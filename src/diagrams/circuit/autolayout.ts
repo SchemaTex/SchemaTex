@@ -40,6 +40,7 @@ import type {
   LaidOutComponent,
   CircuitLayoutResult,
 } from "./layout";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 const COL_W = 96; // horizontal spacing per component
 const ROW_H = 80; // vertical spacing per band (spine / shunt / ground)
@@ -302,6 +303,27 @@ function finalizeAutoLayout(items: LaidOutComponent[], routes: RoutedWire[]): Au
   };
   for (const it of items) {
     for (const a of Object.values(it.anchors)) extendBBox(bbox, a);
+    const label = [it.component.label, it.component.value]
+      .filter(Boolean)
+      .join(" ");
+    if (label) {
+      const labelWidth = estimateTextWidth(label, 11, { fontWeight: 600 });
+      const symbol = getSymbol(it.component.componentType);
+      const angle = (it.rotation * Math.PI) / 180;
+      const midpointX = it.x + (it.length * Math.cos(angle)) / 2;
+      const midpointY = it.y + (it.length * Math.sin(angle)) / 2;
+      const vertical = Math.abs(Math.sin(angle)) > 0.5;
+      const labelX =
+        midpointX +
+        (vertical ? 34 : 0) +
+        (symbol?.labelOffset?.dx ?? 0);
+      const labelY =
+        midpointY -
+        (vertical ? 2 : 18) +
+        (symbol?.labelOffset?.dy ?? 0);
+      extendBBox(bbox, { x: labelX - labelWidth / 2, y: labelY - 13 });
+      extendBBox(bbox, { x: labelX + labelWidth / 2, y: labelY + 14 });
+    }
   }
   for (const r of routes) {
     for (const p of r.points) extendBBox(bbox, p);
@@ -325,6 +347,453 @@ function finalizeAutoLayout(items: LaidOutComponent[], routes: RoutedWire[]): Au
     items,
     routes,
   };
+}
+
+function pinsForComponent(
+  pinMap: Record<string, Record<string, string>>,
+  component: CircuitComponent
+): Array<[string, string]> {
+  return Object.entries(pinMap[component.id] ?? {});
+}
+
+function shortestComponentPath(
+  ast: CircuitAST,
+  startNet: string,
+  targetNet: string,
+  excluded: Set<string>
+): CircuitComponent[] | null {
+  const pinMap = ast.pinMap ?? {};
+  const byNet = new Map<string, CircuitComponent[]>();
+  for (const component of ast.components) {
+    if (excluded.has(component.id) || isGround(component)) continue;
+    for (const [, net] of pinsForComponent(pinMap, component)) {
+      const entries = byNet.get(net) ?? [];
+      entries.push(component);
+      byNet.set(net, entries);
+    }
+  }
+
+  const queue: Array<{ net: string; path: CircuitComponent[] }> = [
+    { net: startNet, path: [] },
+  ];
+  const visited = new Set<string>([startNet]);
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (current.net === targetNet) return current.path;
+    for (const component of byNet.get(current.net) ?? []) {
+      for (const [, nextNet] of pinsForComponent(pinMap, component)) {
+        if (nextNet === current.net || nextNet === "GND" || visited.has(nextNet)) {
+          continue;
+        }
+        visited.add(nextNet);
+        queue.push({ net: nextNet, path: [...current.path, component] });
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Recognize a selector output as independent series branches ending at GND.
+ *
+ * A load-bank branch may contain one component (for example a lamp) or a
+ * simple series chain (for example LED + resistor). Internal nets must connect
+ * exactly the previous and next component; branching or reconvergence means
+ * this specialized layout is not a truthful representation of the topology.
+ *
+ * Every component is visited at most once, so this stays linear instead of
+ * enumerating the exponentially many simple paths in a dense graph.
+ */
+function seriesBranchesToGround(
+  ast: CircuitAST,
+  rootNet: string,
+  excluded: Set<string>
+): CircuitComponent[][] | null {
+  const pinMap = ast.pinMap ?? {};
+  const byNet = new Map<string, CircuitComponent[]>();
+  for (const component of ast.components) {
+    if (excluded.has(component.id) || isGround(component)) continue;
+    for (const [, net] of pinsForComponent(pinMap, component)) {
+      const entries = byNet.get(net) ?? [];
+      entries.push(component);
+      byNet.set(net, entries);
+    }
+  }
+
+  const starters = [...new Map(
+    (byNet.get(rootNet) ?? []).map((component) => [component.id, component])
+  ).values()];
+  const used = new Set<string>();
+  const branches: CircuitComponent[][] = [];
+
+  for (const starter of starters) {
+    if (used.has(starter.id)) return null;
+    const branch: CircuitComponent[] = [];
+    const seenNets = new Set<string>([rootNet]);
+    let currentNet = rootNet;
+    let current = starter;
+
+    while (true) {
+      if (used.has(current.id)) return null;
+      used.add(current.id);
+      branch.push(current);
+
+      const nextNets = [...new Set(
+        pinsForComponent(pinMap, current)
+          .map(([, net]) => net)
+          .filter((net) => net !== currentNet)
+      )];
+      if (nextNets.length !== 1) return null;
+      const nextNet = nextNets[0]!;
+      if (nextNet === "GND") {
+        branches.push(branch);
+        break;
+      }
+      if (seenNets.has(nextNet)) return null;
+      seenNets.add(nextNet);
+
+      const nextComponents = [...new Map(
+        (byNet.get(nextNet) ?? [])
+          .filter((component) => component.id !== current.id)
+          .map((component) => [component.id, component])
+      ).values()];
+      if (nextComponents.length !== 1) return null;
+      currentNet = nextNet;
+      current = nextComponents[0]!;
+    }
+  }
+  return branches;
+}
+
+function routePlacedNetlist(
+  ast: CircuitAST,
+  items: LaidOutComponent[]
+): RoutedWire[] {
+  const pinMap = ast.pinMap ?? {};
+  const placed = new Map(items.map((item) => [item.component.id, item] as const));
+  const netPins = new Map<string, Array<{ compId: string; pt: PinAnchor }>>();
+  for (const component of ast.components) {
+    const item = placed.get(component.id);
+    if (!item) continue;
+    for (const [pinName, netId] of pinsForComponent(pinMap, component)) {
+      const point = item.anchors[pinName];
+      if (!point) continue;
+      const pins = netPins.get(netId) ?? [];
+      pins.push({ compId: component.id, pt: point });
+      netPins.set(netId, pins);
+    }
+  }
+
+  const routes: RoutedWire[] = [];
+  for (const [netId, pins] of netPins) {
+    if (pins.length < 2) continue;
+    if (netId === "GND") {
+      const railY = Math.max(...pins.map((pin) => pin.pt.y));
+      const minX = Math.min(...pins.map((pin) => pin.pt.x));
+      const maxX = Math.max(...pins.map((pin) => pin.pt.x));
+      routes.push({
+        netId,
+        points: [{ x: minX, y: railY }, { x: maxX, y: railY }],
+      });
+      for (const pin of pins) {
+        if (Math.abs(pin.pt.y - railY) < 0.5) continue;
+        routes.push({
+          netId: `${netId}.${pin.compId}`,
+          points: [pin.pt, { x: pin.pt.x, y: railY }],
+        });
+      }
+      continue;
+    }
+
+    if (pins.length === 2) {
+      const [first, second] = pins;
+      routes.push({
+        netId,
+        points:
+          Math.abs(first.pt.x - second.pt.x) < 0.5 ||
+          Math.abs(first.pt.y - second.pt.y) < 0.5
+            ? [first.pt, second.pt]
+            : [
+                first.pt,
+                { x: second.pt.x, y: first.pt.y },
+                second.pt,
+              ],
+      });
+      continue;
+    }
+
+    const ys = pins.map((pin) => pin.pt.y).sort((a, b) => a - b);
+    const spineY = ys[Math.floor(ys.length / 2)]!;
+    const minX = Math.min(...pins.map((pin) => pin.pt.x));
+    const maxX = Math.max(...pins.map((pin) => pin.pt.x));
+    const spine: RoutedWire = {
+      netId,
+      points: [{ x: minX, y: spineY }, { x: maxX, y: spineY }],
+      junctions: [],
+    };
+    routes.push(spine);
+    for (const pin of pins) {
+      if (Math.abs(pin.pt.y - spineY) >= 0.5) {
+        routes.push({
+          netId: `${netId}.${pin.compId}`,
+          points: [pin.pt, { x: pin.pt.x, y: spineY }],
+        });
+      }
+      if (pin.pt.x > minX && pin.pt.x < maxX) {
+        spine.junctions!.push({ x: pin.pt.x, y: spineY });
+      }
+    }
+    if (spine.junctions?.length === 0) delete spine.junctions;
+  }
+  return routes;
+}
+
+/**
+ * Plan a source → series spine → multi-output selector → parallel load bank.
+ *
+ * This is topology-driven: no label/language checks and no case coordinates.
+ * Repeated branches receive independent lanes; their return pins share one
+ * continuous ground rail.
+ */
+function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
+  const pinMap = ast.pinMap ?? {};
+  const sources = ast.components.filter(isPowerSource);
+  if (sources.length !== 1) return null;
+  const source = sources[0]!;
+  const sourcePins = pinMap[source.id] ?? {};
+  const liveNet =
+    sourcePins.plus ??
+    sourcePins.end ??
+    Object.values(sourcePins).find((net) => net !== "GND");
+  if (!liveNet || liveNet === "GND") return null;
+
+  const selectors = ast.components.filter(
+    (component) =>
+      component.componentType === "switch_spdt" ||
+      component.componentType === "switch_spdt_center_off"
+  );
+  for (const selector of selectors) {
+    const pins = pinMap[selector.id] ?? {};
+    const commonNet = pins.common;
+    const outputNets =
+      componentSelectorOutputs(selector, pins);
+    if (!commonNet || outputNets.length !== 2) continue;
+
+    const spinePath = shortestComponentPath(
+      ast,
+      liveNet,
+      commonNet,
+      new Set([source.id, selector.id])
+    );
+    if (!spinePath) continue;
+    const excluded = new Set([
+      source.id,
+      selector.id,
+      ...spinePath.map((component) => component.id),
+    ]);
+    const completeBranchGroups: CircuitComponent[][][] = [];
+    for (const net of outputNets) {
+      const branches = seriesBranchesToGround(ast, net, excluded);
+      if (!branches || branches.length < 2) break;
+      completeBranchGroups.push(branches);
+    }
+    if (completeBranchGroups.length !== outputNets.length) continue;
+    const expectedBranchIds = ast.components
+      .filter((component) => !isGround(component) && !excluded.has(component.id))
+      .map((component) => component.id);
+    const branchIds = completeBranchGroups
+      .flat()
+      .flat()
+      .map((component) => component.id);
+    const uniqueBranchIds = new Set(branchIds);
+    if (
+      uniqueBranchIds.size !== branchIds.length ||
+      expectedBranchIds.length !== uniqueBranchIds.size ||
+      expectedBranchIds.some((id) => !uniqueBranchIds.has(id))
+    ) {
+      continue;
+    }
+
+    const items: LaidOutComponent[] = [];
+    const put = (
+      component: CircuitComponent,
+      x: number,
+      y: number,
+      direction: "right" | "left" | "up" | "down"
+    ): LaidOutComponent => {
+      const item = placeComponent(component, x, y, direction);
+      items.push(item);
+      return item;
+    };
+
+    const mainY = 82;
+    const sourceItem = put(source, 58, mainY + 58, "up");
+    let cursorX = 138;
+    let previousLabelRight = sourceItem.x + 64;
+    const putSpineComponent = (
+      component: CircuitComponent
+    ): LaidOutComponent => {
+      const symbolLength = getSymbol(component.componentType)?.length ?? 40;
+      const labelWidth = estimateTextWidth(component.label ?? component.id, 11, {
+        fontWeight: 600,
+      });
+      // Reserve the painted label, not only the symbol body. This keeps long
+      // multilingual labels on adjacent series components from colliding.
+      cursorX = Math.max(
+        cursorX,
+        previousLabelRight + 18 - symbolLength / 2 + labelWidth / 2
+      );
+      const item = put(component, cursorX, mainY, "right");
+      previousLabelRight =
+        item.x + item.length / 2 + labelWidth / 2;
+      cursorX = item.x + item.length + 28;
+      return item;
+    };
+    for (const component of spinePath) {
+      putSpineComponent(component);
+    }
+    const selectorItem = putSpineComponent(selector);
+
+    const branches = completeBranchGroups.flat();
+    const widestBranchLabel = Math.max(
+      0,
+      ...branches
+        .flat()
+        .map((component) =>
+          estimateTextWidth(component.label ?? component.id, 11, {
+            fontWeight: 600,
+          })
+        )
+    );
+    const laneGap = Math.max(142, Math.min(210, widestBranchLabel + 48));
+    const selectorOutputX = Math.max(
+      selectorItem.anchors.left?.x ?? -Infinity,
+      selectorItem.anchors.right?.x ?? -Infinity,
+      selectorItem.anchors.nc?.x ?? -Infinity,
+      selectorItem.anchors.no?.x ?? -Infinity
+    );
+    const branchStartY = 214;
+    const firstLaneX =
+      selectorOutputX - ((branches.length - 1) * laneGap) / 2;
+    let maxBranchY = branchStartY;
+    let laneIndex = 0;
+    for (const group of completeBranchGroups) {
+      for (const branch of group) {
+        const laneX = firstLaneX + laneIndex * laneGap;
+        let y = branchStartY;
+        for (const component of branch) {
+          const item = put(component, laneX, y, "down");
+          y += item.length + 58;
+          maxBranchY = Math.max(maxBranchY, y);
+        }
+        laneIndex++;
+      }
+    }
+
+    const grounds = ast.components.filter(isGround);
+    grounds.forEach((ground, index) =>
+      put(
+        ground,
+        selectorOutputX + (index - (grounds.length - 1) / 2) * 72,
+        maxBranchY + 20,
+        "down"
+      )
+    );
+
+    const outputNetSet = new Set(outputNets);
+    const routes = routePlacedNetlist(ast, items).filter((route) => {
+      for (const outputNet of outputNetSet) {
+        if (
+          route.netId === outputNet ||
+          route.netId.startsWith(`${outputNet}.`)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    // A selector owns two electrically distinct output rails. The generic
+    // median-spine router can place both on the same y and make a short visual
+    // overlap near the selector. Give each group its own bounded rail and feed
+    // trunk instead.
+    completeBranchGroups.forEach((group, groupIndex) => {
+      const outputNet = outputNets[groupIndex]!;
+      const selectorAnchor = anchorForNet(
+        pinMap,
+        selectorItem,
+        outputNet
+      );
+      const loadAnchors = group
+        .map((branch) => {
+          const first = branch[0];
+          const item = first
+            ? items.find((candidate) => candidate.component.id === first.id)
+            : undefined;
+          return item
+            ? anchorForNet(pinMap, item, outputNet)
+            : undefined;
+        })
+        .filter((anchor): anchor is { x: number; y: number } => !!anchor);
+      if (!selectorAnchor || loadAnchors.length === 0) return;
+
+      const railY =
+        loadAnchors.reduce((sum, anchor) => sum + anchor.y, 0) /
+        loadAnchors.length;
+      const minLoadX = Math.min(...loadAnchors.map((anchor) => anchor.x));
+      const maxLoadX = Math.max(...loadAnchors.map((anchor) => anchor.x));
+      const feedX =
+        groupIndex === 0
+          ? maxLoadX + Math.min(46, laneGap / 3)
+          : minLoadX - Math.min(46, laneGap / 3);
+      const groupBoundaryX = groupIndex === 0 ? maxLoadX : minLoadX;
+      const rail: RoutedWire = {
+        netId: outputNet,
+        points: [
+          { x: minLoadX, y: railY },
+          { x: maxLoadX, y: railY },
+        ],
+        junctions: loadAnchors.map((anchor) => ({
+          x: anchor.x,
+          y: railY,
+        })),
+      };
+      routes.push(rail);
+      routes.push({
+        netId: `${outputNet}.${selector.id}`,
+        points: compactPoints([
+          selectorAnchor,
+          { x: feedX, y: selectorAnchor.y },
+          { x: feedX, y: railY },
+          { x: groupBoundaryX, y: railY },
+        ]),
+      });
+      for (const anchor of loadAnchors) {
+        if (Math.abs(anchor.y - railY) < 0.5) continue;
+        routes.push({
+          netId: `${outputNet}.branch`,
+          points: [anchor, { x: anchor.x, y: railY }],
+        });
+      }
+    });
+
+    return finalizeAutoLayout(items, routes);
+  }
+  return null;
+}
+
+function componentSelectorOutputs(
+  component: CircuitComponent,
+  pins: Record<string, string>
+): string[] {
+  if (component.componentType === "switch_spdt_center_off") {
+    return [pins.left, pins.right].filter(
+      (net): net is string => typeof net === "string"
+    );
+  }
+  return [pins.nc, pins.no].filter(
+    (net): net is string => typeof net === "string"
+  );
 }
 
 function appendReturnRail(
@@ -575,6 +1044,8 @@ function tryLayoutTwoWireLighting(ast: CircuitAST): AutoLayoutResult | null {
 
 export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
   const pinMap = ast.pinMap ?? {};
+  const parallelLoadBank = tryLayoutParallelLoadBank(ast);
+  if (parallelLoadBank) return parallelLoadBank;
   const twoWireLighting = tryLayoutTwoWireLighting(ast);
   if (twoWireLighting) return twoWireLighting;
 

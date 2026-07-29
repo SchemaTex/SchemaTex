@@ -6,6 +6,7 @@ import type {
   CircuitNet,
 } from "../../core/types";
 import { parseNetlist } from "./netlist";
+import { getSymbol } from "./symbols";
 import { matchQuotedTitle } from "../../core/quotes";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 import type { SourceRange } from "../../core/types";
@@ -16,31 +17,6 @@ export class CircuitParseError extends Error {
     this.name = "CircuitParseError";
   }
 }
-
-const COMPONENT_TYPES = new Set<CircuitComponentType>([
-  "resistor", "potentiometer", "rheostat", "thermistor_ntc", "thermistor_ptc",
-  "ldr", "varistor", "fuse", "fuse_slow",
-  "capacitor", "electrolytic_cap", "variable_cap",
-  "inductor", "inductor_iron", "inductor_ferrite", "variable_inductor",
-  "ferrite_bead", "crystal", "transformer",
-  "diode", "zener", "schottky", "led", "photodiode", "varactor", "tvs_diode", "bridge_rectifier",
-  "npn", "pnp", "darlington_npn", "darlington_pnp",
-  "nmos", "pmos", "nmos_depletion", "jfet_n", "jfet_p",
-  "igbt", "scr", "triac", "diac",
-  "phototransistor", "optocoupler",
-  "opamp", "comparator", "schmitt_buffer", "tri_state_buffer", "instrumentation_amp",
-  "generic_ic", "voltage_regulator", "dc_dc_converter", "555_timer",
-  "terminal_block", "enclosure", "din_rail", "wire_duct", "plc",
-  "pilot_light", "selector_switch", "emergency_stop",
-  "voltage_source", "current_source", "ac_source", "battery", "vcc",
-  "ground", "gnd_signal", "gnd_chassis", "gnd_digital",
-  "switch_spst", "switch_spdt", "switch_dpdt", "push_no", "push_nc",
-  "relay_coil", "relay_no", "relay_nc",
-  "contactor", "solenoid_valve", "thermal_overload", "disconnect_switch",
-  "motor", "lamp", "speaker", "microphone", "buzzer",
-  "ammeter", "voltmeter", "wattmeter", "oscilloscope",
-  "wire", "dot", "label", "port", "test_point", "no_connect", "antenna",
-]);
 
 // Aliases for convenience — DSL uses short names
 const ALIASES: Record<string, CircuitComponentType> = {
@@ -95,12 +71,18 @@ const ALIASES: Record<string, CircuitComponentType> = {
   isolator: "disconnect_switch",
   light: "lamp",
   bulb: "lamp",
+  flasher: "automotive_flasher_3pin",
+  automotive_flasher: "automotive_flasher_3pin",
+  selector_center_off: "switch_spdt_center_off",
+  switch_center_off: "switch_spdt_center_off",
 };
 
 function normalizeType(raw: string): CircuitComponentType | null {
   const lower = raw.toLowerCase();
   if (ALIASES[lower]) return ALIASES[lower];
-  if (COMPONENT_TYPES.has(lower as CircuitComponentType)) {
+  // The symbol registry is the capability source of truth: if a type can be
+  // parsed, it must have a renderer definition in the same build.
+  if (getSymbol(lower)) {
     return lower as CircuitComponentType;
   }
   return null;

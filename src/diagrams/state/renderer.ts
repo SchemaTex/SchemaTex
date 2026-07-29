@@ -1,6 +1,7 @@
-import { circle, defs, el, escapeXml, group, line, path, polygon, rect, svgRoot, text } from "../../core/svg";
+import { circle, defs, el, escapeXml, group, line, multilineText, path, polygon, rect, svgRoot, text } from "../../core/svg";
 import type { RenderConfig, SceneItem } from "../../core/types";
 import { resolveStateTheme, type StateTokens, type ResolvedTheme } from "../../core/theme";
+import { estimateMaxLineWidth } from "../../core/text-metrics";
 import { layoutStateDiagram } from "./layout";
 import { parseStateDiagram } from "./parser";
 import { resolveSceneTitle } from "../../core/title-scene";
@@ -96,25 +97,30 @@ function renderSimple(
     rect({ x, y, width, height, rx: 8, ry: 8, class: "lt-state-body" }),
   ];
   const label = node.node.label || node.id;
+  const labelLines = node.labelLines?.length ? node.labelLines : [label];
+  const labelText = labelLines.join("\n");
 
   if (node.node.activities.length === 0) {
     children.push(
-      text(
+      multilineText(
         { x: x + width / 2, y: y + height / 2 + 4, "text-anchor": "middle", class: "lt-state-name", "data-sx-role": scene && node.node.labelSourceRange ? "label" : undefined },
-        label
+        labelText,
+        15
       )
     );
   } else {
+    const nameBandHeight = labelLines.length * 15 + 9;
     children.push(
-      text(
-        { x: x + width / 2, y: y + 16, "text-anchor": "middle", class: "lt-state-name", "data-sx-role": scene && node.node.labelSourceRange ? "label" : undefined },
-        label
+      multilineText(
+        { x: x + width / 2, y: y + nameBandHeight / 2 + 3, "text-anchor": "middle", class: "lt-state-name", "data-sx-role": scene && node.node.labelSourceRange ? "label" : undefined },
+        labelText,
+        15
       )
     );
     children.push(
-      line({ x1: x, y1: y + 22, x2: x + width, y2: y + 22, class: "lt-state-div" })
+      line({ x1: x, y1: y + nameBandHeight, x2: x + width, y2: y + nameBandHeight, class: "lt-state-div" })
     );
-    let cy = y + 36;
+    let cy = y + nameBandHeight + 14;
     for (const a of node.node.activities) {
       children.push(text({ x: x + 8, y: cy, class: "lt-state-activity" }, activityText(a)));
       cy += 14;
@@ -314,15 +320,20 @@ function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
     }),
   ];
   if (edge.label) {
-    const w = Math.max(20, edge.label.length * 6.4 + 8);
+    const labelLines = edge.label.split("\n");
+    const w = Math.max(
+      20,
+      Math.ceil(estimateMaxLineWidth(edge.label, 11)) + 8
+    );
+    const h = labelLines.length * 14 + 2;
     const anchor = edge.labelAnchor ?? "middle";
     const dx = anchor === "start" ? 0 : anchor === "end" ? -w : -w / 2;
     parts.push(
       rect({
         x: edge.labelX + dx,
-        y: edge.labelY - 10,
+        y: edge.labelY - h / 2,
         width: w,
-        height: 14,
+        height: h,
         rx: 2,
         ry: 2,
         class: "lt-transition-label-bg",
@@ -330,17 +341,18 @@ function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
       })
     );
     parts.push(
-      text(
+      multilineText(
         {
           x: edge.labelX,
-          y: edge.labelY,
+          y: edge.labelY + 3,
           "text-anchor": anchor,
           class: "lt-transition-label",
           "data-sx-key": scene && edge.labelSourceRange ? `${key}:label` : undefined,
           "data-sx-role": scene && edge.labelSourceRange ? "label" : undefined,
           "data-sx-live-midpoint": scene ? "true" : undefined,
         },
-        edge.label
+        edge.label,
+        14
       )
     );
   }
@@ -352,7 +364,12 @@ function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
     editable: { label: false, position: "none" },
   });
   if (scene && edge.label && edge.labelSourceRange) {
-    const width = Math.max(20, edge.label.length * 6.4 + 8);
+    const lines = edge.label.split("\n");
+    const width = Math.max(
+      20,
+      Math.ceil(estimateMaxLineWidth(edge.label, 11)) + 8
+    );
+    const height = lines.length * 14 + 2;
     const anchor = edge.labelAnchor ?? "middle";
     const x = edge.labelX - (anchor === "start" ? 0 : anchor === "end" ? width : width / 2);
     scene.push({
@@ -360,7 +377,7 @@ function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
       kind: "label",
       label: edge.label,
       sourceRange: edge.labelSourceRange,
-      bbox: { x, y: edge.labelY - 10, width, height: 14 },
+      bbox: { x, y: edge.labelY - height / 2, width, height },
       editable: { label: true, position: "none" },
     });
   }
@@ -434,6 +451,7 @@ function renderLayout(layout: StateLayoutResult, t: StateTheme, config?: RenderC
       viewBox: `0 0 ${layout.width} ${layout.height}`,
       class: "lt-state",
       "data-diagram-type": "state",
+      "data-manual-layout": layout.manualLayout ? "true" : undefined,
     },
     [
       el("title", {}, escapeXml(`State Diagram${layout.title ? " — " + layout.title : ""}`)),

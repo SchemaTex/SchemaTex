@@ -819,12 +819,15 @@ export interface DiagramPlugin {
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */
   parse?: (text: string) => unknown;
   /**
-   * Optional non-fatal validation pass. Runs after a successful parse and
-   * returns domain-level warnings (e.g. an incomplete instrument loop) without
-   * blocking rendering. Surfaced through `parseResult` / `renderResult`
-   * diagnostics. Must not throw — return `[]` when there's nothing to flag.
+   * Optional domain-validation pass. Runs after a successful parse and may
+   * return render-blocking errors or non-blocking warnings. Surfaced through
+   * `parseResult` / `renderResult` diagnostics. Must not throw — return `[]`
+   * when there is nothing to flag.
    */
-  lint?: (text: string) => SchematexDiagnostic[];
+  lint?: (
+    text: string,
+    config?: Partial<RenderConfig>
+  ) => SchematexDiagnostic[];
   capabilities?: {
     /** Renderer can populate RenderConfig.__scene when explicitly requested. */
     scene?: boolean;
@@ -1088,6 +1091,7 @@ export type CircuitComponentType =
   // ── Switches ──────────────────────────────────────────────────
   | "switch_spst"       // Single-pole single-throw (angled arm + gap)
   | "switch_spdt"       // Single-pole double-throw (3-pin)
+  | "switch_spdt_center_off" // Three-position left/off/right selector
   | "switch_dpdt"       // Double-pole double-throw (6-pin)
   | "push_no"           // Push button normally-open (circle + contact gap)
   | "push_nc"           // Push button normally-closed (circle + line + slash)
@@ -1109,6 +1113,7 @@ export type CircuitComponentType =
   | "speaker"           // Triangle + box + radiating lines
   | "microphone"        // Circle + vertical lines (capsule)
   | "buzzer"            // Piezo symbol or speaker variant
+  | "automotive_flasher_3pin" // Automotive B/L/P turn-signal flasher
 
   // ── Measurement ───────────────────────────────────────────────
   | "ammeter"           // Circle + "A"
@@ -1190,6 +1195,10 @@ export interface BlockNode {
   role?: BlockRole;
   /** Routing hint for feedback/feedforward blocks: "above" = route over forward path */
   route?: "above" | "below";
+  /** True when explicitly requested through the `[ID]` shorthand. */
+  synthetic?: boolean;
+  /** One-based declaration/recovery line for diagnostics and provenance. */
+  sourceLine?: number;
 }
 
 export interface SummingJunction {
@@ -1960,6 +1969,8 @@ export type BreadboardPartKind =
   | "display-tm1637"
   | "module-rotary-ky040"
   | "module-l298n"
+  | "module-relay-1ch"
+  | "module-rtc-ds3231"
   | "actuator-servo-sg90";
 
 export interface BreadboardPart {

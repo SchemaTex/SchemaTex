@@ -32,9 +32,14 @@ route primary here -> x1`,
   });
 
   it("keeps an explicit evacuation header intact under forced routing", () => {
-    const result = renderResult(`evacuation "Office"\nroom office at 0,0 size 4x3`, {
-      type: "evacuation",
-    });
+    const result = renderResult(
+      `evacuation "Office"
+room office "Office" at 0,0 size 4x3
+here in office at 1,1
+exit-final x1 in office at 4,1.5 side east
+route primary here -> x1`,
+      { type: "evacuation" }
+    );
     expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
     expect(result.svg).toContain("Office");
   });

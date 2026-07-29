@@ -21,7 +21,11 @@
 .sx-fp-window { fill: none; stroke: #334155; stroke-width: 1.3; }
 .sx-fp-jamb { fill: none; stroke: #475569; stroke-width: 1.2; }
 .sx-fp-room-name { font: 600 13.5px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-room-name-primary { font-size: 18px; font-weight: 750; letter-spacing: -0.01em; }
+.sx-fp-room-name-secondary { font-size: 11px; font-weight: 500; }
 .sx-fp-room-area { font: 11px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-zone { fill: none; stroke: #94a3b8; stroke-width: 1.4; stroke-dasharray: 7 4; }
+.sx-fp-zone-label { font: 700 10px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; letter-spacing: .03em; }
 .sx-fp-stair-break { fill: none; stroke: #475569; stroke-width: 1.6; }
 .sx-fp-compass { fill: none; stroke: #94a3b8; stroke-width: 1.2; }
 .sx-fp-compass-n { font: 700 11px sans-serif; fill: #64748b; }
@@ -138,25 +142,25 @@
 <rect class="sx-fp-gap" fill="#ffffff" x="522.5" y="711.75" width="88" height="6"/><rect class="sx-fp-gap" fill="#ffffff" x="522.5" y="717.75" width="88" height="6"/><line class="sx-fp-window" x1="522.5" y1="713.57" x2="610.5" y2="713.57"/><line class="sx-fp-window" x1="522.5" y1="717.75" x2="610.5" y2="717.75"/><line class="sx-fp-window" x1="522.5" y1="721.93" x2="610.5" y2="721.93"/><line class="sx-fp-window" x1="522.5" y1="712.25" x2="522.5" y2="723.25"/><line class="sx-fp-window" x1="610.5" y1="712.25" x2="610.5" y2="723.25"/>
 <rect class="sx-fp-gap" fill="#ffffff" x="698.5" y="711.75" width="99" height="6"/><rect class="sx-fp-gap" fill="#ffffff" x="698.5" y="717.75" width="99" height="6"/><line class="sx-fp-window" x1="698.5" y1="713.57" x2="797.5" y2="713.57"/><line class="sx-fp-window" x1="698.5" y1="717.75" x2="797.5" y2="717.75"/><line class="sx-fp-window" x1="698.5" y1="721.93" x2="797.5" y2="721.93"/><line class="sx-fp-window" x1="698.5" y1="712.25" x2="698.5" y2="723.25"/><line class="sx-fp-window" x1="797.5" y1="712.25" x2="797.5" y2="723.25"/>
 <rect class="sx-fp-gap" fill="#ffffff" x="832.75" y="534.05" width="6" height="77"/><rect class="sx-fp-gap" fill="#ffffff" x="838.75" y="534.05" width="6" height="77"/><line class="sx-fp-window" x1="834.57" y1="534.05" x2="834.57" y2="611.05"/><line class="sx-fp-window" x1="838.75" y1="534.05" x2="838.75" y2="611.05"/><line class="sx-fp-window" x1="842.93" y1="534.05" x2="842.93" y2="611.05"/><line class="sx-fp-window" x1="833.25" y1="534.05" x2="844.25" y2="534.05"/><line class="sx-fp-window" x1="833.25" y1="611.05" x2="844.25" y2="611.05"/></g>
-<g class="sx-fp-labels"><text class="sx-fp-room-name" x="244.75" y="203.25" text-anchor="middle">Living Room</text>
+<g class="sx-fp-labels"><text class="sx-fp-room-name sx-fp-room-name-normal" x="244.75" y="203.25" text-anchor="middle">Living Room</text>
 <text class="sx-fp-room-area" x="244.75" y="219.25" text-anchor="middle">32.8 m²</text>
-<text class="sx-fp-room-name" x="525.25" y="203.25" text-anchor="middle">Kitchen</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="525.25" y="203.25" text-anchor="middle">Kitchen</text>
 <text class="sx-fp-room-area" x="525.25" y="219.25" text-anchor="middle">19.3 m²</text>
-<text class="sx-fp-room-name" x="739.75" y="203.25" text-anchor="middle">Dining</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="739.75" y="203.25" text-anchor="middle">Dining</text>
 <text class="sx-fp-room-area" x="739.75" y="219.25" text-anchor="middle">16.6 m²</text>
-<text class="sx-fp-room-name" x="775.5" y="401.25" text-anchor="middle">Bath</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="775.5" y="401.25" text-anchor="middle">Bath</text>
 <text class="sx-fp-room-area" x="775.5" y="417.25" text-anchor="middle">6.0 m²</text>
-<text class="sx-fp-room-name" x="198" y="593.75" text-anchor="middle">Master Bedroom</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="198" y="593.75" text-anchor="middle">Master Bedroom</text>
 <text class="sx-fp-room-area" x="198" y="609.75" text-anchor="middle">18.9 m²</text>
-<text class="sx-fp-room-name" x="365.75" y="527.75" text-anchor="middle">WIC</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="365.75" y="527.75" text-anchor="middle">WIC</text>
 <text class="sx-fp-room-area" x="365.75" y="543.75" text-anchor="middle">3.6 m²</text>
-<text class="sx-fp-room-name" x="365.75" y="648.75" text-anchor="middle">En-suite</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="365.75" y="648.75" text-anchor="middle">En-suite</text>
 <text class="sx-fp-room-area" x="365.75" y="664.75" text-anchor="middle">4.3 m²</text>
-<text class="sx-fp-room-name" x="467.5" y="527.75" text-anchor="middle">Laundry</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="467.5" y="527.75" text-anchor="middle">Laundry</text>
 <text class="sx-fp-room-area" x="467.5" y="543.75" text-anchor="middle">3.8 m²</text>
-<text class="sx-fp-room-name" x="588.5" y="593.75" text-anchor="middle">Bedroom 2</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="588.5" y="593.75" text-anchor="middle">Bedroom 2</text>
 <text class="sx-fp-room-area" x="588.5" y="609.75" text-anchor="middle">15.6 m²</text>
-<text class="sx-fp-room-name" x="748" y="593.75" text-anchor="middle">Bedroom 3</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="748" y="593.75" text-anchor="middle">Bedroom 3</text>
 <text class="sx-fp-room-area" x="748" y="609.75" text-anchor="middle">14.5 m²</text>
 <text class="sx-fp-furn-label" x="698.5" y="99.98" text-anchor="middle">Cabinet</text></g>
 <g class="sx-fp-dims"><line class="sx-fp-dim" x1="79.75" y1="45.65" x2="838.75" y2="45.65"/><line class="sx-fp-dim" x1="76.15" y1="49.25" x2="83.35" y2="42.05"/><line class="sx-fp-dim" x1="835.15" y1="49.25" x2="842.35" y2="42.05"/><text class="sx-fp-dim-text" x="459.25" y="41.65" text-anchor="middle">13.8 m</text>

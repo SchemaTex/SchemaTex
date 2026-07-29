@@ -31,7 +31,7 @@ import type {
   CircuitComponentType,
   CircuitNet,
 } from "../../core/types";
-import { getNetlistPinOrder } from "./symbols";
+import { getNetlistPinOrder, getSymbol } from "./symbols";
 
 export class NetlistParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -70,14 +70,23 @@ const PREFIX_MAP: Record<string, { type: CircuitComponentType; pins: string[] }>
 const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   vsource: "voltage_source",
   isource: "current_source",
+  ac: "ac_source",
   acsource: "ac_source",
+  switch: "switch_spst",
   ecap: "electrolytic_cap",
   pot: "potentiometer",
+  xtal: "crystal",
+  xfmr: "transformer",
   gnd: "ground",
   ic: "generic_ic",
   reg: "voltage_regulator",
   timer555: "555_timer",
   transistor: "npn",
+  bjt_npn: "npn",
+  bjt_pnp: "pnp",
+  mosfet_n: "nmos",
+  mosfet_p: "pmos",
+  terminal: "terminal_block",
   tb: "terminal_block",
   junction_box: "terminal_block",
   jbox: "terminal_block",
@@ -93,7 +102,17 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   lamp: "lamp",
   light: "lamp",
   bulb: "lamp",
+  flasher: "automotive_flasher_3pin",
+  automotive_flasher: "automotive_flasher_3pin",
+  selector_center_off: "switch_spdt_center_off",
+  switch_center_off: "switch_spdt_center_off",
 };
+
+const NETLIST_SPECIAL_TYPES = new Set<CircuitComponentType>([
+  "wire",
+  "dot",
+  "label",
+]);
 
 /** Ground refs: SPICE "0", canonical aliases (GND/AGND/DGND/EARTH/PE/VSS/COM), and suffixed variants (GND_REF, AGND_DIG, EARTH1). */
 const GROUND_REF = /^(0|gnd|ground|earth|pe|agnd|dgnd|gnda|gndd|vss|com)(_\w+|\d+)?$/i;
@@ -229,7 +248,14 @@ export function parseNetlist(
 
     if (kv.type) {
       const t = kv.type.toLowerCase();
-      cType = (TYPE_ALIASES[t] ?? t) as CircuitComponentType;
+      const normalized = (TYPE_ALIASES[t] ?? t) as CircuitComponentType;
+      if (!NETLIST_SPECIAL_TYPES.has(normalized) && !getSymbol(normalized)) {
+        throw new NetlistParseError(
+          `Unknown component type "${kv.type}". Use a supported circuit symbol or alias.`,
+          lineIdx + 1
+        );
+      }
+      cType = normalized;
       pinOrder = getNetlistPinOrder(cType) ?? defaults?.pins ?? ["start", "end"];
     } else if (defaults) {
       cType = defaults.type;

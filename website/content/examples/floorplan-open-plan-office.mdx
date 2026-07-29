@@ -22,7 +22,7 @@ dsl: |
   door between work break at 30%
   window work north at 25% width 2 type sliding
   window work north at 75% width 2 type sliding
-  grid desk-l in work rows 3 cols 6 count 18 area 1.8,1.8 14.2,8.2 itemsize 1.6x1.6
+  grid desk-l in work rows 3 cols 6 count 18 centers 1.8,1.8 14.2,8.2 itemsize 1.6x1.6
   furniture lockers in work at 0.2,9.4 size 3x0.45
   furniture filing-cabinet in work at 14.6,9.2
   furniture conference-table in meet at 0.9,1.5 size 3.2x1.6
@@ -34,6 +34,6 @@ dsl: |
 
 ## What this shows
 
-Eighteen corner workstations come from one `grid desk-l` — each L-desk draws its own task chair, and the grid's `area` corners are the centres of the first and last desk, so the 2.5 m column pitch leaves a clear circulation lane between rows.
+Eighteen corner workstations come from one `grid desk-l` — each L-desk draws its own task chair, and the grid's `centers` coordinates are the centres of the first and last desk, so the 2.5 m column pitch leaves a clear circulation lane between rows.
 
 Two service rooms hang off the open floor with `right-of`/`below` chaining; the `conference-table` and `round-table-4` auto-seat their edges, and the validator guarantees nothing — locker run, filing, fridge — strays past a wall or into a desk.

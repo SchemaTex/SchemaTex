@@ -5,6 +5,7 @@ import type {
   CircuitComponentType,
 } from "../../core/types";
 import { parseCircuit } from "./parser";
+import { getSymbol } from "./symbols";
 
 /**
  * Circuit electrical-rule check (ERC) + recoverable-input lint.
@@ -78,6 +79,11 @@ function isConventionalOpenNet(id: string): boolean {
 function componentIdOfAnchor(anchor: string): string {
   const dot = anchor.lastIndexOf(".");
   return dot < 0 ? anchor : anchor.slice(0, dot);
+}
+
+function pinIdOfAnchor(anchor: string): string | undefined {
+  const dot = anchor.lastIndexOf(".");
+  return dot < 0 ? undefined : anchor.slice(dot + 1);
 }
 
 /** Levenshtein distance, bailing out as soon as it provably exceeds `max`. */
@@ -180,6 +186,14 @@ export function lintCircuit(text: string): SchematexDiagnostic[] {
 
     const comp = compById.get(componentIdOfAnchor(net.anchors[0]));
     if (comp && INTENTIONAL_SINGLE_PIN.has(comp.componentType)) continue;
+    const pinId = pinIdOfAnchor(net.anchors[0]);
+    if (
+      comp &&
+      pinId &&
+      getSymbol(comp.componentType)?.optionalNetlistPins?.includes(pinId)
+    ) {
+      continue;
+    }
 
     const lower = net.id.toLowerCase();
     const typoTarget = wired.find(

@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)` (sans `+`) | `r` traité comme `+r` — fonctionne, mais ambigu | Écrire `sum(+r, -ym)` pour plus de clarté |
 | `ctrl -> plant, plant -> out` (virgule sur une ligne) | `,` n'est pas un séparateur — parse échoue | Une connexion par ligne ou utiliser la chaîne : `ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` non valide sur signal ; l'utiliser sur les connexions | Supprimer `label:` de la déclaration de signal |
-| `role: filter` | Rôle inconnu — silencieusement remplacé par `generic` | Utiliser `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, ou `generic` |
+| `role: filter` | Erreur d’analyse — rôle inconnu | Utiliser `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, ou `generic` |
 | `A -> B [discrete, label: "e"]` — étiquette en premier échoue | L'ordre des attributs dans `[…]` n'a pas d'importance, mais le raccourci `"texte"` nu ne fonctionne que s'il est le seul élément | Utiliser `[label: "e", discrete]` |
 
 ---

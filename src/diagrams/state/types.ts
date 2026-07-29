@@ -83,6 +83,8 @@ export interface StateDiagramAST {
   title?: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   direction: StateDirection;
+  /** Whether direction came from the default, an explicit axis, or auto policy. */
+  directionSource?: "default" | "explicit" | "auto";
   /** Top-level states (children of the implicit root). */
   states: StateNode[];
   transitions: StateTransition[];
@@ -100,6 +102,8 @@ export interface StateLayoutNode {
   width: number;
   height: number;
   node: StateNode;
+  /** Exact measured display lines reserved by layout and consumed by renderer. */
+  labelLines?: string[];
   /** Layer index in the local container (0 = leftmost / topmost). */
   layer: number;
   /** Absolute center coordinates of the symbol (used for routing). */
@@ -159,4 +163,6 @@ export interface StateLayoutResult {
   title?: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   direction: StateDirection;
+  /** True when authored @overrides pins affected this render. */
+  manualLayout?: boolean;
 }

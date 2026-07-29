@@ -1,9 +1,18 @@
-import type { BlockAST, BlockEdge, BlockNode, SummingJunction } from "../../core/types";
+import type {
+  BlockAST,
+  BlockEdge,
+  BlockNode,
+} from "../../core/types";
+import {
+  estimateMaxLineWidth,
+  wrapTextToWidth,
+} from "../../core/text-metrics";
 
 export interface LaidBlock {
   kind: "block";
   id: string;
   label: string;
+  labelLines: string[];
   role: string;
   x: number;
   y: number;
@@ -44,12 +53,14 @@ export interface LaidEdge {
   from: string;
   to: string;
   label?: string;
+  labelLines?: string[];
+  labelWidth?: number;
+  labelHeight?: number;
   discrete: boolean;
   path: string;
   midX: number;
   midY: number;
   isFeedback: boolean;
-  /** Polarity sign to draw near the target if target is a sum */
   polarity?: LaidEdgePolarity;
 }
 
@@ -59,36 +70,182 @@ export interface BlockDiagramLayout {
   nodes: LaidNode[];
   edges: LaidEdge[];
   title?: string;
-  /** Offset applied to all y coords (>0 when feedforward rows exist above FWD_Y) */
   topOffset: number;
 }
 
-const BLOCK_W = 100;
-const BLOCK_H = 54;
-const SUM_R = 12;
-const FWD_Y = 110;
-const ROW_GAP = 80;
-const FIRST_ROW_OFFSET = 110;
-const COL_GAP = 60;
-const LEFT_PAD = 30;
-const RIGHT_PAD = 30;
+export interface BlockDiagramCollisions {
+  nodeNode: string[];
+  labelLabel: string[];
+  labelNode: string[];
+}
 
-interface Track {
-  /** row index (1, 2, ...); 0 means forward path */
-  row: number;
-  /** above = y < FWD_Y; below = y > FWD_Y */
-  side: "above" | "below";
-  /** Occupied col ranges [minCol, maxCol] for collision detection */
-  ranges: Array<[number, number]>;
+const SUM_R = 12;
+const MIN_BLOCK_W = 126;
+const MAX_BLOCK_W = 230;
+const MIN_BLOCK_H = 54;
+const BLOCK_FONT = 14;
+const BLOCK_LINE_H = 16;
+const BLOCK_TEXT_MAX = 190;
+const EDGE_FONT = 12;
+const EDGE_LINE_H = 14;
+const EDGE_TEXT_MAX = 165;
+const MIN_COL_GAP = 64;
+const ROW_GAP = 42;
+const TOP_PAD = 32;
+const BOTTOM_PAD = 34;
+const SIDE_PAD = 34;
+const FEEDBACK_LANE_GAP = 28;
+
+interface NodeMeasure {
+  width: number;
+  height: number;
+  label: string;
+  lines: string[];
+}
+
+function measureBlock(block: BlockNode): NodeMeasure {
+  const lines = wrapTextToWidth(
+    block.label,
+    BLOCK_FONT,
+    BLOCK_TEXT_MAX,
+    { fontWeight: 600 }
+  );
+  const label = lines.join("\n");
+  const width = Math.max(
+    MIN_BLOCK_W,
+    Math.min(
+      MAX_BLOCK_W,
+      Math.ceil(estimateMaxLineWidth(label, BLOCK_FONT, { fontWeight: 600 })) +
+        28
+    )
+  );
+  const height = Math.max(
+    MIN_BLOCK_H,
+    lines.length * BLOCK_LINE_H + 22
+  );
+  return { width, height, label, lines };
+}
+
+function measureEdgeLabel(label: string | undefined): {
+  label?: string;
+  lines?: string[];
+  width?: number;
+  height?: number;
+} {
+  if (!label) return {};
+  const lines = wrapTextToWidth(label, EDGE_FONT, EDGE_TEXT_MAX);
+  const normalized = lines.join("\n");
+  return {
+    label: normalized,
+    lines,
+    // The renderer intentionally uses italic serif for signal notation; leave
+    // a conservative optical allowance beyond system-ui measurement.
+    width: Math.ceil(estimateMaxLineWidth(normalized, EDGE_FONT) * 1.16) + 14,
+    height: lines.length * EDGE_LINE_H + 4,
+  };
+}
+
+function centeredRows(
+  ids: string[],
+  heightOf: (id: string) => number,
+  contentHeight: number,
+  top: number = TOP_PAD
+): Map<string, number> {
+  const total =
+    ids.reduce((sum, id) => sum + heightOf(id), 0) +
+    Math.max(0, ids.length - 1) * ROW_GAP;
+  let cursor = top + (contentHeight - total) / 2;
+  const centers = new Map<string, number>();
+  for (const id of ids) {
+    const height = heightOf(id);
+    centers.set(id, cursor + height / 2);
+    cursor += height + ROW_GAP;
+  }
+  return centers;
+}
+
+function portOffset(index: number, count: number, height: number): number {
+  if (count <= 1) return 0;
+  const available = Math.max(0, height - 24);
+  const step = Math.min(18, available / Math.max(1, count - 1));
+  return (index - (count - 1) / 2) * step;
+}
+
+function rectsOverlap(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number }
+): boolean {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+export function findBlockDiagramCollisions(
+  layout: BlockDiagramLayout
+): BlockDiagramCollisions {
+  const nodeRects = layout.nodes.flatMap((node) => {
+    if (node.kind === "block") {
+      return [{ id: node.id, x: node.x, y: node.y, width: node.width, height: node.height }];
+    }
+    if (node.kind === "sum") {
+      return [{
+        id: node.id,
+        x: node.cx - node.r,
+        y: node.cy - node.r,
+        width: node.r * 2,
+        height: node.r * 2,
+      }];
+    }
+    return [];
+  });
+  const labelRects = layout.edges.flatMap((edge, index) =>
+    edge.label && edge.labelWidth && edge.labelHeight
+      ? [{
+          id: `${edge.from}->${edge.to}:${index}`,
+          x: edge.midX - edge.labelWidth / 2,
+          y: edge.midY - edge.labelHeight / 2,
+          width: edge.labelWidth,
+          height: edge.labelHeight,
+        }]
+      : []
+  );
+
+  const collisions = (
+    entries: Array<{ id: string; x: number; y: number; width: number; height: number }>
+  ): string[] => {
+    const result: string[] = [];
+    for (let left = 0; left < entries.length; left++) {
+      for (let right = left + 1; right < entries.length; right++) {
+        if (rectsOverlap(entries[left]!, entries[right]!)) {
+          result.push(`${entries[left]!.id}|${entries[right]!.id}`);
+        }
+      }
+    }
+    return result;
+  };
+
+  return {
+    nodeNode: collisions(nodeRects),
+    labelLabel: collisions(labelRects),
+    labelNode: labelRects.flatMap((label) =>
+      nodeRects
+        .filter((node) => rectsOverlap(label, node))
+        .map((node) => `${label.id}|${node.id}`)
+    ),
+  };
 }
 
 export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
-  const nodeIds = new Set<string>();
-  for (const b of ast.blocks) nodeIds.add(b.id);
-  for (const s of ast.sums) nodeIds.add(s.id);
-  for (const e of ast.connections) {
-    nodeIds.add(e.from);
-    nodeIds.add(e.to);
+  const blockById = new Map(ast.blocks.map((block) => [block.id, block] as const));
+  const sumById = new Map(ast.sums.map((sum) => [sum.id, sum] as const));
+  const explicitIds = new Set([...blockById.keys(), ...sumById.keys()]);
+  const nodeIds = new Set<string>(explicitIds);
+  for (const edge of ast.connections) {
+    nodeIds.add(edge.from);
+    nodeIds.add(edge.to);
   }
 
   const outgoing = new Map<string, BlockEdge[]>();
@@ -97,466 +254,424 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     outgoing.set(id, []);
     incoming.set(id, []);
   }
-  for (const e of ast.connections) {
-    outgoing.get(e.from)!.push(e);
-    incoming.get(e.to)!.push(e);
+  for (const edge of ast.connections) {
+    outgoing.get(edge.from)?.push(edge);
+    incoming.get(edge.to)?.push(edge);
   }
 
-  // Entry points
-  const hasIn = nodeIds.has("in");
-  const entries: string[] = [];
-  if (hasIn) entries.push("in");
-  for (const id of nodeIds) {
-    if (id === "in" || id === "out") continue;
-    if ((incoming.get(id) ?? []).length === 0 && !entries.includes(id)) {
-      entries.push(id);
-    }
-  }
-
-  // BFS forward (first-visit col assignment — back-edges become feedback)
-  const col = new Map<string, number>();
-  const queue: string[] = [];
-  for (const e of entries) {
-    col.set(e, 0);
-    queue.push(e);
-  }
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    const c = col.get(cur)!;
-    for (const edge of outgoing.get(cur) ?? []) {
-      if (!col.has(edge.to)) {
-        col.set(edge.to, c + 1);
-        queue.push(edge.to);
-      }
-    }
-  }
-  // Any unreached node
-  for (const id of nodeIds) {
-    if (!col.has(id)) col.set(id, 1);
-  }
-
-  // Feedback detection: outgoing edges are ALL going backward
-  const isFeedback = new Set<string>();
-  for (const id of nodeIds) {
-    if (id === "in" || id === "out") continue;
-    const myCol = col.get(id)!;
-    const outs = outgoing.get(id) ?? [];
-    if (outs.length === 0) continue;
-    const allBack = outs.every((e) => (col.get(e.to) ?? myCol) < myCol);
-    if (allBack) isFeedback.add(id);
-  }
-
-  // For each feedback node, compute loop range [minCol, maxCol]
-  const blockById = new Map<string, BlockNode>();
-  for (const b of ast.blocks) blockById.set(b.id, b);
-
-  interface FbInfo {
-    id: string;
-    range: [number, number];
-    side: "above" | "below";
-    row: number; // depth
-  }
-  const fbInfos: FbInfo[] = [];
-  for (const id of isFeedback) {
-    const outs = outgoing.get(id) ?? [];
-    const ins = incoming.get(id) ?? [];
-    // targets (forward nodes it feeds back into)
-    const targetCols = outs.map((e) => col.get(e.to) ?? 0);
-    const sourceCols = ins.map((e) => col.get(e.from) ?? 0);
-    const minC = Math.min(...targetCols, ...sourceCols);
-    const maxC = Math.max(...targetCols, ...sourceCols);
-    const bn = blockById.get(id);
-    const side: "above" | "below" = bn?.route === "above" ? "above" : "below";
-    fbInfos.push({ id, range: [minC, maxC], side, row: 0 });
-  }
-
-  // Sort by range width desc (outermost first), break ties by min col
-  fbInfos.sort((a, b) => {
-    const wa = a.range[1] - a.range[0];
-    const wb = b.range[1] - b.range[0];
-    if (wa !== wb) return wb - wa;
-    return a.range[0] - b.range[0];
+  const entries = [...nodeIds].filter(
+    (id) => (incoming.get(id)?.length ?? 0) === 0
+  );
+  if (entries.length === 0 && nodeIds.size > 0) entries.push([...nodeIds][0]!);
+  entries.sort((a, b) => {
+    if (a === "in") return -1;
+    if (b === "in") return 1;
+    return 0;
   });
 
-  // Assign tracks per side, greedy interval-overlap depth
-  const tracks: Record<"above" | "below", Track[]> = { above: [], below: [] };
-  for (const fb of fbInfos) {
-    let row = 1;
-    while (true) {
-      // check if any existing block on this (side, row) has overlapping range
-      const occupied = tracks[fb.side].find((t) => t.row === row);
-      const conflict =
-        occupied?.ranges.some(
-          ([a, b]) => !(fb.range[1] < a || fb.range[0] > b)
-        ) ?? false;
-      if (!conflict) {
-        if (occupied) occupied.ranges.push(fb.range);
-        else
-          tracks[fb.side].push({ row, side: fb.side, ranges: [fb.range] });
-        fb.row = row;
-        break;
-      }
-      row++;
+  // First-visit layering deliberately leaves later edges that point to an
+  // earlier layer as feedback. It is stable under declaration-order changes
+  // and, unlike the old fixed-row policy, never collapses peers together.
+  const layer = new Map<string, number>();
+  const queue = [...entries];
+  for (const entry of entries) layer.set(entry, 0);
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const nextLayer = (layer.get(current) ?? 0) + 1;
+    for (const edge of outgoing.get(current) ?? []) {
+      if (layer.has(edge.to)) continue;
+      layer.set(edge.to, nextLayer);
+      queue.push(edge.to);
     }
   }
-
-  const maxBelowRow = tracks.below.reduce((m, t) => Math.max(m, t.row), 0);
-  const maxAboveRow = tracks.above.reduce((m, t) => Math.max(m, t.row), 0);
-
-  // Compute y per (side, row)
-  const yFor = (side: "above" | "below", row: number): number => {
-    const step = FIRST_ROW_OFFSET + (row - 1) * ROW_GAP;
-    return side === "above" ? FWD_Y - step : FWD_Y + step;
-  };
-
-  // For the feedforward row(s) to have room, shift all y by topOffset
-  const topOffset = maxAboveRow > 0 ? (FIRST_ROW_OFFSET + (maxAboveRow - 1) * ROW_GAP) + 30 : 30;
-  const forwardY = FWD_Y + (topOffset - 30);
-
-  // Remap y helper
-  const rowY = (side: "above" | "below", row: number): number =>
-    yFor(side, row) + (topOffset - 30);
-
-  // Normalize columns
-  let maxFwdCol = 0;
   for (const id of nodeIds) {
-    if (!isFeedback.has(id)) maxFwdCol = Math.max(maxFwdCol, col.get(id) ?? 0);
+    if (!layer.has(id)) layer.set(id, 0);
   }
-  const colCount = maxFwdCol + 1;
-  const colContent = new Array(colCount).fill(BLOCK_W);
 
-  const colX: number[] = [];
-  {
-    let x = LEFT_PAD;
-    for (let i = 0; i < colCount; i++) {
-      const w = i === 0 && hasIn ? 30 : colContent[i];
-      colX.push(x + w / 2);
-      x += w + COL_GAP;
+  const measures = new Map<string, NodeMeasure>();
+  for (const block of ast.blocks) measures.set(block.id, measureBlock(block));
+  for (const sum of ast.sums) {
+    measures.set(sum.id, {
+      width: SUM_R * 2,
+      height: SUM_R * 2,
+      label: "",
+      lines: [],
+    });
+  }
+  for (const id of nodeIds) {
+    if (!measures.has(id)) {
+      measures.set(id, { width: 20, height: 20, label: id, lines: [id] });
     }
   }
-  const totalWidth = colX.length
-    ? colX[colX.length - 1] + BLOCK_W / 2 + RIGHT_PAD
-    : 400;
 
-  // Lookup for feedback row info
-  const fbById = new Map<string, FbInfo>();
-  for (const f of fbInfos) fbById.set(f.id, f);
+  const maxLayer = Math.max(0, ...layer.values());
+  const layers: string[][] = Array.from({ length: maxLayer + 1 }, () => []);
+  for (const id of nodeIds) layers[layer.get(id) ?? 0]!.push(id);
+
+  // Barycentric ordering keeps peers near the average row of their parents.
+  for (let rank = 1; rank < layers.length; rank++) {
+    const previousOrder = new Map(
+      layers[rank - 1]!.map((id, index) => [id, index] as const)
+    );
+    layers[rank]!.sort((left, right) => {
+      const score = (id: string): number => {
+        const parents = (incoming.get(id) ?? [])
+          .map((edge) => previousOrder.get(edge.from))
+          .filter((value): value is number => value !== undefined);
+        return parents.length
+          ? parents.reduce((sum, value) => sum + value, 0) / parents.length
+          : Number.MAX_SAFE_INTEGER;
+      };
+      return score(left) - score(right);
+    });
+  }
+
+  // A return-path block (for example a feedback sensor) is not another stage
+  // in the forward pipeline. Detect it from topology and place it in a
+  // dedicated side band. This keeps the main path aligned without relying on
+  // role names or diagram-specific IDs.
+  const feedbackNodeSide = new Map<string, "above" | "below">();
+  for (const id of nodeIds) {
+    const ins = incoming.get(id) ?? [];
+    const outs = outgoing.get(id) ?? [];
+    if (
+      explicitIds.has(id) &&
+      ins.length > 0 &&
+      outs.length > 0 &&
+      outs.every(
+        (edge) => (layer.get(edge.to) ?? 0) < (layer.get(id) ?? 0)
+      )
+    ) {
+      feedbackNodeSide.set(
+        id,
+        blockById.get(id)?.route === "above" ? "above" : "below"
+      );
+    }
+  }
+
+  const normalLayers = layers.map((ids) =>
+    ids.filter((id) => !feedbackNodeSide.has(id))
+  );
+  const stackHeights = normalLayers.map((ids) =>
+    ids.reduce((sum, id) => sum + measures.get(id)!.height, 0) +
+    Math.max(0, ids.length - 1) * ROW_GAP
+  );
+  const contentHeight = Math.max(MIN_BLOCK_H, ...stackHeights);
+  const feedbackEdges = ast.connections.filter(
+    (edge) => (layer.get(edge.to) ?? 0) <= (layer.get(edge.from) ?? 0)
+  );
+  const feedbackEdgeSide = (edge: BlockEdge): "above" | "below" =>
+    feedbackNodeSide.get(edge.from) === "above" ? "above" : "below";
+  const aboveFeedbackCount = feedbackEdges.filter(
+    (edge) => feedbackEdgeSide(edge) === "above"
+  ).length;
+  const belowFeedbackCount = feedbackEdges.length - aboveFeedbackCount;
+  const feedbackNodes = [...feedbackNodeSide].sort(
+    ([left], [right]) =>
+      (layer.get(left) ?? 0) - (layer.get(right) ?? 0) ||
+      layers[layer.get(left) ?? 0]!.indexOf(left) -
+        layers[layer.get(right) ?? 0]!.indexOf(right)
+  );
+  const aboveFeedbackNodes = feedbackNodes
+    .filter(([, side]) => side === "above")
+    .map(([id]) => id);
+  const belowFeedbackNodes = feedbackNodes
+    .filter(([, side]) => side === "below")
+    .map(([id]) => id);
+  const stackHeight = (ids: string[]): number =>
+    ids.reduce((sum, id) => sum + measures.get(id)!.height, 0) +
+    Math.max(0, ids.length - 1) * ROW_GAP;
+  const aboveStackHeight = stackHeight(aboveFeedbackNodes);
+  const belowStackHeight = stackHeight(belowFeedbackNodes);
+  const aboveLaneBand = aboveFeedbackCount * FEEDBACK_LANE_GAP;
+  const normalTop =
+    TOP_PAD +
+    aboveLaneBand +
+    aboveStackHeight +
+    (aboveFeedbackNodes.length > 0 ? ROW_GAP : 0);
+
+  const columnWidths = layers.map((ids) =>
+    Math.max(MIN_BLOCK_W, ...ids.map((id) => measures.get(id)!.width))
+  );
+  // Horizontal whitespace is a measured property of the edges between two
+  // columns. Short labels should not force poster-wide diagrams, while the
+  // last of several fan-out channels still gets enough room for its label.
+  const pairSources = new Map<string, string[]>();
+  for (const edge of ast.connections) {
+    const fromLayer = layer.get(edge.from) ?? 0;
+    const toLayer = layer.get(edge.to) ?? 0;
+    if (toLayer <= fromLayer) continue;
+    const key = `${fromLayer}:${toLayer}`;
+    const ids = pairSources.get(key) ?? [];
+    if (!ids.includes(edge.from)) ids.push(edge.from);
+    pairSources.set(key, ids);
+  }
+  for (const [key, ids] of pairSources) {
+    const fromLayer = Number(key.split(":")[0]);
+    ids.sort(
+      (left, right) =>
+        layers[fromLayer]!.indexOf(left) - layers[fromLayer]!.indexOf(right)
+    );
+  }
+  const columnGaps = Array.from(
+    { length: Math.max(0, layers.length - 1) },
+    () => MIN_COL_GAP
+  );
+  for (const edge of ast.connections) {
+    const fromLayer = layer.get(edge.from) ?? 0;
+    const toLayer = layer.get(edge.to) ?? 0;
+    if (toLayer !== fromLayer + 1) continue;
+    const sources = pairSources.get(`${fromLayer}:${toLayer}`) ?? [edge.from];
+    const sourceRank = Math.max(0, sources.indexOf(edge.from));
+    const remainingFraction = 1 - (sourceRank + 1) / (sources.length + 1);
+    const labelWidth = measureEdgeLabel(edge.label).width ?? 0;
+    const required = labelWidth > 0
+      ? Math.ceil((labelWidth + 12) / Math.max(0.2, remainingFraction))
+      : MIN_COL_GAP;
+    columnGaps[fromLayer] = Math.max(
+      columnGaps[fromLayer] ?? MIN_COL_GAP,
+      required
+    );
+  }
+  const columnCenters: number[] = [];
+  let xCursor = SIDE_PAD;
+  for (let rank = 0; rank < columnWidths.length; rank++) {
+    const width = columnWidths[rank]!;
+    columnCenters.push(xCursor + width / 2);
+    xCursor += width + (columnGaps[rank] ?? 0);
+  }
+  const width = Math.max(360, xCursor + SIDE_PAD);
+
+  const centers = new Map<string, { x: number; y: number }>();
+  normalLayers.forEach((ids, rank) => {
+    const rowCenters = centeredRows(
+      ids,
+      (id) => measures.get(id)!.height,
+      contentHeight,
+      normalTop
+    );
+    for (const id of ids) {
+      centers.set(id, {
+        x: columnCenters[rank]!,
+        y: rowCenters.get(id)!,
+      });
+    }
+  });
+  let aboveCursor = TOP_PAD + aboveLaneBand;
+  for (const id of aboveFeedbackNodes) {
+    const measure = measures.get(id)!;
+    centers.set(id, {
+      x: columnCenters[layer.get(id) ?? 0]!,
+      y: aboveCursor + measure.height / 2,
+    });
+    aboveCursor += measure.height + ROW_GAP;
+  }
+  let belowCursor =
+    normalTop +
+    contentHeight +
+    (belowFeedbackNodes.length > 0 ? ROW_GAP : 0);
+  for (const id of belowFeedbackNodes) {
+    const measure = measures.get(id)!;
+    centers.set(id, {
+      x: columnCenters[layer.get(id) ?? 0]!,
+      y: belowCursor + measure.height / 2,
+    });
+    belowCursor += measure.height + ROW_GAP;
+  }
 
   const nodes: LaidNode[] = [];
   const branchCount = new Map<string, number>();
-  for (const e of ast.connections) {
-    branchCount.set(e.from, (branchCount.get(e.from) ?? 0) + 1);
+  for (const edge of ast.connections) {
+    branchCount.set(edge.from, (branchCount.get(edge.from) ?? 0) + 1);
   }
-  const hasBranchOf = (id: string) => (branchCount.get(id) ?? 0) > 1;
-
-  for (const b of ast.blocks) {
-    const c = col.get(b.id) ?? 0;
-    const cx = colX[Math.min(c, colX.length - 1)];
-    let cy = forwardY;
-    const fb = fbById.get(b.id);
-    if (fb) cy = rowY(fb.side, fb.row);
-    nodes.push({
-      kind: "block",
-      id: b.id,
-      label: b.label,
-      role: b.role ?? "generic",
-      x: cx - BLOCK_W / 2,
-      y: cy - BLOCK_H / 2,
-      width: BLOCK_W,
-      height: BLOCK_H,
-      hasBranch: hasBranchOf(b.id),
-    });
-  }
-
-  for (const s of ast.sums) {
-    const c = col.get(s.id) ?? 0;
-    const cx = colX[Math.min(c, colX.length - 1)];
-    let cy = forwardY;
-    const fb = fbById.get(s.id);
-    if (fb) cy = rowY(fb.side, fb.row);
-    nodes.push({
-      kind: "sum",
-      id: s.id,
-      cx,
-      cy,
-      r: SUM_R,
-      hasBranch: hasBranchOf(s.id),
-    });
-  }
-
-  if (hasIn) {
-    nodes.push({
-      kind: "port",
-      id: "in",
-      label: "in",
-      x: LEFT_PAD,
-      y: forwardY,
-      isInput: true,
-      hasBranch: hasBranchOf("in"),
-    });
-  }
-  if (nodeIds.has("out")) {
-    const outCol = col.get("out") ?? maxFwdCol;
-    const cx = colX[Math.min(outCol, colX.length - 1)];
-    nodes.push({
-      kind: "port",
-      id: "out",
-      label: "out",
-      x: cx,
-      y: forwardY,
-      isInput: false,
-    });
-  }
-
-  // Dangling signal targets: node IDs that appear as edge targets but have no
-  // block / sum / port entry (i.e. they are the `to` of a signal declaration
-  // with no consumer). Create a minimal output-port anchor so the edge is
-  // routed and its label rendered rather than silently dropped.
-  {
-    const knownIds = new Set<string>([
-      ...ast.blocks.map((b) => b.id),
-      ...ast.sums.map((s) => s.id),
-      "in",
-      "out",
-    ]);
-    for (const id of nodeIds) {
-      if (knownIds.has(id)) continue;
-      if ((incoming.get(id)?.length ?? 0) === 0) continue;
-      const sigCol = Math.min(col.get(id) ?? maxFwdCol + 1, colX.length - 1);
-      const x = colX[sigCol] ?? (colX[colX.length - 1] ?? 0) + COL_GAP;
+  for (const id of nodeIds) {
+    const center = centers.get(id)!;
+    const measure = measures.get(id)!;
+    const block = blockById.get(id);
+    const sum = sumById.get(id);
+    if (block) {
+      nodes.push({
+        kind: "block",
+        id,
+        label: measure.label,
+        labelLines: measure.lines,
+        role: block.role ?? "generic",
+        x: center.x - measure.width / 2,
+        y: center.y - measure.height / 2,
+        width: measure.width,
+        height: measure.height,
+        hasBranch: (branchCount.get(id) ?? 0) > 1,
+      });
+    } else if (sum) {
+      nodes.push({
+        kind: "sum",
+        id,
+        cx: center.x,
+        cy: center.y,
+        r: SUM_R,
+        hasBranch: (branchCount.get(id) ?? 0) > 1,
+      });
+    } else {
       nodes.push({
         kind: "port",
         id,
-        label: "",   // edge label carries the signal label; blank avoids double-text
-        x,
-        y: forwardY,
-        isInput: false,
+        label: id === "in" || id === "out" ? id : "",
+        x: center.x,
+        y: center.y,
+        isInput: (incoming.get(id)?.length ?? 0) === 0,
+        hasBranch: (branchCount.get(id) ?? 0) > 1,
       });
     }
   }
 
-  // Anchor lookup
-  interface Anchor {
-    left: { x: number; y: number };
-    right: { x: number; y: number };
-    top: { x: number; y: number };
-    bottom: { x: number; y: number };
-    cx: number;
-    cy: number;
+  const nodeHeight = (id: string): number => measures.get(id)?.height ?? 20;
+  const outgoingOrder = new Map<BlockEdge, number>();
+  const incomingOrder = new Map<BlockEdge, number>();
+  for (const edges of outgoing.values()) {
+    [...edges]
+      .sort((a, b) => (centers.get(a.to)?.y ?? 0) - (centers.get(b.to)?.y ?? 0))
+      .forEach((edge, index) => outgoingOrder.set(edge, index));
   }
-  const anchors = new Map<string, Anchor>();
-  for (const n of nodes) {
-    if (n.kind === "block") {
-      anchors.set(n.id, {
-        left: { x: n.x, y: n.y + n.height / 2 },
-        right: { x: n.x + n.width, y: n.y + n.height / 2 },
-        top: { x: n.x + n.width / 2, y: n.y },
-        bottom: { x: n.x + n.width / 2, y: n.y + n.height },
-        cx: n.x + n.width / 2,
-        cy: n.y + n.height / 2,
-      });
-    } else if (n.kind === "sum") {
-      anchors.set(n.id, {
-        left: { x: n.cx - n.r, y: n.cy },
-        right: { x: n.cx + n.r, y: n.cy },
-        top: { x: n.cx, y: n.cy - n.r },
-        bottom: { x: n.cx, y: n.cy + n.r },
-        cx: n.cx,
-        cy: n.cy,
-      });
-    } else {
-      anchors.set(n.id, {
-        left: { x: n.x - 10, y: n.y },
-        right: { x: n.x + (n.isInput ? 20 : 0), y: n.y },
-        top: { x: n.x, y: n.y - 10 },
-        bottom: { x: n.x, y: n.y + 10 },
-        cx: n.x,
-        cy: n.y,
-      });
-    }
+  for (const edges of incoming.values()) {
+    [...edges]
+      .sort((a, b) => (centers.get(a.from)?.y ?? 0) - (centers.get(b.from)?.y ?? 0))
+      .forEach((edge, index) => incomingOrder.set(edge, index));
   }
 
-  // Build sum-input-polarity lookup
+  const sourceRanksByPair = new Map<string, Map<string, number>>();
+  const sourceCountsByPair = new Map<string, number>();
+  for (const [key, pairIds] of pairSources) {
+    const ids = [...pairIds].sort(
+      (left, right) =>
+        (centers.get(left)?.y ?? 0) - (centers.get(right)?.y ?? 0)
+    );
+    sourceRanksByPair.set(
+      key,
+      new Map(ids.map((id, index) => [id, index] as const))
+    );
+    sourceCountsByPair.set(key, ids.length);
+  }
+
   const sumPolarity = new Map<string, Map<string, "+" | "-">>();
-  for (const s of ast.sums) {
-    const m = new Map<string, "+" | "-">();
-    for (const tok of s.inputs) {
-      const sign = tok.startsWith("-") ? "-" : "+";
-      const srcId = tok.replace(/^[+-]/, "");
-      m.set(srcId, sign);
+  for (const sum of ast.sums) {
+    const values = new Map<string, "+" | "-">();
+    for (const token of sum.inputs) {
+      values.set(
+        token.replace(/^[+-]/, ""),
+        token.startsWith("-") ? "-" : "+"
+      );
     }
-    sumPolarity.set(s.id, m);
+    sumPolarity.set(sum.id, values);
   }
 
-  // Build edges
   const edges: LaidEdge[] = [];
-  // Track horizontal-track offsets for feedback paths to avoid overlap
-  const sumById = new Map<string, SummingJunction>();
-  for (const s of ast.sums) sumById.set(s.id, s);
+  let aboveFeedbackIndex = 0;
+  let belowFeedbackIndex = 0;
+  const belowStackEnd =
+    normalTop +
+    contentHeight +
+    (belowFeedbackNodes.length > 0 ? ROW_GAP + belowStackHeight : 0);
+  const belowLaneStart = belowStackEnd + BOTTOM_PAD;
+  for (const edge of ast.connections) {
+    const source = centers.get(edge.from);
+    const target = centers.get(edge.to);
+    if (!source || !target) continue;
+    const fromLayer = layer.get(edge.from) ?? 0;
+    const toLayer = layer.get(edge.to) ?? 0;
+    const outgoingEdges = outgoing.get(edge.from) ?? [];
+    const incomingEdges = incoming.get(edge.to) ?? [];
+    const sourceY =
+      source.y +
+      portOffset(
+        outgoingOrder.get(edge) ?? 0,
+        outgoingEdges.length,
+        nodeHeight(edge.from)
+      );
+    const targetY =
+      target.y +
+      portOffset(
+        incomingOrder.get(edge) ?? 0,
+        incomingEdges.length,
+        nodeHeight(edge.to)
+      );
+    const sourceX = source.x + measures.get(edge.from)!.width / 2;
+    const targetX = target.x - measures.get(edge.to)!.width / 2;
+    const measuredLabel = measureEdgeLabel(edge.label);
 
-  for (const e of ast.connections) {
-    const fromA = anchors.get(e.from);
-    const toA = anchors.get(e.to);
-    if (!fromA || !toA) continue;
+    let path: string;
+    let midX: number;
+    let midY: number;
+    let isFeedback = false;
 
-    const fromFb = fbById.get(e.from);
-    const toFb = fbById.get(e.to);
-    const fromCol = col.get(e.from) ?? 0;
-    const toCol = col.get(e.to) ?? 0;
-
-    // Determine pin on target when target is a sum: left (from forward earlier),
-    // bottom (from below feedback), top (from above feedforward), or right (rare, output)
-    let polarity: LaidEdgePolarity | undefined;
-    if (sumById.has(e.to)) {
-      const pm = sumPolarity.get(e.to);
-      const sign = pm?.get(e.from) ?? "+";
-      let pin: "left" | "top" | "bottom" | "right" = "left";
-      if (fromFb?.side === "below") pin = "bottom";
-      else if (fromFb?.side === "above") pin = "top";
-      else if (fromCol < toCol) pin = "left";
-      else pin = "bottom";
-      const sumNode = nodes.find(
-        (n) => n.kind === "sum" && n.id === e.to
-      ) as LaidSum | undefined;
-      if (sumNode) {
-        let px = sumNode.cx, py = sumNode.cy;
-        if (pin === "left") {
-          px = sumNode.cx - sumNode.r - 8;
-          py = sumNode.cy + 6;
-        } else if (pin === "bottom") {
-          px = sumNode.cx - sumNode.r - 2;
-          py = sumNode.cy + sumNode.r + 10;
-        } else if (pin === "top") {
-          px = sumNode.cx - sumNode.r - 2;
-          py = sumNode.cy - sumNode.r - 2;
-        }
-        polarity = { sign, pin, x: px, y: py };
-      }
+    if (toLayer > fromLayer) {
+      const pairKey = `${fromLayer}:${toLayer}`;
+      const sourceRank =
+        sourceRanksByPair.get(pairKey)?.get(edge.from) ?? 0;
+      const sourceCount = sourceCountsByPair.get(pairKey) ?? 1;
+      const fraction = (sourceRank + 1) / (sourceCount + 1);
+      const channelX = sourceX + (targetX - sourceX) * fraction;
+      path = Math.abs(sourceY - targetY) < 0.5
+        ? `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`
+        : `M ${sourceX} ${sourceY} L ${channelX} ${sourceY} L ${channelX} ${targetY} L ${targetX} ${targetY}`;
+      midX = Math.abs(sourceY - targetY) < 0.5
+        ? (sourceX + targetX) / 2
+        : (channelX + targetX) / 2;
+      midY = targetY - 7;
+    } else {
+      isFeedback = true;
+      const side = feedbackEdgeSide(edge);
+      const laneY = side === "above"
+        ? TOP_PAD + aboveFeedbackIndex++ * FEEDBACK_LANE_GAP
+        : belowLaneStart + belowFeedbackIndex++ * FEEDBACK_LANE_GAP;
+      const sourceEdgeY = side === "above"
+        ? source.y - nodeHeight(edge.from) / 2
+        : source.y + nodeHeight(edge.from) / 2;
+      const targetEdgeY = side === "above"
+        ? target.y - nodeHeight(edge.to) / 2
+        : target.y + nodeHeight(edge.to) / 2;
+      path = `M ${source.x} ${sourceEdgeY} L ${source.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetEdgeY}`;
+      midX = (source.x + target.x) / 2;
+      midY = laneY + (side === "above" ? 7 : -7);
     }
 
-    // Route
-    let path: string;
-    let midX: number, midY: number;
-    let isFb = false;
-
-    const fromIsFbSide = fromFb?.side;
-    const toIsFbSide = toFb?.side;
-
-    if (fromIsFbSide && toIsFbSide === fromIsFbSide) {
-      // within same feedback row
-      const sx = fromA.left.x;
-      const sy = fromA.left.y;
-      const tx = toA.right.x;
-      const ty = toA.right.y;
-      path = `M ${sx} ${sy} L ${tx} ${ty}`;
-      midX = (sx + tx) / 2;
-      midY = sy - 6;
-      isFb = true;
-    } else if (!fromIsFbSide && toIsFbSide === "below") {
-      // forward → below feedback: branch down from source.bottom
-      const sx = fromA.bottom.x;
-      const sy = fromA.bottom.y;
-      const tx = toA.right.x;
-      const ty = toA.right.y;
-      path = `M ${sx} ${sy} L ${sx} ${ty} L ${tx} ${ty}`;
-      midX = sx;
-      midY = (sy + ty) / 2;
-      isFb = true;
-    } else if (!fromIsFbSide && toIsFbSide === "above") {
-      // forward → above feedforward: branch up from source.top
-      const sx = fromA.top.x;
-      const sy = fromA.top.y;
-      const tx = toA.right.x;
-      const ty = toA.right.y;
-      path = `M ${sx} ${sy} L ${sx} ${ty} L ${tx} ${ty}`;
-      midX = sx;
-      midY = (sy + ty) / 2;
-      isFb = true;
-    } else if (fromIsFbSide === "below" && !toIsFbSide) {
-      // below feedback → forward target (bottom pin if sum)
-      const sx = fromA.left.x;
-      const sy = fromA.left.y;
-      const tx = toA.bottom.x;
-      const ty = toA.bottom.y;
-      path = `M ${sx} ${sy} L ${tx} ${sy} L ${tx} ${ty}`;
-      midX = (sx + tx) / 2;
-      midY = sy - 6;
-      isFb = true;
-    } else if (fromIsFbSide === "above" && !toIsFbSide) {
-      // above feedforward → forward target (top pin if sum)
-      const sx = fromA.left.x;
-      const sy = fromA.left.y;
-      const tx = toA.top.x;
-      const ty = toA.top.y;
-      path = `M ${sx} ${sy} L ${tx} ${sy} L ${tx} ${ty}`;
-      midX = (sx + tx) / 2;
-      midY = sy - 6;
-      isFb = true;
-    } else if (toCol < fromCol) {
-      // generic back-edge fallback (below)
-      const sx = fromA.right.x;
-      const sy = fromA.right.y;
-      const tx = toA.bottom.x;
-      const ty = toA.bottom.y;
-      const dipY = Math.max(sy, ty) + 60;
-      path = `M ${sx} ${sy} L ${sx} ${dipY} L ${tx} ${dipY} L ${tx} ${ty}`;
-      midX = (sx + tx) / 2;
-      midY = dipY + 10;
-      isFb = true;
-    } else {
-      // forward edge
-      const sx = fromA.right.x;
-      const sy = fromA.right.y;
-      const tx = toA.left.x;
-      const ty = toA.left.y;
-      if (Math.abs(sy - ty) < 0.5) {
-        path = `M ${sx} ${sy} L ${tx} ${ty}`;
-      } else {
-        const midXH = (sx + tx) / 2;
-        path = `M ${sx} ${sy} L ${midXH} ${sy} L ${midXH} ${ty} L ${tx} ${ty}`;
-      }
-      midX = (sx + tx) / 2;
-      midY = sy - 8;
+    let polarity: LaidEdgePolarity | undefined;
+    if (sumById.has(edge.to)) {
+      const sign = sumPolarity.get(edge.to)?.get(edge.from) ?? "+";
+      const side = feedbackEdgeSide(edge);
+      const pin = isFeedback ? side === "above" ? "top" : "bottom" : "left";
+      polarity = {
+        sign,
+        pin,
+        x: isFeedback ? target.x - 8 : targetX - 8,
+        y: isFeedback
+          ? target.y + (side === "above" ? -SUM_R - 4 : SUM_R + 10)
+          : targetY + 5,
+      };
     }
 
     edges.push({
-      from: e.from,
-      to: e.to,
-      label: e.label,
-      discrete: !!e.discrete,
+      from: edge.from,
+      to: edge.to,
+      ...measuredLabel,
+      discrete: !!edge.discrete,
       path,
       midX,
       midY,
-      isFeedback: isFb,
+      isFeedback,
       polarity,
     });
   }
 
-  // Total canvas height: enough for top rows + forward + bottom rows
-  const totalTopSpace =
-    maxAboveRow > 0
-      ? FIRST_ROW_OFFSET + (maxAboveRow - 1) * ROW_GAP + 60
-      : 30;
-  const totalBottomSpace =
-    maxBelowRow > 0
-      ? FIRST_ROW_OFFSET + (maxBelowRow - 1) * ROW_GAP + 60
-      : 100;
-  // `FWD_Y + 170` is a conservative floor that reserves space for feedback
-  // rows. Apply it only when at least one feedback row exists; pure forward
-  // diagrams (no loops) are allowed to be more compact.
-  const hasFeedbackRows = maxBelowRow > 0 || maxAboveRow > 0;
-  const height = Math.max(
-    forwardY + totalBottomSpace,
-    hasFeedbackRows ? FWD_Y + 170 : 0,
-    totalTopSpace + totalBottomSpace
-  );
+  const height =
+    belowLaneStart +
+    Math.max(BOTTOM_PAD, belowFeedbackCount * FEEDBACK_LANE_GAP);
 
   return {
-    width: totalWidth,
+    width,
     height,
     nodes,
     edges,
     title: ast.title,
-    topOffset,
+    topOffset: TOP_PAD,
   };
 }

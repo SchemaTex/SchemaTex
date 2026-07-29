@@ -9,13 +9,19 @@ import type {
 } from "./types";
 import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+import {
+  decodeDslString,
+  readLogicalLines,
+  UnterminatedDslStringError,
+} from "../../core/logical-lines";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 const COMPOSITE_RE = new RegExp(
   `^(?:composite|state)\\s+(${IDENTIFIER_SOURCE})\\s*\\{?\\s*$`,
   "u"
 );
 const ALIAS_RE = new RegExp(
-  `^state\\s+"([^"]*)"\\s+as\\s+(${IDENTIFIER_SOURCE})\\s*$`,
+  `^state\\s+"((?:[^"\\\\]|\\\\.)*)"\\s+as\\s+(${IDENTIFIER_SOURCE})\\s*$`,
   "u"
 );
 const STEREOTYPE_RE = new RegExp(
@@ -47,9 +53,22 @@ const LABEL_ONLY_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
 const BARE_IDENTIFIER_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*$`, "u");
 
 export class StateParseError extends Error {
-  constructor(message: string, public line?: number) {
+  public code?: string;
+  public source?: string;
+  public hint?: string;
+
+  constructor(
+    message: string,
+    public line?: number,
+    code?: string,
+    source?: string,
+    hint?: string
+  ) {
     super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "StateParseError";
+    this.code = code;
+    this.source = source;
+    this.hint = hint;
   }
 }
 
@@ -84,27 +103,27 @@ const MERMAID_STEREOTYPE: Record<string, PseudoStateKind> = {
 };
 
 function preprocess(src: string): RawLine[] {
-  const out: RawLine[] = [];
-  const lines = src.split(/\r?\n/);
-  let offset = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i];
-    if (raw === undefined) continue;
-    const trimmed = raw.trim();
-    if (!trimmed) {
-      offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
-      continue;
+  try {
+    return readLogicalLines(src, {
+      fullLineCommentMarkers: ["#", "//", "%%"],
+    }).map((statement) => ({
+      indent: statement.indent,
+      text: statement.text.trim(),
+      line: statement.line,
+      start: statement.start,
+    }));
+  } catch (error) {
+    if (error instanceof UnterminatedDslStringError) {
+      throw new StateParseError(
+        "unterminated quoted state label",
+        error.line,
+        "STATE_UNTERMINATED_STRING",
+        error.source,
+        "Close the quoted label; use `\\n` or physical newlines only inside that closed string."
+      );
     }
-    // Comment forms: # // and Mermaid's %%
-    if (trimmed.startsWith("#") || trimmed.startsWith("//") || trimmed.startsWith("%%")) {
-      offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
-      continue;
-    }
-    const indent = raw.length - raw.replace(/^\s+/, "").length;
-    out.push({ indent, text: trimmed, line: i + 1, start: offset + raw.indexOf(trimmed) });
-    offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
+    throw error;
   }
-  return out;
 }
 
 function tokenBounds(text: string, token: string, from = 0): { start: number; end: number } {
@@ -114,7 +133,7 @@ function tokenBounds(text: string, token: string, from = 0): { start: number; en
 
 function unquote(s: string): string {
   if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
-    return s.slice(1, -1);
+    return decodeDslString(s.slice(1, -1));
   }
   return s;
 }
@@ -333,6 +352,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
 
   let title: string | undefined;
   let direction: StateDirection = "TB";
+  let directionSource: StateDiagramAST["directionSource"] = "default";
 
   const headerRest = header.text.slice(headerTok[0].length).trim();
   // Parse optional `direction LR` on the header line itself (Mermaid permits this on a separate line too)
@@ -340,7 +360,13 @@ export function parseStateDiagram(src: string): StateDiagramAST {
   let beforeProps = headerRest;
   if (propsMatch) {
     const props = parseProps(propsMatch[0]);
-    if (props.direction === "TB" || props.direction === "LR") direction = props.direction;
+    const requested = props.direction?.toUpperCase();
+    if (requested === "TB" || requested === "LR") {
+      direction = requested;
+      directionSource = "explicit";
+    } else if (requested === "AUTO") {
+      directionSource = "auto";
+    }
     beforeProps = headerRest.slice(0, propsMatch.index).trim();
   }
   if (beforeProps.startsWith('"')) title = unquote(beforeProps);
@@ -402,10 +428,15 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // Top-level `direction LR` directive (Mermaid)
-    const dirMatch = text.match(/^direction\s+(TB|BT|LR|RL)\s*$/);
+    const dirMatch = text.match(/^direction\s+(TB|BT|LR|RL|AUTO)\s*$/i);
     if (dirMatch) {
-      const d = dirMatch[1] as "TB" | "BT" | "LR" | "RL";
-      direction = d === "BT" ? "TB" : d === "RL" ? "LR" : (d as StateDirection);
+      const d = dirMatch[1]!.toUpperCase() as "TB" | "BT" | "LR" | "RL" | "AUTO";
+      if (d === "AUTO") {
+        directionSource = "auto";
+      } else {
+        direction = d === "BT" ? "TB" : d === "RL" ? "LR" : d;
+        directionSource = "explicit";
+      }
       i++;
       continue;
     }
@@ -426,7 +457,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     const aliasMatch = text.match(ALIAS_RE);
     if (aliasMatch) {
       const node = ensureSimpleState(ctx, aliasMatch[2], parent);
-      node.label = aliasMatch[1];
+      node.label = decodeDslString(aliasMatch[1]);
       const quoted = `"${aliasMatch[1]}"`;
       const bounds = tokenBounds(text, quoted);
       node.labelSourceRange = locator.range(ln.start + bounds.start, ln.start + bounds.end);
@@ -648,11 +679,50 @@ export function parseStateDiagram(src: string): StateDiagramAST {
   }
   for (const s of ctx.states) finalizeRegions(s);
 
+  if (directionSource === "auto") {
+    const simpleStates: StateNode[] = [];
+    const collectSimple = (state: StateNode): void => {
+      if (state.kind === "simple") simpleStates.push(state);
+      for (const child of state.children) collectSimple(child);
+    };
+    for (const state of ctx.states) collectSimple(state);
+    const simpleIds = new Set(simpleStates.map((state) => state.id));
+    const edges = ctx.transitions.filter(
+      (transition) =>
+        simpleIds.has(transition.from) && simpleIds.has(transition.to)
+    );
+    const indegree = new Map<string, number>();
+    const outdegree = new Map<string, number>();
+    for (const edge of edges) {
+      indegree.set(edge.to, (indegree.get(edge.to) ?? 0) + 1);
+      outdegree.set(edge.from, (outdegree.get(edge.from) ?? 0) + 1);
+    }
+    const linear =
+      simpleStates.length > 0 &&
+      edges.length >= Math.max(0, simpleStates.length - 1) &&
+      simpleStates.every(
+        (state) =>
+          (indegree.get(state.id) ?? 0) <= 1 &&
+          (outdegree.get(state.id) ?? 0) <= 1
+      );
+    const maxLabelWidth = Math.max(
+      0,
+      ...simpleStates.map((state) =>
+        estimateTextWidth(state.label || state.id, 12, { fontWeight: 600 })
+      )
+    );
+    direction =
+      linear && simpleStates.length <= 3 && maxLabelWidth <= 150
+        ? "LR"
+        : "TB";
+  }
+
   return {
     type: "state",
     title,
     titleSourceRange,
     direction,
+    directionSource,
     states: ctx.states,
     transitions: ctx.transitions,
     notes: ctx.notes,

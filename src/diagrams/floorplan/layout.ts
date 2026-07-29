@@ -19,6 +19,7 @@ import type {
   FloorplanOpening,
   FloorplanRoom,
   FloorplanExtend,
+  FloorplanGeometryDiagnostic,
   FloorplanUnit,
   FloorPlate,
   ItemGeom,
@@ -27,6 +28,7 @@ import type {
   RoomBox,
   SeamGeom,
   WallSide,
+  ZoneGeom,
 } from "./types";
 import { FLOORPLAN_SYMBOLS } from "./catalog";
 import { finalizeEvacuationLayout } from "./evacuation";
@@ -77,7 +79,10 @@ export function formatArea(areaM2: number, unit: FloorplanUnit): string {
 }
 
 const fmtNum = (v: number): string => String(Math.round(v * 100) / 100);
-const snap = (v: number): number => Math.round(v * 1e6) / 1e6;
+const snap = (v: number): number => {
+  const rounded = Math.round(v * 1e6) / 1e6;
+  return Object.is(rounded, -0) ? 0 : rounded;
+};
 
 // ─── Geometry helpers ────────────────────────────────────────────
 
@@ -238,13 +243,16 @@ function resolvePlacement(
   rooms: RoomBox[],
   u: number,
   who: string,
-  errors: string[]
+  reportError: (code: string, message: string) => void
 ): { x: number; y: number } | null {
   if (p.at) return { x: snap(p.at.x * u), y: snap(p.at.y * u) };
   if (p.rel) {
     const refIdx = byId.get(p.rel.ref);
     if (refIdx === undefined) {
-      errors.push(`${who}: unknown reference room "${p.rel.ref}" — declare it first`);
+      reportError(
+        "floorplan/unknown-room",
+        `${who}: unknown reference room "${p.rel.ref}" — declare it first`
+      );
       return null;
     }
     const ref = rooms[refIdx]!;
@@ -363,8 +371,28 @@ function layoutOneFloor(
   pins?: Map<string, { x: number; y: number }>
 ): OneFloorResult {
   const u = ast.unit === "ft" ? FT : 1;
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const diagnostics: FloorplanGeometryDiagnostic[] = [];
+  const report = (
+    severity: FloorplanGeometryDiagnostic["severity"],
+    code: string,
+    phase: FloorplanGeometryDiagnostic["phase"],
+    message: string,
+    meta: Partial<Omit<FloorplanGeometryDiagnostic, "severity" | "code" | "phase" | "message">> = {}
+  ): void => {
+    diagnostics.push({ severity, code, phase, message, ...meta });
+  };
+  const error = (
+    code: string,
+    phase: FloorplanGeometryDiagnostic["phase"],
+    message: string,
+    meta?: Partial<Omit<FloorplanGeometryDiagnostic, "severity" | "code" | "phase" | "message">>
+  ): void => report("error", code, phase, message, meta);
+  const warning = (
+    code: string,
+    phase: FloorplanGeometryDiagnostic["phase"],
+    message: string,
+    meta?: Partial<Omit<FloorplanGeometryDiagnostic, "severity" | "code" | "phase" | "message">>
+  ): void => report("warning", code, phase, message, meta);
 
   // 1. Rooms + extensions — resolve in source order so a later room can be
   //    placed relative to an already-extended room's bounding box.
@@ -381,7 +409,16 @@ function layoutOneFloor(
       const r = stmt.room;
       const w = r.w * u;
       const h = r.h * u;
-      const pos = resolvePlacement(r, w, h, byId, rooms, u, `room "${r.id}"`, errors) ?? { x: 0, y: 0 };
+      const pos = resolvePlacement(
+        r,
+        w,
+        h,
+        byId,
+        rooms,
+        u,
+        `room "${r.id}"`,
+        (code, message) => error(code, "placement", message, { line: r.line, floor: r.floor, entityIds: [r.id] })
+      ) ?? { x: 0, y: 0 };
       const part: RectM = { x: pos.x, y: pos.y, w, h };
       const room: RoomBox = {
         id: r.id,
@@ -399,6 +436,7 @@ function layoutOneFloor(
         areaText: "",
         fill: r.fill,
         nolabel: r.nolabel ?? false,
+        labelRole: r.labelRole ?? "normal",
         positionMode: r.rel
           ? (r.rel.how === "right-of" || r.rel.how === "left-of" ? "move-y" : "move-x")
           : "free",
@@ -411,13 +449,26 @@ function layoutOneFloor(
       const e = stmt.ext;
       const idx = byId.get(e.room);
       if (idx === undefined) {
-        errors.push(`extend: unknown room "${e.room}" — declare it first`);
+        error("floorplan/unknown-room", "placement", `extend: unknown room "${e.room}" — declare it first`, {
+          line: e.line,
+          floor: e.floor,
+          entityIds: [e.room],
+        });
         continue;
       }
       const room = rooms[idx]!;
       const w = e.w * u;
       const h = e.h * u;
-      const pos = resolvePlacement(e, w, h, byId, rooms, u, `extend "${e.room}"`, errors);
+      const pos = resolvePlacement(
+        e,
+        w,
+        h,
+        byId,
+        rooms,
+        u,
+        `extend "${e.room}"`,
+        (code, message) => error(code, "placement", message, { line: e.line, floor: e.floor, entityIds: [e.room] })
+      );
       if (!pos) continue;
       const part: RectM = { x: pos.x, y: pos.y, w, h };
       let touches = false;
@@ -428,11 +479,21 @@ function layoutOneFloor(
         if (rectSharedEdge(p, part)) touches = true;
       }
       if (overlaps) {
-        errors.push(`extend "${e.room}": extension overlaps the room's existing area — place it edge-to-edge`);
+        error(
+          "floorplan/invalid-extension",
+          "geometry",
+          `extend "${e.room}": extension overlaps the room's existing area — place it edge-to-edge`,
+          { line: e.line, floor: e.floor, entityIds: [e.room] }
+        );
         continue;
       }
       if (!touches) {
-        errors.push(`extend "${e.room}": extension does not touch the room — extensions must share an edge`);
+        error(
+          "floorplan/invalid-extension",
+          "topology",
+          `extend "${e.room}": extension does not touch the room — extensions must share an edge`,
+          { line: e.line, floor: e.floor, entityIds: [e.room] }
+        );
         continue;
       }
       room.parts.push(part);
@@ -480,9 +541,12 @@ function layoutOneFloor(
         }
       }
       if (worst) {
-        errors.push(
+        error(
+          "floorplan/room-overlap",
+          "geometry",
           `rooms "${a.id}" and "${b.id}" overlap by ${worst.ox.toFixed(2)}×${worst.oy.toFixed(2)} m — ` +
-            `move "${b.id}" right-of "${a.id}" or shrink size`
+            `move "${b.id}" right-of "${a.id}" or shrink size`,
+          { floor: a.floor, entityIds: [a.id, b.id] }
         );
       }
     }
@@ -503,7 +567,19 @@ function layoutOneFloor(
   // 4. Openings.
   const openings: OpeningGeom[] = [];
   for (const op of ast.openings) {
-    const geom = resolveOpening(op, rooms, byId, u, ast.unit, errors, warnings);
+    const geom = resolveOpening(
+      op,
+      rooms,
+      byId,
+      u,
+      ast.unit,
+      (severity, code, phase, message) =>
+        report(severity, code, phase, message, {
+          line: op.line,
+          floor: op.floor,
+          entityIds: op.between ?? (op.room ? [op.room] : undefined),
+        })
+    );
     if (geom) openings.push(geom);
   }
 
@@ -525,7 +601,9 @@ function layoutOneFloor(
     sourceX?: number,
     sourceY?: number,
     sourceLine?: number,
-    instanceId?: string
+    instanceId?: string,
+    arrayGroup?: number,
+    anchored?: boolean
   ): void => {
     const room = rooms[roomIdx]!;
     const seq = (seqByType.get(type) ?? 0) + 1;
@@ -544,6 +622,8 @@ function layoutOneFloor(
       sourceY,
       sourceLine,
       instanceId,
+      arrayGroup,
+      anchored,
       seats,
       roomId: room.id,
       floor: room.floor,
@@ -552,12 +632,20 @@ function layoutOneFloor(
   };
   const roomIdxOf = (stmt: string, roomId: string | undefined, line: number | undefined): number | undefined => {
     if (!roomId) {
-      errors.push(`${stmt}${line ? ` (line ${line})` : ""}: missing "in <room>"`);
+      error(
+        "floorplan/missing-room",
+        "placement",
+        `${stmt}${line ? ` (line ${line})` : ""}: missing "in <room>"`,
+        { line }
+      );
       return undefined;
     }
     const idx = byId.get(roomId);
     if (idx === undefined) {
-      errors.push(`${stmt}: unknown room "${roomId}"`);
+      error("floorplan/unknown-room", "placement", `${stmt}: unknown room "${roomId}"`, {
+        line,
+        entityIds: [roomId],
+      });
       return undefined;
     }
     return idx;
@@ -569,11 +657,45 @@ function layoutOneFloor(
     if (idx === undefined) continue;
     const w = f.size ? f.size.w * u : def.w;
     const h = f.size ? f.size.h * u : def.h;
+    let localX = f.x * u;
+    let localY = f.y * u;
+    if (f.anchor) {
+      const room = rooms[idx]!;
+      const segments = sideSegments(room, f.anchor.side);
+      if (segments.length === 0) {
+        error(
+          "floorplan/fixture-no-wall",
+          "topology",
+          `fixture ${f.type} on "${room.id}" ${f.anchor.side}: that side has no exterior wall segment`,
+          { line: f.line, floor: f.floor, entityIds: [room.id] }
+        );
+        continue;
+      }
+      const total = segments.reduce((sum, segment) => sum + segment.hi - segment.lo, 0);
+      let target = total * Math.min(100, Math.max(0, f.anchor.pct)) / 100;
+      let chosen = segments[segments.length - 1]!;
+      for (const segment of segments) {
+        const length = segment.hi - segment.lo;
+        if (target <= length) {
+          chosen = segment;
+          break;
+        }
+        target -= length;
+      }
+      const center = chosen.lo + Math.min(chosen.hi - chosen.lo, Math.max(0, target));
+      if (f.anchor.side === "north" || f.anchor.side === "south") {
+        localX = center - room.x - w / 2;
+        localY = f.anchor.side === "north" ? chosen.along - room.y : chosen.along - room.y - h;
+      } else {
+        localX = f.anchor.side === "west" ? chosen.along - room.x : chosen.along - room.x - w;
+        localY = center - room.y - h / 2;
+      }
+    }
     place(
       f.type,
       idx,
-      f.x * u,
-      f.y * u,
+      localX,
+      localY,
       w,
       h,
       f.rotate,
@@ -584,11 +706,14 @@ function layoutOneFloor(
       f.x,
       f.y,
       f.line,
-      f.instanceId
+      f.instanceId,
+      undefined,
+      f.anchor !== undefined
     );
   }
 
-  for (const a of ast.arrays) {
+  for (let arrayIndex = 0; arrayIndex < ast.arrays.length; arrayIndex++) {
+    const a = ast.arrays[arrayIndex]!;
     const def = FLOORPLAN_SYMBOLS[a.type];
     const idx = roomIdxOf(`${a.mode} ${a.type}`, a.room, a.line);
     if (idx === undefined) continue;
@@ -597,18 +722,70 @@ function layoutOneFloor(
     const ih = a.itemsize ? a.itemsize.h * u : def.h;
     const p1 = a.p1 ? { x: a.p1.x * u, y: a.p1.y * u } : { x: 0.5 * u, y: 0.5 * u };
     const p2 = a.p2 ? { x: a.p2.x * u, y: a.p2.y * u } : { x: room.w - 0.5 * u, y: room.h - 0.5 * u };
+    const arrayGroup = a.line ?? -(arrayIndex + 1);
     if (a.mode === "grid" || a.mode === "row") {
-      const nRows = a.mode === "row" ? 1 : Math.max(1, Math.round(a.rows));
-      const nCols = Math.max(1, Math.round(a.cols));
+      const nRows = a.mode === "row" ? 1 : a.rows;
+      const nCols = a.cols;
       const cap = Number.isFinite(a.count) ? a.count : nRows * nCols;
-      const spanW = p2.x - p1.x;
-      const spanH = p2.y - p1.y;
+      const gap = a.gap * u;
+      let firstCenterX = p1.x;
+      let firstCenterY = p1.y;
+      let lastCenterX = p2.x;
+      let lastCenterY = p2.y;
+      if (a.placement === "within") {
+        const minX = Math.min(p1.x, p2.x);
+        const maxX = Math.max(p1.x, p2.x);
+        const minY = Math.min(p1.y, p2.y);
+        const maxY = Math.max(p1.y, p2.y);
+        const availableW = maxX - minX;
+        const availableH = maxY - minY;
+        const requiredW = nCols * iw + Math.max(0, nCols - 1) * gap;
+        const requiredH = nRows * ih + Math.max(0, nRows - 1) * gap;
+        if (requiredW > availableW + 1e-9 || requiredH > availableH + 1e-9) {
+          error(
+            "floorplan/array-does-not-fit",
+            "geometry",
+            `${a.mode} ${a.type} needs ${fmtNum(requiredW)}×${fmtNum(requiredH)} m for ${nRows}×${nCols} items ` +
+              `with ${fmtNum(gap)} m gap, but "within" provides ${fmtNum(availableW)}×${fmtNum(availableH)} m`,
+            {
+              line: a.line,
+              floor: a.floor,
+              entityIds: [a.room ?? ""].filter(Boolean),
+              hint: `Increase the within bounds, reduce rows/cols, shrink itemsize, or reduce gap.`,
+            }
+          );
+          continue;
+        }
+        firstCenterX = minX + iw / 2;
+        lastCenterX = maxX - iw / 2;
+        firstCenterY = minY + ih / 2;
+        lastCenterY = maxY - ih / 2;
+      }
+      const spanW = lastCenterX - firstCenterX;
+      const spanH = lastCenterY - firstCenterY;
       let placed = 0;
       for (let r = 0; r < nRows && placed < cap; r++) {
         for (let col = 0; col < nCols && placed < cap; col++) {
-          const cx = p1.x + (nCols === 1 ? spanW / 2 : (col * spanW) / (nCols - 1));
-          const cy = p1.y + (nRows === 1 ? spanH / 2 : (r * spanH) / (nRows - 1));
-          place(a.type, idx, cx - iw / 2, cy - ih / 2, iw, ih, a.rotate);
+          const cx = firstCenterX + (nCols === 1 ? spanW / 2 : (col * spanW) / (nCols - 1));
+          const cy = firstCenterY + (nRows === 1 ? spanH / 2 : (r * spanH) / (nRows - 1));
+          place(
+            a.type,
+            idx,
+            cx - iw / 2,
+            cy - ih / 2,
+            iw,
+            ih,
+            a.rotate,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            a.line,
+            undefined,
+            arrayGroup
+          );
           placed++;
         }
       }
@@ -624,12 +801,64 @@ function layoutOneFloor(
         const cx = cen.x + radius * Math.cos(th);
         const cy = cen.y + radius * Math.sin(th);
         const facing = (th * 180) / Math.PI + 270; // face the arc center
-        place(a.type, idx, cx - iw / 2, cy - ih / 2, iw, ih, facing + a.rotate);
+        place(
+          a.type,
+          idx,
+          cx - iw / 2,
+          cy - ih / 2,
+          iw,
+          ih,
+          facing + a.rotate,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          a.line,
+          undefined,
+          arrayGroup
+        );
       }
     }
   }
 
-  // 6. Furniture validation (§6.3–6.4).
+  const zones: ZoneGeom[] = [];
+  for (const authored of ast.zones) {
+    const idx = roomIdxOf(`zone ${authored.id}`, authored.room, authored.line);
+    if (idx === undefined) continue;
+    const room = rooms[idx]!;
+    const zone: ZoneGeom = {
+      id: authored.id,
+      label: authored.label,
+      x: room.x + authored.x * u,
+      y: room.y + authored.y * u,
+      w: authored.w * u,
+      h: authored.h * u,
+      keepClear: authored.keepClear,
+      roomId: room.id,
+      floor: room.floor,
+      sourceLine: authored.line,
+    };
+    const overshoot = Math.max(
+      room.x - zone.x,
+      zone.x + zone.w - (room.x + room.w),
+      room.y - zone.y,
+      zone.y + zone.h - (room.y + room.h)
+    );
+    if (overshoot > 0.011) {
+      error(
+        "floorplan/zone-outside-room",
+        "geometry",
+        `zone "${zone.id}" extends ${fmtNum(overshoot)} m outside room "${room.id}"`,
+        { line: authored.line, floor: authored.floor, entityIds: [zone.id, room.id] }
+      );
+      continue;
+    }
+    zones.push(zone);
+  }
+
+  // 6. Furniture and protected-zone validation (§6.3–6.4).
   const roomOf = new Map<string, RoomBox>();
   for (const r of rooms) roomOf.set(r.id, r);
   const warnItems = new Set<number>();
@@ -646,8 +875,12 @@ function layoutOneFloor(
       bb.maxY - (room.y + room.h)
     );
     if (over > 0.011) {
-      errors.push(
+      error(
+        "floorplan/item-outside-room",
+        "geometry",
         `furniture ${it.type} #${it.seq} extends ${fmtNum(over)} m outside room "${it.roomId}" — move it or shrink size`
+        ,
+        { line: it.sourceLine, floor: it.floor, entityIds: [it.roomId] }
       );
       continue;
     }
@@ -663,9 +896,12 @@ function layoutOneFloor(
       }
       const uncovered = bw * bh - covered;
       if (uncovered > 0.01) {
-        errors.push(
+        error(
+          "floorplan/item-outside-room",
+          "geometry",
           `furniture ${it.type} #${it.seq} sits outside room "${it.roomId}"'s L-shape ` +
-            `(${fmtNum(uncovered)} m² past the notch) — move it onto a room part`
+            `(${fmtNum(uncovered)} m² past the notch) — move it onto a room part`,
+          { line: it.sourceLine, floor: it.floor, entityIds: [it.roomId] }
         );
       }
     }
@@ -675,6 +911,33 @@ function layoutOneFloor(
     const def = FLOORPLAN_SYMBOLS[it.type];
     return obbCorners(it.x, it.y, it.w, it.h, it.rotate, def.envelope ?? [0, 0, 0, 0]);
   });
+  for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+    const item = items[itemIndex]!;
+    for (const zone of zones) {
+      if (!zone.keepClear || zone.roomId !== item.roomId) continue;
+      const zoneCorners: Array<[number, number]> = [
+        [zone.x, zone.y],
+        [zone.x + zone.w, zone.y],
+        [zone.x + zone.w, zone.y + zone.h],
+        [zone.x, zone.y + zone.h],
+      ];
+      const penetration = obbPenetration(envelopes[itemIndex]!, zoneCorners);
+      if (penetration > 0.011) {
+        error(
+          "floorplan/protected-zone-obstructed",
+          "geometry",
+          `furniture ${item.type} #${item.seq} obstructs keep-clear zone "${zone.label}" by ${fmtNum(penetration)} m`,
+          {
+            line: item.sourceLine,
+            floor: item.floor,
+            entityIds: [zone.id, item.roomId],
+            hint: `Move the furniture outside the protected zone or resize the zone.`,
+          }
+        );
+      }
+    }
+  }
+  const arrayCollisions = new Map<number, { penetration: number; first: ItemGeom; second: ItemGeom }>();
   for (let i = 0; i < items.length; i++) {
     const a = items[i]!;
     if (FLOORPLAN_SYMBOLS[a.type].underlay) continue;
@@ -683,13 +946,39 @@ function layoutOneFloor(
       if (FLOORPLAN_SYMBOLS[b.type].underlay) continue;
       const pen = obbPenetration(envelopes[i]!, envelopes[j]!);
       if (pen > 0.011) {
-        warnings.push(
+        if (a.arrayGroup !== undefined && a.arrayGroup === b.arrayGroup) {
+          const existing = arrayCollisions.get(a.arrayGroup);
+          if (!existing || pen > existing.penetration) {
+            arrayCollisions.set(a.arrayGroup, { penetration: pen, first: a, second: b });
+          }
+          warnItems.add(i);
+          warnItems.add(j);
+          continue;
+        }
+        warning(
+          "floorplan/item-collision",
+          "geometry",
           `${a.type} #${a.seq} overlaps ${b.type} #${b.seq} by ${fmtNum(pen)} m — increase spacing or reduce cols`
+          ,
+          { floor: a.floor, entityIds: [a.roomId] }
         );
         warnItems.add(i);
         warnItems.add(j);
       }
     }
+  }
+  for (const [line, collision] of arrayCollisions) {
+    warning(
+      "floorplan/array-pitch-too-small",
+      "geometry",
+      `${collision.first.type} array overlaps internally by up to ${fmtNum(collision.penetration)} m — ` +
+        `increase the array bounds, add fewer rows/cols, or reduce itemsize`,
+      {
+        line: line > 0 ? line : undefined,
+        floor: collision.first.floor,
+        entityIds: [collision.first.roomId],
+      }
+    );
   }
 
   // 7. Bounds, dims, totals.
@@ -706,7 +995,11 @@ function layoutOneFloor(
   if (rooms.length === 0) {
     minX = minY = 0;
     maxX = maxY = 1;
-    errors.push('no rooms defined — declare at least one: room id "Label" at 0,0 size 4x3');
+    error(
+      "floorplan/no-rooms",
+      "document",
+      'no rooms defined — declare at least one: room id "Label" at 0,0 size 4x3'
+    );
   }
 
   const dims: DimLineGeom[] = [];
@@ -778,12 +1071,14 @@ function layoutOneFloor(
     seams,
     openings,
     items,
+    zones,
     dims,
     bounds: { minX, minY, maxX, maxY },
     wallT: FLOORPLAN_CONST.wallT,
     totalAreaM2: rooms.reduce((s, r) => s + r.areaM2, 0),
-    errors,
-    warnings,
+    errors: diagnostics.filter((entry) => entry.severity === "error").map((entry) => entry.message),
+    warnings: diagnostics.filter((entry) => entry.severity === "warning").map((entry) => entry.message),
+    diagnostics,
     warnItems: [...warnItems],
   };
 }
@@ -794,7 +1089,8 @@ const STAIR_ALIGN_TOLERANCE_M = 0.1;
 function floorLabel(ast: FloorplanAst, level: number): string {
   const declared = ast.floors.find((floor) => floor.level === level);
   if (declared) return declared.label;
-  if (level === 0 || level === 1) return "Ground Floor";
+  if (level === 0) return "Ground Floor";
+  if (level === 1) return "First Floor";
   return level > 1 ? `Floor ${level}` : `Basement ${-level}`;
 }
 
@@ -856,18 +1152,39 @@ function offsetOpening(
 
 function crossFloorReferences(ast: FloorplanAst): {
   errors: string[];
+  diagnostics: FloorplanGeometryDiagnostic[];
   invalidRooms: Set<FloorplanRoom>;
   invalidExtensions: Set<FloorplanExtend>;
   invalidOpenings: Set<FloorplanOpening>;
   invalidFurniture: Set<FloorplanAst["furniture"][number]>;
   invalidArrays: Set<FloorplanAst["arrays"][number]>;
+  invalidZones: Set<FloorplanAst["zones"][number]>;
 } {
   const errors: string[] = [];
+  const diagnostics: FloorplanGeometryDiagnostic[] = [];
+  const crossFloorError = (
+    message: string,
+    line?: number,
+    floor?: number,
+    entityIds?: string[]
+  ): void => {
+    errors.push(message);
+    diagnostics.push({
+      severity: "error",
+      code: "floorplan/cross-floor-reference",
+      phase: "topology",
+      message,
+      line,
+      floor,
+      entityIds,
+    });
+  };
   const invalidRooms = new Set<FloorplanRoom>();
   const invalidExtensions = new Set<FloorplanExtend>();
   const invalidOpenings = new Set<FloorplanOpening>();
   const invalidFurniture = new Set<FloorplanAst["furniture"][number]>();
   const invalidArrays = new Set<FloorplanAst["arrays"][number]>();
+  const invalidZones = new Set<FloorplanAst["zones"][number]>();
   const floorsByRoom = new Map<string, number[]>();
   for (const room of ast.rooms) {
     const floors = floorsByRoom.get(room.id) ?? [];
@@ -884,9 +1201,12 @@ function crossFloorReferences(ast: FloorplanAst): {
     if (!room.rel) continue;
     const refFloor = floorFor(room.rel.ref, room.floor);
     if (refFloor !== undefined && refFloor !== room.floor) {
-      errors.push(
+      crossFloorError(
         `room "${room.id}" (floor ${room.floor}) references "${room.rel.ref}" (floor ${refFloor}) — ` +
-          `relative placement cannot cross floors`
+          `relative placement cannot cross floors`,
+        room.line,
+        room.floor,
+        [room.id, room.rel.ref]
       );
       invalidRooms.add(room);
     }
@@ -898,7 +1218,12 @@ function crossFloorReferences(ast: FloorplanAst): {
       (targetFloor !== undefined && targetFloor !== extension.floor) ||
       (refFloor !== undefined && refFloor !== extension.floor)
     ) {
-      errors.push(`extend "${extension.room}" on floor ${extension.floor} references a room on another floor`);
+      crossFloorError(
+        `extend "${extension.room}" on floor ${extension.floor} references a room on another floor`,
+        extension.line,
+        extension.floor,
+        [extension.room]
+      );
       invalidExtensions.add(extension);
     }
   }
@@ -906,13 +1231,21 @@ function crossFloorReferences(ast: FloorplanAst): {
     const ids = opening.between ?? (opening.room ? [opening.room] : []);
     const roomFloors = ids.map((id) => floorFor(id, opening.floor));
     if (opening.between && roomFloors[0] !== undefined && roomFloors[1] !== undefined && roomFloors[0] !== roomFloors[1]) {
-      errors.push(
+      crossFloorError(
         `${opening.kind} between "${opening.between[0]}" (floor ${roomFloors[0]}) and ` +
-          `"${opening.between[1]}" (floor ${roomFloors[1]}): rooms are on different floors`
+          `"${opening.between[1]}" (floor ${roomFloors[1]}): rooms are on different floors`,
+        opening.line,
+        opening.floor,
+        [...opening.between]
       );
       invalidOpenings.add(opening);
     } else if (roomFloors.some((floor) => floor !== undefined && floor !== opening.floor)) {
-      errors.push(`${opening.kind} on floor ${opening.floor} references a room on another floor`);
+      crossFloorError(
+        `${opening.kind} on floor ${opening.floor} references a room on another floor`,
+        opening.line,
+        opening.floor,
+        ids
+      );
       invalidOpenings.add(opening);
     }
   }
@@ -920,9 +1253,12 @@ function crossFloorReferences(ast: FloorplanAst): {
     if (!furniture.room) continue;
     const roomFloor = floorFor(furniture.room, furniture.floor);
     if (roomFloor !== undefined && roomFloor !== furniture.floor) {
-      errors.push(
+      crossFloorError(
         `furniture ${furniture.type}${furniture.instanceId ? ` "${furniture.instanceId}"` : ""} on floor ` +
-          `${furniture.floor} references "${furniture.room}" on floor ${roomFloor}`
+          `${furniture.floor} references "${furniture.room}" on floor ${roomFloor}`,
+        furniture.line,
+        furniture.floor,
+        [furniture.room]
       );
       invalidFurniture.add(furniture);
     }
@@ -931,11 +1267,37 @@ function crossFloorReferences(ast: FloorplanAst): {
     if (!array.room) continue;
     const roomFloor = floorFor(array.room, array.floor);
     if (roomFloor !== undefined && roomFloor !== array.floor) {
-      errors.push(`${array.mode} ${array.type} on floor ${array.floor} references "${array.room}" on floor ${roomFloor}`);
+      crossFloorError(
+        `${array.mode} ${array.type} on floor ${array.floor} references "${array.room}" on floor ${roomFloor}`,
+        array.line,
+        array.floor,
+        [array.room]
+      );
       invalidArrays.add(array);
     }
   }
-  return { errors, invalidRooms, invalidExtensions, invalidOpenings, invalidFurniture, invalidArrays };
+  for (const zone of ast.zones) {
+    const roomFloor = floorFor(zone.room, zone.floor);
+    if (roomFloor !== undefined && roomFloor !== zone.floor) {
+      crossFloorError(
+        `zone "${zone.id}" on floor ${zone.floor} references "${zone.room}" on floor ${roomFloor}`,
+        zone.line,
+        zone.floor,
+        [zone.id, zone.room]
+      );
+      invalidZones.add(zone);
+    }
+  }
+  return {
+    errors,
+    diagnostics,
+    invalidRooms,
+    invalidExtensions,
+    invalidOpenings,
+    invalidFurniture,
+    invalidArrays,
+    invalidZones,
+  };
 }
 
 export function layoutFloorplan(
@@ -955,6 +1317,7 @@ export function layoutFloorplan(
         areaText: formatArea(layout.totalAreaM2, ast.unit),
         roomIdx: layout.rooms.map((_, index) => index),
         itemIdx: layout.items.map((_, index) => index),
+        zoneIdx: layout.zones.map((_, index) => index),
         openingIdx: layout.openings.map((_, index) => index),
         dimIdx: layout.dims.map((_, index) => index),
         seamIdx: layout.seams.map((_, index) => index),
@@ -973,6 +1336,7 @@ export function layoutFloorplan(
     ...ast.openings,
     ...ast.furniture,
     ...ast.arrays,
+    ...ast.zones,
   ]) {
     levelSet.add(statement.floor);
   }
@@ -989,6 +1353,7 @@ export function layoutFloorplan(
       openings: ast.openings.filter((opening) => opening.floor === level && !refs.invalidOpenings.has(opening)),
       furniture: ast.furniture.filter((item) => item.floor === level && !refs.invalidFurniture.has(item)),
       arrays: ast.arrays.filter((array) => array.floor === level && !refs.invalidArrays.has(array)),
+      zones: ast.zones.filter((zone) => zone.floor === level && !refs.invalidZones.has(zone)),
     };
     return { level, layout: layoutOneFloor(subAst) };
   });
@@ -1000,23 +1365,39 @@ export function layoutFloorplan(
   const seams: SeamGeom[] = [];
   const openings: OpeningGeom[] = [];
   const items: ItemGeom[] = [];
+  const zones: ZoneGeom[] = [];
   const dims: DimLineGeom[] = [];
   const plates: FloorPlate[] = [];
   const errors = [...refs.errors];
   const warnings = [...stairWarnings];
+  const diagnostics: FloorplanGeometryDiagnostic[] = [
+    ...refs.diagnostics,
+    ...stairWarnings.map(
+      (message): FloorplanGeometryDiagnostic => ({
+        severity: "warning",
+        code: "floorplan/stair-misalignment",
+        phase: "geometry",
+        message,
+      })
+    ),
+  ];
   const warnItems: number[] = [];
   let cursor = 0;
 
   for (const { level, layout } of perFloor) {
-    const offset = ast.stack === "horizontal" ? { x: cursor, y: 0 } : { x: 0, y: cursor };
+    const offset = ast.stack === "horizontal"
+      ? { x: snap(cursor - layout.bounds.minX), y: snap(-layout.bounds.minY) }
+      : { x: snap(-layout.bounds.minX), y: snap(cursor - layout.bounds.minY) };
     const roomBase = rooms.length;
     const itemBase = items.length;
+    const zoneBase = zones.length;
     const openingBase = openings.length;
     const dimBase = dims.length;
     const seamBase = seams.length;
 
     rooms.push(...layout.rooms.map((room) => offsetRoom(room, offset)));
     items.push(...layout.items.map((item) => ({ ...item, x: item.x + offset.x, y: item.y + offset.y })));
+    zones.push(...layout.zones.map((zone) => ({ ...zone, x: zone.x + offset.x, y: zone.y + offset.y })));
     openings.push(...layout.openings.map((opening) => offsetOpening(opening, offset, roomBase)));
     seams.push(...layout.seams.map((seam) => ({
       ...seam,
@@ -1033,6 +1414,7 @@ export function layoutFloorplan(
     })));
     errors.push(...layout.errors);
     warnings.push(...layout.warnings);
+    diagnostics.push(...layout.diagnostics);
     warnItems.push(...layout.warnItems.map((index) => index + itemBase));
 
     plates.push({
@@ -1044,6 +1426,7 @@ export function layoutFloorplan(
       areaText: formatArea(layout.totalAreaM2, ast.unit),
       roomIdx: layout.rooms.map((_, index) => roomBase + index),
       itemIdx: layout.items.map((_, index) => itemBase + index),
+      zoneIdx: layout.zones.map((_, index) => zoneBase + index),
       openingIdx: layout.openings.map((_, index) => openingBase + index),
       dimIdx: layout.dims.map((_, index) => dimBase + index),
       seamIdx: layout.seams.map((_, index) => seamBase + index),
@@ -1075,6 +1458,7 @@ export function layoutFloorplan(
     seams,
     openings,
     items,
+    zones,
     dims,
     plates,
     bounds: { minX, minY, maxX, maxY },
@@ -1082,6 +1466,7 @@ export function layoutFloorplan(
     totalAreaM2: plates.reduce((sum, plate) => sum + plate.areaM2, 0),
     errors,
     warnings,
+    diagnostics,
     warnItems,
   };
   if (ast.mode === "evacuation") return finalizeEvacuationLayout(ast, result);
@@ -1097,8 +1482,12 @@ function resolveOpening(
   byId: Map<string, number>,
   u: number,
   unit: FloorplanUnit,
-  errors: string[],
-  warnings: string[]
+  report: (
+    severity: FloorplanGeometryDiagnostic["severity"],
+    code: string,
+    phase: FloorplanGeometryDiagnostic["phase"],
+    message: string
+  ) => void
 ): OpeningGeom | null {
   let seg: SharedEdge | null = null;
   let owner = -1;
@@ -1110,7 +1499,12 @@ function resolveOpening(
     const ia = byId.get(op.between[0]);
     const ib = byId.get(op.between[1]);
     if (ia === undefined || ib === undefined) {
-      errors.push(`${op.kind}: unknown room "${ia === undefined ? op.between[0] : op.between[1]}"`);
+      report(
+        "error",
+        "floorplan/unknown-room",
+        "topology",
+        `${op.kind}: unknown room "${ia === undefined ? op.between[0] : op.between[1]}"`
+      );
       return null;
     }
     const a = rooms[ia]!;
@@ -1121,7 +1515,10 @@ function resolveOpening(
       const gapY = Math.max(a.y, b.y) - Math.min(a.y + a.h, b.y + b.h);
       const axis = gapX >= gapY ? "x" : "y";
       const gap = Math.max(gapX, gapY);
-      errors.push(
+      report(
+        "error",
+        "floorplan/opening-no-shared-wall",
+        "topology",
         gap > 0
           ? `${op.kind} between "${a.id}" and "${b.id}": rooms share no wall (gap ${fmtNum(gap)} m on ${axis}-axis)`
           : `${op.kind} between "${a.id}" and "${b.id}": rooms share no wall`
@@ -1144,7 +1541,7 @@ function resolveOpening(
   } else {
     const idx = byId.get(op.room!);
     if (idx === undefined) {
-      errors.push(`${op.kind}: unknown room "${op.room}"`);
+      report("error", "floorplan/unknown-room", "topology", `${op.kind}: unknown room "${op.room}"`);
       return null;
     }
     owner = idx;
@@ -1152,7 +1549,12 @@ function resolveOpening(
     const side = op.side!;
     const segs = sideSegments(r, side);
     if (segs.length === 0) {
-      errors.push(`${op.kind} on "${r.id}" ${side}: that side has no exterior wall segment`);
+      report(
+        "error",
+        "floorplan/opening-no-wall",
+        "topology",
+        `${op.kind} on "${r.id}" ${side}: that side has no exterior wall segment`
+      );
       return null;
     }
     // pct maps along the concatenated exterior segments of that side
@@ -1198,7 +1600,10 @@ function resolveOpening(
   const avail = segLen - 2 * jamb;
   let wd = op.width * u;
   if (wd > avail) {
-    warnings.push(
+    report(
+      "warning",
+      "floorplan/opening-clamped",
+      "geometry",
       `${op.kind}${op.room ? ` on "${op.room}" ${op.side}` : op.between ? ` between "${op.between[0]}" and "${op.between[1]}"` : ""}: ` +
         `width ${formatLength(wd, unit)} clamped to ${formatLength(avail, unit)} to fit the wall segment`
     );

@@ -21,26 +21,53 @@ export const floorplan: DiagramPlugin = {
   render(text: string, config?: RenderConfig): string {
     return renderFloorplan(text, config);
   },
-  lint(text: string): SchematexDiagnostic[] {
+  lint(text: string, config?: Partial<RenderConfig>): SchematexDiagnostic[] {
     try {
-      const lay = layoutFloorplan(parseFloorplan(text));
+      const ast = parseFloorplan(text);
+      const lay = layoutFloorplan(ast);
+      const structuredMessages = new Set(lay.diagnostics.map((entry) => entry.message));
       return [
-        ...lay.errors.map(
-          (message): SchematexDiagnostic => ({
-            severity: "error",
-            code: "floorplan/validation",
-            message,
+        ...lay.diagnostics.map(
+          (entry): SchematexDiagnostic => ({
+            severity: entry.severity,
+            code: entry.code,
+            message: entry.message,
+            line: entry.line,
+            hint: entry.hint,
             fatal: false,
           })
         ),
-        ...lay.warnings.map(
-          (message): SchematexDiagnostic => ({
-            severity: "warning",
-            code: "floorplan/warning",
-            message,
-            fatal: false,
-          })
-        ),
+        ...lay.errors
+          .filter((message) => !structuredMessages.has(message))
+          .map(
+            (message): SchematexDiagnostic => ({
+              severity: "error",
+              code: "floorplan/validation",
+              message,
+              fatal: false,
+            })
+          ),
+        ...lay.warnings
+          .filter((message) => !structuredMessages.has(message))
+          .map(
+            (message): SchematexDiagnostic => ({
+              severity: "warning",
+              code: "floorplan/warning",
+              message,
+              fatal: false,
+            })
+          ),
+        ...(ast.mode === "evacuation" && config?.theme === "monochrome"
+          ? [
+              {
+                severity: "error" as const,
+                code: "floorplan/evacuation-color-required",
+                message:
+                  "monochrome theme is not permitted for evacuation plans — ISO 3864 safety colours are semantic (green = escape, red = fire equipment)",
+                fatal: false,
+              },
+            ]
+          : []),
       ];
     } catch {
       return []; // parse errors surface through parse(), not lint()
@@ -73,4 +100,13 @@ export {
 } from "./stageplot";
 export { STAGE_SYMBOLS } from "./stage-symbols";
 export { orthogonalPolyline } from "./orthogonal-routing";
+export {
+  FLOORPLAN_CAPABILITIES,
+  getFloorplanCapabilities,
+  validateFloorplanIntent,
+} from "./capabilities";
+export type {
+  FloorplanCapability,
+  FloorplanCapabilityEntry,
+} from "./capabilities";
 export type * from "./types";

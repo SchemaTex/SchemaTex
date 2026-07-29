@@ -21,6 +21,11 @@ const BAND_ODD_LIGHT = "#f7f7f7";
 const BAND_EVEN_LIGHT = "#fbfbfb";
 const BAND_ODD_DARK = "#172033";
 const BAND_EVEN_DARK = "#202b3d";
+const TITLE_BASELINE_Y = 22;
+const TITLE_DESCENT = 4;
+const TITLE_TO_SOURCE_GAP = 12;
+const SOURCE_LABEL_ASCENT = 11;
+const SOURCE_LABEL_OFFSET = 22;
 
 function buildCss(t: IT): string {
   const isDark = t.bg !== "#ffffff";
@@ -176,7 +181,22 @@ function renderLabels(ln: SLDLayoutNode): string[] {
 export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
   const layout = layoutSLD(ast);
   const t = resolveIndustrialTheme(config?.theme ?? "default");
-  const titleOffset = ast.title ? 34 : 12;
+  const sourceLabelTop = layout.nodes
+    .filter((node) => node.level === 0 && node.nodeType !== "bus")
+    .reduce(
+      (min, node) =>
+        Math.min(min, node.topY - SOURCE_LABEL_OFFSET - SOURCE_LABEL_ASCENT),
+      Infinity
+    );
+  const titleOffset = ast.title && Number.isFinite(sourceLabelTop)
+    ? Math.max(
+        12,
+        TITLE_BASELINE_Y +
+          TITLE_DESCENT +
+          TITLE_TO_SOURCE_GAP -
+          sourceLabelTop
+      )
+    : 12;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
 
@@ -210,7 +230,15 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
 
   if (ast.title) {
     children.push(
-      textEl({ x: 20, y: 22, class: "lt-sld-title" }, ast.title)
+      textEl(
+        {
+          x: 20,
+          y: TITLE_BASELINE_Y,
+          class: "lt-sld-title",
+          "data-sld-role": "title",
+        },
+        ast.title
+      )
     );
   }
 

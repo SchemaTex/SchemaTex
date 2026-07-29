@@ -17,7 +17,7 @@
 
 所有系统元件（controller, plant, sensor 等）用矩形盒表示。
 
-**标准尺寸**: 80px wide × 50px tall（默认）
+**尺寸策略**: label 先按像素宽度测量并保留显式换行，再在 `126–230px` 的宽度范围内分配 bbox；高度随行数增长，最小 `54px`。布局使用这个最终 bbox，而不是在固定盒子内事后贴字。
 
 ```svg
 <!-- Standard block -->
@@ -231,6 +231,14 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 
 ## 3. DSL Grammar (Block Diagram)
 
+### 3.0 Implemented parser and layout contract
+
+- `block("…")`、`signal("…")` 和 edge label 同时支持 escaped `\n` 与引号内部的 physical newline。
+- 未知 non-comment statement 返回 `BLOCK_UNKNOWN_STATEMENT`；不会被静默丢弃后继续标成 `valid`。
+- `A -> B` 的 bare endpoint 必须先声明；否则返回 `BLOCK_UNDECLARED_ENDPOINT`。只有显式 `[A] -> [B]` shorthand 可以有意创建 id-as-label block。
+- Layout 为 measured layered placement：同层 peer 有独立 row，fan-out/fan-in 使用分散 ports 和 routing channels，edge label geometry 在布线时预留。
+- `findBlockDiagramCollisions()` 暴露 node-node、label-label 和 label-node 的结构化检查；`getBlockDiagramGenerationCapabilities()` 暴露同一 generation contract。
+
 ```ebnf
 document      = header statement*
 header        = "block" quoted_string? NEWLINE
@@ -266,7 +274,7 @@ label_clause  = "[" quoted_string "]"
 
 IDENTIFIER    = /[a-zA-Z][a-zA-Z0-9_]*/
 INT           = /[0-9]+/
-quoted_string = '"' /[^"]*/ '"'
+quoted_string = '"' (escaped_newline | physical_newline | /[^"]*/) * '"'
 NEWLINE       = /\n/
 INDENT        = increase in whitespace
 DEDENT        = decrease in whitespace
@@ -277,9 +285,9 @@ DEDENT        = decrease in whitespace
 blockdiagram "PID Closed-Loop Control System"
 
 # System components
-C = block("C(s)") [name: "PID Controller", role: controller]
-G = block("G(s)") [name: "Plant", role: plant]
-H = block("H(s)") [name: "Sensor", role: sensor]
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
 
 # Signals
 r = signal("r(t)")   # reference input

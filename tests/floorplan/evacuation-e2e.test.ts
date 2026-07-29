@@ -73,13 +73,13 @@ route secondary here -> office -> lobby -> west -> xw`);
     );
   });
 
-  it("keeps the accessible description concise when the plan has many warnings", () => {
+  it("keeps warnings out of the exported accessible description", () => {
     const svg = renderFloorplan(`${source}
 first-aid fa2 in office at 1,1
 extinguisher f2 in office at 1,1
 call-point cp2 in office at 1,1`);
     const desc = svg.match(/<desc>(.*?)<\/desc>/s)?.[1] ?? "";
-    expect(desc).toMatch(/[3-9]\d* warnings/);
+    expect(desc).not.toContain("warnings");
     expect(desc).not.toContain("safety symbols");
     expect(desc.length).toBeLessThan(300);
   });

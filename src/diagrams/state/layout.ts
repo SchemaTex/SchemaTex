@@ -30,6 +30,10 @@ import type {
   StateNode,
   StateTransition,
 } from "./types";
+import {
+  estimateMaxLineWidth,
+  wrapTextToWidth,
+} from "../../core/text-metrics";
 
 // ── Pseudo-state symbol sizes (rendered geometry; layout reserves bbox) ──
 const PSEUDO_BBOX = {
@@ -55,6 +59,32 @@ interface ConversionResult {
   ast: FlowchartAST;
   /** state-id → its size override (so we can later restore pseudo bboxes if needed) */
   pseudoSizes: Map<string, { w: number; h: number }>;
+  /** State labels after deterministic wrapping; renderer consumes the same rows. */
+  displayLabels: Map<string, string[]>;
+}
+
+function transitionLabelBounds(edge: StateLayoutEdge): {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+} | null {
+  if (!edge.label) return null;
+  const width = Math.max(
+    20,
+    Math.ceil(estimateMaxLineWidth(edge.label, 11)) + 8
+  );
+  const height = edge.label.split("\n").length * 14 + 2;
+  const anchor = edge.labelAnchor ?? "middle";
+  const x =
+    edge.labelX -
+    (anchor === "start" ? 0 : anchor === "end" ? width : width / 2);
+  return {
+    x,
+    y: edge.labelY - height / 2,
+    width,
+    height,
+  };
 }
 
 function shapeForState(node: StateNode): FlowchartShape {
@@ -94,6 +124,7 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
   const fcNodes: FlowchartNode[] = [];
   const fcSubgraphs: FlowchartSubgraph[] = [];
   const pseudoSizes = new Map<string, { w: number; h: number }>();
+  const displayLabels = new Map<string, string[]>();
   // composite-id → preferred entry/exit node id (for edges that target a composite)
   const compositeEntryFor = new Map<string, string>();
   const compositeExitFor = new Map<string, string>();
@@ -135,9 +166,14 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
       return;
     }
     // Simple or pseudo
+    const labelLines =
+      s.kind === "pseudo"
+        ? []
+        : wrapTextToWidth(s.label || s.id, 12, 240, { fontWeight: 600 });
+    if (labelLines.length) displayLabels.set(s.id, labelLines);
     const node: FlowchartNode = {
       id: s.id,
-      label: labelForFlowchart(s),
+      label: labelForFlowchart(s, labelLines),
       shape: shapeForState(s),
       parent: parentId,
     };
@@ -165,7 +201,12 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
       from,
       to,
       kind: "solid",
-      label: buildLabel(t),
+      label: (() => {
+        const label = buildLabel(t);
+        return label
+          ? wrapTextToWidth(label, 11, 220).join("\n")
+          : undefined;
+      })(),
       labelSourceRange: t.labelSourceRange,
     };
   });
@@ -181,7 +222,7 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
     classDefs: [],
     linkStyles: new Map(),
   };
-  return { ast: fc, pseudoSizes };
+  return { ast: fc, pseudoSizes, displayLabels };
 }
 
 /**
@@ -193,17 +234,14 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
  * For simple states with no activities we use the actual label so the
  * rounded-rect width hugs the text.
  */
-function labelForFlowchart(s: StateNode): string {
+function labelForFlowchart(s: StateNode, labelLines: string[]): string {
   if (s.kind === "pseudo") return ""; // becomes 0-width; flowchart clamps to minNodeWidth
-  // simple state — use label, augmented with activity hint so the box is tall enough
-  if (s.activities.length === 0) return s.label || s.id;
-  // Reserve vertical space by appending newline-equivalent (flowchart layout
-  // doesn't currently wrap, so just use the longest activity for sizing).
-  const activityWidth = s.activities
-    .map((a) => activityText(a).length)
-    .reduce((m, n) => Math.max(m, n), 0);
-  const label = s.label || s.id;
-  return label.length >= activityWidth ? label : "x".repeat(activityWidth);
+  // Feed the exact label/activity rows to flowchart measurement so the state
+  // renderer cannot outgrow a fixed 44px box after layout.
+  return [
+    ...labelLines,
+    ...s.activities.map((activity) => activityText(activity)),
+  ].join("\n");
 }
 
 function activityText(a: { kind: string; trigger?: string; guard?: string; action?: string }): string {
@@ -267,7 +305,7 @@ export function layoutStateDiagram(
   ast: StateDiagramAST,
   pins?: Map<string, { x: number; y: number }>
 ): StateLayoutResult {
-  const { ast: fcAst, pseudoSizes } = convertToFlowchart(ast);
+  const { ast: fcAst, pseudoSizes, displayLabels } = convertToFlowchart(ast);
 
   // Self-loops would confuse Sugiyama's layering (re-visiting a node creates
   // back-edges that get reversed). Strip them before running flowchart layout
@@ -336,6 +374,7 @@ export function layoutStateDiagram(
       cy,
       layer: fcNode.layer,
       node: s,
+      labelLines: displayLabels.get(s.id),
       parent: s.parent,
     });
   }
@@ -388,7 +427,7 @@ export function layoutStateDiagram(
       from: t.from,
       to: t.to,
       path,
-      label: buildLabel(t),
+      label: fcEdge.edge.label,
       labelSourceRange: t.labelSourceRange,
       labelX: fcEdge.labelAnchor?.x ?? 0,
       labelY: fcEdge.labelAnchor?.y ?? 0,
@@ -455,10 +494,20 @@ export function layoutStateDiagram(
   let maxX = fcResult.width;
   let maxY = fcResult.height;
   let minX = 0;
+  let minY = 0;
   for (const n of notes) {
     maxX = Math.max(maxX, n.x + n.width + 8);
     maxY = Math.max(maxY, n.y + n.height + 8);
     minX = Math.min(minX, n.x - 8);
+    minY = Math.min(minY, n.y - 8);
+  }
+  for (const edge of stateEdges) {
+    const bounds = transitionLabelBounds(edge);
+    if (!bounds) continue;
+    minX = Math.min(minX, bounds.x - 8);
+    minY = Math.min(minY, bounds.y - 8);
+    maxX = Math.max(maxX, bounds.x + bounds.width + 8);
+    maxY = Math.max(maxY, bounds.y + bounds.height + 8);
   }
   if (minX < 0) {
     const dx = -minX;
@@ -480,10 +529,25 @@ export function layoutStateDiagram(
     }
     maxX += dx;
   }
-  for (const e of stateEdges) {
-    if (!e.selfLoop) continue;
-    maxX = Math.max(maxX, e.labelX + 60);
-    maxY = Math.max(maxY, e.labelY + 60);
+  if (minY < 0) {
+    const dy = -minY;
+    for (const n of stateNodes) {
+      n.y += dy;
+      n.cy += dy;
+    }
+    for (const c of clusters) {
+      c.y += dy;
+    }
+    for (const e of stateEdges) {
+      e.path = shiftPathY(e.path, dy);
+      e.labelY += dy;
+    }
+    for (const n of notes) {
+      n.y += dy;
+      n.leader.y1 += dy;
+      n.leader.y2 += dy;
+    }
+    maxY += dy;
   }
 
   // Title bar reserves vertical space.
@@ -518,6 +582,7 @@ export function layoutStateDiagram(
     title: ast.title,
     titleSourceRange: ast.titleSourceRange,
     direction: ast.direction,
+    manualLayout: (pins?.size ?? 0) > 0,
   };
 }
 

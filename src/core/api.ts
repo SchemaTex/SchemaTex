@@ -572,7 +572,18 @@ export function parseResult(
     const prepared = prepareForPlugin(prepared0, plugin, forced, type);
     const ast = plugin.parse(prepared.text);
     remapAstSourceRanges(ast, prepared);
-    const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
+    const diagnostics = [
+      ...prepared.diagnostics,
+      ...runLint(plugin, prepared.text, config),
+    ];
+    if (hasBlockingDiagnostics(diagnostics)) {
+      return {
+        ok: false,
+        status: "invalid",
+        type: plugin.type,
+        diagnostics,
+      };
+    }
     return {
       ok: true,
       status: diagnostics.length > 0 ? "partial" : "valid",
@@ -591,16 +602,43 @@ export function parseResult(
 }
 
 /**
- * Run a plugin's optional lint pass defensively — a lint hook must never break
- * parsing/rendering, so any throw is swallowed and treated as "no warnings".
+ * Run a plugin's optional domain-validation pass defensively. A hook may return
+ * render-blocking errors or non-blocking warnings, but it must never break the
+ * pipeline itself, so a throw is swallowed and treated as "no diagnostics".
  */
-function runLint(plugin: DiagramPlugin, prepared: string): SchematexDiagnostic[] {
+function runLint(
+  plugin: DiagramPlugin,
+  prepared: string,
+  config?: SchematexConfig
+): SchematexDiagnostic[] {
   if (!plugin.lint) return [];
   try {
-    return plugin.lint(prepared);
+    return plugin.lint(prepared, config);
   } catch {
     return [];
   }
+}
+
+function hasBlockingDiagnostics(diagnostics: SchematexDiagnostic[]): boolean {
+  return diagnostics.some((diagnostic) => diagnostic.severity === "error");
+}
+
+function blockingDiagnosticError(diagnostics: SchematexDiagnostic[]): Error {
+  const diagnostic = diagnostics.find((entry) => entry.severity === "error");
+  const error = new Error(diagnostic?.message ?? "Diagram validation failed.") as Error & {
+    code?: string;
+    line?: number;
+    column?: number;
+    source?: string;
+    hint?: string;
+  };
+  error.name = "SchematexValidationError";
+  error.code = diagnostic?.code;
+  error.line = diagnostic?.line;
+  error.column = diagnostic?.column;
+  error.source = diagnostic?.source;
+  error.hint = diagnostic?.hint;
+  return error;
 }
 
 export function render(text: string, config?: SchematexConfig): string {
@@ -611,6 +649,13 @@ export function render(text: string, config?: SchematexConfig): string {
   const type = requestedType(plugin, config);
   const forced = config?.type != null && servesType(plugin, config.type);
   const prepared = prepareForPlugin(prepared0, plugin, forced, type);
+  const diagnostics = [
+    ...prepared.diagnostics,
+    ...runLint(plugin, prepared.text, config),
+  ];
+  if (hasBlockingDiagnostics(diagnostics)) {
+    throw blockingDiagnosticError(diagnostics);
+  }
   return renderWithPlugin(prepared, plugin, type, config).svg;
 }
 
@@ -625,8 +670,22 @@ export function renderResult(
     const type = requestedType(plugin, config);
     const forced = config?.type != null && servesType(plugin, config.type);
     const prepared = prepareForPlugin(prepared0, plugin, forced, type);
+    const diagnostics = [
+      ...prepared.diagnostics,
+      ...runLint(plugin, prepared.text, config),
+    ];
+    if (hasBlockingDiagnostics(diagnostics)) {
+      return {
+        ok: false,
+        status: "invalid",
+        type: plugin.type,
+        svg: renderDiagnosticSvg(diagnostics, plugin.type, {
+          fontFamily: config?.fontFamily,
+        }),
+        diagnostics,
+      };
+    }
     const rendered = renderWithPlugin(prepared, plugin, type, config);
-    const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
     return {
       ok: true,
       status: diagnostics.length > 0 ? "partial" : "valid",

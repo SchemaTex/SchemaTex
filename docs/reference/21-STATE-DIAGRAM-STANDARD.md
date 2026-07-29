@@ -19,7 +19,7 @@
 | Choice / fork / join | ✅（stereotype 语法） | ✅（一等关键字） |
 | Notes on state (left/right) | ✅ | ✅ |
 | Concurrent regions | ✅（`--`） | ✅（`---`） |
-| Direction (LR/TB) | ✅ | ✅ |
+| Direction (LR/TB) | ✅ | ✅（另有 `auto` policy） |
 | **Entry / exit / do activities** | ❌ | ✅（UML 14.2.3.4.3） |
 | **Trigger [guard] / action transition label** | ❌ | ✅（UML 14.2.4.9 完整形式） |
 | **Internal transitions** | ❌ | ✅ |
@@ -201,6 +201,16 @@ State diagram 布局 ≈ **layered DAG with nested containers + self-loop handli
 长 transition label（e.g. `request [authenticated && !rate_limited] / log("granted")`）超过 `80px` 时：
 - 换行，`text-anchor=middle`，多 `<tspan>` 堆叠
 - 整 label 块中心对齐到线段中点
+- label bbox 进入最终 canvas bounds；不会在 viewBox 右侧或顶部被裁掉
+
+### 3.4 Direction, multiline, and provenance contract
+
+- `direction LR` 与 `direction TB` 是显式用户 intent，renderer 会尊重。
+- `direction auto` 对 4 个以上长 label 的线性 chain 选择 TB；3 个以内的短 lifecycle 保持 compact LR。
+- 显式 LR 若产生极端宽高比，linter 返回 non-fatal `STATE_EXTREME_ASPECT_RATIO`，不会暗改用户方向。
+- `state "header\nbody" as ID` 同时支持 escaped newline 与引号中的 physical newline；相同的 measured rows 供 layout 和 renderer 使用。
+- 应用 `@overrides` pins 的 SVG 标记 `data-manual-layout="true"`，让 consumer 区分 auto layout 与 manual revision。
+- 这些字段可通过 `getStateGenerationCapabilities()` 读取，generation profile 直接消费同一 contract。
 
 ---
 
@@ -210,7 +220,7 @@ State diagram 布局 ≈ **layered DAG with nested containers + self-loop handli
 document     = header statement*
 header       = "state" quoted_string? props? NEWLINE
 props        = "[" prop ("," prop)* "]"
-prop         = "direction:" ("LR" | "TB")
+prop         = "direction:" ("LR" | "TB" | "auto")
              | "style:" ("uml" | "harel")
 
 statement    = comment

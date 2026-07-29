@@ -1,5 +1,8 @@
 import type { DiagramType } from "../core/types";
 import { FLOORPLAN_TYPE_KEYWORDS } from "../diagrams/floorplan/catalog";
+import { CIRCUIT_GENERATION_CAPABILITIES } from "../diagrams/circuit/capabilities";
+import { BLOCKDIAGRAM_GENERATION_CAPABILITIES } from "../diagrams/blockdiagram/capabilities";
+import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
 
 /**
  * Shared generation policy exposed to LLM-facing syntax callers.
@@ -262,7 +265,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · lamps/loads: L1 switched neutral type=lamp · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect',
+      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect`,
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -279,6 +282,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
       "For household AC lighting, use clear L/N nets: `V1 live neutral 220Vac type=acsource`, then `F1 live protected`, `S1 protected switched`, `L1 switched neutral type=lamp`. The renderer keeps live/control above and neutral return below.",
       "For two-way/stair lighting, use two `switch_spdt` parts sharing two traveler nets; do not place SPST switches in series.",
+      "For an automotive turn-signal path use `automotive_flasher_3pin` with B/L/P nets and `switch_spdt_center_off` for the left/off/right selector; these are real three-pin symbols, not generic aliases.",
       "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
       "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
     ],
@@ -288,6 +292,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
       "Do not model two-way/three-way light switching as a simple series chain of `switch_spst`; use traveler nets and `switch_spdt`/crossover switching.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
+      "Don't invent an automotive `flasher` placeholder or model a center-off selector as a two-pin switch; use the supported three-pin automotive types.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -301,7 +306,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'blockdiagram "Title"',
     mode: "named block/sum/signal decls + directed -> chains",
     keywords:
-      'ID = block("label") [role:…][route:above|below] · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect ids with -> (chainable a -> b -> c) · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic',
+      `ID = block("label") [role:…][route:above|below] · labels support ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.multilineLabels.join(" and ")} inside the closing quotes · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect declared ids with -> (chainable a -> b -> c) · explicit shorthand ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} -> ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic`,
     forms: [
       'C = block("PID C(s)") [role: controller]',
       'G = block("Plant G(s)") [role: plant]',
@@ -312,16 +317,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       'Declare blocks `ID = block("label") [role: …]`, junctions `ID = sum(+a, -b)`, and signals `ID = signal("label")`, then wire ids with directed `->` (chainable: `a -> b -> c`).',
       "Model feedback through an explicit `sum(+ref, -fb)` — the signs are visual (+ enters, − subtracts), not computed; send a long return path over the top with `[route: above]` on the sensor block.",
-      'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. Use the auto-provided `in`/`out` ports for the system boundary, and annotate an edge with `["label"]`.',
+      'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. The reserved ids `in` and `out` render as boundary ports when they are not explicitly declared as blocks; annotate an edge with `["label"]`.',
+      "Use explicit `\\n` breaks inside long hardware labels. Node bounds are measured before layered placement, so fan-out peers receive separate rows.",
     ],
     avoid: [
-      "An unknown id on a `->` line does NOT error — it silently becomes a stray generic `block`, so a typo'd id creates a phantom box. Keep ids consistent.",
+      "Don't reference a bare undeclared id on a `->` line — it is a hard error. Declare the block first, or use the intentional `[ID]` shorthand.",
       "Avoid drawing feedback as a bare reverse arrow with no junction; route it into a `sum(...)` so the loop reads correctly.",
       'Don\'t quote ids; quotes belong only inside `block("…")` / `signal("…")` labels and edge `["…"]` labels.',
     ],
     repair: [
       "'Invalid connection: <line>' -> a `->` line needs an id on both sides (e.g. `err -> C`); `C ->` or `-> C` alone is rejected.",
-      "Most ids auto-declare, so few lines hard-fail — if a box is unexpectedly empty or duplicated, look for an id typo (see avoid).",
+      "'undeclared endpoint' -> declare the missing `ID = block(\"…\")`; use `[ID]` only when an id-as-label shorthand is intentional. Reserved `in`/`out` remain boundary ports.",
+      "'unrecognized statement' -> repair the exact source line; the parser never drops an unknown declaration and returns clean success.",
     ],
   },
   ladder: {
@@ -676,10 +683,12 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'timeline "Title"',
     mode: "dated events on a time axis — swimlane (default), gantt, or lollipop styles",
     keywords:
-      'DATE: "label" · DATE - DATE: "label" (range) · DATE: milestone "label" · era DATE - DATE: "label" · track "Name": / section Name (lanes) · config: style=swimlane|gantt|lollipop orientation=horizontal|vertical scale=proportional|equidistant|log · point props [side:above|below shape:circle|square|diamond|star|flag color:#hex category:…] · dates: YYYY YYYY-MM YYYY-MM-DD, BC years, ordinal keys (Phase 1, Q1 2024)',
+      'DATE: "label" · DATE - DATE: "label" (range) · DATE: milestone "label" · era DATE - DATE: "label" · track "Name": / section Name (lanes) · config keys: style=swimlane|gantt|lollipop · orientation=horizontal|vertical · scale=proportional|equidistant|log · axis=bottom|center (one or multiple key=value pairs per config line) · point props [side:above|below shape:circle|square|diamond|star|flag color:#hex category:…] · dates: YYYY YYYY-MM YYYY-MM-DD, BC years, ordinal keys (Phase 1, Q1 2024)',
     forms: [
       'timeline "Platform v2 Launch"',
       "config: style = gantt",
+      "config: orientation = horizontal",
+      "config: scale = proportional",
       "",
       '2025-07-01 - 2025-08-15: "Engineering build" [category: "engineering"]',
       '2025-08-20: milestone "Feature freeze" [color: #E53935]',
@@ -688,6 +697,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Use ISO dates (`YYYY-MM-DD`/`YYYY-MM`/`YYYY`) for the row key for proportional layout; for non-date groupings (Phase 1, Q1 2024) use an ordinal key placed in declaration order.",
       "Use `config: style = gantt` for roadmaps (overlapping bars), `lollipop` for milestone stories, default `swimlane` for multi-track streams.",
+      "Prefer one `config: key = value` line per setting for readability; the parser also accepts multiple key=value pairs on one line.",
       "Use `milestone` before the quoted label for diamond headline events; group events with `track \"Name\":` or Mermaid `section Name`; add era bands with `era START - END: \"label\"`.",
     ],
     avoid: [
@@ -706,7 +716,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: "stateDiagram-v2",
     mode: "Mermaid stateDiagram-v2 (recommended; native 'state' header also accepted)",
     keywords:
-      'stateDiagram-v2 (or state "Title" [direction: LR]) · [*] --> S / S --> [*] · S --> T : trigger [guard] / action · state "Long name" as ID · state ID <<choice>> | <<fork>> | <<join>> | <<end>> · composite state ID { … } with -- for concurrent regions · note right_of X : text · direction TB|LR · native pseudo-states: initial final choice junction fork join history dhistory terminate entry_point exit_point',
+      `stateDiagram-v2 (or state "Title" [direction: LR]) · [*] --> S / S --> [*] · S --> T : trigger [guard] / action · state "Long name" as ID (quoted labels support \`\\n\` or physical newlines) · state ID <<choice>> | <<fork>> | <<join>> | <<end>> · composite state ID { … } with -- for concurrent regions · note right_of X : text · direction ${STATE_GENERATION_CAPABILITIES.directions.join("|")} · native pseudo-states: initial final choice junction fork join history dhistory terminate entry_point exit_point`,
     forms: [
       "stateDiagram-v2",
       "  [*] --> Idle",
@@ -720,16 +730,20 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use Mermaid `stateDiagram-v2` with `[*]` for initial/final pseudo-states and `-->` for transitions — matches the dominant training prior and is less error-prone than the native `state \"Title\"` + `initial`/`final` form.",
       "Write transition labels as `: trigger [guard] / action` — all three segments optional, but the colon is required if any label follows the arrow.",
       "For composite states use `state ID { … }` (Mermaid) or `composite ID { … }` (native); separate concurrent regions with `--` inside the block.",
+      "When the user asks for down/vertical/top-to-bottom arrows, use `direction TB`. For long linear chains, use `direction auto` or TB; reserve LR for short compact lifecycles.",
+      "Break a long state into measured rows inside the quoted label, e.g. `state \"M₀ · (1,0,0)\\nPackage received\" as M0`.",
     ],
     avoid: [
       "Don't mix the two header styles — `[*]` (Mermaid) and `initial X` (native) are both accepted but must not appear together.",
       "Don't invent pseudo-state kinds — valid are `initial`/`final`/`choice`/`junction`/`fork`/`join`/`history`/`dhistory`/`terminate`/`entry_point`/`exit_point` and `<<choice>>`/`<<fork>>`/`<<join>>`/`<<end>>`.",
       "Don't leave a composite `{` block unclosed — an unclosed brace is a hard parse error.",
+      "Don't use `direction LR` for a requested downward sequence or as a workaround for long labels; it can trigger `STATE_EXTREME_ASPECT_RATIO`.",
     ],
     repair: [
       "'Expected' header -> the first non-comment line must be `stateDiagram-v2`, `stateDiagram`, or `state`.",
       "'Unparseable line' -> check for an unsupported pseudo-state keyword, a missing `-->` arrow, or a line that is neither a transition, declaration, nor directive.",
       "'Unclosed composite block' -> every `state ID {` or `composite ID {` must be closed with a matching `}`.",
+      "'STATE_EXTREME_ASPECT_RATIO' -> switch an explicitly horizontal long chain to `direction TB` or `direction auto`.",
     ],
   },
   pid: {
@@ -802,7 +816,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: "breadboard",
     mode: "parts section + wires section; breadboard-native hole/rail coordinates",
     keywords:
-      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header potentiometer · mcu uno|nano|esp32|esp32-c3|esp32-s3|pico · sensor hcsr04|dht11|dht22|vl53l0x · display oled-ssd1306|lcd-1602-i2c|tm1637 · module rotary-ky040|l298n · actuator servo-sg90 · pin aliases: ESP GPIO22 accepts D22/IO22/22, VIN accepts 5V/VBUS, Arduino A4/A5 accept SDA/SCL · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
+      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header potentiometer · mcu uno|nano|esp32|esp32-c3|esp32-s3|pico · sensor hcsr04|dht11|dht22|vl53l0x · display oled-ssd1306|lcd-1602-i2c|tm1637 · module rotary-ky040|l298n|relay|ds3231 · relay pins: VCC GND IN COM NO NC · DS3231 pins: VCC GND SDA SCL SQW 32K · actuator servo-sg90 · pin aliases: ESP GPIO22 accepts D22/IO22/22, VIN accepts 5V/VBUS, Arduino A4/A5 accept SDA/SCL · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
     forms: [
       "breadboard",
       "board: half",
@@ -820,16 +834,19 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Declare every part in the `parts` section before referencing it in `wires`; the part `id` is what you use as `partId:pin` in wire endpoints.",
       "Use breadboard-native coordinates: `@5e` for hole column 5 row e, `@5e..9e` for a span, `@+t8`/`@-t8` for top positive/negative rail.",
       "Wire color carries convention — `red` for +V, `black`/`blue` for GND, signal colors (`yellow`, `orange`, `green`) for data; all wire lines are `ep --color-- ep`.",
+      "Use the exact requested part: `module relay` for a relay and `module ds3231` for an RTC. If a requested part is not in the catalog, report it as unsupported instead of substituting a visually similar module.",
     ],
     avoid: [
       "Don't use rail coordinates (`@+t8`) on a `board: mini` — mini boards have no power rails and the parser throws `Mini boards have no power rails`.",
       "Don't omit the `@` placement from a part — `missing placement` is thrown when the `@` token is absent.",
       "Don't reference a part id in wires that was not declared in the parts section — `Wire references unknown part` fails validation.",
+      "Don't substitute `module l298n` for a relay or a generic `dip` for an RTC — those parts have different electrical roles and pin maps.",
     ],
     repair: [
       "'Unknown board' -> set `board:` to `mini`, `half`, or `full`.",
-      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header` `potentiometer`) or a compound (`mcu esp32`, `sensor hcsr04`, `display tm1637`, `module l298n`).",
+      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header` `potentiometer`) or a compound (`mcu esp32`, `sensor hcsr04`, `display tm1637`, `module l298n`, `module relay`, `module ds3231`).",
       "'Wire references unknown part' -> add `X: KIND @placement` to the `parts` section before `wires`.",
+      "'has no pin named' -> use the part catalog's canonical pins; for `cap-elec` use `+`/`-`, for relay use `VCC GND IN COM NO NC`.",
     ],
   },
   bpmn: {
@@ -1132,10 +1149,15 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'network "Title"',
     mode: "device declarations + links (annotations are optional)",
     keywords:
-      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site rack subnet vlan zone dmz { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
+      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
     forms: [
-      'router r1 "Edge Router"',
-      'l3switch core1 "Core" tier: core',
+      'network "Branch office"',
+      'site hq "HQ Building" {',
+      '  rack mdf "MDF Rack" {',
+      '    router r1 "Edge Router"',
+      '    l3switch core1 "Core" tier: core',
+      "  }",
+      "}",
       'switch acc1 "Access" tier: access',
       'pc pc1 "Workstation"',
       "r1 -- core1",
@@ -1145,15 +1167,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Start from the skeleton: `kind id \"label\"` device lines plus `a -- b` links. That alone renders a complete, valid diagram.",
       "Declare every device before any link references it.",
+      "Every boundary needs an unquoted id before its optional label: `site hq \"HQ\" {`, `subnet users \"10.0.10.0/24\" {`.",
       "Keep the cheap structural hints `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf) and `tier:` (edge/core/distribution/access) — they drive a readable hierarchy.",
       "Common kinds: router, switch, l3switch, firewall, ap, server, pc, laptop, camera, nvr, poeswitch, internet, cloud.",
     ],
     avoid: [
       "Avoid linking to an undeclared device id.",
+      "Don't omit a boundary id — `site \"HQ\" {` is invalid because the quoted text is a label, not an id.",
       "Add verbose per-link annotations (`vlan:`, `port:`, speeds, `trunk`/`access`) and `subnet \"cidr\" { ... }` boundaries ONLY when the request needs them — they don't affect layout and are where generation most often breaks.",
     ],
     repair: [
       "'undeclared device' -> a link references an id with no `kind id` declaration; declare it first.",
+      "'group needs an id' -> write `site hq \"HQ\" {` (kind, id, optional quoted label, then `{`).",
       "If the layout looks flat/messy, add `layout: tiered` + `tier:` on infrastructure; if unsure about per-link annotations, drop them — the skeleton always renders.",
     ],
   },
@@ -1659,7 +1684,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'floorplan "Title" [unit m|ft] [stack horizontal|vertical]',
     mode: "explicit dimensions + relative room placement; optional `floor N` sections share one drawing scale",
     keywords:
-      'floor N "Label" · stack horizontal|vertical · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> [instanceId] in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
+      'floor N "Label" · stack horizontal|vertical · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel|label-role normal|primary|secondary|hidden] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> [instanceId] in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · fixture <type> in room on north|south|east|west at N% [size WxH] · zone <id> "Label" in room at x,y size WxH [keep-clear] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] (centers|within) x1,y1 x2,y2 [itemsize WxH] [gap n] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
       FLOORPLAN_TYPE_KEYWORDS,
     forms: [
       'floorplan "Two-Storey Villa" unit m stack horizontal',
@@ -1679,6 +1704,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use `door between A B` for interior doors (the engine finds the shared wall); use `door <room> <side>` only for exterior walls.",
       "Furniture `at x,y` is relative to its room's interior top-left corner, in the plan unit.",
       "Use `grid`/`row`/`arc` for repeated items (desks, banquet tables, ceremony chairs) instead of many `furniture` lines; `count` truncates row-major.",
+      "Use `within p1 p2` when the rectangle is a hard physical boundary; the engine subtracts item footprints before choosing centers and proves rows/cols/gap fit. Use `centers p1 p2` only when the two coordinates intentionally name first/last item centers.",
+      "Use `zone id \"Label\" in room at x,y size WxH keep-clear` for circulation, activity, and access regions that must remain unobstructed. A decorative rug is not a clearance contract.",
+      "Use `fixture <type> in room on <side> at N%` for wall-mounted boards and panels so placement stays on the wall when the room changes.",
       "Round tables auto-seat their chairs (round-table-8 = 8 chairs); dining/banquet/conference tables auto-seat both long edges; leave chair clearance ≥ 0.5 m around tables.",
       'For a seating chart / plan de table / 席次表 — who sits where, not just where the tables go — add `seats "Alice" "Bob" …` to each table: the names are written onto the chairs in seating order (round tables clockwise from top, head/long tables along the seated edge). Fewer names than chairs is fine (extras stay empty); CJK names quote like any label.',
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
@@ -1686,18 +1714,20 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",
       "Restaurant kitchens use the real commercial symbols `prep-table`, `range`, `grill`, `fryer`, `walk-in`, and `commercial-sink`; don't substitute a row of household `stove` symbols with text labels. The `oven` → `stove` alias is only for household kitchens.",
       "For electrical fittings plans, stay in `floorplan` and add overlay furniture: `duplex-outlet`, `switch`, `ceiling-light`, `data-outlet`, `electrical-panel`, `distribution-board`. Use `sld` for the panel internals, not floorplan.",
+      "Floorplan is rectilinear and placement-focused. If the request requires curved room boundaries, plumbing/HVAC routes, or electrical circuit connectivity, report that capability as unsupported instead of approximating it with rectangles or furniture points.",
     ],
     avoid: [
       "Don't overlap room rectangles — adjacency means edges touch exactly (right-of/below guarantee this).",
       "Don't place a `door between` rooms that share no edge; the engine rejects it with the measured gap.",
       "Don't position furniture in absolute plan coordinates — coordinates are room-relative.",
       "Don't reference a room declared on another floor; duplicate local room ids are allowed, but room placement, openings, and arrays must resolve within their own floor.",
+      "Don't repeat the floorplan header to start another level; one document has one header and every additional level starts with `floor N`.",
     ],
     repair: [
       "'rooms … overlap by …' -> move the second room with right-of/below placement or shrink its size.",
       "'rooms share no wall' -> make the rooms adjacent (sizes summing to a shared edge) or hang the door on a wall side instead.",
       "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
-      "'overlaps … by … m' (warning) -> spread the grid `area` corners or reduce rows/cols; remember chair rings extend ~0.45 m beyond a table edge.",
+      "'array overlaps internally …' -> enlarge the `within` bounds, reduce rows/cols, shrink itemsize, or add a truthful gap; one array diagnostic replaces pairwise collision spam.",
       "'references room … on floor …' -> move the statement into that room's `floor` section or reference a room declared on the current floor.",
     ],
   },

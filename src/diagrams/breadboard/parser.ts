@@ -172,6 +172,12 @@ const MODULE_SUBTYPES: Record<string, BreadboardPartKind> = {
   l298n: "module-l298n",
   "l298": "module-l298n",
   motor: "module-l298n",
+  relay: "module-relay-1ch",
+  "relay-1ch": "module-relay-1ch",
+  "1ch-relay": "module-relay-1ch",
+  ds3231: "module-rtc-ds3231",
+  rtc: "module-rtc-ds3231",
+  "rtc-ds3231": "module-rtc-ds3231",
 };
 
 const ACTUATOR_SUBTYPES: Record<string, BreadboardPartKind> = {

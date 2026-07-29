@@ -521,6 +521,90 @@ function moduleSpec(
   };
 }
 
+function relayModuleSpec(): PartSpec {
+  const base = moduleSpec(
+    "module-relay-1ch",
+    126,
+    76,
+    "#1d4ed8",
+    ["VCC", "GND", "IN", "COM", "NO", "NC"],
+    "1-CH RELAY"
+  );
+  return {
+    ...base,
+    body: (part, w, h) =>
+      base.body(part, w, h) +
+      rectShape(12, 27, 54, 29, {
+        fill: "#2563eb",
+        stroke: "#dbeafe",
+        "stroke-width": 1,
+        rx: 3,
+      }) +
+      textShape(39, 45, "SRD RELAY", {
+        fill: "#eff6ff",
+        "font-size": 8,
+        "font-weight": 700,
+        "text-anchor": "middle",
+      }) +
+      rectShape(78, 29, 34, 23, {
+        fill: "#166534",
+        stroke: "#dcfce7",
+        "stroke-width": 1,
+        rx: 2,
+      }) +
+      lineShape(85, 43, 94, 35, {
+        stroke: "#dcfce7",
+        "stroke-width": 1.4,
+      }) +
+      lineShape(94, 35, 106, 35, {
+        stroke: "#dcfce7",
+        "stroke-width": 1.4,
+      }) +
+      lineShape(94, 43, 106, 48, {
+        stroke: "#dcfce7",
+        "stroke-width": 1.4,
+      }),
+  };
+}
+
+function rtcModuleSpec(): PartSpec {
+  const base = moduleSpec(
+    "module-rtc-ds3231",
+    112,
+    68,
+    "#075985",
+    ["VCC", "GND", "SDA", "SCL", "SQW", "32K"],
+    "RTC · DS3231"
+  );
+  return {
+    ...base,
+    body: (part, w, h) =>
+      base.body(part, w, h) +
+      rectShape(13, 27, 34, 23, {
+        fill: "#0f172a",
+        stroke: "#cbd5e1",
+        "stroke-width": 1,
+        rx: 2,
+      }) +
+      textShape(30, 41, "DS3231", {
+        fill: "#f8fafc",
+        "font-size": 7.5,
+        "font-weight": 700,
+        "text-anchor": "middle",
+      }) +
+      circShape(78, 39, 15, {
+        fill: "#cbd5e1",
+        stroke: "#475569",
+        "stroke-width": 1.2,
+      }) +
+      circShape(78, 39, 10, {
+        fill: "#e2e8f0",
+        stroke: "#94a3b8",
+        "stroke-width": 0.8,
+      }),
+  };
+}
+
 // ─── Catalog map ─────────────────────────────────────────────
 
 export const PART_CATALOG: Record<BreadboardPartKind, PartSpec> = {
@@ -546,6 +630,8 @@ export const PART_CATALOG: Record<BreadboardPartKind, PartSpec> = {
   "display-tm1637": moduleSpec("display-tm1637", 84, 52, "#7c2d12", ["CLK", "DIO", "VCC", "GND"], "TM1637"),
   "module-rotary-ky040": moduleSpec("module-rotary-ky040", 80, 60, "#7c2d12", ["CLK", "DT", "SW", "VCC", "GND"], "KY-040"),
   "module-l298n": moduleSpec("module-l298n", 150, 72, "#991b1b", ["ENA", "IN1", "IN2", "IN3", "IN4", "ENB", "5V", "GND", "12V"], "L298N"),
+  "module-relay-1ch": relayModuleSpec(),
+  "module-rtc-ds3231": rtcModuleSpec(),
   "actuator-servo-sg90": moduleSpec("actuator-servo-sg90", 60, 60, "#475569", ["GND", "VCC", "SIG"], "Servo SG90"),
 };
 

@@ -26,14 +26,21 @@ import {
  */
 
 export class MindmapParseError extends Error {
+  public code?: string;
+  public hint?: string;
+
   constructor(
     message: string,
     public line?: number,
     public column?: number,
-    public source?: string
+    public source?: string,
+    code?: string,
+    hint?: string
   ) {
     super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "MindmapParseError";
+    this.code = code;
+    this.hint = hint;
   }
 }
 
@@ -87,17 +94,30 @@ export function parseMindmap(text: string): MindmapAST {
     if (text.charCodeAt(i) === 10) lineStarts.push(i + 1);
   }
   const allLines = text.split(/\r?\n/);
-  let lineOffset = 0;
-
-  // Skip optional leading "mindmap" marker.
-  if (allLines[0]?.trim().toLowerCase() === "mindmap") {
-    allLines.shift();
-    lineOffset = 1;
+  // The shared wrapper pass blanks Markdown fences in place so source
+  // positions remain stable. Locate the optional marker after those blank
+  // lines instead of assuming it is physical line 1.
+  const markerIndexes = allLines
+    .map((line, index) => ({ index, value: line.trim().toLowerCase() }))
+    .filter((entry) => entry.value === "mindmap")
+    .map((entry) => entry.index);
+  if (markerIndexes.length > 1) {
+    const duplicate = markerIndexes[1]!;
+    throw new MindmapParseError(
+      "duplicate `mindmap` engine marker",
+      duplicate + 1,
+      undefined,
+      allLines[duplicate],
+      "DOCUMENT_DUPLICATE_ENGINE_MARKER",
+      "Keep one optional `mindmap` marker before the single `# Title` root."
+    );
   }
+  const markerIndex = markerIndexes[0];
   const lines = allLines;
 
   const directives: Directives = { style: "map", mode: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
   let root: MindmapNode | null = null;
+  let rootLine: number | undefined;
   let rootInferred: "line" | "placeholder" | undefined;
   let idCounter = 0;
   const nextId = () => `n${idCounter++}`;
@@ -143,8 +163,9 @@ export function parseMindmap(text: string): MindmapAST {
   };
 
   for (let i = 0; i < lines.length; i++) {
+    if (i === markerIndex) continue;
     const raw = lines[i] ?? "";
-    const lineNo = i + 1 + lineOffset;
+    const lineNo = i + 1;
     const line = raw.replace(/\s+$/, "");
     const trimmed = line.trim();
     if (!trimmed) continue;
@@ -162,11 +183,21 @@ export function parseMindmap(text: string): MindmapAST {
         nextId(),
         label,
         depth,
-        labelRange(i + lineOffset, line, heading[2], label)
+        labelRange(i, line, heading[2], label)
       );
       if (depth === 0) {
-        if (root) throw new MindmapParseError("multiple `#` center nodes not allowed", lineNo, undefined, line);
+        if (root) {
+          throw new MindmapParseError(
+            `multiple \`#\` center nodes not allowed (first root at line ${rootLine ?? "unknown"})`,
+            lineNo,
+            undefined,
+            line,
+            "MINDMAP_MULTIPLE_ROOTS",
+            "Keep exactly one `# Title` center node; use `##` and deeper headings for branches."
+          );
+        }
         root = node;
+        rootLine = lineNo;
         stack.length = 0;
         stack.push({ node, depth: 0 });
       } else {
@@ -185,7 +216,7 @@ export function parseMindmap(text: string): MindmapAST {
         nextId(),
         label,
         depth,
-        labelRange(i + lineOffset, line, bullet[2], label)
+        labelRange(i, line, bullet[2], label)
       );
       attach(node, depth, lineNo, line);
       continue;
@@ -196,7 +227,7 @@ export function parseMindmap(text: string): MindmapAST {
     // an LLM writing the title as a bare line (`My Topic`) instead of `# Title`
     // — adopt it as the center rather than discarding it and orphaning the rest.
     if (!root && stack.length === 0) {
-      const lineStart = lineStarts[i + lineOffset];
+      const lineStart = lineStarts[i];
       const labelAt = line.indexOf(trimmed);
       root = makeNode(
         nextId(),

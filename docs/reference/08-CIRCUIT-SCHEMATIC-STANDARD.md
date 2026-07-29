@@ -199,6 +199,19 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 - **Output**: `(50, 20)` — right vertex
 - **Power (+V, −V)**: 三角形 top/bottom midpoints（可选显示）
 
+### 1.6 Automotive control primitives
+
+Netlist mode includes two automotive-specific three-terminal symbols:
+
+| Type | Pin order | Meaning |
+|------|-----------|---------|
+| `automotive_flasher_3pin` | `b`, `l`, `p` | Battery/input, load output, optional pilot output |
+| `switch_spdt_center_off` | `common`, `left`, `right` | Left / OFF / right selector |
+
+`p` may intentionally remain open without producing `CIRCUIT_FLOATING_NET`; it is still drawn and labelled so a later dashboard pilot branch can attach. `b` and `l` remain required. Use these exact canonical types for generation; `flasher` and `selector_center_off` are input aliases only.
+
+The public `getCircuitGenerationCapabilities()` API returns the full supported component inventory derived from the live symbol registry. The positional parser checks that same registry, so an accepted explicit type always has a renderer symbol in the current build.
+
 ---
 
 ## 2. Element Connection Model
@@ -462,7 +475,7 @@ Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd |
 
 ### 4.5.3 Type aliases (for `type=`)
 
-`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
+`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `flasher`/`automotive_flasher`→automotive_flasher_3pin · `selector_center_off`/`switch_center_off`→switch_spdt_center_off · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
 
 ### 4.5.4 Trailing tokens
 
@@ -478,6 +491,7 @@ Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layo
 
 - single-phase source + protection/control + lamp/load + neutral return → a two-rail household loop (`L` path above, `N` return below);
 - two `switch_spdt` devices sharing two traveler nets → a two-way / stair-lighting layout with the two travelers drawn between switches;
+- source + series protection/control + three-way selector + repeated loads → a topology-derived parallel load bank. Each selector output owns a separate positive rail, repeated branches receive independent lanes, and all return pins share one continuous ground rail;
 - otherwise, the generic electronic schematic layout uses a top spine row, shunt band, and ground rail.
 
 For exact publication drawings, positional DSL is still available, but generated ordinary schematics should prefer netlist mode.
@@ -487,7 +501,8 @@ For exact publication drawings, positional DSL is still available, but generated
 - **`W1`/`W2` for wires** — supported (see prefix table). Real SPICE has no `W` device; this is a textbook/AI convention that schematex accepts as a quality-of-life feature.
 - **Household lamps** — write `L1 switched neutral type=lamp label="Lamp"`; bare `L1` is an inductor by SPICE convention.
 - **Stair / two-way switching** — use `switch_spdt` traveler nets. Do not model a two-way or three-way lighting circuit as multiple `switch_spst` components in series; that changes the circuit.
-- **Pin references like `U_UNO.TX`** — the pin name must exist in the symbol's anchor map, OR the IC must declare `pins="TX,RX,..."`. Otherwise the connection silently fails.
+- **Automotive selector** — use `K1 in load pilot type=automotive_flasher_3pin` followed by `S1 load left right type=switch_spdt_center_off`; a generic two-pin switch cannot express OFF plus two outputs.
+- **Pin references like `U_UNO.TX`** — the pin name must exist in the symbol's anchor map, OR the IC must declare `pins="TX,RX,..."`.
 - **Mixing positional + netlist in one diagram** — not supported. Pick one mode per `circuit` block.
 
 ---

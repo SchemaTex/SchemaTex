@@ -25,3 +25,8 @@ export { parseNetlist } from "./netlist";
 export { renderCircuit } from "./renderer";
 export { layoutCircuit } from "./layout";
 export { layoutCircuitNetlist } from "./autolayout";
+export {
+  CIRCUIT_GENERATION_CAPABILITIES,
+  getCircuitGenerationCapabilities,
+  type CircuitGenerationCapabilities,
+} from "./capabilities";

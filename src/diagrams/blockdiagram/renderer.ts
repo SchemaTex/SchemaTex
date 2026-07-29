@@ -9,6 +9,8 @@ import {
   circle,
   path as pathEl,
   text,
+  multilineText,
+  rect,
   title as titleEl,
   desc,
 } from "../../core/svg";
@@ -29,6 +31,7 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
 .schematex-bd-sum-sign { font: bold 11px sans-serif; fill: ${t.signalStroke}; }
 .schematex-bd-signal { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; }
 .schematex-bd-signal-discrete { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: ${t.sumFill}; opacity: .94; stroke: none; }
 .schematex-bd-signal-label { font: italic 12px serif; fill: ${t.signalStroke}; }
 .schematex-bd-port-label { font: italic 13px serif; fill: ${t.blockText}; }
 .schematex-bd-title { font: 700 16px sans-serif; fill: ${t.blockText}; }
@@ -70,10 +73,10 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
               class: "schematex-bd-block",
               rx: 2,
             }),
-            text(
+            multilineText(
               {
                 x: n.width / 2,
-                y: n.height / 2 + 5,
+                y: n.height / 2 + 4,
                 "text-anchor": "middle",
                 class: "schematex-bd-tf",
               },
@@ -144,15 +147,28 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
       })
     );
     if (e.label) {
+      const labelWidth = e.labelWidth ?? Math.max(20, e.label.length * 6.4);
+      const labelHeight = e.labelHeight ?? 18;
       edgeSvgs.push(
-        text(
+        rect({
+          x: e.midX - labelWidth / 2,
+          y: e.midY - labelHeight / 2,
+          width: labelWidth,
+          height: labelHeight,
+          rx: 2,
+          class: "schematex-bd-signal-label-bg",
+        })
+      );
+      edgeSvgs.push(
+        multilineText(
           {
             x: e.midX,
-            y: e.midY,
+            y: e.midY + 3,
             "text-anchor": "middle",
             class: "schematex-bd-signal-label",
           },
-          e.label
+          e.label,
+          14
         )
       );
     }

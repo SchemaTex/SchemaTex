@@ -64,6 +64,7 @@ const ENGINE_BUG_NAMES = new Set([
 export function diagnosticFromError(err: unknown): SchematexDiagnostic {
   if (err instanceof Error) {
     const anyErr = err as Error & {
+      code?: string;
       line?: number;
       column?: number;
       source?: string;
@@ -80,7 +81,12 @@ export function diagnosticFromError(err: unknown): SchematexDiagnostic {
 
     return {
       severity: "error",
-      code: isEngineBug ? "ENGINE_BUG" : "DSL_INVALID",
+      code:
+        typeof anyErr.code === "string"
+          ? anyErr.code
+          : isEngineBug
+          ? "ENGINE_BUG"
+          : "DSL_INVALID",
       line: typeof anyErr.line === "number" ? anyErr.line : undefined,
       column: typeof anyErr.column === "number" ? anyErr.column : undefined,
       source,

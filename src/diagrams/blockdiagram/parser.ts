@@ -1,15 +1,21 @@
 import type {
   BlockAST,
-  BlockNode,
   BlockEdge,
-  SummingJunction,
+  BlockNode,
   BlockRole,
+  SummingJunction,
 } from "../../core/types";
 import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
-import { matchQuotedTitle } from "../../core/quotes";
+import {
+  decodeDslString,
+  readLogicalLines,
+  UnterminatedDslStringError,
+} from "../../core/logical-lines";
+import { extractQuotedString } from "../../core/quotes";
 
+const QUOTED_CONTENT = String.raw`((?:[^"\\]|\\.)*)`;
 const BLOCK_DECL_RE = new RegExp(
-  `^(${IDENTIFIER_SOURCE})\\s*=\\s*block\\s*\\(\\s*"([^"]*)"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*block\\s*\\(\\s*"${QUOTED_CONTENT}"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
   "u"
 );
 const SUM_DECL_RE = new RegExp(
@@ -17,20 +23,28 @@ const SUM_DECL_RE = new RegExp(
   "u"
 );
 const SIGNAL_DECL_RE = new RegExp(
-  `^(${IDENTIFIER_SOURCE})\\s*=\\s*signal\\s*\\(\\s*"([^"]*)"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*signal\\s*\\(\\s*"${QUOTED_CONTENT}"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
   "u"
 );
 const BRACKETED_IDENTIFIER_RE = new RegExp(`^\\[(${IDENTIFIER_SOURCE})\\]$`, "u");
+const BOUNDARY_PORT_IDS = new Set(["in", "out"]);
 
 export class BlockDiagramParseError extends Error {
+  public code?: string;
+  public hint?: string;
+
   constructor(
     message: string,
     public line?: number,
     public column?: number,
-    public source?: string
+    public source?: string,
+    code?: string,
+    hint?: string
   ) {
     super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "BlockDiagramParseError";
+    this.code = code;
+    this.hint = hint;
   }
 }
 
@@ -51,249 +65,487 @@ interface SignalDecl {
 }
 
 interface ParsedAttrs {
-  name?: string;
   role?: BlockRole;
   discrete?: boolean;
   label?: string;
   route?: "above" | "below";
 }
 
-function parseAttrs(s: string): ParsedAttrs {
-  // Inside [ ... ] — comma-separated  key:value  or bare flags like "discrete"
-  const result: ParsedAttrs = {};
-  // Split at commas not inside quotes
+type AttrContext = "block" | "signal" | "connection";
+
+function splitAttrs(source: string): string[] {
   const parts: string[] = [];
-  let cur = "";
+  let current = "";
   let inQuote = false;
-  for (const ch of s) {
+  let escaped = false;
+  for (const ch of source) {
+    if (escaped) {
+      current += ch;
+      escaped = false;
+      continue;
+    }
+    if (inQuote && ch === "\\") {
+      current += ch;
+      escaped = true;
+      continue;
+    }
     if (ch === '"') inQuote = !inQuote;
     if (ch === "," && !inQuote) {
-      parts.push(cur);
-      cur = "";
+      parts.push(current);
+      current = "";
     } else {
-      cur += ch;
+      current += ch;
     }
   }
-  if (cur.trim()) parts.push(cur);
+  if (current.trim()) parts.push(current);
+  return parts;
+}
 
-  for (const raw of parts) {
-    const p = raw.trim();
-    if (!p) continue;
-    if (p === "discrete") {
+function unquoteAttr(value: string): string {
+  if (value.startsWith('"') && value.endsWith('"')) {
+    return decodeDslString(value.slice(1, -1));
+  }
+  return value;
+}
+
+function parseAttrs(
+  source: string,
+  context: AttrContext,
+  line: number,
+  statement: string
+): ParsedAttrs {
+  const result: ParsedAttrs = {};
+  const parts = splitAttrs(source).map((part) => part.trim()).filter(Boolean);
+  for (const part of parts) {
+    if (part === "discrete") {
+      if (context === "block") {
+        throw parserError(
+          '`discrete` is not valid on a block declaration',
+          line,
+          statement,
+          "BLOCK_UNKNOWN_ATTRIBUTE",
+          "Block attributes are `role: ...` and `route: above|below`."
+        );
+      }
       result.discrete = true;
       continue;
     }
-    if (p.startsWith('"') && p.endsWith('"')) {
-      result.label = p.slice(1, -1);
+    if (part.startsWith('"') && part.endsWith('"')) {
+      if (context !== "connection" || parts.length !== 1) {
+        throw parserError(
+          "a bare quoted label is only valid as the sole connection attribute",
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE",
+          'Use `["label"]`, or combine attributes as `[label: "label", discrete]`.'
+        );
+      }
+      result.label = unquoteAttr(part);
       continue;
     }
-    const m = p.match(/^(\w+)\s*:\s*(.+)$/);
-    if (!m) continue;
-    const key = m[1].toLowerCase();
-    let val = m[2].trim();
-    if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-    if (key === "name") result.name = val;
-    else if (key === "role") {
-      if (ROLE_VALUES.has(val as BlockRole)) result.role = val as BlockRole;
-    } else if (key === "label") result.label = val;
-    else if (key === "route") {
-      if (val === "above" || val === "below") result.route = val;
+    const match = part.match(/^(\w+)\s*:\s*(.+)$/);
+    if (!match) {
+      throw parserError(
+        `invalid ${context} attribute "${part}"`,
+        line,
+        statement,
+        "BLOCK_INVALID_ATTRIBUTE"
+      );
     }
+    const key = match[1]!.toLowerCase();
+    const rawValue = match[2]!.trim();
+    const value = unquoteAttr(rawValue);
+
+    if (context === "block" && key === "role") {
+      if (!ROLE_VALUES.has(value as BlockRole)) {
+        throw parserError(
+          `unknown block role "${value}"`,
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          `Use one of: ${[...ROLE_VALUES].join(", ")}.`
+        );
+      }
+      result.role = value as BlockRole;
+      continue;
+    }
+    if (context === "block" && key === "route") {
+      if (value !== "above" && value !== "below") {
+        throw parserError(
+          `invalid route "${value}"`,
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          "Use `route: above` or `route: below`."
+        );
+      }
+      result.route = value;
+      continue;
+    }
+    if (context === "connection" && key === "label") {
+      if (!rawValue.startsWith('"') || !rawValue.endsWith('"')) {
+        throw parserError(
+          "connection labels must be double-quoted",
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          'Use `[label: "signal"]`.'
+        );
+      }
+      result.label = value;
+      continue;
+    }
+    throw parserError(
+      `unknown ${context} attribute "${key}"`,
+      line,
+      statement,
+      "BLOCK_UNKNOWN_ATTRIBUTE"
+    );
   }
   return result;
 }
 
+function parserError(
+  message: string,
+  line: number,
+  source: string,
+  code: string,
+  hint?: string
+): BlockDiagramParseError {
+  return new BlockDiagramParseError(
+    message,
+    line,
+    undefined,
+    source,
+    code,
+    hint
+  );
+}
+
+function parseBlockHeader(line: string, lineNo: number): string | undefined {
+  const match = /^blockdiagram\b/i.exec(line);
+  if (!match) return undefined;
+  const remainder = line.slice(match[0].length).trim();
+  if (!remainder) return undefined;
+  let quoted: ReturnType<typeof extractQuotedString>;
+  try {
+    quoted = extractQuotedString(remainder, 0);
+  } catch {
+    quoted = null;
+  }
+  if (!quoted || remainder.slice(quoted.end).trim()) {
+    throw parserError(
+      "invalid blockdiagram header",
+      lineNo,
+      line,
+      "BLOCK_INVALID_HEADER",
+      'Use `blockdiagram` or `blockdiagram "Title"` with no trailing content.'
+    );
+  }
+  return decodeDslString(quoted.value);
+}
+
 export function parseBlockDiagram(text: string): BlockAST {
-  const lines = text.split("\n").map((l) => l.replace(/\r$/, ""));
-  let title: string | undefined;
+  let statements: ReturnType<typeof readLogicalLines>;
+  try {
+    statements = readLogicalLines(text, {
+      fullLineCommentMarkers: ["#"],
+      inlineCommentMarkers: ["#"],
+    });
+  } catch (error) {
+    if (error instanceof UnterminatedDslStringError) {
+      throw parserError(
+        "unterminated quoted label",
+        error.line,
+        error.source ?? "",
+        "BLOCK_UNTERMINATED_STRING",
+        "Close the label with `\"`; use `\\n` or a physical newline only inside a closed quoted string."
+      );
+    }
+    throw error;
+  }
+
+  const header = statements[0];
+  if (!header) {
+    throw new BlockDiagramParseError(
+      "missing `blockdiagram` header",
+      undefined,
+      undefined,
+      undefined,
+      "BLOCK_MISSING_HEADER"
+    );
+  }
+  const headerLine = header.text.trim();
+  if (!/^blockdiagram\b/i.test(headerLine)) {
+    throw parserError(
+      "the first statement must be a blockdiagram header",
+      header.line,
+      headerLine,
+      "BLOCK_MISSING_HEADER",
+      'Start with `blockdiagram` or `blockdiagram "Title"`.'
+    );
+  }
+  const title = parseBlockHeader(headerLine, header.line);
   const blocks: BlockNode[] = [];
   const sums: SummingJunction[] = [];
   const connections: BlockEdge[] = [];
   const signals = new Map<string, SignalDecl>();
 
-  for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i] ?? "";
-    const lineNo = i + 1;
-    const line = rawLine.replace(/#.*$/, "").trim();
-    if (!line) continue;
+  const declared = (id: string): boolean =>
+    blocks.some((block) => block.id === id) ||
+    sums.some((sum) => sum.id === id) ||
+    signals.has(id);
 
-    // Header: blockdiagram "Title"
+  const assertFresh = (id: string, line: number, source: string): void => {
+    const existing = blocks.find((block) => block.id === id);
+    if (existing?.synthetic) return;
+    if (declared(id)) {
+      throw parserError(
+        `duplicate declaration for "${id}"`,
+        line,
+        source,
+        "BLOCK_DUPLICATE_ID"
+      );
+    }
+  };
+
+  const declareBlock = (node: BlockNode): void => {
+    const syntheticIndex = blocks.findIndex(
+      (block) => block.id === node.id && block.synthetic
+    );
+    if (syntheticIndex >= 0 && !node.synthetic) {
+      blocks[syntheticIndex] = node;
+    } else if (syntheticIndex < 0) {
+      blocks.push(node);
+    }
+  };
+
+  for (const statement of statements.slice(1)) {
+    const line = statement.text.trim();
+    const lineNo = statement.line;
+
     if (/^blockdiagram\b/i.test(line)) {
-      const t = matchQuotedTitle(line);
-      if (t !== undefined) title = t;
-      continue;
+      throw parserError(
+        "multiple blockdiagram headers are not allowed",
+        lineNo,
+        line,
+        "BLOCK_MULTIPLE_HEADERS"
+      );
     }
 
-    // block:  ID = block("label") [role: X, name: "Y"]
     const blockMatch = line.match(BLOCK_DECL_RE);
     if (blockMatch) {
-      const id = blockMatch[1];
-      const label = blockMatch[2];
-      const attrs = blockMatch[3] ? parseAttrs(blockMatch[3]) : {};
-      const node: BlockNode = { id, label, role: attrs.role ?? "generic" };
+      const id = blockMatch[1]!;
+      assertFresh(id, lineNo, line);
+      const attrs = blockMatch[3]
+        ? parseAttrs(blockMatch[3], "block", lineNo, line)
+        : {};
+      const node: BlockNode = {
+        id,
+        label: decodeDslString(blockMatch[2]!),
+        role: attrs.role ?? "generic",
+        sourceLine: lineNo,
+      };
       if (attrs.route) node.route = attrs.route;
-      blocks.push(node);
+      declareBlock(node);
       continue;
     }
 
-    // sum:  ID = sum(+a, -b, ...)
     const sumMatch = line.match(SUM_DECL_RE);
     if (sumMatch) {
-      const id = sumMatch[1];
-      const rawInputs = sumMatch[2]
+      const id = sumMatch[1]!;
+      assertFresh(id, lineNo, line);
+      const inputs = sumMatch[2]!
         .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean);
-      const inputs: string[] = [];
-      for (const tok of rawInputs) {
-        if (tok.startsWith("+") || tok.startsWith("-")) inputs.push(tok);
-        else inputs.push("+" + tok);
-      }
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .map((entry) =>
+          entry.startsWith("+") || entry.startsWith("-") ? entry : `+${entry}`
+        );
       sums.push({ id, inputs });
       continue;
     }
 
-    // signal:  ID = signal("label") [discrete]
-    const sigMatch = line.match(SIGNAL_DECL_RE);
-    if (sigMatch) {
-      const id = sigMatch[1];
-      const label = sigMatch[2];
-      const attrs = sigMatch[3] ? parseAttrs(sigMatch[3]) : {};
-      signals.set(id, { id, label, discrete: !!attrs.discrete });
+    const signalMatch = line.match(SIGNAL_DECL_RE);
+    if (signalMatch) {
+      const id = signalMatch[1]!;
+      assertFresh(id, lineNo, line);
+      const attrs = signalMatch[3]
+        ? parseAttrs(signalMatch[3], "signal", lineNo, line)
+        : {};
+      signals.set(id, {
+        id,
+        label: decodeDslString(signalMatch[2]!),
+        discrete: !!attrs.discrete,
+      });
       continue;
     }
 
-    // Connection chain: `A -> B -> C [label_or_attrs]`. Inline `[id] -> [id]` (D2/Mermaid) auto-declares.
-    const arrowIdx = line.indexOf("->");
-    if (arrowIdx >= 0) {
+    if (line.includes("->")) {
       let body = line;
       let tailAttrs: ParsedAttrs = {};
-      // Trailing `[...]` must be preceded by whitespace, else it's an inline endpoint.
+
       if (body.endsWith("]")) {
         let bracketStart = -1;
         let depth = 0;
         let inQuote = false;
-        for (let i = body.length - 1; i >= 1; i--) {
-          const ch = body[i];
+        let escaped = false;
+        for (let index = body.length - 1; index >= 1; index--) {
+          const ch = body[index]!;
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (inQuote && ch === "\\") {
+            escaped = true;
+            continue;
+          }
           if (ch === '"') inQuote = !inQuote;
           else if (!inQuote && ch === "]") depth++;
           else if (!inQuote && ch === "[") {
             depth--;
             if (depth === 0) {
-              if (/\s/.test(body[i - 1] ?? "")) bracketStart = i;
+              if (/\s/.test(body[index - 1] ?? "")) bracketStart = index;
               break;
             }
           }
         }
         if (bracketStart >= 0) {
           const inner = body.slice(bracketStart + 1, -1).trim();
-          const isBareId = isIdentifier(inner);
-          if (!isBareId) {
+          if (!isIdentifier(inner)) {
             body = body.slice(0, bracketStart).trim();
-            if (inner.startsWith('"') && inner.endsWith('"') && !inner.slice(1, -1).includes(',')) {
-              tailAttrs.label = inner.slice(1, -1);
-            } else {
-              tailAttrs = parseAttrs(inner);
-            }
+            tailAttrs = parseAttrs(inner, "connection", lineNo, line);
           }
         }
       }
-      const parts = body.split("->").map((x) => x.trim()).filter(Boolean);
-      if (parts.length < 2) {
-        throw new BlockDiagramParseError(`Invalid connection: ${line}`, lineNo, undefined, line);
+
+      const rawEndpoints = body
+        .split("->")
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+      if (rawEndpoints.length < 2) {
+        throw parserError(
+          `invalid connection: ${line}`,
+          lineNo,
+          line,
+          "BLOCK_INVALID_CONNECTION"
+        );
       }
-      const endpoints = parts.map((p) => {
-        const m = BRACKETED_IDENTIFIER_RE.exec(p);
-        return m ? m[1] : p;
-      });
-      for (const ep of endpoints) {
-        if (!isIdentifier(ep)) continue;
-        const exists =
-          blocks.some((b) => b.id === ep) ||
-          sums.some((s) => s.id === ep) ||
-          signals.has(ep);
-        if (!exists) {
-          blocks.push({ id: ep, label: ep, role: "generic" });
+
+      const endpoints = rawEndpoints.map((raw) => {
+        const bracketed = BRACKETED_IDENTIFIER_RE.exec(raw);
+        const id = bracketed?.[1] ?? raw;
+        if (!isIdentifier(id)) {
+          throw parserError(
+            `invalid endpoint "${raw}"`,
+            lineNo,
+            line,
+            "BLOCK_INVALID_ENDPOINT"
+          );
         }
+        return { id, explicitShorthand: bracketed !== null };
+      });
+
+      for (const endpoint of endpoints) {
+        if (declared(endpoint.id) || BOUNDARY_PORT_IDS.has(endpoint.id)) continue;
+        if (!endpoint.explicitShorthand) {
+          throw parserError(
+            `undeclared endpoint "${endpoint.id}"`,
+            lineNo,
+            line,
+            "BLOCK_UNDECLARED_ENDPOINT",
+            `Declare \`${endpoint.id} = block("…")\`, or use \`[${endpoint.id}]\` to request an explicit shorthand block.`
+          );
+        }
+        declareBlock({
+          id: endpoint.id,
+          label: endpoint.id,
+          role: "generic",
+          synthetic: true,
+          sourceLine: lineNo,
+        });
       }
-      for (let i = 0; i < endpoints.length - 1; i++) {
-        const from = endpoints[i];
-        const to = endpoints[i + 1];
-        const isLast = i === endpoints.length - 2;
-        const edge: BlockEdge = { from, to };
-        if (isLast && tailAttrs.label) edge.label = tailAttrs.label;
-        if (isLast && tailAttrs.discrete) edge.discrete = true;
+
+      for (let index = 0; index < endpoints.length - 1; index++) {
+        const edge: BlockEdge = {
+          from: endpoints[index]!.id,
+          to: endpoints[index + 1]!.id,
+        };
+        if (index === endpoints.length - 2) {
+          if (tailAttrs.label) edge.label = tailAttrs.label;
+          if (tailAttrs.discrete) edge.discrete = true;
+        }
         connections.push(edge);
       }
       continue;
     }
+
+    throw parserError(
+      `unrecognized statement: ${line.replace(/\s+/g, " ")}`,
+      lineNo,
+      line,
+      "BLOCK_UNKNOWN_STATEMENT",
+      "Use a block/sum/signal declaration or a directed `A -> B` connection."
+    );
   }
 
-  // Post-process: if edge endpoints reference a signal id, inline the signal.
-  // A signal is a pass-through label. Merge edges X->sig and sig->Y into X->Y,
-  // using signal's label (unless edge already has one) and discrete flag.
   if (signals.size > 0) {
     const merged: BlockEdge[] = [];
     const bySource = new Map<string, BlockEdge[]>();
     const byTarget = new Map<string, BlockEdge[]>();
-    for (const e of connections) {
-      if (!bySource.has(e.from)) bySource.set(e.from, []);
-      bySource.get(e.from)!.push(e);
-      if (!byTarget.has(e.to)) byTarget.set(e.to, []);
-      byTarget.get(e.to)!.push(e);
+    for (const edge of connections) {
+      const outgoing = bySource.get(edge.from) ?? [];
+      outgoing.push(edge);
+      bySource.set(edge.from, outgoing);
+      const incoming = byTarget.get(edge.to) ?? [];
+      incoming.push(edge);
+      byTarget.set(edge.to, incoming);
     }
 
     const consumed = new Set<BlockEdge>();
-    for (const sigId of signals.keys()) {
-      const sig = signals.get(sigId)!;
-      const incoming = byTarget.get(sigId) ?? [];
-      const outgoing = bySource.get(sigId) ?? [];
-
+    for (const signal of signals.values()) {
+      const incoming = byTarget.get(signal.id) ?? [];
+      const outgoing = bySource.get(signal.id) ?? [];
       if (incoming.length > 0 && outgoing.length > 0) {
-        // Full pass-through: merge X→sig + sig→Y into X→Y
-        for (const ine of incoming) {
-          for (const oute of outgoing) {
-            consumed.add(ine);
-            consumed.add(oute);
+        for (const source of incoming) {
+          for (const target of outgoing) {
+            consumed.add(source);
+            consumed.add(target);
             merged.push({
-              from: ine.from,
-              to: oute.to,
-              label: ine.label ?? oute.label ?? sig.label,
-              discrete: sig.discrete || ine.discrete || oute.discrete,
+              from: source.from,
+              to: target.to,
+              label: source.label ?? target.label ?? signal.label,
+              discrete:
+                signal.discrete || !!source.discrete || !!target.discrete,
             });
           }
         }
       } else if (incoming.length > 0) {
-        // Dangling output signal (no consumer): keep the incoming edge but
-        // apply the signal's label so the arrowhead is annotated.
-        for (const ine of incoming) {
-          consumed.add(ine);
+        for (const source of incoming) {
+          consumed.add(source);
           merged.push({
-            from: ine.from,
-            to: sigId,
-            label: ine.label ?? sig.label,
-            discrete: sig.discrete || ine.discrete,
+            from: source.from,
+            to: signal.id,
+            label: source.label ?? signal.label,
+            discrete: signal.discrete || !!source.discrete,
           });
         }
       } else if (outgoing.length > 0) {
-        // Dangling input signal (no producer): keep the outgoing edge with label.
-        for (const oute of outgoing) {
-          consumed.add(oute);
+        for (const target of outgoing) {
+          consumed.add(target);
           merged.push({
-            from: sigId,
-            to: oute.to,
-            label: oute.label ?? sig.label,
-            discrete: sig.discrete || oute.discrete,
+            from: signal.id,
+            to: target.to,
+            label: target.label ?? signal.label,
+            discrete: signal.discrete || !!target.discrete,
           });
         }
       }
     }
-    // Keep edges not consumed by any signal merge
-    for (const e of connections) {
-      if (!consumed.has(e)) merged.push(e);
+    for (const edge of connections) {
+      if (!consumed.has(edge)) merged.push(edge);
     }
-    connections.length = 0;
-    connections.push(...merged);
+    connections.splice(0, connections.length, ...merged);
   }
 
   return {

@@ -85,7 +85,11 @@ function buildCss(
 .sx-fp-window { fill: none; stroke: ${t.windowStroke}; stroke-width: 1.3; }
 .sx-fp-jamb { fill: none; stroke: ${t.furnStroke}; stroke-width: 1.2; }
 .sx-fp-room-name { font: 600 13.5px sans-serif; fill: ${t.roomName}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-room-name-primary { font-size: 18px; font-weight: 750; letter-spacing: -0.01em; }
+.sx-fp-room-name-secondary { font-size: 11px; font-weight: 500; }
 .sx-fp-room-area { font: 11px sans-serif; fill: ${t.roomArea}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-zone { fill: none; stroke: ${t.rugStroke}; stroke-width: 1.4; stroke-dasharray: 7 4; }
+.sx-fp-zone-label { font: 700 10px sans-serif; fill: ${t.furnLabel}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 3px; stroke-linejoin: round; letter-spacing: .03em; }
 .sx-fp-stair-break { fill: none; stroke: ${t.furnStroke}; stroke-width: 1.6; }
 .sx-fp-compass { fill: none; stroke: ${t.dimStroke}; stroke-width: 1.2; }
 .sx-fp-compass-n { font: 700 11px sans-serif; fill: ${t.dimText}; }
@@ -142,8 +146,13 @@ function buildCss(
 
 function renderErrorPanel(lay: FloorplanLayoutResult, t: Theme): string {
   const lines = lay.errors;
-  const w = Math.max(560, ...lines.map((l) => l.length * 6.6 + 48));
-  const h = 56 + lines.length * 19;
+  const visible = lines.slice(0, 8);
+  const hidden = Math.max(0, lines.length - visible.length);
+  const panelLines = hidden > 0
+    ? [...visible, `… ${hidden} more error${hidden === 1 ? "" : "s"} available through structured diagnostics`]
+    : visible;
+  const w = Math.min(980, Math.max(560, ...panelLines.map((l) => l.length * 6.6 + 48)));
+  const h = 56 + panelLines.length * 19;
   return svgRoot(
     { viewBox: `0 0 ${r2(w)} ${h}`, width: r2(w), height: h, class: "sx-fp", role: "img" },
     [
@@ -152,7 +161,7 @@ function renderErrorPanel(lay: FloorplanLayoutResult, t: Theme): string {
       el("style", {}, buildCss(t)),
       rect({ class: "sx-fp-error-box", x: 1, y: 1, width: r2(w - 2), height: h - 2, rx: 6 }),
       textEl({ class: "sx-fp-error-title", x: 16, y: 26 }, `floorplan: ${lines.length} validation error${lines.length === 1 ? "" : "s"}`),
-      ...lines.map((e, i) => textEl({ class: "sx-fp-error-line", x: 16, y: 50 + i * 19 }, `⚠ ${e}`)),
+      ...panelLines.map((e, i) => textEl({ class: "sx-fp-error-line", x: 16, y: 50 + i * 19 }, `⚠ ${e}`)),
     ]
   );
 }
@@ -665,16 +674,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const t: Theme =
     evacuationTheme ?? resolveFloorplanTheme(config?.theme ?? "default");
   if (lay.errors.length > 0) return renderErrorPanel(lay, t);
-  // Deliberate exception: monochrome is a compliance error but does not block
-  // rendering. Keeping the colour SVG visible lets the author diagnose the
-  // remaining plan instead of replacing it with the ordinary error panel.
-  const renderErrors =
-    isEvacuation && config?.theme === "monochrome"
-      ? [
-          "monochrome theme is not permitted for evacuation plans — ISO 3864 safety colours are semantic (green = escape, red = fire equipment); rendering in default colours instead",
-        ]
-      : [];
-
   const scale = C.scale;
   const px = (m: number): number => r2(m * scale);
   const band = C.dimBand + C.pad;
@@ -694,8 +693,10 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const ctx: Ctx = { X, Y, px, t, wallT: lay.wallT };
 
   const titleH = TITLE.bandH;
-  const diagnosticCount = lay.warnings.length + renderErrors.length;
-  const warnH = diagnosticCount ? diagnosticCount * 17 + 10 : 0;
+  // Diagnostics are returned out-of-band by the public result APIs. Keep the
+  // exported drawing itself clean: warnings belong in the editor/admin UI,
+  // never in the architectural sheet body.
+  const warnH = 0;
   let W = px(lay.bounds.maxX - lay.bounds.minX + band + tail);
   let H = px(lay.bounds.maxY - lay.bounds.minY + band + tail) + titleH + warnH;
   // house rule (PR #40): center the title on the content, not the canvas —
@@ -715,6 +716,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }));
   const roomPlate = new Map<number, number>();
   const itemPlate = new Map<number, number>();
+  const zonePlate = new Map<number, number>();
   const openingPlate = new Map<number, number>();
   const dimPlate = new Map<number, number>();
   const seamPlate = new Map<number, number>();
@@ -723,6 +725,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     floorPlate.set(plate.level, plateIndex);
     plate.roomIdx.forEach((index) => roomPlate.set(index, plateIndex));
     plate.itemIdx.forEach((index) => itemPlate.set(index, plateIndex));
+    plate.zoneIdx.forEach((index) => zonePlate.set(index, plateIndex));
     plate.openingIdx.forEach((index) => openingPlate.set(index, plateIndex));
     plate.dimIdx.forEach((index) => dimPlate.set(index, plateIndex));
     plate.seamIdx.forEach((index) => seamPlate.set(index, plateIndex));
@@ -743,9 +746,11 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const labels: string[] = [];
   const dims: string[] = [];
   const nativeHandles: string[] = [];
+  const roomSceneKey = (room: FloorplanLayoutResult["rooms"][number]): string =>
+    legacySingle ? `node:${room.id}` : `node:floor:${room.floor}:room:${room.id}`;
 
   for (const room of lay.rooms) {
-    const key = `node:${room.id}`;
+    const key = roomSceneKey(room);
     config?.__scene?.push({
       key,
       kind: "node",
@@ -773,7 +778,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         x: number,
         y: number,
       ): void => {
-        const handleKey = `handle:room:${room.id}:${axis}`;
+        const handleKey = legacySingle
+          ? `handle:room:${room.id}:${axis}`
+          : `handle:floor:${room.floor}:room:${room.id}:${axis}`;
         config.__scene!.push({
           key: handleKey,
           kind: "node",
@@ -813,8 +820,8 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       {
         class: "sx-fp-floor",
         "data-room": r.id,
-        "data-sx-key": config?.__scene ? `node:${r.id}` : undefined,
-        "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined,
+        "data-sx-key": config?.__scene ? roomSceneKey(r) : undefined,
+        "data-sx-owner": config?.__scene ? roomSceneKey(r) : undefined,
       },
       r.parts.map((p) =>
         rect({
@@ -834,11 +841,11 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       const cx = X(main.x + main.w / 2);
       const cy = Y(main.y + main.h / 2);
       const name = textEl({
-        class: "sx-fp-room-name",
+        class: `sx-fp-room-name sx-fp-room-name-${r.labelRole}`,
         x: cx,
         y: r2(cy - 3),
         "text-anchor": "middle",
-        "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined,
+        "data-sx-owner": config?.__scene ? roomSceneKey(r) : undefined,
         "data-sx-role": config?.__scene && r.labelSourceRange ? "label" : undefined,
       }, r.label);
       const area = textEl({
@@ -846,7 +853,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         x: cx,
         y: r2(cy + 13),
         "text-anchor": "middle",
-        "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined,
+        "data-sx-owner": config?.__scene ? roomSceneKey(r) : undefined,
       }, r.areaText);
       if (isEvacuation) {
         labels.push(name);
@@ -858,6 +865,37 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     }
   });
 
+  lay.zones.forEach((zone, zoneIndex) => {
+    const zoneShape = group(
+      {
+        class: "sx-fp-zone-group",
+        "data-zone": zone.id,
+        "data-keep-clear": zone.keepClear ? "true" : undefined,
+      },
+      [
+        rect({
+          class: "sx-fp-zone",
+          x: X(zone.x),
+          y: Y(zone.y),
+          width: px(zone.w),
+          height: px(zone.h),
+          rx: 4,
+        }),
+        textEl(
+          {
+            class: "sx-fp-zone-label",
+            x: X(zone.x + zone.w / 2),
+            y: Y(zone.y + zone.h / 2),
+            "text-anchor": "middle",
+          },
+          zone.label
+        ),
+      ]
+    );
+    floors.push(zoneShape);
+    layerFor(zonePlate, zoneIndex).floors.push(zoneShape);
+  });
+
   if (isEvacuation) {
     for (const route of lay.evacuation?.routes ?? []) {
       const shape = renderRoute(route, ctx);
@@ -866,7 +904,11 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     }
   }
 
-  const warnSet = new Set(lay.warnItems);
+  // Collision overlays are editor affordances. Plain SVG export keeps the
+  // drawing clean and returns the warnings through renderResult instead.
+  const warnSet = config?.__scene
+    ? new Set(lay.warnItems)
+    : new Set<number>();
   lay.items.forEach((it, idx) => {
     if (
       isEvacuation &&
@@ -881,7 +923,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     const cx = r2(X(it.x) + wpx / 2);
     const cy = r2(Y(it.y) + hpx / 2);
     const rot = Math.round(it.rotate * 10) / 10;
-    const itemKey = `item:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`;
+    const itemKey = legacySingle
+      ? `item:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`
+      : `item:floor:${it.floor}:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`;
     const canMove = it.positionSourceRange !== undefined && it.sourceX !== undefined && it.sourceY !== undefined;
     config?.__scene?.push({
       key: itemKey,
@@ -908,6 +952,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       {
         class: "sx-fp-item",
         "data-furniture": it.type,
+        "data-fixture": it.anchored ? it.type : undefined,
         "data-sx-key": config?.__scene ? itemKey : undefined,
         "data-sx-owner": config?.__scene ? itemKey : undefined,
         transform: `translate(${cx},${cy})${rot ? ` rotate(${rot})` : ""} translate(${r2(-wpx / 2)},${r2(-hpx / 2)})`,
@@ -917,7 +962,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     furniture.push(itemShape);
     layerFor(itemPlate, idx).furniture.push(itemShape);
     if (it.label && !def.consumesLabel) {
-      const labelKey = `label:furniture:${it.roomId}:${it.type}:${it.seq}`;
+      const labelKey = legacySingle
+        ? `label:furniture:${it.roomId}:${it.type}:${it.seq}`
+        : `label:floor:${it.floor}:furniture:${it.roomId}:${it.type}:${it.seq}`;
       config?.__scene?.push({
         key: labelKey,
         kind: "label",
@@ -950,7 +997,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x + p.w) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
     }
     const wallShape = config?.__scene
-      ? group({ "data-sx-owner": `node:${r.id}` }, roomWalls)
+      ? group({ "data-sx-owner": roomSceneKey(r) }, roomWalls)
       : roomWalls.join("");
     walls.push(wallShape);
     layerFor(roomPlate, roomIndex).walls.push(wallShape);
@@ -967,7 +1014,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       rawSeam = rect({ class: "sx-fp-gap", fill, x: X(s.lo), y: r2(Y(s.along) - tpx / 2 - 0.5), width: px(s.hi - s.lo), height: r2(tpx + 1) });
     }
     const seamShape = config?.__scene
-      ? group({ "data-sx-owner": `node:${lay.rooms[s.room]!.id}` }, [rawSeam])
+      ? group({ "data-sx-owner": roomSceneKey(lay.rooms[s.room]!) }, [rawSeam])
       : rawSeam;
     openings.push(seamShape);
     layerFor(seamPlate, seamIndex).openings.push(seamShape);
@@ -979,7 +1026,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     else if (o.kind === "door") shapes.push(doorSymbol(o, ctx));
     else shapes.push(jambLines(o, ctx));
     const openingShape = config?.__scene
-      ? group({ "data-sx-owner": `node:${lay.rooms[o.owner]!.id}` }, shapes)
+      ? group({ "data-sx-owner": roomSceneKey(lay.rooms[o.owner]!) }, shapes)
       : shapes.join("");
     openings.push(openingShape);
     layerFor(openingPlate, openingIndex).openings.push(openingShape);
@@ -1073,27 +1120,16 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }
 
   const nRooms = lay.rooms.length;
-  const evacuationDiagnostics = [
-    renderErrors.length
-      ? `${renderErrors.length} error${renderErrors.length === 1 ? "" : "s"}`
-      : "",
-    lay.warnings.length
-      ? `${lay.warnings.length} warning${lay.warnings.length === 1 ? "" : "s"}`
-      : "",
-  ].filter(Boolean).join(", ");
   const descText = isEvacuation && lay.evacuation
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${lay.evacuation.routes.length} escape route${lay.evacuation.routes.length === 1 ? "" : "s"}, ` +
       `${lay.evacuation.profile === "iso" ? "ISO 23601" : lay.evacuation.profile === "nfpa" ? "NFPA 170" : "UAE Civil Defence"} profile. ` +
-      lay.evacuation.scale.note +
-      (evacuationDiagnostics ? ` ${evacuationDiagnostics}.` : "")
+      lay.evacuation.scale.note
     : legacySingle
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${formatArea(lay.totalAreaM2, lay.unit)} total. ` +
-      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +
-      (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "")
+      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.`
     : `${lay.plates.length} floors, ${nRooms} rooms, ${formatArea(lay.totalAreaM2, lay.unit)} total (` +
       `${lay.plates.map((plate) => `${plate.label} ${plate.areaText}`).join(", ")}). ` +
-      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +
-      (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "");
+      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.`;
 
   const groupedLayers = (layers: RenderLayers): string[] =>
     isEvacuation
@@ -1162,35 +1198,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }
   H = legendBottom + warnH;
   const chartXOffset = Math.max(0, (W - naturalWidth) / 2);
-  const warnBlock: string[] = [];
-  if (diagnosticCount) {
-    const y0 = H - warnH + 4;
-    renderErrors.forEach((error, index) => {
-      warnBlock.push(
-        textEl(
-          {
-            class: "sx-fp-compliance-error",
-            x: 10,
-            y: r2(y0 + index * 17 + 10),
-          },
-          `✕ ${error}`
-        )
-      );
-    });
-    lay.warnings.forEach((warning, index) => {
-      warnBlock.push(
-        textEl(
-          {
-            class: "sx-fp-warn",
-            x: 10,
-            y: r2(y0 + (renderErrors.length + index) * 17 + 10),
-          },
-          `⚠ ${warning}`
-        )
-      );
-    });
-  }
-
   const titleScene = resolveSceneTitle(
     lay.title,
     lay.titleSourceRange,
@@ -1238,7 +1245,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
             ),
           ]),
       ...(legendSvg ? [legendSvg] : []),
-      ...warnBlock,
     ]
   );
 }

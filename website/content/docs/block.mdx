@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)` (no `+`) | `r` treated as `+r` — works, but ambiguous | Write `sum(+r, -ym)` for clarity |
 | `ctrl -> plant, plant -> out` (comma on one line) | `,` is not a separator — parse fails | One connection per line or use chain: `ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` not valid on signal; use it on connections | Drop `label:` from signal declaration |
-| `role: filter` | Unknown role — silently defaults to `generic` | Use `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, or `generic` |
+| `role: filter` | Parse error — unknown role | Use `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, or `generic` |
 | `A -> B [discrete, label: "e"]` — label first fails | Order of attrs inside `[…]` doesn't matter, but bare `"text"` shorthand only works when it's the only item | Use `[label: "e", discrete]` |
 
 ---
