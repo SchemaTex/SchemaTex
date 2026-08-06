@@ -243,7 +243,7 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 document      = header statement*
 header        = "block" quoted_string? NEWLINE
 
-statement     = comment | block_def | signal_def | connect_def
+statement     = comment | block_def | connect_def
               | summing_def | boundary_def
 
 comment       = "#" [^\n]* NEWLINE
@@ -257,9 +257,6 @@ block_attr    = "name:" quoted_string      # descriptive name
               | "height:" INT
 role_type     = "plant" | "controller" | "sensor" | "actuator" | "filter"
 
-signal_def    = IDENTIFIER "=" "signal" "(" quoted_string ")" signal_attrs? NEWLINE
-signal_attrs  = "[" "discrete" "]"        # dashed line
-
 summing_def   = IDENTIFIER "=" "sum" "(" sum_input+ ")" NEWLINE
 sum_input     = ("+" | "-") IDENTIFIER    # polarity + signal/block output
 
@@ -267,10 +264,10 @@ boundary_def  = "boundary" quoted_string ":" NEWLINE INDENT
                   block_def*
                 DEDENT
 
-connect_def   = IDENTIFIER "->" IDENTIFIER label_clause? NEWLINE
-              | "in" "->" IDENTIFIER label_clause? NEWLINE   # external input
-              | IDENTIFIER "->" "out" label_clause? NEWLINE  # external output
-label_clause  = "[" quoted_string "]"
+connect_def   = endpoint ("->" endpoint)+ connection_attrs? NEWLINE
+endpoint      = IDENTIFIER | "in" | "out"
+connection_attrs = "[" connection_attr ("," connection_attr)* "]"
+connection_attr  = quoted_string | "label:" quoted_string | "discrete"
 
 IDENTIFIER    = /[a-zA-Z][a-zA-Z0-9_]*/
 INT           = /[0-9]+/
@@ -279,6 +276,10 @@ NEWLINE       = /\n/
 INDENT        = increase in whitespace
 DEDENT        = decrease in whitespace
 ```
+
+### 3.1 Not Yet Implemented (Roadmap)
+
+Standalone named signal nodes are not retained in the current AST. The planned declaration syntax is `r = signal("r[k]") [discrete]`; until signal nodes are implemented, put the label and `discrete` flag on the connection itself.
 
 **DSL 示例：经典 PID 闭环控制**
 ```
@@ -458,13 +459,13 @@ G = block("G(s)") [role: plant]
 ZOH = block("ZOH") [role: actuator]
 H = block("H(s)") [role: sensor]
 err = sum(+r, -ym)
-r = signal("r[k]") [discrete]
-in -> err
-err -> C -> ZOH
+in -> err [label: "r[k]", discrete]
+err -> C [label: "e[k]", discrete]
+C -> ZOH [label: "u[k]", discrete]
 ZOH -> G -> out
 G -> H -> err
 ```
-验证：r, err→C 为虚线（discrete），ZOH→G 为实线（continuous）。
+验证：in→err、err→C、C→ZOH 为虚线（discrete），ZOH→G 为实线（continuous）。
 
 ---
 

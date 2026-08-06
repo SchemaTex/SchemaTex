@@ -270,7 +270,7 @@ Schematex accepts both a **declarative form** (actors and use cases declared up-
 usecase
 title: "Online Bookstore — Checkout"
 system: "Bookstore System"
-direction: LR | TB           // default LR
+direction: LR                // choose exactly one value: LR (default) or TB
 ```
 
 `system` is optional — if omitted, no subject rectangle is drawn and use cases float free.

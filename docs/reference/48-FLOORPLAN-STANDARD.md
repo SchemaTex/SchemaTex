@@ -103,16 +103,15 @@ Any auto-seating table accepts a `seats "Name" "Name" …` clause that writes an
 A multi-floor document is one `floorplan` containing two or more `floor` sections:
 
 ```dsl
-floorplan "Two-storey villa" unit m
-stack horizontal
+floorplan "Two-storey villa" unit m stack horizontal
 
 floor 0 "Ground Floor"
   room living "Living Room" at 0,0 size 6x5
-  furniture stairs in living at 4.5,1 size 1.2x3 id main-stair
+  furniture stairs main-stair in living at 4.5,1 size 1.2x3
 
 floor 1 "First Floor"
   room hall "Landing" at 0,0 size 6x5
-  furniture stairs in hall at 4.5,1 size 1.2x3 id main-stair
+  furniture stairs main-stair in hall at 4.5,1 size 1.2x3
 ```
 
 - `floor <integer> "<label>"` starts a plate. Labels are optional; levels may be negative.
@@ -182,7 +181,6 @@ door hall west at 50% width 1.0
 opening between living kitchen at 35% width 1.2
 window living north at 30% width 1.8
 furniture sofa in living at 0.25,2.9
-grid desk-chair in class rows 5 cols 6 count 27 centers 5,7 25,23   # explicit first/last centers
 ```
 
 ---

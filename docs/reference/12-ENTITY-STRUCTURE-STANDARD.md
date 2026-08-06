@@ -95,6 +95,8 @@ entity <id> "<display name>" <type>@<jurisdiction> [properties]
 
 示例：
 ```
+entity-structure "Entity Definition Examples"
+
 entity parent "Acme Global, Inc." corp@DE
 entity ie-holdco "Acme Ireland Holdings" corp@IE
 entity ie-ip "Acme IP Ltd" corp@KY [tax: ccorp]
@@ -252,6 +254,9 @@ M&A、重组、信托设立场景经常需要并排显示 **事件前 / 事件�
 ### 6.2 DSL for Transaction Delta
 
 ```
+entity-structure "Transaction Delta"
+
+entity parent "ParentCo, Inc." corp@DE
 entity newsub "NewSubCo, LLC" llc@DE [status: new]
 entity oldsub "OldSubCo, Inc." corp@DE [status: eliminated]
 entity changed "ChangedCo" corp@DE [status: modified]

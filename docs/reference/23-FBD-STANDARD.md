@@ -22,15 +22,15 @@
 | Feature | `logic` (§07) | `fbd` (this doc) |
 |---|---|---|
 | Boolean gates (AND/OR/NOT/NAND/NOR/XOR/XNOR/BUF) | ✅ | ✅ (same shapes) |
-| EN / ENO power-flow ports | ❌ | ✅ (IEC 61131-3 §6.4.4) |
-| Timer blocks (TON/TOF/TP/RTO) | ❌ | ✅ |
-| Counter blocks (CTU/CTD/CTUD) | ❌ | ✅ |
+| EN / ENO power-flow ports | ❌ | Roadmap |
+| Timer blocks (TON/TOF/TP) | ❌ | ✅ |
+| Counter blocks (CTU/CTD) | ❌ | ✅ |
 | Math blocks (ADD/SUB/MUL/DIV/MOD/MOVE/...) | ❌ | ✅ |
 | Comparison blocks (EQ/NE/GT/GE/LT/LE) | ❌ | ✅ |
 | Selection blocks (SEL/MUX/MIN/MAX/LIMIT) | ❌ | ✅ |
-| User-defined function blocks (instance tags) | ❌ | ✅ |
-| Negation bubble on any input/output port | partial | ✅ (any port) |
-| Connector / page-link (cross-page wires) | ❌ | ✅ |
+| User-defined function blocks | ❌ | Roadmap |
+| Negation bubble on block inputs | partial | ✅ (`~` prefix) |
+| Connector / page-link (cross-page wires) | ❌ | Roadmap |
 | Inline constants (`5`, `T#10s`, `100`) on input ports | ❌ | ✅ |
 
 `logic` stays as the simpler, gate-focused engine for digital logic teaching and combinational design. `fbd` is the engineering tool for live PLC programming.
@@ -176,7 +176,7 @@ These are **functions** (stateless), not function blocks (stateful), but render 
 
 (`AND` etc. without `_BIT` are reserved for the BOOL versions.)
 
-### 2.10 User-Defined Function Blocks
+### 2.10 User-Defined Function Blocks — Not Yet Implemented (Roadmap)
 
 User blocks render as plain rectangles with **the type name in the header** and **the instance name above the header bar** (or inside if rendered in “compact” mode).
 
@@ -191,11 +191,11 @@ User blocks render as plain rectangles with **the type name in the header** and 
       └──────────┘
 ```
 
-Instance tag rendering convention: instance name above header, italicized; type name in header bar; ports declared via `pins_in=` and `pins_out=` attrs (similar to `circuit` `generic_ic`).
+The intended rendering convention is an italic instance name above the header, with ports declared by `pins_in=` and `pins_out=`. The current parser rejects user-defined block calls; use standard blocks to express the control logic today.
 
-### 2.11 EN / ENO Power-Flow Ports (IEC 61131-3 §6.4.4)
+### 2.11 EN / ENO Power-Flow Ports — Not Yet Implemented (Roadmap)
 
-Any function block may carry **`EN`** (enable input) and **`ENO`** (enable output). These render as the **topmost-left input** and **topmost-right output**, on a horizontal "power flow" rail at the top of each network. EN/ENO is optional per block; the parser accepts `en=true` to enable rendering.
+IEC 61131-3 permits **`EN`** (enable input) and **`ENO`** (enable output), but the current parser does not add those ports or render a power-flow rail. Use a standard `SEL` block when a value must be conditionally enabled.
 
 ```
 power rail ━━━━┳━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━ rail end
@@ -253,7 +253,7 @@ SEL.G = TRUE            ← boolean constant
 
 The constant renders as a **boxed text** to the left of the input port, no wire stub.
 
-### 3.4 Connectors (Page Links)
+### 3.4 Connectors (Page Links) — Not Yet Implemented (Roadmap)
 
 For wires that span pages or are otherwise hard to draw inline, IEC 61131-3 §6.4.3 defines **labeled connectors**. Two forms:
 
@@ -262,13 +262,13 @@ For wires that span pages or are otherwise hard to draw inline, IEC 61131-3 §6.
   ┌─ ConnectorIn ├──
 ```
 
-DSL: `connector "TankLevel"` and `connector_in "TankLevel"`. The renderer matches by name and renders both ends without a continuous wire.
+The planned syntax is `connector_out "TankLevel"` / `connector_in "TankLevel"`. The current parser does not accept connector statements; declare a shared variable and reference it from both networks instead.
 
 ### 3.5 Execution Order
 
 FBD evaluation is **data-flow driven**: the output of any block is computed once all its inputs are stable in the current scan. For purely combinational networks this is unambiguous. For networks with feedback (a block's output wired back to its own input), the parser requires an **execution-order index** on every block in the cycle.
 
-DSL: `[order: 1]`, `[order: 2]`, etc. Rendered in the top-right corner of the block as a small superscript number.
+Execution-order validation and `[order: N]` superscripts are not yet implemented; current examples should remain acyclic and follow declaration/data-flow order.
 
 ---
 
@@ -305,7 +305,7 @@ Optional scope prefix (defaults to local):
 
 ```
 var_global SystemReady: bool
-var Motor1: MotorCtrl                  # instance of user-defined FB
+var Motor1Run: bool
 ```
 
 ---
@@ -314,17 +314,14 @@ var Motor1: MotorCtrl                  # instance of user-defined FB
 
 ```ebnf
 document       = header statement*
-header         = "fbd" quoted_string? props? NEWLINE
-props          = "[" prop ("," prop)* "]"
-prop           = "shape:" ("iec" | "ansi")
-               | "rail:" ("on" | "off")           # default off; on draws EN/ENO power rails
+header         = "fbd" quoted_string? NEWLINE
 
-statement      = comment | variable_decl | network_def | connector_decl
+statement      = comment | variable_decl | network_def
 
 comment        = "#" [^\n]* NEWLINE
 
-variable_decl  = scope? "var" id ":" data_type ("=" init_value)? NEWLINE
-scope          = "var_input" | "var_output" | "var_in_out" | "var_global" | "var_external" | "var"
+variable_decl  = scope id ":" data_type ("=" init_value)? NEWLINE
+scope          = "var" | "var_input" | "var_output" | "var_in_out" | "var_global" | "var_external"
 data_type      = "bool" | "int" | "dint" | "uint" | "udint"
                | "real" | "lreal" | "time" | "date" | "tod"
                | "string" | "wstring"
@@ -333,30 +330,23 @@ data_type      = "bool" | "int" | "dint" | "uint" | "udint"
                | id                                # user-defined FB type
 init_value     = "true" | "false" | INT | FLOAT | TIME_LIT | quoted_string
 
-network_def    = "network" INT? network_label? props? ":" NEWLINE INDENT
+network_def    = "network" INT? network_label? ":" NEWLINE INDENT
                    block_stmt+
                  DEDENT
 network_label  = quoted_string
-network_props  = "[" ("order:" INT)? "]"
-
 block_stmt     = block_call
-               | wire_stmt
 
 block_call     = (instance_id "=")? block_type "(" port_args ")" block_props? NEWLINE
 instance_id    = IDENTIFIER                        # user-given instance tag
-block_type     = standard_block | id
+block_type     = standard_block
 standard_block = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
                | "R_TRIG" | "F_TRIG" | "SR" | "RS"
-               | "TON" | "TOF" | "TP" | "RTO"
-               | "CTU" | "CTD" | "CTUD"
+               | "TON" | "TOF" | "TP"
+               | "CTU" | "CTD"
                | "ADD" | "SUB" | "MUL" | "DIV" | "MOD"
-               | "ABS" | "SQRT" | "LN" | "LOG" | "EXP"
-               | "SIN" | "COS" | "TAN" | "ASIN" | "ACOS" | "ATAN"
-               | "MOVE" | "NEG"
+               | "ABS" | "MOVE" | "NEG"
                | "EQ" | "NE" | "GT" | "GE" | "LT" | "LE"
                | "SEL" | "MUX" | "MAX" | "MIN" | "LIMIT"
-               | "SHL" | "SHR" | "ROL" | "ROR"
-               | "AND_BIT" | "OR_BIT" | "XOR_BIT" | "NOT_BIT"
 port_args      = port_arg ("," port_arg)*
 port_arg       = (port_name ":")? port_value      # named OR positional
 port_name      = IDENTIFIER                        # IN, IN1, CLK, PT, S1, etc.
@@ -366,22 +356,13 @@ constant       = INT | FLOAT | "true" | "false" | TIME_LIT | quoted_string
 
 block_props    = "[" prop_list "]"
 prop_list      = block_prop ("," block_prop)*
-block_prop     = "en"                              # show EN/ENO ports
-               | "order:" INT                      # execution order in feedback cycle
-               | "inputs:" INT                     # extend variadic input count
-               | "pins_in:" quoted_csv             # for user FBs, declare input ports
-               | "pins_out:" quoted_csv
-
-wire_stmt      = wire_ref "=" port_value NEWLINE  # explicit wire (rare; usually auto)
-
-connector_decl = ("connector_out" | "connector_in") quoted_string "=" wire_ref NEWLINE
+block_prop     = "inputs:" INT                     # extend variadic input count
 
 TIME_LIT       = "T#" /[0-9]+(ms|s|m|h)/+         # e.g. T#10s, T#1m30s
 IDENTIFIER     = /[a-zA-Z_][a-zA-Z0-9_]*/
 INT            = /[0-9]+/
 FLOAT          = /[0-9]+\.[0-9]+/
 quoted_string  = '"' /[^"]*/ '"'
-quoted_csv     = '"' /[^",]+(,[^",]+)*/ '"'
 INDENT         = increase in whitespace
 DEDENT         = decrease in whitespace
 NEWLINE        = /\n/
@@ -467,7 +448,7 @@ network 1 "Alarm on out-of-range request":
   Alarm = MOVE(OutOfRange.OUT)
 ```
 
-### 5.5 DSL Example — User-Defined Function Block instance
+### 5.5 DSL Example — Pump Interlock with Standard Blocks
 
 ```
 fbd "Pumping Station"
@@ -476,22 +457,19 @@ var StartCmd: bool
 var StopCmd: bool
 var TankLow: bool
 var TankHigh: bool
-var Pump1: MotorCtrl                          # user-defined FB type
 var Pump1Run: bool
 
 network 0 "Pump 1 control":
-  Pump1 = MotorCtrl(
-    Start: AND(StartCmd, ~TankHigh),
-    Stop: OR(StopCmd, TankLow),
-    Reset: false
-  ) [pins_in: "Start,Stop,Reset", pins_out: "Run,Fault"]
-  Pump1Run = MOVE(Pump1.Run)
+  StartSafe = AND(StartCmd, ~TankHigh)
+  StopDemand = OR(StopCmd, TankLow)
+  PumpLatch = RS(S: StartSafe.OUT, R1: StopDemand.OUT)
+  Pump1Run = MOVE(PumpLatch.Q1)
 ```
 
-### 5.6 DSL Example — EN / ENO Power Flow
+### 5.6 DSL Example — Conditional Math with `SEL`
 
 ```
-fbd "Conditional Math" [rail: on]
+fbd "Conditional Math"
 
 var Enable: bool
 var X: real
@@ -500,13 +478,14 @@ var Result: real
 var ResultValid: bool
 
 network 0:
-  Mul = MUL(IN1: X, IN2: 2.0) [en]
-  Add = ADD(IN1: Mul.OUT, IN2: Y) [en]
+  Mul = MUL(IN1: X, IN2: 2.0)
+  EnabledMul = SEL(G: Enable, IN0: 0.0, IN1: Mul.OUT)
+  Add = ADD(IN1: EnabledMul.OUT, IN2: Y)
   Result      = MOVE(Add.OUT)
-  ResultValid = MOVE(Add.ENO)
+  ResultValid = MOVE(Enable)
 ```
 
-When `rail: on` is set, `[en]` blocks are wired into the top-of-network EN/ENO power rail. Disabled (`Enable=false`) propagates ENO=false, halting the chain.
+`SEL` supplies `0.0` when `Enable=false` and the multiplied value when enabled; `ResultValid` exposes the same enable state without relying on unimplemented EN/ENO ports.
 
 ---
 
@@ -657,9 +636,9 @@ Per-wire Manhattan path with up to 2 bends:
 
 When multiple wires share a column-x, they're spread by `wire_grid` (10px) to avoid overlap. Junctions are inserted where one wire splits to multiple sinks.
 
-### 7.5 Power Rail (EN/ENO networks)
+### 7.5 Power Rail (EN/ENO networks) — Not Yet Implemented (Roadmap)
 
-When any block in a network has `[en]`:
+The planned EN/ENO layout is:
 
 - Two horizontal rails are added: one at network top (`y = -wire_grid`) and the EN port y, one at network top mirroring on the right side for ENO
 - Each `[en]` block's EN port connects up to the left rail; its ENO connects to the right rail
@@ -704,38 +683,37 @@ network 0 "Cycle counter":
 ```
 **Expected:** R_TRIG → CTU → GE chain; execution-order superscripts 1, 2, 3 in top-right of each block. Wires: BOOL from R_TRIG.Q to CTU.CU, INT from CTU.CV to GE.IN1, BOOL constant 100 inline at GE.IN2, BOOL output Done from GE.OUT.
 
-### Case 5 — User-defined FB instance
+### Case 5 — Pump latch built from standard blocks
 ```
 fbd
-var Pump1: MotorCtrl
 network 0:
-  Pump1 = MotorCtrl(Start: A, Stop: B) [pins_in: "Start,Stop", pins_out: "Run,Fault"]
-  RunSig = MOVE(Pump1.Run)
+  PumpLatch = RS(S: A, R1: B)
+  RunSig = MOVE(PumpLatch.Q1)
 ```
-**Expected:** Custom block sized to fit "MotorCtrl" header + Start/Stop on left + Run/Fault on right. Instance tag `Pump1` rendered italicized above the header. MOVE block on right reads `Pump1.Run`.
+**Expected:** RS block latches the run request from A until B resets it; MOVE exposes `PumpLatch.Q1` as `RunSig`.
 
-### Case 6 — EN/ENO power rail
+### Case 6 — Conditional value flow
 ```
-fbd "rail demo" [rail: on]
+fbd "conditional value"
 network 0:
-  M = MUL(IN1: X, IN2: 2) [en]
-  A = ADD(IN1: M.OUT, IN2: Y) [en]
+  M = MUL(IN1: X, IN2: 2)
+  EnabledM = SEL(G: Enable, IN0: 0, IN1: M.OUT)
+  A = ADD(IN1: EnabledM.OUT, IN2: Y)
   Out = MOVE(A.OUT)
 ```
-**Expected:** Top horizontal power rail across the network, MUL.EN and ADD.EN tap into it, MUL.ENO connects to ADD.EN (via the rail), ADD.ENO terminates the rail. MOVE has no `[en]` and is wired below the rail with a normal IN/OUT pair.
+**Expected:** `SEL` passes either zero or M.OUT into ADD according to `Enable`; all connections use implemented standard ports.
 
-### Case 7 — Connectors (page links)
+### Case 7 — Shared variable across networks
 ```
 fbd
+var TankLevel: real
 network 0:
-  Lvl = MUL(IN1: RawSensor, IN2: 0.1)
-  connector_out "TankLevel" = Lvl.OUT
+  TankLevel = MUL(IN1: RawSensor, IN2: 0.1)
 
 network 1:
-  connector_in "TankLevel" = Inflow
-  Alarm = GT(IN1: Inflow, IN2: 95.0)
+  Alarm = GT(IN1: TankLevel, IN2: 95.0)
 ```
-**Expected:** Two networks. Network 0 ends with connector arrow `─┤TankLevel┐`. Network 1 starts with connector tail `┌TankLevel├─`. No continuous wire between networks; renderer matches by name and may emit a hyperlink between them.
+**Expected:** Network 0 scales the sensor into the declared `TankLevel` variable; network 1 reads that shared value and raises an alarm above 95.0.
 
 ### Case 8 — All boolean gates rendering
 ```

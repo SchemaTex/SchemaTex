@@ -131,13 +131,15 @@ export type ValidateDslResult =
       ok: true;
       type: string | null;
       /**
-       * `valid` = parsed cleanly; `partial` = parsed and renderable but the
-       * engine recovered from incomplete input or found non-blocking warnings.
+       * `valid` = a semantic check pass ran cleanly; `unverified` = parsing
+       * succeeded but this engine has no semantic check pass, so nothing about
+       * the diagram has been verified; `partial` = parsed and renderable but
+       * preprocessing or checks found a non-blocking problem (see `warnings`).
        * A `partial` result still renders — diagnostics with severity `error`
        * return the `invalid` branch instead.
        */
-      status: "valid" | "partial";
-      /** Non-fatal lint findings (empty when `status` is `valid`). */
+      status: "valid" | "unverified" | "partial";
+      /** Non-fatal findings (empty when `status` is `valid` or `unverified`). */
       warnings: SchematexValidationError[];
     }
   | { ok: false; type: string | null; status: "invalid"; errors: SchematexValidationError[] };
@@ -173,7 +175,7 @@ export function validateDsl(type: string | undefined, dsl: string): ValidateDslR
 export type RenderDslResult =
   | {
       ok: true;
-      status: "valid" | "partial";
+      status: "valid" | "unverified" | "partial";
       type: string | null;
       svg: string;
     }

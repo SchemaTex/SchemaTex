@@ -210,7 +210,7 @@ The renderer enforces only color tokens; net-role labelling is the user's respon
 
 ```
 breadboard
-board: half | full | mini      // default half
+board: half                    // choose one of mini, half (default), or full
 title: "Blink LED on Arduino Uno"
 ```
 

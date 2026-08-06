@@ -30,5 +30,8 @@ jobs:
       # Every bundled example DSL must still render.
       - run: node scripts/validate-examples.mjs
 
+      # Documented DSL must parse and preserve every claimed semantic token.
+      - run: npm run check:docs
+
       # Gallery SVGs must match current engine output (no silent drift).
       - run: npm run gallery:check

@@ -462,12 +462,6 @@ step S0 [initial]
 step S_Pick
   N PickFromBin
 
-step S_Express
-  N PrepExpressBox
-
-step S_Standard
-  N PrepStandardBox
-
 step S_Ship
   N CarrierPickup
 
@@ -502,12 +496,6 @@ step S0 [initial]
 
 step S_Heat
   N Heater_On
-
-step S_Bake
-  D Oven_Run T#15m
-
-step S_Cool
-  L Cooler_On T#5m
 
 step S_Done
 

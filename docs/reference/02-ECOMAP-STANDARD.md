@@ -12,7 +12,7 @@
 ## 1. Structure
 
 Ecomap 由三层组成：
-1. **中心 (Center)** — 个体或家庭单元（genogram 嵌入或简化圆/方框）
+1. **中心 (Center)** — 个体或家庭单元（当前以单一圆/方框表示）
 2. **外部系统 (Systems)** — 人际关系、组织、机构、社区资源
 3. **连接线 (Connections)** — 表示关系的质量、强度、能量流向
 
@@ -29,7 +29,10 @@ Ecomap 由三层组成：
 | Name label | Text inside shape | `<text>` centered |
 | Optional details | Age, sex symbol | Smaller text below name |
 
-### 2.2 Family Center (Embedded Genogram)
+### 2.2 Not Yet Implemented (Roadmap): Embedded Genogram
+
+> **Roadmap:** 当前 parser 只接受单行 `center:` 定义，不解析 center 下方的 genogram 成员、伴侣关系或子女层级。家庭中心应使用一个带家庭名称的 simple center 表示。以下是未来计划的视觉模型，不是当前支持的 DSL。
+
 在临床实践中，ecomap 的中心通常是一个**迷你 genogram**，包含核心家庭成员：
 
 ```
@@ -41,7 +44,7 @@ Ecomap 由三层组成：
 └─────────────────────────┘
 ```
 
-**实现方式：**
+**计划实现方式：**
 - Center 区域用一个大的虚线圆或矩形包围
 - 内部渲染简化的 genogram（只有 symbols + couple/child lines，无 labels/conditions）
 - Class: `schematex-center-family`
@@ -53,13 +56,8 @@ Ecomap 由三层组成：
 # Simple center
 center: maria [female, age: 34]
 
-# Family center
+# Family unit represented by a labelled simple center
 center: family [label: "The Johnsons"]
-  john [male, 1960]
-  mary [female, 1962]
-  john -- mary
-    kid1 [male, 1990]
-    kid2 [female, 1993]
 ```
 
 ---
@@ -220,10 +218,14 @@ All standard `legend.*` directives apply (see LEGEND-SYSTEM.md). Common ones:
 
 ```dsl
 ecomap "Family Support Network"
-  legend: off                          # disable entirely
-  legend.position: bottom-right         # move to corner overlay
-  legend.label work: "Job & income"     # rename a row
-  legend.hide: weak                     # hide a tie type
+  # disable entirely
+  legend: off
+  # move to corner overlay
+  legend.position: bottom-right
+  # rename a row
+  legend.label work: "Job & income"
+  # hide a tie type
+  legend.hide: weak
   ...
 ```
 
@@ -290,10 +292,7 @@ Each row carries `data-legend-key` for programmatic targeting:
 document        = header center_def system_def* connection_def*
 header          = "ecomap" (":" MODE)? quoted_string? NEWLINE
 
-center_def      = "center:" (simple_center | family_center)
-simple_center   = ID properties? NEWLINE
-family_center   = ID properties? NEWLINE INDENT genogram_content DEDENT
-genogram_content = (individual_def | couple_def)+
+center_def      = "center:" ID properties? NEWLINE
 
 system_def      = ID properties? NEWLINE
 properties      = "[" property ("," property)* "]"
@@ -358,15 +357,10 @@ ecomap "The Johnsons"
   family ~~~ legal
 ```
 
-### Case 3: Family Center with Embedded Genogram
+### Case 3: Family Unit as the Center
 ```
 ecomap "Family Assessment"
   center: family [label: "Rivera Family"]
-    juan [male, 1975]
-    maria [female, 1978]
-    juan -- maria
-      sofia [female, 2005]
-      diego [male, 2008]
   school [label: "Lincoln High", category: education]
   hospital [label: "County General", category: health]
   grandma [label: "Abuela Rosa", category: family, importance: major]
@@ -448,7 +442,7 @@ ecomap "Comprehensive Assessment"
 | P0 (Phase 2) | Basic radial layout + 6 line types + simple center | Medium |
 | P1 | Category-based coloring + system sizing | Low |
 | P1 | Energy flow arrows (directional lines) | Medium |
-| P2 | Family center with embedded mini genogram | High |
+| Roadmap | Family center with embedded mini genogram | High |
 | P2 | Connection labels | Low |
 | P2 | Category sector layout | Medium |
 | P3 | Responsive multi-ring layout for 13+ systems | Medium |

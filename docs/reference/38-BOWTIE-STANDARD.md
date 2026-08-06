@@ -516,15 +516,16 @@ consequence "Release"
 ```
 *Assert:* "UT thickness inspection" barrier drops a muted vertical connector to an amber escalation-factor box `EF_DROP` below it; that box drops a further connector to a grey escalation-factor barrier; the threat band height grows to accommodate the drop without colliding with any consequence band; `data-barrier` on the escalation links it to the UT barrier.
 
-### TC-5 — Validation failure: a threat with no barrier
+### TC-5 — Minimal compliant barrier coverage
 ```
 bowtie
 topevent "Loss of containment"
 threat "Corrosion"
+  prevent "Corrosion monitoring programme"
 consequence "Release"
   mitigate "Gas detection"
 ```
-*Assert:* parse/layout **fails** with the readable message *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* No SVG is produced in strict mode; `renderResult` returns `invalid` with this diagnostic. (Negative companion: a `consequence` with no `mitigate` raises the mirror error; an `escalation` at top level raises the unattached-escalation error.)
+*Assert:* the smallest valid bowtie still includes one preventative barrier for every threat and one mitigative barrier for every consequence. Omitting either barrier fails with a readable CCPS/EI barrier-rule diagnostic; an `escalation` at top level similarly raises the unattached-escalation error.
 
 ---
 

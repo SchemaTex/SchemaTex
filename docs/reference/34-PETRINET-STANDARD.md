@@ -171,16 +171,19 @@ petri "Producer / Consumer (bounded buffer)"
   place Buffer   capacity: 3        "buffer slots"
   place Consume       "consumer ready"
   place Done
+  place Full          "buffer full"
 
   transition put   "deposit"
   transition take  timed rate: 0.8  "withdraw"
+  transition finish "complete consumption"
 
   Produce -> put
   put -> Buffer  weight: 1
   put -> Produce               # producer loops back
   Buffer -> take
   take -> Consume
-  Consume -> Done
+  Consume -> finish
+  finish -> Done
   Full -o put                  # inhibitor: can't deposit while Full is marked
 ```
 

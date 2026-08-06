@@ -178,16 +178,12 @@ dac = block("DAC") [role: actuator]
 plant = block("G(s)") [role: plant]
 adc = block("ADC") [role: sensor]
 err = sum(+r, -yk)
-r = signal("r[k]") [discrete]
-yk = signal("y[k]") [discrete]
-in -> r
-r -> err
+in -> err [label: "r[k]", discrete]
 err -> ctrl
 ctrl -> dac [label: "u[k]", discrete]
 dac -> plant ["u(t)"]
 plant -> adc ["y(t)"]
-adc -> yk [discrete]
-yk -> err`} />
+adc -> err [label: "y[k]", discrete]`} />
 
 ---
 

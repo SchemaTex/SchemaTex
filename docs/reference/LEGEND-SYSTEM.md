@@ -139,10 +139,13 @@ interface LegendOverrides {
 Every diagram parser consumes the same set of `legend.*` directives via the shared helper [`src/core/legend-parser.ts`](../../src/core/legend-parser.ts). The directives can appear anywhere in the DSL after the header.
 
 ```dsl
+ecomap "Legend Directive Catalog"
+
 # Master toggle / position shorthand
 legend: on
 legend: off
-legend: outside-right                # mode=on + position
+# mode=on + position
+legend: outside-right
 legend: bottom-right
 
 # Box-level config
@@ -165,6 +168,8 @@ legend.section heritage.hide: true
 # Add manually authored items
 legend.item dv: "Domestic violence" (kind: line, color: #b71c1c, pattern: zigzag)
 legend.item flag-legal: "Legal flag" (kind: marker, color: #b91c1c)
+
+center: example [label: "Example subject"]
 ```
 
 ### How to find the right key
@@ -257,7 +262,7 @@ User can opt back in by adding a `legend.item` directive (e.g. `legend.item marr
 ```dsl
 genogram "Smith Family"
   john [male, 1950, status: deceased]
-  mary [female, 1955, conditions: "diabetes (cardiovascular)"]
+  mary [female, 1955, conditions: diabetes(full)]
   john -- mary
     alice [female, 1980]
     bob [male, 1983]

@@ -1,6 +1,6 @@
 # 27 — Entity-Relationship Diagram (ERD) Standard Reference
 
-*Academic and production data-modelling diagrams: **Chen notation** (1976, weak entities, ternary relationships, ISA hierarchies, multivalued/derived attributes) and **Crow's-Foot / Information Engineering notation** (1976 Everest, popularized by Martin & Finkelstein, codified by Barker — the de-facto modern notation in MySQL Workbench, dbdiagram.io, Mermaid erDiagram, ERDPlus, draw.io). Distinct from the existing `entity` engine (§12), which models corporate / legal / tax ownership hierarchies — different domain, different layout, different audience.*
+*Production data-modelling diagrams in **Crow's-Foot / Information Engineering notation** (1976 Everest, popularized by Martin & Finkelstein — the de-facto modern notation in MySQL Workbench, dbdiagram.io, Mermaid erDiagram, ERDPlus, draw.io). Chen and Barker variants are roadmap items. Distinct from the existing `entity` engine (§12), which models corporate / legal / tax ownership hierarchies — different domain, different layout, different audience.*
 
 > **Naming note.** The DSL keyword and engine id is **`erd`** to avoid collision with the existing `entity` engine (corporate ownership). When users say "ERD" they almost always mean a database / data-model diagram in the sense of this document.
 
@@ -93,7 +93,7 @@ Implication: the Schematex `erd` page can rank for the head terms by being the o
 | **dbeaver / DBSchema** | Crow's foot | no | Free / commercial | Database-tool first; no DSL |
 | **TikZ ER** | Both | yes (LaTeX) | LaTeX-only | LaTeX-only |
 
-**Schematex differentiation**: only **zero-dependency text-DSL library** with first-class **Chen + crow's foot + Barker** in one engine, with Chen-faithful weak/ternary/ISA support. AGPL-clean, Markdown-embeddable, AI-native.
+**Schematex differentiation**: a zero-dependency, AGPL-clean, Markdown-embeddable, AI-native text DSL for crow's-foot ERDs, with Chen and Barker tracked as future extensions.
 
 ---
 
@@ -101,11 +101,18 @@ Implication: the Schematex `erd` page can rank for the head terms by being the o
 
 ### 3.1 What we implement
 
-- **Chen 1976 notation** as taught by Elmasri & Navathe and Silberschatz: rectangle / double rectangle / diamond / double diamond / oval / double oval / dashed oval / underlined-key oval / ISA triangle with `d`/`o` and total/partial participation. n-ary relationships first-class. Edge cardinality labelled with `1`, `N`, `M`.
 - **Crow's foot / IE notation** as standardised across MySQL Workbench, dbdiagram.io, Mermaid, ERDPlus: tabular entity boxes with PK/FK/UK row markers; relationship line endpoint glyphs `┃`, `○`, `┃<`, `○<`.
-- **Barker notation** as a stylistic refinement of crow's foot (Oracle CASE\*Method): same endpoint glyphs but solid line = mandatory, dashed line = optional, plus arc-based subtype (category) clusters. Selectable as `notation: barker`.
 
-### 3.2 What we deliberately omit
+### 3.2 Not Yet Implemented (Roadmap)
+
+| Roadmap notation | Planned coverage |
+|---|---|
+| **Chen 1976** | Weak entities, relationship diamonds, multivalued/derived/composite attributes, ternary relationships, and ISA hierarchies. |
+| **Barker** | Mandatory/optional half-lines and subtype/category clusters. |
+
+The current parser accepts only `notation: crowsfoot`; `notation: chen` and `notation: barker` are not supported syntax.
+
+### 3.3 What we deliberately omit
 
 | Omitted | Why |
 |---|---|
@@ -115,7 +122,7 @@ Implication: the Schematex `erd` page can rank for the head terms by being the o
 | **ORM / Object-Role Modeling** | Different formalism; out of scope. |
 | **Physical-design artifacts** (indexes, partitions, tablespaces) | Schematex is a renderer; physical DB design is a separate concern. |
 
-### 3.3 Optional reverse-engineering
+### 3.4 Optional reverse-engineering
 
 Future post-v1: an importer that parses standard SQL DDL (`CREATE TABLE`, `FOREIGN KEY ... REFERENCES`) and emits ERD DSL. Not in v1 scope.
 
@@ -189,8 +196,8 @@ When `notation: barker`:
 
 ```
 erd
-notation: chen | crowsfoot | barker     // default crowsfoot
-direction: LR | TB                       // default LR
+notation: crowsfoot                     // the only currently supported notation
+direction: LR                           // choose exactly one value: LR (default) or TB
 title: "University Schema"
 ```
 
@@ -231,7 +238,7 @@ ref Enrollment.course_id   many-mandatory -- one-mandatory  Course.course_id
 
 `ref` syntax: `<source> <left-card> -- <right-card> <target> : "label"`. Cardinalities accept named tokens (`one-mandatory`), Min-Max (`1..1`), or Mermaid glyphs (`}o`, `||`). The `--` is identifying (solid); `..` is non-identifying (dashed).
 
-### 5.3 Chen explicit form
+### 5.3 Not Yet Implemented (Roadmap): Chen explicit form
 
 ```
 chen entity Student {
@@ -257,9 +264,9 @@ chen relationship Enrollment between
 chen isa Employee { Manager, Engineer, Accountant } disjoint total
 ```
 
-`chen entity` blocks accept attribute modifiers DBML cannot express. `chen relationship` is n-ary (any arity ≥ 2). `chen isa` is generalization with `disjoint | overlapping` and `total | partial`.
+The following planned grammar is retained as a roadmap design; the current parser does not accept these productions. `chen entity` would accept attribute modifiers DBML cannot express, `chen relationship` would be n-ary, and `chen isa` would model generalization.
 
-In **Chen mode**, `table` and `ref` are also accepted but rendered with the Chen visual conventions (rectangles + diamond + oval attributes), with cardinality labelled as `1` / `N` / `M`. In **crow's-foot mode**, `chen weak entity` / `chen relationship` / `chen isa` blocks emit warnings ("ternary relationship not natively expressible in crow's foot — promoting Enrollment to associative entity").
+Planned Chen mode would render `table` and `ref` using rectangles, diamonds, and oval attributes. Until it is implemented, model ternary relationships with explicit associative tables in crow's-foot syntax.
 
 ### 5.4 Mermaid-compat alias
 

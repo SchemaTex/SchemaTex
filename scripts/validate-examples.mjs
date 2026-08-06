@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 /**
  * CI gate — parse & render every bundled example. Fails unless every example is
- * semantically valid; warnings are not considered a clean corpus.
+ * free of findings; warnings are not considered a clean corpus.
+ *
+ * `unverified` counts as clean here. It means the engine has no semantic lint
+ * pass, so nothing was checked — not that something was found. Only the 13
+ * engines that implement `lint` can report `valid`; treating the other 37 as
+ * failures would fail the whole corpus for a label change rather than a defect.
+ *
  * Run after build (`npm run build`) so dist/ai is populated.
  */
 import {
@@ -21,11 +27,12 @@ for (const d of listDiagrams()) {
     total++;
     const validation = validateDsl(d.type, ex.dsl);
     const rendered = renderDsl(d.type, ex.dsl);
+    const clean = (status) => status === "valid" || status === "unverified";
     if (
       !validation.ok ||
-      validation.status !== "valid" ||
+      !clean(validation.status) ||
       !rendered.ok ||
-      rendered.status !== "valid"
+      !clean(rendered.status)
     ) {
       failed++;
       const issues = validation.ok

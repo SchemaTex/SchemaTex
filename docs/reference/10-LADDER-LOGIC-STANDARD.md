@@ -77,7 +77,7 @@
 - **符号**: 两竖线 + 上升边箭头（↑）
 - **SVG**: NO + `<polygon points="4,-6 4,0 8,-3"/>` inside gap
 
-#### Negative Transition Contact (ONF / 下降沿)
+#### Negative Transition Contact (OSF / 下降沿)
 - **符号**: 两竖线 + 下降边箭头（↓）
 - **SVG**: NO + `<polygon points="4,6 4,0 8,3"/>` inside gap
 
@@ -160,7 +160,6 @@ function block 在梯级中间，矩形盒包含输入/输出 pins。
 | `TON` | Timer On-Delay | `IN`, `PT` (preset time) | `Q` (done), `ET` (elapsed) |
 | `TOFF` | Timer Off-Delay | `IN`, `PT` | `Q`, `ET` |
 | `TP` | Timer Pulse | `IN`, `PT` | `Q`, `ET` |
-| `RTO` | Retentive Timer On | `IN`, `PT`, `R` (reset) | `Q`, `ET` |
 
 #### Counter Blocks
 
@@ -251,13 +250,9 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 document       = header statement*
 header         = "ladder" quoted_string? NEWLINE
 
-statement      = comment | variable_decl | rung_def
+statement      = comment | rung_def
 
 comment        = ("#" | "//" | "%%") [^\n]* NEWLINE
-
-variable_decl  = "var" id ":" data_type ("=" init_value)? NEWLINE
-data_type      = "bool" | "int" | "float" | "timer" | "counter" | "string"
-init_value     = "true" | "false" | INT | FLOAT | quoted_string
 
 rung_def       = "rung" INT? rung_comment? ":"? NEWLINE INDENT
                    rung_element+
@@ -268,33 +263,29 @@ rung_comment   = quoted_string
 rung_element   = series_element
                | parallel_block
 
-series_element = contact | coil | function_block | jump
+series_element = contact | coil | function_block
 
 parallel_block = "parallel:" NEWLINE INDENT
-                   (series_element+)
                    ("branch:" NEWLINE INDENT series_element+ DEDENT)+
                  DEDENT
 
 contact        = contact_type "(" IDENTIFIER ")" NEWLINE
-contact_type   = "XIC" | "XIO" | "ONS" | "ONF"    # NO, NC, rising, falling edge
-               | "EQU" | "NEQ" | "GRT" | "GEQ" | "LES" | "LEQ"  # compare
+contact_type   = "XIC" | "XIO" | "ONS" | "OSF"    # NO, NC, rising, falling edge
 
 coil           = coil_type "(" IDENTIFIER ")" NEWLINE
 coil_type      = "OTE" | "OTN" | "OTL" | "OTU" | "RES"  # output, negated, set, reset, counter/timer reset
 
 function_block = fb_type "(" fb_params ")" NEWLINE
-fb_type        = "TON" | "TOFF" | "TP" | "RTO"
+fb_type        = "TON" | "TOFF" | "TP"
                | "CTU" | "CTD" | "CTUD"
                | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
-fb_params      = IDENTIFIER ("," IDENTIFIER)*
-
-jump           = "JMP" "(" LABEL_ID ")" NEWLINE
-               | "LBL" "(" LABEL_ID ")" NEWLINE
+               | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+fb_params      = IDENTIFIER ("," IDENTIFIER "=" value)*
 
 IDENTIFIER     = /[a-zA-Z][a-zA-Z0-9_]*/
-LABEL_ID       = /[a-zA-Z][a-zA-Z0-9_]*/
 INT            = /[0-9]+/
 FLOAT          = /[0-9]+\.[0-9]+/
+value          = IDENTIFIER | INT | FLOAT | quoted_string
 quoted_string  = '"' /[^"]*/ '"'
 INDENT         = increase in whitespace
 DEDENT         = decrease in whitespace
@@ -304,13 +295,6 @@ NEWLINE        = /\n/
 **DSL 示例（Motor Start/Stop）：**
 ```
 ladder "Motor Control"
-
-var StartBtn: bool
-var StopBtn: bool
-var EmergencyStop: bool = false
-var MotorLatch: bool = false
-var MotorRun: bool = false
-var RunIndicator: bool = false
 
 rung 0 "Start latch with stop condition":
   XIC(StartBtn)
@@ -335,18 +319,13 @@ rung 3 "Run indicator":
 ```
 ladder "Timer Counter Example"
 
-var RunSignal: bool
-var RunTimer: timer
-var CycleCounter: counter
-var AlarmOut: bool
-
 rung 0 "TON timer when running":
   XIC(RunSignal)
-  TON(RunTimer, RunSignal, T#5s)
+  TON(RunTimer, PT=5000)
 
 rung 1 "Count on timer done":
   XIC(RunTimer.Q)
-  CTU(CycleCounter, RunTimer.Q, 100)
+  CTU(CycleCounter, PV=100)
 
 rung 2 "Alarm when max cycles":
   XIC(CycleCounter.Q)
@@ -359,7 +338,8 @@ ladder "Parallel Branch"
 
 rung 0 "Start from push button OR remote":
   parallel:
-    XIC(LocalStart)
+    branch:
+      XIC(LocalStart)
     branch:
       XIC(RemoteStart)
   XIC(MotorLatch)
@@ -449,7 +429,8 @@ rung 0:
 ladder
 rung 0:
   parallel:
-    XIC(Btn1)
+    branch:
+      XIC(Btn1)
     branch:
       XIC(Btn2)
   OTE(Lamp)
@@ -459,15 +440,14 @@ rung 0:
 ### Case 4: TON Timer
 ```
 ladder
-var RunTimer: timer
 rung 0:
   XIC(StartSignal)
-  TON(RunTimer, StartSignal, T#10s)
+  TON(RunTimer, PT=10000)
 rung 1:
   XIC(RunTimer.Q)
   OTE(DoneOutput)
 ```
-验证：TON block 显示 IN 和 PT 输入 pins，Q 输出 pin，T#10s 参数标注。
+验证：TON block 显示 PT preset（10000 ms），后续梯级读取 timer 的 Q tag。
 
 ### Case 5: Set/Reset Latch
 ```
@@ -484,15 +464,22 @@ rung 1:
 ### Case 6: Counter
 ```
 ladder
-var PulseCnt: counter
 rung 0:
   XIC(PulseInput)
-  CTU(PulseCnt, PulseInput, 50)
+  CTU(PulseCnt, PV=50)
 rung 1:
   XIC(PulseCnt.Q)
   OTE(BatchDone)
 ```
 验证：CTU block 有 CU/PV inputs，Q output，梯级 1 读取 .Q 位。
+
+### Not Yet Implemented (Roadmap)
+
+以下概念属于目标标准，但当前 ladder parser 尚不支持，因此不属于可执行 DSL：
+
+- `var` variable declarations；当前 tag 在 contact、coil 或 function block 中首次使用，无独立声明。
+- `RTO` retentive timer。
+- `JMP` / `LBL` jump instructions。
 
 ---
 

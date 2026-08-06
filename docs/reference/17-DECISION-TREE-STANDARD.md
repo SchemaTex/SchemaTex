@@ -76,7 +76,7 @@ Schematex 的定位：**Text DSL 驱动 + 零依赖 + 合规视觉** → 填补 
 
 1. **三模式一体** — 同一库覆盖三种用户，避免他们分别装三个工具
 2. **SVG + 零依赖** — 可直接嵌入 React / Vue / Obsidian / Notion-like
-3. **DSL-first** — AI 友好，LLM 输出结构化决策树或直接从 sklearn JSON 导入
+3. **DSL-first** — AI 友好，LLM 可输出结构化决策树；sklearn JSON import 尚在 roadmap
 4. **EV 自动计算** — decision analysis 模式下，branch 改概率后 EV 回传
 5. **合规视觉** — Howard 符号 + CART 惯例都被严格遵守，不发明新记号
 
@@ -160,12 +160,14 @@ Arc 写作 `Source -> Target`（按 node id），其含义 **从箭头的目的�
 
 **Header / directive 两种写法**
 
-```
-decisiontree:influence "Oil Wildcatter"     # header 形式
+```dsl
+# header 形式
+decisiontree:influence "Oil Wildcatter"
 ```
 
-```
-decisiontree "Market Entry"                 # directive 形式
+```dsl
+# directive 形式
+decisiontree "Market Entry"
   mode: influence
 ```
 
@@ -336,35 +338,25 @@ classes: setosa, versicolor, virginica
 impurity: gini
 branchLabels: relation
 
-split feature=petal_width op=<= threshold=0.8
-  samples=120 value=[50, 35, 35] gini=0.66
+split feature=petal_width op=<= threshold=0.8 samples=120 value=[50,35,35] gini=0.66
   true leaf samples=50 value=[50, 0, 0] gini=0 class=setosa
-  false split feature=petal_width op=<= threshold=1.75
-    samples=70 value=[0, 35, 35] gini=0.5
-    true split feature=petal_length op=<= threshold=4.95
-      samples=36 value=[0, 32, 4] gini=0.198
+  false split feature=petal_width op=<= threshold=1.75 samples=70 value=[0,35,35] gini=0.5
+    true split feature=petal_length op=<= threshold=4.95 samples=36 value=[0,32,4] gini=0.198
       true leaf samples=32 value=[0, 32, 0] gini=0 class=versicolor
       false leaf samples=4 value=[0, 0, 4] gini=0 class=virginica
     false leaf samples=34 value=[0, 3, 31] gini=0.162 class=virginica
 ```
 
-**方式 B — 从 sklearn JSON 导入**：
+**方式 B — 从 sklearn JSON 导入（Not Yet Implemented / Roadmap）**：
 
-```
-decisiontree:ml "Iris classification" [source: sklearn-json]
-
-classes: setosa, versicolor, virginica
-impurity: gini
-
-import <<<
+```json
 {
-  "feature_names": ["sepal_length","sepal_width","petal_length","petal_width"],
-  "tree_": { ... sklearn.tree.DecisionTreeClassifier.tree_ attributes serialized ... }
+  "feature_names": ["sepal_length", "sepal_width", "petal_length", "petal_width"],
+  "tree_": { "feature": [], "threshold": [], "children_left": [], "children_right": [] }
 }
->>>
 ```
 
-Importer 实现：消费 `sklearn.tree.export_text(..., show_weights=True)` JSON dump 或用户自己序列化的 `tree_` 字段（`feature`, `threshold`, `children_left`, `children_right`, `impurity`, `n_node_samples`, `value`）。Importer 生成等价的手写 DSL AST。
+当前 parser 不接受 `[source: sklearn-json]` header attribute 或 `import <<< ... >>>` block。Roadmap importer 将消费用户序列化的 `tree_` 字段并生成等价的手写 DSL AST；在实现前，请使用方式 A。
 
 ### 6.4 Taxonomy DSL
 
@@ -396,14 +388,12 @@ q "Credit score"
 ### 6.5 DSL EBNF
 
 ```ebnf
-document        = type_header NEWLINE title NEWLINE
+document        = type_header quoted_string? NEWLINE
                   config_block?
                   tree_body
 
 type_header     = "decisiontree" (":" mode)?
-mode            = "decision" | "da" | "ml" | "taxonomy" | "tax"
-
-title           = quoted_string
+mode            = "decision" | "da" | "influence" | "id" | "ml" | "taxonomy" | "tax"
 
 config_block    = (config_line)+
 config_line     = key ":" value NEWLINE
@@ -658,10 +648,8 @@ decision "Drill or sell?"
 decisiontree:ml "Housing price regression"
 impurity: mse
 
-split feature=RM op=<= threshold=6.94
-  samples=506 value=22.5 mse=84.4
-  true split feature=LSTAT op=<= threshold=14.4
-    samples=430 value=19.9 mse=40.2
+split feature=RM op=<= threshold=6.94 samples=506 value=22.5 mse=84.4
+  true split feature=LSTAT op=<= threshold=14.4 samples=430 value=19.9 mse=40.2
     true leaf samples=255 value=23.3 mse=26.0
     false leaf samples=175 value=14.9 mse=23.3
   false leaf samples=76 value=37.2 mse=79.7
@@ -697,7 +685,8 @@ q "Airway compromise?"
 ### Case 9 — Bayesian probability tree
 
 ```
-decisiontree:decision "COVID test Bayesian" [branchLength: probability]
+decisiontree:decision "COVID test Bayesian"
+branchLength: probability
 
 chance "Has disease?"
   prob 0.01 chance "Test result (infected)"

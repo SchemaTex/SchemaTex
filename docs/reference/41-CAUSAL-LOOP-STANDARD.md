@@ -61,18 +61,18 @@ Notation choice (Sterman, canonical): **use `+` / `−`, not `s` / `o`.** Sterma
 
 ---
 
-## DSL sketch (draft — needs Victor)
+## DSL Syntax
 
 ```
 causalloop "Adoption model"
-  # links: X -> Y with polarity; ~ marks a delay on the link
-  # polarity: ->+  / ->-   (aliases: ->s same, ->o opposite)
+  # links: X -> Y : polarity; ~delay marks a delay on the link
+  # polarity: + / - (aliases: s/o, same/opposite)
 
-  "Adoption rate" ->+ Adopters
-  Adopters        ->+ "Adoption rate"          # R loop: 0 negatives -> Reinforcing
+  "Adoption rate" -> Adopters : +
+  Adopters -> "Adoption rate" : +              # R loop: 0 negatives -> Reinforcing
 
-  "Adoption rate" ->- "Potential adopters"
-  "Potential adopters" ->+ "Adoption rate"     # B loop: 1 negative -> Balancing
+  "Adoption rate" -> "Potential adopters" : -
+  "Potential adopters" -> "Adoption rate" : +  # B loop: 1 negative -> Balancing
 
   # optional explicit loop naming (else auto R1/B1/...)
   loop R1 "Word of mouth"
@@ -81,10 +81,10 @@ causalloop "Adoption model"
 
 Delayed link example (life-insurance style):
 ```
-  "Training and coaching quality" ->+ "Salesperson skills" ~delay
+  "Training and coaching quality" -> "Salesperson skills" : + ~delay
 ```
 
-*Draft only.* Open choices: polarity syntax (`->+` / `->-` vs `-->|+|` vs trailing `: +`); whether loops are auto-named (`R1`,`B1` by detection order) or author-named via `loop`; how delay is marked (`~delay`, `//`, a trailing flag); whether variables need declaration or are implicit from first mention in a link; whether to accept `s`/`o`/same/opposite aliases (recommended yes, for AI-friendliness); CJK-quote handling for labels.
+The parser uses trailing polarity (`A -> B : +`), accepts `s`/`o` and `same`/`opposite` aliases, creates variables implicitly from links, accepts `~delay`, and supports optional author-supplied `loop R1 "Name"` annotations.
 
 ---
 

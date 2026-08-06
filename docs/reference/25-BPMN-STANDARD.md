@@ -248,7 +248,7 @@ Stroke weight encodes lifecycle role:
 
 ```
 bpmn
-direction: LR | TB        // default LR
+direction: LR             // use exactly one value: LR (default) or TB
 title: "Loan Application Approval"
 ```
 

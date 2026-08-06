@@ -374,6 +374,7 @@ direction: LR                    // LR (default) | TB
 layout: network                  // network (default) | timescaled
 critical-tolerance: 0            // numeric, default 0
 show-sentinels: false            // default false
+task kickoff "Project kickoff" duration: 1 milestone
 ```
 
 ### 7.2 Task declaration

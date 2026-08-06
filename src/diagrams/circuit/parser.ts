@@ -77,12 +77,23 @@ const ALIASES: Record<string, CircuitComponentType> = {
   switch_center_off: "switch_spdt_center_off",
 };
 
+/**
+ * Drawing directives, not symbols. `wire`, `dot`, and `label` are drawn by
+ * dedicated branches in layout.ts and renderer.ts rather than by a SymbolDef,
+ * so they are legitimately absent from the symbol registry and must be
+ * accepted alongside it. Without this, documented schematic syntax such as a
+ * bare `dot` junction fails to parse even though the rest of the pipeline
+ * still renders it.
+ */
+const PSEUDO_TYPES = new Set(["wire", "dot", "label"]);
+
 function normalizeType(raw: string): CircuitComponentType | null {
   const lower = raw.toLowerCase();
   if (ALIASES[lower]) return ALIASES[lower];
   // The symbol registry is the capability source of truth: if a type can be
-  // parsed, it must have a renderer definition in the same build.
-  if (getSymbol(lower)) {
+  // parsed, it must have a renderer definition in the same build — except for
+  // the pseudo-types above, which have renderer branches instead of symbols.
+  if (getSymbol(lower) || PSEUDO_TYPES.has(lower)) {
     return lower as CircuitComponentType;
   }
   return null;

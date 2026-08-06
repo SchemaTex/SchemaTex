@@ -586,7 +586,12 @@ export function parseResult(
     }
     return {
       ok: true,
-      status: diagnostics.length > 0 ? "partial" : "valid",
+      status:
+        diagnostics.length > 0
+          ? "partial"
+          : plugin.lint
+          ? "valid"
+          : "unverified",
       type: plugin.type,
       ast,
       diagnostics,
@@ -688,7 +693,12 @@ export function renderResult(
     const rendered = renderWithPlugin(prepared, plugin, type, config);
     return {
       ok: true,
-      status: diagnostics.length > 0 ? "partial" : "valid",
+      status:
+        diagnostics.length > 0
+          ? "partial"
+          : plugin.lint
+          ? "valid"
+          : "unverified",
       type: plugin.type,
       svg: rendered.svg,
       diagnostics,

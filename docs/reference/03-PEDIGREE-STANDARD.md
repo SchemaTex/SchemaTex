@@ -97,18 +97,6 @@ pedigree "Breast/Ovarian Cancer Family"
 | Adopted in | Brackets around shape | `[` shape `]` | `[adopted-in]` |
 | Adopted out | Brackets around shape, dashed line to parents | `[` shape `]` + dashed line | `[adopted-out]` |
 
-### 2.5 Assisted Reproduction (Bennett 2022)
-
-Bennett 2022 增加了辅助生殖的标准符号，这在现代临床中越来越重要：
-
-| Type | Symbol | DSL |
-|------|--------|-----|
-| Donor egg | "D" on connecting line from egg donor | `[donor-egg]` |
-| Donor sperm | "D" on connecting line from sperm donor | `[donor-sperm]` |
-| Donor embryo | "D" on connecting lines from both donors | `[donor-embryo]` |
-| Surrogacy (gestational) | "S" label on surrogate, dashed line to child | `[surrogate]` |
-| IVF | "IVF" label on couple line | couple line 标注 |
-
 ---
 
 ## 3. Relationship Lines (Pedigree-Specific)
@@ -131,10 +119,22 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 | Biological | Solid vertical | (default) |
 | Adopted in | Dashed vertical + brackets on child | `[adopted-in]` |
 | Adopted out | Dashed vertical + brackets, line goes to new parents | `[adopted-out]` |
+
+### 3.3 Not Yet Implemented (Roadmap)
+
+The following standard structures are roadmap items, not currently supported DSL attributes:
+
+| Planned type | Intended symbol | Reserved roadmap token |
+|------|--------|-----|
 | Identical twins | V-shape (meet at single point) | `[twin-mz]` (monozygotic) |
 | Fraternal twins | Inverted-V with horizontal bar | `[twin-dz]` (dizygotic) |
 | Twins (unknown zygosity) | Inverted-V, question mark on bar | `[twin-unknown]` |
-| Triplets+ | 3+ lines from point/bar | `[triplet-mz]` etc. |
+| Identical triplets+ | 3+ lines from point | `[triplet-mz]` |
+| Fraternal triplets+ | 3+ lines from point/bar | `[triplet-dz]` |
+| Donor egg | "D" on connecting line from egg donor | `[donor-egg]` |
+| Donor sperm | "D" on connecting line from sperm donor | `[donor-sperm]` |
+| Donor embryo | "D" on connecting lines from both donors | `[donor-embryo]` |
+| Surrogacy (gestational) | "S" label on surrogate, dashed line to child | `[surrogate]` |
 
 ---
 
@@ -179,10 +179,14 @@ pedigree "BRCA Family"
 
 ```dsl
 pedigree "..."
-  legend: off                           # disable
-  legend.position: bottom-right          # corner overlay
-  legend.label status.affected: "..."   # rename
-  legend.hide: status.carrier-x          # hide a row
+  # disable
+  legend: off
+  # corner overlay
+  legend.position: bottom-right
+  # rename
+  legend.label status.affected: "..."
+  # hide a row
+  legend.hide: status.carrier-x
 ```
 
 Row keys:
@@ -248,10 +252,7 @@ genetic_prop   = "affected" | "carrier" | "carrier-x" | "obligate-carrier"
 trait_list     = IDENTIFIER ("+" IDENTIFIER)*
 special_prop   = "proband" | "consultand" | "evaluated"
                | "adopted-in" | "adopted-out"
-               | "donor-egg" | "donor-sperm" | "donor-embryo" | "surrogate"
                | "no-children" | "infertile"
-               | "twin-mz" | "twin-dz" | "twin-unknown"
-               | "triplet-mz" | "triplet-dz"
 
 couple_def     = ID couple_op ID couple_label? NEWLINE (INDENT child+ DEDENT)?
 couple_op      = "--" | "==" | "-/-" | "~"
@@ -340,19 +341,18 @@ pedigree "Cancer Family Syndrome"
 ```
 验证：legend box 显示 4 个 trait 对应的 quadrant fill，I-1 有 quad-bl filled，II-1 有 quad-tl + quad-tr filled，III-1 有 proband arrow。
 
-### Case 5: Modern Family (Bennett 2022 — Assisted Reproduction)
+### Case 5: Modern Family (Supported Relationship Structure)
 ```
-pedigree "Donor Conception"
+pedigree "Modern Family"
   I-1 [male]
   I-2 [female]
   I-1 -- I-2
     II-1 [female]
   
-  donor [male, donor-sperm]
   II-1 -- II-2 [male]
     III-1 [female, proband]
 ```
-验证：donor-sperm 标注在 donor 到 child 的连接线上，donor node 可选显示。
+验证：关系结构和 proband marker 正常解析；donor / surrogate annotations 尚属 roadmap，不在 runnable example 中表达。
 
 ### Case 6: Pregnancy / Loss
 ```

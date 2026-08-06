@@ -1,6 +1,6 @@
 {
   "name": "schematex",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Every diagram a doctor, engineer, lawyer, or production crew would actually use. 52 industry-standard diagrams from a text DSL, with open-source React editing, AI tools, and MCP. Pure SVG, zero runtime dependencies.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -143,6 +143,7 @@
     "test:watch": "vitest",
     "lint": "eslint src/",
     "typecheck": "npm run build:ai && tsc --noEmit",
+    "check:docs": "npm run build && node scripts/check-doc-dsls.mjs",
     "validate:examples": "npm run build && node scripts/validate-examples.mjs",
     "preview:quality": "node scripts/generate-quality-hardening-preview.mjs",
     "gallery": "node scripts/generate-gallery-svgs.mjs",

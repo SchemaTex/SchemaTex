@@ -737,23 +737,32 @@ config : cardMode = "auto"
 
 **验证：** n > 30 触发降级到 Compact（180×72），icon 40px。
 
-### Case 13: Mini Mode（150 人）
+### Case 13: Mini Mode Preview（适用于 150 人组织）
 
 ```
-orgchart "Series C · 150 people"
-config : cardMode = "auto"
+orgchart "Series C · Mini Mode Preview"
+config : cardMode = "mini"
+CEO : "Alice" | CEO | Executive
+  CTO : "Bob" | CTO | Engineering
+    VPENG : "Carol" | VP Engineering | Engineering
+  CFO : "Dan" | CFO | Finance
 ```
 
-**验证：** 降级到 Mini（140×44），无 icon，靠 dept 色条区分。
+**验证：** 显式 Mini（140×44），无 icon，靠 dept 色条区分。生产中的 `auto` mode 会在约 150 nodes 时选择同一呈现。
 
 ### Case 14: IconOnly Mode（500 人 overview）
 
 ```
-orgchart "Enterprise · 500 people"
+orgchart "Enterprise · Icon Overview Preview"
 config : cardMode = "iconOnly"
+CEO : "Alice" | CEO | Executive
+  CTO : "Bob" | CTO | Engineering
+    VPENG : "Carol" | VP Engineering | Engineering
+  CFO : "Dan" | CFO | Finance
+  CMO : "Eve" | CMO | Marketing
 ```
 
-**验证：** 全部为 56px 圆形 icon（优先 role icon，fallback initials）；`<title>` 内含 name + title；canvas 可控。
+**验证：** representative hierarchy 全部为 56px 圆形 icon（优先 role icon，fallback initials）；`<title>` 内含 name + title。该模式适合 500 人 overview，同时让 reference example 保持可读。
 
 ### Case 15: Draft Future Org（M&A Post-Transaction）
 

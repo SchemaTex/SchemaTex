@@ -19,7 +19,7 @@
 |--------|-------|-------------|------|
 | □ | Square (40×40) | `<rect>` | Male |
 | ○ | Circle (r=20) | `<circle>` | Female |
-| ◇ | Diamond (40×40) | `<polygon>` | Unknown sex / Nonbinary (Bennett 2022) |
+| ◇ | Diamond (40×40) | `<polygon>` | Unknown / other sex (including nonbinary representation) |
 | △ | Triangle (small, 20×20) | `<polygon>` | Pregnancy (current) |
 | Concentric shape | Double outline (gap=3px) | Two shapes, inner + outer | Index Person (IP) / Identified Patient |
 
@@ -43,20 +43,19 @@ Bennett 2022 引入了 sex 与 gender 分离的符号系统，Schematex 必须�
 | AMAB | Assigned Male at Birth | Square (传统 male symbol) |
 | AFAB | Assigned Female at Birth | Circle (传统 female symbol) |
 | UAAB | Unknown/Ambiguous at Birth / Intersex | Diamond |
-| Nonbinary | Gender identity = nonbinary | Diamond + optional gender label |
-| Transgender | Gender ≠ assigned sex | Shape = assigned sex, label indicates gender identity |
+| Nonbinary | Gender identity = nonbinary | Use `other` (diamond) + explicit label |
+| Transgender | Gender ≠ assigned sex | Not Yet Implemented (Roadmap) |
 
 **DSL 表示：**
 ```
-alex [nonbinary, 1995]           # → diamond
-sam [male, transgender, 1988]    # → square (AMAB) + transgender marker
-jordan [intersex, 1990]          # → diamond (UAAB)
+alex [other, 1995, label: "Alex (nonbinary)"]  # → diamond
+jordan [unknown, 1990]                         # → diamond (UAAB/unspecified)
 ```
 
 **实现规则：**
-- `sex` property 控制 shape（male→□, female→○, unknown/nonbinary/intersex→◇）
-- `transgender` property 添加一个小三角标记在 shape 角落
-- `gender` property 可选，用于 label 显示
+- `sex` property 控制 shape（male→□, female→○, unknown/other→◇）
+- `label:` 可明确写出 nonbinary / intersex 等 identity
+- `transgender` marker 尚未实现，见 roadmap
 
 ### 1.4 Multiple Births
 
@@ -64,12 +63,13 @@ jordan [intersex, 1990]          # → diamond (UAAB)
 |------|--------|-----|
 | Identical twins | V-shape: two child lines meet at single point on sibship line | `[twin-identical]` |
 | Fraternal twins | Inverted-V with horizontal bar connecting at top | `[twin-fraternal]` |
-| Triplets+ | Same pattern, 3+ lines from single point or bar | `[triplet-identical]` / `[triplet-fraternal]` |
+
+Triplets+ 尚未实现，见 §3.5.1 roadmap。
 
 ### 1.5 SVG Implementation Notes
 
 - All shapes: `stroke-width: 2`, `fill: white` (default), `stroke: #333`
-- CSS classes: `schematex-node`, `schematex-male`, `schematex-female`, `schematex-unknown`, `schematex-nonbinary`
+- CSS classes: `schematex-genogram-node`, `schematex-genogram-male`, `schematex-genogram-female`, `schematex-genogram-unknown`
 - Deceased overlay: `class="schematex-deceased-marker"`
 - Index person: outer shape `stroke-width: 1`, inner shape `stroke-width: 2`, gap 3px
 - Data attributes: `data-individual-id`, `data-sex`, `data-status`, `data-generation`
@@ -152,8 +152,8 @@ Conditions 通过填充 individual shape 的不同区域来表示。最多同时
   <!-- Quadrant clip paths for circles (r=20) -->
   <!-- Use rect clips centered at circle center, intersected with circle -->
 
-  <!-- Carrier pattern (diagonal stripes) -->
-  <pattern id="carrier-stripe" patternUnits="userSpaceOnUse" width="6" height="6">
+  <!-- Striped pattern (for carrier notation) -->
+  <pattern id="striped" patternUnits="userSpaceOnUse" width="6" height="6">
     <path d="M-1,1 l2,-2 M0,6 l6,-6 M5,7 l2,-2" stroke="#333" stroke-width="1"/>
   </pattern>
 
@@ -177,7 +177,7 @@ mother [female, 1948, conditions: diabetes + cancer + anxiety]
 uncle [male, 1950, conditions: heart-disease(half-left, #E53935) + diabetes(half-right, #FB8C00)]
 
 # Carrier（无症状）
-son [male, 1975, conditions: diabetes(carrier)]
+son [male, 1975, conditions: diabetes(striped)]
 
 # 使用 category shorthand
 daughter [female, 1978, conditions: cardiovascular + mental-health]
@@ -186,7 +186,7 @@ daughter [female, 1978, conditions: cardiovascular + mental-health]
 **解析规则：**
 - 没有指定 fill position 时，自动按条件数量分配（见 2.1 叠加规则）
 - 没有指定 color 时，使用 category 默认颜色
-- `carrier` fill → striped pattern
+- `striped` fill 可用于 carrier notation
 - Category shorthand（如 `cardiovascular`）映射到默认颜色
 - 自定义条件名（不在标准 category 中）使用 gray 默认色
 
@@ -282,27 +282,15 @@ genogram "Heritage Example" [mode: heritage]
 | Line 2 | Birth/death years | "(1966)" or "(1930-2020)" |
 | Line 3+ | Annotations | "Paleontologist", "Smoking", "Diabetes" |
 
-### 2C.3 Rich Annotations
+### 2C.3 Rich Annotations — Not Yet Implemented (Roadmap)
 
-Individual 可以附加多行文字注释，用于临床评估记录：
+规划中的多行 `@annotation` syntax 尚未被 parser 接受。当前可用 inline `note:` 保存一段 metadata；逗号是 property delimiter，因此同一 value 内的项目使用分号：
 
 ```
-ross [male, 1966, label: "Ross"]
-  @occupation: "Paleontologist, College Professor"
-  @traits: "Geeky, Quirky"  
-  @notes: "Golden Child/Favorite"
+ross [male, 1966, occupation: "Professor", note: "Geeky; Golden Child"]
 ```
 
-**或 inline 简化语法：**
-```
-ross [male, 1966, occupation: "Professor", notes: "Golden Child"]
-```
-
-**渲染：**
-- Annotations 显示在 name + year 下方
-- Font: italic, 10px, class="schematex-annotation"  
-- 最多显示 3 行 annotation，超出部分 truncate + tooltip
-- 可通过 render config 控制是否显示 annotations
+Inline metadata 会保存在 AST；在独立 annotation renderer 实现前，不承诺显示在 name + year 下方。
 
 ### 2C.4 Relationship Labels on Lines
 
@@ -525,10 +513,6 @@ M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
 | Sibling-of (known relative, unknown ancestry) | Dashed bracket between two same-generation nodes, no parents drawn | `[sibling-of: <id>]` property | 已知亲属、家系未知（标准 pedigree 约定） |
 | Identical twins | Lines meet at single point (V) | `[twin-identical]` | 同卵双胞胎 |
 | Fraternal twins | Lines connect with bar | `[twin-fraternal]` | 异卵双胞胎 |
-| Triplets+ | 3+ lines from single point/bar | `[triplet-identical]` | 三胞胎+ |
-| Surrogacy | Dotted line + S label | `[surrogate]` | 代孕 |
-| Donor gamete | Dotted line + D label | `[donor]` | 供体配子 |
-| Step-child | Step-shaped line (two right angles) | `[step]` | 继子女 |
 
 ### 3.4.1 Dual-parent rendering (foster / adoption / guardianship)
 
@@ -620,11 +604,13 @@ Schematex 必须支持现代非传统家庭结构：
 |-----------|---------|
 | Same-sex parents | 两个同性 partner，standard couple line，children 连接方式相同 |
 | Single parent by choice | 只有一个 parent node，直接 vertical line to children |
-| Donor conception | Dotted line from donor node（可选显示/隐藏 donor） |
-| Surrogacy | Surrogate 用 dotted line 连接到 child，biological parents 用 solid line |
 | Co-parenting (non-couple) | Two individuals connected to children but no couple line between them |
 | Blended family | Step-children connections + multiple marriage lines |
 | Polyamorous family | Multiple concurrent couple lines from same individual (no divorce markers) |
+
+### 3.5.1 Not Yet Implemented (Roadmap)
+
+以下结构是标准的目标能力，但当前 genogram parser 尚不接受相应 DSL token：donor conception (`donor`)、surrogacy (`surrogate`)、step-child (`step`)、triplets (`triplet-identical` / `triplet-fraternal`) 和 transgender marker (`transgender`)。当前可执行 DSL 支持 same-sex couples、adoption、foster care、guardianship，以及 identical / fraternal twins。
 
 **Children connection structure (standard):**
 ```
@@ -688,54 +674,46 @@ Father ────── Mother       (couple line)
 ## 5. DSL Grammar (Genogram — Expanded)
 
 ```ebnf
-document       = header? legend_def* statement*
-header         = "genogram" quoted_string? header_props? NEWLINE
-header_props   = "[" header_prop ("," header_prop)* "]"
-header_prop    = "mode:" MODE | "legend:" POSITION
-MODE           = "medical" | "heritage"    # default: medical
-POSITION       = "bottom-right" | "right" | "bottom-center" | "none"
+document       = header legend_def* statement*
+header         = "genogram" quoted_string? NEWLINE
 
 legend_def     = "legend:" IDENTIFIER "=" quoted_string ( "(" color ")" )? NEWLINE
 
 statement      = comment | individual_def | relationship_def
-               | emotional_rel_def | annotation_def
+               | emotional_rel_def
 
 comment        = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 individual_def = ID properties? NEWLINE
 properties     = "[" property ("," property)* "]"
-property       = sex_prop | gender_prop | status_prop | year_prop
-               | condition_prop | heritage_prop | child_prop | kv_prop
+property       = sex_prop | status_prop | year_prop
+               | condition_prop | child_prop | kv_prop
                | "index" | "unknown-siblings"
 
-sex_prop       = "male" | "female" | "unknown" | "nonbinary" | "intersex"
-gender_prop    = "transgender"
-status_prop    = "deceased" | "stillborn" | "miscarriage" | "abortion" | "pregnancy"
+sex_prop       = "male" | "female" | "unknown" | "other"
+status_prop    = "deceased" | "stillborn" | "miscarriage" | "abortion"
 year_prop      = /[0-9]{4}/
 condition_prop = "conditions:" condition ("+" condition)*
-condition      = IDENTIFIER ( "(" fill_spec ")" )?
-fill_spec      = (fill_position ("," color)?) | "carrier"
+condition      = IDENTIFIER "(" fill_spec ")"
+fill_spec      = fill_position ("," color)?
 fill_position  = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
                | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
-heritage_prop  = "heritage:" IDENTIFIER ("+" IDENTIFIER)*
+               | "quarter" | "striped" | "dotted"
 color          = "#" HEX{6} | NAMED_COLOR
-child_prop     = "adopted" | "foster" | "guardian" | "surrogate" | "donor" | "step"
+child_prop     = "adopted" | "foster" | "guardian"
                | "twin-identical" | "twin-fraternal"
-               | "triplet-identical" | "triplet-fraternal"
 kv_prop        = IDENTIFIER ":" VALUE
                | "sibling-of" ":" ID
                | "label" ":" quoted_string
                | "age" ":" INTEGER
                | "death" ":" /[0-9]{4}/
 
-annotation_def = INDENT "@" IDENTIFIER ":" quoted_string NEWLINE  # follows individual_def
-
 relationship_def       = couple_rel | couple_with_children
 couple_rel             = ID couple_op ID rel_label? NEWLINE
 couple_with_children   = ID couple_op ID rel_label? NEWLINE INDENT child+ DEDENT
-couple_op              = "--" | "-x-" | "-/-" | "-//" | "~" | "~/~" | "==" | "-o-" | "~dp~"
+couple_op              = "--" | "-x-" | "~x~" | "-/-" | "-//" | "~" | "~/~" | "==" | "-o-"
 # Note: "~/~" / "-//" must be matched before "~" / "-/-" — longest token wins.
-rel_label              = "[" "label:" quoted_string "]"
+rel_label              = quoted_string
 child                  = individual_def | unknown_sib_placeholder
 unknown_sib_placeholder = INDENT "?" NEWLINE  # auto-generated unknown-siblings node
 
@@ -818,8 +796,8 @@ genogram
   father [male, 1945, conditions: heart-disease(half-left, #E53935) + diabetes(half-right, #FB8C00)]
   mother [female, 1948, conditions: depression(full, #5C6BC0)]
   father -- mother
-    son [male, 1970, conditions: diabetes(carrier)]
-    daughter [female, 1973, conditions: anxiety(full, #26A69A) + heart-disease(carrier)]
+    son [male, 1970, conditions: diabetes(striped)]
+    daughter [female, 1973, conditions: anxiety(full, #26A69A) + heart-disease(striped)]
 ```
 验证：father 有两色半填充，mother 全填充 indigo，son 有 striped pattern，daughter 有 teal fill + stripe。
 
@@ -856,16 +834,15 @@ genogram
 ```
 验证：4 条 emotional relationship lines 叠加在 structural lines 上，各有正确的 line style 和 color。
 
-### Case 8: Modern Family (LGBTQ+ / Donor)
+### Case 8: Modern Family (Same-sex Parents / Adoption)
 ```
 genogram "Modern Family"
   alex [female, 1985]
   sam [female, 1987]
   alex -- sam
-    child [male, 2015, donor]
-  donor-d [male, 1980]
+    child [male, 2015, adopted]
 ```
-验证：同性 couple（按年龄排列），child 有 donor marker，donor-d 可选显示。
+验证：同性 couple 按年龄排列，child 使用已实现的 adopted child relationship。
 
 ### Case 9: Abuse + Control Relationships
 ```
@@ -880,18 +857,18 @@ genogram
 ```
 验证：abuse lines 有方向箭头，red zigzag 样式，overlaid on structural connections。
 
-### Case 10: Nonbinary / Transgender
+### Case 10: Nonbinary Representation
 ```
 genogram
   parent1 [male, 1960]
   parent2 [female, 1962]
-  child1 [nonbinary, 1990]
-  child2 [male, transgender, 1992]
+  child1 [other, 1990, label: "Alex (nonbinary)"]
+  child2 [male, 1992]
   parent1 -- parent2
     child1
     child2
 ```
-验证：child1 renders as diamond，child2 renders as square + transgender marker。
+验证：`other` 使用 diamond，并通过明确 label 表达 nonbinary identity；child2 使用 square。
 
 ### Case 11: Cultural Heritage Genogram
 ```
@@ -918,20 +895,16 @@ genogram "Anna Maria's Heritage" [mode: heritage]
 ### Case 12: Rich Annotations + In-Shape Age
 ```
 genogram "Clinical Assessment"
-  jack [male, 1968, age: 57, occupation: "Veteran, Businessman"]
-    @traits: "Tone Deaf Dad"
-    @medical: "Smoking, Diabetes"
+  jack [male, 1968, age: 57, occupation: "Veteran; Businessman", note: "Tone Deaf Dad; Smoking; Diabetes"]
   judy [female, 1970, age: 55, occupation: "Homemaker"]
-    @notes: "Good Wife, Good Mother"
-  jack -- judy [label: "Married 35 yrs"]
+  jack -- judy "Married 35 yrs"
     ross [male, 1989, age: 36, occupation: "Professor"]
-    monica [female, 1991, age: 34, occupation: "Chef"]
-      @traits: "Hardworking, Type A, Neat Freak"
-  jack -close- ross [label: "Favoritism"]
-  judy -close- monica [label: "Favoritism"]
-  ross -hostile- monica [label: "Competitive"]
+    monica [female, 1991, age: 34, occupation: "Chef", note: "Hardworking; Type A; Neat Freak"]
+  jack -close- ross "Favoritism"
+  judy -close- monica "Favoritism"
+  ross -hostile- monica "Competitive"
 ```
-验证：age number (57, 55, 36, 34) 显示在 shape 内部，annotations 显示在 name 下方，relationship labels 显示在 lines 上。
+验证：age number (57, 55, 36, 34) 显示在 shape 内部，notes 保存在人物 metadata，relationship labels 显示在线上。Property value 内如需列举多项，使用分号；parser 以逗号分隔 properties。
 
 ### Case 13: Extended Family with In-Laws
 ```

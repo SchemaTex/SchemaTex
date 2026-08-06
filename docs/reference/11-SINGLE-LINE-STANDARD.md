@@ -316,15 +316,23 @@ Transformer 旁边标注铭牌数据：
 
 ```ebnf
 document      = header statement*
-header        = "sld" quoted_string? NEWLINE
+header        = "sld" quoted_string? ("[standard:" ("ansi" | "iec" | "abnt" | "as-nzs") "]")? NEWLINE
 
-statement     = comment | source_def | bus_def | device_def | load_def
-              | connect_def | feeder_def | boundary_def
+statement     = comment | node_def | connect_def
 
 comment       = ("#" | "//" | "%%") [^\n]* NEWLINE
 
-source_def    = IDENTIFIER "=" source_type attrs NEWLINE
-source_type   = "utility" | "generator" | "battery"
+node_def      = IDENTIFIER "=" node_type attrs? NEWLINE
+node_type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd" | "autotransformer"
+              | "transformer_3winding" | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl" | "ct" | "pt" | "relay"
+              | "surge_arrester" | "ground_fault" | "rcd" | "motor"
+              | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter" | "consumer_unit"
 attrs         = "[" attr ("," attr)* "]"
 
 # Parser aliases for IEC 60364 / BS 7671 / REBT residential vocabulary:
@@ -333,40 +341,21 @@ attrs         = "[" attr ("," attr)* "]"
 # pia, iga -> breaker
 # main_switch, isolator, disconnector -> switch_load
 # consumer_unit, distribution_board, panel, panelboard -> consumer_unit
-attr          = "voltage:" voltage_spec
-              | "rating:" quoted_string
-              | "label:" quoted_string
-              | "id:" quoted_string
-voltage_spec  = FLOAT "V" | FLOAT "kV"
-
-bus_def       = IDENTIFIER "=" "bus" attrs NEWLINE
-
-device_def    = IDENTIFIER "=" device_type attrs NEWLINE
-device_type   = "breaker" | "switch" | "fuse" | "fused-switch"
-              | "transformer" | "ct" | "pt" | "relay"
-              | "starter" | "contactor" | "mcc"
-              | "ammeter" | "voltmeter" | "power-meter"
-
-load_def      = IDENTIFIER "=" load_type attrs NEWLINE
-load_type     = "motor" | "panel" | "lighting-panel" | "ats" | "ups" | "load"
+attr          = IDENTIFIER ":" value
+value         = IDENTIFIER | quoted_string
 
 connect_def   = IDENTIFIER "->" IDENTIFIER cable_clause? NEWLINE
-              | IDENTIFIER "--" IDENTIFIER             # bidirectional (bus tie)
 cable_clause  = "[" ("cable:" | "cable_csa:" | "cable_length_m:" | "cable_insulation:" | "label:") quoted_string "]"
-
-feeder_def    = "feeder" IDENTIFIER "from:" bus_id "to:" load_id
-              INDENT device_def+ DEDENT
-
-boundary_def  = "boundary" quoted_string ":" NEWLINE
-              INDENT statement+ DEDENT
 
 IDENTIFIER    = /[a-zA-Z][a-zA-Z0-9_-]*/
 FLOAT         = /[0-9]+(\.[0-9]+)?/
 quoted_string = '"' /[^"]*/ '"'
-INDENT        = increase in whitespace
-DEDENT        = decrease in whitespace
 NEWLINE       = /\n/
 ```
+
+### Not Yet Implemented (Roadmap)
+
+以下 shorthand 尚未由 SLD parser 实现：chained connection（`A -> B -> C`）、`A -- B` bidirectional connection、`feeder ... from: ... to: ...` block，以及 `boundary` block。当前 DSL 用每行一条 `A -> B` 表达完整路径；bus tie 使用显式 `bus_tie` node 和两条 connection。
 
 **DSL 示例：简单工业配电 SLD**
 ```
@@ -391,16 +380,19 @@ CB3 = breaker [rating: "200A / 65kA", id: "CB-3"]
 
 # Loads
 M1 = motor [rating: "150HP, 480V, 3ph", label: "Pump Motor M-1"]
-LP1 = lighting-panel [rating: "100A, 208/120V", label: "LP-1"]
-MCC1 = mcc [rating: "800A", label: "MCC-1"]
+LP1 = consumer_unit [rating: "100A, 208/120V", label: "LP-1"]
+MCC1 = load [rating: "800A", label: "MCC-1"]
 
 # Connections (top-to-bottom power flow)
 util -> TX1
 TX1 -> CB-MAIN
 CB-MAIN -> BUS-480
-BUS-480 -> CB1 -> M1 [cable: "3#2/0 AWG, 200ft"]
-BUS-480 -> CB2 -> LP1 [cable: "3#4 AWG, 75ft"]
-BUS-480 -> CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
+BUS-480 -> CB1
+CB1 -> M1 [cable: "3#2/0 AWG, 200ft"]
+BUS-480 -> CB2
+CB2 -> LP1 [cable: "3#4 AWG, 75ft"]
+BUS-480 -> CB3
+CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
 ```
 
 **DSL 示例：住宅服务入口 (NEC — panel 是叶节点)**
@@ -408,11 +400,13 @@ BUS-480 -> CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
 sld "Residential 200A Service"
 
 util = utility [voltage: "240V", label: "Utility 240V/120V Split-Phase"]
-meter = ammeter [id: "M-1"]
+meter = watthour_meter [id: "M-1"]
 main-cb = breaker [rating: "200A / 10kA AIC", id: "MAIN"]
 panel = panel [rating: "200A, 120/240V, 24-space", label: "Main Panel"]
 
-util -> meter -> main-cb -> panel
+util -> meter
+meter -> main-cb
+main-cb -> panel
 ```
 
 **DSL 示例：住宅 IEC 60364 / REBT — 展开 CGMP 内部**
@@ -552,7 +546,8 @@ sld "Transformer Test"
 src = utility [voltage: "13.8kV"]
 tx = transformer [rating: "500 kVA, 13.8kV/480V"]
 bus = bus [voltage: "480V"]
-src -> tx -> bus
+src -> tx
+tx -> bus
 ```
 验证：utility arrow 在顶，transformer 在中，480V bus bar 在底，垂直连线正确。
 
@@ -562,7 +557,8 @@ sld
 bus1 = bus [voltage: "480V"]
 cb = breaker [rating: "800A", id: "CB-1"]
 motor = motor [rating: "50HP"]
-bus1 -> cb -> motor
+bus1 -> cb
+cb -> motor
 ```
 验证：breaker 符号（对角线 + 弧线）在 bus 和 motor 之间，额定值标注正确。
 
@@ -578,9 +574,12 @@ m1 = motor [rating: "30HP", label: "Pump 1"]
 m2 = motor [rating: "30HP", label: "Pump 2"]
 lp1 = panel [rating: "100A", label: "LP-1"]
 src -> bus
-bus -> cb1 -> m1
-bus -> cb2 -> m2
-bus -> cb3 -> lp1
+bus -> cb1
+cb1 -> m1
+bus -> cb2
+cb2 -> m2
+bus -> cb3
+cb3 -> lp1
 ```
 验证：3 个 feeder 从 bus 等间距向下，各自 breaker + 负荷正确对齐。
 
@@ -867,13 +866,15 @@ sld "Substation with Protection"
   M1     = motor [rating: "200HP", voltage: "13.8kV"]
 
   UTIL   -> TX1
-  UTIL   -> ARR1   /* surge arrester in parallel */
-  ARR1   -> BUS1   /* direct to bus */
+  # Surge arrester branch to the bus
+  UTIL   -> ARR1
+  ARR1   -> BUS1
   TX1    -> CB1
   CB1    -> CT1
   CT1    -> BUS1
   CT1    -> REL51
-  TX1    -> REL87   /* differential relay monitors transformer */
+  # Differential relay monitors the transformer
+  TX1    -> REL87
   BUS1   -> VFD1
   VFD1   -> M1
 ```

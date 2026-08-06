@@ -148,7 +148,9 @@ When signals are grouped, render a left-side bracket:
 
 ---
 
-## 3. Timing Annotations
+## 3. Not Yet Implemented (Roadmap): Timing Annotations
+
+> **Roadmap:** 当前 parser 只接受 header、signal、group 与分隔线；不接受 `annotate:` blocks 或 edge-to-edge constraint 语句。现阶段可用专门的 signal row 表达 setup/hold window。以下图形约定描述未来 renderer 目标，不是当前支持的 DSL。
 
 ### 3.1 Arrow Types (WaveDrom node/edge syntax)
 
@@ -238,12 +240,6 @@ config_prop     = "hscale:" INT NEWLINE
                 | "skin:" IDENTIFIER NEWLINE
                 | "period:" INT NEWLINE     # period_width in px
 
-# Timing annotations (separate from signal definitions)
-annotation_def  = "annotate:" NEWLINE INDENT annotation+ DEDENT
-annotation      = node_id "->" node_id label_clause? NEWLINE
-                | node_id "<->" node_id label_clause? NEWLINE
-node_id         = IDENTIFIER
-label_clause    = "label:" quoted_string
 ```
 
 **DSL 示例（完整）：**
@@ -255,10 +251,9 @@ CS:   10000001
 MOSI: x=======x  data: ["0xAB", "0xCD", "0xEF", "0x01", "0x02", "0x03", "0x04", "0x05"]
 MISO: xzzzz===x  data: ["", "", "", "", "0xFF", "0x12", "0x34", "0x56"]
 ---
-# Timing constraints
-annotate:
-  cs_fall -> clk_rise   label: "t_su = 5ns"
-  clk_fall -> cs_rise   label: "t_hold = 2ns"
+# Constraint windows represented as ordinary labelled signals
+CS_SETUP: 2.......  data: ["t_su = 5ns"]
+CS_HOLD:  .......2  data: ["t_hold = 2ns"]
 ```
 
 ---
@@ -343,16 +338,15 @@ SIG_B: x.011110000111100
 ```
 验证：两组信号分别有 bracket，CLK_B 相位偏移 0.5 个周期。
 
-### Case 4: Setup / Hold Annotation
+### Case 4: Setup / Hold Windows as Signals
 ```
 timing
 CLK:  pppp
 DATA: x==.  data: ["VAL"]
-annotate:
-  d_change -> clk_rise  label: "t_su ≥ 3ns"
-  clk_rise -> d_stable  label: "t_h ≥ 1ns"
+SETUP: 2...  data: ["t_su ≥ 3ns"]
+HOLD:  .2..  data: ["t_h ≥ 1ns"]
 ```
-验证：红色双向箭头 + 标签在 CLK 上升沿附近正确定位。
+验证：用与 CLK 对齐的 labelled rows 标出 setup 与 hold constraint windows。
 
 ### Case 5: Single Signal
 ```
@@ -382,7 +376,7 @@ B: 00110011
 | P1 | Clock waveforms (p/n/P/N) | Low | High |
 | P1 | Group notation `[name]` + bracket | Medium | High |
 | P1 | `hscale` config | Low | Medium |
-| P2 | Timing annotations (arrows, labels) | Medium | Medium — 专业用法 |
+| Roadmap | Timing annotations (arrows, labels) | Medium | Medium — 专业用法 |
 | P2 | Phase offset | Low | Medium |
 | P2 | `u/d` explicit edge characters | Low | Low |
-| P3 | Edge timing constraint visualization | High | Low — advanced only |
+| Roadmap | Edge timing constraint visualization | High | Low — advanced only |

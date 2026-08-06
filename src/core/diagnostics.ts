@@ -9,7 +9,22 @@ import {
   title,
 } from "./svg";
 
-export type SchematexResultStatus = "valid" | "partial" | "invalid";
+/**
+ * Outcome of a structured parse or render operation.
+ *
+ * - `valid` — the engine ran a semantic check pass and it reported nothing.
+ * - `unverified` — parsing and rendering succeeded, but this engine has no
+ *   semantic check pass, so nothing about the diagram's correctness has been
+ *   verified. This is not a claim of correctness.
+ * - `partial` — checks ran (or preprocessing produced diagnostics) and
+ *   reported at least one non-fatal problem.
+ * - `invalid` — fatal; parsing or rendering failed.
+ */
+export type SchematexResultStatus =
+  | "valid"
+  | "unverified"
+  | "partial"
+  | "invalid";
 
 export interface SchematexDiagnostic {
   severity: "error" | "warning";
@@ -25,7 +40,7 @@ export interface SchematexDiagnostic {
 export type SchematexParseResult =
   | {
       ok: true;
-      status: "valid" | "partial";
+      status: "valid" | "unverified" | "partial";
       type: DiagramType;
       ast: unknown;
       diagnostics: SchematexDiagnostic[];
@@ -40,7 +55,7 @@ export type SchematexParseResult =
 export type SchematexRenderResult =
   | {
       ok: true;
-      status: "valid" | "partial";
+      status: "valid" | "unverified" | "partial";
       type: DiagramType;
       svg: string;
       diagnostics: SchematexDiagnostic[];

@@ -11,6 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.8] — 2026-08-06
+
+### Changed — `status: "valid"` now means "checked and clean", not "this engine never checked"
+
+`SchematexResultStatus` gains a fourth value, `unverified`. Only 13 of the 50 engines implement a `lint` pass, so for the other 37 `parseResult()` and `renderResult()` always returned `valid` as long as parsing did not throw. A consumer could not distinguish "verified and clean" from "nothing was ever verified", which made any downstream quality gate meaningless.
+
+- **`valid` is now a claim about the diagram, not about the engine.** The status precedence is: any diagnostics → `partial`; otherwise the engine declares a check pass (it implements `lint`) → `valid`; otherwise → `unverified`.
+- **`unverified` is not a claim of correctness.** Parsing and rendering succeeded and the SVG is usable, but nothing about the diagram's semantics has been checked.
+- **Consumer note.** Code that switches exhaustively on `status`, or that treats "not `partial`" as success, must now handle `unverified`. Shipped as a patch release because no engine's parsing or rendering behaviour changes — only the label a clean result carries.
+- **`scripts/validate-examples.mjs` treats `unverified` as clean.** It is the first in-tree consumer of the new value: `unverified` means nothing was checked, not that something was found, so failing the bundled corpus on it would report a label change as a defect.
+- Adding `lint` passes to the remaining 40 engines is separate, incremental work; this change makes their absence visible rather than silently reported as success.
+
+### Fixed — circuit `dot` junctions parse again
+
+The 1.0.7 change that made the circuit symbol registry the capability source of truth replaced a hardcoded type list with a `getSymbol()` lookup. That list also carried `wire`, `dot`, and `label` — drawing directives rendered by dedicated branches in `layout.ts` and `renderer.ts` rather than by a `SymbolDef`, and therefore legitimately absent from the registry. A bare `dot` junction stopped parsing while the rest of the pipeline still rendered it, breaking four documented schematic examples. `normalizeType()` now accepts those three pseudo-types alongside the registry. Found by the documentation gate below on its first run against 1.0.7.
+
+### Fixed — every documented DSL example is now executed in CI
+
+`docs/reference/*.md` (59 files) were the standard documents a reader — or a model — consults for correct syntax, and nothing had ever run the DSL inside them. CI validated only the generated AI examples and the `examples/` gallery, so the reference documentation silently rotted as engines changed. Executing it for the first time surfaced 62 failures.
+
+- **The conformance check now asserts meaning, not just renderability.** `scripts/check-doc-dsls.mjs` previously only asserted that `render()` did not throw. It now parses each block and additionally verifies that every semantic token leaves a trace in the resulting AST — which is what catches documented-but-unimplemented syntax such as pedigree `[twin-mz]`, which rendered perfectly and meant nothing.
+- **It now scans `docs/reference/*.md` as well as `website/content/docs/*.mdx`,** and it runs in CI via `npm run check:docs`. It was previously wired into neither `package.json` nor the workflow.
+- **24 reference documents corrected.** Where the engine supported the concept under different syntax, the documentation was rewritten to the real form (ladder `parallel:`/`branch:`, floorplan `stack` as a header option, block-diagram `discrete` as a connection attribute, single-line one-connection-per-line). Where the feature did not exist at all, the claim was moved into an explicit "Not Yet Implemented (Roadmap)" section and removed from the EBNF (pedigree twins and donor conception, ladder `var`/`RTO`/`JMP`-`LBL`, genogram donor/surrogacy/transgender markers, ERD Chen and Barker notation, timing annotations, decision-tree sklearn JSON import).
+- **Examples keep their teaching value.** Failing examples were rewritten into working DSL that demonstrates the same thing, not deleted or reduced to stubs.
+- **Two silent-drop defects found by the new assertion.** Pedigree discarded `donor-*` and `surrogate` tokens outright, and the block-diagram `signal(...)` declaration documented in the EBNF produced nothing in the AST.
+- **Illustrative blocks are classified, not pre-filtered.** Elided examples, placeholder templates, and grammar alternations are excused only *after* they fail, so a block that passes is always checked; the count of excused blocks is printed rather than silently dropped.
+
+---
+
 ## [1.0.7] — 2026-07-28
 
 ### Fixed — trustworthy validation and measured layout across generation-heavy diagrams

@@ -280,12 +280,13 @@ C1: capacitor down label="100nF"    # 从 R1.end 向下
 
 ### 3.4 Node/Net Labels
 
-Named nets 通过 `net:` 声明，允许非连续元件"隐式连接"（避免长绕线）：
+Named nets 通过 `net NAME` 声明；在当前游标处打点并记住 anchor 时使用 `net NAME: dot`。之后用独立的 `at: NAME` 跳回该 net（避免长绕线）：
 ```
 net VOUT
 R1: resistor right
 net VOUT: dot        # 在 R1.end 打点并命名 net
-C1: capacitor down at: VOUT   # 从同名 net 点出发
+at: VOUT
+C1: capacitor down   # 从同名 net 点出发
 ```
 
 ### 3.5 Readability conventions for auto-layout
@@ -331,8 +332,9 @@ attr           = "label=" quoted_string
 wire_stmt      = "wire" direction length_spec? NEWLINE
 length_spec    = INT "px"
 
-net_stmt       = "net" IDENTIFIER ":" NEWLINE    # declare net name at current point
-               | "at:" anchor_ref NEWLINE        # jump to anchor
+net_stmt       = "net" IDENTIFIER NEWLINE          # declare a net name
+               | "net" IDENTIFIER ":" "dot" NEWLINE # dot current point and remember anchor
+at_stmt        = "at:" anchor_ref NEWLINE          # jump to anchor
 anchor_ref     = IDENTIFIER "." pin_name
                | IDENTIFIER                      # net name as anchor
                | FLOAT "," FLOAT                 # absolute positional coordinate
@@ -376,9 +378,10 @@ Rin: resistor right label="Rin" value="10kΩ"
 
 at: Rin.end
 dot
-net: INV_IN
+net INV_IN: dot
 
-Rf: resistor right label="Rf" value="100kΩ" at: INV_IN
+at: INV_IN
+Rf: resistor right label="Rf" value="100kΩ"
 
 U1: opamp right
 at: U1.minus

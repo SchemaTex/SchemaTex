@@ -732,7 +732,35 @@ set E "Set E"
 
 A only : 10
 B only : 10
-... (all 31 regions)
+C only : 9
+D only : 8
+E only : 7
+A & B : 6
+A & C : 5
+A & D : 4
+A & E : 3
+B & C : 5
+B & D : 4
+B & E : 3
+C & D : 4
+C & E : 3
+D & E : 3
+A & B & C : 3
+A & B & D : 2
+A & B & E : 2
+A & C & D : 2
+A & C & E : 2
+A & D & E : 2
+B & C & D : 2
+B & C & E : 2
+B & D & E : 2
+C & D & E : 2
+A & B & C & D : 1
+A & B & C & E : 1
+A & B & D & E : 1
+A & C & D & E : 1
+B & C & D & E : 1
+A & B & C & D & E : 1
 ```
 
 **验证：** Edwards cogwheel geometry；31 region colors 来自 multiply blending of 5 base colors；label 仅渲染有值区域。
@@ -808,7 +836,12 @@ set b "Group B"
 set c "Group C"
 
 a only : 24
-... (7 regions)
+b only : 18
+c only : 15
+a & b : 9
+a & c : 7
+b & c : 6
+a & b & c : 3
 ```
 
 **验证：** 全灰度填充 + dashed / dotted / solid stroke 区分三集合；count chip 黑色 12pt。
