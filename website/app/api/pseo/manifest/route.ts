@@ -1,6 +1,6 @@
 import { source } from '@/lib/source';
 import { LIVE_LOCALES } from '@/lib/i18n/locales';
-import { buildDocLocaleMap, docBarePath, docFileKey } from '@/lib/docs-locales';
+import { buildDocLocaleMap, docFileKey } from '@/lib/docs-locales';
 import { allExamples } from '@/lib/examples-source';
 
 export const runtime = 'nodejs';
@@ -19,16 +19,9 @@ export function GET(request: Request) {
   // from localeMap (actual translation files, not fumadocs fallbacks).
   const enPages = source.getPages('en');
   const docSlugs = enPages.flatMap((page) => {
-    // IMPORTANT: do NOT use page.url here. fumadocs i18n prefixes EVERY locale
-    // (including the default) so page.url is '/en/docs/api', not '/docs/api'.
-    // The cockpit treats the manifest slug as the locale-agnostic baseSlug and
-    // prepends each non-default locale itself (→ '/fr/docs/api'); feeding it the
-    // already-prefixed '/en/docs/api' both breaks the grouping (group header
-    // shows '/en/...') and produces double-prefixed URLs like '/fr/en/docs/api'.
-    // English is served bare at '/docs/...' (app/docs/[[...slug]]). So emit the
-    // bare canonical path, same for every locale; the cockpit prefixes non-default
-    // locales itself.
-    const slug = docBarePath(page.slugs);
+    // English page URLs are locale-agnostic base slugs. The cockpit prepends
+    // non-default locales itself (for example, '/fr/docs/api').
+    const slug = page.url;
     const locales = localeMap[docFileKey(page.slugs)] ?? ['en'];
 
     return locales.map((locale) => ({
