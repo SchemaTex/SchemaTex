@@ -35,7 +35,7 @@ import type {
   CircuitAST,
   CircuitComponent,
 } from "../../core/types";
-import { getSymbol, type PinAnchor } from "./symbols";
+import { effectiveSymbolDef, getSymbol, type PinAnchor } from "./symbols";
 import type {
   LaidOutComponent,
   CircuitLayoutResult,
@@ -143,7 +143,7 @@ function placeComponent(
       : fallbackDir ?? defaultDirection(comp);
   comp.direction = direction;
   const rot = rotationOf(direction);
-  const sym = getSymbol(comp.componentType);
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
   const worldAnchors: Record<string, PinAnchor> = {};
   if (sym) {
     for (const [name, pt] of Object.entries(sym.anchors)) {
@@ -165,7 +165,7 @@ function placeComponent(
 }
 
 function placeMirroredComponent(comp: CircuitComponent, x: number, y: number): LaidOutComponent {
-  const sym = getSymbol(comp.componentType);
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
   const length = sym?.length ?? 30;
   const worldAnchors: Record<string, PinAnchor> = {};
   comp.direction = "left";
@@ -942,7 +942,9 @@ function layoutTwoWayLightingLoop(
 
   const rightCommonX = leftLaid.x + leftLaid.length + AC_TRAVELER_SPAN + leftLaid.length;
   const sameTravelerOrder = leftPins.nc === rightPins.nc && leftPins.no === rightPins.no;
-  const rightLength = getSymbol(rightSwitch.componentType)?.length ?? 30;
+  const rightLength =
+    (effectiveSymbolDef(rightSwitch.componentType, rightSwitch.attrs) ??
+      getSymbol(rightSwitch.componentType))?.length ?? 30;
   const rightLaid = sameTravelerOrder
     ? placeMirroredComponent(rightSwitch, rightCommonX - rightLength, AC_LIVE_Y)
     : placeComponent(rightSwitch, rightCommonX, AC_LIVE_Y, "left");

@@ -31,7 +31,13 @@ import type {
   CircuitComponentType,
   CircuitNet,
 } from "../../core/types";
-import { getNetlistPinOrder, getSymbol } from "./symbols";
+import {
+  getGenericIcPinSides,
+  getNetlistPinOrder,
+  getSymbol,
+  getTerminalBlockPinLabels,
+  normalizePinName,
+} from "./symbols";
 
 export class NetlistParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -80,6 +86,7 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   gnd: "ground",
   ic: "generic_ic",
   reg: "voltage_regulator",
+  "555": "555_timer",
   timer555: "555_timer",
   transistor: "npn",
   bjt_npn: "npn",
@@ -178,6 +185,13 @@ export function parseNetlist(
   const pinMap: Record<string, Record<string, string>> = {};
   let autoGnd = 0;
   const underspecified: { id: string; type: string; expected: number; got: number }[] = [];
+  const overspecified: {
+    id: string;
+    type: string;
+    expected: number;
+    got: number;
+    extraNets: string[];
+  }[] = [];
 
   const ensureNet = (name: string): CircuitNet => {
     let n = netByName.get(name);
@@ -245,6 +259,7 @@ export function parseNetlist(
     const defaults = PREFIX_MAP[prefix];
     let cType: CircuitComponentType;
     let pinOrder: string[];
+    let genericIcHasExplicitPins = false;
 
     if (kv.type) {
       const t = kv.type.toLowerCase();
@@ -273,6 +288,43 @@ export function parseNetlist(
       );
     }
 
+    // Generic ICs have per-instance pin counts and anchors. Persist the DIP
+    // side labels into attrs so the symbol renderer and effectiveSymbolDef()
+    // build pin legs and wire anchors from the exact same inputs.
+    if (cType === "generic_ic") {
+      let orderedLabels: string[];
+      if (kv.pins !== undefined) {
+        orderedLabels = kv.pins.split(",").map((label) => label.trim()).filter(Boolean);
+        genericIcHasExplicitPins = true;
+        const leftCount = Math.ceil(orderedLabels.length / 2);
+        kv.pins_left = orderedLabels.slice(0, leftCount).join(",");
+        kv.pins_right = orderedLabels.slice(leftCount).reverse().join(",");
+      } else if (kv.pins_left !== undefined || kv.pins_right !== undefined) {
+        const sides = getGenericIcPinSides(kv);
+        kv.pins_left = sides.left.join(",");
+        kv.pins_right = sides.right.join(",");
+        orderedLabels = [...sides.left, ...[...sides.right].reverse()];
+        genericIcHasExplicitPins = true;
+      } else {
+        orderedLabels = Array.from({ length: netRefs.length }, (_, index) => `${index + 1}`);
+        const leftCount = Math.ceil(orderedLabels.length / 2);
+        kv.pins_left = orderedLabels.slice(0, leftCount).join(",");
+        kv.pins_right = orderedLabels.slice(leftCount).reverse().join(",");
+      }
+      pinOrder = orderedLabels.map((label, index) =>
+        normalizePinName(label, `pin_${index + 1}`)
+      );
+    }
+
+    // Terminal blocks are also per-instance symbols. Resolve their pin order
+    // before tail/value handling so T-prefix, type=terminal_block, pins=, and
+    // terminals= all bind against the same labels used by the rendered legs.
+    if (cType === "terminal_block") {
+      pinOrder = getTerminalBlockPinLabels(kv).map((label, index) =>
+        normalizePinName(label, `t${index + 1}`)
+      );
+    }
+
     // Net refs consumption depends on type: last net ref may actually be the
     // "value" / "model" if it doesn't look like a net name.
     // Heuristic: if we have more refs than expected pins+0, last one is value.
@@ -280,7 +332,22 @@ export function parseNetlist(
     const expectedPins = pinOrder.length;
     let valueFromTail: string | undefined;
 
-    if (netRefs.length > expectedPins && expectedPins > 0) {
+    if (
+      cType === "generic_ic" &&
+      genericIcHasExplicitPins &&
+      netRefs.length > expectedPins
+    ) {
+      const got = netRefs.length;
+      const extraNets = netRefs.slice(expectedPins);
+      netRefs.length = expectedPins;
+      overspecified.push({
+        id,
+        type: cType,
+        expected: expectedPins,
+        got,
+        extraNets,
+      });
+    } else if (netRefs.length > expectedPins && expectedPins > 0) {
       // tail contains model/value
       const tail = netRefs.slice(expectedPins);
       netRefs.length = expectedPins;
@@ -312,18 +379,6 @@ export function parseNetlist(
     // implicit. The parser supports `GND1 gnd_net` as a 1-pin component.
     if (cType === "ground" || cType === "gnd_signal" || cType === "gnd_chassis" || cType === "gnd_digital") {
       pinOrder = ["start"];
-    }
-
-    // Terminal block / junction box: pins from pins="..." attr (or t1/t2/…).
-    // Always reset pinOrder — prefix-derived defaults (e.g. J→jfet_n) are wrong here.
-    if (cType === "terminal_block") {
-      const pinsAttr = kv.pins ?? kv.terminals;
-      const labels = pinsAttr
-        ? pinsAttr.split(",").map((s) => s.trim()).filter(Boolean)
-        : Array.from({ length: Math.max(netRefs.length, 1) }, (_, i) => `t${i + 1}`);
-      pinOrder = labels.map((label, idx) =>
-        label.toLowerCase().replace(/[^a-z0-9]+/g, "_") || `t${idx + 1}`
-      );
     }
 
     if (netRefs.length < pinOrder.length) {
@@ -417,6 +472,10 @@ export function parseNetlist(
     pinMap,
     mode: "netlist",
   };
-  if (underspecified.length) ast.recovered = { underspecified };
+  if (underspecified.length || overspecified.length) {
+    ast.recovered = {};
+    if (underspecified.length) ast.recovered.underspecified = underspecified;
+    if (overspecified.length) ast.recovered.overspecified = overspecified;
+  }
   return ast;
 }

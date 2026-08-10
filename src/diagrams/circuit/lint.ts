@@ -24,6 +24,8 @@ import { getSymbol } from "./symbols";
  * Rules:
  *   - CIRCUIT_PIN_UNDERSPECIFIED — multi-terminal part given fewer nets than
  *     pins (missing pins left floating). [both modes via recovered]
+ *   - CIRCUIT_PIN_OVERSPECIFIED  — component given more nets than its explicit
+ *     pin declaration can represent. [netlist via recovered]
  *   - CIRCUIT_DUPLICATE_ID        — same component id declared twice. [both]
  *   - CIRCUIT_NO_GROUND           — has a source but no ground reference. [netlist]
  *   - CIRCUIT_FLOATING_NET        — a node only one pin connects to. [netlist]
@@ -143,6 +145,17 @@ export function lintCircuit(text: string): SchematexDiagnostic[] {
       code: "CIRCUIT_PIN_UNDERSPECIFIED",
       message: `component ${u.id} (${u.type}) needs ${u.expected} nets but got ${u.got}; the missing terminal(s) were left floating`,
       hint: `Give ${u.id} all ${u.expected} net connections (e.g. a transformer is \`${u.id} p1 p2 s1 s2 type=transformer\`). Unconnected pins are drawn but not wired.`,
+      fatal: false,
+    });
+  }
+
+  // ── Over-specified explicit pin lists (recovered during parse) ────────────
+  for (const o of ast.recovered?.overspecified ?? []) {
+    out.push({
+      severity: "warning",
+      code: "CIRCUIT_PIN_OVERSPECIFIED",
+      message: `component ${o.id} (${o.type}) declares ${o.expected} pins but received ${o.got} nets; the extra net(s) ${o.extraNets.map((net) => `"${net}"`).join(", ")} could not be bound`,
+      hint: `Add names for all ${o.got} pins to ${o.id}'s \`pins=\`/\`pins_left=\`/\`pins_right=\` attributes, or remove the extra net connections.`,
       fatal: false,
     });
   }

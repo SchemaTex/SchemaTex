@@ -1,7 +1,7 @@
 import type { CircuitAST, RenderConfig, SceneItem } from "../../core/types";
 import { layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
 import { layoutCircuitNetlist, rerouteCircuitNetlist, type RoutedWire } from "./autolayout";
-import { getSymbol } from "./symbols";
+import { effectiveSymbolDef, getSymbol } from "./symbols";
 import {
   svgRoot,
   defs,
@@ -149,7 +149,7 @@ function renderItem(
     ));
   }
 
-  const sym = getSymbol(comp.componentType);
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
   if (!sym) {
     return wrap(`<rect x="${tx - 10}" y="${ty - 10}" width="20" height="20" fill="none" class="schematex-circuit-err" stroke-dasharray="3,2"/><text x="${tx}" y="${ty + 3}" text-anchor="middle" font-size="9" class="schematex-circuit-err">?${escapeXml(comp.componentType)}</text>`);
   }
