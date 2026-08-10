@@ -843,8 +843,68 @@ const antenna: SymbolDef = {
 
 // ─── ICs / Generic blocks ────────────────────────────────────
 
+const IC_BODY_W = 80;
+const IC_PIN_PITCH = 16;
+const GENERIC_IC_LEFT = ["1", "2", "3", "4"];
+const GENERIC_IC_RIGHT = ["8", "7", "6", "5"];
+
+interface IcPinSides {
+  left: string[];
+  right: string[];
+}
+
+function pinLabels(value: string | undefined, fallback: string[]): string[] {
+  return value === undefined
+    ? [...fallback]
+    : value.split(",").map((label) => label.trim()).filter(Boolean);
+}
+
+function resolveIcPinSides(
+  defaultLeft: string[],
+  defaultRight: string[],
+  attrs?: Record<string, string>
+): IcPinSides {
+  return {
+    left: pinLabels(attrs?.pins_left, defaultLeft),
+    right: pinLabels(attrs?.pins_right, defaultRight),
+  };
+}
+
+export function normalizePinName(label: string, fallback: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || fallback;
+}
+
+export function getGenericIcPinSides(attrs?: Record<string, string>): IcPinSides {
+  return resolveIcPinSides(GENERIC_IC_LEFT, GENERIC_IC_RIGHT, attrs);
+}
+
+function icPinAnchors(
+  sides: IcPinSides,
+  leftNames?: string[],
+  rightNames?: string[]
+): Record<string, PinAnchor> {
+  const rowCount = Math.max(sides.left.length, sides.right.length, 2);
+  const bodyH = IC_PIN_PITCH * (rowCount + 1);
+  const topY = -bodyH / 2;
+  const anchors: Record<string, PinAnchor> = {
+    start: { x: 0, y: 0 },
+    end: { x: IC_BODY_W, y: 0 },
+  };
+
+  for (let i = 0; i < sides.left.length; i++) {
+    const name = leftNames?.[i] ?? normalizePinName(sides.left[i], `pin_${i + 1}`);
+    anchors[name] = { x: -8, y: topY + IC_PIN_PITCH * (i + 1) };
+  }
+  for (let i = 0; i < sides.right.length; i++) {
+    const spicePosition = sides.left.length + sides.right.length - i;
+    const name = rightNames?.[i] ?? normalizePinName(sides.right[i], `pin_${spicePosition}`);
+    anchors[name] = { x: IC_BODY_W + 8, y: topY + IC_PIN_PITCH * (i + 1) };
+  }
+  return anchors;
+}
+
 /**
- * Generic IC — 8-pin dual-inline rectangular block.
+ * Dual-inline rectangular IC block with per-instance pin labels.
  * `attrs.pins_left` / `attrs.pins_right`: comma-separated pin labels.
  * Total pins determine body height. Left pins are input side (start anchor
  * attaches to pin 1 = top-left).
@@ -854,36 +914,33 @@ function icSymbol(
   defaultRight: string[],
   bodyLabel?: string
 ): SymbolDef {
-  const BODY_W = 80;
   return {
-    length: BODY_W,
+    length: IC_BODY_W,
     netlistPins: [],
     anchors: {
       start: { x: 0, y: 0 },
-      end: { x: BODY_W, y: 0 },
+      end: { x: IC_BODY_W, y: 0 },
     },
     svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
-      const left = (attrs?.pins_left ? attrs.pins_left.split(",").map((s) => s.trim()) : defaultLeft);
-      const right = (attrs?.pins_right ? attrs.pins_right.split(",").map((s) => s.trim()) : defaultRight);
+      const { left, right } = resolveIcPinSides(defaultLeft, defaultRight, attrs);
       const n = Math.max(left.length, right.length, 2);
-      const pitch = 16;
-      const bodyH = pitch * (n + 1);
+      const bodyH = IC_PIN_PITCH * (n + 1);
       const topY = -bodyH / 2;
       const parts: string[] = [];
-      parts.push(`<rect x="0" y="${topY}" width="${BODY_W}" height="${bodyH}" fill="white" ${BODY}/>`);
+      parts.push(`<rect x="0" y="${topY}" width="${IC_BODY_W}" height="${bodyH}" fill="white" ${BODY}/>`);
       const labelText = attrs?.ic_label ?? bodyLabel ?? "";
       if (labelText) {
-        parts.push(`<text x="${BODY_W / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${labelText}</text>`);
+        parts.push(`<text x="${IC_BODY_W / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${labelText}</text>`);
       }
       for (let i = 0; i < left.length; i++) {
-        const y = topY + pitch * (i + 1);
+        const y = topY + IC_PIN_PITCH * (i + 1);
         parts.push(`<line x1="-8" y1="${y}" x2="0" y2="${y}" ${WIRE}/>`);
         parts.push(`<text x="4" y="${y + 3}" class="schematex-circuit-pol">${left[i]}</text>`);
       }
       for (let i = 0; i < right.length; i++) {
-        const y = topY + pitch * (i + 1);
-        parts.push(`<line x1="${BODY_W}" y1="${y}" x2="${BODY_W + 8}" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="${BODY_W - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
+        const y = topY + IC_PIN_PITCH * (i + 1);
+        parts.push(`<line x1="${IC_BODY_W}" y1="${y}" x2="${IC_BODY_W + 8}" y2="${y}" ${WIRE}/>`);
+        parts.push(`<text x="${IC_BODY_W - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
       }
       return parts.join("");
     },
@@ -891,8 +948,8 @@ function icSymbol(
 }
 
 const generic_ic: SymbolDef = icSymbol(
-  ["1", "2", "3", "4"],
-  ["8", "7", "6", "5"],
+  GENERIC_IC_LEFT,
+  GENERIC_IC_RIGHT,
   "IC"
 );
 
@@ -901,24 +958,13 @@ const timer_555: SymbolDef = (() => {
   const left = ["GND", "TRG", "OUT", "RST"];
   const right = ["VCC", "DIS", "THR", "CTL"];
   const sym = icSymbol(left, right, "555");
-  // Add custom pin anchors so DSL can reference U1.trg, U1.out, etc.
-  const BODY_W = 80;
-  const pitch = 16;
-  const n = 4;
-  const bodyH = pitch * (n + 1);
-  const topY = -bodyH / 2;
-  const anchors: Record<string, PinAnchor> = {
-    start: { x: 0, y: 0 },
-    end: { x: BODY_W, y: 0 },
-  };
   const leftNames = ["gnd", "trg", "out", "rst"];
   const rightNames = ["vcc", "dis", "thr", "ctl"];
-  for (let i = 0; i < n; i++) {
-    const y = topY + pitch * (i + 1);
-    anchors[leftNames[i]] = { x: -8, y };
-    anchors[rightNames[i]] = { x: BODY_W + 8, y };
-  }
-  return { ...sym, anchors };
+  return {
+    ...sym,
+    anchors: icPinAnchors({ left, right }, leftNames, rightNames),
+    netlistPins: ["gnd", "trg", "out", "rst", "ctl", "thr", "dis", "vcc"],
+  };
 })();
 
 const voltage_regulator: SymbolDef = {
@@ -959,35 +1005,89 @@ const potentiometer: SymbolDef = {
     ].join(""),
 };
 
+const TERMINAL_BLOCK_BODY_W = 80;
+const TERMINAL_BLOCK_PIN_PITCH = 18;
+const TERMINAL_BLOCK_LABEL_BAND = 8;
+const DEFAULT_TERMINAL_BLOCK_PINS = ["1", "2", "3", "4"];
+
+interface TerminalBlockPinGeometry {
+  label: string;
+  anchorName: string;
+  x: number;
+  y: number;
+}
+
+interface TerminalBlockGeometry {
+  bodyWidth: number;
+  bodyHeight: number;
+  topY: number;
+  pins: TerminalBlockPinGeometry[];
+}
+
+export function getTerminalBlockPinLabels(attrs?: Record<string, string>): string[] {
+  const labels = pinLabels(attrs?.pins ?? attrs?.terminals, DEFAULT_TERMINAL_BLOCK_PINS);
+  return labels.length > 0 ? labels : ["T1"];
+}
+
+function terminalBlockGeometry(attrs?: Record<string, string>): TerminalBlockGeometry {
+  const labels = getTerminalBlockPinLabels(attrs);
+  const bodyHeight = TERMINAL_BLOCK_PIN_PITCH * (labels.length + 1);
+  const topY = -bodyHeight / 2;
+  return {
+    bodyWidth: TERMINAL_BLOCK_BODY_W,
+    bodyHeight,
+    topY,
+    pins: labels.map((label, index) => ({
+      label,
+      anchorName: normalizePinName(label, `t${index + 1}`),
+      x: -8,
+      // Reserve the label band for every instance so labels never move pins.
+      y:
+        topY +
+        TERMINAL_BLOCK_PIN_PITCH * (index + 1) +
+        TERMINAL_BLOCK_LABEL_BAND,
+    })),
+  };
+}
+
+function terminalBlockAnchors(
+  geometry: TerminalBlockGeometry
+): Record<string, PinAnchor> {
+  const anchors: Record<string, PinAnchor> = {
+    start: { x: 0, y: 0 },
+    end: { x: geometry.bodyWidth, y: 0 },
+  };
+  for (const pin of geometry.pins) {
+    anchors[pin.anchorName] = { x: pin.x, y: pin.y };
+  }
+  return anchors;
+}
+
 // Terminal block / junction box. Pin anchors are dynamic per-instance from
-// `pins="..."`; the static `start`/`end` anchors here are placeholders.
+// `pins="..."` or `terminals="..."`; static start/end remain cursor anchors.
 const terminal_block: SymbolDef = {
-  length: 80,
+  length: TERMINAL_BLOCK_BODY_W,
   netlistPins: [],
-  anchors: { start: { x: 0, y: 0 }, end: { x: 80, y: 0 } },
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: TERMINAL_BLOCK_BODY_W, y: 0 },
+  },
   svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
-    const pinsAttr = attrs?.pins ?? attrs?.terminals ?? "1,2,3,4";
-    const pins = pinsAttr.split(",").map((s) => s.trim()).filter(Boolean);
-    const n = Math.max(pins.length, 1);
-    const BODY_W = 80;
-    const pitch = 18;
-    const bodyH = pitch * (n + 1);
-    const topY = -bodyH / 2;
+    const geometry = terminalBlockGeometry(attrs);
     const parts: string[] = [];
     parts.push(
-      `<rect x="0" y="${topY}" width="${BODY_W}" height="${bodyH}" rx="3" fill="white" stroke-width="2" ${BODY}/>`
+      `<rect x="0" y="${geometry.topY}" width="${geometry.bodyWidth}" height="${geometry.bodyHeight}" rx="3" fill="white" stroke-width="2" ${BODY}/>`
     );
     if (label) {
       parts.push(
-        `<text x="${BODY_W / 2}" y="${topY + 14}" text-anchor="middle" class="schematex-circuit-meter">${label}</text>`
+        `<text x="${geometry.bodyWidth / 2}" y="${geometry.topY + 14}" text-anchor="middle" class="schematex-circuit-meter">${label}</text>`
       );
     }
-    for (let i = 0; i < n; i++) {
-      const y = topY + pitch * (i + 1) + (label ? 8 : 0);
-      parts.push(`<line x1="-8" y1="${y}" x2="0" y2="${y}" ${WIRE}/>`);
-      parts.push(`<circle cx="6" cy="${y}" r="2" ${FILL}/>`);
+    for (const pin of geometry.pins) {
+      parts.push(`<line x1="${pin.x}" y1="${pin.y}" x2="0" y2="${pin.y}" ${WIRE}/>`);
+      parts.push(`<circle cx="6" cy="${pin.y}" r="2" ${FILL}/>`);
       parts.push(
-        `<text x="12" y="${y + 3}" class="schematex-circuit-pol">${pins[i] ?? `T${i + 1}`}</text>`
+        `<text x="12" y="${pin.y + 3}" class="schematex-circuit-pol">${pin.label}</text>`
       );
     }
     return parts.join("");
@@ -1002,6 +1102,13 @@ function numAttr(attrs: Record<string, string> | undefined, key: string, fallbac
 export function effectiveSymbolDef(type: string, attrs?: Record<string, string>): SymbolDef | undefined {
   const sym = getSymbol(type);
   if (!sym) return undefined;
+  if (type === "generic_ic") {
+    return { ...sym, anchors: icPinAnchors(getGenericIcPinSides(attrs)) };
+  }
+  if (type === "terminal_block") {
+    const geometry = terminalBlockGeometry(attrs);
+    return { ...sym, anchors: terminalBlockAnchors(geometry) };
+  }
   if (type !== "enclosure" && type !== "din_rail" && type !== "wire_duct") return sym;
 
   if (type === "enclosure") {
@@ -1867,7 +1974,7 @@ export function listCircuitSymbolTypes(): CircuitComponentType[] {
 export function getNetlistPinOrder(t: string): string[] | undefined {
   const sym = getSymbol(t);
   if (!sym) return undefined;
-  if (sym.netlistPins) return [...sym.netlistPins];
+  if (sym.netlistPins?.length) return [...sym.netlistPins];
   if (sym.anchors.start && sym.anchors.end) return ["start", "end"];
   return Object.keys(sym.anchors);
 }

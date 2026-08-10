@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — circuit netlist ICs no longer discard their connections
+
+- **Multi-pin ICs declared in netlist mode now bind every net the user wrote.** `IC1 0 2 3 8 0 2 7 8 type=ic` previously rendered an eight-pin box with no wires at all: `generic_ic` carried an empty `netlistPins` array, the empty-array-is-truthy guard in `getNetlistPinOrder` returned zero expected pins, and every net the user declared was dropped without a word. Pins are now auto-numbered `1..N` from the declared net count along the DIP convention, the box grows to show exactly N legs, and each leg is wired. Reported in [#79](https://github.com/SchemaTex/SchemaTex/issues/79).
+- **The same silent drop affected far more than the reported case.** `X`/`U` SPICE prefixes and `type=555` were equally broken. `type=555` now binds the real 555 pinout in SPICE order — `1 GND, 2 TRIG, 3 OUT, 4 RESET, 5 CTRL, 6 THRESH, 7 DISCH, 8 VCC` — onto the existing timer symbol's anchors.
+- **`terminal_block` had the same defect and is fixed alongside it.** Its pin anchors were documented as per-instance but never implemented, so `pins="L,N,PE"` bound the nets and then drew no wires. Pin legs and wire anchors are now generated from one shared, label-independent geometry helper, so the two can no longer drift apart.
+- **A component that cannot honour its declared nets now says so.** Explicit `pins=` lists that receive more nets than they name raise `CIRCUIT_PIN_OVERSPECIFIED` instead of silently truncating.
+
 ---
 
 ## [1.0.7] — 2026-07-28

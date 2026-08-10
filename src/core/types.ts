@@ -1181,6 +1181,13 @@ export interface CircuitAST {
    */
   recovered?: {
     underspecified?: { id: string; type: string; expected: number; got: number }[];
+    overspecified?: {
+      id: string;
+      type: string;
+      expected: number;
+      got: number;
+      extraNets: string[];
+    }[];
   };
 }
 
