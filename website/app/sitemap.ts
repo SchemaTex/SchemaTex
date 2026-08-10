@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { source } from '@/lib/source';
 import { allExamples } from '@/lib/examples-source';
 import { LIVE_LOCALES, buildLanguageAlternates, localizedUrl } from '@/lib/i18n/locales';
-import { buildDocLocaleMap, docBarePath, docFileKey } from '@/lib/docs-locales';
+import { buildDocLocaleMap, docFileKey } from '@/lib/docs-locales';
 
 const SITE = 'https://schematex.js.org';
 const NOW = new Date();
@@ -27,13 +27,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/changelog`, priority: 0.6, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/icons`, priority: 0.6, lastModified: NOW, changeFrequency: 'monthly' },
   ];
-  // One sitemap entry per (doc page × translated locale). NOT page.url — fumadocs
-  // i18n prefixes the default locale, so page.url is '/en/docs/api' (a 404). The
-  // English doc is served bare at '/docs/api'; translated locales at '/<loc>/docs/api'.
-  // Each entry carries the hreflang alternate set across its live translations.
+  // One sitemap entry per (doc page × translated locale). English page.url is
+  // the bare path; localizedUrl adds a prefix only for non-default locales.
   const localeMap = buildDocLocaleMap();
   const docPages: MetadataRoute.Sitemap = source.getPages('en').flatMap((page) => {
-    const barePath = docBarePath(page.slugs);
+    const barePath = page.url;
     const locales = localeMap[docFileKey(page.slugs)] ?? ['en'];
     const languages = Object.fromEntries(
       locales.map((locale) => [locale, localizedUrl(SITE, locale, barePath)]),

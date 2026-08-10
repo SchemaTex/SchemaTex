@@ -38,9 +38,8 @@ export function buildDocLocaleMap(): Record<string, string[]> {
 }
 
 /** The bare (locale-agnostic) canonical path for a docs page given its fumadocs
- *  `page.slugs`. English is served here; non-default locales get a `/<locale>`
- *  prefix applied by the caller. NEVER derive this from `page.url` — fumadocs
- *  i18n prefixes the default locale too, yielding '/en/docs/api' which 404s. */
+ *  `page.slugs`. English is served here; callers add a `/<locale>` prefix for
+ *  non-default locales when needed. */
 export function docBarePath(slugs: string[]): string {
   return slugs.length ? `/docs/${slugs.join('/')}` : '/docs';
 }

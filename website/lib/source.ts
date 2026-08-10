@@ -12,6 +12,7 @@ export const docsI18n = defineI18n({
   defaultLanguage: 'en',
   languages: [...DOC_LOCALES],
   fallbackLanguage: 'en',
+  hideLocale: 'default-locale',
 });
 
 export const source = loader({
