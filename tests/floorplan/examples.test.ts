@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseFloorplan } from "../../src/diagrams/floorplan/parser";
 import { layoutFloorplan } from "../../src/diagrams/floorplan/layout";
+import { renderFloorplan } from "../../src/diagrams/floorplan/renderer";
 
 /**
  * Every published floorplan example must render correct-by-construction:
@@ -46,6 +47,7 @@ describe("floorplan examples — gallery is correct-by-construction", () => {
       const lay = layoutFloorplan(parseFloorplan(dsl));
       expect({ file, errors: lay.errors }).toEqual({ file, errors: [] });
       expect({ file, warnings: lay.warnings }).toEqual({ file, warnings: [] });
+      expect(renderFloorplan(dsl), `${file}: renders an SVG`).toContain("<svg");
     });
   }
 });

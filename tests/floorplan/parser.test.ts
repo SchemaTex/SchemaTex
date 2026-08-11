@@ -9,6 +9,28 @@ describe("floorplan parser — header & detect", () => {
     expect(ast.unit).toBe("m");
   });
 
+  it("parses the electrical symbol standard and defaults to nec", () => {
+    const explicit = parseFloorplan(`floorplan "Apartment" unit m symbols iec\nroom a at 0,0 size 4x3`);
+    const implicit = parseFloorplan(`floorplan\nroom a at 0,0 size 4x3`);
+    expect(explicit.symbols).toBe("iec");
+    expect(implicit.symbols).toBe("nec");
+  });
+
+  it.each(["evacuation", "stageplot"])(
+    "accepts the shared symbols header setting in %s mode",
+    (mode) => {
+      const ast = parseFloorplan(`${mode} "Shared header" symbols iec`);
+      expect(ast.mode).toBe(mode);
+      expect(ast.symbols).toBe("iec");
+    }
+  );
+
+  it("rejects an unknown electrical symbol standard", () => {
+    expect(() => parseFloorplan(`floorplan symbols legacy`)).toThrow(
+      /symbols must be nec\|iec/
+    );
+  });
+
   it("defaults: unit m, title fallback", () => {
     const ast = parseFloorplan(`floorplan\nroom a at 0,0 size 4x3`);
     expect(ast.unit).toBe("m");

@@ -275,7 +275,12 @@ describe("stageplot canonical fixtures and symbols", () => {
     expect(Object.keys(STAGE_SYMBOLS).sort()).toEqual([...STAGE_EQUIPMENT_KINDS].sort());
     for (const kind of STAGE_EQUIPMENT_KINDS) {
       const def = STAGE_SYMBOLS[kind as StageEquipmentKind];
-      const fragment = def.draw({ w: def.w, h: def.h, px: (value) => value * 40 });
+      const fragment = def.draw({
+        w: def.w,
+        h: def.h,
+        px: (value) => value * 40,
+        symbols: "nec",
+      });
       expect(fragment).not.toContain("style=");
       expect(fragment.length).toBeGreaterThan(10);
     }

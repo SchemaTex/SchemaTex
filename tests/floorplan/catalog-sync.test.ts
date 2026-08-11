@@ -8,6 +8,12 @@ import {
   FURNITURE_ALIASES,
   parseFloorplan,
 } from "../../src/diagrams/floorplan/parser";
+import type {
+  FurnitureType,
+  SymbolDef,
+} from "../../src/diagrams/floorplan/types";
+
+const catalogForEveryFurnitureType: Record<FurnitureType, SymbolDef> = FLOORPLAN_SYMBOLS;
 
 function minimalFurnitureDsl(type: string): string {
   return `floorplan "Catalog probe"
@@ -33,6 +39,12 @@ function profileFurnitureTypes(): Set<string> {
 }
 
 describe("floorplan symbol catalog synchronization", () => {
+  it("has a catalog drawing for every FurnitureType", () => {
+    expect(Object.keys(catalogForEveryFurnitureType).sort()).toEqual(
+      [...FURNITURE_TYPES].sort()
+    );
+  });
+
   it("advertises every catalog type in the LLM profile", () => {
     const advertised = profileFurnitureTypes();
     expect(
@@ -68,6 +80,7 @@ describe("floorplan symbol catalog synchronization", () => {
       w: def.w,
       h: def.h,
       px: (meters) => meters * 100,
+      symbols: "nec",
     });
     expect(fragment).toMatch(/class="sx-fp-/);
     expect(fragment).not.toMatch(/\b(?:style|fill|stroke)=/);

@@ -4,7 +4,7 @@ title: Floor plan
 
 ## About floor plans
 
-A **floor plan** is the standard 2D architectural view of a space: rooms with real dimensions, walls drawn as solid **poché** bands, doors with quarter-circle swing arcs, windows as glazing lines, and furniture as plan-view symbols — the visual language documented in *Architectural Graphic Standards* and used by every professional plan set. Schematex renders it from text: you declare rooms, openings, and furniture with real measurements; the engine merges shared walls, computes room areas, draws dimension lines, auto-seats tables, and validates the geometry.
+A **floor plan** is the standard 2D architectural view of a space: rooms with real dimensions, walls drawn as solid **poché** bands, doors with quarter-circle swing arcs, windows as glazing lines, and furniture as plan-view symbols. Wall poché, door-swing arcs, and glazing lines follow *Architectural Graphic Standards* conventions; *Neufert, Architects' Data* (*Bauentwurfslehre*) is the corresponding European planning reference, while ISO 128 and ISO 129 govern linework and dimensioning. Schematex renders this shared visual language from text: you declare rooms, openings, and furniture with real measurements; the engine merges shared walls, computes room areas, draws dimension lines, auto-seats tables, and validates the geometry.
 
 Unlike image generators, the output is *measurable and editable* — every room is a labeled element with its computed area, and adding a fourth row of desks is a one-line edit.
 
@@ -131,7 +131,48 @@ Extra chairs without a name stay empty; extra names past the chair count are ign
 
 ---
 
-## 5. Arrays — grid, row, arc
+## 5. Electrical plans
+
+Set the document-wide electrical convention on the header. `symbols nec` is the default and uses ANSI Y32.9 / NEC-style receptacle and `S`-family switch marks common on US plans. `symbols iec` uses IEC 60617 socket semicircles and dot-and-lever switches for European installation drawings, including NEN 1010 workflows.
+
+```text
+floorplan "Electrical Plan" unit m symbols nec
+```
+
+The complete electrical vocabulary is grouped by purpose:
+
+| Family | Types |
+| --- | --- |
+| Receptacles | `outlet` `duplex-outlet` `gfci-outlet` `outlet-240v` `floor-outlet` `weatherproof-outlet` |
+| Switches and controls | `switch` `switch-3way` `switch-4way` `switch-dimmer` `motion-sensor` `thermostat` |
+| Luminaires | `light` `ceiling-light` `recessed-light` `wall-light` `pendant-light` `fluorescent-light` `emergency-light` |
+| Safety, communications, and distribution | `smoke-detector` `data-outlet` `tv-outlet` `phone-outlet` `junction-box` `electrical-panel` `distribution-board` |
+
+Use `fixture` for wall-mounted items. It attaches the symbol to a named wall and turns directional receptacle, switch, and wall-light glyphs to face the room; the placement survives room resizing. Use `furniture` for items positioned within the room, where `at x,y` is the symbol's **top-left corner**, not its center.
+
+```text
+fixture gfci-outlet G1 in kitchen on north at 30%
+fixture switch-3way SW1 in hall on west at 20%
+furniture recessed-light L1 in hall at 1.4,0.5
+```
+
+Give switches and luminaires instance ids, then connect them with `controls`. One switch may control several luminaires, and several switches may control the same luminaire. The renderer draws themeable dashed curves for these functional relationships. They show **which switch operates which luminaire**, not conductor runs, circuit membership, or cable routes back to a panel.
+
+<Playground initial={`floorplan "Hallway Lighting" unit m symbols iec
+room hall "Hallway" at 0,0 size 5x1.5
+room living "Living Room" below hall size 5x3.5
+fixture switch-3way SW1 in hall on west at 50%
+fixture switch-3way SW2 in hall on east at 50%
+furniture recessed-light L1 in hall at 1.4,0.54
+furniture recessed-light L2 in hall at 3.2,0.54
+fixture outlet O1 in living on south at 25%
+fixture gfci-outlet O2 in living on south at 75%
+controls SW1 -> L1, L2
+controls SW2 -> L1, L2`} height={360} />
+
+---
+
+## 6. Arrays — grid, row, arc
 
 Repeated furniture is one statement, not thirty:
 
@@ -147,7 +188,7 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 
 ---
 
-## 6. Units, areas, dimension lines
+## 7. Units, areas, dimension lines
 
 - `unit ft` makes every number feet; dimension lines format as `32'` / `15'1"` and areas as `sq ft`. Internally everything is metric (1 ft = 0.3048 m).
 - Room areas are **computed by the engine** from the declared geometry, never typed by hand.
@@ -155,7 +196,7 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 
 ---
 
-## 7. Validation
+## 8. Validation
 
 The engine validates what LLMs (and humans) actually get wrong, with errors that name the offending elements and a fix direction:
 
@@ -172,11 +213,12 @@ The engine validates what LLMs (and humans) actually get wrong, with errors that
 
 ---
 
-## 8. Grammar (EBNF)
+## 9. Grammar (EBNF)
 
 ```text
-plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
-statement ::= room | extend | north | door | window | opening | furniture | array
+plan      ::= "floorplan" string? header-setting* NL statement*
+header-setting ::= "unit" ("m"|"ft") | "symbols" ("nec"|"iec")
+statement ::= room | extend | north | door | window | opening | furniture | fixture | array | controls
 room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
 extend    ::= "extend" id placement "size" dims
 north     ::= "north" num?
@@ -189,7 +231,10 @@ door      ::= "door" (wallref | "between" id id) "at" pct
 window    ::= "window" wallref "at" pct ("width" num)?
               ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+furniture ::= "furniture" type id? ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+fixture   ::= "fixture" type id? "in" id "on" ("north"|"south"|"east"|"west") "at" pct
+              ("size" dims)? ("rotate" num)? string?
+controls  ::= "controls" id "->" id ("," id)*
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
               ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?

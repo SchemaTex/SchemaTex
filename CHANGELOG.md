@@ -9,12 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.0.8] — 2026-08-10
+
+### Added — floor plans carry a real electrical layer
+
+- **A floor plan now declares which electrical symbol convention it follows.** `symbols nec|iec` on the header selects between ANSI Y32.9 / NEC forms (switches as `S`, `S₃`, `S₄`, `S_D`; receptacles as slotted circles) and IEC 60617 forms (semicircle sockets with a stem, dot-and-lever switches) for the whole document. `nec` is the default. A GFCI receptacle correctly annotates as `GFCI` under `nec` and `RCD` under `iec`, because that is what each audience calls it.
+- **Eighteen new fixtures cover what a code-compliant plan actually needs.** Switches `switch-3way` `switch-4way` `switch-dimmer`; receptacles `gfci-outlet` `outlet-240v` `floor-outlet` `weatherproof-outlet`; luminaires `recessed-light` `wall-light` `pendant-light` `fluorescent-light` `emergency-light`; detection and control `smoke-detector` `thermostat` `motion-sensor`; communications `tv-outlet` `phone-outlet` `junction-box`. Three-way switches and GFCI/RCD protection were the two most conspicuous gaps — a stairwell light and a code-mandated kitchen receptacle were both previously undrawable. European and colloquial vocabulary resolves through aliases (`rcd`, `sconce`, `downlight`, `troffer`, `pir`, …).
+- **`controls` draws which switch operates which luminaire.** `controls SW1 -> L1, L2` renders a dashed curve from a switch or motion sensor to each luminaire it drives, crossing rooms where it needs to, with two switches on one light expressing stairwell two-way control. This is the *situational* half of an installation drawing — the part that makes it useful to an electrician rather than just a symbol-placement exercise — and it is what [#85](https://github.com/SchemaTex/SchemaTex/issues/85) asked for. Undefined ids, self-control, a non-switch source, and a non-luminaire target are all rejected with a diagnostic rather than silently drawing nothing.
+- **Wall-mounted glyphs orient themselves against the wall they hang on.** IEC sockets and wall lights are directional, so a fixture placed on the south wall now rotates to face into the room. The flag lives on the symbol definition rather than in a separate list, and a test rejects any future symbol that is drawn wall-facing without it.
+- **The electrical overlay is discoverable for the first time.** The eight symbols that shipped in 0.9.11 were never used by a single one of the 21 published floor plan examples, which is why [#85](https://github.com/SchemaTex/SchemaTex/issues/85) requested a feature that already half-existed. There are now two worked examples — a US residential electrical plan and an IEC installation drawing — plus a proper docs section and symbol-sheet entries for both conventions.
+
+### Fixed — the electrical symbols no longer mix two standards
+
+- **One drawing could previously contain both US and European conventions.** The switch glyph was drawn as an IEC dot-and-lever while the ceiling light used the ANSI circle-and-cross, in an engine that documented itself as following US practice. Each symbol now belongs to a declared convention. The default switch glyph changes shape as a result; no published example was affected, because none used an electrical symbol.
+- **Eight symbol names were only four drawings.** `light` and `ceiling-light` differed by the letter in their label; `data-outlet`, `electrical-panel` and `distribution-board` were one rectangle with different text inside. Each now has its own form.
+- **The floor plan standards citation no longer implies US-only output.** The engine is metric-native — rooms in metres, 0.28 m treads, 0.65 m seating pitch, with `unit ft` as opt-in conversion — but cited only Ramsey & Sleeper, which reasonably read as "this tool draws US plans" ([#82](https://github.com/SchemaTex/SchemaTex/issues/82)). References now name **Neufert, *Architects' Data*** and **ISO 128 / ISO 129** alongside AGS, and state narrowly what each governs. No geometry changed.
+
 ### Fixed — circuit netlist ICs no longer discard their connections
 
 - **Multi-pin ICs declared in netlist mode now bind every net the user wrote.** `IC1 0 2 3 8 0 2 7 8 type=ic` previously rendered an eight-pin box with no wires at all: `generic_ic` carried an empty `netlistPins` array, the empty-array-is-truthy guard in `getNetlistPinOrder` returned zero expected pins, and every net the user declared was dropped without a word. Pins are now auto-numbered `1..N` from the declared net count along the DIP convention, the box grows to show exactly N legs, and each leg is wired. Reported in [#79](https://github.com/SchemaTex/SchemaTex/issues/79).
 - **The same silent drop affected far more than the reported case.** `X`/`U` SPICE prefixes and `type=555` were equally broken. `type=555` now binds the real 555 pinout in SPICE order — `1 GND, 2 TRIG, 3 OUT, 4 RESET, 5 CTRL, 6 THRESH, 7 DISCH, 8 VCC` — onto the existing timer symbol's anchors.
 - **`terminal_block` had the same defect and is fixed alongside it.** Its pin anchors were documented as per-instance but never implemented, so `pins="L,N,PE"` bound the nets and then drew no wires. Pin legs and wire anchors are now generated from one shared, label-independent geometry helper, so the two can no longer drift apart.
 - **A component that cannot honour its declared nets now says so.** Explicit `pins=` lists that receive more nets than they name raise `CIRCUIT_PIN_OVERSPECIFIED` instead of silently truncating.
+
+### Fixed — every reference page in the docs sidebar
+
+- **The documentation sidebar linked English pages to a route that does not exist.** fumadocs prefixes every locale by default, including the default one, so the sidebar pointed at `/en/docs/<page>` while English is served bare at `/docs/<page>` — every reference link 404'd ([#67](https://github.com/SchemaTex/SchemaTex/issues/67)). Fixed at the source with `hideLocale: 'default-locale'`; three call sites that had each grown their own `/en/` workaround now trust the corrected URL instead of double-compensating. Non-default locales keep their prefix.
 
 ---
 
