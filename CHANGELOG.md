@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.9] — 2026-08-10
+
+### Fixed — wall-mounted fixtures are no longer buried by the wall
+
+- **The wall band was painted over every wall-mounted fixture.** The furniture layer was emitted before the wall layer, so the solid poché band covered the top of any glyph anchored to a wall — 83% of a `whiteboard` or `smartboard`, 67% of a wall-mounted `tv`, and a third of a `switch` or `outlet`. Anchored fixtures now render in their own `sx-fp-wall-fixtures` layer after the walls and openings, which is where the electrical symbol layer sits in normal drafting practice. Free-standing furniture keeps its existing z-order.
+- **This defect predates the 1.0.8 electrical work** — the older wall fixtures were buried worse than the new electrical ones. It went unnoticed because a half-hidden whiteboard is cosmetic, whereas on an electrical plan the wall symbols *are* the drawing. A test now pins the layer ordering on all four walls so it cannot silently regress.
+- **The electrical plans are in the static gallery.** 1.0.8 added the two worked electrical examples to the site but not to the pre-rendered `examples/` sheet, so they were missing anywhere the static SVGs are used. Both are now generated: `apartment-electrical-nec.svg` and `apartment-electrical-iec.svg`.
+
+---
+
 ## [1.0.8] — 2026-08-10
 
 ### Added — floor plans carry a real electrical layer

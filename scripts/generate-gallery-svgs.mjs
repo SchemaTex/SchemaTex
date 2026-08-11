@@ -723,6 +723,117 @@ furniture wardrobe in bed3 at 2.7,0.15 size 0.5x1.8
 furniture bookshelf in bed3 at 0.3,3.9 size 1.2x0.35`,
   },
   {
+    file: 'examples/floorplan/apartment-electrical-nec.svg',
+    text: `floorplan "Small Apartment Electrical Plan" unit m symbols nec
+north
+room living "Living Room" at 0,0 size 5.4x4
+room kitchen "Kitchen" right-of living size 3.6x4
+room hall "Hallway" below living size 9x1.4 nolabel
+room bath "Bathroom" below hall size 2.5x2.8
+room bedroom "Bedroom" right-of bath size 4x2.8
+room utility "Utility / Entry" right-of bedroom size 2.5x2.8
+
+opening between living kitchen at 55% width 1.4
+opening between living hall at 70% width 1.4
+opening between kitchen hall at 45% width 1.2
+door between hall bath at 45%
+door between hall bedroom at 50%
+door between hall utility at 55%
+door utility south at 70% width 0.95
+window living north at 35% width 1.8
+window living west at 55% width 1.4
+window kitchen north at 50% width 1.5
+window kitchen east at 55% width 1.2
+window bath south at 55% width 0.7
+window bedroom south at 55% width 1.6
+
+fixture electrical-panel P1 in utility on east at 25%
+fixture duplex-outlet LR1 in living on north at 15%
+fixture duplex-outlet LR2 in living on west at 75%
+fixture switch-dimmer LRSW in living on south at 18%
+furniture ceiling-light L1 in living at 2.5,1.7
+fixture wall-light L2 in living on west at 32%
+furniture smoke-detector SD1 in living at 4.35,0.65
+controls LRSW -> L1, L2
+
+fixture gfci-outlet KG1 in kitchen on north at 20%
+fixture gfci-outlet KG2 in kitchen on north at 72%
+fixture gfci-outlet KG3 in kitchen on east at 45%
+fixture switch KSW in kitchen on south at 85%
+furniture recessed-light K1 in kitchen at 0.85,1.45
+furniture recessed-light K2 in kitchen at 2.3,1.45
+controls KSW -> K1, K2
+
+fixture switch-3way HS1 in hall on north at 8%
+fixture switch-3way HS2 in hall on south at 92%
+furniture recessed-light H1 in hall at 4.3,0.48
+controls HS1 -> H1
+controls HS2 -> H1
+
+fixture gfci-outlet BG1 in bath on south at 22%
+fixture switch BSW in bath on north at 80%
+fixture wall-light B1 in bath on north at 48%
+furniture ceiling-light B2 in bath at 1.05,1.5
+controls BSW -> B1, B2
+
+fixture duplex-outlet BR1 in bedroom on south at 22%
+fixture duplex-outlet BR2 in bedroom on east at 68%
+fixture switch BRSW in bedroom on north at 12%
+furniture ceiling-light BRL in bedroom at 1.8,1.25
+furniture smoke-detector SD2 in bedroom at 3.25,0.55
+controls BRSW -> BRL`,
+  },
+  {
+    file: 'examples/floorplan/apartment-electrical-iec.svg',
+    text: `floorplan "Apartment Installatietekening" unit m symbols iec
+room living "Woonkamer" at 0,0 size 5x4
+room kitchen "Keuken" right-of living size 3x4
+room hall "Hal" below living size 8x1.3 nolabel
+room bath "Badkamer" below hall size 2.4x2.5
+room bedroom "Slaapkamer" right-of bath size 5.6x2.5
+
+opening between living kitchen at 55% width 1.3
+opening between living hall at 70% width 1.2
+opening between kitchen hall at 45% width 1.1
+door between hall bath at 45%
+door between hall bedroom at 55%
+door hall west at 50% width 0.95
+window living north at 50% width 1.8
+window kitchen north at 50% width 1.4
+window bath south at 50% width 0.7
+window bedroom south at 55% width 1.6
+
+fixture outlet W1 in living on north at 20%
+fixture duplex-outlet W2 in living on west at 70%
+fixture switch WSW in living on south at 18%
+furniture pendant-light WL1 in living at 2.35,1.65
+controls WSW -> WL1
+
+fixture gfci-outlet K1 in kitchen on north at 24%
+fixture gfci-outlet K2 in kitchen on east at 58%
+fixture switch KSW in kitchen on south at 82%
+furniture recessed-light KL1 in kitchen at 0.75,1.5
+furniture recessed-light KL2 in kitchen at 1.95,1.5
+controls KSW -> KL1, KL2
+
+fixture switch-3way HSW1 in hall on north at 8%
+fixture switch-3way HSW2 in hall on south at 92%
+furniture ceiling-light HL1 in hall at 3.8,0.42
+controls HSW1 -> HL1
+controls HSW2 -> HL1
+
+fixture gfci-outlet B1 in bath on south at 24%
+fixture switch BSW in bath on north at 82%
+fixture wall-light BL1 in bath on north at 48%
+controls BSW -> BL1
+
+fixture outlet S1 in bedroom on south at 22%
+fixture outlet S2 in bedroom on east at 70%
+fixture switch SSW in bedroom on north at 12%
+furniture ceiling-light SL1 in bedroom at 2.55,1.1
+controls SSW -> SL1`,
+  },
+  {
     file: 'examples/playbook/football-four-verticals.svg',
     text: `playbook "Four Verticals" sport football
 field down 2 distance 7 los 40
