@@ -244,6 +244,17 @@ function floorplanCatalog(): SymbolCatalogEntry[] {
   const scale = 40; // px per meter for the standalone sheet
   const px = (m: number): number => Math.round(m * scale * 100) / 100;
   const out: SymbolCatalogEntry[] = [];
+  const dualStandardTypes = new Set([
+    "outlet",
+    "duplex-outlet",
+    "gfci-outlet",
+    "outlet-240v",
+    "weatherproof-outlet",
+    "switch",
+    "switch-3way",
+    "switch-4way",
+    "switch-dimmer",
+  ]);
   for (const [id, def] of Object.entries(FLOORPLAN_SYMBOLS)) {
     const [mt, mr, mb, ml] = def.envelope ?? [0, 0, 0, 0];
     const pad = 5;
@@ -251,11 +262,27 @@ function floorplanCatalog(): SymbolCatalogEntry[] {
     const y0 = -px(mt) - pad;
     const w = px(def.w + ml + mr) + 2 * pad;
     const h = px(def.h + mt + mb) + 2 * pad;
+    const svgFor = (symbols: "nec" | "iec"): string => svgDoc(
+      `${x0} ${y0} ${w} ${h}`,
+      FLOORPLAN_CSS,
+      def.draw({ w: def.w, h: def.h, px, symbols }),
+    );
+    const hasTwoStandards = dualStandardTypes.has(id);
+    const label = humanize(id)
+      .replace(/^Gfci\b/, "GFCI")
+      .replace(/240v\b/i, "240 V");
     out.push({
       id,
-      label: humanize(id),
-      svg: svgDoc(`${x0} ${y0} ${w} ${h}`, FLOORPLAN_CSS, def.draw({ w: def.w, h: def.h, px })),
+      label: `${label}${hasTwoStandards ? " (NEC)" : ""}`,
+      svg: svgFor("nec"),
     });
+    if (hasTwoStandards) {
+      out.push({
+        id: `${id}-iec`,
+        label: id === "gfci-outlet" ? "RCD Outlet (IEC)" : `${label} (IEC)`,
+        svg: svgFor("iec"),
+      });
+    }
   }
   return out.sort((a, b) => a.label.localeCompare(b.label));
 }
@@ -300,7 +327,7 @@ const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
   floorplan: () => ({
     type: "floorplan",
     label: "Floor plan furniture & fixtures",
-    note: "AGS plan-view symbols — auto-seated tables, beds, kitchen/bath fixtures, classroom and event/banquet furniture.",
+    note: "Architectural plan-view symbols, including distinct NEC and IEC outlet/switch forms, auto-seated tables, and residential, commercial, classroom, and event fixtures.",
     entries: floorplanCatalog(),
   }),
 };

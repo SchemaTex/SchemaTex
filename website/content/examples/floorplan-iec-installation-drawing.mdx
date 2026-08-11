@@ -1,0 +1,71 @@
+---
+title: European installation drawing — IEC symbols
+description: "A focused apartment installatietekening using IEC 60617 semicircle sockets, lever switches, RCD-protected outlets, luminaires, and dashed switch-control lines."
+diagram: floorplan
+standard: IEC 60617 · NEN 1010 · ISO 128 / ISO 129
+industry: [residential, construction, electrical]
+persona: For the European installer documenting socket and lighting positions
+complexity: 2
+tags: [floorplan, electrical, IEC 60617, NEN 1010, installation drawing]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Apartment Installatietekening" unit m symbols iec
+  room living "Woonkamer" at 0,0 size 5x4
+  room kitchen "Keuken" right-of living size 3x4
+  room hall "Hal" below living size 8x1.3 nolabel
+  room bath "Badkamer" below hall size 2.4x2.5
+  room bedroom "Slaapkamer" right-of bath size 5.6x2.5
+
+  opening between living kitchen at 55% width 1.3
+  opening between living hall at 70% width 1.2
+  opening between kitchen hall at 45% width 1.1
+  door between hall bath at 45%
+  door between hall bedroom at 55%
+  door hall west at 50% width 0.95
+  window living north at 50% width 1.8
+  window kitchen north at 50% width 1.4
+  window bath south at 50% width 0.7
+  window bedroom south at 55% width 1.6
+
+  fixture outlet W1 in living on north at 20%
+  fixture duplex-outlet W2 in living on west at 70%
+  fixture switch WSW in living on south at 18%
+  furniture pendant-light WL1 in living at 2.35,1.65
+  controls WSW -> WL1
+
+  fixture gfci-outlet K1 in kitchen on north at 24%
+  fixture gfci-outlet K2 in kitchen on east at 58%
+  fixture switch KSW in kitchen on south at 82%
+  furniture recessed-light KL1 in kitchen at 0.75,1.5
+  furniture recessed-light KL2 in kitchen at 1.95,1.5
+  controls KSW -> KL1, KL2
+
+  fixture switch-3way HSW1 in hall on north at 8%
+  fixture switch-3way HSW2 in hall on south at 92%
+  furniture ceiling-light HL1 in hall at 3.8,0.42
+  controls HSW1 -> HL1
+  controls HSW2 -> HL1
+
+  fixture gfci-outlet B1 in bath on south at 24%
+  fixture switch BSW in bath on north at 82%
+  fixture wall-light BL1 in bath on north at 48%
+  controls BSW -> BL1
+
+  fixture outlet S1 in bedroom on south at 22%
+  fixture outlet S2 in bedroom on east at 70%
+  fixture switch SSW in bedroom on north at 12%
+  furniture ceiling-light SL1 in bedroom at 2.55,1.1
+  controls SSW -> SL1
+---
+
+## What this shows
+
+The `symbols iec` header changes the wall symbols without changing the room geometry: sockets become the semicircle forms used on European installation drawings, switches use dot-and-lever marks, and `gfci-outlet` is labelled as RCD-protected. The same `fixture … on <side> at N%` syntax keeps every wall-mounted fitting attached to its wall as rooms are resized.
+
+## Standards context
+
+IEC 60617 supplies the electrical symbol convention, while NEN 1010 governs Dutch low-voltage installation practice; comparable installatietekening conventions are common in Belgium and Germany. The dashed `controls` curves show the functional relationship from each lever switch to its luminaire, not the physical cable route.

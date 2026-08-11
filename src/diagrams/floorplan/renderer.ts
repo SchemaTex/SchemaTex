@@ -71,6 +71,7 @@ function buildCss(
 .sx-fp-furn-nofill { fill: none; stroke: ${t.furnStroke}; stroke-width: 1.2; }
 .sx-fp-furn-line { fill: none; stroke: ${t.furnStroke}; stroke-width: 1; }
 .sx-fp-furn-dash { fill: none; stroke: ${t.furnStroke}; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-fp-control { fill: none; stroke: ${t.dimStroke}; stroke-width: 1; stroke-dasharray: 5 4; stroke-linecap: round; opacity: .72; }
 .sx-fp-furn-dot { fill: ${t.furnStroke}; stroke: none; }
 .sx-fp-furn-solid { fill: ${t.furnSolid}; stroke: none; }
 .sx-fp-board-inner { fill: ${t.boardInner}; stroke: none; }
@@ -179,6 +180,7 @@ interface Ctx {
 interface RenderLayers {
   floors: string[];
   routes: string[];
+  controls: string[];
   furniture: string[];
   walls: string[];
   openings: string[];
@@ -706,6 +708,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const plateLayers: RenderLayers[] = lay.plates.map(() => ({
     floors: [],
     routes: [],
+    controls: [],
     furniture: [],
     walls: [],
     openings: [],
@@ -738,6 +741,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   // z-order §4.4
   const floors: string[] = [];
   const routes: string[] = [];
+  const controls: string[] = [];
   const furniture: string[] = [];
   const walls: string[] = [];
   const openings: string[] = [];
@@ -904,6 +908,34 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     }
   }
 
+  for (const control of lay.controls) {
+    const source = lay.items[control.source];
+    const target = lay.items[control.target];
+    if (!source || !target) continue;
+    const x1 = X(source.x + source.w / 2);
+    const y1 = Y(source.y + source.h / 2);
+    const x2 = X(target.x + target.w / 2);
+    const y2 = Y(target.y + target.h / 2);
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const distance = Math.hypot(dx, dy);
+    const bend = Math.min(32, Math.max(12, distance * 0.12));
+    const controlX = distance > 0
+      ? (x1 + x2) / 2 - (dy / distance) * bend
+      : x1;
+    const controlY = distance > 0
+      ? (y1 + y2) / 2 + (dx / distance) * bend
+      : y1 - bend;
+    const shape = path({
+      class: "sx-fp-control",
+      d: `M ${r2(x1)} ${r2(y1)} Q ${r2(controlX)} ${r2(controlY)} ${r2(x2)} ${r2(y2)}`,
+      "data-control-source": control.sourceId,
+      "data-control-target": control.targetId,
+    });
+    controls.push(shape);
+    layerFor(itemPlate, control.source).controls.push(shape);
+  }
+
   // Collision overlays are editor affordances. Plain SVG export keeps the
   // drawing clean and returns the warnings through renderResult instead.
   const warnSet = config?.__scene
@@ -944,7 +976,14 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         : undefined,
       editable: { label: it.labelSourceRange !== undefined, position: canMove ? "free" : "none" },
     });
-    const children = [def.draw({ w: it.w, h: it.h, px, label: it.label, seats: it.seats })];
+    const children = [def.draw({
+      w: it.w,
+      h: it.h,
+      px,
+      symbols: lay.symbols,
+      label: it.label,
+      seats: it.seats,
+    })];
     if (warnSet.has(idx)) {
       children.push(rect({ class: "sx-fp-warn-item", x: -1, y: -1, width: r2(wpx + 2), height: r2(hpx + 2) }));
     }
@@ -1136,6 +1175,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       ? [
           group({ class: "sx-fp-floors" }, layers.floors),
           group({ class: "sx-fp-routes" }, layers.routes),
+          group({ class: "sx-fp-controls" }, layers.controls),
           group({ class: "sx-fp-furniture" }, layers.furniture),
           group({ class: "sx-fp-walls" }, layers.walls),
           group({ class: "sx-fp-openings" }, layers.openings),
@@ -1146,6 +1186,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         ]
       : [
           group({ class: "sx-fp-floors" }, layers.floors),
+          group({ class: "sx-fp-controls" }, layers.controls),
           group({ class: "sx-fp-furniture" }, layers.furniture),
           group({ class: "sx-fp-walls" }, layers.walls),
           group({ class: "sx-fp-openings" }, layers.openings),
@@ -1156,6 +1197,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     ? groupedLayers({
         floors,
         routes,
+        controls,
         furniture,
         walls,
         openings,

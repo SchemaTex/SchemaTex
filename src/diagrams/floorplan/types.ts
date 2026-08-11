@@ -16,6 +16,9 @@ import type { LegendOverrides, LegendSpec } from "../../core/types";
 
 export type FloorplanUnit = "m" | "ft";
 
+/** Document-wide electrical overlay convention. */
+export type ElectricalSymbolStandard = "nec" | "iec";
+
 export type WallSide = "north" | "south" | "east" | "west";
 
 export type OpeningKind = "door" | "window" | "opening";
@@ -273,9 +276,27 @@ export type FurnitureType =
   | "outlet"
   | "duplex-outlet"
   | "switch"
+  | "switch-3way"
+  | "switch-4way"
+  | "switch-dimmer"
+  | "gfci-outlet"
+  | "outlet-240v"
+  | "floor-outlet"
+  | "weatherproof-outlet"
   | "light"
   | "ceiling-light"
+  | "recessed-light"
+  | "wall-light"
+  | "pendant-light"
+  | "fluorescent-light"
+  | "emergency-light"
+  | "smoke-detector"
+  | "thermostat"
+  | "motion-sensor"
   | "data-outlet"
+  | "tv-outlet"
+  | "phone-outlet"
+  | "junction-box"
   | "electrical-panel"
   | "distribution-board"
   // site / outdoor
@@ -383,6 +404,13 @@ export interface FloorplanFurniture {
    */
   seats?: string[];
   floor: number;
+  line?: number;
+}
+
+/** A switch/sensor-to-luminaire control annotation, resolved by instance id. */
+export interface FloorplanControl {
+  source: string;
+  targets: string[];
   line?: number;
 }
 
@@ -525,6 +553,7 @@ export interface FloorplanAst {
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
+  symbols: ElectricalSymbolStandard;
   floors: FloorplanFloor[];
   stack: "horizontal" | "vertical";
   /** `north` statement: draw a compass; value = clockwise rotation in degrees (0 = up). */
@@ -533,6 +562,7 @@ export interface FloorplanAst {
   extensions: FloorplanExtend[];
   openings: FloorplanOpening[];
   furniture: FloorplanFurniture[];
+  controls: FloorplanControl[];
   arrays: FloorplanArray[];
   zones: FloorplanZone[];
   compliance: CompliancePolicy;
@@ -641,6 +671,14 @@ export interface ItemGeom {
   floor: number;
   /** Sequence number within its type (for warning messages: "round-table-8 #4"). */
   seq: number;
+}
+
+/** Resolved item indices for one switch/sensor-to-luminaire control curve. */
+export interface ControlGeom {
+  source: number;
+  target: number;
+  sourceId: string;
+  targetId: string;
 }
 
 export interface ZoneGeom {
@@ -823,6 +861,7 @@ export interface FloorplanLayoutResult {
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
+  symbols: ElectricalSymbolStandard;
   mode: FloorplanAst["mode"];
   /** Compass rotation in degrees when the plan declares `north`. */
   north?: number;
@@ -830,6 +869,7 @@ export interface FloorplanLayoutResult {
   seams: SeamGeom[];
   openings: OpeningGeom[];
   items: ItemGeom[];
+  controls: ControlGeom[];
   zones: ZoneGeom[];
   dims: DimLineGeom[];
   /** Per-floor grouping and local bounds. A legacy single plan has one level-0 plate. */
@@ -878,6 +918,8 @@ export interface SymbolDrawCtx {
   w: number;
   h: number;
   px: PxFn;
+  /** Document-wide electrical symbol convention. */
+  symbols: ElectricalSymbolStandard;
   /** Item label, for symbols that render it themselves (stairs UP/DN). */
   label?: string;
   /** Per-seat occupant names for auto-seating tables (§2.5). */
@@ -898,6 +940,8 @@ export interface SymbolDef {
   envelope?: [number, number, number, number];
   /** Floor coverings (rug, dance-floor) underlay other furniture — skip collision. */
   underlay?: boolean;
+  /** Glyph is authored with its wall-facing edge toward north and rotates with an anchored wall side. */
+  directional?: boolean;
   /** Draw into a w×h meter box at origin; returns SVG fragment (theme classes only). */
   draw: (ctx: SymbolDrawCtx) => string;
 }

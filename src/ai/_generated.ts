@@ -1105,7 +1105,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Hotel grand ballroom — 120 guests",
     "description": "A banquet hall the venue can execute: twelve 60″ rounds auto-seated at ten covers each, a stage, a hatched dance floor, a DJ booth, a buffet line, and a bar — all collision-checked.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "banquet",
@@ -1124,7 +1124,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Bistro café — dining, bar, kitchen",
     "description": "A small-business commercial plan: bar with stool row, six auto-seated 4-tops, rotated booth tables, commercial kitchen line, and a restroom pair including an accessible WC.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "restaurant",
@@ -1142,7 +1142,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Cinema auditorium — 96 seats",
     "description": "A movie-theatre layout: two banks of theatre row-chairs (exactly 96 countable seats) with a centre aisle, a full-width screen, and dual egress — the capacity-planning view a venue actually signs off.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "cinema",
@@ -1161,7 +1161,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "5th-grade classroom — 27 desks",
     "description": "The #1 floor-plan request class: a 32′×26′ classroom seating chart with a 5×6 desk grid truncated row-major to exactly 27 students, in feet-and-inches.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "classroom",
@@ -1179,7 +1179,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Computer lab — 24 stations",
     "description": "An ICT classroom: a 6×4 grid of desk-chair workstations truncated to exactly 24 seats, an instructor desk, and a wall whiteboard — the seating chart a school IT coordinator hands to facilities.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "classroom",
@@ -1197,7 +1197,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Four-bedroom family home — 160 m²",
     "description": "A 12-room single-story home exercising the full engine: two L-shaped rooms via extend, stairs with break line, bay window, kitchen island with stools, bifold laundry closet, and 40+ furniture items.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "residential",
@@ -1216,7 +1216,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Fitness center — equipment zones",
     "description": "A gym floor: a cardio row of treadmills, a free-weights zone with benches and power racks, a mirrored yoga studio of mats, and a locker room — the equipment plan a gym operator hands the installer.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "gym",
@@ -1234,7 +1234,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Garden ceremony — semi-circle seating",
     "description": "Outdoor ceremony seating: four concentric chair arcs facing the arch (104 chairs), placed with one arc statement per row.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "wedding",
@@ -1252,7 +1252,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Hair salon & spa",
     "description": "A salon floor: four styling stations, a manicure row, a wash area with two shampoo bowls, reception and a waiting sofa, plus a restroom — the layout a salon owner plans before the lease build.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "salon",
@@ -1266,11 +1266,29 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## What this shows\n\n`salon-chair` (a styling station with its mirror), `shampoo-bowl` (a backwash unit), and `manicure-table` (a table with two facing chairs) are the salon symbol set. Four stations come from one `grid` along the front, a three-seat manicure row from another.\n\nThe wash area off the main floor pairs two shampoo bowls; reception, a waiting `sofa`, and a `plant` fill the entry — and the manicure tables' chair envelopes keep the aisle between the rows clear."
   },
   {
+    "slug": "floorplan-iec-installation-drawing",
+    "diagram": "floorplan",
+    "title": "European installation drawing — IEC symbols",
+    "description": "A focused apartment installatietekening using IEC 60617 semicircle sockets, lever switches, RCD-protected outlets, luminaires, and dashed switch-control lines.",
+    "standard": "IEC 60617 · NEN 1010 · ISO 128 / ISO 129",
+    "tags": [
+      "floorplan",
+      "electrical",
+      "IEC 60617",
+      "NEN 1010",
+      "installation drawing"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "floorplan \"Apartment Installatietekening\" unit m symbols iec\nroom living \"Woonkamer\" at 0,0 size 5x4\nroom kitchen \"Keuken\" right-of living size 3x4\nroom hall \"Hal\" below living size 8x1.3 nolabel\nroom bath \"Badkamer\" below hall size 2.4x2.5\nroom bedroom \"Slaapkamer\" right-of bath size 5.6x2.5\n\nopening between living kitchen at 55% width 1.3\nopening between living hall at 70% width 1.2\nopening between kitchen hall at 45% width 1.1\ndoor between hall bath at 45%\ndoor between hall bedroom at 55%\ndoor hall west at 50% width 0.95\nwindow living north at 50% width 1.8\nwindow kitchen north at 50% width 1.4\nwindow bath south at 50% width 0.7\nwindow bedroom south at 55% width 1.6\n\nfixture outlet W1 in living on north at 20%\nfixture duplex-outlet W2 in living on west at 70%\nfixture switch WSW in living on south at 18%\nfurniture pendant-light WL1 in living at 2.35,1.65\ncontrols WSW -> WL1\n\nfixture gfci-outlet K1 in kitchen on north at 24%\nfixture gfci-outlet K2 in kitchen on east at 58%\nfixture switch KSW in kitchen on south at 82%\nfurniture recessed-light KL1 in kitchen at 0.75,1.5\nfurniture recessed-light KL2 in kitchen at 1.95,1.5\ncontrols KSW -> KL1, KL2\n\nfixture switch-3way HSW1 in hall on north at 8%\nfixture switch-3way HSW2 in hall on south at 92%\nfurniture ceiling-light HL1 in hall at 3.8,0.42\ncontrols HSW1 -> HL1\ncontrols HSW2 -> HL1\n\nfixture gfci-outlet B1 in bath on south at 24%\nfixture switch BSW in bath on north at 82%\nfixture wall-light BL1 in bath on north at 48%\ncontrols BSW -> BL1\n\nfixture outlet S1 in bedroom on south at 22%\nfixture outlet S2 in bedroom on east at 70%\nfixture switch SSW in bedroom on north at 12%\nfurniture ceiling-light SL1 in bedroom at 2.55,1.1\ncontrols SSW -> SL1",
+    "notes": "## What this shows\n\nThe `symbols iec` header changes the wall symbols without changing the room geometry: sockets become the semicircle forms used on European installation drawings, switches use dot-and-lever marks, and `gfci-outlet` is labelled as RCD-protected. The same `fixture … on <side> at N%` syntax keeps every wall-mounted fitting attached to its wall as rooms are resized.\n\n## Standards context\n\nIEC 60617 supplies the electrical symbol convention, while NEN 1010 governs Dutch low-voltage installation practice; comparable installatietekening conventions are common in Belgium and Germany. The dashed `controls` curves show the functional relationship from each lever switch to its luminaire, not the physical cable route."
+  },
+  {
     "slug": "floorplan-kindergarten",
     "diagram": "floorplan",
     "title": "Kindergarten activity room",
     "description": "An early-education layout: kidney teaching table with an arc of chairs, three round group tables, circle-time rug, nap cribs, play kitchen, and cubbies + lockers along the south wall.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "kindergarten",
@@ -1288,7 +1306,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Community lecture hall — 96 seats",
     "description": "Theater-style seating: twelve row-chair strips in two banks with a center aisle (exactly 96 countable seats), stage, podium, smartboard, and double egress doors.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "lecture-hall",
@@ -1306,7 +1324,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Open-plan office — 18 workstations",
     "description": "A coworking floor: three rows of six L-desk workstations, a conference room and a break area off the open floor, lockers and filing, with double egress and sliding clerestory windows.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "office",
@@ -1325,7 +1343,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Residential site plan — 60 × 100 ft lot",
     "description": "A plot plan in feet: front and back yards, the house footprint, and a driveway tiled as non-overlapping zones, with two parked cars, four trees, and a patio table — the site view a permit needs.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "site-plan",
@@ -1344,7 +1362,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Restaurant — dining room + commercial kitchen",
     "description": "A restaurant floor plan with the back-of-house most tools skip: booths and named tables out front, a commercial kitchen line (range, prep tables, three-compartment sink, walk-in cooler, fryer) behind the pass.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "restaurant",
@@ -1361,7 +1379,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Retail boutique — sales floor",
     "description": "A small-shop plan: gondola shelving in a grid, a window display, a checkout, round garment racks, a stockroom, and a fitting-room bank — the layout a retailer plans before the build-out.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "retail",
@@ -1379,7 +1397,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Wedding seating chart — named guests",
     "description": "A seating chart, not just a venue plan: every chair carries its guest's name. Six round tables and a head table, named with the `seats` clause; the engine writes each name onto its chair in seating order, including CJK names.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "wedding",
@@ -1397,7 +1415,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Studio office — 6 workstations",
     "description": "A small-office plan: L-desk workstations in a grid, auto-seated conference table, lobby with elevator and double entry, sliding windows, lockers and filing.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "office",
@@ -1415,7 +1433,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Two-bedroom apartment — 68 m²",
     "description": "A fully furnished residential plan: 7 rooms chained with relative placement, interior doors resolved onto shared walls automatically, auto-computed room areas, and exterior dimension strings.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "residential",
@@ -1433,7 +1451,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Two-storey family villa — registered stairwell",
     "description": "A two-level home drawn as one coordinated plan set, with both floors sharing a scale and the stair direction derived automatically from its S1 id.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "residential",
@@ -1447,11 +1465,30 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## What this shows\n\nBoth levels use their own local coordinates but render at one shared scale. The repeated `stairs S1` id registers one continuous stairwell: the ground-floor symbol receives `UP`, the first-floor symbol receives `DN`, and moving either instance more than 0.1 m would produce an alignment warning.\n\nRoom ids are scoped per floor, so `stair` can be named naturally on both levels. Doors, relative placement, and furniture remain floor-local; only a registered stair id may connect levels."
   },
   {
+    "slug": "floorplan-us-residential-electrical",
+    "diagram": "floorplan",
+    "title": "US residential electrical plan — NEC symbols",
+    "description": "A small-apartment electrical overlay with NEC receptacles, required kitchen and bathroom GFCI protection, three-way hallway switching, mixed luminaires, smoke detectors, and a service panel.",
+    "standard": "ANSI Y32.9 / NEC · Architectural Graphic Standards",
+    "tags": [
+      "floorplan",
+      "electrical",
+      "residential",
+      "NEC",
+      "GFCI",
+      "lighting"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "floorplan \"Small Apartment Electrical Plan\" unit m symbols nec\nnorth\nroom living \"Living Room\" at 0,0 size 5.4x4\nroom kitchen \"Kitchen\" right-of living size 3.6x4\nroom hall \"Hallway\" below living size 9x1.4 nolabel\nroom bath \"Bathroom\" below hall size 2.5x2.8\nroom bedroom \"Bedroom\" right-of bath size 4x2.8\nroom utility \"Utility / Entry\" right-of bedroom size 2.5x2.8\n\nopening between living kitchen at 55% width 1.4\nopening between living hall at 70% width 1.4\nopening between kitchen hall at 45% width 1.2\ndoor between hall bath at 45%\ndoor between hall bedroom at 50%\ndoor between hall utility at 55%\ndoor utility south at 70% width 0.95\nwindow living north at 35% width 1.8\nwindow living west at 55% width 1.4\nwindow kitchen north at 50% width 1.5\nwindow kitchen east at 55% width 1.2\nwindow bath south at 55% width 0.7\nwindow bedroom south at 55% width 1.6\n\nfixture electrical-panel P1 in utility on east at 25%\nfixture duplex-outlet LR1 in living on north at 15%\nfixture duplex-outlet LR2 in living on west at 75%\nfixture switch-dimmer LRSW in living on south at 18%\nfurniture ceiling-light L1 in living at 2.5,1.7\nfixture wall-light L2 in living on west at 32%\nfurniture smoke-detector SD1 in living at 4.35,0.65\ncontrols LRSW -> L1, L2\n\nfixture gfci-outlet KG1 in kitchen on north at 20%\nfixture gfci-outlet KG2 in kitchen on north at 72%\nfixture gfci-outlet KG3 in kitchen on east at 45%\nfixture switch KSW in kitchen on south at 85%\nfurniture recessed-light K1 in kitchen at 0.85,1.45\nfurniture recessed-light K2 in kitchen at 2.3,1.45\ncontrols KSW -> K1, K2\n\nfixture switch-3way HS1 in hall on north at 8%\nfixture switch-3way HS2 in hall on south at 92%\nfurniture recessed-light H1 in hall at 4.3,0.48\ncontrols HS1 -> H1\ncontrols HS2 -> H1\n\nfixture gfci-outlet BG1 in bath on south at 22%\nfixture switch BSW in bath on north at 80%\nfixture wall-light B1 in bath on north at 48%\nfurniture ceiling-light B2 in bath at 1.05,1.5\ncontrols BSW -> B1, B2\n\nfixture duplex-outlet BR1 in bedroom on south at 22%\nfixture duplex-outlet BR2 in bedroom on east at 68%\nfixture switch BRSW in bedroom on north at 12%\nfurniture ceiling-light BRL in bedroom at 1.8,1.25\nfurniture smoke-detector SD2 in bedroom at 3.25,0.55\ncontrols BRSW -> BRL",
+    "notes": "## What this shows\n\nThe drawing uses the default `symbols nec` convention: receptacle arcs, `S`-family switch marks, and familiar residential luminaire symbols. The hallway light is operated from both ends by two `switch-3way` fixtures; each `controls` statement draws a dashed control curve to the same recessed luminaire.\n\n## Code-aware placement\n\nThe kitchen worktop locations and bathroom include `gfci-outlet` fixtures because NEC 210.8 requires GFCI protection in those locations. The two smoke detectors, mixed ceiling/recessed/wall lighting, and the utility-room panel make this a coordination drawing rather than a symbol sampler. `controls` records which switch operates each luminaire; it does not describe conductor routing or a home run to panel `P1`."
+  },
+  {
     "slug": "floorplan-warehouse",
     "diagram": "floorplan",
     "title": "Distribution warehouse — racking & docks",
     "description": "An industrial layout: sixteen pallet-rack bays in aisled rows, two loading docks with a forklift in the pick aisle, and a shipping office annex — the warehouse plan a 3PL hands the fit-out crew.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "warehouse",
@@ -1469,7 +1506,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "diagram": "floorplan",
     "title": "Wedding reception — 120 guests",
     "description": "Banquet layout at industry defaults: fifteen 60″ rounds auto-seated with 8 chairs each, head table seating one side, hatched dance floor, and service-aisle spacing that passes collision validation.",
-    "standard": "Architectural Graphic Standards · US NCS v6",
+    "standard": "Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129",
     "tags": [
       "floorplan",
       "wedding",
@@ -4240,7 +4277,7 @@ export const SYNTAX: Readonly<Record<string, GeneratedSyntax>> = {
   },
   "floorplan": {
     "title": "Floor plan",
-    "content": "## 1. Your first floor plan\n\nA header, one room, a door, and a window:\n\n```\nfloorplan \"Studio\"\nroom main \"Studio\" at 0,0 size 4x3\ndoor main south at 20%\nwindow main north at 50%\n```\n\nThree rules cover most usage:\n\n1. Start with `floorplan`, an optional quoted title, and `unit m` (default) or `unit ft`. **All numbers are in this unit.**\n2. Rooms are rectangles: `room id \"Label\" at x,y size WxH`. The label and computed area render centered in the room.\n3. Openings hang on walls: a wall reference (`main south`) positions along that wall at a percentage; `between A B` finds the shared wall automatically.\n\n---\n\n## 2. Rooms and placement\n\nPlace the first room at `0,0` and chain the rest relatively — adjacent rooms share an edge exactly, and their walls merge into a single band:\n\n```\nroom living  \"Living Room\" at 0,0 size 5.2x4.2\nroom kitchen \"Kitchen\"     right-of living size 3.0x4.2\nroom hall    \"Hallway\"     below living size 2.0x2.6\nroom bed1    \"Bedroom 1\"   right-of hall size 3.2x2.6\n```\n\n- `right-of` / `left-of` / `above` / `below` snap to the reference room's edge.\n- `align start|center|end` aligns the cross axis (default `start` = top/left edges flush); `offset n` shifts it.\n- `fill #e0f2fe` tints the floor; `nolabel` suppresses the name + area label (single-space plans like classrooms).\n- Coordinates are y-down: `at 0,0` is the top-left corner.\n\n**L/T/U-shaped rooms** use `extend` — declare the main rectangle, then grow it with edge-sharing rectangles. The walls merge along the seam, the area is summed into one number (exactly how professionals measure L-rooms), and the label centers on the largest part:\n\n```\nroom living \"Living Room\" at 0,0 size 5x4\nextend living at 5,2 size 2x2          # L-shape: notch at top-right\n```\n\nAn extension that doesn't touch the room, or overlaps it, is rejected with a quantified error. `north` (optionally `north 30` for rotated plans) adds the compass at the top right.\n\n---\n\n## 3. Doors, windows, openings\n\n```\ndoor hall west at 50% width 1.0 swing in          # exterior door on a wall\ndoor between hall bed1 at 50% hinge right          # interior door on the shared wall\ndoor between bed1 bath at 30% type sliding         # sliding door — no arc\nopening between living kitchen at 35% width 1.2    # archway, no leaf\nwindow living north at 30% width 1.8\n```\n\n- `between A B` resolves the shared wall segment and positions at the percentage **along the overlap** — no coordinates needed. Non-adjacent rooms are rejected with the measured gap.\n- Doors default to 0.9 m wide on exterior walls, 0.8 m on `between` walls; windows default to 1.2 m.\n- `hinge left|right` picks the jamb; `swing in|out` flips the quarter-arc (default swings into the owning room — the first room named).\n- Door `type single|double|sliding|pocket|bifold`: double draws two mirrored arcs; sliding/pocket draw offset leaf lines without an arc; bifold draws the two closet-door tent peaks.\n- Window `type fixed|sliding|casement|bay`: sliding = two offset panels, casement adds the outward swing arc, bay projects a splayed trapezoid outside the wall.\n- Openings clamp to fit their wall segment (with a warning) rather than overflowing.\n\n---\n\n## 4. Furniture\n\nFurniture is placed **relative to its room's interior top-left corner**, with optional `size`, `rotate`, and a label:\n\n```\nfurniture sofa in living at 0.25,2.9\nfurniture desk \"Teacher\" in class at 2,1.5 size 5x2.5 rotate 20\nfurniture counter \"Cubbies\" in class at 6,24.4 size 10x1.2\n```\n\nThe catalog spans residential, commercial, and site work (sizes default to industry-standard footprints):\n\n| Cluster | Types |\n| --- | --- |\n| Residential | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |\n| Kitchen / bath | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |\n| Classroom / office | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |\n| Event / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |\n| Retail / warehouse | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |\n| Salon / gym | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |\n| Restaurant / commercial kitchen | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |\n| Stairs / structural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |\n| Site / outdoor | `tree` `car` |\n\n**Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, `manicure-table` seats a client and technician chair, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.\n\n**Seating charts** — name the occupants of any auto-seating table with a `seats` clause, and the engine writes each name onto its chair (in placement order: round tables clockwise from the top; rectangular tables fill the top edge left-to-right, then the bottom edge). This turns a venue floor plan into the seating chart guests actually read:\n\n```\nfurniture round-table-8 \"Table 3\" in hall at 11,4 seats \"Alice\" \"Bob\" \"Carol\" \"Dave\"\nfurniture head-table \"Head Table\" in hall at 5,0.6 size 6x0.9 seats \"Bride\" \"Groom\"\n```\n\nExtra chairs without a name stay empty; extra names past the chair count are ignored. CJK-quoted names (`seats \"张伟\" \"李娜\"`) work like every other label. Names read horizontally, so keep the table unrotated for a clean chart.\n\n`tree` and `car` are sized for the outdoors (canopy disc, parking-stall footprint), so a **site plan** is just zones tiled as adjacent rooms — front yard, house footprint, driveway, back yard — with trees and parked cars placed on top.\n\n**Stairs** follow the drafting conventions: tread lines at 0.28 m (11″), a direction arrow starting at the lowest tread labeled `UP` (give the item a `\"DN\"` label for a descending run), and the 45° zigzag break line at the imaginary 4-ft cut plane, with dashed treads beyond. `stairs` is a straight run (orient with `size`/`rotate`), `stairs-l` turns 90° over a landing, `stairs-u` switches back 180°, `spiral-stairs` is a circle with radial treads and a center pole.\n\n---\n\n## 5. Arrays — grid, row, arc\n\nRepeated furniture is one statement, not thirty:\n\n```\ngrid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5\nrow round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3\narc chair in hall count 13 center 12,8 radius 5 from 200 to 340\n```\n\n- `area x1,y1 x2,y2` gives the first and last item **centers**; items spread evenly between them.\n- `count` truncates **row-major** — 27 desks in a 5×6 grid drops the last row's tail, exactly like a real classroom.\n- `arc` places items on a circular arc facing the center — semicircle classrooms, ceremony seating.\n\n---\n\n## 6. Units, areas, dimension lines\n\n- `unit ft` makes every number feet; dimension lines format as `32'` / `15'1\"` and areas as `sq ft`. Internally everything is metric (1 ft = 0.3048 m).\n- Room areas are **computed by the engine** from the declared geometry, never typed by hand.\n- Dimension lines render outside the plan with architectural slash ticks: overall width + height always, plus per-room segments along the top and left exteriors.\n\n---\n\n## 7. Validation\n\nThe engine validates what LLMs (and humans) actually get wrong, with errors that name the offending elements and a fix direction:\n\n**Errors** (block rendering, shown in an error panel):\n\n- Room overlap — `rooms \"bed1\" and \"bath\" overlap by 0.40×2.60 m — move \"bath\" right-of \"bed1\" or shrink size`\n- Door between non-adjacent rooms — `door between \"kitchen\" and \"bed2\": rooms share no wall (gap 2 m on x-axis)`\n- Furniture outside its room — `furniture sofa #1 extends 1.7 m outside room \"c\" — move it or shrink size`\n\n**Warnings** (render anyway, listed under the plan):\n\n- Furniture collision — bounding boxes including **chair-ring envelopes**, so two banquet rounds whose chairs touch get flagged even when the table tops don't.\n- Opening clamped to fit its wall segment.\n\n---\n\n## 8. Grammar (EBNF)\n\n```text\nplan      ::= \"floorplan\" string? (\"unit\" (\"m\"|\"ft\"))? NL statement*\nstatement ::= room | extend | north | door | window | opening | furniture | array\nroom      ::= \"room\" id string? placement \"size\" dims (\"fill\" color)? (\"nolabel\")?\nextend    ::= \"extend\" id placement \"size\" dims\nnorth     ::= \"north\" num?\nplacement ::= \"at\" coord\n            | (\"right-of\"|\"left-of\"|\"above\"|\"below\") id (\"offset\" num)?\n              (\"align\" (\"start\"|\"center\"|\"end\"))?\ndoor      ::= \"door\" (wallref | \"between\" id id) \"at\" pct\n              (\"width\" num)? (\"hinge\" (\"left\"|\"right\"))? (\"swing\" (\"in\"|\"out\"))?\n              (\"type\" (\"single\"|\"double\"|\"sliding\"|\"pocket\"|\"bifold\"))?\nwindow    ::= \"window\" wallref \"at\" pct (\"width\" num)?\n              (\"type\" (\"fixed\"|\"sliding\"|\"casement\"|\"bay\"))?\nopening   ::= \"opening\" (wallref | \"between\" id id) \"at\" pct (\"width\" num)?\nfurniture ::= \"furniture\" type (\"in\" id) \"at\" coord (\"size\" dims)? (\"rotate\" num)? string? (\"seats\" string+)?\narray     ::= (\"grid\"|\"row\"|\"arc\") type \"in\" id\n              (\"rows\" int)? (\"cols\" int)? (\"count\" int)?\n              (\"area\" coord coord)? (\"itemsize\" dims)? (\"rotate\" num)?\n              (\"center\" coord)? (\"radius\" num)? (\"from\" num \"to\" num)?\nwallref   ::= id (\"north\"|\"south\"|\"east\"|\"west\")\ncoord     ::= num \",\" num          dims ::= num \"x\" num          pct ::= num \"%\"?\n```\n\nComments run from `#` to end of line. CJK quotes (`“”`) are accepted as ASCII quotes.\n\n---\n\n## Related examples\n\n- [Two-bedroom apartment](/examples#floorplan) — relative placement, 7 doors, full furnishing\n- [27-desk classroom](/examples#floorplan) — `grid … count` truncation, `unit ft`\n- [Wedding reception for 120](/examples#floorplan) — auto-seated banquet rounds, dance floor\n\n## Interactive editing\n\nFurniture and electrical fixtures move independently in room coordinates. A simple room exposes east, south, and corner resize handles that rewrite native dimensions; the room body itself does not drag, keeping furniture selection unambiguous. Shared-wall openings remain topology-validated.\n\n## Multi-floor plan sets\n\nUse `floor N \"Label\"` to divide one source into framed floor plates. All plates share one drawing scale; `stack horizontal|vertical` controls the sheet arrangement.\n\n```\nfloorplan \"Two-Storey Villa\" unit m stack horizontal\nfloor 0 \"Ground Floor\"\nroom hall at 0,0 size 6x4\nfurniture stairs S1 in hall at 4,0.4\n\nfloor 1 \"First Floor\"\nroom landing at 0,0 size 6x4\nfurniture stairs S1 in landing at 4,0.4\n```\n\nThe optional furniture instance id (`S1`) registers the same stair run across levels. The lower occurrence becomes UP, upper occurrences DN, and offsets over 0.1 m warn. Room references, doors, furniture, and arrays cannot cross floor sections."
+    "content": "## 1. Your first floor plan\n\nA header, one room, a door, and a window:\n\n```\nfloorplan \"Studio\"\nroom main \"Studio\" at 0,0 size 4x3\ndoor main south at 20%\nwindow main north at 50%\n```\n\nThree rules cover most usage:\n\n1. Start with `floorplan`, an optional quoted title, and `unit m` (default) or `unit ft`. **All numbers are in this unit.**\n2. Rooms are rectangles: `room id \"Label\" at x,y size WxH`. The label and computed area render centered in the room.\n3. Openings hang on walls: a wall reference (`main south`) positions along that wall at a percentage; `between A B` finds the shared wall automatically.\n\n---\n\n## 2. Rooms and placement\n\nPlace the first room at `0,0` and chain the rest relatively — adjacent rooms share an edge exactly, and their walls merge into a single band:\n\n```\nroom living  \"Living Room\" at 0,0 size 5.2x4.2\nroom kitchen \"Kitchen\"     right-of living size 3.0x4.2\nroom hall    \"Hallway\"     below living size 2.0x2.6\nroom bed1    \"Bedroom 1\"   right-of hall size 3.2x2.6\n```\n\n- `right-of` / `left-of` / `above` / `below` snap to the reference room's edge.\n- `align start|center|end` aligns the cross axis (default `start` = top/left edges flush); `offset n` shifts it.\n- `fill #e0f2fe` tints the floor; `nolabel` suppresses the name + area label (single-space plans like classrooms).\n- Coordinates are y-down: `at 0,0` is the top-left corner.\n\n**L/T/U-shaped rooms** use `extend` — declare the main rectangle, then grow it with edge-sharing rectangles. The walls merge along the seam, the area is summed into one number (exactly how professionals measure L-rooms), and the label centers on the largest part:\n\n```\nroom living \"Living Room\" at 0,0 size 5x4\nextend living at 5,2 size 2x2          # L-shape: notch at top-right\n```\n\nAn extension that doesn't touch the room, or overlaps it, is rejected with a quantified error. `north` (optionally `north 30` for rotated plans) adds the compass at the top right.\n\n---\n\n## 3. Doors, windows, openings\n\n```\ndoor hall west at 50% width 1.0 swing in          # exterior door on a wall\ndoor between hall bed1 at 50% hinge right          # interior door on the shared wall\ndoor between bed1 bath at 30% type sliding         # sliding door — no arc\nopening between living kitchen at 35% width 1.2    # archway, no leaf\nwindow living north at 30% width 1.8\n```\n\n- `between A B` resolves the shared wall segment and positions at the percentage **along the overlap** — no coordinates needed. Non-adjacent rooms are rejected with the measured gap.\n- Doors default to 0.9 m wide on exterior walls, 0.8 m on `between` walls; windows default to 1.2 m.\n- `hinge left|right` picks the jamb; `swing in|out` flips the quarter-arc (default swings into the owning room — the first room named).\n- Door `type single|double|sliding|pocket|bifold`: double draws two mirrored arcs; sliding/pocket draw offset leaf lines without an arc; bifold draws the two closet-door tent peaks.\n- Window `type fixed|sliding|casement|bay`: sliding = two offset panels, casement adds the outward swing arc, bay projects a splayed trapezoid outside the wall.\n- Openings clamp to fit their wall segment (with a warning) rather than overflowing.\n\n---\n\n## 4. Furniture\n\nFurniture is placed **relative to its room's interior top-left corner**, with optional `size`, `rotate`, and a label:\n\n```\nfurniture sofa in living at 0.25,2.9\nfurniture desk \"Teacher\" in class at 2,1.5 size 5x2.5 rotate 20\nfurniture counter \"Cubbies\" in class at 6,24.4 size 10x1.2\n```\n\nThe catalog spans residential, commercial, and site work (sizes default to industry-standard footprints):\n\n| Cluster | Types |\n| --- | --- |\n| Residential | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |\n| Kitchen / bath | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |\n| Classroom / office | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |\n| Event / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |\n| Retail / warehouse | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |\n| Salon / gym | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |\n| Restaurant / commercial kitchen | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |\n| Stairs / structural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |\n| Site / outdoor | `tree` `car` |\n\n**Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, `manicure-table` seats a client and technician chair, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.\n\n**Seating charts** — name the occupants of any auto-seating table with a `seats` clause, and the engine writes each name onto its chair (in placement order: round tables clockwise from the top; rectangular tables fill the top edge left-to-right, then the bottom edge). This turns a venue floor plan into the seating chart guests actually read:\n\n```\nfurniture round-table-8 \"Table 3\" in hall at 11,4 seats \"Alice\" \"Bob\" \"Carol\" \"Dave\"\nfurniture head-table \"Head Table\" in hall at 5,0.6 size 6x0.9 seats \"Bride\" \"Groom\"\n```\n\nExtra chairs without a name stay empty; extra names past the chair count are ignored. CJK-quoted names (`seats \"张伟\" \"李娜\"`) work like every other label. Names read horizontally, so keep the table unrotated for a clean chart.\n\n`tree` and `car` are sized for the outdoors (canopy disc, parking-stall footprint), so a **site plan** is just zones tiled as adjacent rooms — front yard, house footprint, driveway, back yard — with trees and parked cars placed on top.\n\n**Stairs** follow the drafting conventions: tread lines at 0.28 m (11″), a direction arrow starting at the lowest tread labeled `UP` (give the item a `\"DN\"` label for a descending run), and the 45° zigzag break line at the imaginary 4-ft cut plane, with dashed treads beyond. `stairs` is a straight run (orient with `size`/`rotate`), `stairs-l` turns 90° over a landing, `stairs-u` switches back 180°, `spiral-stairs` is a circle with radial treads and a center pole.\n\n---\n\n## 5. Electrical plans\n\nSet the document-wide electrical convention on the header. `symbols nec` is the default and uses ANSI Y32.9 / NEC-style receptacle and `S`-family switch marks common on US plans. `symbols iec` uses IEC 60617 socket semicircles and dot-and-lever switches for European installation drawings, including NEN 1010 workflows.\n\n```text\nfloorplan \"Electrical Plan\" unit m symbols nec\n```\n\nThe complete electrical vocabulary is grouped by purpose:\n\n| Family | Types |\n| --- | --- |\n| Receptacles | `outlet` `duplex-outlet` `gfci-outlet` `outlet-240v` `floor-outlet` `weatherproof-outlet` |\n| Switches and controls | `switch` `switch-3way` `switch-4way` `switch-dimmer` `motion-sensor` `thermostat` |\n| Luminaires | `light` `ceiling-light` `recessed-light` `wall-light` `pendant-light` `fluorescent-light` `emergency-light` |\n| Safety, communications, and distribution | `smoke-detector` `data-outlet` `tv-outlet` `phone-outlet` `junction-box` `electrical-panel` `distribution-board` |\n\nUse `fixture` for wall-mounted items. It attaches the symbol to a named wall and turns directional receptacle, switch, and wall-light glyphs to face the room; the placement survives room resizing. Use `furniture` for items positioned within the room, where `at x,y` is the symbol's **top-left corner**, not its center.\n\n```text\nfixture gfci-outlet G1 in kitchen on north at 30%\nfixture switch-3way SW1 in hall on west at 20%\nfurniture recessed-light L1 in hall at 1.4,0.5\n```\n\nGive switches and luminaires instance ids, then connect them with `controls`. One switch may control several luminaires, and several switches may control the same luminaire. The renderer draws themeable dashed curves for these functional relationships. They show **which switch operates which luminaire**, not conductor runs, circuit membership, or cable routes back to a panel.\n\n```\nfloorplan \"Hallway Lighting\" unit m symbols iec\nroom hall \"Hallway\" at 0,0 size 5x1.5\nroom living \"Living Room\" below hall size 5x3.5\nfixture switch-3way SW1 in hall on west at 50%\nfixture switch-3way SW2 in hall on east at 50%\nfurniture recessed-light L1 in hall at 1.4,0.54\nfurniture recessed-light L2 in hall at 3.2,0.54\nfixture outlet O1 in living on south at 25%\nfixture gfci-outlet O2 in living on south at 75%\ncontrols SW1 -> L1, L2\ncontrols SW2 -> L1, L2\n```\n\n---\n\n## 6. Arrays — grid, row, arc\n\nRepeated furniture is one statement, not thirty:\n\n```\ngrid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5\nrow round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3\narc chair in hall count 13 center 12,8 radius 5 from 200 to 340\n```\n\n- `area x1,y1 x2,y2` gives the first and last item **centers**; items spread evenly between them.\n- `count` truncates **row-major** — 27 desks in a 5×6 grid drops the last row's tail, exactly like a real classroom.\n- `arc` places items on a circular arc facing the center — semicircle classrooms, ceremony seating.\n\n---\n\n## 7. Units, areas, dimension lines\n\n- `unit ft` makes every number feet; dimension lines format as `32'` / `15'1\"` and areas as `sq ft`. Internally everything is metric (1 ft = 0.3048 m).\n- Room areas are **computed by the engine** from the declared geometry, never typed by hand.\n- Dimension lines render outside the plan with architectural slash ticks: overall width + height always, plus per-room segments along the top and left exteriors.\n\n---\n\n## 8. Validation\n\nThe engine validates what LLMs (and humans) actually get wrong, with errors that name the offending elements and a fix direction:\n\n**Errors** (block rendering, shown in an error panel):\n\n- Room overlap — `rooms \"bed1\" and \"bath\" overlap by 0.40×2.60 m — move \"bath\" right-of \"bed1\" or shrink size`\n- Door between non-adjacent rooms — `door between \"kitchen\" and \"bed2\": rooms share no wall (gap 2 m on x-axis)`\n- Furniture outside its room — `furniture sofa #1 extends 1.7 m outside room \"c\" — move it or shrink size`\n\n**Warnings** (render anyway, listed under the plan):\n\n- Furniture collision — bounding boxes including **chair-ring envelopes**, so two banquet rounds whose chairs touch get flagged even when the table tops don't.\n- Opening clamped to fit its wall segment.\n\n---\n\n## 9. Grammar (EBNF)\n\n```text\nplan      ::= \"floorplan\" string? header-setting* NL statement*\nheader-setting ::= \"unit\" (\"m\"|\"ft\") | \"symbols\" (\"nec\"|\"iec\")\nstatement ::= room | extend | north | door | window | opening | furniture | fixture | array | controls\nroom      ::= \"room\" id string? placement \"size\" dims (\"fill\" color)? (\"nolabel\")?\nextend    ::= \"extend\" id placement \"size\" dims\nnorth     ::= \"north\" num?\nplacement ::= \"at\" coord\n            | (\"right-of\"|\"left-of\"|\"above\"|\"below\") id (\"offset\" num)?\n              (\"align\" (\"start\"|\"center\"|\"end\"))?\ndoor      ::= \"door\" (wallref | \"between\" id id) \"at\" pct\n              (\"width\" num)? (\"hinge\" (\"left\"|\"right\"))? (\"swing\" (\"in\"|\"out\"))?\n              (\"type\" (\"single\"|\"double\"|\"sliding\"|\"pocket\"|\"bifold\"))?\nwindow    ::= \"window\" wallref \"at\" pct (\"width\" num)?\n              (\"type\" (\"fixed\"|\"sliding\"|\"casement\"|\"bay\"))?\nopening   ::= \"opening\" (wallref | \"between\" id id) \"at\" pct (\"width\" num)?\nfurniture ::= \"furniture\" type id? (\"in\" id) \"at\" coord (\"size\" dims)? (\"rotate\" num)? string? (\"seats\" string+)?\nfixture   ::= \"fixture\" type id? \"in\" id \"on\" (\"north\"|\"south\"|\"east\"|\"west\") \"at\" pct\n              (\"size\" dims)? (\"rotate\" num)? string?\ncontrols  ::= \"controls\" id \"->\" id (\",\" id)*\narray     ::= (\"grid\"|\"row\"|\"arc\") type \"in\" id\n              (\"rows\" int)? (\"cols\" int)? (\"count\" int)?\n              (\"area\" coord coord)? (\"itemsize\" dims)? (\"rotate\" num)?\n              (\"center\" coord)? (\"radius\" num)? (\"from\" num \"to\" num)?\nwallref   ::= id (\"north\"|\"south\"|\"east\"|\"west\")\ncoord     ::= num \",\" num          dims ::= num \"x\" num          pct ::= num \"%\"?\n```\n\nComments run from `#` to end of line. CJK quotes (`“”`) are accepted as ASCII quotes.\n\n---\n\n## Related examples\n\n- [Two-bedroom apartment](/examples#floorplan) — relative placement, 7 doors, full furnishing\n- [27-desk classroom](/examples#floorplan) — `grid … count` truncation, `unit ft`\n- [Wedding reception for 120](/examples#floorplan) — auto-seated banquet rounds, dance floor\n\n## Interactive editing\n\nFurniture and electrical fixtures move independently in room coordinates. A simple room exposes east, south, and corner resize handles that rewrite native dimensions; the room body itself does not drag, keeping furniture selection unambiguous. Shared-wall openings remain topology-validated.\n\n## Multi-floor plan sets\n\nUse `floor N \"Label\"` to divide one source into framed floor plates. All plates share one drawing scale; `stack horizontal|vertical` controls the sheet arrangement.\n\n```\nfloorplan \"Two-Storey Villa\" unit m stack horizontal\nfloor 0 \"Ground Floor\"\nroom hall at 0,0 size 6x4\nfurniture stairs S1 in hall at 4,0.4\n\nfloor 1 \"First Floor\"\nroom landing at 0,0 size 6x4\nfurniture stairs S1 in landing at 4,0.4\n```\n\nThe optional furniture instance id (`S1`) registers the same stair run across levels. The lower occurrence becomes UP, upper occurrences DN, and offsets over 0.1 m warn. Room references, doors, furniture, and arrays cannot cross floor sections."
   },
   "evacuation": {
     "title": "Evacuation plan",

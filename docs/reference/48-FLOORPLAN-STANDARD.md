@@ -3,13 +3,14 @@
 *2D architectural floor plans and space layouts — **rooms** (rectilinear, dimensioned), **walls** with poché (solid-fill) rendering and automatic shared-wall merging, **openings** (doors with swing arcs, windows, archways) placed along walls, and a **furniture/fixture symbol catalog** (residential, kitchen/bath, classroom, event/banquet, office) placeable individually or as **arrays** (grids, rows, arcs of desks/tables/chairs). Schematex renders the conventional architectural plan-view vocabulary as semantic SVG from a text DSL designed for AI generation — with automatic area computation, dimension lines, and validation that catches the errors LLMs actually make (overlapping rooms, doors on non-shared walls, colliding furniture).*
 
 > **Primary references (the standard landscape).** Floor-plan notation has **no single binding ISO/IEEE standard** — it is convention-driven, and the conventions are documented in a small set of canonical sources. Schematex treats the following as its baseline:
-> - **Ramsey & Sleeper, *Architectural Graphic Standards*** (12th ed., Wiley / The American Institute of Architects) — *the* de-facto reference for US architectural drawing conventions: wall poché, door-swing quarter-arcs, window glazing lines, plumbing-fixture and appliance symbols, dimension-line format.
-> - **U.S. National CAD Standard (NCS v6)** — drawing-set conventions (line weights, symbol classes, annotation) that professional plan sets follow.
-> - **ISO 4157** (construction drawings — designation of buildings and parts) and **ISO 7518** (simplified representation of demolition/rebuilding) — light-touch international counterparts; ISO plans use the same poché/swing/glazing vocabulary.
+> - **Ramsey & Sleeper, *Architectural Graphic Standards*** (12th ed., Wiley / The American Institute of Architects) — the US reference used narrowly here for wall poché, door-swing quarter-arcs, window glazing lines, and plan-view fixture/appliance conventions.
+> - **Neufert, *Architects' Data* (*Bauentwurfslehre*)** — the corresponding European architectural planning reference, particularly for metric spatial dimensions and layout practice.
+> - **ISO 128 / ISO 129** — the international baseline for technical-drawing line conventions, hatching, and dimensioning.
+> - **U.S. National CAD Standard (NCS v6)** — US drawing-set conventions for line weights, symbol classes, and annotation; useful when producing a US plan set, not a claim that the engine's metric-native geometry is US-specific.
 > - **Banquet & event industry conventions** (BizBash / Cvent / Social Tables operational standards): 60″ (152 cm) round seats 8, 72″ (183 cm) round seats 10, 8′ banquet rectangle seats 8–10, dance floor ≈ 4.5 sq ft per guest, service aisles ≥ 60″ between table edges (chair-back to chair-back).
 > - **Classroom/教育 layout practice** has no formal standard; the vocabulary (desk-chair units in rows/groups/semicircle, teacher desk, whiteboard run, cubbies, reading-corner rug) is stable across ConceptDraw/EdrawMax template libraries and ECERS-R environment-rating conventions. Documented here as the baseline, deviations welcome.
 >
-> *Honest framing (mirrors the network §0 note).* Because the notation is convention-not-statute, Schematex treats **AGS symbols as the visual baseline**, **NCS dimensioning as the annotation baseline**, and **the event-industry capacity tables as the defaults baseline** — and documents deviations explicitly.
+> *Honest framing (mirrors the network §0 note).* Because floor-plan notation is convention-driven, Schematex draws the architectural shell from the shared AGS/Neufert tradition, follows ISO 128 / ISO 129 for international linework and dimensioning, and uses NCS conventions where a US plan-set detail is needed. The narrow AGS-derived claim is wall poché, door swings, glazing lines, and plan-view fixture silhouettes — not that Schematex output is US-specific.
 
 ---
 
@@ -32,7 +33,7 @@
 | `breadboard` (§26) | Physical component placement on a real coordinate grid | **Closest structural cousin** — both place typed symbols at physical coordinates in a metric space. But breadboard's space is a fixed prefab grid; floorplan's space is user-declared rooms with walls, openings, and free metric placement. |
 | `flowchart` (§14) | Topology → auto-layout (Sugiyama) | Floorplan is the *inverse* problem: geometry is explicit (user gives dims/positions), the engine validates and renders. No graph layout involved in v0.1. |
 | `network` (§35) | Typed icon catalog + boundary containers | Shares the "typed symbol catalog + container" pattern; floorplan rooms are metric containers with structural walls, not dashed logical boundaries. |
-| `sld` / `circuit` | IEEE/IEC symbol standards | Same *stance* (published symbol conventions, redrawn as original line art); different domain. Electrical floor plans (outlets/switches per NEC symbols) are a natural **future bridge** between `floorplan` and `circuit` — deferred, see §8. |
+| `sld` / `circuit` | IEEE/IEC symbol standards | Same *stance* (published symbol conventions, redrawn as original line art); different domain. `floorplan` now covers electrical fitting placement and switch-to-luminaire `controls`; panel internals, circuit topology, and conductor routing remain in the `sld` / `circuit` boundary described in §8. |
 
 **New core surface, deliberately small.** Floorplan introduces one genuinely new mechanism — *wall geometry with openings* (poché merge, gap punching, swing arcs). Everything else (parser, symbol library, validation, theming) follows existing patterns. No auto-layout solver in v0.1 (§8).
 
@@ -72,11 +73,19 @@ Full vocabulary specified now (DSL/types never change to add more); **v0.1 colum
 **Retail / warehouse** — all ✅ (0.9.3): `shelving` (gondola run, back-to-back spine + bays) `checkout` (POS counter + register) `clothing-rack` (round rail) `fitting-room` (booth + bench + curtain) `pallet-rack` (open frame, X-braced bays) `loading-dock` (roll-up door + bumpers) `forklift`.
 **Salon / gym** — all ✅ (0.9.3): `salon-chair` (styling station + mirror) `shampoo-bowl` (backwash unit) `manicure-table` (auto-seats client + technician) `treadmill` `weight-bench` (auto barbell) `power-rack` `yoga-mat` (underlay).
 **Restaurant / commercial kitchen** — ✅ (0.9.9, expanded from production evidence): `booth` (two facing benches + table between, restaurant booth) `prep-table` (stainless work table, dashed under-shelf) `range` (commercial 6-burner + oven) `walk-in` (insulated double-wall cooler/freezer + door) `commercial-sink` (three-compartment sink) `fryer` (twin fry vats) `grill` (0.9 m-deep charbroiler/griddle with grate and control strip). Targets `restaurant floor plan` / `commercial kitchen layout` (Google Ads US: ~2.4K / ~850 mo, the head commercial-floorplan terms).
-**Electrical overlay** — ✅ (0.9.11): `outlet` `duplex-outlet` `switch` `light` `ceiling-light` `data-outlet` `electrical-panel` `distribution-board`. These are room-relative overlay fixtures for residential/commercial electrical fittings plans (socket/switch/light/panel placement). They intentionally do **not** model panel internals; use `sld` for consumer-unit/distribution-board single-lines and `circuit` positional panel layout for DIN-rail/control-cabinet views.
+**Electrical overlay** — ✅ (0.9.11, expanded): document-wide `symbols nec|iec` selects the drawing convention. The `nec` set follows ANSI Y32.9 / NEC plan conventions; `iec` follows IEC 60617, including semicircle sockets and lever switches used in European installation drawings.
+
+- **Receptacles:** `outlet` `duplex-outlet` `gfci-outlet` `outlet-240v` `floor-outlet` `weatherproof-outlet`.
+- **Switches and controls:** `switch` `switch-3way` `switch-4way` `switch-dimmer` `motion-sensor` `thermostat`.
+- **Luminaires:** `light` `ceiling-light` `recessed-light` `wall-light` `pendant-light` `fluorescent-light` `emergency-light`.
+- **Safety, communications, and distribution:** `smoke-detector` `data-outlet` `tv-outlet` `phone-outlet` `junction-box` `electrical-panel` `distribution-board`.
+
+Wall-mounted fittings use `fixture <type> <instance-id> in <room> on <side> at N%`; room/ceiling items use `furniture <type> <instance-id> in <room> at x,y`. `controls <switch-id> -> <luminaire-id>[, ...]` draws a themeable dashed curve showing the functional switch-to-luminaire relationship. It is an operational annotation, not wiring topology.
+
 **Site / outdoor** — ✅ (0.9.3, expanded from production evidence): `bench` (slatted freestanding seat) `fountain` (concentric courtyard basin and jets) `tree` (canopy disc) `car` (parking-stall footprint). A site/plot plan tiles the lot as adjacent zones (front yard · house footprint · driveway · back yard) with fixtures, trees, and cars on top.
 **Deferred** ⬜: hospital/dental beds & chairs — add by demand evidence.
 
-Symbols are original line art following AGS plan-view silhouettes (same stance as network vs Cisco icons): thin stroke, white fill, no inline styles, themable via CSS classes (`stx-floorplan-wall`, `stx-floorplan-furniture`, `stx-floorplan-label`, …).
+Symbols are original line art following the cited architectural/electrical conventions (same stance as network vs Cisco icons): thin stroke, white fill, no inline styles, themable via CSS classes (`sx-fp-wall`, `sx-fp-furniture`, `sx-fp-labels`, `sx-fp-control`, …).
 
 ### 2.3 Auto-seating rules (industry defaults baked in)
 
@@ -256,5 +265,6 @@ Working POC (parser + renderer + the three scenario renders, zero-dep JS): `../C
 
 - **Auto-layout from adjacency constraints only** ("kitchen next to living, no coordinates") — academic-grade problem (diffusion/MIP); v0.1 is explicit-dims + relative placement, which covers the observed demand. Revisit only with usage evidence.
 - **Polygon-vertex rooms** — `extend` (rect union) covers rectilinear L/T/U natively; a `polygon` vertex-list escape hatch (rectilinear-validated, later relaxed to 45°) is reserved syntax for a fast-follow. **Diagonal (45°) walls** = fast-follow; **curved/arc walls** = deferred — evidence: the RPLAN corpus (80k real residential plans) is fully axis-aligned, and RoomSketcher gates curved walls behind its Pro tier. Bay windows (the most common curved-ish feature) are covered by `window … type bay`.
-- **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred. Multi-floor plate assembly and stair registration are implemented in 1.0.2. Electrical **placement** overlay is supported; electrical **panel internals / schedules** remain `sld` / `circuit` territory.
+- **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred. Multi-floor plate assembly and stair registration are implemented in 1.0.2.
+- **Electrical wiring design** — conductor runs, home runs back to the panel, circuit numbering, and load calculations are not supported. `controls` shows which switch operates which luminaire; it does not say how cable is pulled. Panel internals and schedules remain `sld` / `circuit` territory.
 - **Photorealism** — permanently out of scope; that is the image-model lane.

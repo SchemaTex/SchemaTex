@@ -24,6 +24,7 @@ import type {
   WindowType,
   FloorplanArray,
   FloorplanAst,
+  FloorplanControl,
   FloorplanExtend,
   FloorplanFurniture,
   FloorplanOpening,
@@ -212,6 +213,16 @@ export const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   "breaker-panel": "electrical-panel",
   db: "distribution-board",
   "consumer-unit": "distribution-board",
+  "rcd-outlet": "gfci-outlet",
+  rcd: "gfci-outlet",
+  sconce: "wall-light",
+  downlight: "recessed-light",
+  "can-light": "recessed-light",
+  "smoke-alarm": "smoke-detector",
+  pir: "motion-sensor",
+  "coax-outlet": "tv-outlet",
+  "strip-light": "fluorescent-light",
+  troffer: "fluorescent-light",
   // Common everyday synonyms an LLM reaches for that map cleanly onto an
   // existing type. Keeps a valid layout from failing on a vocabulary gap.
   "console-table": "side-table",
@@ -306,6 +317,12 @@ function parseHeader(
         throw new FloorplanParseError(`stack must be horizontal|vertical, got "${stack}"`, ln);
       }
       ast.stack = stack;
+    } else if (t.word === "symbols") {
+      const symbols = parseId(tok.shift(), "symbols (nec|iec)", ln);
+      if (symbols !== "nec" && symbols !== "iec") {
+        throw new FloorplanParseError(`symbols must be nec|iec, got "${symbols}"`, ln);
+      }
+      ast.symbols = symbols;
     } else throw new FloorplanParseError(`${mode}: unexpected token "${t.word}"`, ln);
   }
 }
@@ -752,6 +769,36 @@ function parseFurniture(
   ast.furniture.push(f);
 }
 
+function parseControl(tok: Tok[], ast: FloorplanAst, ln: number): void {
+  const source = parseId(tok.shift(), "a source instance id", ln);
+  const arrow = tok.shift();
+  if (!isWord(arrow, "->")) {
+    throw new FloorplanParseError(`controls expects "<source> -> <target>[, <target>...]"`, ln);
+  }
+  const targetWords: string[] = [];
+  for (const token of tok) {
+    if (!isWord(token)) {
+      throw new FloorplanParseError(`controls instance ids must be unquoted`, ln);
+    }
+    targetWords.push(token.word);
+  }
+  const targetList = targetWords
+    .join(" ")
+    .split(",")
+    .map((target) => target.trim());
+  if (
+    targetList.length === 0 ||
+    targetList.some((target) => target.length === 0 || /\s/.test(target))
+  ) {
+    throw new FloorplanParseError(
+      `controls expects one or more comma-separated target instance ids`,
+      ln
+    );
+  }
+  const control: FloorplanControl = { source, targets: targetList, line: ln };
+  ast.controls.push(control);
+}
+
 function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const type = parseFurnitureType(tok.shift(), ln);
   const a: FloorplanArray = {
@@ -1088,12 +1135,14 @@ export function parseFloorplan(text: string): FloorplanAst {
     mode: "floorplan",
     title: "Floor Plan",
     unit: "m",
+    symbols: "nec",
     floors: [],
     stack: "horizontal",
     rooms: [],
     extensions: [],
     openings: [],
     furniture: [],
+    controls: [],
     arrays: [],
     zones: [],
     compliance: "iso",
@@ -1405,6 +1454,9 @@ export function parseFloorplan(text: string): FloorplanAst {
         );
       }
     }
+    else if (kw === "controls") {
+      parseControl(tok, ast, ln);
+    }
     else if (kw === "grid" || kw === "row" || kw === "arc") {
       parseArray(kw as ArrayMode, tok, ast, ln, currentFloor);
     }
@@ -1413,7 +1465,7 @@ export function parseFloorplan(text: string): FloorplanAst {
     }
     else {
       throw new FloorplanParseError(
-        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc, fixture, zone, safety, route`,
+        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc, fixture, zone, safety, route, controls`,
         ln
       );
     }

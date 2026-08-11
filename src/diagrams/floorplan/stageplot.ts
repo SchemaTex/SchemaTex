@@ -687,6 +687,7 @@ export function renderStageplotLayout(
         w: item.w,
         h: item.h,
         px,
+        symbols: lay.symbols,
         label: item.label,
       }),
     ];

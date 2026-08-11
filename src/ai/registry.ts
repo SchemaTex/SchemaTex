@@ -818,11 +818,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     tagline:
       "2D architectural floor plans & space layouts — poch\u00e9 walls with automatic shared-wall merging, door swing arcs, windows, and an auto-seating furniture catalog with collision validation.",
     useWhen:
-      "Use for measurable rectilinear room/space layouts: apartments and small homes, classroom seating arrangements, wedding/event floor plans, small shops and offices. Declare rooms with real dimensions (`room living at 0,0 size 5.2x4.2`, `unit m|ft`), chain placement with right-of/below, hang doors/windows on walls (`door between A B at 50%`), and place furniture room-relative — individually or as bounded `grid`/`row`/`arc` arrays. L/T/U-shaped rooms use `extend`; wall fixtures and keep-clear zones preserve placement intent. The engine merges shared walls, computes room areas/dimensions, auto-seats tables, and validates topology and geometry. It does not represent curved room boundaries, plumbing/HVAC runs, electrical circuit connectivity, automatic space planning, photorealistic renders, or CAD construction documents; never fake those semantics with furniture points or decorative lines.",
+      "Use for measurable rectilinear room/space layouts: apartments and small homes, classroom seating arrangements, wedding/event floor plans, small shops and offices. Declare rooms with real dimensions (`room living at 0,0 size 5.2x4.2`, `unit m|ft`), chain placement with right-of/below, hang doors/windows on walls (`door between A B at 50%`), and place furniture room-relative — individually or as bounded `grid`/`row`/`arc` arrays. L/T/U-shaped rooms use `extend`; wall fixtures and keep-clear zones preserve placement intent. The engine merges shared walls, computes room areas/dimensions, auto-seats tables, and validates topology and geometry. Electrical fittings plans are supported: `symbols nec|iec` picks the symbol convention, and `controls SW1 -> L1` draws which switch or sensor operates which luminaire. It does not represent curved room boundaries, plumbing/HVAC runs, conductor runs or circuit topology (home runs to the panel, circuit numbering, load calculations), automatic space planning, photorealistic renders, or CAD construction documents; never fake those semantics with furniture points or decorative lines.",
     cluster: "architecture",
     standard:
-      "Ramsey & Sleeper Architectural Graphic Standards",
-    standardAlso: ["US National CAD Standard v6", "Banquet-industry capacity conventions"],
+      "Architectural Graphic Standards · Neufert",
+    standardAlso: [
+      "Neufert, Architects' Data (Bauentwurfslehre)",
+      "ISO 128 / ISO 129",
+      "US National CAD Standard v6",
+      "Banquet-industry capacity conventions",
+    ],
     syntaxKey: "floorplan",
     aliases: [
       "Floor plan",

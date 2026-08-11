@@ -36,6 +36,14 @@ import { finalizeStageplotLayout } from "./stageplot";
 
 const FT = 0.3048;
 
+/** Directional fixture glyphs are authored with their wall edge facing north. */
+const WALL_FIXTURE_ROTATION: Record<WallSide, number> = {
+  north: 0,
+  east: 90,
+  south: 180,
+  west: 270,
+};
+
 export const FLOORPLAN_CONST = {
   /** Wall band thickness, meters (§5). */
   wallT: 0.2,
@@ -698,7 +706,9 @@ function layoutOneFloor(
       localY,
       w,
       h,
-      f.rotate,
+      f.rotate + (f.anchor && def.directional
+        ? WALL_FIXTURE_ROTATION[f.anchor.side]
+        : 0),
       f.label,
       f.seats,
       f.labelSourceRange,
@@ -1065,12 +1075,14 @@ function layoutOneFloor(
     title: ast.title,
     titleSourceRange: ast.titleSourceRange,
     unit: ast.unit,
+    symbols: ast.symbols,
     mode: ast.mode,
     north: ast.north,
     rooms,
     seams,
     openings,
     items,
+    controls: [],
     zones,
     dims,
     bounds: { minX, minY, maxX, maxY },
@@ -1148,6 +1160,135 @@ function offsetOpening(
     negRoom: opening.negRoom === undefined ? undefined : opening.negRoom + roomBase,
     posRoom: opening.posRoom === undefined ? undefined : opening.posRoom + roomBase,
   };
+}
+
+const CONTROL_SOURCE_TYPES: ReadonlySet<ItemGeom["type"]> = new Set([
+  "switch",
+  "switch-3way",
+  "switch-4way",
+  "switch-dimmer",
+  "motion-sensor",
+]);
+
+const CONTROL_TARGET_TYPES: ReadonlySet<ItemGeom["type"]> = new Set([
+  "light",
+  "ceiling-light",
+  "recessed-light",
+  "wall-light",
+  "pendant-light",
+  "fluorescent-light",
+  "emergency-light",
+]);
+
+function levenshtein(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i++) {
+    let previous = row[0] ?? 0;
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const saved = row[j] ?? 0;
+      row[j] = Math.min(
+        (row[j] ?? 0) + 1,
+        (row[j - 1] ?? 0) + 1,
+        previous + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+      previous = saved;
+    }
+  }
+  return row[b.length] ?? Math.max(a.length, b.length);
+}
+
+function resolveControls(ast: FloorplanAst, layout: FloorplanLayoutResult): void {
+  const byInstanceId = new Map<string, number>();
+  for (let index = 0; index < layout.items.length; index++) {
+    const instanceId = layout.items[index]?.instanceId;
+    if (instanceId !== undefined && !byInstanceId.has(instanceId)) {
+      byInstanceId.set(instanceId, index);
+    }
+  }
+  const knownIds = [...byInstanceId.keys()];
+  const report = (
+    code: string,
+    message: string,
+    line: number | undefined,
+    entityIds: string[]
+  ): void => {
+    layout.errors.push(message);
+    layout.diagnostics.push({
+      severity: "error",
+      code,
+      phase: "topology",
+      message,
+      line,
+      entityIds,
+    });
+  };
+  const unknownMessage = (id: string): string => {
+    const suggestion = knownIds
+      .filter((knownId) => knownId !== id)
+      .sort((a, b) => levenshtein(id, a) - levenshtein(id, b) || a.localeCompare(b))[0];
+    return `controls: unknown instance id "${id}".${suggestion ? ` Did you mean "${suggestion}"?` : ""}`;
+  };
+
+  for (const control of ast.controls) {
+    const sourceIndex = byInstanceId.get(control.source);
+    const source = sourceIndex === undefined ? undefined : layout.items[sourceIndex];
+    if (!source) {
+      report(
+        "floorplan/control-unknown-instance",
+        unknownMessage(control.source),
+        control.line,
+        [control.source]
+      );
+    } else if (!CONTROL_SOURCE_TYPES.has(source.type)) {
+      report(
+        "floorplan/control-invalid-source",
+        `controls: source "${control.source}" is ${source.type}; sources must be a switch or motion-sensor`,
+        control.line,
+        [control.source]
+      );
+    }
+
+    for (const targetId of control.targets) {
+      if (targetId === control.source) {
+        report(
+          "floorplan/control-self-reference",
+          `controls: item "${control.source}" cannot control itself`,
+          control.line,
+          [control.source]
+        );
+        continue;
+      }
+      const targetIndex = byInstanceId.get(targetId);
+      const target = targetIndex === undefined ? undefined : layout.items[targetIndex];
+      if (targetIndex === undefined || !target) {
+        report(
+          "floorplan/control-unknown-instance",
+          unknownMessage(targetId),
+          control.line,
+          [targetId]
+        );
+        continue;
+      }
+      if (!CONTROL_TARGET_TYPES.has(target.type)) {
+        report(
+          "floorplan/control-invalid-target",
+          `controls: target "${targetId}" is ${target.type}; targets must be luminaires`,
+          control.line,
+          [targetId]
+        );
+        continue;
+      }
+      if (source && sourceIndex !== undefined && CONTROL_SOURCE_TYPES.has(source.type)) {
+        layout.controls.push({
+          source: sourceIndex,
+          target: targetIndex,
+          sourceId: control.source,
+          targetId,
+        });
+      }
+    }
+  }
 }
 
 function crossFloorReferences(ast: FloorplanAst): {
@@ -1323,6 +1464,7 @@ export function layoutFloorplan(
         seamIdx: layout.seams.map((_, index) => index),
       }],
     };
+    resolveControls(ast, result);
     if (ast.mode === "evacuation") return finalizeEvacuationLayout(ast, result);
     if (ast.mode === "stageplot") return finalizeStageplotLayout(ast, result);
     return result;
@@ -1452,12 +1594,14 @@ export function layoutFloorplan(
   const result: FloorplanLayoutResult = {
     title: ast.title,
     unit: ast.unit,
+    symbols: ast.symbols,
     mode: ast.mode,
     north: ast.north,
     rooms,
     seams,
     openings,
     items,
+    controls: [],
     zones,
     dims,
     plates,
@@ -1469,6 +1613,7 @@ export function layoutFloorplan(
     diagnostics,
     warnItems,
   };
+  resolveControls(ast, result);
   if (ast.mode === "evacuation") return finalizeEvacuationLayout(ast, result);
   if (ast.mode === "stageplot") return finalizeStageplotLayout(ast, result);
   return result;

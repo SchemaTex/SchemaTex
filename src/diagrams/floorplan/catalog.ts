@@ -415,40 +415,287 @@ function spiralStairs(c: SymbolDrawCtx): string {
   return parts.join("");
 }
 
-function outletDraw(duplex: boolean): (c: SymbolDrawCtx) => string {
-  return (c: SymbolDrawCtx): string => {
-    const parts: string[] = [];
-    const cx = c.w / 2;
-    const centers = duplex ? [c.h * 0.34, c.h * 0.66] : [c.h / 2];
-    parts.push(rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.04) }));
-    for (const cy of centers) {
-      parts.push(circle({ class: "sx-fp-furn-line", cx: c.px(cx), cy: c.px(cy), r: c.px(Math.min(c.w, c.h) * 0.16) }));
-      parts.push(line({ class: "sx-fp-furn-line", x1: c.px(cx - c.w * 0.1), y1: c.px(cy), x2: c.px(cx + c.w * 0.1), y2: c.px(cy) }));
-    }
-    return parts.join("");
-  };
+type SwitchVariant = "single" | "3way" | "4way" | "dimmer";
+
+function symbolText(
+  c: SymbolDrawCtx,
+  label: string,
+  x = c.w / 2,
+  y = c.h / 2,
+  size = Math.min(0.14, c.h * 0.42)
+): string {
+  return textEl({
+    class: "sx-fp-furn-text",
+    x: c.px(x),
+    y: c.px(y),
+    "text-anchor": "middle",
+    "dominant-baseline": "central",
+    "font-size": c.px(size),
+  }, label);
 }
 
-function electricalSwitchDraw(c: SymbolDrawCtx): string {
+function necReceptacleDraw(
+  c: SymbolDrawCtx,
+  duplex: boolean,
+  annotation?: string
+): string {
+  const cx = c.w / 2;
+  const cy = c.h * 0.34;
+  const r = Math.min(c.w, c.h) * 0.18;
+  const offsets = duplex
+    ? [-0.62, -0.2, 0.2, 0.62]
+    : [-0.3, 0.3];
+  const stemEnd = c.h * (annotation ? 0.62 : 0.86);
   return [
-    rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.04) }),
-    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.28), y1: c.px(c.h * 0.65), x2: c.px(c.w * 0.72), y2: c.px(c.h * 0.35) }),
-    circle({ class: "sx-fp-furn-dot", cx: c.px(c.w * 0.28), cy: c.px(c.h * 0.65), r: c.px(0.025) }),
+    circle({
+      class: "sx-fp-furn-nofill",
+      cx: c.px(cx),
+      cy: c.px(cy),
+      r: c.px(r),
+    }),
+    ...offsets.map((offset) =>
+      line({
+        class: "sx-fp-furn-line",
+        x1: c.px(cx + r * offset),
+        y1: c.px(cy + r * 0.12),
+        x2: c.px(cx + r * offset),
+        y2: c.px(stemEnd),
+      })
+    ),
+    ...(annotation
+      ? [symbolText(c, annotation, cx, c.h * 0.84, Math.min(0.095, c.h * 0.28))]
+      : []),
   ].join("");
 }
 
-function lightDraw(label = "L"): (c: SymbolDrawCtx) => string {
+function iecSocketDraw(
+  c: SymbolDrawCtx,
+  duplex: boolean,
+  annotation?: string
+): string {
+  const cx = c.w / 2;
+  const flatY = 0;
+  const r = Math.min(c.w * 0.3, c.h * (annotation ? 0.22 : 0.3));
+  const stemEnd = c.h * (annotation ? 0.61 : 0.9);
+  const stemOffsets = duplex ? [-r * 0.23, r * 0.23] : [0];
+  return [
+    line({
+      class: "sx-fp-furn-line",
+      x1: c.px(cx - r),
+      y1: c.px(flatY),
+      x2: c.px(cx + r),
+      y2: c.px(flatY),
+    }),
+    path({
+      class: "sx-fp-furn-line",
+      d: `M ${c.px(cx - r)} ${c.px(flatY)} A ${c.px(r)} ${c.px(r)} 0 0 0 ${c.px(cx + r)} ${c.px(flatY)}`,
+    }),
+    ...stemOffsets.map((offset) =>
+      line({
+        class: "sx-fp-furn-line",
+        x1: c.px(cx + offset),
+        y1: c.px(flatY + r),
+        x2: c.px(cx + offset),
+        y2: c.px(stemEnd),
+      })
+    ),
+    ...(annotation
+      ? [symbolText(c, annotation, cx, c.h * 0.84, Math.min(0.095, c.h * 0.28))]
+      : []),
+  ].join("");
+}
+
+function outletDraw(
+  duplex: boolean,
+  annotation?: "GFCI" | "WP" | "240V"
+): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string =>
+    c.symbols === "iec"
+      ? iecSocketDraw(c, duplex, annotation === "GFCI" ? "RCD" : annotation)
+      : necReceptacleDraw(c, duplex, annotation);
+}
+
+function necSwitchDraw(c: SymbolDrawCtx, variant: SwitchVariant): string {
+  const subscript = variant === "3way" ? "3" : variant === "4way" ? "4" : variant === "dimmer" ? "D" : undefined;
+  const mainSize = Math.min(0.23, c.h * 0.72);
+  const cx = c.w / 2 - (subscript ? c.w * 0.06 : 0);
+  return [
+    symbolText(c, "S", cx, c.h * 0.5, mainSize),
+    ...(subscript
+      ? [symbolText(c, subscript, cx + c.w * 0.25, c.h * 0.67, mainSize * 0.48)]
+      : []),
+  ].join("");
+}
+
+function iecSwitchDraw(c: SymbolDrawCtx, variant: SwitchVariant): string {
+  if (variant === "4way") {
+    // IEC/NEN plan sets vary in terminal detail; the conservative, widely
+    // recognised intermediate-switch form is two crossing lever strokes.
+    return [
+      line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.28), y1: c.px(c.h * 0.12), x2: c.px(c.w * 0.72), y2: c.px(c.h * 0.78) }),
+      line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.72), y1: c.px(c.h * 0.12), x2: c.px(c.w * 0.28), y2: c.px(c.h * 0.78) }),
+      circle({ class: "sx-fp-furn-dot", cx: c.px(c.w * 0.28), cy: c.px(c.h * 0.12), r: c.px(0.025) }),
+      circle({ class: "sx-fp-furn-dot", cx: c.px(c.w * 0.72), cy: c.px(c.h * 0.12), r: c.px(0.025) }),
+    ].join("");
+  }
+  const x1 = c.w * 0.3;
+  const y1 = c.h * 0.12;
+  const x2 = c.w * 0.74;
+  const y2 = c.h * 0.76;
+  return [
+    line({ class: "sx-fp-furn-line", x1: c.px(x1), y1: c.px(y1), x2: c.px(x2), y2: c.px(y2) }),
+    circle({ class: "sx-fp-furn-dot", cx: c.px(x1), cy: c.px(y1), r: c.px(0.025) }),
+    ...(variant === "3way"
+      ? [line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.58), y1: c.px(c.h * 0.53), x2: c.px(c.w * 0.86), y2: c.px(c.h * 0.43) })]
+      : []),
+    ...(variant === "dimmer"
+      ? [polygon({
+          class: "sx-fp-furn-dot",
+          points: [
+            `${c.px(x2)},${c.px(y2 - c.h * 0.1)}`,
+            `${c.px(x2 - c.w * 0.1)},${c.px(y2 + c.h * 0.08)}`,
+            `${c.px(x2 + c.w * 0.1)},${c.px(y2 + c.h * 0.08)}`,
+          ].join(" "),
+        })]
+      : []),
+  ].join("");
+}
+
+function electricalSwitchDraw(variant: SwitchVariant): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string =>
+    c.symbols === "iec"
+      ? iecSwitchDraw(c, variant)
+      : necSwitchDraw(c, variant);
+}
+
+function lightDraw(c: SymbolDrawCtx): string {
+  const r = Math.min(c.w, c.h) / 2 - 0.01;
+  const cx = c.w / 2;
+  const cy = c.h / 2;
+  return [
+    circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx + r * 0.65), y2: c.px(cy + r * 0.65) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx - r * 0.65), y2: c.px(cy + r * 0.65) }),
+  ].join("");
+}
+
+function recessedLightDraw(c: SymbolDrawCtx): string {
+  const inset = Math.min(c.w, c.h) * 0.08;
+  const cx = c.w / 2;
+  const cy = c.h / 2;
+  const r = Math.min(c.w, c.h) * 0.29;
+  return [
+    rect({ class: "sx-fp-furn-nofill", x: c.px(inset), y: c.px(inset), width: c.px(c.w - inset * 2), height: c.px(c.h - inset * 2) }),
+    circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.62), y1: c.px(cy - r * 0.62), x2: c.px(cx + r * 0.62), y2: c.px(cy + r * 0.62) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.62), y1: c.px(cy - r * 0.62), x2: c.px(cx - r * 0.62), y2: c.px(cy + r * 0.62) }),
+  ].join("");
+}
+
+function wallLightDraw(c: SymbolDrawCtx): string {
+  const cx = c.w / 2;
+  const flatY = 0;
+  const r = Math.min(c.w * 0.42, c.h * 0.42);
+  const left = cx - r;
+  const right = cx + r;
+  const bottom = flatY + r;
+  return [
+    line({ class: "sx-fp-furn-line", x1: c.px(left), y1: c.px(flatY), x2: c.px(right), y2: c.px(flatY) }),
+    path({ class: "sx-fp-furn-line", d: `M ${c.px(left)} ${c.px(flatY)} A ${c.px(r)} ${c.px(r)} 0 0 0 ${c.px(right)} ${c.px(flatY)}` }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.5), y1: c.px(flatY + r * 0.25), x2: c.px(cx + r * 0.5), y2: c.px(bottom * 0.92) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.5), y1: c.px(flatY + r * 0.25), x2: c.px(cx - r * 0.5), y2: c.px(bottom * 0.92) }),
+  ].join("");
+}
+
+function pendantLightDraw(c: SymbolDrawCtx): string {
+  const cx = c.w / 2;
+  const r = Math.min(c.w, c.h) * 0.24;
+  const cy = c.h * 0.68;
+  return [
+    circle({ class: "sx-fp-furn-dot", cx: c.px(cx), cy: c.px(c.h * 0.08), r: c.px(0.025) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx), y1: c.px(c.h * 0.1), x2: c.px(cx), y2: c.px(cy - r) }),
+    circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+  ].join("");
+}
+
+function fluorescentLightDraw(c: SymbolDrawCtx): string {
+  const inset = Math.min(c.w, c.h) * 0.06;
+  return [
+    rect({ class: "sx-fp-furn-nofill", x: c.px(inset), y: c.px(inset), width: c.px(c.w - inset * 2), height: c.px(c.h - inset * 2) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(inset), y1: c.px(c.h / 2), x2: c.px(c.w - inset), y2: c.px(c.h / 2) }),
+  ].join("");
+}
+
+function emergencyLightDraw(c: SymbolDrawCtx): string {
+  return [
+    rect({ class: "sx-fp-furn", x: c.px(c.w * 0.27), y: c.px(c.h * 0.48), width: c.px(c.w * 0.46), height: c.px(c.h * 0.32), rx: c.px(0.025) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.36), y1: c.px(c.h * 0.5), x2: c.px(c.w * 0.2), y2: c.px(c.h * 0.3) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.64), y1: c.px(c.h * 0.5), x2: c.px(c.w * 0.8), y2: c.px(c.h * 0.3) }),
+    rect({ class: "sx-fp-furn", x: c.px(c.w * 0.08), y: c.px(c.h * 0.18), width: c.px(c.w * 0.24), height: c.px(c.h * 0.18), rx: c.px(0.02), transform: `rotate(-28 ${c.px(c.w * 0.2)} ${c.px(c.h * 0.27)})` }),
+    rect({ class: "sx-fp-furn", x: c.px(c.w * 0.68), y: c.px(c.h * 0.18), width: c.px(c.w * 0.24), height: c.px(c.h * 0.18), rx: c.px(0.02), transform: `rotate(28 ${c.px(c.w * 0.8)} ${c.px(c.h * 0.27)})` }),
+  ].join("");
+}
+
+function circularLabelDraw(label: string): (c: SymbolDrawCtx) => string {
   return (c: SymbolDrawCtx): string => {
     const r = Math.min(c.w, c.h) / 2 - 0.01;
-    const cx = c.w / 2;
-    const cy = c.h / 2;
     return [
-      circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
-      line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx + r * 0.65), y2: c.px(cy + r * 0.65) }),
-      line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx - r * 0.65), y2: c.px(cy + r * 0.65) }),
-      textEl({ class: "sx-fp-furn-text", x: c.px(cx), y: c.px(cy + r + 0.11), "text-anchor": "middle", "font-size": c.px(0.16) }, label),
+      circle({ class: "sx-fp-furn-nofill", cx: c.px(c.w / 2), cy: c.px(c.h / 2), r: c.px(r) }),
+      symbolText(c, label),
     ].join("");
   };
+}
+
+function motionSensorDraw(c: SymbolDrawCtx): string {
+  const cx = c.w / 2;
+  return [
+    rect({ class: "sx-fp-furn", x: c.px(cx - c.w * 0.14), y: c.px(c.h * 0.08), width: c.px(c.w * 0.28), height: c.px(c.h * 0.18), rx: c.px(0.025) }),
+    path({ class: "sx-fp-furn-line", d: `M ${c.px(c.w * 0.3)} ${c.px(c.h * 0.43)} Q ${c.px(cx)} ${c.px(c.h * 0.67)} ${c.px(c.w * 0.7)} ${c.px(c.h * 0.43)}` }),
+    path({ class: "sx-fp-furn-line", d: `M ${c.px(c.w * 0.16)} ${c.px(c.h * 0.56)} Q ${c.px(cx)} ${c.px(c.h * 0.94)} ${c.px(c.w * 0.84)} ${c.px(c.h * 0.56)}` }),
+  ].join("");
+}
+
+function squareLabelDraw(label: string): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string => [
+    rect({ class: "sx-fp-furn-nofill", x: c.px(0.01), y: c.px(0.01), width: c.px(c.w - 0.02), height: c.px(c.h - 0.02) }),
+    symbolText(c, label),
+  ].join("");
+}
+
+function floorOutletDraw(c: SymbolDrawCtx): string {
+  const inset = Math.min(c.w, c.h) * 0.06;
+  const r = Math.min(c.w, c.h) * 0.34;
+  const cx = c.w / 2;
+  const cy = c.h / 2;
+  return [
+    rect({ class: "sx-fp-furn-nofill", x: c.px(inset), y: c.px(inset), width: c.px(c.w - inset * 2), height: c.px(c.h - inset * 2) }),
+    circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.25), y1: c.px(cy - r * 0.4), x2: c.px(cx - r * 0.25), y2: c.px(cy + r * 0.4) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.25), y1: c.px(cy - r * 0.4), x2: c.px(cx + r * 0.25), y2: c.px(cy + r * 0.4) }),
+  ].join("");
+}
+
+function phoneOutletDraw(c: SymbolDrawCtx): string {
+  return [
+    rect({ class: "sx-fp-furn-nofill", x: c.px(0.01), y: c.px(0.01), width: c.px(c.w - 0.02), height: c.px(c.h - 0.02) }),
+    // A handset silhouette keeps the phone outlet distinct from thermostat T.
+    path({ class: "sx-fp-furn-line", d: `M ${c.px(c.w * 0.27)} ${c.px(c.h * 0.3)} Q ${c.px(c.w * 0.18)} ${c.px(c.h * 0.56)} ${c.px(c.w * 0.5)} ${c.px(c.h * 0.7)} Q ${c.px(c.w * 0.82)} ${c.px(c.h * 0.56)} ${c.px(c.w * 0.73)} ${c.px(c.h * 0.3)}` }),
+    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.22), y1: c.px(c.h * 0.27), x2: c.px(c.w * 0.34), y2: c.px(c.h * 0.34) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.66), y1: c.px(c.h * 0.34), x2: c.px(c.w * 0.78), y2: c.px(c.h * 0.27) }),
+  ].join("");
+}
+
+function distributionBoardDraw(c: SymbolDrawCtx): string {
+  const split = c.w * 0.38;
+  const parts = [
+    rect({ class: "sx-fp-furn", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.02) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(split), y1: 0, x2: c.px(split), y2: c.px(c.h) }),
+    symbolText(c, "DB", split / 2, c.h / 2, Math.min(0.12, c.h * 0.4)),
+  ];
+  for (const fraction of [0.25, 0.5, 0.75]) {
+    parts.push(line({ class: "sx-fp-furn-line", x1: c.px(split), y1: c.px(c.h * fraction), x2: c.px(c.w), y2: c.px(c.h * fraction) }));
+  }
+  return parts.join("");
 }
 
 function panelDraw(label: string): (c: SymbolDrawCtx) => string {
@@ -1564,14 +1811,32 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   },
 
   // ── electrical overlay fixtures ──
-  outlet: { w: 0.22, h: 0.22, underlay: true, draw: outletDraw(false) },
-  "duplex-outlet": { w: 0.24, h: 0.36, underlay: true, draw: outletDraw(true) },
-  switch: { w: 0.24, h: 0.3, underlay: true, draw: electricalSwitchDraw },
-  light: { w: 0.35, h: 0.35, underlay: true, draw: lightDraw("L") },
-  "ceiling-light": { w: 0.45, h: 0.45, underlay: true, draw: lightDraw("CL") },
-  "data-outlet": { w: 0.28, h: 0.24, underlay: true, draw: panelDraw("D") },
+  outlet: { w: 0.28, h: 0.28, underlay: true, directional: true, draw: outletDraw(false) },
+  "duplex-outlet": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: outletDraw(true) },
+  switch: { w: 0.28, h: 0.28, underlay: true, directional: true, draw: electricalSwitchDraw("single") },
+  "switch-3way": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("3way") },
+  "switch-4way": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("4way") },
+  "switch-dimmer": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("dimmer") },
+  "gfci-outlet": { w: 0.42, h: 0.42, underlay: true, directional: true, draw: outletDraw(false, "GFCI") },
+  "outlet-240v": { w: 0.4, h: 0.4, underlay: true, directional: true, draw: outletDraw(false, "240V") },
+  "floor-outlet": { w: 0.34, h: 0.34, underlay: true, draw: floorOutletDraw },
+  "weatherproof-outlet": { w: 0.38, h: 0.38, underlay: true, directional: true, draw: outletDraw(false, "WP") },
+  light: { w: 0.35, h: 0.35, underlay: true, draw: lightDraw },
+  "ceiling-light": { w: 0.45, h: 0.45, underlay: true, draw: lightDraw },
+  "recessed-light": { w: 0.42, h: 0.42, underlay: true, draw: recessedLightDraw },
+  "wall-light": { w: 0.38, h: 0.38, underlay: true, directional: true, draw: wallLightDraw },
+  "pendant-light": { w: 0.3, h: 0.42, underlay: true, draw: pendantLightDraw },
+  "fluorescent-light": { w: 1.2, h: 0.3, underlay: true, draw: fluorescentLightDraw },
+  "emergency-light": { w: 0.45, h: 0.32, underlay: true, draw: emergencyLightDraw },
+  "smoke-detector": { w: 0.38, h: 0.38, underlay: true, draw: circularLabelDraw("SD") },
+  thermostat: { w: 0.32, h: 0.32, underlay: true, draw: circularLabelDraw("T") },
+  "motion-sensor": { w: 0.4, h: 0.32, underlay: true, draw: motionSensorDraw },
+  "data-outlet": { w: 0.28, h: 0.24, underlay: true, draw: squareLabelDraw("D") },
+  "tv-outlet": { w: 0.34, h: 0.26, underlay: true, draw: squareLabelDraw("TV") },
+  "phone-outlet": { w: 0.34, h: 0.28, underlay: true, draw: phoneOutletDraw },
+  "junction-box": { w: 0.3, h: 0.3, underlay: true, draw: squareLabelDraw("J") },
   "electrical-panel": { w: 0.55, h: 0.24, underlay: true, draw: panelDraw("PANEL") },
-  "distribution-board": { w: 0.6, h: 0.28, underlay: true, draw: panelDraw("DB") },
+  "distribution-board": { w: 0.6, h: 0.28, underlay: true, draw: distributionBoardDraw },
 
   // ── site / outdoor ──
   // Circular courtyard fountain: basin wall, inner water ring, and four
