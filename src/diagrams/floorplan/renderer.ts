@@ -184,6 +184,7 @@ interface RenderLayers {
   furniture: string[];
   walls: string[];
   openings: string[];
+  wallFixtures: string[];
   fireDoors: string[];
   safety: string[];
   labels: string[];
@@ -712,6 +713,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     furniture: [],
     walls: [],
     openings: [],
+    wallFixtures: [],
     fireDoors: [],
     safety: [],
     labels: [],
@@ -745,6 +747,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const furniture: string[] = [];
   const walls: string[] = [];
   const openings: string[] = [];
+  const wallFixtures: string[] = [];
   const fireDoors: string[] = [];
   const safety: string[] = [];
   const labels: string[] = [];
@@ -998,8 +1001,14 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       },
       children
     );
-    furniture.push(itemShape);
-    layerFor(itemPlate, idx).furniture.push(itemShape);
+    const itemLayer = layerFor(itemPlate, idx);
+    if (it.anchored) {
+      wallFixtures.push(itemShape);
+      itemLayer.wallFixtures.push(itemShape);
+    } else {
+      furniture.push(itemShape);
+      itemLayer.furniture.push(itemShape);
+    }
     if (it.label && !def.consumesLabel) {
       const labelKey = legacySingle
         ? `label:furniture:${it.roomId}:${it.type}:${it.seq}`
@@ -1179,6 +1188,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
           group({ class: "sx-fp-furniture" }, layers.furniture),
           group({ class: "sx-fp-walls" }, layers.walls),
           group({ class: "sx-fp-openings" }, layers.openings),
+          ...(layers.wallFixtures.length
+            ? [group({ class: "sx-fp-wall-fixtures" }, layers.wallFixtures)]
+            : []),
           group({ class: "sx-fp-fire-doors" }, layers.fireDoors),
           group({ class: "sx-fp-safety-symbols" }, layers.safety),
           group({ class: "sx-fp-labels" }, layers.labels),
@@ -1190,6 +1202,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
           group({ class: "sx-fp-furniture" }, layers.furniture),
           group({ class: "sx-fp-walls" }, layers.walls),
           group({ class: "sx-fp-openings" }, layers.openings),
+          ...(layers.wallFixtures.length
+            ? [group({ class: "sx-fp-wall-fixtures" }, layers.wallFixtures)]
+            : []),
           group({ class: "sx-fp-labels" }, layers.labels),
           group({ class: "sx-fp-dims" }, layers.dims),
         ];
@@ -1201,6 +1216,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         furniture,
         walls,
         openings,
+        wallFixtures,
         fireDoors,
         safety,
         labels,

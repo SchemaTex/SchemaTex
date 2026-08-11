@@ -4,6 +4,7 @@ import {
   FURNITURE_TYPES,
   layoutFloorplan,
   parseFloorplan,
+  renderFloorplan,
 } from "../../src/diagrams/floorplan";
 import type { FurnitureType } from "../../src/diagrams/floorplan/types";
 import { getSymbolCatalog } from "../../src/symbols-catalog";
@@ -54,6 +55,25 @@ const WALL_FACING_GLYPHS: FurnitureType[] = [
   "switch-dimmer",
   "wall-light",
 ];
+
+const WALL_FIXTURE_LAYER_CASES: FurnitureType[] = [
+  "whiteboard",
+  "smartboard",
+  "tv",
+  "switch",
+  "outlet",
+  "duplex-outlet",
+  "gfci-outlet",
+  "wall-light",
+];
+
+const WALL_SIDES = ["north", "south", "east", "west"] as const;
+
+function layerIndex(svg: string, className: string): number {
+  const index = svg.indexOf(`class="${className}"`);
+  expect(index, `${className} should be emitted`).toBeGreaterThanOrEqual(0);
+  return index;
+}
 
 function draw(type: FurnitureType, symbols: "nec" | "iec"): string {
   const def = FLOORPLAN_SYMBOLS[type];
@@ -124,6 +144,89 @@ fixture outlet in r on south at 60%
 fixture outlet in r on west at 80%`);
     const layout = layoutFloorplan(ast);
     expect(layout.items.map((item) => item.rotate)).toEqual([0, 90, 180, 270]);
+  });
+});
+
+describe("floorplan wall fixture layer ordering", () => {
+  it.each(
+    WALL_FIXTURE_LAYER_CASES.flatMap((fixture) =>
+      WALL_SIDES.map((side) => [fixture, side] as const)
+    )
+  )("renders %s on the %s wall above walls and openings", (fixture, side) => {
+    const svg = renderFloorplan(`floorplan "Wall fixture layer"
+room probe at 0,0 size 6x6
+window probe ${side} at 50% width 1.2
+fixture ${fixture} in probe on ${side} at 50%`);
+
+    const walls = layerIndex(svg, "sx-fp-walls");
+    const openings = layerIndex(svg, "sx-fp-openings");
+    const wallFixtures = layerIndex(svg, "sx-fp-wall-fixtures");
+    const fixtureItem = svg.indexOf(`data-fixture="${fixture}"`);
+
+    expect(wallFixtures).toBeGreaterThan(walls);
+    expect(wallFixtures).toBeGreaterThan(openings);
+    expect(fixtureItem).toBeGreaterThan(wallFixtures);
+    expect(fixtureItem).toBeLessThan(layerIndex(svg, "sx-fp-labels"));
+  });
+
+  it("preserves the normal floorplan layer order around wall fixtures", () => {
+    const svg = renderFloorplan(`floorplan "Layer order"
+room probe at 0,0 size 6x6
+window probe north at 50% width 1.2
+fixture switch SW1 in probe on north at 50%
+furniture ceiling-light L1 in probe at 2.7,2.7
+controls SW1 -> L1`);
+    const classes = [
+      "sx-fp-floors",
+      "sx-fp-controls",
+      "sx-fp-furniture",
+      "sx-fp-walls",
+      "sx-fp-openings",
+      "sx-fp-wall-fixtures",
+      "sx-fp-labels",
+      "sx-fp-dims",
+    ];
+
+    expect(classes.map((className) => layerIndex(svg, className))).toEqual(
+      [...classes]
+        .map((className) => layerIndex(svg, className))
+        .sort((a, b) => a - b)
+    );
+  });
+
+  it("preserves evacuation routes, furniture, walls, openings, fixtures, fire doors, safety, labels, and dimensions order", () => {
+    const svg = renderFloorplan(`evacuation "Fixture layer"
+show furniture
+room office at 0,0 size 6x4
+room corridor below office size 6x2
+window office north at 50% width 1.2
+door between office corridor at 50%
+fire-door between office corridor rating "EI30"
+fixture switch SW1 in office on north at 50%
+furniture ceiling-light L1 in office at 2.7,2
+controls SW1 -> L1
+here in office at 2,2
+exit-final x1 in corridor at 6,1 side east
+route primary here -> corridor -> x1`);
+    const classes = [
+      "sx-fp-floors",
+      "sx-fp-routes",
+      "sx-fp-controls",
+      "sx-fp-furniture",
+      "sx-fp-walls",
+      "sx-fp-openings",
+      "sx-fp-wall-fixtures",
+      "sx-fp-fire-doors",
+      "sx-fp-safety-symbols",
+      "sx-fp-labels",
+      "sx-fp-dims",
+    ];
+
+    expect(classes.map((className) => layerIndex(svg, className))).toEqual(
+      [...classes]
+        .map((className) => layerIndex(svg, className))
+        .sort((a, b) => a - b)
+    );
   });
 });
 
