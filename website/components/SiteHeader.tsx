@@ -38,6 +38,7 @@ export function SiteHeader({
   const navLinks = [
     { label: nav.docs, href: '/docs' },
     { label: nav.gallery, href: '/gallery' },
+    { label: 'Research', href: '/research' },
     { label: nav.icons, href: '/icons' },
     { label: nav.playground, href: '/playground' },
     { label: nav.changelog, href: '/changelog' },

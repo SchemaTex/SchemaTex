@@ -17,6 +17,7 @@ const withPlausibleProxyWrapper = withPlausibleProxy({
 });
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const RESEARCH_ORIGIN = 'https://pseo.ideamarketfit.com/sites/schematex/research';
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -32,6 +33,10 @@ const config = {
   },
   async rewrites() {
     const routes = [
+      // Research notes are authored and rendered by pseo-cockpit but stay on
+      // the Schematex origin so citations and search equity belong here.
+      { source: '/research', destination: RESEARCH_ORIGIN },
+      { source: '/research/:path*', destination: `${RESEARCH_ORIGIN}/:path*` },
       // Clean Markdown mirrors for coding agents and plain-text clients.
       { source: '/docs.md', destination: '/llms.mdx/docs' },
       { source: '/docs/:path*.md', destination: '/llms.mdx/docs/:path*' },
