@@ -8,6 +8,8 @@ A **state diagram** (also called a *statechart* or *state machine diagram*) desc
 
 Schematex implements a strict superset of **[Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html)** — every Mermaid example pastes in unchanged, plus you get UML 2.5 features Mermaid doesn't expose: `entry / exit / do` activities, full `trigger [guard] / action` transition labels, `terminate` and history pseudo-states, junction, and Schematex-style block notes. Layout uses the same Sugiyama-layered-DAG engine as flowcharts, so cycles, composite states, and cross-boundary transitions all route cleanly.
 
+For an early model that begins as a list of states and transitions, [FreeDiagram's state diagram maker](https://www.freediagram.app/state-diagram-maker) can generate the first state machine before the syntax is tightened here.
+
 <Playground initial={`stateDiagram-v2
 direction TB
 

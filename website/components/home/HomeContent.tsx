@@ -587,8 +587,12 @@ export function HomeContent({
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
                 {[
                   { name: 'ChatDiagram', href: 'https://chatdiagram.com', logo: '/logos/chatdiagram.svg' },
-                  { name: 'FreeDiagram', href: 'https://freediagram.app', logo: '/logos/freediagram.svg' },
-                  { name: 'FloorPlan Maker', href: 'https://www.floorplanmaker.app', logo: '/logos/floorplanmaker.svg' },
+                  { name: 'FreeDiagram', href: 'https://www.freediagram.app/', logo: '/logos/freediagram.svg' },
+                  { name: 'FloorPlan Maker', href: 'https://www.floorplanmaker.app/', logo: '/logos/floorplanmaker.svg' },
+                  { name: 'CircuitMaker.ai', href: 'https://circuitmaker.ai/', logo: '/logos/circuitmaker.svg' },
+                  { name: 'GenogramMaker.ai', href: 'https://genogrammaker.ai/', logo: '/logos/genogrammaker.svg' },
+                  { name: 'PedigreeMaker.ai', href: 'https://pedigreemaker.ai/', logo: '/logos/pedigreemaker.svg' },
+                  { name: 'FloorPlanCreator.org', href: 'https://floorplancreator.org/', logo: '/logos/floorplancreator.svg' },
                 ].map((p) => (
                   <a
                     key={p.name}

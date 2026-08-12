@@ -8,6 +8,8 @@ A **timeline diagram** arranges events along a shared time axis so that chronolo
 
 Schematex renders timelines in three visual styles — **swimlane** (events spread above and below an axis), **gantt** (horizontal duration bars, useful for project scheduling), and **lollipop** (dot-on-stick markers, useful for historical retrospectives). All three share the same DSL; the `style` config key switches between them.
 
+If the source material is already a list of dates and events, [FreeDiagram's timeline maker](https://www.freediagram.app/timeline-maker) can assemble the initial diagram before you refine the DSL here.
+
 <Playground initial={`timeline "History of the Web"
 config: style = lollipop
 

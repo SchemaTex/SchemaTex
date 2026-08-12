@@ -8,6 +8,8 @@ A **single-line diagram** (also called a one-line diagram) represents the electr
 
 Schematex follows **[IEEE Std 315 (ANSI Y32.2)](https://standards.ieee.org/ieee/315/1099/)** graphic symbol conventions for equipment, extended with IEC 60617 winding-configuration notation for transformer variants. This page documents what the parser accepts today.
 
+When the source is an equipment list and a description of the power path, [CircuitMaker.ai's single-line diagram maker](https://circuitmaker.ai/single-line-diagram-maker) can generate the first SLD before detailed editing.
+
 <Playground initial={`sld "13.8 kV Substation"
 utility = utility [label: "Grid 138 kV"]
 bus_hv = bus [voltage: "138kV", label: "HV Bus"]

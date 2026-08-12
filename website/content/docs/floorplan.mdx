@@ -8,6 +8,8 @@ A **floor plan** is the standard 2D architectural view of a space: rooms with re
 
 Unlike image generators, the output is *measurable and editable* — every room is a labeled element with its computed area, and adding a fourth row of desks is a one-line edit.
 
+For a new layout that begins as room requirements and dimensions, [FloorPlan Maker](https://www.floorplanmaker.app/free-floor-plan-maker) can generate a measurable first draft with this engine.
+
 <Playground initial={`floorplan "Studio Apartment" unit m
 room main   "Living / Sleeping" at 0,0 size 5.2x4.0
 room bath   "Bath"   right-of main size 2.0x2.2
@@ -68,6 +70,8 @@ extend living at 5,2 size 2x2          # L-shape: notch at top-right
 ```
 
 An extension that doesn't touch the room, or overlaps it, is rejected with a quantified error. `north` (optionally `north 30` for rotated plans) adds the compass at the top right.
+
+For an addition or conversion where the existing home defines the starting geometry, [FloorPlanCreator.org](https://floorplancreator.org/) provides a workflow centered on that remodeling context.
 
 ---
 

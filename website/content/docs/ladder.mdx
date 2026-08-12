@@ -8,6 +8,8 @@ title: Ladder logic
 
 Schematex follows **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**, the international standard for PLC programming languages, with Allen-Bradley (Rockwell) tag-address-name naming conventions common in North American industrial practice. This page documents what the parser accepts today.
 
+For a control sequence that starts as a written description of inputs, interlocks, and outputs, [CircuitMaker.ai's ladder logic generator](https://circuitmaker.ai/ladder-logic-generator) can produce the initial rungs.
+
 <Playground initial={`ladder "Motor Start/Stop"
 rung 1 "Seal-in circuit":
   parallel:

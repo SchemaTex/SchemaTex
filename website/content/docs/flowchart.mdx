@@ -8,6 +8,8 @@ A **flowchart** maps the steps of a process — decisions, operations, inputs, o
 
 Schematex follows the **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** symbol conventions for flowchart shapes and uses a **[Mermaid-compatible](https://mermaid.js.org/syntax/flowchart.html)** DSL so existing Mermaid flowcharts transfer directly. This page documents what the parser accepts today.
 
+For a one-off workflow that begins as a written process, [FreeDiagram's flowchart maker](https://www.freediagram.app/flowchart-maker) provides a plain-language route into the same rendering engine.
+
 <Playground initial={`flowchart LR
   start([New order received])
   start --> validate{Inventory available?}
