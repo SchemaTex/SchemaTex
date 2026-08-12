@@ -8,6 +8,8 @@ A **phylogenetic tree** (also called a phylogram or cladogram) shows the inferre
 
 Schematex accepts trees in **[Newick format](https://phylipweb.github.io/phylip/newicktree.html)** — the universal interchange standard used by PAUP\*, IQ-TREE, RAxML, BEAST, and virtually every phylogenetics program — extended with **[NHX annotations](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** for bootstrap values and clade metadata. An indentation-based DSL is also supported for hand-authored trees. This page documents what the parser accepts today.
 
+When the starting point is a set of taxa and their relationships rather than a Newick string, [PedigreeMaker.ai's phylogenetic tree maker](https://pedigreemaker.ai/phylogenetic-tree-maker) can assemble an initial tree.
+
 <Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
   newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
   clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]

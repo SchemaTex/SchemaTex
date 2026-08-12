@@ -8,6 +8,8 @@ A **circuit schematic** is the standard graphical representation of an electroni
 
 The DSL has two modes. **Netlist mode (recommended)** is SPICE-style: you list components and the nodes they connect to, and the engine lays everything out automatically — each line is self-contained, with no spatial state to track. **Positional mode** is for hand-drawing: components chain in a direction like Schemdraw. Both produce the same SVG. **For generated diagrams (e.g. by an LLM), always use netlist mode** — it has by far the smaller error surface.
 
+When the input is a plain-language circuit description rather than a netlist, [CircuitMaker.ai's schematic maker](https://circuitmaker.ai/schematic-maker) can generate the first schematic with this engine.
+
 <Playground initial={`circuit "CE Amp (netlist)" netlist
 V1 vcc 0 9V
 Rc vcc c 2.2k

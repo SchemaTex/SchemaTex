@@ -8,6 +8,8 @@ A **piping & instrumentation diagram (P&ID)** is the engineering "wiring diagram
 
 Schematex implements the **[ANSI/ISA-5.1-2009](https://www.isa.org/products/ansi-isa-5-1-2009-instrumentation-symbols-and-iden)** symbol catalog (instrument bubbles, tag letter codes, signal-line types) plus equipment symbols from **[ISO 10628-1:2014](https://www.iso.org/standard/51840.html)** (vessels, columns, pumps, heat exchangers). The DSL is intentionally compact so an LLM can generate a control-loop P&ID from a process description in one shot.
 
+That plain-language workflow is also available through [CircuitMaker.ai's P&ID diagram maker](https://circuitmaker.ai/pid-diagram-maker), which is useful when the starting material is a process description rather than DSL.
+
 <Playground initial={`pid "Pump with Flow Control"
 
 equip T-101 : tank_atm           [tag: "Feed Tank"]

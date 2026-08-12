@@ -8,6 +8,8 @@ A **timing diagram** shows how digital signals change over time — clock pulses
 
 Schematex uses a **[WaveDrom-compatible](https://wavedrom.com/tutorial.html)** signal notation — the same wave characters (`0`, `1`, `x`, `z`, `p`, `=`, …) and data label syntax that WaveDrom pioneered — so existing WaveDrom DSL transfers directly. This page documents what the parser accepts today.
 
+When a protocol is easier to specify as signal behavior and transitions, [CircuitMaker.ai's timing diagram maker](https://circuitmaker.ai/timing-diagram-maker) can create the initial waveform description.
+
 <Playground initial={`timing "SPI Transaction"
 CLK:   pppppppp
 CS_N:  10000001
