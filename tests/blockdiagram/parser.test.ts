@@ -1,7 +1,61 @@
 import { describe, test, expect } from "vitest";
 import { parseBlockDiagram } from "../../src/diagrams/blockdiagram/parser";
+import { renderResult } from "../../src/core/api";
 
 describe("blockdiagram parser", () => {
+  describe("soft decorative vocabulary", () => {
+    test("input and output are first-class roles", () => {
+      const ast = parseBlockDiagram(`blockdiagram
+input_block = block("Input") [role: input]
+output_block = block("Output") [role: output]
+input_block -> output_block`);
+      expect(ast.blocks.map((block) => block.role)).toEqual(["input", "output"]);
+      expect(ast.warnings).toBeUndefined();
+    });
+
+    test.each(["power source", "audio source", "signal amplifier"])(
+      "unknown role %s falls back to generic with a structured warning",
+      (role) => {
+        const result = renderResult(`blockdiagram
+A = block("Source") [role: ${role}]`);
+        expect(result.ok).toBe(true);
+        expect(result.status).toBe("partial");
+        expect(result.svg).toContain('data-block-role="generic"');
+        expect(result.diagnostics).toContainEqual(
+          expect.objectContaining({
+            code: "blockdiagram/unknown-role",
+            token: role,
+            line: 2,
+          })
+        );
+      }
+    );
+
+    test("unknown connection styling attributes are ignored with a warning", () => {
+      const result = renderResult(`blockdiagram
+A = block("A")
+B = block("B")
+A -> B [route: above]`);
+      expect(result.ok).toBe(true);
+      expect(result.svg).toContain('data-from="A"');
+      expect(result.diagnostics).toContainEqual(
+        expect.objectContaining({
+          code: "blockdiagram/unknown-connection-attribute",
+          token: "route",
+          line: 4,
+        })
+      );
+    });
+
+    test("malformed attributes and undeclared endpoints remain fatal", () => {
+      expect(() => parseBlockDiagram(`blockdiagram
+A = block("A") [role plant]`)).toThrow(/invalid block attribute/);
+      expect(() => parseBlockDiagram(`blockdiagram
+A = block("A")
+A -> Missing`)).toThrow(/undeclared endpoint/);
+    });
+  });
+
   describe("standard form", () => {
     test("parses ID = block(\"label\") declarations + chain", () => {
       const ast = parseBlockDiagram(`blockdiagram "X"

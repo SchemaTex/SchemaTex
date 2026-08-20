@@ -407,6 +407,7 @@ function toValidationError(
     line: diagnostic.line,
     column: diagnostic.column,
     source: diagnostic.source,
+    token: diagnostic.token,
     message: diagnostic.message,
     hint: diagnostic.hint ?? repairHint(type, diagnostic.message),
   };

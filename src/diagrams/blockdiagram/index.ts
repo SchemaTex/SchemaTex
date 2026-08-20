@@ -1,4 +1,5 @@
 import type { DiagramPlugin } from "../../core/types";
+import type { SchematexDiagnostic } from "../../core/diagnostics";
 import { parseBlockDiagram } from "./parser";
 import { renderBlockDiagram } from "./renderer";
 
@@ -9,6 +10,13 @@ export const blockdiagram: DiagramPlugin = {
     return first.startsWith("blockdiagram");
   },
   parse: parseBlockDiagram,
+  lint(text: string): SchematexDiagnostic[] {
+    try {
+      return parseBlockDiagram(text).warnings ?? [];
+    } catch {
+      return [];
+    }
+  },
 
   render(text: string, config?): string {
     const ast = parseBlockDiagram(text);

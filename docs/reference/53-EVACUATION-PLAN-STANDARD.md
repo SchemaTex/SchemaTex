@@ -120,6 +120,8 @@ show       ::= "show" "furniture"
 
 `safety` is optional, so `exit-final east in lobby at 5.8,2 side east` and the long form are equivalent. Coordinates inside rooms are room-relative; `outside at` uses plan coordinates and grows the plate bounds. A trailing label containing ` / ` carries English and Arabic halves; Arabic renders as a separate RTL run.
 
+Everyday aliases normalize before catalogue lookup: `fire-extinguisher`→`extinguisher`, `assembly-point`/`muster-point`→`assembly`, `emergency-exit`→`exit-final`, `fire-alarm`→`alarm-sounder`, `escape-route`→`exit`, and `you-are-here`→`here`. Other unknown kinds remain fatal: a safety pictogram is semantic, and substituting an unrelated sign would be unsafe.
+
 Canonical source:
 
 ```dsl

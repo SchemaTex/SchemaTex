@@ -1,7 +1,7 @@
 import type { CircuitAST, RenderConfig, SceneItem } from "../../core/types";
 import { layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
 import { layoutCircuitNetlist, rerouteCircuitNetlist, type RoutedWire } from "./autolayout";
-import { effectiveSymbolDef, getSymbol } from "./symbols";
+import { effectiveSymbolDef } from "./symbols";
 import {
   svgRoot,
   defs,
@@ -149,10 +149,7 @@ function renderItem(
     ));
   }
 
-  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
-  if (!sym) {
-    return wrap(`<rect x="${tx - 10}" y="${ty - 10}" width="20" height="20" fill="none" class="schematex-circuit-err" stroke-dasharray="3,2"/><text x="${tx}" y="${ty + 3}" text-anchor="middle" font-size="9" class="schematex-circuit-err">?${escapeXml(comp.componentType)}</text>`);
-  }
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
 
   const body = sym.svg(comp.label, comp.value, comp.attrs);
   const transform = it.mirrorX
@@ -333,7 +330,6 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
 .schematex-circuit-pol { font: 9px sans-serif; fill: ${t.stroke}; }
 .schematex-circuit-meter { font: bold 12px sans-serif; fill: ${t.stroke}; }
 .schematex-circuit-title { font: 700 16px sans-serif; fill: ${t.text}; }
-.schematex-circuit-err { stroke: ${t.error}; fill: ${t.error}; }
 .schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
 .schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
 .schematex-circuit-panel-label { font: 700 11px system-ui, sans-serif; fill: ${t.text}; }

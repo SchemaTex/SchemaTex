@@ -896,7 +896,19 @@ function levenshtein(a: string, b: string): number {
   return row[b.length] ?? Math.max(a.length, b.length);
 }
 
+const SAFETY_KIND_ALIASES: Readonly<Record<string, SafetyKind>> = {
+  "fire-extinguisher": "extinguisher",
+  "assembly-point": "assembly",
+  "emergency-exit": "exit-final",
+  "fire-alarm": "alarm-sounder",
+  "escape-route": "exit",
+  "muster-point": "assembly",
+  "you-are-here": "here",
+};
+
 function parseSafetyKind(word: string, ln: number): SafetyKind {
+  const alias = SAFETY_KIND_ALIASES[word];
+  if (alias) return alias;
   if ((SAFETY_KINDS as readonly string[]).includes(word)) {
     return word as SafetyKind;
   }
@@ -1358,7 +1370,8 @@ export function parseFloorplan(text: string): FloorplanAst {
       parseSafety(parseId(tok.shift(), "a safety kind", ln), tok, ast, ln, currentFloor);
     } else if (
       ast.mode === "evacuation" &&
-      (SAFETY_KINDS as readonly string[]).includes(kw)
+      ((SAFETY_KINDS as readonly string[]).includes(kw) ||
+        SAFETY_KIND_ALIASES[kw] !== undefined)
     ) {
       parseSafety(kw, tok, ast, ln, currentFloor);
     } else if (ast.mode === "evacuation" && kw === "route") {

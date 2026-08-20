@@ -1,4 +1,5 @@
-import type { DiagramType, SceneItem } from "./types";
+import type { DiagramType, SceneItem, SchematexDiagnostic } from "./types";
+export type { SchematexDiagnostic } from "./types";
 import {
   desc,
   el,
@@ -10,17 +11,6 @@ import {
 } from "./svg";
 
 export type SchematexResultStatus = "valid" | "partial" | "invalid";
-
-export interface SchematexDiagnostic {
-  severity: "error" | "warning";
-  code: string;
-  message: string;
-  line?: number;
-  column?: number;
-  source?: string;
-  hint?: string;
-  fatal: boolean;
-}
 
 export type SchematexParseResult =
   | {

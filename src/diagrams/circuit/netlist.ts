@@ -30,6 +30,7 @@ import type {
   CircuitComponent,
   CircuitComponentType,
   CircuitNet,
+  SchematexDiagnostic,
 } from "../../core/types";
 import {
   getGenericIcPinSides,
@@ -136,7 +137,8 @@ function parseKV(tok: string): [string, string] {
  */
 export function parseNetlist(
   body: string,
-  title?: string
+  title?: string,
+  lineOffset = 0
 ): CircuitAST {
   const components: CircuitComponent[] = [];
   const netByName = new Map<string, CircuitNet>();
@@ -150,6 +152,7 @@ export function parseNetlist(
     got: number;
     extraNets: string[];
   }[] = [];
+  const warnings: SchematexDiagnostic[] = [];
 
   const ensureNet = (name: string): CircuitNet => {
     let n = netByName.get(name);
@@ -223,12 +226,19 @@ export function parseNetlist(
       const t = kv.type.toLowerCase();
       const normalized = (CIRCUIT_TYPE_ALIASES[t] ?? t) as CircuitComponentType;
       if (!NETLIST_SPECIAL_TYPES.has(normalized) && !getSymbol(normalized)) {
-        throw new NetlistParseError(
-          `Unknown component type "${kv.type}". Use a supported circuit symbol or alias.`,
-          lineIdx + 1
-        );
+        warnings.push({
+          severity: "warning",
+          code: "circuit/unknown-component-type",
+          message: `unknown component type "${kv.type}"; rendered as a generic labeled box`,
+          token: kv.type,
+          line: lineIdx + 1 + lineOffset,
+          fatal: false,
+        });
+        cType = "generic_ic";
+        kv.ic_label = kv.label ?? kv.type;
+      } else {
+        cType = normalized;
       }
-      cType = normalized;
       pinOrder = getNetlistPinOrder(cType) ?? defaults?.pins ?? ["start", "end"];
     } else if (defaults) {
       cType = defaults.type;
@@ -429,6 +439,7 @@ export function parseNetlist(
     nets,
     pinMap,
     mode: "netlist",
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
   if (underspecified.length || overspecified.length) {
     ast.recovered = {};

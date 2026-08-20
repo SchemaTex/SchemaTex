@@ -467,7 +467,7 @@ The first character of `<id>` determines the default type and pin order. Overrid
 
 Anything else (e.g. `N1`, `MyComponent`) → must declare with `type=<...>`.
 
-> **Scope note:** Schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617 conventions). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar (directional valve envelopes, cylinder symbols, line-style differentiation for pressure / return / drain) and are out of scope for this engine. If your netlist uses hydraulic prefixes such as `EV*` (electrovalve), `BOMBA*` (pump), `TANK*`, `DIPOSIT*`, or types like `electrovalvula_4_3` / `valvula_limitadora_pressio` / `regulador_cabal`, the parser will reject the id (no inferred type) and the renderer will draw an unknown-type placeholder for any explicit `type=` it can't resolve.
+> **Scope note:** Schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617 conventions). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar. An id with no inferable prefix and no `type=` remains an error. An explicit but unknown `type=` is well-formed, so it renders as a neutral labeled generic-IC box with all declared nets bound to numbered pins and emits a structured `circuit/unknown-component-type` warning (`token`, `line`). It is never rendered as an error-coloured `?` placeholder.
 
 ### 4.5.2 Ground nets
 
@@ -475,7 +475,7 @@ Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd |
 
 ### 4.5.3 Type aliases (for `type=`)
 
-`vsource`/`dc_supply`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `ntc`→thermistor_ntc · `pullup`→resistor · `gnd`→ground · `ic`/`mcu`→generic_ic · `reg`/`regulator`/`ldo_3v3`→voltage_regulator · `pushbutton`→push_no · `switch_spst_nc`→switch_nc · `selector`→selector_switch · `dc_motor`→motor · `solar`→solar_cell · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `flasher`/`automotive_flasher`→automotive_flasher_3pin · `selector_center_off`/`switch_center_off`→switch_spdt_center_off · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
+`vsource`/`dc_supply`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `ntc`→thermistor_ntc · `pullup`→resistor · `gnd`→ground · `ic`/`mcu`/`gear_ctrl`→generic_ic · `reg`/`regulator`/`ldo_3v3`→voltage_regulator · `pushbutton`→push_no · `switch_no`/`switch_spst_no`→switch_spst · `switch_spst_nc`→switch_nc · `outlet`→mains_socket · `prox_sensor`→proximity_sensor · `selector`→selector_switch · `dc_motor`→motor · `solar`→solar_cell · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `flasher`/`automotive_flasher`→automotive_flasher_3pin · `selector_center_off`/`switch_center_off`→switch_spdt_center_off · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
 
 ### 4.5.4 Trailing tokens
 

@@ -241,7 +241,7 @@ Q4: pmos right`} height={320} />
 | `schmitt_buffer` | Buffer + hysteresis symbol |
 | `tri_state_buffer` | Buffer + enable pin |
 | `instrumentation_amp` | Three-op-amp INA block |
-| `generic_ic` | Configurable rect with labeled pins (also: `ic`, `mcu`) |
+| `generic_ic` | Configurable rect with labeled pins (also: `ic`, `mcu`, `gear_ctrl`) |
 | `voltage_regulator` | 3-terminal block: IN/GND/OUT (also: `reg`, `regulator`, `ldo_3v3`) |
 | `dc_dc_converter` | 2-port block with DC/DC label |
 | `555_timer` | 8-pin 555 pinout block (also: `timer555`) |
@@ -265,7 +265,7 @@ U3: generic_ic right`} height={320} />
 
 | DSL type | Description |
 |---|---|
-| `switch_spst` | Single-pole single-throw |
+| `switch_spst` | Single-pole normally-open maintained switch (also: `switch_no`, `switch_spst_no`) |
 | `switch_nc` | Maintained SPST normally-closed contact (also: `switch_spst_nc`) |
 | `switch_spdt` | Single-pole double-throw |
 | `switch_dpdt` | Double-pole double-throw |
@@ -310,7 +310,9 @@ K2: relay_no right`} height={300} />
 | `wattmeter` | Circle + W |
 | `oscilloscope` | Circle + waveform |
 
-Common production aliases use the closest canonical symbol without replacing a user's `label=`: `pushbutton`→`push_no`, `ntc`→`thermistor_ntc`, `dc_supply`→`voltage_source`, `selector`→`selector_switch`, `pullup`→`resistor`, and `dc_motor`→`motor`.
+Common production aliases use the closest canonical symbol without replacing a user's `label=`: `pushbutton`→`push_no`, `ntc`→`thermistor_ntc`, `dc_supply`→`voltage_source`, `selector`→`selector_switch`, `pullup`→`resistor`, `dc_motor`→`motor`, `outlet`→`mains_socket`, and `prox_sensor`→`proximity_sensor`.
+
+An explicit unknown `type=` is not fatal. Schematex draws a neutral rectangle labeled with the raw type (or authored label), binds every declared net through the same numbered-pin path as `generic_ic`, and returns a structured `circuit/unknown-component-type` warning containing `token` and `line`. Missing/invalid statements, malformed netlists, and ids with neither an inferable prefix nor an explicit type still fail validation.
 
 ### 2.10 Connectors and annotations
 
