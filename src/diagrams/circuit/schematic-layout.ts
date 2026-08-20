@@ -109,12 +109,24 @@ function rotationOf(dir: "right" | "left" | "up" | "down"): number {
   return dir === "right" ? 0 : dir === "down" ? 90 : dir === "left" ? 180 : 270;
 }
 
-/** Place one component and resolve every anchor into world coordinates. */
+/**
+ * Place one component and resolve every anchor into world coordinates.
+ *
+ * `mirror` flips the glyph horizontally about its own cell rather than
+ * rotating it. That distinction matters for polarised parts: a diode whose
+ * upstream pin sits on the right must have its anode drawn on the right, and
+ * mirroring moves the glyph's geometry to match while leaving the part
+ * occupying the same slot. Flipping a polarised part merely to make the
+ * drawing look tidier would change what the drawing claims, so the caller
+ * only ever mirrors when the netlist itself puts the upstream pin on the
+ * right — the flip preserves the circuit, it does not restyle it.
+ */
 function placeAt(
   comp: CircuitComponent,
   x: number,
   y: number,
-  dir: "right" | "left" | "up" | "down"
+  dir: "right" | "left" | "up" | "down",
+  mirror = false
 ): LaidOutComponent {
   const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
   // An orientation the author wrote down outranks anything layout infers.
@@ -123,6 +135,20 @@ function placeAt(
   comp.direction = direction;
   const rot = rotationOf(direction);
   const anchors: Record<string, PinAnchor> = {};
+  if (mirror && direction === "right") {
+    for (const [name, pt] of Object.entries(sym.anchors)) {
+      anchors[name] = { x: x + sym.length - pt.x, y: y + pt.y };
+    }
+    return {
+      component: comp,
+      x,
+      y,
+      rotation: 0,
+      mirrorX: true,
+      length: sym.length,
+      anchors,
+    };
+  }
   for (const [name, pt] of Object.entries(sym.anchors)) {
     const rp = rotatePt(pt, rot);
     anchors[name] = { x: x + rp.x, y: y + rp.y };
@@ -423,10 +449,34 @@ export function schematicNetlistLayout(
   // stacks parallel shunts into a column that reads as a series chain. The
   // textbook idiom is to hang it off the node it taps, which is what step 5b
   // does once the nodes have coordinates.
+  const netPinCount = new Map<string, number>();
+  for (const p of allPins) {
+    netPinCount.set(p.net, (netPinCount.get(p.net) ?? 0) + 1);
+  }
+
+  /**
+   * Does this two-terminal part hang off a node, or is it a link in a chain?
+   *
+   * "One leg on a supply" is not the answer on its own. The first resistor of
+   * a ten-resistor ladder has one leg on the supply and is unmistakably a link
+   * — drawing it upright while its nine identical siblings lie flat tells the
+   * reader it is a different kind of element. The pull-up in an astable also
+   * has one leg on the supply and is unmistakably hanging.
+   *
+   * What separates them is the node on the other end. A net with exactly two
+   * pins is a junction between two parts: the chain continues through it. A
+   * net with three or more is a real node with several consumers, and a part
+   * feeding it from a rail is pulling that node up. Ground returns always
+   * hang, because that is the direction the drawing reserves for them.
+   */
   const isShuntComp = (c: CircuitComponent): boolean => {
     const pins = pinEntriesOf(ast, c);
     if (pins.length !== 2) return false;
-    return pins.filter(([, n]) => isSupplyNet(n)).length === 1;
+    const supply = pins.filter(([, n]) => isSupplyNet(n));
+    if (supply.length !== 1) return false;
+    if (groundNets.has(supply[0]![1])) return true;
+    const signal = pins.find(([, n]) => !isSupplyNet(n));
+    return signal ? (netPinCount.get(signal[1]) ?? 0) >= 3 : false;
   };
   // A part fed from a supply rail is carrying signal forward; a part returning
   // to ground is hanging off a node. Only the second reads as a shunt leg, and
@@ -550,15 +600,18 @@ export function schematicNetlistLayout(
   // ── 4b. Fold long chains into bands ───────────────────────────
   // A series chain is topologically a straight line, so layering alone still
   // yields one very long row — correct, and unreadable. Paper schematics wrap
-  // for exactly this reason. The fold runs boustrophedon (alternate rows read
-  // right-to-left) so the wire continuing the chain drops straight down at the
-  // fold instead of travelling the full width back to the left margin.
+  // for exactly this reason.
+  //
+  // The fold reads left-to-right on every row, like text. Boustrophedon
+  // (alternating direction) gives a shorter carry wire and was tried first,
+  // but it misleads: R6…R9 laid out right-to-left appear on the page as
+  // "R9 R8 R7 R6", which a reader takes for a numbering mistake rather than a
+  // direction change, and a symmetric part like a resistor gives no clue that
+  // the row reversed. An always-forward fold costs one visible carry wire per
+  // fold and leaves no room for that misreading.
   const cols = Math.max(4, Math.ceil(Math.sqrt(layers.length * 1.6)));
   const rowOf = (li: number) => Math.floor(li / cols);
-  const colOf = (li: number) => {
-    const c = li % cols;
-    return rowOf(li) % 2 === 1 ? cols - 1 - c : c;
-  };
+  const colOf = (li: number) => li % cols;
   const rowHeights: number[] = [];
   layers.forEach((col, li) => {
     const r = rowOf(li);
@@ -569,6 +622,18 @@ export function schematicNetlistLayout(
   for (let r = 0; r < rowHeights.length; r++) {
     rowTop[r] = acc;
     acc += (rowHeights[r] ?? 1) * SLOT_H + SLOT_H * 0.5;
+  }
+
+  // Depth of each signal net: the earliest layer that touches it. This is what
+  // "upstream" means once layering has run, and it is what decides whether a
+  // part's own pin order agrees with the direction the drawing flows.
+  const netLayer = new Map<string, number>();
+  for (const p of allPins) {
+    if (isSupplyNet(p.net)) continue;
+    const d = layer.get(p.compId);
+    if (d === undefined) continue;
+    const cur = netLayer.get(p.net);
+    if (cur === undefined || d < cur) netLayer.set(p.net, d);
   }
 
   // ── 5. Place ──────────────────────────────────────────────────
@@ -596,7 +661,15 @@ export function schematicNetlistLayout(
       // stands vertically under its node, which is how it is always drawn.
       const x = LEFT_MARGIN + colOf(li) * LAYER_W;
       const y = (rowTop[rowOf(li)] ?? TOP_MARGIN) + si * SLOT_H;
-      const laid = placeAt(comp, x, y, "right");
+      // If the netlist puts this part's first pin on the downstream node, its
+      // natural left-to-right geometry runs against the flow: the wires would
+      // cross over the body, and on a polarised part the terminal that belongs
+      // downstream would be drawn upstream. Mirroring resolves both.
+      const flowReversed =
+        signalPins.length === 2 &&
+        (netLayer.get(signalPins[0]![1]) ?? 0) >
+          (netLayer.get(signalPins[1]![1]) ?? 0);
+      const laid = placeAt(comp, x, y, "right", flowReversed);
       items.push(laid);
       placed.set(comp.id, laid);
       void supplyPins;

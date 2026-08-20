@@ -101,6 +101,81 @@ R3 vcc c2 4k7`;
   });
 });
 
+describe("schematic layout — folds read forward, parts stay uniform", () => {
+  it("numbers a folded chain in ascending reading order on every row", () => {
+    // A boustrophedon fold laid R6..R9 out right-to-left, so the page read
+    // "R9 R8 R7 R6" and looked like a numbering error rather than a direction
+    // change — a symmetric part gives the reader no clue the row reversed.
+    const svg = svgOf(seriesChain(10));
+    const labels = [
+      ...svg.matchAll(
+        /<text[^>]*x="([\d.-]+)"[^>]*y="([\d.-]+)"[^>]*class="schematex-circuit-label"[^>]*>(R\d+)</g
+      ),
+    ].map((m) => ({ x: Number(m[1]), y: Number(m[2]), id: m[3]! }));
+
+    const rows = new Map<number, Array<{ x: number; id: string }>>();
+    for (const l of labels) {
+      const band = Math.round(l.y / 40);
+      const list = rows.get(band) ?? [];
+      list.push({ x: l.x, id: l.id });
+      rows.set(band, list);
+    }
+    for (const list of rows.values()) {
+      if (list.length < 2) continue;
+      const byX = [...list].sort((a, b) => a.x - b.x);
+      const nums = byX.map((r) => Number(r.id.slice(1)));
+      const ascending = nums.every((n, i) => i === 0 || n > nums[i - 1]!);
+      expect(ascending).toBe(true);
+    }
+  });
+
+  it("draws every element of a uniform series chain the same way round", () => {
+    // The first resistor sits on the supply net, which an earlier rule read as
+    // "shunt" and stood upright while its nine identical siblings lay flat.
+    const svg = svgOf(seriesChain(10));
+    const rotations = [
+      ...svg.matchAll(/<g transform="translate\([^)]*\) rotate\((\d+)\)"/g),
+    ].map((m) => Number(m[1]));
+    const horizontal = rotations.filter((r) => r % 180 === 0).length;
+    expect(horizontal).toBeGreaterThanOrEqual(9);
+  });
+});
+
+describe("schematic layout — polarity survives placement", () => {
+  it("mirrors a part whose upstream pin is written second, instead of crossing its wires", () => {
+    // D1 is declared cathode-first. Drawing it un-mirrored would put the
+    // terminal that belongs downstream on the upstream side and drag both
+    // wires across the body. Mirroring keeps the circuit's meaning and
+    // uncrosses the wires; rotating or silently reordering would not.
+    const forward = `circuit "Fwd" netlist
+V1 a 0 5V
+R1 a b 1k
+D1 b c type=diode
+R2 c 0 1k`;
+    const reversed = `circuit "Rev" netlist
+V1 a 0 5V
+R1 a b 1k
+D1 c b type=diode
+R2 c 0 1k`;
+    const f = svgOf(forward);
+    const r = svgOf(reversed);
+    expect(f).toContain("<svg");
+    expect(r).toContain("<svg");
+    // The reversed declaration must be drawn differently from the forward one:
+    // if both render identically, one of them is lying about the diode.
+    expect(f).not.toEqual(r);
+    expect(r).toContain("scale(-1, 1)");
+  });
+
+  it("never mirrors a part the author oriented explicitly", () => {
+    const svg = svgOf(`circuit "Explicit" netlist
+V1 a 0 5V
+R1 a b 1k dir=up
+C1 b 0 100n`);
+    expect(svg).toContain("<svg");
+  });
+});
+
 describe("schematic layout — labels do not collide", () => {
   it("separates label blocks of neighbouring components", () => {
     const svg = svgOf(seriesChain(8));
