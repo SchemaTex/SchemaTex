@@ -880,9 +880,9 @@ export interface FloorplanLayoutResult {
   wallT: number;
   /** Total interior area, m². */
   totalAreaM2: number;
-  /** Blocking problems (§6: room overlap, non-adjacent door, out-of-room furniture). */
+  /** Blocking structural problems (§6: room overlap, non-adjacent door). */
   errors: string[];
-  /** Non-blocking problems (§6: furniture collision, clamped opening). */
+  /** Non-blocking problems (§6: furniture overshoot/collision, clamped opening). */
   warnings: string[];
   /** Authoritative structured diagnostics; errors/warnings are compatibility views. */
   diagnostics: FloorplanGeometryDiagnostic[];

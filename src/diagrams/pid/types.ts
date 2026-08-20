@@ -34,6 +34,9 @@ export type PidEquipType =
   | "cyclone"
   | "flare"
   | "cooling_tower"
+  | "boiler"
+  | "burner"
+  | "generator"
   // Valves (in-line)
   | "valve_gate"
   | "valve_ball"

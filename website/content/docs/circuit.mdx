@@ -132,6 +132,7 @@ T1: transformer right`} height={380} />
 | `current_source` | Circle + arrow (also: `isource`) |
 | `ac_source` | Circle + sine symbol (also: `acsource`) |
 | `battery` | Alternating long/short terminal lines |
+| `solar_cell` | IEC photovoltaic cell + incident-light arrows (also: `solar`) |
 | `vcc` | Power rail arrow (pointing up) |
 | `ground` | Earth ground — 3 decreasing lines (also: `gnd`) |
 | `gnd_signal` | Signal ground — solid triangle |
@@ -213,6 +214,7 @@ ground`} height={280} />
 | `diac` | DIAC |
 | `phototransistor` | NPN with light arrows |
 | `optocoupler` | LED + phototransistor in isolation box |
+| `triode` | IEEE 315 thermionic valve with plate/grid/cathode pins |
 
 <Playground initial={`circuit "Transistor types gallery"
 # NPN BJT
@@ -239,8 +241,8 @@ Q4: pmos right`} height={320} />
 | `schmitt_buffer` | Buffer + hysteresis symbol |
 | `tri_state_buffer` | Buffer + enable pin |
 | `instrumentation_amp` | Three-op-amp INA block |
-| `generic_ic` | Configurable rect with labeled pins (also: `ic`) |
-| `voltage_regulator` | 3-terminal block: IN/GND/OUT (also: `reg`) |
+| `generic_ic` | Configurable rect with labeled pins (also: `ic`, `mcu`) |
+| `voltage_regulator` | 3-terminal block: IN/GND/OUT (also: `reg`, `regulator`, `ldo_3v3`) |
 | `dc_dc_converter` | 2-port block with DC/DC label |
 | `555_timer` | 8-pin 555 pinout block (also: `timer555`) |
 
@@ -264,11 +266,14 @@ U3: generic_ic right`} height={320} />
 | DSL type | Description |
 |---|---|
 | `switch_spst` | Single-pole single-throw |
+| `switch_nc` | Maintained SPST normally-closed contact (also: `switch_spst_nc`) |
 | `switch_spdt` | Single-pole double-throw |
 | `switch_dpdt` | Double-pole double-throw |
 | `push_no` | Push button normally-open |
 | `push_nc` | Push button normally-closed |
 | `relay_coil` | Relay coil (2-pin rect) |
+| `relay` | Combined coil + normally-open contact (4 pins) |
+| `relay_spdt` | Combined coil + changeover contact (5 pins) |
 | `relay_no` | Relay contact normally-open |
 | `relay_nc` | Relay contact normally-closed |
 
@@ -295,6 +300,7 @@ K2: relay_no right`} height={300} />
 | DSL type | Description |
 |---|---|
 | `motor` | Circle + M |
+| `fan` | IEC rotating-machine fan / impeller |
 | `lamp` | Lighting load: circle + X (aliases: `light`, `bulb`) |
 | `speaker` | Cone + box |
 | `microphone` | Capsule symbol |
@@ -303,6 +309,8 @@ K2: relay_no right`} height={300} />
 | `voltmeter` | Circle + V |
 | `wattmeter` | Circle + W |
 | `oscilloscope` | Circle + waveform |
+
+Common production aliases use the closest canonical symbol without replacing a user's `label=`: `pushbutton`→`push_no`, `ntc`→`thermistor_ntc`, `dc_supply`→`voltage_source`, `selector`→`selector_switch`, `pullup`→`resistor`, and `dc_motor`→`motor`.
 
 ### 2.10 Connectors and annotations
 

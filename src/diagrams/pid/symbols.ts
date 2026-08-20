@@ -232,6 +232,42 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
       out: { x: 50, y: 0 },
     },
   },
+  boiler: {
+    width: 100,
+    height: 100,
+    ports: {
+      feed: { x: -50, y: 20 },
+      in: { x: -50, y: 20 },
+      steam: { x: 50, y: -28 },
+      out: { x: 50, y: -28 },
+      fuel: { x: -50, y: 38 },
+      blowdown: { x: 0, y: 50 },
+      top: { x: 0, y: -50 },
+      bottom: { x: 0, y: 50 },
+    },
+  },
+  burner: {
+    width: 76,
+    height: 56,
+    ports: {
+      fuel: { x: -38, y: 0 },
+      in: { x: -38, y: 0 },
+      flame: { x: 38, y: 0 },
+      out: { x: 38, y: 0 },
+    },
+  },
+  generator: {
+    width: 76,
+    height: 76,
+    ports: {
+      shaft: { x: -38, y: 0 },
+      in: { x: -38, y: 0 },
+      electric: { x: 38, y: 0 },
+      out: { x: 38, y: 0 },
+      top: { x: 0, y: -38 },
+      bottom: { x: 0, y: 38 },
+    },
+  },
 
   // ── Valves (in-line) ──────────────────────────────────
   valve_gate: {
@@ -784,6 +820,41 @@ export function renderEquip(type: PidEquipType, label: string, rawType?: string)
           class: "lt-pid-equip",
         }),
         text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+      ]);
+    }
+
+    case "boiler": {
+      const w = 100;
+      const h = 100;
+      return group({}, [
+        rect({ x: -w / 2, y: -h / 2, width: w, height: h, class: "lt-pid-equip" }),
+        path({
+          d: "M -34,-24 L 34,-24 M -34,-14 L 34,-14 M -34,-4 L 34,-4",
+          class: "lt-pid-tray-line",
+        }),
+        path({
+          d: "M -12,30 C -20,18 -8,12 -5,2 C 5,10 4,18 10,22 C 16,27 12,38 0,40 C -8,39 -14,36 -12,30 Z",
+          class: "lt-pid-equip",
+        }),
+        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+      ]);
+    }
+    case "burner": {
+      return group({}, [
+        line({ x1: -38, y1: 0, x2: -18, y2: 0, class: "lt-pid-tray-line" }),
+        polygon({ points: "-18,-14 -18,14 8,0", class: "lt-pid-equip" }),
+        path({
+          d: "M 12,3 C 6,-5 16,-10 18,-19 C 27,-11 23,-3 30,1 C 38,7 31,18 21,18 C 13,18 8,11 12,3 Z",
+          class: "lt-pid-equip",
+        }),
+        text({ x: 0, y: 36, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+      ]);
+    }
+    case "generator": {
+      return group({}, [
+        circle({ cx: 0, cy: 0, r: 38, class: "lt-pid-equip" }),
+        text({ x: 0, y: 7, "text-anchor": "middle", class: "lt-pid-equip-tag" }, "G"),
+        text({ x: 0, y: 54, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     }
 

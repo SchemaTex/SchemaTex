@@ -10,6 +10,7 @@ import { getSymbol } from "./symbols";
 import { matchQuotedTitle } from "../../core/quotes";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 import type { SourceRange } from "../../core/types";
+import { CIRCUIT_TYPE_ALIASES } from "./aliases";
 
 export class CircuitParseError extends Error {
   constructor(message: string) {
@@ -18,68 +19,9 @@ export class CircuitParseError extends Error {
   }
 }
 
-// Aliases for convenience — DSL uses short names
-const ALIASES: Record<string, CircuitComponentType> = {
-  vsource: "voltage_source",
-  isource: "current_source",
-  acsource: "ac_source",
-  ecap: "electrolytic_cap",
-  pot: "potentiometer",
-  xtal: "crystal",
-  xfmr: "transformer",
-  transistor: "npn",
-  bjt_npn: "npn",
-  bjt_pnp: "pnp",
-  mosfet_n: "nmos",
-  mosfet_p: "pmos",
-  gnd: "ground",
-  ic: "generic_ic",
-  reg: "voltage_regulator",
-  timer555: "555_timer",
-  terminal: "terminal_block",
-  tb: "terminal_block",
-  junction_box: "terminal_block",
-  jbox: "terminal_block",
-  cabinet: "enclosure",
-  panel: "enclosure",
-  backplate: "enclosure",
-  dinrail: "din_rail",
-  "din-rail": "din_rail",
-  duct: "wire_duct",
-  wireduct: "wire_duct",
-  trunking: "wire_duct",
-  controller: "plc",
-  indicator: "pilot_light",
-  pilot: "pilot_light",
-  selector: "selector_switch",
-  estop: "emergency_stop",
-  e_stop: "emergency_stop",
-  "e-stop": "emergency_stop",
-  therm: "thermistor_ntc",
-  ntc: "thermistor_ntc",
-  ptc: "thermistor_ptc",
-  ths: "thermistor_ntc",
-  // Industrial control aliases (IEC letter codes)
-  coil: "relay_coil",
-  relay: "relay_coil",
-  km: "contactor",
-  solenoid: "solenoid_valve",
-  ev: "solenoid_valve",
-  overload: "thermal_overload",
-  thermal: "thermal_overload",
-  disconnect: "disconnect_switch",
-  isolator: "disconnect_switch",
-  light: "lamp",
-  bulb: "lamp",
-  flasher: "automotive_flasher_3pin",
-  automotive_flasher: "automotive_flasher_3pin",
-  selector_center_off: "switch_spdt_center_off",
-  switch_center_off: "switch_spdt_center_off",
-};
-
 function normalizeType(raw: string): CircuitComponentType | null {
   const lower = raw.toLowerCase();
-  if (ALIASES[lower]) return ALIASES[lower];
+  if (CIRCUIT_TYPE_ALIASES[lower]) return CIRCUIT_TYPE_ALIASES[lower];
   // The symbol registry is the capability source of truth: if a type can be
   // parsed, it must have a renderer definition in the same build.
   if (getSymbol(lower)) {

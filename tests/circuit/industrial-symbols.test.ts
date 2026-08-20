@@ -59,7 +59,7 @@ Q1: disconnect right
 Q2: isolator right`;
     const ast = parseCircuit(dsl);
     expect(ast.components.find((c) => c.id === "K1")?.componentType).toBe("relay_coil");
-    expect(ast.components.find((c) => c.id === "K2")?.componentType).toBe("relay_coil");
+    expect(ast.components.find((c) => c.id === "K2")?.componentType).toBe("relay");
     expect(ast.components.find((c) => c.id === "KM1")?.componentType).toBe("contactor");
     expect(ast.components.find((c) => c.id === "EV1")?.componentType).toBe("solenoid_valve");
     expect(ast.components.find((c) => c.id === "EV2")?.componentType).toBe("solenoid_valve");

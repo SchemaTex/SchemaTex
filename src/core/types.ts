@@ -1082,6 +1082,7 @@ export type CircuitComponentType =
   | "current_source"    // Circle + arrow
   | "ac_source"         // Circle + ~ (sine symbol)
   | "battery"           // Alternating long/short lines
+  | "solar_cell"        // Photovoltaic source cell (IEC 60617)
   | "vcc"               // Power rail arrow pointing up
   | "ground"            // Earth ground (3 horizontal lines)
   | "gnd_signal"        // Signal ground (solid triangle)
@@ -1090,6 +1091,7 @@ export type CircuitComponentType =
 
   // ── Switches ──────────────────────────────────────────────────
   | "switch_spst"       // Single-pole single-throw (angled arm + gap)
+  | "switch_nc"         // Single-pole normally-closed maintained contact
   | "switch_spdt"       // Single-pole double-throw (3-pin)
   | "switch_spdt_center_off" // Three-position left/off/right selector
   | "switch_dpdt"       // Double-pole double-throw (6-pin)
@@ -1098,6 +1100,8 @@ export type CircuitComponentType =
 
   // ── Relays (coil and contacts placed separately) ───────────────
   | "relay_coil"        // Rectangle with coil symbol, 2-pin
+  | "relay"             // Combined coil + normally-open contact, 4-pin
+  | "relay_spdt"        // Combined coil + changeover contact, 5-pin
   | "relay_no"          // Relay contact normally-open (like switch_spst)
   | "relay_nc"          // Relay contact normally-closed (with slash)
 
@@ -1109,10 +1113,12 @@ export type CircuitComponentType =
 
   // ── Electromechanical ─────────────────────────────────────────
   | "motor"             // Circle + M + shaft line
+  | "fan"               // Motor-driven fan / impeller
   | "lamp"              // Circle + X (lighting load)
   | "speaker"           // Triangle + box + radiating lines
   | "microphone"        // Circle + vertical lines (capsule)
   | "buzzer"            // Piezo symbol or speaker variant
+  | "triode"            // Three-electrode thermionic valve
   | "automotive_flasher_3pin" // Automotive B/L/P turn-signal flasher
 
   // ── Measurement ───────────────────────────────────────────────

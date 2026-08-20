@@ -6,7 +6,7 @@
  * Syntax-level problems (unknown keyword, malformed numbers, unknown
  * furniture type, duplicate room id) throw `FloorplanParseError` with the
  * line number. Semantic geometry problems (room overlap, non-adjacent
- * doors, out-of-room furniture) are collected by the layout pass instead —
+ * doors, out-of-room furniture warnings) are collected by the layout pass instead —
  * see §6 severity table.
  */
 

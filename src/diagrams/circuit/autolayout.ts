@@ -71,6 +71,7 @@ function isPowerSource(c: CircuitComponent): boolean {
     c.componentType === "current_source" ||
     c.componentType === "ac_source" ||
     c.componentType === "battery" ||
+    c.componentType === "solar_cell" ||
     c.componentType === "vcc"
   );
 }
@@ -249,6 +250,7 @@ function isLightingLoad(c: CircuitComponent): boolean {
     c.componentType === "lamp" ||
     c.componentType === "pilot_light" ||
     c.componentType === "motor" ||
+    c.componentType === "fan" ||
     c.componentType === "buzzer" ||
     c.componentType === "speaker"
   );
