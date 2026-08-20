@@ -659,7 +659,7 @@ export function schematicNetlistLayout(
     // Spend an author-declared ground symbol here before synthesising one, so
     // the part they wrote is the part that gets drawn.
     const claimed = ground ? groundPool.get(p.net)?.shift() : undefined;
-    let stubTo = at;
+    const stubTo = at;
     if (claimed) {
       // An author-declared ground is a real part: it stays in `items`.
       const laid = placeAt(claimed, at.x, at.y, "down");
