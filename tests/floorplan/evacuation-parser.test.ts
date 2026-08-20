@@ -81,30 +81,29 @@ safety extnguisher f1 in lobby at 1,1`)
     );
   });
 
-  it("normalizes common safety-kind aliases without weakening unknown kinds", () => {
-    const aliases = [
-      ["fire-extinguisher", "extinguisher"],
-      ["assembly-point", "assembly"],
-      ["emergency-exit", "exit-final"],
-      ["fire-alarm", "alarm-sounder"],
-      ["escape-route", "exit"],
-      ["muster-point", "assembly"],
-      ["you-are-here", "here"],
-    ] as const;
-    const body = aliases
-      .map(([alias], index) => `safety ${alias} s${index} in room at 1,1`)
-      .join("\n");
+  it.each([
+    ["emergency-exit", "exit"],
+    ["fire-exit", "exit"],
+    ["exit-arrow", "exit-direction"],
+    ["assembly-point", "assembly"],
+    ["muster-point", "assembly"],
+    ["fire-extinguisher", "extinguisher"],
+    ["fire-alarm", "call-point"],
+    ["fire-hose-reel", "hose-reel"],
+    ["you-are-here", "here"],
+    ["defibrillator", "aed"],
+  ])("normalizes the common safety alias %s to %s", (alias, canonical) => {
     const ast = parseFloorplan(`evacuation
 room room at 0,0 size 4x4
-${body}`);
-    expect(ast.safety.map((symbol) => symbol.kind)).toEqual(
-      aliases.map(([, canonical]) => canonical)
-    );
-    expect(() =>
-      parseFloorplan(`evacuation
+${alias} marker in room at 1,1`);
+    expect(ast.safety[0]).toMatchObject({ kind: canonical, id: "marker" });
+  });
+
+  it("accepts aliases in the explicit safety form", () => {
+    const ast = parseFloorplan(`evacuation
 room room at 0,0 size 4x4
-safety mystery-sign in room at 1,1`)
-    ).toThrow(/unknown safety kind "mystery-sign"/);
+safety alarm-call-point alarm in room at 1,1`);
+    expect(ast.safety[0]).toMatchObject({ kind: "call-point", id: "alarm" });
   });
 });
 

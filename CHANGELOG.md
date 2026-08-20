@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.11] — 2026-08-20
+
+### Changed — an unknown word is no longer a fatal error
+
+- **Two releases in a row shipped an alias list, and production kept finding new words.** 1.0.10 added sixteen circuit component types; within a day, production DSL turned up `outlet`, `switch_no`, `prox_sensor`, `MAX17048`, `ESP32`, `1N4007`, and a set of block-diagram roles the grammar had never heard of. A third list would have bought another few weeks, because there is no finite set of ways to name a thing in English. The disposition was the defect, not the coverage: an unrecognised *value* inside a well-formed statement now degrades instead of killing the drawing, and the vocabulary tables become a quality layer rather than the thing standing between a user and any output at all.
+- **Decorative values fall back and warn.** A block's `[role: ...]` selects a shape; an unknown one now renders as `generic` and reports `blockdiagram/unknown-role` instead of throwing. Unrecognised connection attributes (`a -> b [route: above]`) are ignored the same way. Nothing is lost but styling, which never justified discarding the diagram.
+- **`input` and `output` are first-class block roles.** They were the two most natural words in the whole vocabulary and the grammar rejected both. Treating them as junk to be aliased away would have been the cheap answer; a block diagram genuinely has input and output blocks, so they now render as themselves.
+- **An unknown circuit component becomes a labeled box, not a refusal.** `U2 sda scl vcc gnd type=MAX17048` draws a rectangle reading MAX17048, wired to every net it declared, which is exactly what a draftsman does with an unfamiliar part. This replaces the red `?` placeholder, which was worse than useless — it looked like damage while reporting success, so it sailed through publication gates and onto public galleries. Part numbers now work for free as a consequence rather than as a special case. A wrong symbol is still never guessed: when the family is uncertain, it is a box.
+- **What stays fatal:** syntax errors, unknown statement keywords, malformed netlists, and references to undeclared ids. The change covers unknown values, not unknown structure.
+- **Every softened token is reported with the raw word, so the guessing stops.** Diagnostics now carry `{ code, message, token, line, fatal }` — `token` being the literal unrecognised string. Hosts can aggregate that into a ranked list of what real users actually type, which is the alias backlog for the next release, measured instead of audited.
+
+### Added — the safety catalogue answers to the words people use
+
+- **Evacuation plans rejected the everyday spelling of their own symbols.** The ISO 7010 / NFPA 170 catalogue has twenty-eight kinds, and `fire-extinguisher`, `assembly-point`, `emergency-exit`, `fire-alarm`, `you-are-here` were none of them — the parser even computed a did-you-mean suggestion and then threw anyway, so the matching already worked and only the disposition was wrong. Those spellings now resolve, through one exported resolver rather than a second lookup table beside the first, which is the mistake 1.0.10 had to unwind on the circuit side.
+- **`escape-route` is deliberately not an alias.** An escape route is a path, not a point symbol; mapping it onto `exit` would have answered a different question than the one asked. It belongs to the `route` statement, and saying so in a diagnostic is more useful than quietly drawing the wrong thing.
+- **`exit-direction` completes the egress set**, and the evacuation documentation and worked examples were expanded to match — the symbols that shipped in earlier releases were never demonstrated, which is how 1.0.8's electrical work ended up being requested as a new feature after it already existed.
+
+---
+
 ## [1.0.10] — 2026-08-19
 
 ### Fixed — escaping, vocabulary, and fail-soft floor plans

@@ -1,6 +1,6 @@
 ---
 title: Office floor — two independent escape routes
-description: "A posted office escape plan with two structurally independent routes, final exits, fire equipment, first aid, a mandatory legend, and an ISO print-scale check."
+description: "A complete posted office escape plan with two independent routes, final exits, two extinguishers, first aid, an assembly point, a used-only legend, and an ISO print-scale check."
 diagram: evacuation
 standard: ISO 23601 · ISO 7010 · ISO 3864
 industry: [business, safety]
@@ -28,13 +28,16 @@ dsl: |
   exit-final xB in stairB at 3,1.2 side east "EXIT"
   call-point cp1 in lobby at 0.8,0.3 side north
   extinguisher f1 in lobby at 2.0,0.3 side north class "ABC"
+  extinguisher f2 in stairA at 2.2,0.4 class "ABC"
   first-aid fa1 in lobby at 4.8,1.8
+  assembly muster outside at 3,9.5
   fire-door between lobby stairA rating "EI30"
   fire-door between lobby stairB rating "EI30"
   route primary here -> lobby -> stairB -> xB
   route secondary here -> lobby -> stairA -> xA
+  legend: auto
 ---
 
 ## Why this plan is reviewable
 
-Both routes name every room they cross and finish at different final exits. The engine verifies the shared openings, computes the A3 print scale, and derives the Tier-M legend from the signs actually used.
+Both routes name every room they cross and finish at different final exits. The engine verifies the shared openings, computes the A3 print scale, and derives the Tier-M legend from the route styles, exits, extinguishers, first-aid sign, call point, assembly point, and fire-door mark actually used.

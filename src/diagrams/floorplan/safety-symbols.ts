@@ -12,8 +12,10 @@ import type {
   CompliancePolicy,
   SafetyDrawCtx,
   SafetyKind,
+  SafetyName,
   SafetySymbolDef,
 } from "./types";
+import { resolveSafetyKind } from "./types";
 
 const KNOCKOUT = "sx-fp-safety-knockout";
 const KNOCKOUT_STROKE = "sx-fp-safety-knockout-stroke";
@@ -97,6 +99,18 @@ function exitGlyph(dir: 1 | -1, final = false, nfpa = false): string {
   return plate("safe") + runningFigure(dir) + extra;
 }
 
+function directionArrow(dir: 1 | -1): string {
+  const x = (value: number): number => (dir === 1 ? value : 24 - value);
+  return path({
+    class: KNOCKOUT_STROKE,
+    d: `M ${x(2.5)} 3.2 H ${x(10)} M ${x(7.1)} 0.8 L ${x(10)} 3.2 L ${x(7.1)} 5.6`,
+  });
+}
+
+function exitDirectionGlyph(dir: 1 | -1, nfpa = false): string {
+  return exitGlyph(dir, false, nfpa) + directionArrow(dir);
+}
+
 function crossGlyph(colour: "safe" | "fire" = "safe"): string {
   return (
     plate(colour) +
@@ -153,6 +167,11 @@ export const SAFETY_SYMBOLS: Record<SafetyKind, SafetySymbolDef> = {
     ].join("")
   ),
   exit: exitDefault,
+  "exit-direction": make(
+    "E001/E002 + ISO 3864-3 arrow",
+    "safe",
+    (ctx) => exitDirectionGlyph(ctx.hand === "left" ? -1 : 1)
+  ),
   "exit-final": exitFinalDefault,
   assembly: make("E007", "safe", () =>
     [
@@ -381,6 +400,18 @@ function directionalExit(
   return make(code, "safe", () => exitGlyph(dir, final, profile === "nfpa"));
 }
 
+function directionalExitDirection(
+  hand: "left" | "right",
+  profile: "iso" | "nfpa"
+): SafetySymbolDef {
+  const dir = hand === "left" ? -1 : 1;
+  const code =
+    profile === "nfpa"
+      ? "NFPA 170 Ch.11"
+      : `${hand === "left" ? "E001" : "E002"} + ISO 3864-3 arrow`;
+  return make(code, "safe", () => exitDirectionGlyph(dir, profile === "nfpa"));
+}
+
 const hereNfpa = make("NFPA 170 Ch.11", "safe", () =>
   [
     plate("safe"),
@@ -409,6 +440,10 @@ export const SAFETY_PREVIEW_SYMBOLS: Readonly<Record<string, SafetySymbolDef>> =
   "exit:iso:right": directionalExit("right", "iso", false),
   "exit:nfpa:left": directionalExit("left", "nfpa", false),
   "exit:nfpa:right": directionalExit("right", "nfpa", false),
+  "exit-direction:iso:left": directionalExitDirection("left", "iso"),
+  "exit-direction:iso:right": directionalExitDirection("right", "iso"),
+  "exit-direction:nfpa:left": directionalExitDirection("left", "nfpa"),
+  "exit-direction:nfpa:right": directionalExitDirection("right", "nfpa"),
   "exit-final:iso:left": directionalExit("left", "iso", true),
   "exit-final:iso:right": directionalExit("right", "iso", true),
   "exit-final:nfpa:left": directionalExit("left", "nfpa", true),
@@ -418,12 +453,20 @@ export const SAFETY_PREVIEW_SYMBOLS: Readonly<Record<string, SafetySymbolDef>> =
 };
 
 export function resolveSafetySymbol(
-  kind: SafetyKind,
+  name: SafetyName,
   context: { hand: "left" | "right"; profile: CompliancePolicy }
 ): SafetySymbolDef {
+  const kind = resolveSafetyKind(name);
+  if (!kind) {
+    throw new Error(`unknown evacuation safety symbol "${name}"`);
+  }
   if (kind === "exit" || kind === "exit-final") {
     const profile = context.profile === "nfpa" ? "nfpa" : "iso";
     return directionalExit(context.hand, profile, kind === "exit-final");
+  }
+  if (kind === "exit-direction") {
+    const profile = context.profile === "nfpa" ? "nfpa" : "iso";
+    return directionalExitDirection(context.hand, profile);
   }
   if (kind === "here" && context.profile === "nfpa") return hereNfpa;
   if (kind === "here" && context.profile === "uae") return hereUae;
