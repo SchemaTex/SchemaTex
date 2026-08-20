@@ -18,6 +18,12 @@ export interface LaidOutComponent {
   length: number;
   /** Resolved anchors in world coordinates. */
   anchors: Record<string, PinAnchor>;
+  /**
+   * Layout-chosen position for this component's label block, in the same world
+   * coordinates as the anchors. Set by layouts that run a label-avoidance pass;
+   * when absent the renderer falls back to its fixed perpendicular offset.
+   */
+  labelPos?: PinAnchor;
 }
 
 export interface CircuitLayoutResult {

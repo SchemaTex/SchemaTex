@@ -1,6 +1,11 @@
 import type { CircuitAST, RenderConfig, SceneItem } from "../../core/types";
 import { layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
-import { layoutCircuitNetlist, rerouteCircuitNetlist, type RoutedWire } from "./autolayout";
+import {
+  layoutCircuitNetlist,
+  rerouteCircuitNetlist,
+  type RoutedWire,
+  type SupplyFlagMark,
+} from "./autolayout";
 import { effectiveSymbolDef } from "./symbols";
 import {
   svgRoot,
@@ -40,7 +45,7 @@ function samePoint(a: { x: number; y: number }, b: { x: number; y: number }): bo
 
 /** Apply stable component pins before routes are rebuilt from the moved anchors. */
 function applyCircuitPins(
-  layout: CircuitLayoutResult & { routes?: RoutedWire[] },
+  layout: CircuitLayoutResult & { routes?: RoutedWire[]; flags?: SupplyFlagMark[] },
   pins: Map<string, { x: number; y: number }> | undefined,
   topOff: number
 ): void {
@@ -167,10 +172,14 @@ function renderItem(
     const midpointX = it.x + offX + (it.length * Math.cos(angle)) / 2;
     const midpointY = it.y + offY + (it.length * Math.sin(angle)) / 2;
     const vertical = Math.abs(Math.sin(angle)) > 0.5;
-    const labelX =
-      midpointX + (vertical ? 34 : 0) + (sym.labelOffset?.dx ?? 0);
-    const labelY =
-      midpointY - (vertical ? 2 : 18) + (sym.labelOffset?.dy ?? 0);
+    // A layout that ran a label-avoidance pass hands us a vetted position; it
+    // saw the wires and the neighbouring parts, which this formula cannot.
+    const labelX = it.labelPos
+      ? it.labelPos.x + offX
+      : midpointX + (vertical ? 34 : 0) + (sym.labelOffset?.dx ?? 0);
+    const labelY = it.labelPos
+      ? it.labelPos.y + offY
+      : midpointY - (vertical ? 2 : 18) + (sym.labelOffset?.dy ?? 0);
     if (comp.label) {
       labels.push(
         text(
@@ -294,7 +303,7 @@ function renderRoute(
 export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const isNetlist = ast.mode === "netlist";
   const topOff = ast.title ? 24 : 0;
-  const layout: CircuitLayoutResult & { routes?: RoutedWire[] } = isNetlist
+  const layout: CircuitLayoutResult & { routes?: RoutedWire[]; flags?: SupplyFlagMark[] } = isNetlist
     ? layoutCircuitNetlist(ast)
     : layoutCircuit(ast);
   const baseRoutes = layout.routes?.map((route) => ({
@@ -316,6 +325,32 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
     .map((r, index) => renderRoute(r, offsetX, offsetY, index, ast, layout.items, config?.__scene))
     .join("");
   const items = layout.items.map((it) => renderItem(it, offsetX, offsetY, topOff, config?.__scene)).join("");
+
+  // Local supply marks. These are decoration, not parts: they carry no
+  // component identity, so they are drawn straight from their glyph and never
+  // enter the scene graph as something a user could select or edit.
+  const flagSvg = (layout.flags ?? [])
+    .map((f: SupplyFlagMark) => {
+      const sym = effectiveSymbolDef(f.kind, undefined);
+      const rot = f.kind === "ground" ? 90 : 270;
+      const x = f.at.x + offsetX;
+      const y = f.at.y + offsetY + topOff;
+      const glyph = `<g transform="translate(${x}, ${y}) rotate(${rot})">${sym.svg()}</g>`;
+      if (!f.label) return glyph;
+      return (
+        glyph +
+        text(
+          {
+            x: x + 22,
+            y: y - 10,
+            class: "schematex-circuit-net-label",
+            "text-anchor": "start",
+          },
+          f.label
+        )
+      );
+    })
+    .join("");
 
   const css = `
 .schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
@@ -374,8 +409,8 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
       ),
       defs([el("style", {}, css)]),
       ...(config?.__scene
-        ? [group({ transform: `translate(0, ${topOff})` }, [routeSvg + items]), titleBar]
-        : [titleBar, group({ transform: `translate(0, ${topOff})` }, [routeSvg + items])]),
+        ? [group({ transform: `translate(0, ${topOff})` }, [routeSvg + flagSvg + items]), titleBar]
+        : [titleBar, group({ transform: `translate(0, ${topOff})` }, [routeSvg + flagSvg + items])]),
     ]
   );
 }
