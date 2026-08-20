@@ -131,6 +131,38 @@ floor 1 "First Floor"
 - Structural and opening references never cross a floor boundary. A reference to an id that exists only on another floor is an error naming both levels.
 - A one-floor level-0 document keeps the legacy SVG path byte-for-byte: no plate wrapper or plate title is introduced.
 
+### 2.6 Fire safety and evacuation overlay
+
+Use the `evacuation` header (alias `escapeplan`) to put life-safety semantics on the same measurable room, wall, door, opening, stair, and multi-floor geometry. This mode adds ISO 7010 / ISO 3864 pictograms, authored cross-room escape routes, and a mandatory used-only legend; it does not introduce another geometry subsystem. Route anchors reuse floorplan room/symbol coordinates and declared openings, and the shared orthogonal routing helper supplies deterministic bends through those openings.
+
+```dsl
+evacuation "Office Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office at 0,0 size 6x5
+room corridor below office size 6x2
+room west left-of corridor size 3x2
+room east right-of corridor size 3x2
+opening between office corridor at 50% width 1.2
+door between corridor west at 50% width 1.1
+door between corridor east at 50% width 1.1
+here in office at 3,2.5
+exit-final westExit in west at 0,1 side west
+exit-final eastExit in east at 3,1 side east
+fire-extinguisher f1 in corridor at 1,0.3
+fire-extinguisher f2 in corridor at 5,0.3
+assembly-point muster outside at 3,9
+route primary here -> corridor -> east -> eastExit
+route secondary here -> corridor -> west -> westExit
+legend: auto
+```
+
+The exact route form is `route [primary|secondary|accessible|rescue] anchor (-> anchor)+ ["label"]`. Room-to-room hops must cross a declared `door` or `opening`; the engine does not invent a passage. Chevrons are placed along the resolved polyline and point from the first anchor toward the last. `secondary` is dashed, so multiple independent alternatives remain distinguishable without text.
+
+The exact coordinate-sign form is `[safety] kind [id] (in room at x,y | outside at x,y) [side wallside] [hand left|right] [rotate deg] [class "ABC"] ["label"]`. Canonical high-frequency kinds are `here`, `exit`, `exit-direction`, `exit-final`, `assembly`, `first-aid`, `aed`, `extinguisher`, `call-point`, and `hose-reel`. Common author vocabulary normalizes as follows: `emergency-exit`/`fire-exit` → `exit`; `exit-arrow`/`direction-arrow` → `exit-direction`; `assembly-point`/`muster-point` → `assembly`; `fire-extinguisher` → `extinguisher`; `fire-alarm`/`alarm-call-point` → `call-point`; `fire-hose-reel` → `hose-reel`; `defibrillator` → `aed`; `you-are-here` → `here`.
+
+Signs remain pictogram-first: safe-condition plates are green, firefighting-equipment plates red, and no text is required for the mark to read. `exit-direction` is the E001/E002 running-person sign combined with the ISO 3864-3 supplementary direction arrow; the arrow is not represented as a free-standing ISO 7010 E-code. The Tier-M legend is always on and derives entries only from route styles, signs, and rated-door marks actually used. See [53 — Evacuation / Escape Plan Standard Reference](53-EVACUATION-PLAN-STANDARD.md) for the complete catalog and validation profiles.
+
 ---
 
 ## 3. DSL Grammar

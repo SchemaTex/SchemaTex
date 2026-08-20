@@ -176,7 +176,54 @@ controls SW2 -> L1, L2`} height={360} />
 
 ---
 
-## 6. Arrays — grid, row, arc
+## 6. Fire safety and evacuation plans
+
+Use the `evacuation` header (alias `escapeplan`) when the floor needs to become a posted life-safety plan. It keeps the same rooms, walls, openings, stairs, and real coordinates, then adds pictogram-first ISO-style signs, cross-room routes with forward chevrons, and a mandatory legend derived only from items used.
+
+<Playground initial={`evacuation "Office Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office "Open Office" at 0,0 size 6x5
+room corridor "Corridor" below office size 6x2
+room west "West Exit" left-of corridor size 3x2
+room east "East Exit" right-of corridor size 3x2
+opening between office corridor at 50% width 1.2
+door between corridor west at 50% width 1.1
+door between corridor east at 50% width 1.1
+here in office at 3,2.5
+exit-final westExit in west at 0,1 side west
+exit-final eastExit in east at 3,1 side east
+fire-extinguisher f1 in corridor at 1,0.3
+fire-extinguisher f2 in corridor at 5,0.3
+first-aid aid in office at 0.6,0.6
+fire-alarm alarm in corridor at 3,0.3
+assembly-point muster outside at 3,9
+route primary here -> corridor -> east -> eastExit
+route secondary here -> corridor -> west -> westExit
+legend: auto`} height={500} />
+
+Route syntax is exact and intentionally authored:
+
+```text
+route [primary|secondary|accessible|rescue] anchor -> anchor [-> anchor ...] ["label"]
+```
+
+Name each room crossed. Every room-to-room hop must use a declared `door` or `opening`; the engine routes through its center and never invents a passage. Chevrons follow the ordered anchors, `secondary` is dashed, `accessible` adds an accessible-egress mark, and `rescue` is blue.
+
+Sign syntax works with or without the `safety` prefix:
+
+```text
+[safety] kind [id] in room at x,y [side north|south|east|west] [hand left|right] ["label"]
+[safety] kind [id] outside at x,y [hand left|right] ["label"]
+```
+
+Core kinds are `here`, `exit`, `exit-direction`, `exit-final`, `assembly`, `first-aid`, `aed`, `extinguisher`, `call-point`, and `hose-reel`. Common aliases include `emergency-exit`/`fire-exit`, `exit-arrow`, `assembly-point`/`muster-point`, `fire-extinguisher`, `fire-alarm`, `fire-hose-reel`, `defibrillator`, and `you-are-here`. Safe-condition signs stay safety green and firefighting equipment stays safety red; labels are optional, so the plan remains legible across languages.
+
+`legend: auto` is the canonical form. Evacuation legends cannot be disabled and list only route styles, signs, and rated-door marks present in the drawing. See the full [Evacuation plan reference](/docs/evacuation) for ISO/NFPA/UAE profiles, print scale, all signs, and validation rules.
+
+---
+
+## 7. Arrays — grid, row, arc
 
 Repeated furniture is one statement, not thirty:
 
@@ -192,7 +239,7 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 
 ---
 
-## 7. Units, areas, dimension lines
+## 8. Units, areas, dimension lines
 
 - `unit ft` makes every number feet; dimension lines format as `32'` / `15'1"` and areas as `sq ft`. Internally everything is metric (1 ft = 0.3048 m).
 - Room areas are **computed by the engine** from the declared geometry, never typed by hand.
@@ -200,7 +247,7 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 
 ---
 
-## 8. Validation
+## 9. Validation
 
 The engine validates what LLMs (and humans) actually get wrong, with errors that name the offending elements and a fix direction:
 
@@ -217,7 +264,7 @@ The engine validates what LLMs (and humans) actually get wrong, with errors that
 
 ---
 
-## 9. Grammar (EBNF)
+## 10. Grammar (EBNF)
 
 ```text
 plan      ::= "floorplan" string? header-setting* NL statement*

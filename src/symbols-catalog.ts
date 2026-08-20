@@ -15,10 +15,18 @@ import { iconNames, renderIcon } from "./diagrams/flowchart/icons";
 import { getGateGeometry } from "./diagrams/logic/symbols";
 import { drawDeviceIcon, iconSize } from "./diagrams/network/symbols";
 import { FLOORPLAN_SYMBOLS } from "./diagrams/floorplan/catalog";
+import { SAFETY_SYMBOLS } from "./diagrams/floorplan/safety-symbols";
+import {
+  SAFETY_ALIASES,
+  SAFETY_KINDS,
+  type SafetyKind,
+} from "./diagrams/floorplan/types";
 
 export interface SymbolCatalogEntry {
   id: string;
   label: string;
+  /** Accepted DSL names that normalize to this canonical id. */
+  aliases?: string[];
   svg: string;
 }
 
@@ -287,6 +295,44 @@ function floorplanCatalog(): SymbolCatalogEntry[] {
   return out.sort((a, b) => a.label.localeCompare(b.label));
 }
 
+// ── Evacuation signs (ISO 7010 / ISO 3864 visual grammar) ─────────
+const EVACUATION_CSS =
+  ".sx-fp-safety-plate-safe{fill:#00843D;stroke:none}" +
+  ".sx-fp-safety-plate-fire{fill:#C8102E;stroke:none}" +
+  ".sx-fp-safety-plate-mand{fill:#005387;stroke:none}" +
+  ".sx-fp-safety-plate-warn{fill:#FFCC00;stroke:none}" +
+  ".sx-fp-safety-plate-neutral{fill:#fff;stroke:#334155;stroke-width:1.1}" +
+  ".sx-fp-safety-knockout{fill:#fff;stroke:none}" +
+  ".sx-fp-safety-knockout-stroke{fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}" +
+  ".sx-fp-safety-dark{fill:#0f172a;stroke:none}" +
+  ".sx-fp-safety-dark-stroke{fill:none;stroke:#0f172a;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}";
+
+function aliasesForSafetyKind(kind: SafetyKind): string[] {
+  return Object.entries(SAFETY_ALIASES)
+    .filter(([, canonical]) => canonical === kind)
+    .map(([alias]) => alias)
+    .sort();
+}
+
+function evacuationCatalog(): SymbolCatalogEntry[] {
+  return SAFETY_KINDS.map((kind) => {
+    const def = SAFETY_SYMBOLS[kind];
+    const aliases = aliasesForSafetyKind(kind);
+    return {
+      id: kind,
+      label: humanize(kind)
+        .replace(/^Aed$/, "AED")
+        .replace(/^Here$/, "You Are Here"),
+      ...(aliases.length > 0 ? { aliases } : {}),
+      svg: svgDoc(
+        "0 0 24 24",
+        EVACUATION_CSS,
+        def.draw({ hand: "right", profile: "iso" })
+      ),
+    };
+  }).sort((a, b) => a.label.localeCompare(b.label));
+}
+
 const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
   circuit: () => ({
     type: "circuit",
@@ -329,6 +375,12 @@ const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
     label: "Floor plan furniture & fixtures",
     note: "Architectural plan-view symbols, including distinct NEC and IEC outlet/switch forms, auto-seated tables, and residential, commercial, classroom, and event fixtures.",
     entries: floorplanCatalog(),
+  }),
+  evacuation: () => ({
+    type: "evacuation",
+    label: "Evacuation and fire-safety signs",
+    note: "Pictogram-first safe-condition and firefighting signs using ISO 7010 identities and ISO 3864 safety colours. Aliases expose common author vocabulary.",
+    entries: evacuationCatalog(),
   }),
 };
 
