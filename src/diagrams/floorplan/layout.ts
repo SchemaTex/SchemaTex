@@ -7,9 +7,9 @@
  * Converts input units to meters (1 ft = 0.3048 m), resolves relative room
  * placement and `extend` parts (L/T/U rooms as disjoint rect unions), maps
  * openings onto wall segments (`between` → the shared-wall overlap), expands
- * furniture arrays, and runs the validation pass. Errors (room overlap,
- * non-adjacent door, out-of-room furniture) block rendering; warnings
- * (furniture collision, clamped opening) do not.
+ * furniture arrays, and runs the validation pass. Structural errors (room
+ * overlap, non-adjacent door) block rendering; authored furniture overshoot,
+ * furniture collision, and clamped openings warn without changing geometry.
  */
 
 import type {
@@ -885,7 +885,7 @@ function layoutOneFloor(
       bb.maxY - (room.y + room.h)
     );
     if (over > 0.011) {
-      error(
+      warning(
         "floorplan/item-outside-room",
         "geometry",
         `furniture ${it.type} #${it.seq} extends ${fmtNum(over)} m outside room "${it.roomId}" — move it or shrink size`
@@ -906,7 +906,7 @@ function layoutOneFloor(
       }
       const uncovered = bw * bh - covered;
       if (uncovered > 0.01) {
-        error(
+        warning(
           "floorplan/item-outside-room",
           "geometry",
           `furniture ${it.type} #${it.seq} sits outside room "${it.roomId}"'s L-shape ` +

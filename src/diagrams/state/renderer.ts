@@ -455,7 +455,7 @@ function renderLayout(layout: StateLayoutResult, t: StateTheme, config?: RenderC
     },
     [
       el("title", {}, escapeXml(`State Diagram${layout.title ? " — " + layout.title : ""}`)),
-      el("desc", {}, "UML 2.5 / Harel statechart rendered by Schematex"),
+      el("desc", {}, escapeXml("UML 2.5 / Harel statechart rendered by Schematex")),
       defs([renderArrowMarker(t), el("style", {}, buildStyle(t))]),
       ...(config?.__scene ? [...body, titleNode] : [titleNode, ...body]),
     ]

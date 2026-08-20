@@ -85,7 +85,7 @@ row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3`);
     expect(svg).not.toContain('class="sx-fp-warn-item"');
   });
 
-  it("renders an error panel for the error plan (spec §7 case 4)", () => {
+  it("renders only the structural failures in the error panel (spec §7 case 4)", () => {
     const svg = renderFloorplan(`floorplan "Errors"
 room a "A" at 0,0 size 4x3
 room b "B" at 2,1 size 3x3
@@ -93,7 +93,7 @@ room c "C" at 10,0 size 3x3
 door between a c at 50%
 furniture sofa in c at 2.5,0.5`);
     expect(svg).toContain("sx-fp-error");
-    expect(count(svg, 'class="sx-fp-error-line"')).toBe(3);
+    expect(count(svg, 'class="sx-fp-error-line"')).toBe(2);
     expect(svg).toContain("overlap");
   });
 

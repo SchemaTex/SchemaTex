@@ -234,7 +234,7 @@ Every error names the offending ids and a fix direction:
 1. **Room overlap** — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`.
 2. **Door/opening between non-adjacent rooms** — `door between "kitchen" and "bed2": rooms share no wall (gap 2.0 m on x-axis)`.
 3. **Furniture collision** — Oriented-box (SAT) checks use each symbol's declared clearance envelope. Repeated items from one array produce one quantified `array-pitch-too-small` diagnostic instead of N² pair messages. Cross-array and explicit-item collisions remain pair diagnostics. **Underlay exemption:** decorative floor coverings (`rug`, `dance-floor`) and work surfaces (`counter`, `island`) may carry furniture; use a `keep-clear` zone when overlap is forbidden.
-4. **Furniture outside room interior** — clamp is wrong (hides intent); error with the overshoot amount.
+4. **Furniture outside room interior** — clamp is wrong (hides intent); preserve the authored geometry and warn with the overshoot amount.
 5. **Opening wider than wall segment** — clamp + warning.
 6. **Unknown furniture type** — list valid types (existing house pattern).
 7. **Duplicate floor level** — error and name the repeated level.
@@ -253,7 +253,7 @@ Layout emits stable typed diagnostics (`code`, `phase`, `line`, `floor`, `entity
 1. **Two-bedroom apartment** (residential cluster): 7 rooms via relative placement, 7 doors (incl. `between` + hinge/swing variants), 7 windows, 18 furniture items, ft′in″ off (`unit m`). Asserts: shared-wall merge produces no double-thickness bands; area sum = 68.76 m² ±0.1 (the title's "68 m²" is the rounded marketing number); all door arcs inside their owning rooms.
 2. **27-desk classroom** (`unit ft`): `grid … rows 5 cols 6 count 27` truncation; whiteboard run on north wall; dims render as `32'`/`26'`. Asserts: exactly 27 desk-chair groups; truncation drops the *last row's tail*, not random cells.
 3. **120-guest wedding reception**: 15 × `round-table-8` via two grids + one row, `dance-floor`, `head-table`, two south doors. Asserts: 15×8 = 120 chairs total; **no furniture-collision warnings** at the documented spacing; collision warning *does* fire when the grid area is squeezed below the chair-ring envelope spacing (negative test).
-4. **Error plan**: overlapping rooms + door between non-adjacent rooms + desk placed outside room → exactly 3 errors, each naming both ids and a quantified overlap/gap.
+4. **Mixed validation plan**: overlapping rooms + door between non-adjacent rooms + desk placed outside room → exactly 2 structural errors and 1 furniture warning, each with a quantified overlap/gap/overshoot.
 5. **Minimal smoke**: one room, one door, one window, no furniture — parses, renders, `<desc>` reports "1 room, 12.0 m²".
 6. **Two-storey villa**: two labelled floor plates with a shared stair id. Asserts: shared scale, inferred `UP`/`DN`, 1.5 m plate gap, cross-floor reference error, duplicate-level error, alignment warning above 0.1 m, and no warning at exactly 0.1 m. A separate regression asserts a level-0 single-floor SVG is byte-identical to the pre-1.0.2 output.
 

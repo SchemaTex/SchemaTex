@@ -41,6 +41,7 @@ const EQUIP_TYPES = new Set<PidEquipType>([
   "compressor", "blower",
   "reactor_cstr", "reactor_pfr",
   "filter", "cyclone", "flare", "cooling_tower",
+  "boiler", "burner", "generator",
   "valve_gate", "valve_ball", "valve_globe", "valve_butterfly",
   "valve_check", "valve_control", "valve_psv",
 ]);

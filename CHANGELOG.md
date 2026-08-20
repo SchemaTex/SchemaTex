@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.10] — 2026-08-19
+
+### Fixed — escaping, vocabulary, and fail-soft floor plans
+
+- **Every P&ID SVG is valid XML again.** Its accessibility description wrote the literal `P&ID` through the low-level element builder, bypassing XML escaping, so the raw ampersand made every export malformed and `<img>` embeds failed as broken gallery cards. P&ID and State descriptions now follow the same escaped path as their adjacent titles; the audit also found and fixed unescaped UML generic member types such as `Map<String,List<int>>`. A strict XML-parser test now renders all 219 bundled examples across every engine, pinning the entire SVG catalog rather than this one string.
+- **Production electronics vocabulary resolves to electrically honest symbols.** Circuit's positional and netlist parsers maintained separate alias tables, so familiar names could work in one mode and throw `Unknown component type` in the other. Both modes now share one resolver for `mcu`, `pushbutton`, `ntc`, `regulator`, `ldo_3v3`, `dc_supply`, `selector`, `switch_spst_nc`, `pullup`, and `dc_motor`; real IEEE 315 / IEC 60617-style symbols cover combined NO and SPDT relays, a maintained NC switch, fan, photovoltaic cell, and thermionic triode. Sixteen realistic netlist fixtures pin both the accepted production spellings and the relay pin mappings.
+- **Boilers, burners, and generators no longer degrade into unknown P&ID placeholders.** The equipment catalog stopped at general chemical-process vessels and rotating machinery, leaving common utility and fired-equipment names outside the parser even though they belong on plant P&IDs. Each now has explicit ports, measured geometry, and a recognizable ISO/ISA-style equipment glyph; a fired boiler train fixture proves the three symbols route together without warnings.
+- **Furniture overshoot is advisory instead of diagram-fatal.** Floorplan validation treated the room boundary as a hard containment constraint, which erased the whole drawing for survey noise as small as 0.05 m and for intentional edge-straddling equipment such as loading docks. Out-of-bounds furniture now renders at the exact authored coordinates without clamping or repositioning and returns the unchanged quantified message as a `floorplan/item-outside-room` warning. Fixtures replay the reported sink, 2.8 m loading-dock, and ten-seat round-table cases, while a fully contained plan remains warning-free.
+
+---
+
 ## [1.0.9] — 2026-08-10
 
 ### Fixed — wall-mounted fixtures are no longer buried by the wall

@@ -213,6 +213,26 @@ const battery: SymbolDef = {
     ].join(""),
 };
 
+// IEC 60617 photovoltaic cell: cell plates with incident-light arrows.
+const solar_cell: SymbolDef = {
+  length: 36,
+  netlistPins: ["plus", "minus"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 36, y: 0 },
+    minus: { x: 0, y: 0 },
+    plus: { x: 36, y: 0 },
+  },
+  svg: () => [
+    lineWire(0, 0, 10, 0),
+    `<line x1="10" y1="-10" x2="10" y2="10" ${BODY}/>` ,
+    `<line x1="15" y1="-7" x2="15" y2="7" ${BODY}/>` ,
+    lineWire(15, 0, 36, 0),
+    `<path d="M 25,-20 L 18,-13 M 18,-17 L 18,-13 L 22,-13" fill="none" ${BODY}/>` ,
+    `<path d="M 34,-20 L 27,-13 M 27,-17 L 27,-13 L 31,-13" fill="none" ${BODY}/>` ,
+  ].join(""),
+};
+
 const ground: SymbolDef = {
   length: 20,
   anchors: { start: { x: 0, y: 0 }, end: { x: 20, y: 0 } },
@@ -369,6 +389,31 @@ const pnp: SymbolDef = {
       // PNP arrow (inward on emitter → toward base line)
       `<polygon points="14,-6 20,-4 18,-10" ${FILL}/>`,
     ].join(""),
+};
+
+// IEEE 315 thermionic triode: plate, control grid, and cathode in an envelope.
+const triode: SymbolDef = {
+  length: 48,
+  netlistPins: ["plate", "grid", "cathode"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 48, y: -15 },
+    plate: { x: 48, y: -15 },
+    p: { x: 48, y: -15 },
+    grid: { x: 0, y: 0 },
+    g: { x: 0, y: 0 },
+    cathode: { x: 48, y: 15 },
+    k: { x: 48, y: 15 },
+  },
+  svg: () => [
+    `<circle cx="24" cy="0" r="18" fill="white" ${BODY}/>` ,
+    lineWire(0, 0, 13, 0),
+    `<line x1="18" y1="-11" x2="18" y2="11" stroke-dasharray="2,3" ${BODY}/>` ,
+    `<line x1="27" y1="-10" x2="27" y2="10" ${BODY}/>` ,
+    `<line x1="34" y1="-9" x2="34" y2="9" ${BODY}/>` ,
+    lineWire(34, -9, 48, -15),
+    lineWire(27, 10, 48, 15),
+  ].join(""),
 };
 
 // ─── MOSFET ───────────────────────────────────────────────────
@@ -565,6 +610,21 @@ const voltmeter: SymbolDef = { length: 40, anchors: { start: { x: 0, y: 0 }, end
 const wattmeter: SymbolDef = { length: 40, anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } }, svg: meterSvg("W") };
 const motor: SymbolDef = { length: 40, anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } }, svg: meterSvg("M") };
 
+// IEC 60617 rotating-machine fan: circle with a three-blade impeller.
+const fan: SymbolDef = {
+  length: 44,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 44, y: 0 } },
+  svg: () => [
+    lineWire(0, 0, 7, 0),
+    `<circle cx="22" cy="0" r="15" fill="white" ${BODY}/>` ,
+    `<path d="M 22,0 C 18,-3 16,-10 20,-13 C 24,-10 25,-4 22,0 Z" ${FILL}/>` ,
+    `<path d="M 22,0 C 27,-1 33,2 33,7 C 28,9 23,6 22,0 Z" ${FILL}/>` ,
+    `<path d="M 22,0 C 21,5 16,10 12,7 C 12,2 16,-1 22,0 Z" ${FILL}/>` ,
+    `<circle cx="22" cy="0" r="2" ${FILL}/>` ,
+    lineWire(37, 0, 44, 0),
+  ].join(""),
+};
+
 // ─── Electromechanical / Output devices ───────────────────────
 
 // Lamp / bulb — circle with X through it
@@ -718,6 +778,21 @@ const switch_spdt: SymbolDef = {
       `<circle cx="42" cy="12" r="2" ${FILL}/>`,
       lineWire(42, 12, 50, 12),
     ].join(""),
+};
+
+// Maintained SPST contact shown in its normal, closed state (IEC 60617/IEEE 315).
+const switch_nc: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () => [
+    lineWire(0, 0, 10, 0),
+    `<circle cx="10" cy="0" r="2" ${FILL}/>` ,
+    `<line x1="10" y1="0" x2="30" y2="0" ${BODY}/>` ,
+    `<circle cx="30" cy="0" r="2" ${FILL}/>` ,
+    `<line x1="20" y1="-12" x2="20" y2="-3" ${BODY}/>` ,
+    `<line x1="14" y1="-12" x2="26" y2="-12" ${BODY}/>` ,
+    lineWire(30, 0, 40, 0),
+  ].join(""),
 };
 
 const switch_spdt_center_off: SymbolDef = {
@@ -1254,6 +1329,61 @@ const relay_coil: SymbolDef = {
       `<line x1="8" y1="-10" x2="32" y2="10" ${BODY}/>`,
       lineWire(32, 0, 40, 0),
     ].join(""),
+};
+
+// IEEE 315 combined relay: coil and NO contact joined by a mechanical link.
+const relay: SymbolDef = {
+  length: 68,
+  netlistPins: ["coil_a", "coil_b", "common", "no"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 68, y: 10 },
+    coil_a: { x: 0, y: -14 },
+    coil_b: { x: 0, y: 14 },
+    common: { x: 68, y: -10 },
+    no: { x: 68, y: 10 },
+  },
+  svg: () => [
+    lineWire(0, -14, 8, -14),
+    lineWire(0, 14, 8, 14),
+    `<rect x="8" y="-20" width="22" height="40" fill="white" ${BODY}/>` ,
+    `<path d="M 8,-20 L 30,20 M 8,0 L 20,20" fill="none" ${BODY}/>` ,
+    `<line x1="34" y1="0" x2="48" y2="0" stroke-dasharray="3,3" ${BODY}/>` ,
+    `<circle cx="50" cy="-10" r="2" ${FILL}/>` ,
+    `<circle cx="50" cy="10" r="2" ${FILL}/>` ,
+    `<line x1="50" y1="-10" x2="63" y2="5" ${BODY}/>` ,
+    lineWire(50, -10, 68, -10),
+    lineWire(50, 10, 68, 10),
+  ].join(""),
+};
+
+// IEEE 315 combined SPDT relay: coil with mechanically linked changeover contact.
+const relay_spdt: SymbolDef = {
+  length: 72,
+  netlistPins: ["coil_a", "coil_b", "common", "nc", "no"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 72, y: 0 },
+    coil_a: { x: 0, y: -16 },
+    coil_b: { x: 0, y: 16 },
+    common: { x: 72, y: 0 },
+    nc: { x: 72, y: -16 },
+    no: { x: 72, y: 16 },
+  },
+  svg: () => [
+    lineWire(0, -16, 8, -16),
+    lineWire(0, 16, 8, 16),
+    `<rect x="8" y="-22" width="22" height="44" fill="white" ${BODY}/>` ,
+    `<path d="M 8,-22 L 30,22 M 8,0 L 19,22" fill="none" ${BODY}/>` ,
+    `<line x1="34" y1="0" x2="46" y2="0" stroke-dasharray="3,3" ${BODY}/>` ,
+    `<circle cx="50" cy="0" r="2" ${FILL}/>` ,
+    `<circle cx="62" cy="-16" r="2" ${FILL}/>` ,
+    `<circle cx="62" cy="16" r="2" ${FILL}/>` ,
+    `<line x1="50" y1="0" x2="60" y2="-14" ${BODY}/>` ,
+    lineWire(50, 0, 72, 0),
+    lineWire(62, -16, 72, -16),
+    lineWire(62, 16, 72, 16),
+  ].join(""),
 };
 
 // Relay contact normally-open — same as a switch contact but visually
@@ -1875,6 +2005,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   current_source,
   ac_source,
   battery,
+  solar_cell,
   ground,
   gnd_signal,
   vcc,
@@ -1885,6 +2016,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   photodiode,
   npn,
   pnp,
+  triode,
   nmos,
   pmos,
   jfet_n,
@@ -1892,11 +2024,13 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   opamp,
   comparator,
   switch_spst,
+  switch_nc,
   push_no,
   ammeter,
   voltmeter,
   wattmeter,
   motor,
+  fan,
   lamp,
   speaker,
   microphone,
@@ -1930,6 +2064,8 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   voltage_regulator,
   // Industrial control / power electrical (IEC 60617)
   relay_coil,
+  relay,
+  relay_spdt,
   relay_no,
   relay_nc,
   contactor,

@@ -383,7 +383,7 @@ function renderMemberRow(
   const nameAt = body.indexOf(m.name);
   const typeAt = m.type ? body.indexOf(m.type, Math.max(0, nameAt + m.name.length)) : -1;
   const spans: string[] = [];
-  if (glyph) spans.push(el("tspan", { class: "sx-umlclass-visibility" }, `${glyph} `));
+  if (glyph) spans.push(el("tspan", { class: "sx-umlclass-visibility" }, escapeXmlText(`${glyph} `)));
 
   let cursor = 0;
   if (nameAt >= 0) {
@@ -392,7 +392,7 @@ function renderMemberRow(
     spans.push(el("tspan", {
       "data-sx-key": scene && m.nameSourceRange ? nameKey : undefined,
       "data-sx-role": scene && m.nameSourceRange ? "label" : undefined,
-    }, m.name));
+    }, escapeXmlText(m.name)));
     scene?.push({
       key: nameKey, kind: "label", label: m.name, sourceRange: m.nameSourceRange,
       editable: { label: m.nameSourceRange !== undefined, position: "none" },
@@ -405,7 +405,7 @@ function renderMemberRow(
     spans.push(el("tspan", {
       "data-sx-key": scene && m.typeSourceRange ? typeKey : undefined,
       "data-sx-role": scene && m.typeSourceRange ? "label" : undefined,
-    }, m.type));
+    }, escapeXmlText(m.type)));
     scene?.push({
       key: typeKey, kind: "label", label: m.type, sourceRange: m.typeSourceRange,
       editable: { label: m.typeSourceRange !== undefined, position: "none" },
