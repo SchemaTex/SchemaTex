@@ -34,6 +34,7 @@ ISO 3864 visual grammar is mandatory: a solid semantic-colour plate with a knock
 |---|---|---|
 | Location | `here` | ISO 23601 Standort / NFPA YOU ARE HERE; mandatory |
 | Egress | `exit` | ISO 7010 E001 left / E002 right |
+| Egress | `exit-direction` | E001/E002 composed with the ISO 3864-3 supplementary direction arrow |
 | Egress | `exit-final` | E001/E002 plus final-discharge doorway |
 | Egress | `assembly` | E007 assembly point |
 | Egress | `refuge` | NFPA 170 area of refuge |
@@ -61,13 +62,14 @@ ISO 3864 visual grammar is mandatory: a solid semantic-colour plate with a knock
 | Prohibition | `no-elevator` | NFPA 170 Chapter 11; auto-added by NFPA/UAE profiles |
 | Notification | `alarm-sounder` | alarm sounder/strobe |
 
-ISO 7010 **E024 is temporary refuge**; it is not a sliding-door sign. That earlier secondary-source mapping was rejected. The current sliding-door identities are E033/E034.
+ISO 7010 **E024 is temporary refuge**; it is not a sliding-door sign. That earlier secondary-source mapping was rejected. The current sliding-door identities are E033/E034. The direction arrow is likewise not assigned an invented E-code: `exit-direction` presents E001/E002 together with the ISO 3864-3 supplementary arrow because an arrow is not a complete safety message by itself.
 
-### 1.2 Forty renderable catalogue cells
+### 1.2 Forty-five renderable catalogue cells
 
-The 40-cell visual QA catalogue consists of the 28 kinds above, two structural marks (`fire-door`, `smoke-door`), and ten profile/direction variants:
+The 45-cell visual QA catalogue consists of the 29 kinds above, two structural marks (`fire-door`, `smoke-door`), and fourteen profile/direction variants:
 
 - ISO and NFPA left/right `exit`;
+- ISO and NFPA left/right `exit-direction`;
 - ISO and NFPA left/right `exit-final`;
 - NFPA and UAE `here`.
 
@@ -120,6 +122,8 @@ show       ::= "show" "furniture"
 
 `safety` is optional, so `exit-final east in lobby at 5.8,2 side east` and the long form are equivalent. Coordinates inside rooms are room-relative; `outside at` uses plan coordinates and grows the plate bounds. A trailing label containing ` / ` carries English and Arabic halves; Arabic renders as a separate RTL run.
 
+Everyday aliases normalize before catalogue lookup: `fire-extinguisher`→`extinguisher`, `assembly-point`/`muster-point`→`assembly`, `emergency-exit`→`exit-final`, `fire-alarm`→`alarm-sounder`, `escape-route`→`exit`, and `you-are-here`→`here`. Other unknown kinds remain fatal: a safety pictogram is semantic, and substituting an unrelated sign would be unsafe.
+
 Canonical source:
 
 ```dsl
@@ -136,9 +140,12 @@ door between corridor stair at 50% width 1.1
 here in office at 3.5,2.5 "YOU ARE HERE"
 exit-final east in stair at 2.9,1 side east "EXIT"
 extinguisher f1 in corridor at 0.5,1 class "ABC"
+assembly-point muster outside at 8,8
 route primary here -> office -> corridor -> stair -> east
 legend auto
 ```
+
+Common-name aliases normalize before the AST is built: `emergency-exit`/`fire-exit` → `exit`; `exit-arrow`/`direction-arrow` → `exit-direction`; `assembly-point`/`muster-point` → `assembly`; `fire-extinguisher` → `extinguisher`; `fire-alarm`/`alarm-call-point` → `call-point`; `fire-hose-reel` → `hose-reel`; `defibrillator` → `aed`; and `you-are-here` → `here`. Both the short form and `safety <kind> …` accept aliases, while the AST, SVG `data-safety`, and legend use canonical names.
 
 ---
 

@@ -580,6 +580,37 @@ const switch_spst: SymbolDef = {
     ].join(""),
 };
 
+// IEC 60617 installation-style socket: the open semicircle distinguishes a
+// receptacle from a source while retaining explicit line/neutral terminals.
+const mains_socket: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<path d="M 10,-10 A 10,10 0 0 1 10,10" fill="white" ${BODY}/>` ,
+      `<line x1="10" y1="0" x2="30" y2="0" ${BODY}/>` ,
+      `<line x1="30" y1="-8" x2="30" y2="8" ${BODY}/>` ,
+      lineWire(30, 0, 40, 0),
+    ].join(""),
+};
+
+// IEC-style proximity detector: a labeled sensing block with the conventional
+// non-contact field arcs. It remains electrically honest as a two-terminal
+// catalogue symbol; multi-wire devices should use the generic labeled box.
+const proximity_sensor: SymbolDef = {
+  length: 54,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 54, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 8, 0),
+      `<rect x="8" y="-14" width="32" height="28" rx="2" fill="white" ${BODY}/>` ,
+      `<path d="M 30,-7 Q 36,0 30,7 M 34,-10 Q 43,0 34,10" fill="none" ${BODY}/>` ,
+      `<text x="18" y="4" text-anchor="middle" class="schematex-circuit-pol">PROX</text>`,
+      lineWire(40, 0, 54, 0),
+    ].join(""),
+};
+
 const push_no: SymbolDef = {
   length: 40,
   anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
@@ -1174,9 +1205,19 @@ function numAttr(attrs: Record<string, string> | undefined, key: string, fallbac
   return Number.isFinite(v) && v > 0 ? v : fallback;
 }
 
-export function effectiveSymbolDef(type: string, attrs?: Record<string, string>): SymbolDef | undefined {
+export function effectiveSymbolDef(type: string, attrs?: Record<string, string>): SymbolDef {
   const sym = getSymbol(type);
-  if (!sym) return undefined;
+  if (!sym) {
+    const fallbackAttrs = {
+      ...attrs,
+      ic_label: attrs?.ic_label ?? type,
+    };
+    return {
+      ...generic_ic,
+      anchors: icPinAnchors(getGenericIcPinSides(fallbackAttrs)),
+      svg: (label, value) => generic_ic.svg(label, value, fallbackAttrs),
+    };
+  }
   if (type === "generic_ic") {
     return { ...sym, anchors: icPinAnchors(getGenericIcPinSides(attrs)) };
   }
@@ -2024,6 +2065,8 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   opamp,
   comparator,
   switch_spst,
+  mains_socket,
+  proximity_sensor,
   switch_nc,
   push_no,
   ammeter,

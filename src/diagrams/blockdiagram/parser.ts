@@ -3,6 +3,7 @@ import type {
   BlockEdge,
   BlockNode,
   BlockRole,
+  SchematexDiagnostic,
   SummingJunction,
 } from "../../core/types";
 import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
@@ -55,6 +56,8 @@ const ROLE_VALUES = new Set<BlockRole>([
   "actuator",
   "reference",
   "disturbance",
+  "input",
+  "output",
   "generic",
 ]);
 
@@ -112,7 +115,8 @@ function parseAttrs(
   source: string,
   context: AttrContext,
   line: number,
-  statement: string
+  statement: string,
+  warnings: SchematexDiagnostic[]
 ): ParsedAttrs {
   const result: ParsedAttrs = {};
   const parts = splitAttrs(source).map((part) => part.trim()).filter(Boolean);
@@ -158,13 +162,16 @@ function parseAttrs(
 
     if (context === "block" && key === "role") {
       if (!ROLE_VALUES.has(value as BlockRole)) {
-        throw parserError(
-          `unknown block role "${value}"`,
+        warnings.push({
+          severity: "warning",
+          code: "blockdiagram/unknown-role",
+          message: `unknown block role "${value}"; rendered with the neutral generic role`,
+          token: value,
           line,
-          statement,
-          "BLOCK_INVALID_ATTRIBUTE_VALUE",
-          `Use one of: ${[...ROLE_VALUES].join(", ")}.`
-        );
+          fatal: false,
+        });
+        result.role = "generic";
+        continue;
       }
       result.role = value as BlockRole;
       continue;
@@ -193,6 +200,17 @@ function parseAttrs(
         );
       }
       result.label = value;
+      continue;
+    }
+    if (context === "connection") {
+      warnings.push({
+        severity: "warning",
+        code: "blockdiagram/unknown-connection-attribute",
+        message: `unknown connection attribute "${key}"; ignored`,
+        token: match[1]!,
+        line,
+        fatal: false,
+      });
       continue;
     }
     throw parserError(
@@ -289,6 +307,7 @@ export function parseBlockDiagram(text: string): BlockAST {
   const blocks: BlockNode[] = [];
   const sums: SummingJunction[] = [];
   const connections: BlockEdge[] = [];
+  const warnings: SchematexDiagnostic[] = [];
   const signals = new Map<string, SignalDecl>();
 
   const declared = (id: string): boolean =>
@@ -338,7 +357,7 @@ export function parseBlockDiagram(text: string): BlockAST {
       const id = blockMatch[1]!;
       assertFresh(id, lineNo, line);
       const attrs = blockMatch[3]
-        ? parseAttrs(blockMatch[3], "block", lineNo, line)
+        ? parseAttrs(blockMatch[3], "block", lineNo, line, warnings)
         : {};
       const node: BlockNode = {
         id,
@@ -371,7 +390,7 @@ export function parseBlockDiagram(text: string): BlockAST {
       const id = signalMatch[1]!;
       assertFresh(id, lineNo, line);
       const attrs = signalMatch[3]
-        ? parseAttrs(signalMatch[3], "signal", lineNo, line)
+        ? parseAttrs(signalMatch[3], "signal", lineNo, line, warnings)
         : {};
       signals.set(id, {
         id,
@@ -414,7 +433,7 @@ export function parseBlockDiagram(text: string): BlockAST {
           const inner = body.slice(bracketStart + 1, -1).trim();
           if (!isIdentifier(inner)) {
             body = body.slice(0, bracketStart).trim();
-            tailAttrs = parseAttrs(inner, "connection", lineNo, line);
+            tailAttrs = parseAttrs(inner, "connection", lineNo, line, warnings);
           }
         }
       }
@@ -554,5 +573,6 @@ export function parseBlockDiagram(text: string): BlockAST {
     blocks,
     sums,
     connections,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

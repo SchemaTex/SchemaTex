@@ -235,6 +235,8 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 
 - `block("…")`、`signal("…")` 和 edge label 同时支持 escaped `\n` 与引号内部的 physical newline。
 - 未知 non-comment statement 返回 `BLOCK_UNKNOWN_STATEMENT`；不会被静默丢弃后继续标成 `valid`。
+- `input` 与 `output` 是一等 visual roles。其他未知 `role:` 值退化为 `generic`，并通过公共 diagnostics channel 发出含原始 `token` 与 `line` 的 `blockdiagram/unknown-role` warning。
+- connection 上未知的 routing/styling attribute 被忽略并发出 `blockdiagram/unknown-connection-attribute` warning；attribute 语法错误、未知 statement 和未声明 endpoint 仍是 fatal。
 - `A -> B` 的 bare endpoint 必须先声明；否则返回 `BLOCK_UNDECLARED_ENDPOINT`。只有显式 `[A] -> [B]` shorthand 可以有意创建 id-as-label block。
 - Layout 为 measured layered placement：同层 peer 有独立 row，fan-out/fan-in 使用分散 ports 和 routing channels，edge label geometry 在布线时预留。
 - `findBlockDiagramCollisions()` 暴露 node-node、label-label 和 label-node 的结构化检查；`getBlockDiagramGenerationCapabilities()` 暴露同一 generation contract。
@@ -255,7 +257,8 @@ block_attr    = "name:" quoted_string      # descriptive name
               | "role:" role_type          # visual color coding
               | "width:" INT
               | "height:" INT
-role_type     = "plant" | "controller" | "sensor" | "actuator" | "filter"
+role_type     = "plant" | "controller" | "sensor" | "actuator"
+              | "reference" | "disturbance" | "input" | "output" | "generic"
 
 signal_def    = IDENTIFIER "=" "signal" "(" quoted_string ")" signal_attrs? NEWLINE
 signal_attrs  = "[" "discrete" "]"        # dashed line

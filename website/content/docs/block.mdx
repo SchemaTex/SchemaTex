@@ -75,7 +75,7 @@ A block represents any functional element — controller, plant, filter, actuato
 
 | Attribute | Values | Effect |
 |---|---|---|
-| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic` | Visual color coding; `generic` is the default |
+| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `input`, `output`, `generic` | Visual color coding; `generic` is the default |
 | `route: above` | `above`, `below` | Routing hint for feedback and feedforward blocks |
 
 **ID rules.** Must start with a letter or underscore, followed by letters, digits, or underscores: `[A-Za-z_]\w*`.
@@ -221,7 +221,8 @@ yk -> err`} />
 | `err = sum(r, -ym)` (no `+`) | `r` treated as `+r` — works, but ambiguous | Write `sum(+r, -ym)` for clarity |
 | `ctrl -> plant, plant -> out` (comma on one line) | `,` is not a separator — parse fails | One connection per line or use chain: `ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` not valid on signal; use it on connections | Drop `label:` from signal declaration |
-| `role: filter` | Parse error — unknown role | Use `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, or `generic` |
+| Unknown `role:` value | Renders with neutral `generic` styling and a structured `blockdiagram/unknown-role` warning | Use a first-class role when one is semantically accurate |
+| Unknown connection attribute | Ignored with a structured `blockdiagram/unknown-connection-attribute` warning | Check the supported label and `discrete` attributes |
 | `A -> B [discrete, label: "e"]` — label first fails | Order of attrs inside `[…]` doesn't matter, but bare `"text"` shorthand only works when it's the only item | Use `[label: "e", discrete]` |
 
 ---
@@ -238,6 +239,7 @@ block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]
 block-attrs    = block-attr ("," block-attr)*
 block-attr     = "role:" role | "route:" ("above" | "below")
 role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "input" | "output" | "generic"
                | "reference" | "disturbance" | "generic"
 
 sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE

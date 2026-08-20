@@ -64,6 +64,26 @@ describe("evacuation examples — gallery is compliance-checked", () => {
     expect(featured).toEqual(["evacuation-hotel-floor.mdx"]);
   });
 
+  it("ships a complete office plan with two routes, exits, extinguishers, assembly, and legend", () => {
+    const file = "evacuation-office-floor.mdx";
+    const dsl = extractDsl(readFileSync(join(EXAMPLES_DIR, file), "utf8"));
+    const ast = parseFloorplan(dsl);
+    const lay = layoutFloorplan(ast);
+    expect(ast.routes.map(({ kind }) => kind)).toEqual(["primary", "secondary"]);
+    expect(ast.safety.filter(({ kind }) => kind === "exit-final")).toHaveLength(2);
+    expect(ast.safety.filter(({ kind }) => kind === "extinguisher")).toHaveLength(2);
+    expect(ast.safety.some(({ kind }) => kind === "assembly")).toBe(true);
+    expect(lay.evacuation?.legend.items.map(({ key }) => key).sort()).toEqual(
+      expect.arrayContaining([
+        "assembly",
+        "exit-final",
+        "extinguisher",
+        "route.primary",
+        "route.secondary",
+      ])
+    );
+  });
+
   for (const file of evacuationFiles) {
     it(`${file}: no errors and no collision warnings`, () => {
       const dsl = extractDsl(readFileSync(join(EXAMPLES_DIR, file), "utf8"));

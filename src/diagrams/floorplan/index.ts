@@ -85,6 +85,12 @@ export {
   resolveSafetySymbol,
 } from "./safety-symbols";
 export {
+  SAFETY_ALIASES,
+  SAFETY_KINDS,
+  SAFETY_NAMES,
+  resolveSafetyKind,
+} from "./types";
+export {
   EVACUATION_PROFILES,
   EVACUATION_SHEETS_MM,
   computeEvacuationScale,

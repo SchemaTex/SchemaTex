@@ -80,6 +80,31 @@ safety extnguisher f1 in lobby at 1,1`)
       /unknown safety kind "extnguisher".*extinguisher.*ISO 7010.*NFPA 170/s
     );
   });
+
+  it.each([
+    ["emergency-exit", "exit"],
+    ["fire-exit", "exit"],
+    ["exit-arrow", "exit-direction"],
+    ["assembly-point", "assembly"],
+    ["muster-point", "assembly"],
+    ["fire-extinguisher", "extinguisher"],
+    ["fire-alarm", "call-point"],
+    ["fire-hose-reel", "hose-reel"],
+    ["you-are-here", "here"],
+    ["defibrillator", "aed"],
+  ])("normalizes the common safety alias %s to %s", (alias, canonical) => {
+    const ast = parseFloorplan(`evacuation
+room room at 0,0 size 4x4
+${alias} marker in room at 1,1`);
+    expect(ast.safety[0]).toMatchObject({ kind: canonical, id: "marker" });
+  });
+
+  it("accepts aliases in the explicit safety form", () => {
+    const ast = parseFloorplan(`evacuation
+room room at 0,0 size 4x4
+safety alarm-call-point alarm in room at 1,1`);
+    expect(ast.safety[0]).toMatchObject({ kind: "call-point", id: "alarm" });
+  });
 });
 
 describe("evacuation parser — routes, doors, and mandatory legend", () => {

@@ -118,6 +118,10 @@ export function lintCircuit(text: string): SchematexDiagnostic[] {
 
   const out: SchematexDiagnostic[] = [];
 
+  for (const warning of ast.warnings ?? []) {
+    out.push(warning);
+  }
+
   // ── Duplicate component id (both modes) ───────────────────────────────────
   // Auto-synthesized ids (auto ground, positional auto-ids) are unique by
   // construction; user-authored collisions silently overwrite a pinMap entry.

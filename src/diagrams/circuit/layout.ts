@@ -3,7 +3,7 @@ import type {
   CircuitComponent,
   CircuitDirection,
 } from "../../core/types";
-import { effectiveSymbolDef, getSymbol, type PinAnchor } from "./symbols";
+import { effectiveSymbolDef, type PinAnchor } from "./symbols";
 
 export interface LaidOutComponent {
   component: CircuitComponent;
@@ -76,7 +76,7 @@ export function layoutCircuit(ast: CircuitAST): CircuitLayoutResult {
       if (resolved) startPt = resolved;
     }
 
-    const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
+    const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
     const rot = rotationDeg(comp.direction);
 
     if (comp.componentType === "wire") {
@@ -125,24 +125,6 @@ export function layoutCircuit(ast: CircuitAST): CircuitLayoutResult {
       items.push(laid);
       byId.set(comp.id, laid);
       // don't advance cursor
-      continue;
-    }
-
-    if (!sym) {
-      // Unknown symbol — render as placeholder square, advance 30
-      const endOffset = rotatePoint({ x: 30, y: 0 }, rot);
-      const end = { x: startPt.x + endOffset.x, y: startPt.y + endOffset.y };
-      const laid: LaidOutComponent = {
-        component: comp,
-        x: startPt.x,
-        y: startPt.y,
-        rotation: rot,
-        length: 30,
-        anchors: { start: startPt, end },
-      };
-      items.push(laid);
-      byId.set(comp.id, laid);
-      cursor = end;
       continue;
     }
 

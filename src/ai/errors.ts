@@ -10,6 +10,8 @@ export interface SchematexValidationError {
   column?: number;
   /** Source snippet from the offending line, if the parser captured it. */
   source?: string;
+  /** Exact unrecognised value when a warning reports a soft fallback. */
+  token?: string;
   /** Human-readable error message. */
   message: string;
   /** Optional remediation hint. */
@@ -34,6 +36,7 @@ export function extractError(err: unknown): SchematexValidationError {
     line: diagnostic.line,
     column: diagnostic.column,
     source: diagnostic.source,
+    token: diagnostic.token,
     message: diagnostic.message,
     hint: diagnostic.hint,
   };

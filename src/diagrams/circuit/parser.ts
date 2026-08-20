@@ -4,6 +4,7 @@ import type {
   CircuitComponentType,
   CircuitDirection,
   CircuitNet,
+  SchematexDiagnostic,
 } from "../../core/types";
 import { parseNetlist } from "./netlist";
 import { getSymbol } from "./symbols";
@@ -148,7 +149,7 @@ export function parseCircuit(text: string): CircuitAST {
       }
     }
     const body = rawLines.slice(headerIdx + 1).join("\n");
-    const ast = parseNetlist(body, netlistTitle);
+    const ast = parseNetlist(body, netlistTitle, headerIdx + 1);
     const header = rawLines[headerIdx]!.replace(/\r$/, "");
     const token = findFirstQuotedRange(header);
     if (token) {
@@ -184,11 +185,13 @@ export function parseCircuit(text: string): CircuitAST {
   const netByName = new Map<string, CircuitNet>();
   let autoId = 0;
   let pendingAt: string | undefined;
+  const warnings: SchematexDiagnostic[] = [];
 
   const mkId = (prefix: string) => `${prefix}_${autoId++}`;
 
   let lineStart = 0;
-  for (const rawLine of lines) {
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const rawLine = lines[lineIndex]!;
     const stripped = rawLine.replace(/[#;].*$/, "").trim();
     const absoluteStrippedStart = lineStart + Math.max(0, rawLine.indexOf(stripped));
     lineStart += rawLine.length + 1;
@@ -291,12 +294,21 @@ export function parseCircuit(text: string): CircuitAST {
     if (colonMatch) {
       const id = colonMatch[1];
       const typeStr = colonMatch[2];
-      const norm = normalizeType(typeStr);
-      if (!norm) {
-        throw new CircuitParseError(`Unknown component type: ${typeStr}`);
-      }
+      const normalized = normalizeType(typeStr);
+      const norm = normalized ?? "generic_ic";
       const rest = colonMatch[3] ?? "";
       const parsed = parseAttrs(rest, absoluteStrippedStart + stripped.length - rest.length, locator);
+      if (!normalized) {
+        warnings.push({
+          severity: "warning",
+          code: "circuit/unknown-component-type",
+          message: `unknown component type "${typeStr}"; rendered as a generic labeled box`,
+          token: typeStr,
+          line: lineIndex + 1,
+          fatal: false,
+        });
+        parsed.attrs.ic_label = parsed.label ?? typeStr;
+      }
       const comp: CircuitComponent = {
         id,
         stableId: true,
@@ -364,5 +376,6 @@ export function parseCircuit(text: string): CircuitAST {
     components,
     nets,
     mode: "positional",
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

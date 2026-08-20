@@ -46,6 +46,31 @@ describe("evacuation layout — signs and route geometry", () => {
     });
   });
 
+  it("points chevrons forward through several authored waypoints", () => {
+    const lay = layoutFloorplan(
+      parseFloorplan(`evacuation
+room a at 0,0 size 4x4
+room b right-of a size 4x4
+room c below b size 4x4
+opening between a b at 50% width 1
+opening between b c at 50% width 1
+here in a at 1,2
+exit-final x1 in c at 3,4 side south
+route primary here -> a -> b -> c -> x1`)
+    );
+    const degrees = lay.evacuation?.routes[0]?.chevrons.map(({ deg }) => deg);
+    expect(degrees).toEqual([0, 0, 90, 90, 90]);
+  });
+
+  it("derives a legend from used routes and symbols only", () => {
+    const lay = layoutFloorplan(parseFloorplan(officePlan));
+    const keys = lay.evacuation?.legend.items.map(({ key }) => key);
+    expect(keys).toEqual(["route.primary", "here", "exit-final"]);
+    expect(keys).not.toContain("route.secondary");
+    expect(keys).not.toContain("assembly");
+    expect(keys).not.toContain("extinguisher");
+  });
+
   it("reports a standard-cited error for a non-adjacent route hop", () => {
     const lay = layoutFloorplan(
       parseFloorplan(`evacuation

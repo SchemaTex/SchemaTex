@@ -200,7 +200,7 @@ wires
     }
   });
 
-  it("renders terminal aliases as real terminal blocks and rejects unknown types", () => {
+  it("renders terminal aliases and degrades explicit unknown types to labeled boxes", () => {
     const dsl = `circuit "MCU 3.3V to 24V Level Shifter" netlist
 V_mcu sig_in 0 3.3Vdc type=vsource label="MCU GPIO"
 R1 sig_in base 1k
@@ -219,7 +219,17 @@ T_out collector 0 type=terminal label="Vout (0–24V)"`;
       "circuit",
       'circuit "bad" netlist\nX1 a b type=flux_capacitor'
     );
-    expect(unknown.ok).toBe(false);
+    expect(unknown.ok).toBe(true);
+    if (unknown.ok) {
+      expect(unknown.status).toBe("partial");
+      expect(unknown.warnings).toContainEqual(
+        expect.objectContaining({
+          code: "circuit/unknown-component-type",
+          token: "flux_capacitor",
+          line: 2,
+        })
+      );
+    }
   });
 
   it("renders reserved blockdiagram boundary ids once, as ports", () => {

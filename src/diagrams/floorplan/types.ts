@@ -56,6 +56,7 @@ export type EvacuationSheetOrientation = "landscape" | "portrait";
 export const SAFETY_KINDS = [
   "here",
   "exit",
+  "exit-direction",
   "exit-final",
   "assembly",
   "refuge",
@@ -85,6 +86,47 @@ export const SAFETY_KINDS = [
 ] as const;
 
 export type SafetyKind = (typeof SAFETY_KINDS)[number];
+
+/** Common author vocabulary normalized to the standards-oriented DSL keys. */
+export const SAFETY_ALIASES = {
+  "you-are-here": "here",
+  "location-marker": "here",
+  "emergency-exit": "exit",
+  "fire-exit": "exit",
+  "exit-arrow": "exit-direction",
+  "direction-arrow": "exit-direction",
+  "escape-direction": "exit-direction",
+  "assembly-point": "assembly",
+  "muster-point": "assembly",
+  muster: "assembly",
+  firstaid: "first-aid",
+  "first-aid-kit": "first-aid",
+  defibrillator: "aed",
+  "automated-external-defibrillator": "aed",
+  "fire-extinguisher": "extinguisher",
+  "fire-alarm": "call-point",
+  "fire-alarm-call-point": "call-point",
+  "alarm-call-point": "call-point",
+  "fire-hose-reel": "hose-reel",
+  // "escape-route" is deliberately absent: an escape route is a path, not a
+  // point symbol, and aliasing it onto `exit` would silently answer a
+  // different question than the one asked. It belongs to the `route` statement.
+} as const satisfies Readonly<Record<string, SafetyKind>>;
+
+export type SafetyAlias = keyof typeof SAFETY_ALIASES;
+export type SafetyName = SafetyKind | SafetyAlias;
+
+export const SAFETY_NAMES = [
+  ...SAFETY_KINDS,
+  ...Object.keys(SAFETY_ALIASES),
+] as const;
+
+export function resolveSafetyKind(value: string): SafetyKind | undefined {
+  if ((SAFETY_KINDS as readonly string[]).includes(value)) {
+    return value as SafetyKind;
+  }
+  return SAFETY_ALIASES[value as SafetyAlias];
+}
 
 export type SafetyColour =
   | "safe"

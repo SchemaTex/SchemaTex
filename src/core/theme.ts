@@ -1672,6 +1672,8 @@ const DEFAULT_BLOCK: BlockTokens = {
     filter: "#fef9c3",
     reference: "#ffffff",
     disturbance: "#ffedd5",
+    input: "#e0f2fe",
+    output: "#ecfccb",
     generic: "#ffffff",
   },
 };
@@ -1690,6 +1692,8 @@ const MONOCHROME_BLOCK: BlockTokens = {
     filter: "#ffffff",
     reference: "#ffffff",
     disturbance: "#ffffff",
+    input: "#ffffff",
+    output: "#ffffff",
     generic: "#ffffff",
   },
 };
@@ -1708,6 +1712,8 @@ const DARK_BLOCK: BlockTokens = {
     filter: "#3a3326",
     reference: "#172033",
     disturbance: "#3a2d1a",
+    input: "#15344a",
+    output: "#263b20",
     generic: "#172033",
   },
 };

@@ -49,11 +49,13 @@ Signs use a fixed 24×24 drawing grid and a fixed printed size (8 mm by default)
 
 The coordinate-based vocabulary is:
 
-- Exits and rescue: `exit`, `exit-final`, `assembly`, `refuge`, `shelter`, `escape-ladder`, `rescue-window`, `emergency-door-push`, `emergency-door-slide`
+- Exits and rescue: `exit`, `exit-direction`, `exit-final`, `assembly`, `refuge`, `shelter`, `escape-ladder`, `rescue-window`, `emergency-door-push`, `emergency-door-slide`
 - Medical and emergency help: `first-aid`, `aed`, `stretcher`, `doctor`, `eyewash`, `safety-shower`, `emergency-phone`, `break-glass`
 - Fire equipment: `extinguisher`, `hose-reel`, `fire-ladder`, `fire-equipment`, `call-point`, `fire-phone`, `riser`
 - Plan and prohibition: `here`, `not-an-exit`, `no-elevator`, `alarm-sounder`
 - Door overlays: `fire-door` and `smoke-door` attach to an existing door rather than a coordinate
+
+Common spellings are accepted as aliases: `fire-extinguisher`, `assembly-point`, `emergency-exit`, `fire-alarm`, `escape-route`, `muster-point`, and `you-are-here`. Unknown sign kinds outside this alias set remain fatal because substituting the wrong life-safety pictogram would be misleading.
 
 Use either the short form or explicit `safety`:
 
@@ -63,6 +65,10 @@ safety first-aid aid1 in lobby at 4.8,1.8
 assembly muster outside at 14,10 "Assembly Point A"
 fire-door between corridor stairA rating "EI30"
 ```
+
+Common aliases are accepted in both forms: `emergency-exit`/`fire-exit` → `exit`, `exit-arrow`/`direction-arrow` → `exit-direction`, `assembly-point`/`muster-point` → `assembly`, `fire-extinguisher` → `extinguisher`, `fire-alarm`/`alarm-call-point` → `call-point`, `fire-hose-reel` → `hose-reel`, `defibrillator` → `aed`, and `you-are-here` → `here`.
+
+`exit-direction` combines the E001/E002 running-person sign with the ISO 3864-3 supplementary arrow. The arrow is not assigned a made-up standalone E-code.
 
 Room coordinates are relative to that room. `outside at x,y` is plan-absolute. `side north|south|east|west` snaps a sign onto the wall; `hand left|right` overrides the automatically selected directional variant.
 

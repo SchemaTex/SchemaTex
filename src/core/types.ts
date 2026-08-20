@@ -9,9 +9,22 @@
  *   - Renderer: LayoutResult → SVG string
  */
 
-// Type-only import (erased at runtime — no dependency cycle) for the plugin
-// lint hook's return type.
-import type { SchematexDiagnostic } from "./diagnostics";
+/**
+ * Public machine-readable parser/lint diagnostic. Non-fatal parser recoveries
+ * use this same shape in ASTs and through parseResult/renderResult.
+ */
+export interface SchematexDiagnostic {
+  severity: "error" | "warning";
+  code: string;
+  message: string;
+  line?: number;
+  column?: number;
+  source?: string;
+  hint?: string;
+  /** Exact unrecognised value when this diagnostic reports a soft fallback. */
+  token?: string;
+  fatal: boolean;
+}
 
 // ─── AST Types ───────────────────────────────────────────────
 
@@ -1110,6 +1123,7 @@ export type CircuitComponentType =
   | "solenoid_valve"    // Pneumatic / hydraulic control (EV*) — coil + valve symbol
   | "thermal_overload"  // Motor protection (F2*) — hashed rectangle + heat marks
   | "disconnect_switch" // Service disconnect / isolator (Q1*) — switch with disconnect bracket
+  | "proximity_sensor"  // IEC-style non-contact proximity sensor block
 
   // ── Electromechanical ─────────────────────────────────────────
   | "motor"             // Circle + M + shaft line
@@ -1132,6 +1146,7 @@ export type CircuitComponentType =
   | "dot"               // Junction dot
   | "label"             // Net label (flag or text-only)
   | "port"              // Named port (hollow circle + label)
+  | "mains_socket"      // IEC-style mains socket / receptacle
   | "test_point"        // TP marker (small circle + "TP" label)
   | "no_connect"        // X marker — no electrical connection
   | "antenna";          // Antenna (vertical line + radiating stubs)
@@ -1179,6 +1194,8 @@ export interface CircuitAST {
    * Populated by the netlist parser; consumed by the auto-layout engine.
    */
   pinMap?: Record<string, Record<string, string>>;
+  /** Non-fatal parser recoveries surfaced by the circuit lint hook. */
+  warnings?: SchematexDiagnostic[];
   /**
    * Netlist-only recoverable-input notes. Components given fewer nets than
    * their pin count are padded with floating no-connect nets and rendered
@@ -1199,7 +1216,16 @@ export interface CircuitAST {
 
 // ── Block Diagram ────────────────────────────────────────────
 
-export type BlockRole = "plant" | "controller" | "sensor" | "actuator" | "reference" | "disturbance" | "generic";
+export type BlockRole =
+  | "plant"
+  | "controller"
+  | "sensor"
+  | "actuator"
+  | "reference"
+  | "disturbance"
+  | "input"
+  | "output"
+  | "generic";
 
 export interface BlockNode {
   id: string;
@@ -1237,6 +1263,8 @@ export interface BlockAST {
   blocks: BlockNode[];
   sums: SummingJunction[];
   connections: BlockEdge[];
+  /** Non-fatal parser recoveries surfaced by the blockdiagram lint hook. */
+  warnings?: SchematexDiagnostic[];
   metadata?: Record<string, string>;
 }
 

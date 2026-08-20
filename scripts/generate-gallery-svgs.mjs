@@ -559,11 +559,14 @@ exit-final xA in stairA at 0,1.2 side west "EXIT"
 exit-final xB in stairB at 3,1.2 side east "EXIT"
 call-point cp1 in lobby at 0.8,0.3 side north
 extinguisher f1 in lobby at 2.0,0.3 side north class "ABC"
+extinguisher f2 in stairA at 2.2,0.4 class "ABC"
 first-aid fa1 in lobby at 4.8,1.8
+assembly muster outside at 3,9.5
 fire-door between lobby stairA rating "EI30"
 fire-door between lobby stairB rating "EI30"
 route primary here -> lobby -> stairB -> xB
-route secondary here -> lobby -> stairA -> xA`,
+route secondary here -> lobby -> stairA -> xA
+legend: auto`,
   },
   {
     file: 'examples/evacuation/hotel-floor.svg',

@@ -6,6 +6,9 @@ export type FloorplanCapability =
   | "furniture-layout"
   | "wall-fixtures"
   | "protected-zones"
+  | "fire-safety-signs"
+  | "escape-routes"
+  | "evacuation-legend"
   | "curved-boundaries"
   | "plumbing-runs"
   | "electrical-circuits"
@@ -38,6 +41,18 @@ export const FLOORPLAN_CAPABILITIES: Readonly<Record<FloorplanCapability, Floorp
   "protected-zones": {
     supported: true,
     description: "Measured keep-clear regions that reject furniture obstruction.",
+  },
+  "fire-safety-signs": {
+    supported: true,
+    description: "ISO 7010 / ISO 3864 safety pictograms with common-name aliases in evacuation mode.",
+  },
+  "escape-routes": {
+    supported: true,
+    description: "Multiple authored cross-room routes with forward chevrons and primary/secondary styles in evacuation mode.",
+  },
+  "evacuation-legend": {
+    supported: true,
+    description: "Mandatory legend derived only from routes, signs, and structural marks used in the evacuation drawing.",
   },
   "curved-boundaries": {
     supported: false,

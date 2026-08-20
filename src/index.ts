@@ -116,11 +116,20 @@ export {
   deriveStageOutputList,
   renderStageplotLayout,
   STAGE_SYMBOLS,
+  SAFETY_ALIASES,
+  SAFETY_KINDS,
+  SAFETY_NAMES,
+  SAFETY_SYMBOLS,
+  resolveSafetyKind,
+  resolveSafetySymbol,
   FLOORPLAN_CAPABILITIES,
   getFloorplanCapabilities,
   validateFloorplanIntent,
   type FloorplanCapability,
   type FloorplanCapabilityEntry,
+  type SafetyAlias,
+  type SafetyKind,
+  type SafetyName,
 } from "./diagrams/floorplan";
 export { siteplan } from "./diagrams/siteplan";
 export { playbook } from "./diagrams/playbook";

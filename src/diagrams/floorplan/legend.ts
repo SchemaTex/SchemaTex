@@ -21,6 +21,7 @@ const SECTIONS: LegendSection[] = [
 const LABELS: Readonly<Record<SafetyKind, string>> = {
   here: "You are here",
   exit: "Emergency exit",
+  "exit-direction": "Exit direction",
   "exit-final": "Final exit",
   assembly: "Assembly point",
   refuge: "Area of refuge",
@@ -50,7 +51,12 @@ const LABELS: Readonly<Record<SafetyKind, string>> = {
 };
 
 function sectionFor(kind: SafetyKind): string {
-  if (kind === "exit" || kind === "exit-final" || kind === "assembly") {
+  if (
+    kind === "exit" ||
+    kind === "exit-direction" ||
+    kind === "exit-final" ||
+    kind === "assembly"
+  ) {
     return "exits";
   }
   if (

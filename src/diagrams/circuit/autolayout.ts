@@ -35,7 +35,7 @@ import type {
   CircuitAST,
   CircuitComponent,
 } from "../../core/types";
-import { effectiveSymbolDef, getSymbol, type PinAnchor } from "./symbols";
+import { effectiveSymbolDef, type PinAnchor } from "./symbols";
 import type {
   LaidOutComponent,
   CircuitLayoutResult,
@@ -144,39 +144,29 @@ function placeComponent(
       : fallbackDir ?? defaultDirection(comp);
   comp.direction = direction;
   const rot = rotationOf(direction);
-  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
   const worldAnchors: Record<string, PinAnchor> = {};
-  if (sym) {
-    for (const [name, pt] of Object.entries(sym.anchors)) {
-      const rp = rotatePt(pt, rot);
-      worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
-    }
-  } else {
-    worldAnchors.start = { x, y };
-    worldAnchors.end = { x: x + 30, y };
+  for (const [name, pt] of Object.entries(sym.anchors)) {
+    const rp = rotatePt(pt, rot);
+    worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
   }
   return {
     component: comp,
     x,
     y,
     rotation: rot,
-    length: sym?.length ?? 30,
+    length: sym.length,
     anchors: worldAnchors,
   };
 }
 
 function placeMirroredComponent(comp: CircuitComponent, x: number, y: number): LaidOutComponent {
-  const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
-  const length = sym?.length ?? 30;
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
+  const length = sym.length;
   const worldAnchors: Record<string, PinAnchor> = {};
   comp.direction = "left";
-  if (sym) {
-    for (const [name, pt] of Object.entries(sym.anchors)) {
-      worldAnchors[name] = { x: x + length - pt.x, y: y + pt.y };
-    }
-  } else {
-    worldAnchors.start = { x: x + length, y };
-    worldAnchors.end = { x, y };
+  for (const [name, pt] of Object.entries(sym.anchors)) {
+    worldAnchors[name] = { x: x + length - pt.x, y: y + pt.y };
   }
   return {
     component: comp,
@@ -310,7 +300,7 @@ function finalizeAutoLayout(items: LaidOutComponent[], routes: RoutedWire[]): Au
       .join(" ");
     if (label) {
       const labelWidth = estimateTextWidth(label, 11, { fontWeight: 600 });
-      const symbol = getSymbol(it.component.componentType);
+      const symbol = effectiveSymbolDef(it.component.componentType, it.component.attrs);
       const angle = (it.rotation * Math.PI) / 180;
       const midpointX = it.x + (it.length * Math.cos(angle)) / 2;
       const midpointY = it.y + (it.length * Math.sin(angle)) / 2;
@@ -318,11 +308,11 @@ function finalizeAutoLayout(items: LaidOutComponent[], routes: RoutedWire[]): Au
       const labelX =
         midpointX +
         (vertical ? 34 : 0) +
-        (symbol?.labelOffset?.dx ?? 0);
+        (symbol.labelOffset?.dx ?? 0);
       const labelY =
         midpointY -
         (vertical ? 2 : 18) +
-        (symbol?.labelOffset?.dy ?? 0);
+        (symbol.labelOffset?.dy ?? 0);
       extendBBox(bbox, { x: labelX - labelWidth / 2, y: labelY - 13 });
       extendBBox(bbox, { x: labelX + labelWidth / 2, y: labelY + 14 });
     }
@@ -635,7 +625,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     const putSpineComponent = (
       component: CircuitComponent
     ): LaidOutComponent => {
-      const symbolLength = getSymbol(component.componentType)?.length ?? 40;
+      const symbolLength = effectiveSymbolDef(component.componentType, component.attrs).length;
       const labelWidth = estimateTextWidth(component.label ?? component.id, 11, {
         fontWeight: 600,
       });
@@ -944,9 +934,10 @@ function layoutTwoWayLightingLoop(
 
   const rightCommonX = leftLaid.x + leftLaid.length + AC_TRAVELER_SPAN + leftLaid.length;
   const sameTravelerOrder = leftPins.nc === rightPins.nc && leftPins.no === rightPins.no;
-  const rightLength =
-    (effectiveSymbolDef(rightSwitch.componentType, rightSwitch.attrs) ??
-      getSymbol(rightSwitch.componentType))?.length ?? 30;
+  const rightLength = effectiveSymbolDef(
+    rightSwitch.componentType,
+    rightSwitch.attrs
+  ).length;
   const rightLaid = sameTravelerOrder
     ? placeMirroredComponent(rightSwitch, rightCommonX - rightLength, AC_LIVE_Y)
     : placeComponent(rightSwitch, rightCommonX, AC_LIVE_Y, "left");

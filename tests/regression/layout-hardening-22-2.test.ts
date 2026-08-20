@@ -169,8 +169,8 @@ MCU -> Motor ["PWM"]`);
     }
   });
 
-  it("rejects malformed headers and attributes instead of silently changing meaning", () => {
-    const cases = [
+  it("keeps malformed structure fatal while soft-handling decorative values", () => {
+    const fatalCases = [
       {
         source: 'blockdiagram "X" trailing\nA = block("A")',
         code: "BLOCK_INVALID_HEADER",
@@ -180,26 +180,39 @@ MCU -> Motor ["PWM"]`);
         code: "BLOCK_UNKNOWN_ATTRIBUTE",
       },
       {
+        source: 'A = block("A")\nblockdiagram "X"',
+        code: "BLOCK_MISSING_HEADER",
+      },
+    ];
+
+    for (const entry of fatalCases) {
+      const result = parseResult(entry.source, { type: "blockdiagram" });
+      expect(result.ok).toBe(false);
+      expect(result.diagnostics[0]?.code).toBe(entry.code);
+    }
+
+    const softCases = [
+      {
         source: 'blockdiagram "X"\nA = block("A") [role: contorller]',
-        code: "BLOCK_INVALID_ATTRIBUTE_VALUE",
+        code: "blockdiagram/unknown-role",
+        token: "contorller",
       },
       {
         source: `blockdiagram "X"
 A = block("A")
 B = block("B")
 A -> B [labell: "signal"]`,
-        code: "BLOCK_UNKNOWN_ATTRIBUTE",
-      },
-      {
-        source: 'A = block("A")\nblockdiagram "X"',
-        code: "BLOCK_MISSING_HEADER",
+        code: "blockdiagram/unknown-connection-attribute",
+        token: "labell",
       },
     ];
-
-    for (const entry of cases) {
+    for (const entry of softCases) {
       const result = parseResult(entry.source, { type: "blockdiagram" });
-      expect(result.ok).toBe(false);
-      expect(result.diagnostics[0]?.code).toBe(entry.code);
+      expect(result.ok).toBe(true);
+      expect(result.status).toBe("partial");
+      expect(result.diagnostics).toContainEqual(
+        expect.objectContaining({ code: entry.code, token: entry.token })
+      );
     }
   });
 });
