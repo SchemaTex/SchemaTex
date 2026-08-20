@@ -255,10 +255,10 @@ The engine validates what LLMs (and humans) actually get wrong, with errors that
 
 - Room overlap — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
 - Door between non-adjacent rooms — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
-- Furniture outside its room — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
 
 **Warnings** (render anyway, listed under the plan):
 
+- Furniture outside its room — geometry is preserved exactly as authored and the warning reports the overshoot: `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`.
 - Furniture collision — bounding boxes including **chair-ring envelopes**, so two banquet rounds whose chairs touch get flagged even when the table tops don't.
 - Opening clamped to fit its wall segment.
 

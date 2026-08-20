@@ -305,7 +305,7 @@ function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
     },
     [
       el("title", {}, escapeXml(`P&ID${layout.title ? " — " + layout.title : ""}`)),
-      el("desc", {}, "ISA-5.1 / ISO 10628 P&ID rendered by Schematex"),
+      el("desc", {}, escapeXml("ISA-5.1 / ISO 10628 P&ID rendered by Schematex")),
       defs([
         el(
           "marker",

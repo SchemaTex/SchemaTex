@@ -41,7 +41,7 @@ const INTENTIONAL_SINGLE_PIN = new Set<CircuitComponentType>([
 
 /** Energy sources that demand a ground/return reference. */
 const SOURCE_TYPES = new Set<CircuitComponentType>([
-  "voltage_source", "ac_source", "battery", "current_source",
+  "voltage_source", "ac_source", "battery", "solar_cell", "current_source",
 ]);
 
 const GROUND_TYPES = new Set<CircuitComponentType>([

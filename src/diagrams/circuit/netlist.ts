@@ -38,6 +38,7 @@ import {
   getTerminalBlockPinLabels,
   normalizePinName,
 } from "./symbols";
+import { CIRCUIT_TYPE_ALIASES } from "./aliases";
 
 export class NetlistParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -70,49 +71,6 @@ const PREFIX_MAP: Record<string, { type: CircuitComponentType; pins: string[] }>
   X: { type: "generic_ic", pins: [] },
   W: { type: "wire", pins: ["start", "end"] }, // explicit wire (non-SPICE convention, common in EE textbooks)
   T: { type: "terminal_block", pins: [] }, // pins via pins="..."
-};
-
-/** Aliases for type=xxx — mirror parser.ts aliases. */
-const TYPE_ALIASES: Record<string, CircuitComponentType> = {
-  vsource: "voltage_source",
-  isource: "current_source",
-  ac: "ac_source",
-  acsource: "ac_source",
-  switch: "switch_spst",
-  ecap: "electrolytic_cap",
-  pot: "potentiometer",
-  xtal: "crystal",
-  xfmr: "transformer",
-  gnd: "ground",
-  ic: "generic_ic",
-  reg: "voltage_regulator",
-  "555": "555_timer",
-  timer555: "555_timer",
-  transistor: "npn",
-  bjt_npn: "npn",
-  bjt_pnp: "pnp",
-  mosfet_n: "nmos",
-  mosfet_p: "pmos",
-  terminal: "terminal_block",
-  tb: "terminal_block",
-  junction_box: "terminal_block",
-  jbox: "terminal_block",
-  enclosure: "enclosure",
-  cabinet: "enclosure",
-  panel: "enclosure",
-  dinrail: "din_rail",
-  din_rail: "din_rail",
-  wireduct: "wire_duct",
-  wire_duct: "wire_duct",
-  trunking: "wire_duct",
-  plc: "plc",
-  lamp: "lamp",
-  light: "lamp",
-  bulb: "lamp",
-  flasher: "automotive_flasher_3pin",
-  automotive_flasher: "automotive_flasher_3pin",
-  selector_center_off: "switch_spdt_center_off",
-  switch_center_off: "switch_spdt_center_off",
 };
 
 const NETLIST_SPECIAL_TYPES = new Set<CircuitComponentType>([
@@ -263,7 +221,7 @@ export function parseNetlist(
 
     if (kv.type) {
       const t = kv.type.toLowerCase();
-      const normalized = (TYPE_ALIASES[t] ?? t) as CircuitComponentType;
+      const normalized = (CIRCUIT_TYPE_ALIASES[t] ?? t) as CircuitComponentType;
       if (!NETLIST_SPECIAL_TYPES.has(normalized) && !getSymbol(normalized)) {
         throw new NetlistParseError(
           `Unknown component type "${kv.type}". Use a supported circuit symbol or alias.`,
@@ -353,8 +311,8 @@ export function parseNetlist(
       netRefs.length = expectedPins;
       // Try to interpret first tail token as type override (model name)
       const first = tail[0].toLowerCase();
-      if (TYPE_ALIASES[first]) {
-        cType = TYPE_ALIASES[first];
+      if (CIRCUIT_TYPE_ALIASES[first]) {
+        cType = CIRCUIT_TYPE_ALIASES[first];
         pinOrder = getNetlistPinOrder(cType) ?? pinOrder;
       } else if (
         first === "npn" || first === "pnp" ||

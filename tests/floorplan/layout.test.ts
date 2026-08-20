@@ -122,11 +122,13 @@ room kitchen "Kitchen" at 5,4 size 2x2`;
     expect(w.hi).toBeLessThanOrEqual(2);
   });
 
-  it("furniture in the notch is rejected; furniture on a part is fine", () => {
+  it("furniture in the notch warns; furniture on a part is fine", () => {
     const bad = lay(`${L_ROOM}\nfurniture sofa in living at 4.6,0.2`); // sofa 2.2 wide → straddles into the notch (x 4.6..6.8, y<2)
-    expect(bad.errors.some((e) => e.includes("L-shape"))).toBe(true);
+    expect(bad.errors).toHaveLength(0);
+    expect(bad.warnings.some((warning) => warning.includes("L-shape"))).toBe(true);
     const ok = lay(`${L_ROOM}\nfurniture sofa in living at 0.2,0.2`);
     expect(ok.errors).toHaveLength(0);
+    expect(ok.warnings).toHaveLength(0);
   });
 });
 
@@ -216,23 +218,26 @@ room b "B" at 2,1 size 3x3`);
     expect(e).toMatch(/2\.00?\s*[×x]\s*2\.00?/);
   });
 
-  it("errors on furniture outside the room interior with overshoot", () => {
+  it("warns on furniture outside the room interior with overshoot", () => {
     const r = lay(`floorplan
 room c "C" at 0,0 size 3x3
 furniture sofa in c at 2.5,0.5`);
-    const e = r.errors.find((x) => x.includes("sofa"))!;
-    expect(e).toBeDefined();
-    expect(e).toMatch(/1\.7/);
+    const warning = r.warnings.find((message) => message.includes("sofa"))!;
+    expect(r.errors).toHaveLength(0);
+    expect(warning).toBeDefined();
+    expect(warning).toMatch(/1\.7/);
   });
 
-  it("the error plan produces exactly 3 errors (spec §7 case 4)", () => {
+  it("the error plan produces 2 structural errors and 1 furniture warning (spec §7 case 4)", () => {
     const r = lay(`floorplan "Errors"
 room a "A" at 0,0 size 4x3
 room b "B" at 2,1 size 3x3
 room c "C" at 10,0 size 3x3
 door between a c at 50%
 furniture sofa in c at 2.5,0.5`);
-    expect(r.errors).toHaveLength(3);
+    expect(r.errors).toHaveLength(2);
+    expect(r.warnings).toHaveLength(1);
+    expect(r.warnings[0]).toContain("sofa");
   });
 
   it("warns on furniture collision naming both items with seq numbers", () => {

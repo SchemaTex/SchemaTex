@@ -475,7 +475,7 @@ Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd |
 
 ### 4.5.3 Type aliases (for `type=`)
 
-`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `flasher`/`automotive_flasher`→automotive_flasher_3pin · `selector_center_off`/`switch_center_off`→switch_spdt_center_off · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
+`vsource`/`dc_supply`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `ntc`→thermistor_ntc · `pullup`→resistor · `gnd`→ground · `ic`/`mcu`→generic_ic · `reg`/`regulator`/`ldo_3v3`→voltage_regulator · `pushbutton`→push_no · `switch_spst_nc`→switch_nc · `selector`→selector_switch · `dc_motor`→motor · `solar`→solar_cell · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `flasher`/`automotive_flasher`→automotive_flasher_3pin · `selector_center_off`/`switch_center_off`→switch_spdt_center_off · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
 
 ### 4.5.4 Trailing tokens
 

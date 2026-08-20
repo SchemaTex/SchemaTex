@@ -93,6 +93,9 @@ Connection points: feed (左中), top (reflux), bottom (reboiler return), vapor 
 - **Conveyor** — 长矩形 + 两端圆（pulley）
 - **Cooling tower** — 沙漏形
 - **Flare stack** — 高竖线 + 顶部火焰符号
+- **Boiler** — fired rectangular enclosure + tube bank + flame
+- **Burner** — fuel nozzle + flame
+- **Generator** — rotating-machine circle + `G`
 
 ---
 
@@ -366,6 +369,7 @@ equip_type    = "pump" | "pump_centrifugal" | "pump_pd" | "pump_reciprocating"
               | "column_tray" | "column_packed"
               | "reactor_cstr" | "reactor_pfr" | "reactor_fixed_bed"
               | "filter" | "cyclone" | "mixer" | "cooling_tower" | "flare"
+              | "boiler" | "burner" | "generator"
 
 attr_list   = "[" attr ("," attr)* "]"
 attr        = IDENT ":" attr_value
