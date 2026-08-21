@@ -23,17 +23,21 @@ const diagnosticCodes = (source: string): string[] =>
   );
 
 describe("floorplan 22.1 — production replay contracts", () => {
-  it("FP-001 rejects impossible office topology and accepts the adjacency-first correction", () => {
+  it("FP-001 still draws impossible office topology, reports it, and accepts the adjacency-first correction", () => {
     const before = renderResult(
       fixture("floorplan-22.1-fp001-office-before.sx"),
       { type: "floorplan" }
     );
-    expect(before.ok).toBe(false);
-    expect(before.status).toBe("invalid");
+    // Three overlaps and three doors across gaps. The office is wrong, but it
+    // is drawable, and a wrong drawing plus six precise diagnostics is a better
+    // answer than a validation panel — the person can see what to move.
+    expect(before.ok).toBe(true);
+    expect(before.status).toBe("partial");
     expect(before.diagnostics.filter((entry) => entry.code === "floorplan/room-overlap")).toHaveLength(3);
     expect(
       before.diagnostics.filter((entry) => entry.code === "floorplan/opening-no-shared-wall")
     ).toHaveLength(3);
+    expect(before.diagnostics.every((entry) => entry.severity === "warning")).toBe(true);
 
     const after = renderResult(
       fixture("floorplan-22.1-fp001-office-after.sx"),
@@ -69,10 +73,13 @@ describe("floorplan 22.1 — production replay contracts", () => {
 room class at 0,0 size 5x4
 grid desk-chair in class rows 4 cols 5 within 0.5,0.5 4.5,3.5 itemsize 1x1 gap 0.2`);
     const layout = layoutFloorplan(ast);
+    // The array is still refused as one group rather than half-placed — that
+    // part was always the point. What changed is that refusing the array no
+    // longer refuses the room it sits in.
     expect(layout.items).toHaveLength(0);
     expect(layout.diagnostics).toMatchObject([
       {
-        severity: "error",
+        severity: "warning",
         code: "floorplan/array-does-not-fit",
         phase: "geometry",
         line: 3,

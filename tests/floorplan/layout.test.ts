@@ -197,25 +197,27 @@ door a north at 50% width 5`);
     expect(r.warnings.some((w) => /clamp/i.test(w))).toBe(true);
   });
 
-  it("errors on door between non-adjacent rooms, quantifying the gap", () => {
+  it("warns on door between non-adjacent rooms, quantifying the gap, and keeps the rooms", () => {
     const r = lay(`floorplan
 room a "A" at 0,0 size 4x3
 room c "C" at 10,0 size 3x3
 door between a c at 50%`);
-    const e = r.errors.find((x) => x.includes('"a"') && x.includes('"c"'))!;
-    expect(e).toBeDefined();
-    expect(e).toMatch(/6(\.0+)? ?m/);
+    expect(r.errors).toHaveLength(0);
+    const w = r.warnings.find((x) => x.includes('"a"') && x.includes('"c"'))!;
+    expect(w).toBeDefined();
+    expect(w).toMatch(/6(\.0+)? ?m/);
   });
 });
 
 describe("floorplan layout — validation (spec §6)", () => {
-  it("errors on overlapping rooms with quantified overlap", () => {
+  it("warns on overlapping rooms with quantified overlap, and still lays both out", () => {
     const r = lay(`floorplan
 room a "A" at 0,0 size 4x3
 room b "B" at 2,1 size 3x3`);
-    const e = r.errors.find((x) => x.includes('"a"') && x.includes('"b"'))!;
-    expect(e).toBeDefined();
-    expect(e).toMatch(/2\.00?\s*[×x]\s*2\.00?/);
+    expect(r.errors).toHaveLength(0);
+    const w = r.warnings.find((x) => x.includes('"a"') && x.includes('"b"'))!;
+    expect(w).toBeDefined();
+    expect(w).toMatch(/2\.00?\s*[×x]\s*2\.00?/);
   });
 
   it("warns on furniture outside the room interior with overshoot", () => {
@@ -228,16 +230,30 @@ furniture sofa in c at 2.5,0.5`);
     expect(warning).toMatch(/1\.7/);
   });
 
-  it("the error plan produces 2 structural errors and 1 furniture warning (spec §7 case 4)", () => {
+  it("reports all three position faults as warnings and none as fatal (spec §7 case 4)", () => {
+    // The room overlap and the door across a gap used to be fatal, which threw
+    // away three perfectly good rooms over two misplaced rectangles. They now
+    // sit beside the furniture overshoot 1.0.10 had already demoted.
     const r = lay(`floorplan "Errors"
 room a "A" at 0,0 size 4x3
 room b "B" at 2,1 size 3x3
 room c "C" at 10,0 size 3x3
 door between a c at 50%
 furniture sofa in c at 2.5,0.5`);
-    expect(r.errors).toHaveLength(2);
-    expect(r.warnings).toHaveLength(1);
-    expect(r.warnings[0]).toContain("sofa");
+    expect(r.errors).toHaveLength(0);
+    expect(r.warnings).toHaveLength(3);
+    expect(r.warnings.some((w) => w.includes("sofa"))).toBe(true);
+    expect(r.warnings.some((w) => w.includes("overlap"))).toBe(true);
+    expect(r.warnings.some((w) => w.includes("share no wall"))).toBe(true);
+  });
+
+  it("keeps a structurally impossible document fatal", () => {
+    // The line the change draws: a reference to a room that was never declared
+    // leaves nothing to render, so it stays an error rather than a warning.
+    const r = lay(`floorplan
+room a "A" at 0,0 size 4x3
+furniture sofa in nowhere at 1,1`);
+    expect(r.errors.length).toBeGreaterThan(0);
   });
 
   it("warns on furniture collision naming both items with seq numbers", () => {

@@ -402,6 +402,27 @@ function layoutOneFloor(
     meta?: Partial<Omit<FloorplanGeometryDiagnostic, "severity" | "code" | "phase" | "message">>
   ): void => report("warning", code, phase, message, meta);
 
+  // Which of the checks below are fatal, and why the line sits where it does.
+  //
+  // Two rectangles touching is not a reason to refuse to draw a building. When
+  // a stairwell lands inside a warehouse, or a door is hung between two rooms
+  // that turn out not to share a wall, every other room, opening and fixture in
+  // the document is still correct and still worth showing — and someone who
+  // asked for a floor plan would rather have one with a visible overlap than a
+  // validation panel and nothing else. Each of those sites already skips the
+  // offending element and carries on; the severity alone was keeping the
+  // drawing off the page. 1.0.10 made this call for furniture overshoot, and
+  // the rest of the position conflicts belong on the same side of the line.
+  //
+  // Fatal is reserved for documents that cannot be drawn at all: a reference to
+  // a room that was never declared, an extension of something that is not a
+  // room, no rooms. Those are structural rather than positional — there is
+  // nothing left to render, so a diagnostic is the only honest output.
+  //
+  // Hosts that need the old behaviour still have it: the diagnostics carry
+  // `severity`, so a publication gate can refuse a drawing that warns while a
+  // person asking for a plan still receives one.
+
   // 1. Rooms + extensions — resolve in source order so a later room can be
   //    placed relative to an already-extended room's bounding box.
   const rooms: RoomBox[] = [];
@@ -549,7 +570,7 @@ function layoutOneFloor(
         }
       }
       if (worst) {
-        error(
+        warning(
           "floorplan/room-overlap",
           "geometry",
           `rooms "${a.id}" and "${b.id}" overlap by ${worst.ox.toFixed(2)}×${worst.oy.toFixed(2)} m — ` +
@@ -671,7 +692,7 @@ function layoutOneFloor(
       const room = rooms[idx]!;
       const segments = sideSegments(room, f.anchor.side);
       if (segments.length === 0) {
-        error(
+        warning(
           "floorplan/fixture-no-wall",
           "topology",
           `fixture ${f.type} on "${room.id}" ${f.anchor.side}: that side has no exterior wall segment`,
@@ -752,7 +773,7 @@ function layoutOneFloor(
         const requiredW = nCols * iw + Math.max(0, nCols - 1) * gap;
         const requiredH = nRows * ih + Math.max(0, nRows - 1) * gap;
         if (requiredW > availableW + 1e-9 || requiredH > availableH + 1e-9) {
-          error(
+          warning(
             "floorplan/array-does-not-fit",
             "geometry",
             `${a.mode} ${a.type} needs ${fmtNum(requiredW)}×${fmtNum(requiredH)} m for ${nRows}×${nCols} items ` +
@@ -857,7 +878,7 @@ function layoutOneFloor(
       zone.y + zone.h - (room.y + room.h)
     );
     if (overshoot > 0.011) {
-      error(
+      warning(
         "floorplan/zone-outside-room",
         "geometry",
         `zone "${zone.id}" extends ${fmtNum(overshoot)} m outside room "${room.id}"`,
@@ -933,7 +954,7 @@ function layoutOneFloor(
       ];
       const penetration = obbPenetration(envelopes[itemIndex]!, zoneCorners);
       if (penetration > 0.011) {
-        error(
+        warning(
           "floorplan/protected-zone-obstructed",
           "geometry",
           `furniture ${item.type} #${item.seq} obstructs keep-clear zone "${zone.label}" by ${fmtNum(penetration)} m`,
@@ -1661,7 +1682,7 @@ function resolveOpening(
       const axis = gapX >= gapY ? "x" : "y";
       const gap = Math.max(gapX, gapY);
       report(
-        "error",
+        "warning",
         "floorplan/opening-no-shared-wall",
         "topology",
         gap > 0
@@ -1695,7 +1716,7 @@ function resolveOpening(
     const segs = sideSegments(r, side);
     if (segs.length === 0) {
       report(
-        "error",
+        "warning",
         "floorplan/opening-no-wall",
         "topology",
         `${op.kind} on "${r.id}" ${side}: that side has no exterior wall segment`
