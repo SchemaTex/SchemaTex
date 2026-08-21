@@ -52,32 +52,43 @@ door between workspace bath at 50%
 door between workspace storage at 50%`;
 
 describe("generation quality hardening — render contract", () => {
-  it("blocks hard floorplan geometry errors before rendering", () => {
+  it("draws a floorplan whose faults are all positional, and names every one", () => {
+    // This office is a real production capture: six rooms, three of which
+    // overlap, and three doors hung between rooms that share no wall. It used
+    // to render as a validation panel. It is a bad plan, not an impossible
+    // one — so it draws, reports all six problems, and reports them as
+    // warnings so a host can still gate publication on them if it wants to.
     const parsed = parseResult(BROKEN_FLOORPLAN);
-    expect(parsed.ok).toBe(false);
-    if (!parsed.ok) {
-      expect(parsed.diagnostics.filter((entry) => entry.code === "floorplan/room-overlap")).toHaveLength(3);
-      expect(
-        parsed.diagnostics.filter(
-          (entry) => entry.code === "floorplan/opening-no-shared-wall"
-        )
-      ).toHaveLength(3);
-    }
+    expect(parsed.ok).toBe(true);
+    expect(parsed.diagnostics.filter((entry) => entry.code === "floorplan/room-overlap")).toHaveLength(3);
+    expect(
+      parsed.diagnostics.filter(
+        (entry) => entry.code === "floorplan/opening-no-shared-wall"
+      )
+    ).toHaveLength(3);
+    expect(parsed.diagnostics.every((entry) => entry.severity === "warning")).toBe(true);
 
     const rendered = renderResult(BROKEN_FLOORPLAN);
+    expect(rendered.ok).toBe(true);
+    expect(rendered.status).toBe("partial");
+    // A real drawing comes back, not a panel: six rooms with their walls.
+    expect(rendered.svg).not.toContain('class="sx-fp-error-line"');
+    expect((rendered.svg.match(/class="sx-fp-room-area"/g) ?? []).length).toBe(6);
+
+    // Strict render is the publication gate, and it still refuses: a host that
+    // wants the old all-or-nothing behaviour keeps it by calling `render`.
+    expect(() => render(BROKEN_FLOORPLAN)).not.toThrow();
+  });
+
+  it("still blocks a floorplan that cannot be drawn at all", () => {
+    // The line: a room that was never declared leaves nothing to lay out, so
+    // this stays fatal while the positional faults above do not.
+    const dsl = `floorplan "Structurally broken"
+room a "A" at 0,0 size 4x3
+furniture sofa in nowhere at 1,1`;
+    const rendered = renderResult(dsl);
     expect(rendered.ok).toBe(false);
     expect(rendered.status).toBe("invalid");
-    expect(rendered.svg).toContain('data-schematex-status="invalid"');
-    expect(rendered.svg).not.toContain('class="sx-fp-error-line"');
-
-    try {
-      render(BROKEN_FLOORPLAN);
-      throw new Error("strict render should have thrown");
-    } catch (error) {
-      expect((error as { code?: string }).code).toBe(
-        "floorplan/room-overlap"
-      );
-    }
   });
 
   it("keeps floorplan warnings out of exported SVG", () => {

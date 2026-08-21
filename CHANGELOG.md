@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.13] — 2026-08-21
+
+### Changed — a misplaced rectangle no longer throws away the building
+
+- **Half of one production floor-plan site's generations were failing, and the largest single cause was that two rooms touched.** Replaying thirty real prompts through the full retry loop, eleven of the twenty-one first-attempt failures carried *only* `room-overlap`, `opening-no-shared-wall` or `item-collision` — a plan the engine had already laid out and then refused to hand over. Someone who asks for a floor plan would rather have one with a visible overlap than a validation panel and nothing else; the overlap tells them what to move, the panel does not.
+- **Seven position conflicts are now warnings:** `room-overlap`, `opening-no-shared-wall`, `opening-no-wall`, `fixture-no-wall`, `array-does-not-fit`, `zone-outside-room` and `protected-zone-obstructed`. Nothing else changed — every one of those sites already skipped the offending element and carried on, so the severity alone was keeping the drawing off the page and the engine diff is seven words.
+- **This is the line 1.0.10 drew for furniture overshoot, extended to the rest of the same family.** Fatal now means there is nothing to render: a reference to a room that was never declared, an extension of something that is not a room, no rooms at all. Those are structural rather than positional, and a diagnostic is the only honest output.
+- **Measured on the same thirty production prompts**, scoring both engines against identical model transcripts: first-attempt success moves 37% → 47% and after-retry success 73% → 80% on one model, 10% → 17% and 23% → 33% on another. About ten points either way, from a change that adds no logic.
+- **Hosts that want the old all-or-nothing behaviour keep it.** Diagnostics still carry `severity` and `renderResult` still reports `status: "partial"`, so a publication gate can refuse a drawing that warns while a person asking for a plan still receives one.
+- **An assertion bug fixed on the way:** `expect(svg).toContain("sx-fp-error")` passed on *every* render, because the stylesheet defines `.sx-fp-error-box` unconditionally. Tests now match the attribute rather than the class name — the same false-positive shape that once made a supported circuit component look missing.
+
+---
+
 ## [1.0.12] — 2026-08-20
 
 ### Changed — netlists are laid out as schematics, not as graphs

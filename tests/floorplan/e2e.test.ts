@@ -85,16 +85,35 @@ row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3`);
     expect(svg).not.toContain('class="sx-fp-warn-item"');
   });
 
-  it("renders only the structural failures in the error panel (spec §7 case 4)", () => {
+  it("draws a plan whose only faults are positional, and says what is wrong (spec §7 case 4)", () => {
+    // Two rooms overlap, a door joins two rooms that share no wall, and a sofa
+    // hangs over an edge. Every one of those is a thing in the wrong place, not
+    // a document that cannot be drawn — so the three rooms render and the
+    // problems are reported alongside them rather than instead of them.
     const svg = renderFloorplan(`floorplan "Errors"
 room a "A" at 0,0 size 4x3
 room b "B" at 2,1 size 3x3
 room c "C" at 10,0 size 3x3
 door between a c at 50%
 furniture sofa in c at 2.5,0.5`);
-    expect(svg).toContain("sx-fp-error");
-    expect(count(svg, 'class="sx-fp-error-line"')).toBe(2);
-    expect(svg).toContain("overlap");
+    // Match the attribute, not the bare class name: the stylesheet defines
+    // `.sx-fp-error-box` on every render, so a substring test for
+    // "sx-fp-error" passes whether or not a panel was actually drawn.
+    expect(svg).not.toContain('class="sx-fp-error-box"');
+    expect(count(svg, 'class="sx-fp-room-area"')).toBe(3);
+    expect(count(svg, 'class="sx-fp-wall"')).toBe(12);
+    // The overlap is visible as geometry — two rooms drawn on top of each
+    // other — but not as text. Diagnostics stay out-of-band by design (see the
+    // renderer's `warnH = 0`); the wording is pinned in layout.test.ts instead.
+  });
+
+  it("still refuses a document with nothing to draw", () => {
+    // The counterpart to the case above: `nowhere` was never declared, so there
+    // is no geometry to fall back on and the error panel is the only output.
+    const svg = renderFloorplan(`floorplan "Broken"
+room a "A" at 0,0 size 4x3
+furniture sofa in nowhere at 1,1`);
+    expect(svg).toContain('class="sx-fp-error-box"');
   });
 
   it("minimal smoke: 1 room + door + window (spec §7 case 5)", () => {
