@@ -41,6 +41,7 @@ import type {
   CircuitLayoutResult,
 } from "./layout";
 import { estimateTextWidth } from "../../core/text-metrics";
+import { schematicNetlistLayout } from "./schematic-layout";
 
 const COL_W = 96; // horizontal spacing per component
 const ROW_H = 80; // vertical spacing per band (spine / shunt / ground)
@@ -61,8 +62,25 @@ export interface RoutedWire {
   junctions?: PinAnchor[];
 }
 
+/**
+ * A local supply flag — the Vcc bar or ground rake drawn beside a pin instead
+ * of routing that pin to a shared rail. It is a mark on the drawing, not a
+ * part: it carries no component identity, so it never appears in `items`,
+ * never reaches the scene graph as something selectable, and never shows up
+ * in an export that enumerates components.
+ */
+export interface SupplyFlagMark {
+  kind: "ground" | "vcc";
+  /** Where the glyph's connection point sits, in world coordinates. */
+  at: PinAnchor;
+  /** Rail name, drawn only when a circuit has more than one supply. */
+  label?: string;
+}
+
 export interface AutoLayoutResult extends CircuitLayoutResult {
   routes: RoutedWire[];
+  /** Local supply marks; absent for layouts that draw rails instead. */
+  flags?: SupplyFlagMark[];
 }
 
 function isPowerSource(c: CircuitComponent): boolean {
@@ -1043,6 +1061,12 @@ export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
   if (parallelLoadBank) return parallelLoadBank;
   const twoWireLighting = tryLayoutTwoWireLighting(ast);
   if (twoWireLighting) return twoWireLighting;
+
+  // Schematic-convention layout: implicit supply flags, signal-flow layering,
+  // label avoidance. Falls through to the legacy band layout when the netlist
+  // carries no pin map, which is the one input it cannot reason about.
+  const schematic = schematicNetlistLayout(ast);
+  if (schematic) return schematic;
 
   // ── Step 1: classify ───────────────────────────────────────
   // Three bands, top→bottom: the SPINE row (sources on the left feeding a

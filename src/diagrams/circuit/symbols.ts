@@ -11,6 +11,7 @@
  * coordinates accordingly.
  */
 import type { CircuitComponentType } from "../../core/types";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 export interface PinAnchor {
   x: number;
@@ -950,6 +951,16 @@ const antenna: SymbolDef = {
 // ─── ICs / Generic blocks ────────────────────────────────────
 
 const IC_BODY_W = 80;
+
+/**
+ * How wide an IC body must be to hold its own part number, with room for the
+ * pin numbers printed inside both edges. Widening is one-directional: a short
+ * label keeps the standard body so ordinary schematics do not change shape.
+ */
+function icBodyWidth(label: string): number {
+  if (!label) return IC_BODY_W;
+  return Math.max(IC_BODY_W, Math.ceil(estimateTextWidth(label, 12) + 44));
+}
 const IC_PIN_PITCH = 16;
 const GENERIC_IC_LEFT = ["1", "2", "3", "4"];
 const GENERIC_IC_RIGHT = ["8", "7", "6", "5"];
@@ -987,14 +998,15 @@ export function getGenericIcPinSides(attrs?: Record<string, string>): IcPinSides
 function icPinAnchors(
   sides: IcPinSides,
   leftNames?: string[],
-  rightNames?: string[]
+  rightNames?: string[],
+  bodyW: number = IC_BODY_W
 ): Record<string, PinAnchor> {
   const rowCount = Math.max(sides.left.length, sides.right.length, 2);
   const bodyH = IC_PIN_PITCH * (rowCount + 1);
   const topY = -bodyH / 2;
   const anchors: Record<string, PinAnchor> = {
     start: { x: 0, y: 0 },
-    end: { x: IC_BODY_W, y: 0 },
+    end: { x: bodyW, y: 0 },
   };
 
   for (let i = 0; i < sides.left.length; i++) {
@@ -1004,7 +1016,7 @@ function icPinAnchors(
   for (let i = 0; i < sides.right.length; i++) {
     const spicePosition = sides.left.length + sides.right.length - i;
     const name = rightNames?.[i] ?? normalizePinName(sides.right[i], `pin_${spicePosition}`);
-    anchors[name] = { x: IC_BODY_W + 8, y: topY + IC_PIN_PITCH * (i + 1) };
+    anchors[name] = { x: bodyW + 8, y: topY + IC_PIN_PITCH * (i + 1) };
   }
   return anchors;
 }
@@ -1033,10 +1045,14 @@ function icSymbol(
       const bodyH = IC_PIN_PITCH * (n + 1);
       const topY = -bodyH / 2;
       const parts: string[] = [];
-      parts.push(`<rect x="0" y="${topY}" width="${IC_BODY_W}" height="${bodyH}" fill="white" ${BODY}/>`);
       const labelText = attrs?.ic_label ?? bodyLabel ?? "";
+      // The body has to fit its own part number. A fixed width let a label
+      // like MAX17048 run out past the pin numbers on both sides, which reads
+      // as a broken symbol rather than a long name.
+      const bodyW = icBodyWidth(labelText);
+      parts.push(`<rect x="0" y="${topY}" width="${bodyW}" height="${bodyH}" fill="white" ${BODY}/>`);
       if (labelText) {
-        parts.push(`<text x="${IC_BODY_W / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${labelText}</text>`);
+        parts.push(`<text x="${bodyW / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${labelText}</text>`);
       }
       for (let i = 0; i < left.length; i++) {
         const y = topY + IC_PIN_PITCH * (i + 1);
@@ -1045,8 +1061,8 @@ function icSymbol(
       }
       for (let i = 0; i < right.length; i++) {
         const y = topY + IC_PIN_PITCH * (i + 1);
-        parts.push(`<line x1="${IC_BODY_W}" y1="${y}" x2="${IC_BODY_W + 8}" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="${IC_BODY_W - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
+        parts.push(`<line x1="${bodyW}" y1="${y}" x2="${bodyW + 8}" y2="${y}" ${WIRE}/>`);
+        parts.push(`<text x="${bodyW - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
       }
       return parts.join("");
     },
@@ -1212,14 +1228,29 @@ export function effectiveSymbolDef(type: string, attrs?: Record<string, string>)
       ...attrs,
       ic_label: attrs?.ic_label ?? type,
     };
+    // Body width follows the part number, and `length` plus the pin anchors
+    // must follow it too — widening the drawn box while leaving the anchors at
+    // the old width would hang every wire in the wrong place.
+    const fallbackW = icBodyWidth(fallbackAttrs.ic_label ?? "");
     return {
       ...generic_ic,
-      anchors: icPinAnchors(getGenericIcPinSides(fallbackAttrs)),
+      length: fallbackW,
+      anchors: icPinAnchors(
+        getGenericIcPinSides(fallbackAttrs),
+        undefined,
+        undefined,
+        fallbackW
+      ),
       svg: (label, value) => generic_ic.svg(label, value, fallbackAttrs),
     };
   }
   if (type === "generic_ic") {
-    return { ...sym, anchors: icPinAnchors(getGenericIcPinSides(attrs)) };
+    const w = icBodyWidth(attrs?.ic_label ?? "");
+    return {
+      ...sym,
+      length: w,
+      anchors: icPinAnchors(getGenericIcPinSides(attrs), undefined, undefined, w),
+    };
   }
   if (type === "terminal_block") {
     const geometry = terminalBlockGeometry(attrs);
