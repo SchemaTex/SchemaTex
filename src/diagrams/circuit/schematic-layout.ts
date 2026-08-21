@@ -624,6 +624,41 @@ export function schematicNetlistLayout(
     acc += (rowHeights[r] ?? 1) * SLOT_H + SLOT_H * 0.5;
   }
 
+  // Columns are as wide as their widest occupant, not a fixed pitch. An IC is
+  // several times the width of a resistor, so a constant 104px column let two
+  // chips in adjacent layers overlap — the reader sees two boxes sitting on
+  // top of each other, which no amount of good routing recovers from. Same
+  // reasoning vertically: a tall part must not be handed a short slot.
+  const colWidth: number[] = [];
+  const slotHeight: number[] = [];
+  for (let li = 0; li < layers.length; li++) {
+    const c = colOf(li);
+    for (const id of layers[li] ?? []) {
+      const comp = byId.get(id);
+      if (!comp) continue;
+      const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
+      const ys = Object.values(sym.anchors).map((a) => a.y);
+      const span = ys.length ? Math.max(...ys) - Math.min(...ys) : 0;
+      colWidth[c] = Math.max(colWidth[c] ?? LAYER_W, sym.length + 64);
+      slotHeight[rowOf(li)] = Math.max(
+        slotHeight[rowOf(li)] ?? SLOT_H,
+        span + 56
+      );
+    }
+  }
+  const colLeft: number[] = [];
+  let accX = LEFT_MARGIN;
+  for (let c = 0; c < cols; c++) {
+    colLeft[c] = accX;
+    accX += colWidth[c] ?? LAYER_W;
+  }
+  // Recompute row tops now that slot heights may be taller than the default.
+  acc = TOP_MARGIN;
+  for (let r = 0; r < rowHeights.length; r++) {
+    rowTop[r] = acc;
+    acc += (rowHeights[r] ?? 1) * (slotHeight[r] ?? SLOT_H) + SLOT_H * 0.5;
+  }
+
   // Depth of each signal net: the earliest layer that touches it. This is what
   // "upstream" means once layering has run, and it is what decides whether a
   // part's own pin order agrees with the direction the drawing flows.
@@ -659,8 +694,10 @@ export function schematicNetlistLayout(
       const signalPins = pins.filter(([, n]) => !isSupplyNet(n));
       // A two-terminal part with exactly one leg on a supply is a shunt: it
       // stands vertically under its node, which is how it is always drawn.
-      const x = LEFT_MARGIN + colOf(li) * LAYER_W;
-      const y = (rowTop[rowOf(li)] ?? TOP_MARGIN) + si * SLOT_H;
+      const x = colLeft[colOf(li)] ?? LEFT_MARGIN;
+      const y =
+        (rowTop[rowOf(li)] ?? TOP_MARGIN) +
+        si * (slotHeight[rowOf(li)] ?? SLOT_H);
       // If the netlist puts this part's first pin on the downstream node, its
       // natural left-to-right geometry runs against the flow: the wires would
       // cross over the body, and on a polarised part the terminal that belongs
@@ -689,16 +726,30 @@ export function schematicNetlistLayout(
     if (!signalPin || !supplyPin) continue;
     const toGround = groundNets.has(supplyPin[1]);
 
-    // Anchor on whichever placed component shares this node.
+    // Anchor on whichever placed component shares this node — and insist on
+    // the pin that actually carries the net. Falling back to `end` on the
+    // first host that happened to match sent two pull-ups on *different* nets
+    // to the same coordinate, so they stacked into a column and read as a
+    // series pair rather than as two independent pull-ups.
     let anchor: PinAnchor | undefined;
+    let fallback: PinAnchor | undefined;
     for (const p of allPins) {
       if (p.net !== signalPin[1] || p.compId === comp.id) continue;
       const host = placed.get(p.compId);
       if (!host) continue;
-      anchor = host.anchors[p.pinName] ?? host.anchors.end;
-      if (anchor) break;
+      const exact = host.anchors[p.pinName];
+      if (exact) {
+        anchor = exact;
+        break;
+      }
+      fallback ??= host.anchors.end;
     }
-    const key = signalPin[1];
+    anchor ??= fallback;
+    // Fan out by the column the anchor actually lands in, not by net name: two
+    // pull-ups on different nets still collide when those nets arrive on the
+    // same edge of the same chip, which is where an IC puts all of one side's
+    // pins.
+    const key = String(Math.round((anchor?.x ?? 0) / 8));
     const nth = shuntsPerNode.get(key) ?? 0;
     shuntsPerNode.set(key, nth + 1);
 

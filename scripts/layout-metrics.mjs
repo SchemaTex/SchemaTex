@@ -100,6 +100,44 @@ function metrics(svg) {
     }
   }
 
+  // Component bodies that overlap each other — the defect a reader sees as
+  // "these two chips are sitting on top of each other".
+  //
+  // Symbol geometry is authored in local coordinates inside a <g transform>,
+  // so the rect attributes alone are meaningless: every IC body is drawn at
+  // the same local origin and would trivially "overlap" every other. The
+  // enclosing translate has to be applied before any of this means anything.
+  const boxes = [];
+  for (const g of svg.matchAll(
+    /<g transform="translate\(([-\d.]+),\s*([-\d.]+)\)(?:\s*rotate\((\d+)\))?"[^>]*>([\s\S]*?)<\/g>/g
+  )) {
+    const gx = +g[1], gy = +g[2], rot = +(g[3] ?? 0);
+    const inner = g[4];
+    const rect = inner.match(
+      /<rect[^>]*x="([-\d.]+)"[^>]*y="([-\d.]+)"[^>]*width="([\d.]+)"[^>]*height="([\d.]+)"/
+    );
+    if (!rect) continue;
+    const rx = +rect[1], ry = +rect[2], rw = +rect[3], rh = +rect[4];
+    if (rw < 20 || rh < 20) continue;
+    // Only 0/180 keep the axis-aligned footprint; 90/270 swap the extents.
+    const swap = rot === 90 || rot === 270;
+    boxes.push({
+      x: gx + (swap ? ry : rx),
+      y: gy + (swap ? rx : ry),
+      w: swap ? rh : rw,
+      h: swap ? rw : rh,
+    });
+  }
+  let bodyOverlaps = 0;
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i], b = boxes[j];
+      const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (ox > 2 && oy > 2) bodyOverlaps++;
+    }
+  }
+
   return {
     w: Math.round(w),
     h: Math.round(h),
@@ -107,6 +145,7 @@ function metrics(svg) {
     wire: Math.round(wire),
     labels: labels.length,
     collisions,
+    bodyOverlaps,
   };
 }
 
