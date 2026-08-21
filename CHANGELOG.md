@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.12] — 2026-08-20
+
+### Changed — netlists are laid out as schematics, not as graphs
+
+- **A netlist used to be drawn in the order it was typed.** Placement was `x = declaration index × 96px` across three fixed vertical bands, so canvas height was constant while width grew with every part: four components came out at 1.7:1 and twenty at 6.7:1, a strip too wide to read on any page. Power and ground were drawn as full-width rails that every pin dropped onto, which meant parts also had to line up along those rails to reach them. Nothing in the resulting picture said what the circuit did — the file's own header called its output "readable but not publication-grade".
+- **Power and ground are no longer wires.** Each pin on a supply net now gets a local flag beside it instead of a run to a shared rail. That removes most of the wires in a typical drawing and, more importantly, frees placement. Flags are decoration, not parts: they live in their own `flags` channel and never enter `items`, so they cannot leak into the scene graph, ERC, or any export that enumerates components. A ground symbol the author declared is re-used as the flag for pins on its net rather than being dropped from the drawing.
+- **Signal flows left to right.** X position comes from breadth-first depth over the signal graph; a feedback net simply fails to deepen a component that was already reached, which is the treatment feedback deserves. Crossing reduction is the standard barycenter sweep. Long chains fold onto the next row, always left to right — a deliberate choice over the more compact serpentine fold, because a row running `R9 R8 R7 R6` reads as a numbering mistake rather than as a wrap.
+- **Pin coordinates constrain placement, not just routing.** A two-pin part returning to ground hangs vertically off the node it taps; a supply-fed part carries the chain horizontally. A part whose upstream pin was written second is mirrored so the signal still enters from the left — mirroring reflects netlist pin order and never cosmetic tidying, so a diode written cathode-first draws as a diode pointing the other way rather than being silently corrected. An orientation the author wrote with `dir=` still outranks anything layout infers.
+- **Labels are placed by a scored pass** — candidate offsets ranked by overlap area against parts and wires, least-bad wins — and wires pick a free horizontal channel instead of cutting through a symbol. IC bodies now size to their own text, so a part named `MAX17048` no longer overflows a fixed 80px box.
+- **Measured over eight representative circuits.** The widest canvas goes from 6.7:1 to 2.0:1, and total wire length falls on six of the eight: `astable` 3807→1483, `at89s52-relay` 10352→4268, `divider` 928→275, `555-counter` 1056→428. The two long resistor ladders spend more wire than before (`series-20` 2400→3204) because folding adds a return run at each row — that is the trade being made, a taller page for a readable one. No component body overlaps another in any case, before or after.
+- **Not done in this release:** an obstacle-avoiding router. Wires choose a free channel but do not path around parts, so a dense board can still route a wire past a symbol more tightly than a draftsman would. Several pull-ups hanging off the same edge of one chip still stack into a column.
+
+---
+
 ## [1.0.11] — 2026-08-20
 
 ### Changed — an unknown word is no longer a fatal error
