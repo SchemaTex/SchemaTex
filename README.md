@@ -763,14 +763,16 @@ rbd "Redundant Server"
 
 ### 🏠 Floor plan — *Architectural Graphic Standards plan view*
 
-Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 93-symbol furniture catalog — residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, and site/outdoor (`tree`, `car`) — auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms via `extend`, stairs with the UP arrow + cut-plane break line, and validation that catches what LLMs actually get wrong — overlapping rooms, doors on non-shared walls, colliding furniture (chair-ring envelopes included).
+Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 99-symbol furniture catalog — residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, and site/outdoor (`tree`, `car`) — auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms use `extend`; exterior/interior/shared walls can carry different thicknesses; measured opening chains use stable ids; `fit` and `mirror` handle rotated symbols without hand arithmetic. Labels avoid visible symbol envelopes and door swings, while validation reports the geometry LLMs actually get wrong.
 
 ```
 floorplan "Two-Bedroom Apartment — 68 m²" unit m
+wall exterior thickness 0.35
+wall interior thickness 0.12
 room living  "Living Room"  at 0,0          size 5.2x4.2
 room kitchen "Kitchen"      right-of living size 3.0x4.2
 room hall    "Hallway"      below living    size 2.0x2.6
-door hall west at 50% width 1.0
+door hall west from start 0.4 width 1.0 id entry
 opening between living kitchen at 35% width 1.2
 door between hall living at 50%
 window living north at 30% width 1.8

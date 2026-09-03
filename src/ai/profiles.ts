@@ -1684,7 +1684,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'floorplan "Title" [unit m|ft] [stack horizontal|vertical] [symbols nec|iec]',
     mode: "explicit dimensions + relative room placement; optional `floor N` sections share one drawing scale",
     keywords:
-      'floor N "Label" · stack horizontal|vertical · symbols nec|iec · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel|label-role normal|primary|secondary|hidden] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> [instanceId] in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · fixture <type> [instanceId] in room on north|south|east|west at N% [size WxH] · controls <switchOrSensorId> -> <luminaireId>[, <luminaireId>...] · zone <id> "Label" in room at x,y size WxH [keep-clear] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] (centers|within) x1,y1 x2,y2 [itemsize WxH] [gap n] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
+      'floor N "Label" · stack horizontal|vertical · symbols nec|iec · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel|label-role normal|primary|secondary|hidden] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · wall exterior|interior thickness n · wall between A B thickness n · north [deg] · opening placement = at N% | from start|end n | before|after <openingId> gap n · door <room> north|south|east|west | between A B <placement> [width n] [id id] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window/opening <wallref|between A B> <placement> [width n] [id id] · furniture <type> [instanceId] in room (at x,y | fit [margin n]) [size WxH or square size N] [rotate deg] [mirror x|y] ["label"] [seats "Name" "Name" …] · fixture <type> [instanceId] in room on north|south|east|west at N% [size WxH] · controls <switchOrSensorId> -> <luminaireId>[, <luminaireId>...] · zone <id> "Label" in room at x,y size WxH [keep-clear] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] (centers|within) x1,y1 x2,y2 [itemsize WxH] [gap n] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
       FLOORPLAN_TYPE_KEYWORDS,
     forms: [
       'floorplan "Two-Storey Villa" unit m stack horizontal',
@@ -1692,7 +1692,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'room living "Living Room" at 0,0 size 5.2x4.2',
       'room kitchen "Kitchen" right-of living size 3.0x4.2',
       "door between living kitchen at 35% width 1.2",
-      "furniture stairs S1 in living at 4.0,0.4",
+      "wall exterior thickness 0.35",
+      "wall interior thickness 0.12",
+      "furniture stairs S1 in living fit margin 0.1 rotate 90 mirror x",
       'floor 1 "First Floor"',
       'room landing "Landing" at 0,0 size 5.2x4.2',
       "furniture stairs S1 in landing at 4.0,0.4",
@@ -1702,7 +1704,10 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Give the same stair run the same instance id on adjacent floors, e.g. `furniture stairs S1 …`; the lower occurrence becomes UP and upper occurrences become DN automatically.",
       "Declare rooms with explicit `size WxH` and chain placement with right-of/below — rooms sharing an edge merge into one wall automatically.",
       "Use `door between A B` for interior doors (the engine finds the shared wall); use `door <room> <side>` only for exterior walls.",
+      "Use `from start|end <distance>` when an opening must match a measured offset. For a door/window chain, give the first opening an `id`, then use `after <id> gap <distance>` or `before`; references must already exist on the same wall.",
       "Furniture `at x,y` is relative to its room's interior top-left corner, in the plan unit.",
+      "Use `fit margin n` when the room is the item's container (for example a stairwell): layout rotates first, scales down without distortion, and centers the final envelope. Use `mirror x|y` for handed symbols; never express reflection as a negative rotation.",
+      "Use `wall exterior thickness n`, `wall interior thickness n`, and only when needed `wall between A B thickness n`. With no wall rules, every wall remains 0.2 m.",
       "Use `grid`/`row`/`arc` for repeated items (desks, banquet tables, ceremony chairs) instead of many `furniture` lines; `count` truncates row-major.",
       "Use `within p1 p2` when the rectangle is a hard physical boundary; the engine subtracts item footprints before choosing centers and proves rows/cols/gap fit. Use `centers p1 p2` only when the two coordinates intentionally name first/last item centers.",
       "Use `zone id \"Label\" in room at x,y size WxH keep-clear` for circulation, activity, and access regions that must remain unobstructed. A decorative rug is not a clearance contract.",
@@ -1721,6 +1726,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Don't overlap room rectangles — adjacency means edges touch exactly (right-of/below guarantee this).",
       "Don't place a `door between` rooms that share no edge; the engine rejects it with the measured gap.",
       "Don't position furniture in absolute plan coordinates — coordinates are room-relative.",
+      "Don't combine `at`, `from`, `before`, or `after` on one opening; choose one placement form. Don't reference an opening id declared later or on another wall.",
+      "Don't use bare `flip`; the only reflection syntax is `mirror x|y`. `fit` may scale down but never stretches to fill a room.",
       "Don't reference a room declared on another floor; duplicate local room ids are allowed, but room placement, openings, and arrays must resolve within their own floor.",
       "Don't repeat the floorplan header to start another level; one document has one header and every additional level starts with `floor N`.",
     ],
@@ -1729,6 +1736,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'rooms share no wall' -> make the rooms adjacent (sizes summing to a shared edge) or hang the door on a wall side instead.",
       "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
       "'array overlaps internally …' -> enlarge the `within` bounds, reduce rows/cols, shrink itemsize, or add a truthful gap; one array diagnostic replaces pairwise collision spam.",
+      "'door … swing is obstructed by …' -> move the furniture, change hinge/swing, or use the truthful sliding/pocket/bifold door type; do not suppress the warning.",
+      "'opening … must be declared before it is referenced' -> move the id-bearing opening earlier, then keep the relative opening on the same wall.",
       "'references room … on floor …' -> move the statement into that room's `floor` section or reference a room declared on the current floor.",
     ],
   },

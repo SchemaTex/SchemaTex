@@ -88,10 +88,19 @@
 <polygon class="sx-fp-chevron" points="0,-3.2 7,0 0,3.2" transform="translate(184.25,420.75) rotate(180)"/></g></g>
 <g class="sx-fp-controls"></g>
 <g class="sx-fp-furniture"></g>
-<g class="sx-fp-walls"><rect class="sx-fp-wall" x="250.25" y="74.25" width="341" height="11"/><rect class="sx-fp-wall" x="250.25" y="349.25" width="341" height="11"/><rect class="sx-fp-wall" x="250.25" y="74.25" width="11" height="286"/><rect class="sx-fp-wall" x="580.25" y="74.25" width="11" height="286"/>
-<rect class="sx-fp-wall" x="250.25" y="349.25" width="341" height="11"/><rect class="sx-fp-wall" x="250.25" y="481.25" width="341" height="11"/><rect class="sx-fp-wall" x="250.25" y="349.25" width="11" height="143"/><rect class="sx-fp-wall" x="580.25" y="349.25" width="11" height="143"/>
-<rect class="sx-fp-wall" x="85.25" y="349.25" width="176" height="11"/><rect class="sx-fp-wall" x="85.25" y="481.25" width="176" height="11"/><rect class="sx-fp-wall" x="85.25" y="349.25" width="11" height="143"/><rect class="sx-fp-wall" x="250.25" y="349.25" width="11" height="143"/>
-<rect class="sx-fp-wall" x="580.25" y="349.25" width="176" height="11"/><rect class="sx-fp-wall" x="580.25" y="481.25" width="176" height="11"/><rect class="sx-fp-wall" x="580.25" y="349.25" width="11" height="143"/><rect class="sx-fp-wall" x="745.25" y="349.25" width="11" height="143"/></g>
+<g class="sx-fp-walls"><rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="250.25" y="74.25" width="341" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="85.25" y="349.25" width="176" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="interior" data-wall-thickness="0.2" x="250.25" y="349.25" width="341" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="580.25" y="349.25" width="176" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="250.25" y="74.25" width="11" height="286"/>
+<rect class="sx-fp-wall" data-wall-scope="interior" data-wall-thickness="0.2" x="250.25" y="349.25" width="11" height="143"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="580.25" y="74.25" width="11" height="286"/>
+<rect class="sx-fp-wall" data-wall-scope="interior" data-wall-thickness="0.2" x="580.25" y="349.25" width="11" height="143"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="85.25" y="481.25" width="176" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="250.25" y="481.25" width="341" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="580.25" y="481.25" width="176" height="11"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="85.25" y="349.25" width="11" height="143"/>
+<rect class="sx-fp-wall" data-wall-scope="exterior" data-wall-thickness="0.2" x="745.25" y="349.25" width="11" height="143"/></g>
 <g class="sx-fp-openings"><rect class="sx-fp-gap" fill="#ffffff" x="376.75" y="348.75" width="88" height="6"/><rect class="sx-fp-gap" fill="#ffffff" x="376.75" y="354.75" width="88" height="6"/><line class="sx-fp-jamb" x1="376.75" y1="349.25" x2="376.75" y2="360.25"/><line class="sx-fp-jamb" x1="464.75" y1="349.25" x2="464.75" y2="360.25"/>
 <rect class="sx-fp-gap" fill="#ffffff" x="249.75" y="390.5" width="6" height="60.5"/><rect class="sx-fp-gap" fill="#ffffff" x="255.75" y="390.5" width="6" height="60.5"/><line class="sx-fp-jamb" x1="250.25" y1="390.5" x2="261.25" y2="390.5"/><line class="sx-fp-jamb" x1="250.25" y1="451" x2="261.25" y2="451"/><line class="sx-fp-door-leaf" x1="255.75" y1="390.5" x2="316.25" y2="390.5"/><path class="sx-fp-door-arc" d="M 316.25 390.5 A 60.5 60.5 0 0 1 255.75 451"/>
 <rect class="sx-fp-gap" fill="#ffffff" x="579.75" y="390.5" width="6" height="60.5"/><rect class="sx-fp-gap" fill="#ffffff" x="585.75" y="390.5" width="6" height="60.5"/><line class="sx-fp-jamb" x1="580.25" y1="390.5" x2="591.25" y2="390.5"/><line class="sx-fp-jamb" x1="580.25" y1="451" x2="591.25" y2="451"/><line class="sx-fp-door-leaf" x1="585.75" y1="390.5" x2="525.25" y2="390.5"/><path class="sx-fp-door-arc" d="M 525.25 390.5 A 60.5 60.5 0 0 0 585.75 451"/></g>
@@ -111,10 +120,10 @@
 <text class="sx-fp-safety-class" x="211.75" y="397.75" text-anchor="middle">ABC</text></g>
 <g class="sx-fp-safety" data-safety="first-aid" data-code="E003" data-safety-id="fa1"><g transform="translate(519.75,453.75) scale(0.92) translate(-12,-12)"><rect class="sx-fp-safety-plate-safe" x="0" y="0" width="24" height="24" rx="2"/><path class="sx-fp-safety-knockout" d="M 9 4 H 15 V 9 H 20 V 15 H 15 V 20 H 9 V 15 H 4 V 9 H 9 Z"/></g></g>
 <g class="sx-fp-safety" data-safety="assembly" data-code="E007" data-safety-id="muster"><g transform="translate(420.75,602.25) scale(0.92) translate(-12,-12)"><rect class="sx-fp-safety-plate-safe" x="0" y="0" width="24" height="24" rx="2"/><circle class="sx-fp-safety-knockout" cx="7" cy="7" r="1.7"/><circle class="sx-fp-safety-knockout" cx="17" cy="7" r="1.7"/><circle class="sx-fp-safety-knockout" cx="7" cy="17" r="1.7"/><circle class="sx-fp-safety-knockout" cx="17" cy="17" r="1.7"/><path class="sx-fp-safety-knockout-stroke" d="M 3 3 L 8.2 8.2 M 21 3 L 15.8 8.2 M 3 21 L 8.2 15.8 M 21 21 L 15.8 15.8"/></g></g></g>
-<g class="sx-fp-labels"><text class="sx-fp-room-name sx-fp-room-name-normal" x="420.75" y="214.25" text-anchor="middle">Open Office</text>
-<text class="sx-fp-room-name sx-fp-room-name-normal" x="420.75" y="417.75" text-anchor="middle">Lift Lobby</text>
-<text class="sx-fp-room-name sx-fp-room-name-normal" x="173.25" y="417.75" text-anchor="middle">Stair A</text>
-<text class="sx-fp-room-name sx-fp-room-name-normal" x="668.25" y="417.75" text-anchor="middle">Stair B</text></g>
+<g class="sx-fp-labels"><text class="sx-fp-room-name sx-fp-room-name-normal" data-label-placement="auto" x="420.75" y="214.25" text-anchor="middle">Open Office</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" data-label-placement="auto" x="420.75" y="417.75" text-anchor="middle">Lift Lobby</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" data-label-placement="auto" x="173.25" y="417.75" text-anchor="middle">Stair A</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" data-label-placement="auto" x="668.25" y="417.75" text-anchor="middle">Stair B</text></g>
 <g class="sx-fp-dims"><g class="sx-fp-compass-g" transform=""><circle class="sx-fp-compass" cx="731.5" cy="45.65" r="17.6"/>
 <line class="sx-fp-compass" x1="731.5" y1="57.97" x2="731.5" y2="35.97"/>
 <polygon class="sx-fp-compass" fill="#64748b" points="731.5,30.69 727.63,40.37 735.37,40.37"/>

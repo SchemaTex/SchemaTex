@@ -40,6 +40,7 @@ export type RelativeAlign = "start" | "center" | "end";
 export type ArrayMode = "grid" | "row" | "arc";
 export type ArrayPlacement = "centers" | "within";
 export type FloorplanLabelRole = "normal" | "primary" | "secondary" | "hidden";
+export type FloorplanMirrorAxis = "x" | "y";
 
 export type CompliancePolicy = "iso" | "nfpa" | "uae";
 
@@ -402,6 +403,8 @@ export interface FloorplanExtend {
 
 export interface FloorplanOpening {
   kind: OpeningKind;
+  /** Stable id used by `before` / `after` placement. */
+  id?: string;
   /** Wall reference form: room id + side. */
   room?: string;
   side?: WallSide;
@@ -409,6 +412,10 @@ export interface FloorplanOpening {
   between?: [string, string];
   /** Position along the wall segment (or shared overlap), 0–100. */
   pct: number;
+  /** Absolute offset from the authored wall direction's start or end. */
+  from?: { edge: "start" | "end"; offset: number };
+  /** Placement next to an already-resolved opening on the same wall. */
+  relative?: { how: "before" | "after"; ref: string; gap: number };
   /** Opening width in input units. */
   width: number;
   hinge: DoorHinge;
@@ -434,6 +441,10 @@ export interface FloorplanFurniture {
   size?: { w: number; h: number };
   /** Rotation in degrees, clockwise, around the symbol center. */
   rotate: number;
+  /** Reflect symbol geometry around its local center without changing its footprint. */
+  mirror?: FloorplanMirrorAxis;
+  /** Center and scale the item down until its rotated envelope fits the room. */
+  fit?: { margin: number };
   label?: string;
   labelSourceRange?: import("../../core/types").SourceRange;
   /** Exact source range of the coordinate token following `at`. */
@@ -453,6 +464,16 @@ export interface FloorplanFurniture {
 export interface FloorplanControl {
   source: string;
   targets: string[];
+  line?: number;
+}
+
+export interface FloorplanWallRule {
+  scope: "exterior" | "interior" | "between";
+  between?: [string, string];
+  /** Wall band thickness in the plan's input unit. */
+  thickness: number;
+  /** Owning floor level; wall defaults and pair overrides are floor-local. */
+  floor: number;
   line?: number;
 }
 
@@ -605,6 +626,7 @@ export interface FloorplanAst {
   openings: FloorplanOpening[];
   furniture: FloorplanFurniture[];
   controls: FloorplanControl[];
+  wallRules: FloorplanWallRule[];
   arrays: FloorplanArray[];
   zones: FloorplanZone[];
   compliance: CompliancePolicy;
@@ -656,6 +678,11 @@ export interface RoomBox {
   fill?: string;
   nolabel: boolean;
   labelRole: FloorplanLabelRole;
+  /** Collision-aware label anchor chosen by layout. */
+  labelX?: number;
+  labelY?: number;
+  /** Constrained rooms render the name only so the area line cannot hit walls/fixtures. */
+  compactLabel?: boolean;
   positionMode: "free" | "move-x" | "move-y";
   floor: number;
 }
@@ -668,6 +695,10 @@ export interface RoomBox {
  */
 export interface OpeningGeom {
   kind: OpeningKind;
+  id?: string;
+  sourceLine?: number;
+  /** Resolved wall band thickness at this opening. */
+  thickness: number;
   doorType: DoorType;
   windowType: WindowType;
   vertical: boolean;
@@ -695,6 +726,7 @@ export interface ItemGeom {
   h: number;
   /** Rotation degrees clockwise about the box center. */
   rotate: number;
+  mirror?: FloorplanMirrorAxis;
   label?: string;
   labelSourceRange?: import("../../core/types").SourceRange;
   positionSourceRange?: import("../../core/types").SourceRange;
@@ -899,6 +931,17 @@ export interface SeamGeom {
   room: number;
 }
 
+/** A deduplicated room-boundary segment with its resolved structural thickness. */
+export interface WallGeom {
+  vertical: boolean;
+  along: number;
+  lo: number;
+  hi: number;
+  thickness: number;
+  /** One room for an exterior edge, two rooms for a shared interior edge. */
+  rooms: number[];
+}
+
 export interface FloorplanLayoutResult {
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
@@ -909,6 +952,7 @@ export interface FloorplanLayoutResult {
   north?: number;
   rooms: RoomBox[];
   seams: SeamGeom[];
+  walls: WallGeom[];
   openings: OpeningGeom[];
   items: ItemGeom[];
   controls: ControlGeom[];
@@ -918,7 +962,7 @@ export interface FloorplanLayoutResult {
   plates: FloorPlate[];
   /** Plan bounding box over room exteriors (meters, before dim/padding bands). */
   bounds: { minX: number; minY: number; maxX: number; maxY: number };
-  /** Wall band thickness (meters). */
+  /** Maximum resolved wall thickness (meters), retained for canvas padding. */
   wallT: number;
   /** Total interior area, m². */
   totalAreaM2: number;

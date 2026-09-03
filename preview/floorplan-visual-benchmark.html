@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SchemaTex Floorplan · Visual Benchmark</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #152439;
+      --paper: #edf2f4;
+      --sheet: #ffffff;
+      --line: #c8d4dc;
+      --grid: #dce6eb;
+      --muted: #5c6d7d;
+      --blue: #176b8f;
+      --blue-soft: #e2f1f6;
+      --red: #c23f32;
+      --red-soft: #fff0ed;
+      --green: #26745f;
+      --green-soft: #e8f5f0;
+      --amber: #9a641d;
+      --amber-soft: #fff6df;
+      --shadow: 0 18px 55px rgba(21, 36, 57, .09);
+      --radius: 3px;
+      --display: clamp(48px, 7.5vw, 98px);
+      --headline: clamp(30px, 4vw, 52px);
+      --subhead: clamp(22px, 2.4vw, 34px);
+      --body: 16px;
+      --caption: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(rgba(23, 107, 143, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 107, 143, .045) 1px, transparent 1px);
+      background-size: 22px 22px;
+      font: 400 var(--body)/1.62 "IBM Plex Sans", sans-serif;
+    }
+
+    a { color: inherit; }
+    a:focus-visible, summary:focus-visible { outline: 3px solid rgba(23, 107, 143, .45); outline-offset: 3px; }
+    img { display: block; max-width: 100%; }
+    .shell { width: min(1580px, calc(100% - 44px)); margin: 0 auto; }
+    .mono, .eyebrow, .tag, .score-name, .pair-label, .case-no, .status, .matrix th {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: var(--caption);
+      letter-spacing: .075em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 76px 0 64px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(237, 242, 244, .82);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 620px;
+      height: 430px;
+      right: -90px;
+      top: 44px;
+      border: 2px solid rgba(23, 107, 143, .17);
+      background:
+        linear-gradient(90deg, transparent 31%, rgba(23,107,143,.12) 31%, rgba(23,107,143,.12) 31.4%, transparent 31.4%),
+        linear-gradient(transparent 48%, rgba(23,107,143,.12) 48%, rgba(23,107,143,.12) 48.5%, transparent 48.5%);
+      transform: rotate(4deg);
+      pointer-events: none;
+    }
+    .eyebrow { position: relative; z-index: 1; margin: 0 0 22px; color: var(--blue); }
+    h1, h2, h3 { font-family: "IBM Plex Sans Condensed", sans-serif; line-height: 1.02; }
+    h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 1040px;
+      margin: 0;
+      font-size: var(--display);
+      letter-spacing: -.05em;
+      font-weight: 600;
+    }
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .scoreboard {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 870px;
+      margin-top: 52px;
+      border-block: 1px solid var(--ink);
+    }
+    .score { padding: 17px 20px 18px 0; }
+    .score + .score { padding-left: 20px; border-left: 1px solid var(--line); }
+    .score strong { display: block; font: 600 34px/1 "IBM Plex Sans Condensed", sans-serif; }
+    .score-name { display: block; margin-top: 8px; color: var(--muted); }
+
+    .method {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .method strong { color: var(--ink); }
+    .method a { color: var(--blue); }
+
+    .verdict {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 32px;
+      padding: 68px 0 64px;
+      border-bottom: 1px solid var(--line);
+    }
+    .stamp {
+      align-self: start;
+      padding: 22px 16px;
+      border: 3px solid var(--red);
+      color: var(--red);
+      font: 600 18px/1.2 "IBM Plex Mono", monospace;
+      text-align: center;
+      text-transform: uppercase;
+      transform: rotate(-3deg);
+    }
+    .verdict h2 { max-width: 960px; margin: 0; font-size: var(--headline); letter-spacing: -.03em; }
+    .verdict p { max-width: 920px; margin: 20px 0 0; color: var(--muted); font-size: 18px; }
+
+    .case { padding: 76px 0 82px; border-bottom: 1px solid var(--line); }
+    .case-head {
+      display: grid;
+      grid-template-columns: 130px 1fr auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+    .case-no { color: var(--blue); }
+    .case h2 { margin: 0; font-size: var(--headline); letter-spacing: -.025em; }
+    .tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .tag { padding: 6px 9px; border: 1px solid var(--line); background: rgba(255,255,255,.55); color: var(--muted); }
+    .tag.valid { color: var(--green); border-color: rgba(38,116,95,.35); background: var(--green-soft); }
+
+    .evidence {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 310px;
+      gap: 14px;
+      align-items: stretch;
+    }
+    .image-card, .audit {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--sheet);
+      box-shadow: var(--shadow);
+    }
+    .image-card { overflow: hidden; }
+    .pair-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .pair-label strong { color: var(--ink); font-weight: 500; }
+    .image-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 510px;
+      padding: 14px;
+      background-image:
+        linear-gradient(rgba(23, 107, 143, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 107, 143, .035) 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+    .image-stage img { width: 100%; height: 480px; object-fit: contain; }
+    .image-note { min-height: 72px; margin: 0; padding: 13px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .current .pair-label { border-top: 4px solid var(--green); padding-top: 9px; }
+    .reference .pair-label { border-top: 4px solid var(--blue); padding-top: 9px; }
+
+    .audit { display: flex; flex-direction: column; border-top: 4px solid var(--red); }
+    .audit-head { padding: 17px 18px 15px; border-bottom: 1px solid var(--line); }
+    .status { color: var(--red); }
+    .audit h3 { margin: 7px 0 0; font-size: 27px; letter-spacing: -.02em; }
+    .audit dl { margin: 0; }
+    .audit-row { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .audit dt { color: var(--muted); font-size: 13px; }
+    .audit dd { margin: 3px 0 0; font: 600 24px/1.1 "IBM Plex Sans Condensed", sans-serif; }
+    .findings { margin: 0; padding: 16px 18px 18px 36px; color: var(--muted); font-size: 14px; }
+    .findings li + li { margin-top: 10px; }
+    .findings strong { color: var(--ink); }
+    .source-links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 14px 18px; border-top: 1px solid var(--line); }
+    .source-links a { color: var(--blue); font: 500 11px/1.4 "IBM Plex Mono", monospace; }
+
+    .redline {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      margin-top: 16px;
+      padding: 17px 18px;
+      border-left: 4px solid var(--red);
+      background: var(--red-soft);
+      color: var(--muted);
+    }
+    .redline .mono { color: var(--red); }
+    .redline strong { color: var(--ink); }
+
+    .matrix-section { padding: 78px 0 88px; }
+    .matrix-section h2 { max-width: 1000px; margin: 0; font-size: var(--headline); letter-spacing: -.03em; }
+    .matrix-section > p { max-width: 880px; margin: 18px 0 34px; color: var(--muted); font-size: 18px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--sheet); box-shadow: var(--shadow); }
+    .matrix { width: 100%; border-collapse: collapse; min-width: 880px; }
+    .matrix th, .matrix td { padding: 15px 18px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    .matrix th { color: var(--muted); background: #f7fafb; font-weight: 500; }
+    .matrix td:first-child { width: 22%; font-weight: 600; }
+    .matrix td:nth-child(2) { width: 16%; }
+    .matrix tr:last-child td { border-bottom: 0; }
+    .pill { display: inline-block; padding: 4px 8px; font: 500 11px/1.3 "IBM Plex Mono", monospace; text-transform: uppercase; }
+    .pill.yes { color: var(--green); background: var(--green-soft); }
+    .pill.partial { color: var(--amber); background: var(--amber-soft); }
+    .pill.no { color: var(--red); background: var(--red-soft); }
+
+    .recommendation {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 34px;
+      margin-top: 34px;
+      padding: 28px;
+      background: var(--ink);
+      color: white;
+    }
+    .recommendation h3 { margin: 0; font-size: var(--subhead); }
+    .recommendation ol { margin: 0; padding-left: 22px; color: #cbd7e1; }
+    .recommendation li + li { margin-top: 10px; }
+
+    details { margin-top: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.58); }
+    summary { cursor: pointer; padding: 13px 16px; color: var(--muted); font: 500 12px/1.4 "IBM Plex Mono", monospace; }
+    details p { margin: 0; padding: 0 16px 16px; color: var(--muted); }
+
+    footer { padding: 28px 0 46px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    footer a { color: var(--blue); }
+
+    @media (max-width: 1180px) {
+      .evidence { grid-template-columns: 1fr 1fr; }
+      .audit { grid-column: 1 / -1; display: grid; grid-template-columns: 260px 1fr; }
+      .audit-head { border-right: 1px solid var(--line); }
+      .audit dl { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .audit-row { border-right: 1px solid var(--line); }
+      .findings { grid-column: 2; }
+      .source-links { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 24px, 1580px); }
+      .hero { padding-top: 54px; }
+      .hero::after { opacity: .45; right: -360px; }
+      .scoreboard { grid-template-columns: 1fr; }
+      .score + .score { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+      .verdict, .recommendation { grid-template-columns: 1fr; }
+      .stamp { width: 190px; }
+      .case-head { grid-template-columns: 1fr; align-items: start; }
+      .tags { justify-content: flex-start; }
+      .evidence { grid-template-columns: 1fr; }
+      .audit { grid-column: auto; display: block; }
+      .audit dl { display: block; }
+      .findings { grid-column: auto; }
+      .image-stage { min-height: 390px; }
+      .image-stage img { height: 360px; }
+      .redline { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">Floorplan vision benchmark · generated references × production renderer</p>
+      <h1>能画出来，和还原对了，是两件事。</h1>
+      <p>我让 image model 生成三类典型 floorplan，再只用当前 production DSL 人工还原。下面不是 code review，而是逐张看图后的 redline：哪些真的像，哪些只是 validator 没报错。</p>
+      <div class="scoreboard" aria-label="Vision assessment summary">
+        <div class="score"><strong>8 / 10</strong><span class="score-name">Geometry reconstruction</span></div>
+        <div class="score"><strong>6 / 10</strong><span class="score-name">Visual fidelity</span></div>
+        <div class="score"><strong>4 / 10</strong><span class="score-name">Operational trust</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell method">
+    <strong>方法边界：</strong>参考图由 imagegen 生成，本身不是建筑事实；它们用于制造现实感较强的视觉需求。还原稿全部由当前 SchemaTex renderer 生成，三份 DSL 均为 <code>valid</code>、0 diagnostics。<a href="floorplan-visual-benchmark/prompts.md">查看完整 prompts</a>。
+  </div>
+
+  <main class="shell">
+    <section class="verdict" aria-labelledby="verdict-title">
+      <div class="stamp">Direction<br>approved<br>with gaps</div>
+      <div>
+        <h2 id="verdict-title">结论：现有 engine 能还原“示意图”，还不能可靠还原“可执行空间”。</h2>
+        <p>三张图的 room topology、总体尺寸和大部分 symbol 都能重建，说明基本路线成立。但所有结果都出现了肉眼可见、validator 看不见的问题：label 压住家具、内外墙同厚、门扇扫到座椅、楼梯 handedness 只能碰运气、标题写 40 seats 但 engine 不核对 capacity、Accessible Restroom 只是文字而不是规则。</p>
+      </div>
+    </section>
+
+    <section class="case" id="apartment">
+      <div class="case-head">
+        <div class="case-no">Case A / residential</div>
+        <h2>紧凑型两居公寓</h2>
+        <div class="tags"><span class="tag valid">0 diagnostics</span><span class="tag">10 × 7.5 m</span><span class="tag">2 bedrooms</span></div>
+      </div>
+      <div class="evidence">
+        <figure class="image-card reference">
+          <figcaption class="pair-label"><strong>Visual request</strong><span>imagegen reference</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/reference-apartment.png" alt="Generated compact two-bedroom apartment reference floor plan"></div>
+          <p class="image-note">参考图强调 open kitchen、双卧室、成组 closet、明显不同的外墙/内墙 thickness。</p>
+        </figure>
+        <figure class="image-card current">
+          <figcaption class="pair-label"><strong>Current engine</strong><span>production SVG</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/current-apartment.svg" alt="SchemaTex reconstruction of the apartment floor plan"></div>
+          <p class="image-note">Topology 和 10 × 7.5 m outer size 对上；renderer 也正确给出 75 m² 的 room geometry。</p>
+        </figure>
+        <aside class="audit" aria-label="Apartment vision audit">
+          <div class="audit-head"><span class="status">Vision redline</span><h3>结构对了，阅读失败</h3></div>
+          <dl>
+            <div class="audit-row"><dt>Topology</dt><dd>8 / 10</dd></div>
+            <div class="audit-row"><dt>Symbols</dt><dd>8 / 10</dd></div>
+            <div class="audit-row"><dt>Annotations</dt><dd>4 / 10</dd></div>
+          </dl>
+          <ul class="findings">
+            <li><strong>最大问题是 label：</strong>Living / Dining / Kitchen 正好压在餐桌椅上；Entry Closet 又压住 Entry Hall。</li>
+            <li><strong>open-plan semantics 丢失：</strong>参考图有 living、dining、kitchen 三个功能区；当前只能合成一个 room label，除非伪造墙或把 label 当 furniture。</li>
+            <li><strong>墙厚信息丢失：</strong>外墙和隔墙看起来完全同级，尺寸也无法说明量到 interior、centerline 还是 exterior。</li>
+          </ul>
+          <div class="source-links"><a href="floorplan-visual-benchmark/apartment.sx">OPEN DSL</a><a href="floorplan-visual-benchmark/current-apartment.svg">OPEN SVG</a></div>
+        </aside>
+      </div>
+      <div class="redline"><span class="mono">What “valid” missed</span><span>0 diagnostics 不代表可读。这里至少有两个 <strong>annotation collision</strong>，而现有 validator 只检查 geometry collision。</span></div>
+    </section>
+
+    <section class="case" id="townhouse">
+      <div class="case-head">
+        <div class="case-no">Case B / circulation</div>
+        <h2>L-shaped townhouse</h2>
+        <div class="tags"><span class="tag valid">0 diagnostics</span><span class="tag">9 × 8 m</span><span class="tag">L stair</span></div>
+      </div>
+      <div class="evidence">
+        <figure class="image-card reference">
+          <figcaption class="pair-label"><strong>Visual request</strong><span>imagegen reference</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/reference-townhouse.png" alt="Generated L-shaped townhouse ground-floor reference"></div>
+          <p class="image-note">视觉重点不是房间数量，而是 L-shaped footprint、楼梯转向、landing 和 entry circulation。</p>
+        </figure>
+        <figure class="image-card current">
+          <figcaption class="pair-label"><strong>Current engine</strong><span>production SVG</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/current-townhouse.svg" alt="SchemaTex reconstruction of the townhouse floor plan"></div>
+          <p class="image-note">用多个 room tile 出了正确外轮廓；stairs-l 的 drafting symbol 也明显优于 generic rectangle。</p>
+        </figure>
+        <aside class="audit" aria-label="Townhouse vision audit">
+          <div class="audit-head"><span class="status">Vision redline</span><h3>轮廓能追，楼梯不能保证</h3></div>
+          <dl>
+            <div class="audit-row"><dt>Footprint</dt><dd>9 / 10</dd></div>
+            <div class="audit-row"><dt>Circulation</dt><dd>7 / 10</dd></div>
+            <div class="audit-row"><dt>Stair semantics</dt><dd>5 / 10</dd></div>
+          </dl>
+          <ul class="findings">
+            <li><strong>L-shape 已经能做：</strong>不需要 polygon；room tiling 足够重建这个 typical case。</li>
+            <li><strong>handedness 仍靠碰：</strong>这张参考图恰好可以用 rotate 接近，但遇到左右镜像版本，当前 stairs-l 没有 mirror。</li>
+            <li><strong>label 再次失败：</strong>Dining / Kitchen 压 island，Living Room 压 sectional，Utility 的 label 与 washer/dryer 混在一起。</li>
+          </ul>
+          <div class="source-links"><a href="floorplan-visual-benchmark/townhouse.sx">OPEN DSL</a><a href="floorplan-visual-benchmark/current-townhouse.svg">OPEN SVG</a></div>
+        </aside>
+      </div>
+      <div class="redline"><span class="mono">What the POC proves</span><span><strong>mirror / flip 是真实需求，不是语法洁癖。</strong>同一个 L-stair 的左右手版本无法只靠 rotation 相互得到。</span></div>
+    </section>
+
+    <section class="case" id="restaurant">
+      <div class="case-head">
+        <div class="case-no">Case C / commercial</div>
+        <h2>40-seat neighborhood restaurant</h2>
+        <div class="tags"><span class="tag valid">0 diagnostics</span><span class="tag">14 × 9 m</span><span class="tag">commercial kitchen</span></div>
+      </div>
+      <div class="evidence">
+        <figure class="image-card reference">
+          <figcaption class="pair-label"><strong>Visual request</strong><span>imagegen reference</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/reference-restaurant.png" alt="Generated 40-seat restaurant reference floor plan"></div>
+          <p class="image-note">参考图同时要求 seating density、commercial equipment、accessible restrooms、service exit 和 egress aisle。</p>
+        </figure>
+        <figure class="image-card current">
+          <figcaption class="pair-label"><strong>Current engine</strong><span>production SVG</span></figcaption>
+          <div class="image-stage"><img src="floorplan-visual-benchmark/current-restaurant.svg" alt="SchemaTex reconstruction of the restaurant floor plan"></div>
+          <p class="image-note">restaurant catalog 和 grid 很强：8 组 dining table、booth、walk-in、range、grill、fryer 都有行业可读 symbol。</p>
+        </figure>
+        <aside class="audit" aria-label="Restaurant vision audit">
+          <div class="audit-head"><span class="status">Vision redline</span><h3>最像，但最不能信</h3></div>
+          <dl>
+            <div class="audit-row"><dt>Program</dt><dd>8 / 10</dd></div>
+            <div class="audit-row"><dt>Density</dt><dd>8 / 10</dd></div>
+            <div class="audit-row"><dt>Operations</dt><dd>4 / 10</dd></div>
+          </dl>
+          <ul class="findings">
+            <li><strong>front door swing 扫到座位区：</strong>renderer 没有把 door swing envelope 纳入 furniture clearance，0 diagnostics 仍然出现 circulation 风险。</li>
+            <li><strong>“40-seat” 没有语义：</strong>标题写 40，但当前 engine 不核对 auto-seating 与 booth capacity 是否真等于 40。</li>
+            <li><strong>Accessible 只是 label：</strong>没有 turning circle、grab bar、door clearance 或 code profile；矩形 keep-clear zone 只能做最粗的 aisle 检查。</li>
+          </ul>
+          <div class="source-links"><a href="floorplan-visual-benchmark/restaurant.sx">OPEN DSL</a><a href="floorplan-visual-benchmark/current-restaurant.svg">OPEN SVG</a></div>
+        </aside>
+      </div>
+      <div class="redline"><span class="mono">New issue found</span><span>原来的 issue POC 没覆盖 <strong>door-swing clearance</strong> 和 <strong>capacity / accessibility constraints</strong>。它们不是 renderer polish，而是 validator 的新 domain rules。</span></div>
+    </section>
+
+    <section class="matrix-section" aria-labelledby="matrix-title">
+      <h2 id="matrix-title">所以，之前的 POC 能解决多少？</h2>
+      <p>方向是对的，但不是 complete solution。它能补上这次视觉测试里最显眼的 geometry / symbol 问题；商业空间的 operational correctness 仍需要新增规则。</p>
+      <div class="table-wrap">
+        <table class="matrix">
+          <thead><tr><th>Visible problem</th><th>POC coverage</th><th>Vision evidence</th><th>Decision</th></tr></thead>
+          <tbody>
+            <tr><td>Absolute opening offsets</td><td><span class="pill yes">Yes</span></td><td>参考图依赖准确 jamb offset；percent 在 resize 后会漂。</td><td>保留 leading-jamb + chained placement 方案。</td></tr>
+            <tr><td>Exterior / interior wall hierarchy</td><td><span class="pill yes">Yes</span></td><td>三张参考图都把外墙画得更重，当前三张全部丢失。</td><td>WallSegment 必须进入 domain model，不是 CSS 参数。</td></tr>
+            <tr><td>Stair handedness</td><td><span class="pill yes">Yes</span></td><td>Townhouse 可以 rotate 接近，但不能保证还原其镜像版本。</td><td>加入 explicit mirror；split stair 维持独立 primitive。</td></tr>
+            <tr><td>Label collision</td><td><span class="pill partial">Partial</span></td><td>三张 current output 都有明显文字压家具。</td><td>从 room label avoidance 扩成统一 annotation collision engine，包含 furniture labels。</td></tr>
+            <tr><td>Transform / fit</td><td><span class="pill yes">Yes</span></td><td>大量 furniture 需要人工调坐标才不越界。</td><td>rotate → final bounds → fit 的顺序正确。</td></tr>
+            <tr><td>Door swing clearance</td><td><span class="pill no">No</span></td><td>Restaurant front door 视觉上侵入 seating circulation，validator 没看到。</td><td>把 door leaf swept area 纳入 protected geometry。</td></tr>
+            <tr><td>Capacity / ADA constraints</td><td><span class="pill no">No</span></td><td>“40-seat” 和 “Accessible” 都只是文字，没有可验证含义。</td><td>先按真实 demand 决定是否扩 scope；不要假装当前已支持。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="recommendation">
+        <h3>建议继续做，但按这个顺序进入 production</h3>
+        <ol>
+          <li>先完成 geometry contract：WallSegment、absolute opening、transform final bounds。</li>
+          <li>再做 unified annotation collision 和 door-swing clearance；这两项直接决定图能不能读、空间能不能走。</li>
+          <li>随后补 mirror / split stair。Device/Circuit 留在 shared model 层，不和 floorplan renderer 混写。</li>
+          <li>Capacity、ADA、code compliance 先明确 scope；没有规则就明确报 unsupported，不能靠 label 冒充。</li>
+        </ol>
+      </div>
+
+      <details>
+        <summary>为什么不能把 imagegen 图当作 ground truth？</summary>
+        <p>image model 会生成视觉上可信、几何上可疑的细节。这组三张图中也有门/走道关系需要人工解释。因此 benchmark 判断的是 SchemaTex 能否表达和验证“看起来像真实需求的结构”，不是逐像素复制 imagegen 的错误。</p>
+      </details>
+    </section>
+  </main>
+
+  <footer><div class="shell">SchemaTex visual benchmark · built-in imagegen references · production renderer outputs · <a href="floorplan-poc.html">返回 issue POC</a></div></footer>
+</body>
+</html>

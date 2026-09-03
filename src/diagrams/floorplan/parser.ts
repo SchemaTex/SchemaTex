@@ -29,6 +29,7 @@ import type {
   FloorplanFurniture,
   FloorplanOpening,
   FloorplanRoom,
+  FloorplanWallRule,
   FloorplanZone,
   FloorplanUnit,
   FurnitureType,
@@ -673,14 +674,43 @@ function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: numb
     }
     op.side = side as WallSide;
   }
+  let placementForm: "at" | "from" | "relative" | undefined;
   while (tok.length) {
     const t = tok.shift()!;
     if (!isWord(t)) throw new FloorplanParseError(`${kind}: unexpected string "${t.str}"`, ln);
-    else if (t.word === "at") op.pct = parsePct(tok.shift(), ln);
+    else if (t.word === "at") {
+      if (placementForm) throw new FloorplanParseError(`${kind}: use exactly one placement form: at, from, before, or after`, ln);
+      placementForm = "at";
+      op.pct = parsePct(tok.shift(), ln);
+    }
+    else if (t.word === "from") {
+      if (placementForm) throw new FloorplanParseError(`${kind}: use exactly one placement form: at, from, before, or after`, ln);
+      placementForm = "from";
+      const edge = parseId(tok.shift(), "start|end", ln);
+      if (edge !== "start" && edge !== "end") {
+        throw new FloorplanParseError(`from must be start|end, got "${edge}"`, ln);
+      }
+      const offset = parseNum(tok.shift(), "opening offset", ln);
+      if (offset < 0) throw new FloorplanParseError(`opening offset must be zero or greater`, ln);
+      op.from = { edge, offset };
+    }
+    else if (t.word === "before" || t.word === "after") {
+      if (placementForm) throw new FloorplanParseError(`${kind}: use exactly one placement form: at, from, before, or after`, ln);
+      placementForm = "relative";
+      const ref = parseId(tok.shift(), "an opening id", ln);
+      const gapKeyword = parseId(tok.shift(), '"gap"', ln);
+      if (gapKeyword !== "gap") {
+        throw new FloorplanParseError(`${t.word} expects "${t.word} <opening-id> gap <distance>"`, ln);
+      }
+      const gap = parseNum(tok.shift(), "opening gap", ln);
+      if (gap < 0) throw new FloorplanParseError(`opening gap must be zero or greater`, ln);
+      op.relative = { how: t.word, ref, gap };
+    }
     else if (t.word === "width") {
       op.width = parseNum(tok.shift(), "width", ln);
       if (op.width <= 0) throw new FloorplanParseError(`width must be greater than zero`, ln);
     }
+    else if (t.word === "id") op.id = parseId(tok.shift(), "an opening id", ln);
     else if (t.word === "hinge") {
       const h = parseId(tok.shift(), "hinge (left|right)", ln);
       if (h !== "left" && h !== "right") throw new FloorplanParseError(`hinge must be left|right, got "${h}"`, ln);
@@ -712,7 +742,9 @@ function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: numb
   ast.openings.push(op);
 }
 
-const FURNITURE_INSTANCE_KEYWORDS = new Set(["in", "on", "at", "size", "rotate", "seats"]);
+const FURNITURE_INSTANCE_KEYWORDS = new Set([
+  "in", "on", "at", "size", "rotate", "mirror", "fit", "margin", "seats",
+]);
 
 function parseFurniture(
   tok: Tok[],
@@ -723,6 +755,7 @@ function parseFurniture(
 ): void {
   const type = parseFurnitureType(tok.shift(), ln);
   const f: FloorplanFurniture = { type, x: 0, y: 0, rotate: 0, floor, line: ln };
+  let placementForm: "at" | "fit" | undefined;
   const instance = tok[0];
   if (isWord(instance) && !FURNITURE_INSTANCE_KEYWORDS.has(instance.word)) {
     f.instanceId = instance.word;
@@ -740,6 +773,10 @@ function parseFurniture(
       f.anchor = { side: side as WallSide, pct: 50 };
     }
     else if (t.word === "at") {
+      if (placementForm) {
+        throw new FloorplanParseError(`furniture: use exactly one placement form: at or fit`, ln);
+      }
+      placementForm = "at";
       if (f.anchor) {
         f.anchor.pct = parsePct(tok.shift(), ln);
       } else {
@@ -749,6 +786,27 @@ function parseFurniture(
       }
     } else if (t.word === "size") f.size = parseDims(tok.shift(), "size", ln);
     else if (t.word === "rotate") f.rotate = parseNum(tok.shift(), "rotate", ln);
+    else if (t.word === "mirror") {
+      const axis = parseId(tok.shift(), "mirror axis (x|y)", ln);
+      if (axis !== "x" && axis !== "y") {
+        throw new FloorplanParseError(`mirror axis must be x|y, got "${axis}"`, ln);
+      }
+      f.mirror = axis;
+    }
+    else if (t.word === "fit") {
+      if (wallMounted) throw new FloorplanParseError(`fixture: "fit" is only valid for room-contained furniture`, ln);
+      if (placementForm) {
+        throw new FloorplanParseError(`furniture: use exactly one placement form: at or fit`, ln);
+      }
+      placementForm = "fit";
+      f.fit = { margin: 0 };
+    }
+    else if (t.word === "margin") {
+      if (!f.fit) throw new FloorplanParseError(`"margin" requires "fit"`, ln);
+      const margin = parseNum(tok.shift(), "fit margin", ln);
+      if (margin < 0) throw new FloorplanParseError(`fit margin must be zero or greater`, ln);
+      f.fit.margin = margin;
+    }
     else if (t.word === "seats") {
       // `seats "Alice" "Bob" …` — consume consecutive quoted names. An empty
       // string ("") leaves that seat blank (skip a guest without shifting).
@@ -803,6 +861,30 @@ function parseControl(tok: Tok[], ast: FloorplanAst, ln: number): void {
   }
   const control: FloorplanControl = { source, targets: targetList, line: ln };
   ast.controls.push(control);
+}
+
+function parseWall(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
+  const scope = parseId(tok.shift(), "exterior|interior|between", ln);
+  let rule: FloorplanWallRule;
+  if (scope === "between") {
+    rule = {
+      scope,
+      between: [parseId(tok.shift(), "a room id", ln), parseId(tok.shift(), "a second room id", ln)],
+      thickness: 0,
+      floor,
+      line: ln,
+    };
+  } else if (scope === "exterior" || scope === "interior") {
+    rule = { scope, thickness: 0, floor, line: ln };
+  } else {
+    throw new FloorplanParseError(`wall must target exterior, interior, or between <room> <room>`, ln);
+  }
+  const keyword = parseId(tok.shift(), '"thickness"', ln);
+  if (keyword !== "thickness") throw new FloorplanParseError(`wall expects "thickness <distance>"`, ln);
+  rule.thickness = parseNum(tok.shift(), "wall thickness", ln);
+  if (rule.thickness <= 0) throw new FloorplanParseError(`wall thickness must be greater than zero`, ln);
+  if (tok.length) throw new FloorplanParseError(`wall: unexpected trailing tokens`, ln);
+  ast.wallRules.push(rule);
 }
 
 function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
@@ -1148,6 +1230,7 @@ export function parseFloorplan(text: string): FloorplanAst {
     openings: [],
     furniture: [],
     controls: [],
+    wallRules: [],
     arrays: [],
     zones: [],
     compliance: "iso",
@@ -1459,6 +1542,9 @@ export function parseFloorplan(text: string): FloorplanAst {
     else if (kw === "controls") {
       parseControl(tok, ast, ln);
     }
+    else if (kw === "wall") {
+      parseWall(tok, ast, ln, currentFloor);
+    }
     else if (kw === "grid" || kw === "row" || kw === "arc") {
       parseArray(kw as ArrayMode, tok, ast, ln, currentFloor);
     }
@@ -1467,7 +1553,7 @@ export function parseFloorplan(text: string): FloorplanAst {
     }
     else {
       throw new FloorplanParseError(
-        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc, fixture, zone, safety, route, controls`,
+        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, wall, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc, fixture, zone, safety, route, controls`,
         ln
       );
     }

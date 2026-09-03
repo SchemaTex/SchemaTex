@@ -239,9 +239,9 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340`);
 
   it("rejects unknown keywords with the expected-keyword list", () => {
     expect(() =>
-      parseFloorplan(`floorplan\nroom a at 0,0 size 4x3\nwall a north`)
+      parseFloorplan(`floorplan\nroom a at 0,0 size 4x3\nceiling a north`)
     ).toThrow(
-      /room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc/
+      /room, stage, extend, wall, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc/
     );
   });
 

@@ -54,7 +54,11 @@ describe("floorplan 22.1 — production replay contracts", () => {
     );
     expect(before.ok).toBe(true);
     expect(before.status).toBe("partial");
+    // The crowded historical layout also blocks the entry door. The new
+    // clearance validator adds that finding without changing the grouped
+    // array-collision contract this replay originally protected.
     expect(before.diagnostics.map((entry) => entry.code)).toEqual([
+      "floorplan/door-swing-obstructed",
       "floorplan/array-pitch-too-small",
     ]);
 

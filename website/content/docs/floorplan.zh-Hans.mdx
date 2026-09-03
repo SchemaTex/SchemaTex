@@ -4,7 +4,7 @@ title: 平面图
 
 ## 关于平面图
 
-**平面图**是空间的标准二维建筑视图：具有真实尺寸的房间、以实心**填充墙**绘制的墙体、带四分之一圆弧摆动的门、玻璃线条表示的窗户，以及平面视图符号表示的家具——这是《建筑图形标准》所记录并被所有专业图纸使用的视觉语言。Schematex 通过文本渲染平面图：您用真实尺寸声明房间、开口和家具；引擎自动合并共用墙体、计算房间面积、绘制尺寸线、自动排列座位，并验证几何正确性。
+**平面图**是空间的标准二维建筑视图：具有真实尺寸的房间、以实心**填充墙**绘制的墙体、带四分之一圆弧摆动的门、玻璃线条表示的窗户，以及平面视图符号表示的家具——这是《建筑图形标准》所记录并被所有专业图纸使用的视觉语言。Schematex 通过文本渲染平面图：您用真实尺寸声明房间、连续开口、墙厚和家具；引擎自动合并共用墙体、计算房间面积、绘制尺寸线、自动排列座位与标签，并检查真实的门扇摆动空间。
 
 与图像生成器不同，输出结果是*可量化、可编辑的*——每个房间都是带有计算面积的已标记元素，增加第四排桌子只需编辑一行文字。
 
@@ -88,6 +88,28 @@ window living north at 30% width 1.8
 - 窗 `type fixed|sliding|casement|bay`：sliding = 两个偏移面板，casement 添加向外摆动圆弧，bay 向墙外投影一个展开梯形。
 - 开口会被截断以适应其墙体段（并附带警告），而不会溢出。
 
+如果立面来自实测尺寸，可以给第一个开口命名，再依次排列其余开口：
+
+```text
+door hall south from start 0.30 width 0.90 id entry
+window hall south after entry gap 0.10 width 1.20 id display1
+window hall south after display1 gap 0.20 width 1.20 id display2
+```
+
+水平墙的 `start` 是西端，垂直墙的 `start` 是北端。`from start n` 量到 opening 的 leading jamb；`from end n` 从另一端量到 trailing jamb。`before` / `after` 只能引用同一面墙上、在前文已经声明的 opening id，因此 AI agent 生成的链条有稳定且可检查的顺序。
+
+### 墙厚层级
+
+先声明整体规则，再覆盖少数特殊的共用墙：
+
+```text
+wall exterior thickness 0.35
+wall interior thickness 0.12
+wall between kitchen dining thickness 0.20
+```
+
+墙体填充、开口和 semantic SVG 共用同一组 resolved wall segments，门窗会继承所在墙的真实厚度。不写任何 `wall` 语句时，所有墙仍使用原有的 0.20 m 默认值。
+
 ---
 
 ## 4. 家具
@@ -99,6 +121,14 @@ furniture sofa in living at 0.25,2.9
 furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
 furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
 ```
+
+当需求是“把这个符号完整放进房间”，可用 `fit`，无需让 AI 自己计算旋转后的 bounding box：
+
+```text
+furniture stairs-l S1 in stairwell fit margin 0.10 size 2.4x3.2 rotate 90 mirror x
+```
+
+`fit` 先应用旋转，仅在需要时等比缩小，然后把最终 envelope 居中放进房间的最大区域。`mirror x|y` 只镜像 geometry，`UP` 等文字仍保持正向可读。
 
 目录涵盖住宅、商业和场地规划（尺寸默认为行业标准占地）：
 
@@ -128,6 +158,8 @@ furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Gro
 `tree` 和 `car` 为室外设计（树冠圆盘、停车位占地），因此**场地规划**只需将相邻区域铺排为毗邻房间——前院、建筑占地、车道、后院——再在上面放置树木和停放的汽车即可。
 
 **楼梯**遵循制图规范：踏步线间距 0.28 m（11 英寸），方向箭头从最低踏步开始标注 `UP`（给元素一个 `"DN"` 标签表示下行），以及在假想 4 英尺截面处的 45° 折线断开线，截面以外的踏步用虚线表示。`stairs` 为直跑楼梯（用 `size`/`rotate` 定向），`stairs-l` 经过平台转 90°，`stairs-u` 转回 180°，`spiral-stairs` 为带放射状踏步和中心柱的圆形楼梯。
+
+房间标签不需要额外 syntax。布局会用稳定的 center-out candidates 避让家具的完整可见 envelope（包括餐桌自动生成的椅子）、MEP symbols、hinged-door swing sectors 和 protected-zone captions。狭小的 WC、储物间等自动使用只显示名称的 compact label。
 
 ---
 
@@ -159,15 +191,15 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 
 引擎验证 LLM（和人类）实际容易出错的地方，错误信息会指出问题元素并给出修正方向：
 
-**错误**（阻止渲染，显示在错误面板中）：
-
-- 房间重叠 — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
-- 非相邻房间之间的门 — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+**错误**会阻止渲染，因为文档结构无法被诚实解析。例如：引用不存在的 room id、扩展的对象不是 room、重复的 opening id，或相对 opening 引用了后文 / 另一面墙上的 id。
 
 **警告**（仍会渲染，列于平面图下方）：
 
+- 房间重叠 — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`。
+- 非相邻房间之间的门会被跳过并报告实测 gap，建筑其余部分仍然渲染。
 - 家具超出房间边界 — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
 - 家具碰撞——包含**椅圈包络**的边界框，因此两张相互接触椅子的宴会圆桌即便桌面不重叠也会被标记。
+- 单扇 / 双扇 hinged door 的真实 swept sector 与家具相交时，报告 `floorplan/door-swing-obstructed`；sliding、pocket、bifold 不占用四分之一圆摆动区。
 - 开口被截断以适应其墙体段。
 
 ---
@@ -175,21 +207,30 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
 ## 8. 语法（EBNF）
 
 ```text
-plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
-statement ::= room | extend | north | door | window | opening | furniture | array
-room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+plan      ::= "floorplan" string? header-setting* NL statement*
+header-setting ::= "unit" ("m"|"ft") | "symbols" ("nec"|"iec")
+statement ::= room | extend | wall | north | door | window | opening | furniture | fixture | zone | array | controls
+room      ::= "room" id string? placement "size" dims ("fill" color)?
+              ("nolabel" | "label-role" ("normal"|"primary"|"secondary"|"hidden"))?
 extend    ::= "extend" id placement "size" dims
 north     ::= "north" num?
+wall      ::= "wall" ("exterior" | "interior" | "between" id id) "thickness" num
 placement ::= "at" coord
             | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
               ("align" ("start"|"center"|"end"))?
-door      ::= "door" (wallref | "between" id id) "at" pct
+opening-placement ::= "at" pct | "from" ("start"|"end") num
+                    | ("before"|"after") id "gap" num
+door      ::= "door" (wallref | "between" id id) opening-placement
               ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
-              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
-window    ::= "window" wallref "at" pct ("width" num)?
-              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
-opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))? ("id" id)?
+window    ::= "window" wallref opening-placement ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))? ("id" id)?
+opening   ::= "opening" (wallref | "between" id id) opening-placement ("width" num)? ("id" id)?
+furniture ::= "furniture" type id? ("in" id) ("at" coord | "fit" ("margin" num)?)
+              ("size" dims)? ("rotate" num)? ("mirror" ("x"|"y"))? string? ("seats" string+)?
+fixture   ::= "fixture" type id? "in" id "on" ("north"|"south"|"east"|"west") "at" pct
+controls  ::= "controls" id "->" id ("," id)*
+zone      ::= "zone" id string? "in" id "at" coord "size" dims ("keep-clear")?
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
               ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
@@ -205,6 +246,8 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 ## 相关示例
 
 - [两居室公寓](/examples#floorplan) — 相对定位、7 扇门、完整家具布置
+- [两层 villa](/examples#floorplan) — 共享比例尺的楼层 plates，以及自动 fit 到上下楼梯间的 registered stair
+- [餐厅与商业厨房](/examples#floorplan) — 不同的外墙 / 内墙厚度与完整 back-of-house equipment line
 - [27 张桌子的教室](/examples#floorplan) — `grid … count` 截断、`unit ft`
 - [120 人婚宴](/examples#floorplan) — 自动排座宴会圆桌、舞池
 
@@ -227,4 +270,4 @@ room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
 
-可选的 furniture instance ID（`S1`）会注册跨楼层的同一段楼梯。低层自动标为 UP，高层标为 DN，错位超过 0.1 m 会产生 warning。房间引用、门、furniture 和 arrays 不能跨越 floor sections。
+可选的 furniture instance ID（`S1`）会注册跨楼层的同一段楼梯。低层自动标为 UP，高层标为 DN，错位超过 0.1 m 会产生 warning。room references、wall rules、doors、furniture 和 arrays 都是 floor-local，不能泄漏到其他 floor section。

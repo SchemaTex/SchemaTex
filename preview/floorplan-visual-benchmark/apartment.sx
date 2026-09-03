@@ -1,0 +1,45 @@
+floorplan "Compact Two-Bedroom Apartment — visual reconstruction" unit m
+north
+wall exterior thickness 0.32
+wall interior thickness 0.12
+room great "Living / Dining / Kitchen" at 0,0 size 4.8x7.5
+room bed1 "Bedroom 1" right-of great size 5.2x3.0
+room bath "Bathroom" below bed1 size 2.8x2.0
+room closet1 "Closet" right-of bath size 2.4x2.0
+room hall "Hall" at 4.8,5.0 size 1.4x2.5
+room bed2 "Bedroom 2" right-of hall size 3.8x2.5
+
+door hall south from start 0.2 width 0.95 id front hinge right swing in
+opening between great hall at 72% width 1.1
+door between hall bath at 45% width 0.8 hinge left swing out
+door between hall bed2 at 55% width 0.8 hinge right
+door between bed1 bath at 28% width 0.8 hinge right
+door between bed1 closet1 at 55% width 1.2 type bifold
+door between closet1 bed2 at 50% width 1.2 type bifold
+
+window great north at 48% width 2.0
+window great west at 35% width 1.4
+window bed1 north at 38% width 1.2
+window bed1 east at 35% width 1.2
+window bed2 east at 65% width 1.2
+
+furniture sectional in great at 1.35,0.9 size 2.65x1.75 rotate 180
+furniture coffee-table in great at 1.7,2.85 size 0.9x0.65
+furniture dining-table in great at 1.0,4.0 size 1.8x0.9
+furniture counter in great at 0.15,6.7 size 3.5x0.65
+furniture kitchen-sink in great at 1.0,6.75 size 0.9x0.55
+furniture stove in great at 2.8,6.72 size 0.7x0.6
+furniture fridge in great at 0.15,5.85 size 0.8x0.75
+furniture tv-stand in great at 0.12,1.15 size 0.35x1.4
+
+furniture bed-queen in bed1 at 2.25,0.45 size 1.6x2.0
+furniture nightstand in bed1 at 1.75,0.55
+furniture nightstand in bed1 at 3.95,0.55
+furniture wardrobe in closet1 at 0.15,0.18 size 2.05x0.55
+furniture toilet in bath at 1.25,0.18
+furniture sink in bath at 0.18,0.18
+furniture bathtub in bath at 2.0,0.15 size 0.7x1.65
+furniture bed-queen in bed2 at 1.15,0.3 size 1.6x1.9
+furniture nightstand in bed2 at 0.6,0.45
+furniture nightstand in bed2 at 2.8,0.45
+furniture wardrobe in hall at 0.12,0.12 size 0.5x1.15

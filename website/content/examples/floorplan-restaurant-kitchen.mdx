@@ -1,6 +1,6 @@
 ---
 title: Restaurant — dining room + commercial kitchen
-description: "A restaurant floor plan with the back-of-house most tools skip: booths and named tables out front, a commercial kitchen line (range, prep tables, three-compartment sink, walk-in cooler, fryer) behind the pass."
+description: "A restaurant floor plan with differentiated exterior, interior, and kitchen-pass walls plus the back-of-house most tools skip: booths, named tables, a range, prep tables, three-compartment sink, walk-in cooler, and fryer."
 diagram: floorplan
 standard: Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129
 industry: [hospitality, business]
@@ -14,10 +14,13 @@ relatedLink:
 status: published
 dsl: |
   floorplan "Bistro — Floor + Kitchen" unit m
+  wall exterior thickness 0.40
+  wall interior thickness 0.12
+  wall between dining kitchen thickness 0.20
   room dining "Dining Room" at 0,0 size 9x7
   room kitchen "Kitchen" right-of dining size 6x7
   opening between dining kitchen at 50% width 1.2
-  door dining south at 20% width 1.0
+  door dining south at 20% width 1.0 swing out
   furniture booth "B1" in dining at 0.3,0.4
   furniture booth "B2" in dining at 0.3,2.6
   furniture booth "B3" in dining at 0.3,4.8
@@ -35,4 +38,4 @@ dsl: |
 
 Front-of-house mixes `booth` (two facing benches with a table between) and named `round-table-4` covers; back-of-house uses the restaurant/commercial-kitchen catalog that general floor-plan tools omit: `range` (commercial six-burner over an oven), `prep-table` (stainless work table with a dashed under-shelf), `commercial-sink` (the three-compartment ware-washing sink health codes require), `walk-in` (the insulated double-wall cooler with its door), and `fryer`.
 
-The `opening between dining kitchen` resolves the shared wall automatically and punches the pass-through; area labels and exterior dimensions come for free. This is the `restaurant floor plan` / `commercial kitchen layout` request — the head commercial-floorplan search terms — answered from one paragraph of text.
+The `opening between dining kitchen` resolves the shared wall automatically and punches the pass-through through the actual 0.20 m host wall. The exterior shell remains 0.40 m while ordinary partitions stay 0.12 m; one resolved wall model drives poché and the gap. Area labels move away from the equipment line automatically, and exterior dimensions come for free. This is the `restaurant floor plan` / `commercial kitchen layout` request — the head commercial-floorplan search terms — answered from one paragraph of text.

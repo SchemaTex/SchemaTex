@@ -48,7 +48,7 @@
 | `room` | Rectangular space; walls drawn as solid poché (filled) bands centered on the room boundary; adjacent rooms share a single merged wall | ✅ |
 | `extend` | L/T/U-shaped rooms as a union of axis-aligned rects (`extend <room> at x,y size WxH`); extension must share an edge; walls merge along the seam, area sums, label centers on the largest part. Mirrors how pros measure L-rooms (split into rectangles, sum). | ✅ |
 | stairs | `stairs` / `stairs-l` / `stairs-u` / `spiral-stairs` furniture symbols — 0.28 m tread lines, direction arrow from the lowest tread with `UP` (label override for `DN`), 45° zigzag break line at the 4 ft cut plane, dashed treads beyond; landings blank. `elevator` = shaft with X. | ✅ |
-| room label | Name + auto-computed area (m² or sq ft) centered in the room | ✅ |
+| room label | Name + auto-computed area (m² or sq ft), placed deterministically away from furniture and door swings; constrained rooms use a one-line compact label | ✅ |
 | `door` (single swing) | Wall gap + door leaf + quarter-circle swing arc; hinge side and swing direction explicit | ✅ |
 | `door` double / French | Two mirrored quarter-arcs | ✅ |
 | `door` sliding / pocket | Gap with offset parallel leaf line (no arc) | ✅ |
@@ -117,11 +117,11 @@ stack horizontal
 
 floor 0 "Ground Floor"
   room living "Living Room" at 0,0 size 6x5
-  furniture stairs in living at 4.5,1 size 1.2x3 id main-stair
+  furniture stairs main-stair in living at 4.5,1 size 1.2x3
 
 floor 1 "First Floor"
   room hall "Landing" at 0,0 size 6x5
-  furniture stairs in hall at 4.5,1 size 1.2x3 id main-stair
+  furniture stairs main-stair in hall at 4.5,1 size 1.2x3
 ```
 
 - `floor <integer> "<label>"` starts a plate. Labels are optional; levels may be negative.
@@ -173,20 +173,24 @@ Header keyword: `floorplan` (unique for `detect()`).
 plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL
               ("stack" ("horizontal"|"vertical") NL)? (statement | floor-section)*
 floor-section ::= "floor" signed-int string? NL statement*
-statement ::= room | extend | north | door | window | opening | furniture | fixture | zone | array
+statement ::= room | extend | wall | north | door | window | opening | furniture | fixture | zone | array
 room      ::= "room" id string? placement "size" dims ("fill" color)?
               ("nolabel" | "label-role" ("normal"|"primary"|"secondary"|"hidden"))?
 extend    ::= "extend" id placement "size" dims        (* L/T/U rooms; must share an edge *)
 north     ::= "north" num?                             (* compass, clockwise deg, default 0 *)
+wall      ::= "wall" ("exterior" | "interior" | "between" id id) "thickness" num
 placement ::= "at" coord
             | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
             | ("align" ("start"|"center"|"end"))?          (* with relative placement *)
-door      ::= "door" (wallref | "between" id id) "at" pct
+opening-placement ::= "at" pct | "from" ("start"|"end") num
+                    | ("before"|"after") id "gap" num
+door      ::= "door" (wallref | "between" id id) opening-placement
               ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
-              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
-window    ::= "window" wallref "at" pct ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))?
-opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type id? ("in" id) "at" coord ("size" dims)? ("rotate" num)?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))? ("id" id)?
+window    ::= "window" wallref opening-placement ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))? ("id" id)?
+opening   ::= "opening" (wallref | "between" id id) opening-placement ("width" num)? ("id" id)?
+furniture ::= "furniture" type id? ("in" id) ("at" coord | "fit" ("margin" num)?)
+              ("size" dims)? ("rotate" num)? ("mirror" ("x"|"y"))?
               string? ("seats" string+)?
 fixture   ::= "fixture" type id? "in" id "on" wallside "at" pct ("size" dims)? string?
 zone      ::= "zone" id string? "in" id "at" coord "size" dims ("keep-clear")?
@@ -203,6 +207,9 @@ Notes for implementers (LLM-ergonomics, learned from the working POC):
 - **All authored numbers are in `unit`** (default `m`). Catalog sizes and omitted opening widths are physical meter defaults converted into that source unit exactly once. Furniture `at` is **relative to its room's interior origin** (top-left).
 - One document has exactly one header. Multi-floor content begins each level with `floor N`; a second header is a structural error at that line, not permission to mutate the document mode or unit.
 - `door between A B` resolves the shared wall segment automatically and positions at `pct` along the *overlap*, not the full wall — the single biggest ergonomic win over coordinate-based door placement.
+- Opening ids make measured façade chains explicit: `door hall south from start 0.3 width 0.9 id front`, then `window hall south after front gap 0.1 width 1.2 id w1`. References resolve in source order and must stay on the same wall.
+- `fit [margin n]` rotates first, scales down without distortion, then centers the final envelope in the largest room part. `mirror x|y` reflects symbol geometry around its local center and never mirrors text.
+- `wall exterior|interior thickness n` sets the structural hierarchy for the current floor; `wall between A B thickness n` overrides one shared boundary on that floor. Omitting all wall rules preserves the 0.2 m default everywhere.
 - Comments: `#` to end of line. CJK quotes accepted as ASCII quotes (Schematex house rule).
 - `grid … count N` truncates row-major (27 desks in a 5×6 grid — the real classroom case).
 - `centers p1 p2` names the first/last item centers explicitly. `within p1 p2` names hard outer bounds: layout subtracts item footprints, checks rows/cols/itemsize/gap as one group, and places nothing when the group cannot fit. Legacy `area` is accepted as a `centers` alias but is no longer canonical.
@@ -231,10 +238,10 @@ grid desk-chair in class rows 5 cols 6 count 27 centers 5,7 25,23   # explicit f
 ## 4. Layout & Rendering Rules
 
 1. **Coordinate space.** Meters internally (ft inputs converted on parse, 1 ft = 0.3048 m); y-down; renderer scales (default ≈ 55 px/m, configurable).
-2. **Walls.** Thickness 0.2 m default, drawn as filled bands **centered on room boundary lines**, so two adjacent room rects sharing an edge produce one merged wall automatically — no wall graph needed. Corners overlap-fill naturally.
+2. **Walls.** Thickness 0.2 m default. Optional exterior/interior/per-room-pair rules resolve into deduplicated wall segments centered on room boundary lines. Two adjacent rooms still share one band, and each opening inherits that segment's thickness.
 3. **Openings.** Punch a white gap in the wall band, then draw the symbol: door = leaf line + quarter arc (90°) from hinge jamb, swing into the owning room by default; window = 3 glazing lines + jamb caps; archway = jamb lines only. Opening width clamps to fit its wall segment minus 0.05 m margins.
 4. **Z-order.** room fills → furniture → walls → opening symbols → labels → dimension lines. (Walls over furniture keeps poché crisp when furniture abuts a wall.)
-5. **Labels.** Room name + area center on the largest room part. `label-role primary|normal|secondary|hidden` expresses semantic hierarchy without renderer-specific font sizes; `nolabel` remains the hidden shorthand.
+5. **Labels.** Layout scores a stable center-out candidate grid against furniture envelopes and door-swing sectors. Constrained rooms render the name only; larger rooms keep name + area. `label-role primary|normal|secondary|hidden` expresses semantic hierarchy; `nolabel` remains the explicit hidden shorthand.
 6. **Dimension lines.** Overall W and H always; per-room segment dims for rooms touching the top/left exterior. `unit ft` formats as `15'1"`.
 7. **Areas.** `w × h` of the room rect (interior measure), 1 decimal in m², integer sq ft.
 8. **Semantic SVG.** `<title>`, `<desc>` (room count + total area), `data-room`, `data-furniture`, `data-fixture`, and `data-zone` attrs, theme classes per element family. Scene keys are floor-qualified whenever multiple plates exist. No inline styles (house rule).
@@ -246,7 +253,7 @@ grid desk-chair in class rows 5 cols 6 count 27 centers 5,7 25,23   # explicit f
 
 | Thing | Default |
 |---|---|
-| Wall thickness | 0.2 m (interior and exterior identical in v0.1) |
+| Wall thickness | 0.2 m unless an exterior/interior/per-pair wall rule overrides it |
 | Door width | 0.9 m wall-side form / 0.8 m `between` form (≈ 36″/32″) |
 | Window width | 1.2 m |
 | Archway (`opening`) width | 1.0 m |
@@ -274,7 +281,8 @@ Every error names the offending ids and a fix direction:
 9. **Stairwell mismatch** — warning when matching stair ids differ by more than 0.1 m in plan coordinates.
 10. **Array fit** — `within` validates required vs available width/height before placement and reports one `array-does-not-fit` error with rows, columns, item size, and gap.
 11. **Protected-zone obstruction** — any furniture envelope crossing a `keep-clear` zone is an error naming both entities.
-12. **Capability mismatch** — curved boundaries and MEP routes are rejected by the public capability contract; they are never silently approximated with rectangles or furniture points.
+12. **Door-swing obstruction** — furniture crossing a single/double hinged door's swept sector emits `floorplan/door-swing-obstructed`; sliding, pocket, and bifold doors do not claim a quarter-circle sector.
+13. **Capability mismatch** — curved boundaries and MEP routes are rejected by the public capability contract; they are never silently approximated with rectangles or furniture points.
 
 Layout emits stable typed diagnostics (`code`, `phase`, `line`, `floor`, `entityIds`, `hint`). Human-readable `errors`/`warnings` are compatibility views, not strings that callers must regex-classify.
 
