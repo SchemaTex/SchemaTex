@@ -209,7 +209,7 @@ Notes for implementers (LLM-ergonomics, learned from the working POC):
 - `door between A B` resolves the shared wall segment automatically and positions at `pct` along the *overlap*, not the full wall — the single biggest ergonomic win over coordinate-based door placement.
 - Opening ids make measured façade chains explicit: `door hall south from start 0.3 width 0.9 id front`, then `window hall south after front gap 0.1 width 1.2 id w1`. References resolve in source order and must stay on the same wall.
 - `fit [margin n]` rotates first, scales down without distortion, then centers the final envelope in the largest room part. `mirror x|y` reflects symbol geometry around its local center and never mirrors text.
-- `wall exterior|interior thickness n` sets the structural hierarchy; `wall between A B thickness n` overrides one shared boundary. Omitting all wall rules preserves the 0.2 m default everywhere.
+- `wall exterior|interior thickness n` sets the structural hierarchy for the current floor; `wall between A B thickness n` overrides one shared boundary on that floor. Omitting all wall rules preserves the 0.2 m default everywhere.
 - Comments: `#` to end of line. CJK quotes accepted as ASCII quotes (Schematex house rule).
 - `grid … count N` truncates row-major (27 desks in a 5×6 grid — the real classroom case).
 - `centers p1 p2` names the first/last item centers explicitly. `within p1 p2` names hard outer bounds: layout subtracts item footprints, checks rows/cols/itemsize/gap as one group, and places nothing when the group cannot fit. Legacy `area` is accepted as a `centers` alias but is no longer canonical.

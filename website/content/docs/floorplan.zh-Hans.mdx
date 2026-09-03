@@ -96,7 +96,7 @@ window hall south after entry gap 0.10 width 1.20 id display1
 window hall south after display1 gap 0.20 width 1.20 id display2
 ```
 
-水平墙的 `start` 是西端，垂直墙的 `start` 是北端。`before` / `after` 只能引用同一面墙上、在前文已经声明的 opening id，因此 AI agent 生成的链条有稳定且可检查的顺序。
+水平墙的 `start` 是西端，垂直墙的 `start` 是北端。`from start n` 量到 opening 的 leading jamb；`from end n` 从另一端量到 trailing jamb。`before` / `after` 只能引用同一面墙上、在前文已经声明的 opening id，因此 AI agent 生成的链条有稳定且可检查的顺序。
 
 ### 墙厚层级
 
@@ -270,4 +270,4 @@ room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
 
-可选的 furniture instance ID（`S1`）会注册跨楼层的同一段楼梯。低层自动标为 UP，高层标为 DN，错位超过 0.1 m 会产生 warning。房间引用、门、furniture 和 arrays 不能跨越 floor sections。
+可选的 furniture instance ID（`S1`）会注册跨楼层的同一段楼梯。低层自动标为 UP，高层标为 DN，错位超过 0.1 m 会产生 warning。room references、wall rules、doors、furniture 和 arrays 都是 floor-local，不能泄漏到其他 floor section。

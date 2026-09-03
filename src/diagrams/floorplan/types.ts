@@ -472,6 +472,8 @@ export interface FloorplanWallRule {
   between?: [string, string];
   /** Wall band thickness in the plan's input unit. */
   thickness: number;
+  /** Owning floor level; wall defaults and pair overrides are floor-local. */
+  floor: number;
   line?: number;
 }
 
@@ -960,7 +962,7 @@ export interface FloorplanLayoutResult {
   plates: FloorPlate[];
   /** Plan bounding box over room exteriors (meters, before dim/padding bands). */
   bounds: { minX: number; minY: number; maxX: number; maxY: number };
-  /** Wall band thickness (meters). */
+  /** Maximum resolved wall thickness (meters), retained for canvas padding. */
   wallT: number;
   /** Total interior area, m². */
   totalAreaM2: number;

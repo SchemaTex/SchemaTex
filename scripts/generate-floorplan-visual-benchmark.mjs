@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
-import { Resvg } from "@resvg/resvg-js";
 import { renderResult } from "../dist/index.js";
 
 const root = resolve(process.cwd(), "preview/floorplan-visual-benchmark");
@@ -17,11 +16,6 @@ for (const name of cases) {
   }
 
   writeFileSync(resolve(root, `current-${name}.svg`), result.svg);
-  const png = new Resvg(result.svg, {
-    fitTo: { mode: "width", value: 1600 },
-    background: "#ffffff",
-  }).render().asPng();
-  writeFileSync(resolve(root, `current-${name}.png`), png);
   summary[name] = {
     status: result.status,
     diagnostics: result.diagnostics ?? [],

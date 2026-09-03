@@ -174,7 +174,6 @@ interface Ctx {
   Y: (m: number) => number;
   px: (m: number) => number;
   t: Theme;
-  wallT: number;
 }
 
 interface RenderLayers {
@@ -693,7 +692,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const oy = -lay.bounds.minY + band;
   const X = (m: number): number => px(m + ox);
   const Y = (m: number): number => px(m + oy);
-  const ctx: Ctx = { X, Y, px, t, wallT: lay.wallT };
+  const ctx: Ctx = { X, Y, px, t };
 
   const titleH = TITLE.bandH;
   // Diagnostics are returned out-of-band by the public result APIs. Keep the
@@ -724,7 +723,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const zonePlate = new Map<number, number>();
   const openingPlate = new Map<number, number>();
   const dimPlate = new Map<number, number>();
-  const seamPlate = new Map<number, number>();
   const floorPlate = new Map<number, number>();
   lay.plates.forEach((plate, plateIndex) => {
     floorPlate.set(plate.level, plateIndex);
@@ -733,7 +731,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     plate.zoneIdx.forEach((index) => zonePlate.set(index, plateIndex));
     plate.openingIdx.forEach((index) => openingPlate.set(index, plateIndex));
     plate.dimIdx.forEach((index) => dimPlate.set(index, plateIndex));
-    plate.seamIdx.forEach((index) => seamPlate.set(index, plateIndex));
   });
   const firstLayer = plateLayers[0];
   if (!firstLayer) throw new Error("floorplan layout must contain at least one plate");
@@ -1040,7 +1037,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     }
   });
 
-  const tw = lay.wallT;
   lay.walls.forEach((wall) => {
     const tpx = px(wall.thickness);
     const rawWall = wall.vertical
@@ -1068,23 +1064,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       : rawWall;
     walls.push(wallShape);
     layerFor(roomPlate, owner).walls.push(wallShape);
-  });
-
-  // interior seams between parts of the same room — open the wall fully
-  lay.seams.forEach((s, seamIndex) => {
-    const fill = lay.rooms[s.room]?.fill ?? t.floorFill;
-    const tpx = px(tw);
-    let rawSeam: string;
-    if (s.vertical) {
-      rawSeam = rect({ class: "sx-fp-gap", fill, x: r2(X(s.along) - tpx / 2 - 0.5), y: Y(s.lo), width: r2(tpx + 1), height: px(s.hi - s.lo) });
-    } else {
-      rawSeam = rect({ class: "sx-fp-gap", fill, x: X(s.lo), y: r2(Y(s.along) - tpx / 2 - 0.5), width: px(s.hi - s.lo), height: r2(tpx + 1) });
-    }
-    const seamShape = config?.__scene
-      ? group({ "data-sx-owner": roomSceneKey(lay.rooms[s.room]!) }, [rawSeam])
-      : rawSeam;
-    openings.push(seamShape);
-    layerFor(seamPlate, seamIndex).openings.push(seamShape);
   });
 
   lay.openings.forEach((o, openingIndex) => {

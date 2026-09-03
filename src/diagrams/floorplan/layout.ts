@@ -1853,6 +1853,7 @@ export function layoutFloorplan(
       furniture: ast.furniture.filter((item) => item.floor === level && !refs.invalidFurniture.has(item)),
       arrays: ast.arrays.filter((array) => array.floor === level && !refs.invalidArrays.has(array)),
       zones: ast.zones.filter((zone) => zone.floor === level && !refs.invalidZones.has(zone)),
+      wallRules: ast.wallRules.filter((rule) => rule.floor === level),
     };
     return { level, layout: layoutOneFloor(subAst) };
   });

@@ -17,6 +17,15 @@ furniture stairs-l S1 in stairwell fit margin 0.1 size 4x3 rotate 90 mirror x`);
     });
   });
 
+  it("rejects competing at and fit placement forms instead of silently overriding one", () => {
+    expect(() => parseFloorplan(`floorplan
+room stairwell at 0,0 size 3x3
+furniture stairs-l in stairwell at 0.2,0.2 fit`)).toThrow(/exactly one placement form/);
+    expect(() => parseFloorplan(`floorplan
+room hall at 0,0 size 3x3
+fixture outlet in hall on south fit`)).toThrow(/only valid for room-contained furniture/);
+  });
+
   it("centers and scales a rotated item into the room interior", () => {
     const layout = layoutFloorplan(parseFloorplan(`floorplan
 room stairwell at 0,0 size 2.4x2
@@ -136,6 +145,41 @@ room living at 0,0 size 4x3`));
     expect(layout.diagnostics).toEqual(expect.arrayContaining([
       expect.objectContaining({ code: "floorplan/unknown-room", severity: "error" }),
     ]));
+  });
+
+  it("keeps wall defaults and pair overrides scoped to their authored floor", () => {
+    const layout = layoutFloorplan(parseFloorplan(`floorplan unit m
+floor 1 "Ground"
+wall exterior thickness 0.3
+wall between living kitchen thickness 0.18
+room living at 0,0 size 4x3
+room kitchen right-of living size 3x3
+floor 2 "Upper"
+wall exterior thickness 0.5
+room bedroom at 0,0 size 4x3`));
+    const ground = layout.walls.filter((wall) =>
+      wall.rooms.some((room) => layout.rooms[room]?.floor === 1)
+    );
+    const upper = layout.walls.filter((wall) =>
+      wall.rooms.some((room) => layout.rooms[room]?.floor === 2)
+    );
+    expect(ground.some((wall) => wall.rooms.length === 1 && wall.thickness === 0.3)).toBe(true);
+    expect(ground.some((wall) => wall.rooms.length === 2 && wall.thickness === 0.18)).toBe(true);
+    expect(upper.every((wall) => wall.thickness === 0.5)).toBe(true);
+    expect(layout.errors).toHaveLength(0);
+  });
+
+  it("does not emit legacy seam gaps after wall segments are deduplicated", () => {
+    const source = `floorplan unit m
+room living at 0,0 size 3x3
+extend living at 3,1 size 2x2
+furniture side-table in living at 2.8,1.4 size 0.4x0.4`;
+    const layout = layoutFloorplan(parseFloorplan(source));
+    expect(layout.seams).toHaveLength(1);
+    expect(layout.walls.some((wall) =>
+      wall.vertical && Math.abs(wall.along - 3) < 1e-9 && wall.lo < 2 && wall.hi > 1
+    )).toBe(false);
+    expect(renderFloorplan(source)).not.toContain('class="sx-fp-gap"');
   });
 });
 

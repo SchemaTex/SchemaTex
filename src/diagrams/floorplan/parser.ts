@@ -755,6 +755,7 @@ function parseFurniture(
 ): void {
   const type = parseFurnitureType(tok.shift(), ln);
   const f: FloorplanFurniture = { type, x: 0, y: 0, rotate: 0, floor, line: ln };
+  let placementForm: "at" | "fit" | undefined;
   const instance = tok[0];
   if (isWord(instance) && !FURNITURE_INSTANCE_KEYWORDS.has(instance.word)) {
     f.instanceId = instance.word;
@@ -772,6 +773,10 @@ function parseFurniture(
       f.anchor = { side: side as WallSide, pct: 50 };
     }
     else if (t.word === "at") {
+      if (placementForm) {
+        throw new FloorplanParseError(`furniture: use exactly one placement form: at or fit`, ln);
+      }
+      placementForm = "at";
       if (f.anchor) {
         f.anchor.pct = parsePct(tok.shift(), ln);
       } else {
@@ -788,7 +793,14 @@ function parseFurniture(
       }
       f.mirror = axis;
     }
-    else if (t.word === "fit") f.fit = { margin: 0 };
+    else if (t.word === "fit") {
+      if (wallMounted) throw new FloorplanParseError(`fixture: "fit" is only valid for room-contained furniture`, ln);
+      if (placementForm) {
+        throw new FloorplanParseError(`furniture: use exactly one placement form: at or fit`, ln);
+      }
+      placementForm = "fit";
+      f.fit = { margin: 0 };
+    }
     else if (t.word === "margin") {
       if (!f.fit) throw new FloorplanParseError(`"margin" requires "fit"`, ln);
       const margin = parseNum(tok.shift(), "fit margin", ln);
@@ -851,7 +863,7 @@ function parseControl(tok: Tok[], ast: FloorplanAst, ln: number): void {
   ast.controls.push(control);
 }
 
-function parseWall(tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseWall(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const scope = parseId(tok.shift(), "exterior|interior|between", ln);
   let rule: FloorplanWallRule;
   if (scope === "between") {
@@ -859,10 +871,11 @@ function parseWall(tok: Tok[], ast: FloorplanAst, ln: number): void {
       scope,
       between: [parseId(tok.shift(), "a room id", ln), parseId(tok.shift(), "a second room id", ln)],
       thickness: 0,
+      floor,
       line: ln,
     };
   } else if (scope === "exterior" || scope === "interior") {
-    rule = { scope, thickness: 0, line: ln };
+    rule = { scope, thickness: 0, floor, line: ln };
   } else {
     throw new FloorplanParseError(`wall must target exterior, interior, or between <room> <room>`, ln);
   }
@@ -1530,7 +1543,7 @@ export function parseFloorplan(text: string): FloorplanAst {
       parseControl(tok, ast, ln);
     }
     else if (kw === "wall") {
-      parseWall(tok, ast, ln);
+      parseWall(tok, ast, ln, currentFloor);
     }
     else if (kw === "grid" || kw === "row" || kw === "arc") {
       parseArray(kw as ArrayMode, tok, ast, ln, currentFloor);
