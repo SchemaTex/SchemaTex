@@ -1,0 +1,49 @@
+floorplan "40-Seat Neighborhood Restaurant — visual reconstruction" unit m
+north
+wall exterior thickness 0.4
+wall interior thickness 0.15
+wall between kitchen dining thickness 0.2
+room kitchen "Kitchen / Prep" at 0,0 size 10x4.0
+room dining "Dining Area" below kitchen size 10x5.0
+extend dining at 10,6.5 size 4x2.5
+room corridor "Service Corridor" at 10,0 size 1x6.5 nolabel
+room service "Rear Service" at 11,0 size 3x2.0
+room wc1 "Accessible Restroom" below service size 3x2.25
+room wc2 "Accessible Restroom" below wc1 size 3x2.25
+
+window dining south from start 0.8 width 1.2 id w1
+window dining south after w1 gap 0.5 width 1.2 id w2
+door dining south after w2 gap 0.8 width 1.1 id front hinge right swing out
+window dining south after front gap 0.8 width 1.2 id w3
+window dining south after w3 gap 0.5 width 1.2 id w4
+door service north at 45% width 0.95 hinge left swing out
+opening between kitchen dining at 67% width 2.0
+door between kitchen dining at 30% width 0.95 hinge right
+opening between kitchen corridor at 45% width 0.9
+opening between corridor dining at 58% width 0.9
+door between corridor service at 50% width 0.8 hinge left
+door between corridor wc1 at 50% width 0.8 hinge left
+door between corridor wc2 at 50% width 0.8 hinge left
+
+window dining west at 45% width 1.4
+
+furniture walk-in in kitchen at 0.15,0.15 size 2.6x1.45
+furniture commercial-sink in kitchen at 0.35,2.4 size 1.8x0.7
+furniture dishwasher in kitchen at 2.3,2.4 size 0.65x0.7
+furniture range in kitchen at 4.5,0.18 size 1.3x0.8
+furniture grill in kitchen at 5.9,0.18 size 1.2x0.8
+furniture fryer in kitchen at 7.2,0.18 size 0.8x0.8
+furniture prep-table in kitchen at 4.8,1.75 size 2.8x0.9
+furniture commercial-sink in kitchen at 8.1,0.18 size 1.8x0.7
+furniture counter "Service Counter" in kitchen at 5.7,3.25 size 3.9x0.55
+
+furniture booth in dining at 0.18,0.35 size 1.3x0.8 rotate 90
+furniture booth in dining at 0.18,1.8 size 1.3x0.8 rotate 90
+furniture booth in dining at 0.18,3.25 size 1.3x0.8 rotate 90
+grid dining-table in dining rows 2 cols 4 count 8 centers 3.7,1.15 8.8,3.7 itemsize 1.15x0.72
+zone aisle "Clear egress aisle" in dining at 1.55,0.25 size 0.9x4.5 keep-clear
+
+furniture toilet in wc1 at 2.0,0.85 rotate 90
+furniture sink in wc1 at 0.2,0.2
+furniture toilet in wc2 at 2.0,0.85 rotate 90
+furniture sink in wc2 at 0.2,0.2

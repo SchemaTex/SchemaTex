@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SchemaTex Floorplan · Issue POC</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172033;
+      --paper: #f5f7f8;
+      --sheet: #ffffff;
+      --grid: #d9e1e8;
+      --muted: #637083;
+      --problem: #d34a3a;
+      --problem-soft: #fff0ed;
+      --fixed: #167a68;
+      --fixed-soft: #eaf7f3;
+      --signal: #2f65d9;
+      --signal-soft: #edf3ff;
+      --warning: #a56516;
+      --shadow: 0 18px 55px rgba(23, 32, 51, 0.10);
+      --radius: 2px;
+      --space-1: 6px;
+      --space-2: 10px;
+      --space-3: 16px;
+      --space-4: 24px;
+      --space-5: 36px;
+      --space-6: 56px;
+      --display: clamp(42px, 7vw, 84px);
+      --headline: clamp(27px, 3.5vw, 44px);
+      --body: 16px;
+      --caption: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(rgba(47, 101, 217, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47, 101, 217, 0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+      font: 400 var(--body)/1.65 "IBM Plex Sans", sans-serif;
+    }
+
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
+      outline: 3px solid rgba(47, 101, 217, 0.45);
+      outline-offset: 3px;
+    }
+
+    .page-shell { width: min(1500px, calc(100% - 40px)); margin: 0 auto; }
+
+    .hero {
+      position: relative;
+      min-height: 560px;
+      padding: 76px 0 58px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--grid);
+      background: rgba(245, 247, 248, 0.84);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -8vw;
+      top: 64px;
+      width: min(54vw, 740px);
+      height: 390px;
+      border: 2px solid rgba(47, 101, 217, 0.18);
+      background:
+        linear-gradient(90deg, transparent 34%, rgba(47, 101, 217, 0.1) 34%, rgba(47, 101, 217, 0.1) 34.4%, transparent 34.4%),
+        linear-gradient(transparent 44%, rgba(47, 101, 217, 0.1) 44%, rgba(47, 101, 217, 0.1) 44.6%, transparent 44.6%);
+      transform: rotate(-4deg);
+      pointer-events: none;
+    }
+
+    .eyebrow, .sheet-index, .state, .metric-label, .legend-label {
+      font: 500 var(--caption)/1.25 "IBM Plex Mono", monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow { color: var(--signal); margin: 0 0 var(--space-4); }
+    h1, h2, h3 { font-family: "IBM Plex Sans Condensed", sans-serif; line-height: 1.03; }
+    h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 1020px;
+      margin: 0;
+      font-size: var(--display);
+      font-weight: 600;
+      letter-spacing: -.045em;
+    }
+
+    .hero-lede {
+      position: relative;
+      z-index: 1;
+      max-width: 690px;
+      margin: var(--space-4) 0 0;
+      color: var(--muted);
+      font-size: 19px;
+    }
+
+    .hero-ledger {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 780px;
+      margin-top: var(--space-6);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .metric { padding: 17px 18px 16px 0; }
+    .metric + .metric { padding-left: 18px; border-left: 1px solid var(--grid); }
+    .metric-value { display: block; font: 600 30px/1 "IBM Plex Sans Condensed", sans-serif; }
+    .metric-label { display: block; margin-top: 8px; color: var(--muted); }
+
+    .scope-note {
+      margin: 0;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--grid);
+      color: var(--muted);
+    }
+    .scope-note strong { color: var(--ink); font-weight: 600; }
+
+    .case-nav {
+      display: flex;
+      gap: 8px 18px;
+      padding: 18px 0;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--grid);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .case-nav a { color: var(--muted); text-decoration: none; }
+    .case-nav a:hover { color: var(--signal); }
+
+    main { padding-bottom: 90px; }
+    .inspection-sheet {
+      display: grid;
+      grid-template-columns: minmax(220px, .42fr) minmax(0, 1.58fr);
+      gap: var(--space-5);
+      padding: 70px 0 74px;
+      border-bottom: 1px solid var(--grid);
+    }
+
+    .sheet-index { color: var(--signal); }
+    .sheet-copy h2 { margin: 12px 0 16px; font-size: var(--headline); font-weight: 600; letter-spacing: -.025em; }
+    .sheet-copy p { margin: 0 0 14px; color: var(--muted); }
+    .issue-links { display: flex; flex-wrap: wrap; gap: 7px 14px; margin-top: 22px; }
+    .issue-links a { color: var(--signal); font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+      align-items: stretch;
+    }
+
+    .panel {
+      position: relative;
+      min-width: 0;
+      background: var(--sheet);
+      border: 1px solid var(--grid);
+      border-top: 4px solid var(--problem);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel.after { border-top-color: var(--fixed); }
+    .panel-head { padding: 15px 18px 12px; border-bottom: 1px solid var(--grid); }
+    .state { color: var(--problem); }
+    .after .state { color: var(--fixed); }
+    .panel-title { margin: 5px 0 0; font-weight: 600; }
+
+    .diagram-stage {
+      position: relative;
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      overflow: hidden;
+      background-image:
+        linear-gradient(rgba(47, 101, 217, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47, 101, 217, 0.045) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .diagram-stage svg { display: block; width: 100%; height: auto; max-height: 390px; }
+
+    .diagnostics { min-height: 57px; margin: 0; padding: 13px 18px 15px; border-top: 1px solid var(--grid); color: var(--muted); font-size: 13px; }
+    .diagnostics.problem { color: var(--problem); background: var(--problem-soft); }
+    .diagnostics.fixed { color: var(--fixed); background: var(--fixed-soft); }
+
+    details { border-top: 1px solid var(--grid); }
+    summary { cursor: pointer; padding: 12px 18px; color: var(--muted); font: 500 12px/1.4 "IBM Plex Mono", monospace; }
+    pre { margin: 0; padding: 0 18px 18px; overflow-x: auto; white-space: pre-wrap; color: var(--ink); font: 400 11px/1.6 "IBM Plex Mono", monospace; }
+    .new-token { color: var(--fixed); font-weight: 500; }
+
+    .callout {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: var(--space-3);
+      margin-top: 2px;
+      padding: 16px 18px;
+      border-left: 3px solid var(--signal);
+      background: var(--signal-soft);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .callout strong { color: var(--ink); }
+
+    .annotation {
+      position: absolute;
+      z-index: 3;
+      max-width: 180px;
+      padding: 6px 8px;
+      background: var(--problem);
+      color: #fff;
+      font: 500 11px/1.35 "IBM Plex Mono", monospace;
+      box-shadow: 0 4px 16px rgba(23, 32, 51, .15);
+    }
+    .after .annotation { background: var(--fixed); }
+    .annotation::after { content: ""; position: absolute; width: 38px; height: 1px; background: currentColor; opacity: .75; }
+    .annotation.top-right { top: 18px; right: 18px; }
+    .annotation.top-right::after { right: 100%; top: 50%; }
+
+    .wall-demo { width: 100%; max-width: 520px; }
+    .wall-demo text { font-family: "IBM Plex Mono", monospace; fill: var(--ink); }
+    .wall-demo .room-fill { fill: #f8fafc; }
+    .wall-demo .wall { fill: var(--ink); }
+    .wall-demo .outer-after { fill: var(--signal); }
+    .wall-demo .inner-after { fill: var(--fixed); }
+    .wall-demo .measure { stroke: var(--muted); stroke-width: 1; fill: none; }
+    .wall-demo .problem-mark { fill: var(--problem); }
+
+    .split-stairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; }
+    .split-stairs figure { margin: 0; min-width: 0; }
+    .split-stairs figcaption { margin-bottom: 7px; color: var(--muted); font: 500 11px/1.3 "IBM Plex Mono", monospace; text-align: center; }
+    .poc-mirror { transform-box: fill-box; transform-origin: center; transform: scaleX(-1); }
+
+    .layer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      width: 100%;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--grid);
+      background: var(--fixed-soft);
+      font-size: 13px;
+    }
+    .layer-controls label { display: inline-flex; align-items: center; min-height: 34px; gap: 7px; cursor: pointer; }
+    .layer-controls input { accent-color: var(--fixed); }
+
+    .linked-stage { display: grid; grid-template-columns: 1.45fr .7fr; gap: 12px; align-items: center; width: 100%; }
+    .mini-sld { width: 100%; max-height: 260px; }
+    .mini-sld .wire { stroke: var(--ink); stroke-width: 2; fill: none; }
+    .mini-sld .device { fill: #fff; stroke: var(--ink); stroke-width: 1.4; }
+    .mini-sld text { font-family: "IBM Plex Mono", monospace; fill: var(--ink); font-size: 10px; text-anchor: middle; }
+    .circuit-c1 { transition: opacity .18s ease, filter .18s ease; }
+    .circuit-muted { opacity: .16 !important; }
+    .circuit-active { filter: drop-shadow(0 0 4px rgba(47, 101, 217, .7)); }
+
+    .decision {
+      padding: 72px 0 20px;
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: var(--space-6);
+    }
+    .decision h2 { margin: 0; font-size: var(--headline); letter-spacing: -.025em; }
+    .decision ol { margin: 0; padding-left: 24px; }
+    .decision li { padding: 0 0 16px 10px; color: var(--muted); }
+    .decision li strong { color: var(--ink); }
+
+    @media (max-width: 980px) {
+      .hero::after { opacity: .45; right: -240px; }
+      .inspection-sheet, .decision { grid-template-columns: 1fr; }
+      .sheet-copy { max-width: 720px; }
+    }
+
+    @media (max-width: 720px) {
+      .page-shell { width: min(100% - 24px, 1500px); }
+      .hero { min-height: auto; padding-top: 52px; }
+      .hero-ledger, .comparison, .linked-stage { grid-template-columns: 1fr; }
+      .metric + .metric { border-left: 0; border-top: 1px solid var(--grid); padding-left: 0; }
+      .inspection-sheet { padding: 52px 0; }
+      .diagram-stage { min-height: 270px; }
+      .callout { grid-template-columns: 1fr; gap: 5px; }
+      .split-stairs { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="page-shell">
+      <p class="eyebrow">Floorplan issue inspection · visual POC</p>
+      <h1>图没有画错。<br>是模型先失去了含义。</h1>
+      <p class="hero-lede">把 11 个 open issues 放回真实住宅场景里看：尺寸为什么漂、楼梯为什么要写负坐标、电气设施为什么无法和 SLD 对上。左边是当前 engine，右边是可实现的 POC。</p>
+      <div class="hero-ledger" aria-label="POC scope">
+        <div class="metric"><span class="metric-value">11</span><span class="metric-label">open issues reviewed</span></div>
+        <div class="metric"><span class="metric-value">6</span><span class="metric-label">visual comparisons</span></div>
+        <div class="metric"><span class="metric-value">2</span><span class="metric-label">model-level gaps</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <p class="scope-note"><strong>分支状态：</strong><code>fit</code>、<code>mirror x|y</code>、绝对/链式 opening、分级 wall thickness、自动 label placement 和 door-swing clearance 已接入同一套 production parser → layout → renderer，并由 regression tests 覆盖。<code>stairs-split</code> 与 cross-view electrical circuit 仍是 model POC，页面会明确标注，不把尚未实现的能力算作完成。</p>
+    <nav class="case-nav" aria-label="Floorplan issue cases">
+      <a href="#transform">01 Rotate / fit</a>
+      <a href="#openings">02 Absolute openings</a>
+      <a href="#walls">03 Wall thickness</a>
+      <a href="#stairs">04 Stair semantics</a>
+      <a href="#labels">05 Label avoidance</a>
+      <a href="#electrical">06 Electrical + SLD</a>
+    </nav>
+
+    <main>
+      <section class="inspection-sheet" id="transform">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 01</span>
+          <h2>能放进去的楼梯，却要求负坐标</h2>
+          <p>当前 <code>at 0,0</code> 指的是旋转前矩形的左上角。物体绕中心旋转后，可见 bounding box 跑出房间；validator 数学没错，坐标语义却违背直觉。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/103">#103 transform mismatch</a><a href="https://github.com/SchemaTex/SchemaTex/issues/104">#104 fit / fill</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current engine</span><p class="panel-title">旋转后超出 0.38m</p></div>
+            <div class="diagram-stage" id="transform-before"><span class="annotation top-right">at 0,0 仍按旋转前矩形解释</span></div>
+            <p class="diagnostics problem" id="transform-before-diag" role="alert"></p>
+            <details><summary>Current DSL</summary><pre>furniture stairs-u S1 in pantry
+  at 0,0 size 1.83x1.075 rotate 90</pre></details>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · production branch</span><p class="panel-title">以最终 bounding box 居中 fit</p></div>
+            <div class="diagram-stage" id="transform-after"><span class="annotation top-right">rotate first → fit → place</span></div>
+            <p class="diagnostics fixed" id="transform-after-diag"></p>
+            <details><summary>Proposed DSL</summary><pre>furniture stairs-u S1 in pantry
+  <span class="new-token">fit margin 0.05</span> rotate 90</pre></details>
+          </article>
+          <div class="callout"><strong>POC rule</strong><span><code>fit</code> 保持 symbol 比例，先旋转，再把最终 bounding box 放入 room interior；不加入会拉坏符号的 <code>fill</code>。</span></div>
+        </div>
+      </section>
+
+      <section class="inspection-sheet" id="openings">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 02</span>
+          <h2>房间一变长，门窗 clearance 就漂了</h2>
+          <p>百分比适合“放在墙中间”，不适合施工尺寸。这个案例把墙从 3.67m 拉长到 4.4m：旧百分比让门离墙角、窗离门的实际距离一起变化。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/105">#105 absolute & chained placement</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current engine</span><p class="panel-title">原百分比被带到新墙长</p></div>
+            <div class="diagram-stage" id="opening-before"></div>
+            <p class="diagnostics problem">门框离左墙变成 0.44m；门窗间距变成约 0.32m。</p>
+            <details><summary>Current DSL</summary><pre>door hall south at 19.75% width 0.85
+window hall south at 50.41% width 1.2</pre></details>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · production branch</span><p class="panel-title">layout 直接解析绝对距离</p></div>
+            <div class="diagram-stage" id="opening-after"></div>
+            <p class="diagnostics fixed">门框离左墙仍是 0.30m；窗户始终在门后 0.10m。</p>
+            <details><summary>Canonical proposal</summary><pre>door hall south <span class="new-token">from start 0.30</span> width 0.85 <span class="new-token">id front</span>
+window hall south <span class="new-token">after front gap 0.10</span> width 1.2 <span class="new-token">id w1</span></pre></details>
+          </article>
+          <div class="callout"><strong>POC rule</strong><span>绝对 offset 定位 opening 的 leading jamb，不是中心；每面墙的 <code>start</code> direction 必须固定，chained placement 需要 opening ID。</span></div>
+        </div>
+      </section>
+
+      <section class="inspection-sheet" id="walls">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 03</span>
+          <h2>所有墙都是 20cm，建筑总宽当然对不上</h2>
+          <p>当前墙只是沿 room boundary 画出的固定色带。真实住宅的外墙、承重墙、隔墙厚度不同；如果仍把墙当作 room 的副产品，shared wall 的厚度和 dimension reference 都没有可靠归属。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/101">#101 wall thickness</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current model</span><p class="panel-title">统一 0.20m；room size 与外轮廓混在一起</p></div>
+            <div class="diagram-stage">
+              <svg class="wall-demo" viewBox="0 0 520 300" role="img" aria-label="Current uniform wall thickness model">
+                <rect class="room-fill" x="70" y="45" width="380" height="205"/>
+                <path class="wall" d="M55 30h410v20H55zM55 245h410v20H55zM55 30h20v235H55zM445 30h20v235h-20zM255 40h20v215h-20z"/>
+                <text x="165" y="145" text-anchor="middle" font-size="14">ROOM A</text><text x="365" y="145" text-anchor="middle" font-size="14">ROOM B</text>
+                <circle class="problem-mark" cx="265" cy="285" r="4"/><text x="277" y="289" font-size="11">every wall = 0.20m</text>
+              </svg>
+            </div>
+            <p class="diagnostics problem">修改 visual thickness 也无法回答尺寸量到 interior、centerline 还是 exterior。</p>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · production branch</span><p class="panel-title">去重后的 wall segments 各自拥有厚度</p></div>
+            <div class="diagram-stage" id="wall-after"></div>
+            <p class="diagnostics fixed">外墙 0.45m、默认隔墙 0.12m；这个 shared wall 用 pair override 设为 0.20m，opening 同步继承。</p>
+            <details><summary>Canonical proposal</summary><pre>wall exterior thickness 0.45
+wall interior thickness 0.12
+wall between room_a room_b thickness 0.20</pre></details>
+          </article>
+          <div class="callout"><strong>Architecture change</strong><span>这不是加一个 renderer 参数。需要 layout 从 resolved rooms 派生去重后的 <code>WallSegment[]</code>，再由 walls 同时驱动 opening、dimension 和 SVG。</span></div>
+        </div>
+      </section>
+
+      <section class="inspection-sheet" id="stairs">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 04</span>
+          <h2>Rotate 不能把左手楼梯变成右手楼梯</h2>
+          <p>U/L 型楼梯有 handedness，镜像与旋转是两种不同变换。split-level 又是另一种结构：中间 landing 同时接一段 UP 和一段 DN，不是给现有箭头写 <code>both</code> 就够。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/102">#102 flip staircases</a><a href="https://github.com/SchemaTex/SchemaTex/issues/106">#106 split-level stairs</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current engine</span><p class="panel-title">四种 primitive，只有 rotate 和 UP/DN label</p></div>
+            <div class="diagram-stage" id="stairs-before"></div>
+            <p class="diagnostics problem">入口在错误一侧时，只能旋转整个楼梯；split-level 需要手工叠两个 symbol。</p>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · mixed status</span><p class="panel-title">mirror 已实现；split stair 仍是 model POC</p></div>
+            <div class="diagram-stage split-stairs">
+              <figure><figcaption>stairs-u mirror</figcaption><div id="stairs-mirror"></div></figure>
+              <figure><figcaption>stairs-split</figcaption>
+                <svg viewBox="0 0 220 280" role="img" aria-label="Split-level stairs with up and down flights">
+                  <rect x="28" y="20" width="164" height="240" fill="#fff" stroke="#172033" stroke-width="2"/>
+                  <rect x="28" y="122" width="164" height="36" fill="#edf3ff" stroke="#172033" stroke-width="1.4"/>
+                  <path d="M110 20v102M110 158v102" stroke="#172033" stroke-width="1.2"/>
+                  <path d="M28 45h164M28 70h164M28 95h164M28 185h164M28 210h164M28 235h164" stroke="#637083" stroke-width="1"/>
+                  <path d="M70 112V48m0 0-7 12m7-12 7 12" stroke="#167a68" stroke-width="2" fill="none"/>
+                  <path d="M150 168v64m0 0-7-12m7 12 7-12" stroke="#2f65d9" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+                  <text x="57" y="84" font-family="IBM Plex Mono" font-size="12" fill="#167a68">UP</text>
+                  <text x="158" y="204" font-family="IBM Plex Mono" font-size="12" fill="#2f65d9">DN</text>
+                  <text x="110" y="145" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#172033">LANDING</text>
+                </svg>
+              </figure>
+            </div>
+            <p class="diagnostics fixed">左侧 mirror 由 production renderer 生成；右侧 split stair 只验证目标 geometry，尚未进入 catalog。</p>
+            <details><summary>Canonical proposal</summary><pre>furniture stairs-u S1 in hall <span class="new-token">mirror x</span>
+furniture <span class="new-token">stairs-split</span> S2 in entry size 1.8x2.6</pre></details>
+          </article>
+          <div class="callout"><strong>POC rule</strong><span><code>mirror x|y</code> 是明确轴向的 symbol-local reflection；不使用含义模糊的 bare <code>flip</code>，也不把负 rotation 偷偷解释成 mirror。<code>stairs-split</code> 是新 primitive，不污染已有 stairs 的 direction 语义。</span></div>
+        </div>
+      </section>
+
+      <section class="inspection-sheet" id="labels">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 05</span>
+          <h2>房间名固定居中，正好压在灯具上</h2>
+          <p>旧 renderer 只取 room 最大矩形的中心。新 layout 不做不可预测的自由搜索，而是在中心附近测试一组固定候选点，选择离中心最近、与 symbol overlap 最少的位置。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/97">#97 room label overlap</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current engine</span><p class="panel-title">room label 与 ceiling light 共用中心</p></div>
+            <div class="diagram-stage" id="label-before"></div>
+            <p class="diagnostics problem">文字仍会绘制，但读者无法同时辨认 room name 和 electrical symbol。</p>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · production branch</span><p class="panel-title">layout 选择最低碰撞分数的位置</p></div>
+            <div class="diagram-stage" id="label-after"></div>
+            <p class="diagnostics fixed">结果 deterministic；先不增加手动 keyword，真实使用证明自动 placement 不够时再设计 escape hatch。</p>
+          </article>
+          <div class="callout"><strong>Implemented rule</strong><span>候选点从中心向外稳定排序，评分考虑 furniture 与 door-swing sector；小房间自动切成只显示 room name 的 compact label，避免 area 行压墙。</span></div>
+        </div>
+      </section>
+
+      <section class="inspection-sheet" id="electrical">
+        <div class="sheet-copy">
+          <span class="sheet-index">Inspection 06</span>
+          <h2>一个插座，不该在两张图里变成两个陌生对象</h2>
+          <p>当前 IEC glyph 和 switch-to-light control line 已经存在，但 floorplan 不知道 circuit。POC 给 device 增加稳定 ID、system 和 circuit metadata：同一个 ID 同时进入 floorplan 与 SLD。</p>
+          <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/82">#82 European conventions</a><a href="https://github.com/SchemaTex/SchemaTex/issues/98">#98 toggle layers</a><a href="https://github.com/SchemaTex/SchemaTex/issues/99">#99 floorplan + SLD</a><a href="https://github.com/SchemaTex/SchemaTex/issues/100">#100 electrical symbols</a></div>
+        </div>
+        <div class="comparison">
+          <article class="panel">
+            <div class="panel-head"><span class="state">Before · current engine</span><p class="panel-title">有 symbol 和 controls，没有 circuit identity</p></div>
+            <div class="diagram-stage" id="electrical-before"></div>
+            <p class="diagnostics problem">可以看出哪个 switch 控制哪盏灯，却不能回答它们属于哪个 breaker。</p>
+          </article>
+          <article class="panel after">
+            <div class="panel-head"><span class="state">After · interactive model POC</span><p class="panel-title">一套 device IDs，两个 linked views</p></div>
+            <div class="layer-controls" aria-label="Layer controls">
+              <label><input type="checkbox" data-layer="electrical" checked> Electrical devices</label>
+              <label><input type="checkbox" data-layer="controls" checked> Control lines</label>
+              <label><input type="checkbox" data-layer="c1" checked> Highlight circuit C1</label>
+            </div>
+            <div class="diagram-stage">
+              <div class="linked-stage">
+                <div id="electrical-after"></div>
+                <svg class="mini-sld" viewBox="0 0 180 300" role="img" aria-label="SLD linked to floorplan circuit C1">
+                  <g class="circuit-c1" data-circuit="C1">
+                    <path class="wire" d="M90 35v45M90 118v42M90 198v28M55 226h70M55 226v35M125 226v35"/>
+                    <rect class="device" x="55" y="80" width="70" height="38"/><text x="90" y="103">RCD-1</text>
+                    <rect class="device" x="55" y="160" width="70" height="38"/><text x="90" y="183">MCB C1</text>
+                    <circle class="device" cx="55" cy="269" r="17"/><text x="55" y="273">O1</text>
+                    <circle class="device" cx="125" cy="269" r="17"/><text x="125" y="273">L1</text>
+                    <text x="90" y="20">PANEL</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <p class="diagnostics fixed" id="electrical-status" aria-live="polite">Circuit C1 同时高亮 floorplan 的 O1/L1 和 SLD branch。</p>
+            <details><summary>Canonical proposal</summary><pre>fixture outlet O1 in living on south at 25% <span class="new-token">circuit C1</span>
+furniture ceiling-light L1 in living at 2.4,1.7 <span class="new-token">circuit C1</span>
+controls SW1 -&gt; L1
+# Circuit declaration belongs to the shared electrical model.</pre></details>
+          </article>
+          <div class="callout"><strong>Architecture change</strong><span>“拼成一张 SVG”不是解法。先让两个 view 消费同一组 <code>Device</code> / <code>Circuit</code>，layer toggle 和 cross-highlight 才会自然成立。</span></div>
+        </div>
+      </section>
+
+      <section class="decision" aria-labelledby="decision-title">
+        <h2 id="decision-title">这个方向能做，但不能按 11 个 keyword 分头打补丁。</h2>
+        <ol>
+          <li><strong>已完成 geometry contract：</strong><code>fit</code>、opening offsets、wall segments、door clearance 和 label placement 已走 production pipeline。</li>
+          <li><strong>已完成安全的 symbol extension：</strong><code>mirror x|y</code> 不改变 catalog footprint，也不会镜像文字。</li>
+          <li><strong>仍需真正的新模型：</strong><code>stairs-split</code> 需要新 primitive；Device/Circuit 需要 floorplan 与 SLD 共享 domain model，不能靠 renderer metadata 假装完成。</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderResult } from "../src/index.ts";
+
+    const ELECTRICAL_TYPES = new Set([
+      "outlet", "duplex-outlet", "gfci-outlet", "outlet-240v", "floor-outlet",
+      "weatherproof-outlet", "switch", "switch-3way", "switch-4way", "switch-dimmer",
+      "motion-sensor", "thermostat", "light", "ceiling-light", "recessed-light",
+      "wall-light", "pendant-light", "fluorescent-light", "emergency-light",
+      "smoke-detector", "data-outlet", "tv-outlet", "phone-outlet", "junction-box",
+      "electrical-panel", "distribution-board"
+    ]);
+
+    const staircaseBeforeSource = `floorplan "Stair fit · before" unit m
+room pantry "Stairwell" at 0,0 size 1.18x2.035 nolabel
+furniture stairs-u S1 in pantry at 0,0 size 1.83x1.075 rotate 90`;
+
+    const staircaseAfterSource = `floorplan "Stair fit · branch" unit m
+room pantry "Stairwell" at 0,0 size 1.18x2.035 nolabel
+furniture stairs-u S1 in pantry fit margin 0.05 size 1.83x1.075 rotate 90`;
+
+    const openingSource = (doorPct, windowPct) => `floorplan "Opening offsets after resize" unit m
+room hall "Hall wall · 4.4m" at 0,0 size 4.4x2.4
+door hall south at ${doorPct}% width 0.85
+window hall south at ${windowPct}% width 1.2`;
+
+    const openingAfterSource = `floorplan "Opening offsets · branch" unit m
+room hall "Hall wall · 4.4m" at 0,0 size 4.4x2.4
+door hall south from start 0.30 width 0.85 id front
+window hall south after front gap 0.10 width 1.2 id w1`;
+
+    const wallSource = `floorplan "Resolved wall hierarchy" unit m
+wall exterior thickness 0.45
+wall interior thickness 0.12
+wall between room_a room_b thickness 0.20
+room room_a "Room A" at 0,0 size 3.6x3.2
+room room_b "Room B" right-of room_a size 3.4x3.2
+door between room_a room_b at 55% width 0.8`;
+
+    const labelSource = `floorplan "Room label collision" unit m symbols iec
+room living "Living Room" at 0,0 size 5x4
+fixture outlet O1 in living on south at 22%
+fixture switch SW1 in living on west at 45%
+furniture ceiling-light L1 in living at 2.275,1.775
+controls SW1 -> L1`;
+
+    const stairSource = `floorplan "U stair handedness" unit m
+room hall "Hall" at 0,0 size 3.2x3.6 nolabel
+furniture stairs-u S1 in hall at 0.6,0.3 size 2x3`;
+
+    const stairMirrorSource = `floorplan "U stair handedness · mirrored" unit m
+room hall "Hall" at 0,0 size 3.2x3.6 nolabel
+furniture stairs-u S1 in hall at 0.6,0.3 size 2x3 mirror x`;
+
+    const electricalSource = `floorplan "Electrical identity" unit m symbols iec
+room living "Living Room" at 0,0 size 5x4 nolabel
+fixture outlet O1 in living on south at 22% "O1 · C1"
+fixture switch SW1 in living on west at 45% "SW1"
+furniture ceiling-light L1 in living at 2.275,1.25 "L1 · C1"
+controls SW1 -> L1`;
+
+    function mount(id, source, mutate) {
+      const host = document.getElementById(id);
+      if (!host) return null;
+      const result = renderResult(source, { scene: true });
+      const preserved = [...host.children];
+      host.insertAdjacentHTML("afterbegin", result.svg);
+      const svg = host.querySelector("svg");
+      if (svg) {
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        if (mutate) mutate(svg, host);
+      }
+      preserved.forEach((node) => host.appendChild(node));
+      return result;
+    }
+
+    function message(result) {
+      if (!result || result.diagnostics.length === 0) return "No geometry warnings.";
+      return result.diagnostics.map((diagnostic) => diagnostic.message).join(" · ");
+    }
+
+    const beforeTransform = mount("transform-before", staircaseBeforeSource);
+    document.getElementById("transform-before-diag").textContent = message(beforeTransform);
+
+    const afterTransform = mount("transform-after", staircaseAfterSource);
+    document.getElementById("transform-after-diag").textContent = message(afterTransform);
+
+    // Current percentages were calculated for the old 3.67m wall.
+    mount("opening-before", openingSource("19.755", "50.409"));
+    mount("opening-after", openingAfterSource);
+
+    mount("wall-after", wallSource);
+
+    mount("stairs-before", stairSource);
+    mount("stairs-mirror", stairMirrorSource);
+
+    mount("label-before", labelSource, (svg) => {
+      const floor = svg.querySelector(".sx-fp-floor rect");
+      const name = svg.querySelector(".sx-fp-room-name");
+      const area = svg.querySelector(".sx-fp-room-area");
+      if (!floor) return;
+      const cx = Number(floor.getAttribute("x")) + Number(floor.getAttribute("width")) / 2;
+      const cy = Number(floor.getAttribute("y")) + Number(floor.getAttribute("height")) / 2;
+      for (const node of [name, area]) {
+        if (!node) continue;
+        node.setAttribute("x", String(cx));
+      }
+      if (name) name.setAttribute("y", String(cy - 3));
+      if (area) area.setAttribute("y", String(cy + 13));
+    });
+    mount("label-after", labelSource);
+
+    mount("electrical-before", electricalSource);
+    mount("electrical-after", electricalSource, (svg) => {
+      svg.classList.add("floorplan-linked-view");
+      svg.querySelectorAll(".sx-fp-item").forEach((item) => {
+        const type = item.getAttribute("data-furniture");
+        if (type && ELECTRICAL_TYPES.has(type)) item.classList.add("poc-electrical");
+        if (type === "outlet" || type === "ceiling-light") {
+          item.classList.add("circuit-c1");
+          item.setAttribute("data-circuit", "C1");
+        }
+      });
+    });
+
+    const electricalHost = document.getElementById("electrical-after");
+    const status = document.getElementById("electrical-status");
+    document.querySelectorAll("[data-layer]").forEach((control) => {
+      control.addEventListener("change", () => {
+        const layer = control.dataset.layer;
+        if (layer === "electrical") {
+          electricalHost.querySelectorAll(".poc-electrical").forEach((node) => {
+            node.style.display = control.checked ? "" : "none";
+          });
+        }
+        if (layer === "controls") {
+          electricalHost.querySelectorAll(".sx-fp-controls").forEach((node) => {
+            node.style.display = control.checked ? "" : "none";
+          });
+        }
+        if (layer === "c1") {
+          document.querySelectorAll("#electrical .circuit-c1").forEach((node) => {
+            node.classList.toggle("circuit-active", control.checked);
+            node.classList.toggle("circuit-muted", !control.checked);
+          });
+          status.textContent = control.checked
+            ? "Circuit C1 同时高亮 floorplan 的 O1/L1 和 SLD branch。"
+            : "Circuit highlight 已关闭；device identity 仍保留。";
+        }
+      });
+    });
+
+    document.querySelector('[data-layer="c1"]').dispatchEvent(new Event("change"));
+  </script>
+</body>
+</html>

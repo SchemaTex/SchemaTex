@@ -27,6 +27,7 @@ import type {
   RectM,
   RoomBox,
   SeamGeom,
+  WallGeom,
   WallSide,
   ZoneGeom,
 } from "./types";
@@ -43,6 +44,13 @@ const WALL_FIXTURE_ROTATION: Record<WallSide, number> = {
   south: 180,
   west: 270,
 };
+
+/** Floor-covering surfaces may sit behind a label; overhead/MEP symbols may not. */
+const LABEL_SURFACE_TYPES: ReadonlySet<ItemGeom["type"]> = new Set([
+  "rug",
+  "dance-floor",
+  "yoga-mat",
+]);
 
 export const FLOORPLAN_CONST = {
   /** Wall band thickness, meters (§5). */
@@ -205,8 +213,8 @@ function rotatedAabb(
 function obbPenetration(a: Array<[number, number]>, b: Array<[number, number]>): number {
   let minPen = Infinity;
   for (const poly of [a, b]) {
-    for (let i = 0; i < 4; i++) {
-      const j = (i + 1) % 4;
+    for (let i = 0; i < poly.length; i++) {
+      const j = (i + 1) % poly.length;
       let ax = poly[j]![1] - poly[i]![1];
       let ay = poly[i]![0] - poly[j]![0];
       const len = Math.hypot(ax, ay);
@@ -233,6 +241,52 @@ function obbPenetration(a: Array<[number, number]>, b: Array<[number, number]>):
     }
   }
   return minPen === Infinity ? 0 : minPen;
+}
+
+/** Convex polygon approximating the area swept by one hinged door leaf. */
+function doorSwingSector(
+  opening: OpeningGeom,
+  hingeAtLo: boolean,
+  width: number
+): Array<[number, number]> {
+  const hinge: [number, number] = opening.vertical
+    ? [opening.along, hingeAtLo ? opening.lo : opening.hi]
+    : [hingeAtLo ? opening.lo : opening.hi, opening.along];
+  const openAngle = opening.vertical
+    ? (opening.inward === 1 ? 0 : Math.PI)
+    : (opening.inward === 1 ? Math.PI / 2 : -Math.PI / 2);
+  const closedAngle = opening.vertical
+    ? (hingeAtLo ? Math.PI / 2 : -Math.PI / 2)
+    : (hingeAtLo ? 0 : Math.PI);
+  let delta = closedAngle - openAngle;
+  while (delta > Math.PI) delta -= Math.PI * 2;
+  while (delta < -Math.PI) delta += Math.PI * 2;
+  const points: Array<[number, number]> = [hinge];
+  const steps = 8;
+  for (let step = 0; step <= steps; step++) {
+    const angle = openAngle + delta * (step / steps);
+    points.push([
+      hinge[0] + Math.cos(angle) * width,
+      hinge[1] + Math.sin(angle) * width,
+    ]);
+  }
+  return points;
+}
+
+function doorSwingSectors(opening: OpeningGeom): Array<Array<[number, number]>> {
+  if (opening.kind !== "door" || opening.doorType === "sliding" || opening.doorType === "pocket") {
+    return [];
+  }
+  const width = opening.hi - opening.lo;
+  if (opening.doorType === "double") {
+    const half = width / 2;
+    return [
+      doorSwingSector({ ...opening, hi: opening.lo + half }, true, half),
+      doorSwingSector({ ...opening, lo: opening.hi - half }, false, half),
+    ];
+  }
+  if (opening.doorType === "bifold") return [];
+  return [doorSwingSector(opening, opening.hinge !== "right", width)];
 }
 
 // ─── Room placement ──────────────────────────────────────────────
@@ -367,7 +421,172 @@ function sideSegments(room: RoomBox, side: WallSide): SideSeg[] {
       if (sHi - sLo >= MIN_OVERLAP) segs.push({ along, lo: sLo, hi: sHi });
     }
   }
-  return segs.sort((a, b) => a.lo - b.lo || a.along - b.along);
+  const sorted = segs.sort((a, b) => a.along - b.along || a.lo - b.lo);
+  const merged: SideSeg[] = [];
+  for (const segment of sorted) {
+    const previous = merged[merged.length - 1];
+    if (previous && Math.abs(previous.along - segment.along) < ADJ_EPS && segment.lo <= previous.hi + ADJ_EPS) {
+      previous.hi = Math.max(previous.hi, segment.hi);
+    } else {
+      merged.push({ ...segment });
+    }
+  }
+  return merged.sort((a, b) => a.lo - b.lo || a.along - b.along);
+}
+
+function resolveWalls(ast: FloorplanAst, rooms: RoomBox[], u: number): WallGeom[] {
+  type RawWall = Pick<WallGeom, "vertical" | "along" | "lo" | "hi"> & { room: number };
+  const raw: RawWall[] = [];
+  for (let room = 0; room < rooms.length; room++) {
+    for (const side of ["north", "south", "west", "east"] as const) {
+      const vertical = side === "west" || side === "east";
+      for (const segment of sideSegments(rooms[room]!, side)) {
+        raw.push({ vertical, ...segment, room });
+      }
+    }
+  }
+
+  const groups = new Map<string, RawWall[]>();
+  for (const wall of raw) {
+    const key = `${wall.vertical ? "v" : "h"}:${snap(wall.along)}`;
+    const group = groups.get(key) ?? [];
+    group.push(wall);
+    groups.set(key, group);
+  }
+
+  let exterior = FLOORPLAN_CONST.wallT;
+  let interior = FLOORPLAN_CONST.wallT;
+  for (const rule of ast.wallRules) {
+    if (rule.scope === "exterior") exterior = rule.thickness * u;
+    if (rule.scope === "interior") interior = rule.thickness * u;
+  }
+
+  const walls: WallGeom[] = [];
+  for (const group of groups.values()) {
+    const points = [...new Set(group.flatMap((wall) => [snap(wall.lo), snap(wall.hi)]))].sort((a, b) => a - b);
+    for (let index = 0; index < points.length - 1; index++) {
+      const lo = points[index]!;
+      const hi = points[index + 1]!;
+      if (hi - lo <= 1e-9) continue;
+      const mid = (lo + hi) / 2;
+      const owners = [...new Set(group.filter((wall) => wall.lo < mid && wall.hi > mid).map((wall) => wall.room))];
+      if (owners.length === 0) continue;
+      let thickness = owners.length > 1 ? interior : exterior;
+      if (owners.length > 1) {
+        const ownerIds = new Set(owners.map((owner) => rooms[owner]!.id));
+        for (const rule of ast.wallRules) {
+          if (rule.scope === "between" && rule.between?.every((id) => ownerIds.has(id))) {
+            thickness = rule.thickness * u;
+          }
+        }
+      }
+      walls.push({
+        vertical: group[0]!.vertical,
+        along: group[0]!.along,
+        lo,
+        hi,
+        thickness,
+        rooms: owners,
+      });
+    }
+  }
+  return walls;
+}
+
+function rectIntersectionArea(
+  a: { minX: number; minY: number; maxX: number; maxY: number },
+  b: { minX: number; minY: number; maxX: number; maxY: number }
+): number {
+  return Math.max(0, Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX)) *
+    Math.max(0, Math.min(a.maxY, b.maxY) - Math.max(a.minY, b.minY));
+}
+
+/** Choose a stable, readable room-label anchor that avoids placed furniture. */
+function placeRoomLabels(rooms: RoomBox[], items: ItemGeom[], openings: OpeningGeom[], zones: ZoneGeom[]): void {
+  const itemBoxes = items.map((item) => {
+    const envelope = FLOORPLAN_SYMBOLS[item.type].envelope ?? [0, 0, 0, 0];
+    const labelClearance: [number, number, number, number] = [
+      envelope[0] + 0.12,
+      envelope[1] + 0.12,
+      envelope[2] + 0.12,
+      envelope[3] + 0.12,
+    ];
+    return {
+      item,
+      // Catalog envelopes include visible geometry outside the nominal box —
+      // notably the auto-generated chair ring around dining tables.
+      box: rotatedAabb(item.x, item.y, item.w, item.h, item.rotate, labelClearance),
+    };
+  });
+  const openingBoxes = openings.flatMap((opening) => doorSwingSectors(opening).map((sector) => {
+    const xs = sector.map(([x]) => x);
+    const ys = sector.map(([, y]) => y);
+    return {
+      floor: rooms[opening.owner]?.floor,
+      box: {
+        minX: Math.min(...xs) - 0.04,
+        maxX: Math.max(...xs) + 0.04,
+        minY: Math.min(...ys) - 0.04,
+        maxY: Math.max(...ys) + 0.04,
+      },
+    };
+  }));
+  const zoneLabelBoxes = zones.map((zone) => {
+    const labelW = Math.min(zone.w - 0.1, Math.max(0.55, zone.label.length * 0.09));
+    return {
+      roomId: zone.roomId,
+      box: {
+        minX: zone.x + zone.w / 2 - labelW / 2,
+        maxX: zone.x + zone.w / 2 + labelW / 2,
+        minY: zone.y + zone.h / 2 - 0.18,
+        maxY: zone.y + zone.h / 2 + 0.18,
+      },
+    };
+  });
+  for (const room of rooms) {
+    if (room.nolabel || room.labelRole === "hidden") continue;
+    const part = room.parts.reduce((largest, candidate) =>
+      candidate.w * candidate.h > largest.w * largest.h ? candidate : largest
+    );
+    const widthPerCharacter = room.labelRole === "primary" ? 0.15 : room.labelRole === "secondary" ? 0.1 : 0.12;
+    room.compactLabel = part.w < 1.8 || part.h < 1.6;
+    const labelW = Math.min(Math.max(0.2, part.w - 0.36), Math.max(0.6, room.label.length * widthPerCharacter));
+    const labelH = room.compactLabel ? 0.34 : room.labelRole === "primary" ? 0.74 : 0.65;
+    const fractions = [0.5, 0.4, 0.6, 0.25, 0.75, 0.15, 0.85];
+    const candidates = fractions.flatMap((fy) => fractions.map((fx) => [fx, fy] as const))
+      .sort((a, b) => Math.hypot(a[0] - 0.5, a[1] - 0.5) - Math.hypot(b[0] - 0.5, b[1] - 0.5));
+    let best: { x: number; y: number; score: number } | undefined;
+    for (const [fx, fy] of candidates) {
+      const x = part.x + part.w * fx;
+      const y = part.y + part.h * fy;
+      const box = { minX: x - labelW / 2, maxX: x + labelW / 2, minY: y - labelH / 2, maxY: y + labelH / 2 };
+      const outside = Math.max(
+        part.x + 0.18 - box.minX,
+        box.maxX - (part.x + part.w - 0.18),
+        part.y + 0.18 - box.minY,
+        box.maxY - (part.y + part.h - 0.18),
+        0
+      );
+      let score = outside * 1_000;
+      for (const { item, box: itemBox } of itemBoxes) {
+        if (item.roomId !== room.id || LABEL_SURFACE_TYPES.has(item.type)) continue;
+        score += rectIntersectionArea(box, itemBox) * 100;
+      }
+      for (const opening of openingBoxes) {
+        if (opening.floor !== room.floor) continue;
+        score += rectIntersectionArea(box, opening.box) * 120;
+      }
+      for (const zoneLabel of zoneLabelBoxes) {
+        if (zoneLabel.roomId !== room.id) continue;
+        score += rectIntersectionArea(box, zoneLabel.box) * 120;
+      }
+      // Prefer the conventional center whenever readability is equivalent.
+      score += Math.hypot(x - (part.x + part.w / 2), y - (part.y + part.h / 2)) * 0.01;
+      if (!best || score < best.score) best = { x, y, score };
+    }
+    room.labelX = best?.x ?? part.x + part.w / 2;
+    room.labelY = best?.y ?? part.y + part.h / 2;
+  }
 }
 
 // ─── Layout ──────────────────────────────────────────────────────
@@ -582,6 +801,28 @@ function layoutOneFloor(
   }
 
   // 3. Interior seams between parts of the same room (walls get punched).
+  for (const rule of ast.wallRules) {
+    if (rule.scope !== "between" || !rule.between) continue;
+    const first = byId.get(rule.between[0]);
+    const second = byId.get(rule.between[1]);
+    if (first === undefined || second === undefined) {
+      const missing = first === undefined ? rule.between[0] : rule.between[1];
+      error("floorplan/unknown-room", "topology", `wall between: unknown room "${missing}"`, {
+        line: rule.line,
+        entityIds: [...rule.between],
+      });
+      continue;
+    }
+    if (!roomSharedEdge(rooms[first]!, rooms[second]!)) {
+      warning(
+        "floorplan/wall-no-shared-boundary",
+        "topology",
+        `wall between "${rule.between[0]}" and "${rule.between[1]}": rooms share no wall`,
+        { line: rule.line, entityIds: [...rule.between] }
+      );
+    }
+  }
+
   const seams: SeamGeom[] = [];
   for (let ri = 0; ri < rooms.length; ri++) {
     const parts = rooms[ri]!.parts;
@@ -593,13 +834,25 @@ function layoutOneFloor(
     }
   }
 
+  const walls = resolveWalls(ast, rooms, u);
+
   // 4. Openings.
   const openings: OpeningGeom[] = [];
+  const openingById = new Map<string, OpeningGeom>();
   for (const op of ast.openings) {
+    if (op.id && openingById.has(op.id)) {
+      error("floorplan/duplicate-opening-id", "document", `opening id "${op.id}" is already in use`, {
+        line: op.line,
+        floor: op.floor,
+        entityIds: [op.id],
+      });
+      continue;
+    }
     const geom = resolveOpening(
       op,
       rooms,
       byId,
+      openingById,
       u,
       ast.unit,
       (severity, code, phase, message) =>
@@ -609,7 +862,17 @@ function layoutOneFloor(
           entityIds: op.between ?? (op.room ? [op.room] : undefined),
         })
     );
-    if (geom) openings.push(geom);
+    if (geom) {
+      const hostWall = walls.find((wall) =>
+        wall.vertical === geom.vertical &&
+        Math.abs(wall.along - geom.along) < ADJ_EPS &&
+        wall.lo <= geom.lo + ADJ_EPS &&
+        wall.hi >= geom.hi - ADJ_EPS
+      );
+      if (hostWall) geom.thickness = hostWall.thickness;
+      openings.push(geom);
+      if (geom.id) openingById.set(geom.id, geom);
+    }
   }
 
   // 5. Furniture — explicit items, then arrays (declaration order).
@@ -632,7 +895,8 @@ function layoutOneFloor(
     sourceLine?: number,
     instanceId?: string,
     arrayGroup?: number,
-    anchored?: boolean
+    anchored?: boolean,
+    mirror?: ItemGeom["mirror"]
   ): void => {
     const room = rooms[roomIdx]!;
     const seq = (seqByType.get(type) ?? 0) + 1;
@@ -644,6 +908,7 @@ function layoutOneFloor(
       w,
       h,
       rotate,
+      mirror,
       label,
       labelSourceRange,
       positionSourceRange,
@@ -684,11 +949,36 @@ function layoutOneFloor(
     const def = FLOORPLAN_SYMBOLS[f.type];
     const idx = roomIdxOf(`furniture ${f.type}`, f.room, f.line);
     if (idx === undefined) continue;
-    const w = f.size ? f.size.w * u : def.w;
-    const h = f.size ? f.size.h * u : def.h;
+    let w = f.size ? f.size.w * u : def.w;
+    let h = f.size ? f.size.h * u : def.h;
     let localX = f.x * u;
     let localY = f.y * u;
-    if (f.anchor) {
+    if (f.fit) {
+      const room = rooms[idx]!;
+      const target = room.parts.reduce((largest, part) =>
+        part.w * part.h > largest.w * largest.h ? part : largest
+      );
+      const margin = f.fit.margin * u;
+      const availableW = Math.max(0, target.w - 2 * margin);
+      const availableH = Math.max(0, target.h - 2 * margin);
+      const rad = (f.rotate * Math.PI) / 180;
+      const envelopeW = Math.abs(w * Math.cos(rad)) + Math.abs(h * Math.sin(rad));
+      const envelopeH = Math.abs(w * Math.sin(rad)) + Math.abs(h * Math.cos(rad));
+      const fitScale = Math.min(1, availableW / envelopeW, availableH / envelopeH);
+      if (!Number.isFinite(fitScale) || fitScale <= 0) {
+        warning(
+          "floorplan/item-cannot-fit",
+          "geometry",
+          `furniture ${f.type} cannot fit in "${room.id}" with ${fmtNum(margin)} m margin`,
+          { line: f.line, floor: f.floor, entityIds: [room.id] }
+        );
+        continue;
+      }
+      w *= fitScale;
+      h *= fitScale;
+      localX = target.x + target.w / 2 - room.x - w / 2;
+      localY = target.y + target.h / 2 - room.y - h / 2;
+    } else if (f.anchor) {
       const room = rooms[idx]!;
       const segments = sideSegments(room, f.anchor.side);
       if (segments.length === 0) {
@@ -739,7 +1029,8 @@ function layoutOneFloor(
       f.line,
       f.instanceId,
       undefined,
-      f.anchor !== undefined
+      f.anchor !== undefined,
+      f.mirror
     );
   }
 
@@ -889,6 +1180,8 @@ function layoutOneFloor(
     zones.push(zone);
   }
 
+  placeRoomLabels(rooms, items, openings, zones);
+
   // 6. Furniture and protected-zone validation (§6.3–6.4).
   const roomOf = new Map<string, RoomBox>();
   for (const r of rooms) roomOf.set(r.id, r);
@@ -968,6 +1261,32 @@ function layoutOneFloor(
       }
     }
   }
+
+  // A door arc represents reserved usable space. Validate its swept sector,
+  // rather than treating the arc as decoration that furniture may cover.
+  for (const opening of openings) {
+    const sectors = doorSwingSectors(opening);
+    if (sectors.length === 0) continue;
+    for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+      const item = items[itemIndex]!;
+      if (item.floor !== rooms[opening.owner]?.floor || FLOORPLAN_SYMBOLS[item.type].underlay) continue;
+      const penetration = Math.max(...sectors.map((sector) => obbPenetration(envelopes[itemIndex]!, sector)));
+      if (penetration <= 0.011) continue;
+      warning(
+        "floorplan/door-swing-obstructed",
+        "geometry",
+        `door${opening.id ? ` "${opening.id}"` : ""} swing is obstructed by ${item.type} #${item.seq} by ${fmtNum(penetration)} m`,
+        {
+          line: opening.sourceLine,
+          floor: item.floor,
+          entityIds: [opening.id, item.roomId].filter((value): value is string => Boolean(value)),
+          hint: `Move the furniture clear of the door arc, reduce its size, or change the door hinge/swing.`,
+        }
+      );
+      warnItems.add(itemIndex);
+    }
+  }
+
   const arrayCollisions = new Map<number, { penetration: number; first: ItemGeom; second: ItemGeom }>();
   for (let i = 0; i < items.length; i++) {
     const a = items[i]!;
@@ -1101,13 +1420,14 @@ function layoutOneFloor(
     north: ast.north,
     rooms,
     seams,
+    walls,
     openings,
     items,
     controls: [],
     zones,
     dims,
     bounds: { minX, minY, maxX, maxY },
-    wallT: FLOORPLAN_CONST.wallT,
+    wallT: Math.max(FLOORPLAN_CONST.wallT, ...walls.map((wall) => wall.thickness)),
     totalAreaM2: rooms.reduce((s, r) => s + r.areaM2, 0),
     errors: diagnostics.filter((entry) => entry.severity === "error").map((entry) => entry.message),
     warnings: diagnostics.filter((entry) => entry.severity === "warning").map((entry) => entry.message),
@@ -1163,6 +1483,8 @@ function offsetRoom(room: RoomBox, offset: { x: number; y: number }): RoomBox {
     ...room,
     x: room.x + offset.x,
     y: room.y + offset.y,
+    labelX: room.labelX === undefined ? undefined : room.labelX + offset.x,
+    labelY: room.labelY === undefined ? undefined : room.labelY + offset.y,
     parts: room.parts.map((part) => ({ ...part, x: part.x + offset.x, y: part.y + offset.y })),
   };
 }
@@ -1180,6 +1502,20 @@ function offsetOpening(
     owner: opening.owner + roomBase,
     negRoom: opening.negRoom === undefined ? undefined : opening.negRoom + roomBase,
     posRoom: opening.posRoom === undefined ? undefined : opening.posRoom + roomBase,
+  };
+}
+
+function offsetWall(
+  wall: WallGeom,
+  offset: { x: number; y: number },
+  roomBase: number
+): WallGeom {
+  return {
+    ...wall,
+    along: wall.along + (wall.vertical ? offset.x : offset.y),
+    lo: wall.lo + (wall.vertical ? offset.y : offset.x),
+    hi: wall.hi + (wall.vertical ? offset.y : offset.x),
+    rooms: wall.rooms.map((room) => room + roomBase),
   };
 }
 
@@ -1526,6 +1862,7 @@ export function layoutFloorplan(
 
   const rooms: RoomBox[] = [];
   const seams: SeamGeom[] = [];
+  const walls: WallGeom[] = [];
   const openings: OpeningGeom[] = [];
   const items: ItemGeom[] = [];
   const zones: ZoneGeom[] = [];
@@ -1562,6 +1899,7 @@ export function layoutFloorplan(
     items.push(...layout.items.map((item) => ({ ...item, x: item.x + offset.x, y: item.y + offset.y })));
     zones.push(...layout.zones.map((zone) => ({ ...zone, x: zone.x + offset.x, y: zone.y + offset.y })));
     openings.push(...layout.openings.map((opening) => offsetOpening(opening, offset, roomBase)));
+    walls.push(...layout.walls.map((wall) => offsetWall(wall, offset, roomBase)));
     seams.push(...layout.seams.map((seam) => ({
       ...seam,
       along: seam.along + (seam.vertical ? offset.x : offset.y),
@@ -1620,6 +1958,7 @@ export function layoutFloorplan(
     north: ast.north,
     rooms,
     seams,
+    walls,
     openings,
     items,
     controls: [],
@@ -1627,7 +1966,7 @@ export function layoutFloorplan(
     dims,
     plates,
     bounds: { minX, minY, maxX, maxY },
-    wallT: FLOORPLAN_CONST.wallT,
+    wallT: Math.max(FLOORPLAN_CONST.wallT, ...walls.map((wall) => wall.thickness)),
     totalAreaM2: plates.reduce((sum, plate) => sum + plate.areaM2, 0),
     errors,
     warnings,
@@ -1646,6 +1985,7 @@ function resolveOpening(
   op: FloorplanOpening,
   rooms: RoomBox[],
   byId: Map<string, number>,
+  openingById: ReadonlyMap<string, OpeningGeom>,
   u: number,
   unit: FloorplanUnit,
   report: (
@@ -1660,6 +2000,7 @@ function resolveOpening(
   let negRoom: number | undefined;
   let posRoom: number | undefined;
   let inward: 1 | -1 = 1;
+  let fromCoordinateWithin: number | undefined;
 
   if (op.between) {
     const ia = byId.get(op.between[0]);
@@ -1723,12 +2064,44 @@ function resolveOpening(
       );
       return null;
     }
-    // pct maps along the concatenated exterior segments of that side
+    // pct maps along the concatenated exterior segments of that side. Absolute
+    // and relative forms select a concrete segment first, then resolve within it.
     const total = segs.reduce((s, sg) => s + (sg.hi - sg.lo), 0);
-    const pct = Math.min(100, Math.max(0, op.pct));
-    let target = (total * pct) / 100;
+    let target = (total * Math.min(100, Math.max(0, op.pct))) / 100;
+    if (op.from?.edge === "start") target = op.from.offset * u;
+    if (op.from?.edge === "end") target = Math.max(0, total - op.from.offset * u);
     let chosen = segs[segs.length - 1]!;
+    const relativeRef = op.relative ? openingById.get(op.relative.ref) : undefined;
+    if (op.relative && !relativeRef) {
+      report(
+        "error",
+        "floorplan/unknown-opening",
+        "topology",
+        `${op.kind}: opening "${op.relative.ref}" must be declared before it is referenced`
+      );
+      return null;
+    }
+    if (relativeRef) {
+      const match = segs.find((candidate) =>
+        (side === "west" || side === "east") === relativeRef.vertical &&
+        Math.abs(candidate.along - relativeRef.along) < ADJ_EPS &&
+        candidate.lo <= relativeRef.lo + ADJ_EPS &&
+        candidate.hi >= relativeRef.hi - ADJ_EPS
+      );
+      if (!match) {
+        report(
+          "error",
+          "floorplan/opening-reference-different-wall",
+          "topology",
+          `${op.kind}: opening "${op.relative!.ref}" is not on the same wall`
+        );
+        return null;
+      }
+      chosen = match;
+      target = match.lo;
+    }
     for (const sg of segs) {
+      if (relativeRef) break;
       const len = sg.hi - sg.lo;
       if (target <= len) {
         chosen = sg;
@@ -1736,9 +2109,13 @@ function resolveOpening(
       }
       target -= len;
     }
-    // re-express pct within the chosen segment
-    const within = Math.min(1, Math.max(0, target / (chosen.hi - chosen.lo)));
-    op = { ...op, pct: within * 100 };
+    if (op.from) fromCoordinateWithin = Math.min(chosen.hi - chosen.lo, Math.max(0, target));
+    // Re-express the legacy percentage within the chosen segment. The absolute
+    // and relative placement branches below use their authored values directly.
+    if (!op.from && !op.relative) {
+      const within = Math.min(1, Math.max(0, target / (chosen.hi - chosen.lo)));
+      op = { ...op, pct: within * 100 };
+    }
     seg = { vertical: side === "west" || side === "east", along: chosen.along, lo: chosen.lo, hi: chosen.hi };
     switch (side) {
       case "north":
@@ -1775,9 +2152,31 @@ function resolveOpening(
     );
     wd = avail;
   }
-  const pct = Math.min(100, Math.max(0, op.pct));
-  const c = seg.lo + (segLen * pct) / 100;
-  const lo = Math.max(seg.lo + jamb, Math.min(c - wd / 2, seg.hi - jamb - wd));
+  let requestedLo: number;
+  if (op.from?.edge === "start") {
+    requestedLo = seg.lo + (fromCoordinateWithin ?? op.from.offset * u);
+  } else if (op.from?.edge === "end") {
+    requestedLo = seg.lo + (fromCoordinateWithin ?? segLen - op.from.offset * u) - wd;
+  } else if (op.relative) {
+    const ref = openingById.get(op.relative.ref);
+    if (!ref || ref.vertical !== seg.vertical || Math.abs(ref.along - seg.along) >= ADJ_EPS) {
+      report(
+        "error",
+        "floorplan/opening-reference-different-wall",
+        "topology",
+        `${op.kind}: opening "${op.relative.ref}" is not on the same wall`
+      );
+      return null;
+    }
+    requestedLo = op.relative.how === "after"
+      ? ref.hi + op.relative.gap * u
+      : ref.lo - op.relative.gap * u - wd;
+  } else {
+    const pct = Math.min(100, Math.max(0, op.pct));
+    const c = seg.lo + (segLen * pct) / 100;
+    requestedLo = c - wd / 2;
+  }
+  const lo = Math.max(seg.lo + jamb, Math.min(requestedLo, seg.hi - jamb - wd));
   const hi = lo + wd;
 
   // Final arc direction: into the owner unless swing out.
@@ -1785,6 +2184,9 @@ function resolveOpening(
 
   return {
     kind: op.kind,
+    id: op.id,
+    sourceLine: op.line,
+    thickness: FLOORPLAN_CONST.wallT,
     doorType: op.doorType,
     windowType: op.windowType,
     vertical: seg.vertical,

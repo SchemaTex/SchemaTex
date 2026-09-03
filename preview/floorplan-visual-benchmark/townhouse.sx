@@ -1,0 +1,46 @@
+floorplan "L-Shaped Townhouse Ground Floor — visual reconstruction" unit m
+north
+wall exterior thickness 0.34
+wall interior thickness 0.12
+room living "Living Room" at 0,4.5 size 4.2x3.5
+room great "Dining / Kitchen" at 4.2,0 size 4.8x5.5
+room entry "Entry" below great size 2.3x2.5
+room powder "WC" right-of entry size 2.5x1.25
+room utility "Laundry" below powder size 2.5x1.25
+
+door entry south at 52% width 0.95 hinge right swing in
+door great north at 54% width 1.6 type double swing out
+opening between living great at 50% width 0.9
+opening between living entry at 55% width 1.2
+opening between great entry at 35% width 1.1
+door between entry powder at 35% width 0.75 hinge right
+door between entry utility at 50% width 0.8 hinge left
+
+window living west at 30% width 1.2
+window living west at 72% width 1.2
+window living south at 45% width 1.6
+window great north at 25% width 1.0
+window great north at 84% width 1.0
+window great east at 62% width 1.2
+
+furniture sectional in living at 0.35,0.45 size 2.2x1.55 rotate 180
+furniture coffee-table in living at 2.7,1.65 size 0.85x0.6
+furniture armchair in living at 0.65,2.5 size 0.75x0.75
+furniture tv-stand in living at 3.62,0.9 size 0.35x1.5
+
+furniture dining-table in great at 0.65,0.75 size 2.2x1.0
+furniture counter in great at 4.0,0.25 size 0.65x3.1
+furniture kitchen-sink in great at 4.02,0.8 rotate 90
+furniture stove in great at 4.0,2.0 rotate 90
+furniture fridge in great at 3.85,3.1 size 0.75x0.8
+furniture island in great at 1.05,2.7 size 2.3x0.85
+furniture bar-stool in great at 0.85,3.65
+furniture bar-stool in great at 1.55,3.65
+furniture bar-stool in great at 2.25,3.65
+furniture stairs-l in great at 1.65,4.35 size 2.9x1.0 rotate 180 mirror x
+
+furniture toilet in powder at 1.65,0.18 rotate 90
+furniture sink in powder at 0.2,0.18
+furniture washer in utility at 1.45,0.18
+furniture dryer in utility at 0.65,0.18
+furniture counter in utility at 0.15,0.72 size 2.15x0.4

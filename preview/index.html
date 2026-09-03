@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Schematex Preview</title>
+<link rel="icon" href="data:,">
 <style>
   body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 40px 20px; }
   h1 { font-size: 22px; color: #333; margin-bottom: 8px; }
@@ -37,6 +38,16 @@
 <h1>Schematex Preview</h1>
 <p>Text DSL → SVG · Select a diagram type to view cases</p>
 <div class="grid">
+  <a class="card" href="floorplan-visual-benchmark.html">
+    <div class="badge planned">Vision Benchmark</div>
+    <h2>Floorplan · Reference vs Engine</h2>
+    <p>Image-generated typical plans reconstructed with the production DSL and visually audited</p>
+  </a>
+  <a class="card" href="floorplan-poc.html">
+    <div class="badge planned">Issue POC</div>
+    <h2>Floorplan · Before / After</h2>
+    <p>Geometry, stairs, labels, wall thickness, electrical layers and SLD linking</p>
+  </a>
   <a class="card" href="genogram.html">
     <div class="badge implemented">Implemented</div>
     <h2>Genogram</h2>

@@ -198,7 +198,7 @@ function gapFill(lay: FloorplanLayoutResult, t: Theme, roomIdx: number | undefin
 
 /** Punch the wall band with the floor color of each side (half/half). */
 function punchGap(o: OpeningGeom, lay: FloorplanLayoutResult, c: Ctx): string {
-  const tpx = c.px(c.wallT);
+  const tpx = c.px(o.thickness);
   const negFill = gapFill(lay, c.t, o.negRoom);
   const posFill = gapFill(lay, c.t, o.posRoom);
   if (o.vertical) {
@@ -220,7 +220,7 @@ function punchGap(o: OpeningGeom, lay: FloorplanLayoutResult, c: Ctx): string {
 }
 
 function windowSymbol(o: OpeningGeom, c: Ctx): string {
-  const tpx = c.px(c.wallT);
+  const tpx = c.px(o.thickness);
   const parts: string[] = [];
   const outward = (o.inward === 1 ? -1 : 1) as 1 | -1;
   // glazing offsets across the wall band: fixed/casement/bay = 3 lines,
@@ -299,7 +299,7 @@ function windowSymbol(o: OpeningGeom, c: Ctx): string {
 }
 
 function jambLines(o: OpeningGeom, c: Ctx): string {
-  const tpx = c.px(c.wallT);
+  const tpx = c.px(o.thickness);
   if (o.vertical) {
     const x = c.X(o.along);
     return [o.lo, o.hi]
@@ -376,7 +376,7 @@ function doorSymbol(o: OpeningGeom, c: Ctx): string {
   }
   if (o.doorType === "sliding" || o.doorType === "pocket") {
     // §2.1: gap with offset parallel leaf line(s), no arc
-    const off = c.px(c.wallT) * 0.28;
+    const off = c.px(o.thickness) * 0.28;
     const mid = (o.lo + o.hi) / 2;
     const parts: string[] = [jambLines(o, c)];
     if (o.vertical) {
@@ -843,12 +843,14 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     floors.push(floorShape);
     layerFor(roomPlate, roomIndex).floors.push(floorShape);
     if (!r.nolabel) {
-      // label centers on the largest part (research-backed convention for L-rooms)
+      // Layout selects a collision-aware anchor; the largest-part center is
+      // retained as a compatibility fallback for externally built layouts.
       const main = r.parts.reduce((a, b) => (b.w * b.h > a.w * a.h ? b : a));
-      const cx = X(main.x + main.w / 2);
-      const cy = Y(main.y + main.h / 2);
+      const cx = X(r.labelX ?? main.x + main.w / 2);
+      const cy = Y(r.labelY ?? main.y + main.h / 2);
       const name = textEl({
         class: `sx-fp-room-name sx-fp-room-name-${r.labelRole}`,
+        "data-label-placement": r.labelX !== undefined ? "auto" : undefined,
         x: cx,
         y: r2(cy - 3),
         "text-anchor": "middle",
@@ -862,7 +864,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         "text-anchor": "middle",
         "data-sx-owner": config?.__scene ? roomSceneKey(r) : undefined,
       }, r.areaText);
-      if (isEvacuation) {
+      if (isEvacuation || r.compactLabel) {
         labels.push(name);
         layerFor(roomPlate, roomIndex).labels.push(name);
       } else {
@@ -962,6 +964,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       ? `item:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`
       : `item:floor:${it.floor}:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`;
     const canMove = it.positionSourceRange !== undefined && it.sourceX !== undefined && it.sourceY !== undefined;
+    const overlayLabel = it.mirror && def.consumesLabel ? (it.label ?? "UP") : it.label;
     config?.__scene?.push({
       key: itemKey,
       kind: "node",
@@ -984,7 +987,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       h: it.h,
       px,
       symbols: lay.symbols,
-      label: it.label,
+      // Mirroring a glyph must not mirror human-readable text. Catalog symbols
+      // that normally consume their label hand it back to the overlay layer.
+      label: it.mirror && def.consumesLabel ? "" : it.label,
       seats: it.seats,
     })];
     if (warnSet.has(idx)) {
@@ -997,7 +1002,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         "data-fixture": it.anchored ? it.type : undefined,
         "data-sx-key": config?.__scene ? itemKey : undefined,
         "data-sx-owner": config?.__scene ? itemKey : undefined,
-        transform: `translate(${cx},${cy})${rot ? ` rotate(${rot})` : ""} translate(${r2(-wpx / 2)},${r2(-hpx / 2)})`,
+        transform: `translate(${cx},${cy})${rot ? ` rotate(${rot})` : ""}${it.mirror ? ` scale(${it.mirror === "x" ? -1 : 1} ${it.mirror === "y" ? -1 : 1})` : ""} translate(${r2(-wpx / 2)},${r2(-hpx / 2)})`,
       },
       children
     );
@@ -1009,16 +1014,16 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       furniture.push(itemShape);
       itemLayer.furniture.push(itemShape);
     }
-    if (it.label && !def.consumesLabel) {
+    if (overlayLabel && (!def.consumesLabel || it.mirror)) {
       const labelKey = legacySingle
         ? `label:furniture:${it.roomId}:${it.type}:${it.seq}`
         : `label:floor:${it.floor}:furniture:${it.roomId}:${it.type}:${it.seq}`;
       config?.__scene?.push({
         key: labelKey,
         kind: "label",
-        label: it.label,
+        label: overlayLabel,
         sourceRange: it.labelSourceRange,
-        bbox: { x: cx - Math.max(24, it.label.length * 3.2), y: cy - 8 + titleH, width: Math.max(48, it.label.length * 6.4), height: 16 },
+        bbox: { x: cx - Math.max(24, overlayLabel.length * 3.2), y: cy - 8 + titleH, width: Math.max(48, overlayLabel.length * 6.4), height: 16 },
         editable: { label: it.labelSourceRange !== undefined, position: "none" },
       });
       const label = textEl({
@@ -1029,26 +1034,40 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         "data-sx-key": config?.__scene && it.labelSourceRange ? labelKey : undefined,
         "data-sx-owner": config?.__scene ? itemKey : undefined,
         "data-sx-role": config?.__scene && it.labelSourceRange ? "label" : undefined,
-      }, it.label);
+      }, overlayLabel);
       labels.push(label);
       layerFor(itemPlate, idx).labels.push(label);
     }
   });
 
   const tw = lay.wallT;
-  lay.rooms.forEach((r, roomIndex) => {
-    const roomWalls: string[] = [];
-    for (const p of r.parts) {
-      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
-      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y + p.h) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
-      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
-      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x + p.w) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
-    }
+  lay.walls.forEach((wall) => {
+    const tpx = px(wall.thickness);
+    const rawWall = wall.vertical
+      ? rect({
+          class: "sx-fp-wall",
+          "data-wall-scope": wall.rooms.length > 1 ? "interior" : "exterior",
+          "data-wall-thickness": r2(wall.thickness),
+          x: r2(X(wall.along) - tpx / 2),
+          y: r2(Y(wall.lo) - tpx / 2),
+          width: tpx,
+          height: r2(px(wall.hi - wall.lo) + tpx),
+        })
+      : rect({
+          class: "sx-fp-wall",
+          "data-wall-scope": wall.rooms.length > 1 ? "interior" : "exterior",
+          "data-wall-thickness": r2(wall.thickness),
+          x: r2(X(wall.lo) - tpx / 2),
+          y: r2(Y(wall.along) - tpx / 2),
+          width: r2(px(wall.hi - wall.lo) + tpx),
+          height: tpx,
+        });
+    const owner = wall.rooms[0] ?? 0;
     const wallShape = config?.__scene
-      ? group({ "data-sx-owner": roomSceneKey(r) }, roomWalls)
-      : roomWalls.join("");
+      ? group({ "data-sx-owner": roomSceneKey(lay.rooms[owner]!) }, [rawWall])
+      : rawWall;
     walls.push(wallShape);
-    layerFor(roomPlate, roomIndex).walls.push(wallShape);
+    layerFor(roomPlate, owner).walls.push(wallShape);
   });
 
   // interior seams between parts of the same room — open the wall fully
