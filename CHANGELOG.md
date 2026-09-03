@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.14] — 2026-09-03
+
+### Added — floor plans now preserve the visual intent, not just valid syntax
+
+- **Furniture can be fitted and mirrored without asking an agent to do rotated-bounds arithmetic.** `fit [margin n]` rotates first, scales down without distortion, and centers the final envelope in the room; `mirror x|y` reflects the symbol around its center while keeping labels such as a stair's `UP` readable. Existing explicit `at x,y`, `size`, and `rotate` behavior is unchanged.
+- **Façade openings can be laid out as measured chains.** Doors, windows, and archways accept `from start|end n`, a trailing `id`, and `before|after <id> gap n`. Direction is stable—west to east on horizontal walls, north to south on vertical walls—and references must name an earlier opening on the same resolved wall, so an AI agent cannot accidentally create a cross-wall or forward-reference chain.
+- **One resolved wall model now drives drawing and openings.** `wall exterior thickness n`, `wall interior thickness n`, and `wall between A B thickness n` produce deduplicated wall segments with explicit ownership and thickness. Openings inherit their host wall's actual thickness; semantic SVG exposes `data-wall-scope` and `data-wall-thickness`. Omitting wall rules preserves the existing 0.20 m default.
+- **Room labels are layout-owned annotations.** A deterministic center-out pass avoids furniture's full visible envelope—including chairs generated around a table—MEP symbols, hinged-door swing sectors, and protected-zone captions. Small service rooms automatically use a compact name-only label. The SVG marks automatic placement with `data-label-placement="auto"`.
+- **Hinged doors claim their real swept area.** Single and double doors are checked as polygonal quarter-circle sectors against rotated furniture bounds and report `floorplan/door-swing-obstructed`; sliding, pocket, and bifold doors do not pretend to need a quarter-circle clearance.
+
+### Changed — `floorplan` documentation and examples tell one story
+
+- **The reference, website documentation, README, AI generation profile, and examples use the same canonical sentence shapes.** New behavior remains a modifier on the existing domain noun—`furniture … fit`, `door … from start`, `wall … thickness`—instead of introducing parallel POC-only commands. Circuit membership and a split-level stair primitive remain explicitly unsupported rather than being documented ahead of the engine.
+- **Three visual benchmarks now exercise residential, L-shaped townhouse, and restaurant plans.** Each benchmark keeps its source DSL, generated SVG/PNG, image reference, and machine-readable diagnostics together; all three render `valid` with zero diagnostics. The browser comparison page makes visual review repeatable instead of treating parser success as image quality.
+- **Stricter door-clearance validation exposed old examples instead of being waived for them.** Nine public floor-plan examples and one production regression fixture now describe the intended real-world door behavior—out-swinging exterior doors or non-hinged warehouse openings—so the gallery stays warning-free without suppressing the new check.
+- **Regression coverage is broader than the release surface.** Sixteen focused visual-contract tests cover transforms, measured opening chains, wall hierarchy, door clearance, automatic labels, symbol envelopes, zone captions, and compact rooms; the complete floorplan and regression set contains 418 passing tests.
+
+---
+
 ## [1.0.13] — 2026-08-21
 
 ### Changed — a misplaced rectangle no longer throws away the building

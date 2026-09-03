@@ -1,6 +1,6 @@
 ---
 title: Two-bedroom apartment — 68 m²
-description: "A fully furnished residential plan: 7 rooms chained with relative placement, interior doors resolved onto shared walls automatically, auto-computed room areas, and exterior dimension strings."
+description: "A fully furnished residential plan with separate exterior/interior wall weights, a measured two-window façade chain, shared-wall doors, automatic labels, computed room areas, and exterior dimensions."
 diagram: floorplan
 standard: Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129
 industry: [residential]
@@ -14,6 +14,8 @@ relatedLink:
 status: published
 dsl: |
   floorplan "Two-Bedroom Apartment — 68 m²" unit m
+  wall exterior thickness 0.35
+  wall interior thickness 0.12
   room living  "Living Room"  at 0,0       size 5.2x4.2
   room kitchen "Kitchen"      right-of living size 3.0x4.2
   room hall    "Hallway"      below living  size 2.0x2.6
@@ -28,8 +30,8 @@ dsl: |
   door between bed1 bath at 30%
   door between hall bed2 at 25%
   door between bed2 closet at 50% type bifold
-  window living north at 30% width 1.8
-  window living north at 75% width 1.2
+  window living north from start 0.4 width 1.8 id living-west
+  window living north after living-west gap 1.0 width 1.2 id living-east
   window kitchen north at 50% width 1.5
   window kitchen east at 50% width 1.4 type sliding
   window bed1 south at 55% width 1.4
@@ -57,6 +59,8 @@ dsl: |
 
 ## What this shows
 
-The whole apartment is placed with `right-of` / `below` chaining from one `at 0,0` anchor — adjacent rooms share an edge exactly, so their walls merge into a single poché band. Every interior door uses `door between A B`, which finds the shared wall segment and positions along the overlap; no wall coordinates appear anywhere in the source.
+The whole apartment is placed with `right-of` / `below` chaining from one `at 0,0` anchor — adjacent rooms share an edge exactly, so their walls merge into a single poché band. `wall exterior` and `wall interior` establish a visible structural hierarchy while every interior door still uses `door between A B`, which finds the shared wall automatically.
 
-Room areas (and the 68 m² total in the SVG `<desc>`) are computed from the geometry, never typed. The kitchen shows the underlay convention: the sink and stove sit *inside* the counter run without triggering collision warnings, while a misplaced wardrobe would be flagged with the overlap in meters.
+The living-room façade is measured rather than percentage-guessed: `living-west` starts 0.4 m from the west jamb and `living-east` follows it with an exact 1.0 m gap. Opening ids are source-order identities on one resolved wall, so changing the first width moves the second predictably.
+
+Room areas (and the 68 m² total in the SVG `<desc>`) are computed from the geometry, never typed. Labels automatically avoid furniture envelopes and door swings. The kitchen shows the underlay convention: the sink and stove sit *inside* the counter run without triggering collision warnings, while a misplaced wardrobe would be flagged with the overlap in meters.

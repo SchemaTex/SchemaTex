@@ -34,6 +34,7 @@ function changelogPath(): string | null {
 // vs `block diagram` overlap is handled by a negative lookbehind.
 const KEYWORD_TO_TYPE: Array<[RegExp, DiagramType]> = [
   [/\bstage ?plot\b|\binput list\b/i, 'stageplot'],
+  [/\bfloor[ -]?plans?\b|\bspace layouts?\b/i, 'floorplan'],
   [/\buse case\b/i, 'usecase'],
   [/\bsingle-line\b|\bsld\b/i, 'sld'],
   [/\bp&id\b|\bpiping & instrumentation\b/i, 'pid'],
