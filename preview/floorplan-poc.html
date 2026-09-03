@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -324,8 +324,8 @@
   <header class="hero">
     <div class="page-shell">
       <p class="eyebrow">SchemaTex 1.0.14 · floorplan release preview</p>
-      <h1>左边是 1.0.13。<br>右边是准备 ship 的 1.0.14。</h1>
-      <p class="hero-lede">六组 Before / After 直接展示这次真正进入 production pipeline 的能力，也把只做到一半和明确不支持的部分留在同一页，避免把 model POC 当成 release feature。</p>
+      <h1>1.0.13 on the left.<br>1.0.14 ready to ship on the right.</h1>
+      <p class="hero-lede">Six before-and-after inspections show what now runs through the production pipeline. Partial and unsupported cases remain visible so a model POC is never mistaken for a release feature.</p>
       <div class="hero-ledger" aria-label="1.0.14 issue coverage">
         <div class="metric"><span class="metric-value">4</span><span class="metric-label">issues fully resolved</span></div>
         <div class="metric"><span class="metric-value">2</span><span class="metric-label">partially addressed</span></div>
@@ -335,22 +335,22 @@
   </header>
 
   <div class="page-shell">
-    <p class="scope-note"><strong>1.0.14 ship contract：</strong><code>fit</code>、<code>mirror x|y</code>、绝对/链式 opening、分级 wall thickness、自动 label placement 和 door-swing clearance 已接入同一套 production parser → layout → renderer，并由 regression tests 覆盖。<code>stairs-split</code> 与 cross-view electrical circuit 仍是 model POC，页面会明确标注，不把尚未实现的能力算作完成。</p>
+    <p class="scope-note"><strong>1.0.14 ship contract:</strong> <code>fit</code>, <code>mirror x|y</code>, measured and chained openings, tiered wall thickness, automatic label placement, and door-swing clearance now run through one production parser → layout → renderer pipeline with regression coverage. <code>stairs-split</code> and cross-view electrical circuits remain model POCs and are explicitly marked as not shipped.</p>
     <section class="support-matrix" aria-label="Supported and deferred GitHub issues">
       <article class="support-card shipped">
-        <h2>Ships · PR 自动关闭</h2>
+        <h2>Ships · PR closes automatically</h2>
         <ul>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/97">#97</a> room label 避让 electrical / MEP symbols</li>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/102">#102</a> <code>mirror x|y</code> 改变 stair handedness</li>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/104">#104</a> <code>fit margin</code> 自动缩放并居中</li>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/105">#105</a> absolute offsets 与 chained openings</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/97">#97</a> room labels avoid electrical and MEP symbols</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/102">#102</a> <code>mirror x|y</code> changes stair handedness</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/104">#104</a> <code>fit margin</code> scales and centers automatically</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/105">#105</a> measured offsets and chained openings</li>
         </ul>
       </article>
       <article class="support-card partial">
-        <h2>Partial · 保持 issue open</h2>
+        <h2>Partial · issues remain open</h2>
         <ul>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/101">#101</a> 已有 wall thickness hierarchy；dimension reference mode 尚未实现</li>
-          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/103">#103</a> <code>fit</code> 消除负坐标 workaround；显式 <code>at</code> pivot 语义不变</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/101">#101</a> wall-thickness hierarchy ships; dimension reference modes do not</li>
+          <li><a href="https://github.com/SchemaTex/SchemaTex/issues/103">#103</a> <code>fit</code> removes the negative-coordinate workaround; explicit <code>at</code> pivot semantics remain unchanged</li>
         </ul>
       </article>
       <article class="support-card deferred">
@@ -377,65 +377,65 @@
       <section class="inspection-sheet" id="transform">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 01</span>
-          <h2>能放进去的楼梯，却要求负坐标</h2>
-          <p>当前 <code>at 0,0</code> 指的是旋转前矩形的左上角。物体绕中心旋转后，可见 bounding box 跑出房间；validator 数学没错，坐标语义却违背直觉。</p>
+          <h2>A stair that fits still requires negative coordinates</h2>
+          <p><code>at 0,0</code> currently refers to the pre-rotation rectangle's top-left corner. Once the object rotates around its center, the visible bounding box leaves the room. The validator is mathematically correct, but the placement semantics are not intuitive.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/103">#103 transform mismatch</a><a href="https://github.com/SchemaTex/SchemaTex/issues/104">#104 fit / fill</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">旋转后超出 0.38m</p></div>
-            <div class="diagram-stage" id="transform-before"><span class="annotation top-right">at 0,0 仍按旋转前矩形解释</span></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Extends 0.38m after rotation</p></div>
+            <div class="diagram-stage" id="transform-before"><span class="annotation top-right">at 0,0 uses the pre-rotation box</span></div>
             <p class="diagnostics problem" id="transform-before-diag" role="alert"></p>
             <details><summary>Current DSL</summary><pre>furniture stairs-u S1 in pantry
   at 0,0 size 1.83x1.075 rotate 90</pre></details>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">以最终 bounding box 居中 fit</p></div>
+            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">Fit using the final bounding box</p></div>
             <div class="diagram-stage" id="transform-after"><span class="annotation top-right">rotate first → fit → place</span></div>
             <p class="diagnostics fixed" id="transform-after-diag"></p>
             <details><summary>Proposed DSL</summary><pre>furniture stairs-u S1 in pantry
   <span class="new-token">fit margin 0.05</span> rotate 90</pre></details>
           </article>
-          <div class="callout"><strong>Ship rule</strong><span><code>fit</code> 保持 symbol 比例，先旋转，再把最终 bounding box 放入 room interior；不加入会拉坏符号的 <code>fill</code>。</span></div>
+          <div class="callout"><strong>Ship rule</strong><span><code>fit</code> preserves symbol proportions: rotate first, then place the final bounding box inside the room interior. A stretching <code>fill</code> mode is intentionally excluded.</span></div>
         </div>
       </section>
 
       <section class="inspection-sheet" id="openings">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 02</span>
-          <h2>房间一变长，门窗 clearance 就漂了</h2>
-          <p>百分比适合“放在墙中间”，不适合施工尺寸。这个案例把墙从 3.67m 拉长到 4.4m：旧百分比让门离墙角、窗离门的实际距离一起变化。</p>
+          <h2>Resizing a room shifts door and window clearances</h2>
+          <p>Percentages work for “place this near the middle,” not for construction dimensions. This case extends a wall from 3.67m to 4.4m: the old percentages change both the door-to-corner clearance and the window-to-door gap.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/105">#105 absolute & chained placement</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">原百分比被带到新墙长</p></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Old percentages follow the new wall length</p></div>
             <div class="diagram-stage" id="opening-before"></div>
-            <p class="diagnostics problem">门框离左墙变成 0.44m；门窗间距变成约 0.32m。</p>
+            <p class="diagnostics problem">The door jamb moves to 0.44m from the left wall; the door-to-window gap grows to about 0.32m.</p>
             <details><summary>Current DSL</summary><pre>door hall south at 19.75% width 0.85
 window hall south at 50.41% width 1.2</pre></details>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">layout 直接解析绝对距离</p></div>
+            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">Layout resolves measured distances directly</p></div>
             <div class="diagram-stage" id="opening-after"></div>
-            <p class="diagnostics fixed">门框离左墙仍是 0.30m；窗户始终在门后 0.10m。</p>
+            <p class="diagnostics fixed">The door jamb stays 0.30m from the left wall; the window remains 0.10m after the door.</p>
             <details><summary>Canonical proposal</summary><pre>door hall south <span class="new-token">from start 0.30</span> width 0.85 <span class="new-token">id front</span>
 window hall south <span class="new-token">after front gap 0.10</span> width 1.2 <span class="new-token">id w1</span></pre></details>
           </article>
-          <div class="callout"><strong>Ship rule</strong><span>绝对 offset 定位 opening 的 leading jamb，不是中心；每面墙的 <code>start</code> direction 必须固定，chained placement 需要 opening ID。</span></div>
+          <div class="callout"><strong>Ship rule</strong><span>A measured offset positions an opening's leading jamb, not its center. Each wall has a stable <code>start</code> direction, and chained placement references an opening ID.</span></div>
         </div>
       </section>
 
       <section class="inspection-sheet" id="walls">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 03</span>
-          <h2>所有墙都是 20cm，建筑总宽当然对不上</h2>
-          <p>当前墙只是沿 room boundary 画出的固定色带。真实住宅的外墙、承重墙、隔墙厚度不同；如果仍把墙当作 room 的副产品，shared wall 的厚度和 dimension reference 都没有可靠归属。</p>
+          <h2>If every wall is 20cm, the building width cannot add up</h2>
+          <p>Walls were fixed-width bands drawn along room boundaries. Real buildings use different exterior, structural, and partition wall thicknesses. Treating walls as a room by-product leaves shared-wall thickness and dimension references without a reliable owner.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/101">#101 wall thickness</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">统一 0.20m；room size 与外轮廓混在一起</p></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Uniform 0.20m walls mix room size with exterior outline</p></div>
             <div class="diagram-stage">
               <svg class="wall-demo" viewBox="0 0 520 300" role="img" aria-label="Current uniform wall thickness model">
                 <rect class="room-fill" x="70" y="45" width="380" height="205"/>
@@ -444,35 +444,35 @@ window hall south <span class="new-token">after front gap 0.10</span> width 1.2 
                 <circle class="problem-mark" cx="265" cy="285" r="4"/><text x="277" y="289" font-size="11">every wall = 0.20m</text>
               </svg>
             </div>
-            <p class="diagnostics problem">修改 visual thickness 也无法回答尺寸量到 interior、centerline 还是 exterior。</p>
+            <p class="diagnostics problem">Changing visual thickness still cannot say whether dimensions target the interior, centerline, or exterior.</p>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">After · partial in 1.0.14</span><p class="panel-title">wall segments 已有厚度；dimension reference 待补</p></div>
+            <div class="panel-head"><span class="state">After · partial in 1.0.14</span><p class="panel-title">Wall segments have thickness; reference modes remain open</p></div>
             <div class="diagram-stage" id="wall-after"></div>
-            <p class="diagnostics fixed">外墙 0.45m、默认隔墙 0.12m；这个 shared wall 用 pair override 设为 0.20m，opening 同步继承。</p>
+            <p class="diagnostics fixed">Exterior walls are 0.45m, default partitions are 0.12m, and this shared wall uses a 0.20m pair override inherited by its opening.</p>
             <details><summary>Canonical proposal</summary><pre>wall exterior thickness 0.45
 wall interior thickness 0.12
 wall between room_a room_b thickness 0.20</pre></details>
           </article>
-          <div class="callout"><strong>Partial scope</strong><span>layout 从 resolved rooms 派生去重后的 <code>WallSegment[]</code>，并由它驱动 opening gap 与 SVG。Exterior / centerline dimension reference 不在 1.0.14，因此 #101 保持 open。</span></div>
+          <div class="callout"><strong>Partial scope</strong><span>Layout derives deduplicated <code>WallSegment[]</code> records from resolved rooms and uses them for opening gaps and SVG output. Exterior and centerline dimension references are not in 1.0.14, so #101 remains open.</span></div>
         </div>
       </section>
 
       <section class="inspection-sheet" id="stairs">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 04</span>
-          <h2>Rotate 不能把左手楼梯变成右手楼梯</h2>
-          <p>U/L 型楼梯有 handedness，镜像与旋转是两种不同变换。split-level 又是另一种结构：中间 landing 同时接一段 UP 和一段 DN，不是给现有箭头写 <code>both</code> 就够。</p>
+          <h2>Rotation cannot turn a left-handed stair into a right-handed one</h2>
+          <p>U- and L-shaped stairs have handedness, so mirroring and rotation are different transforms. A split-level stair is a separate structure: its middle landing connects one UP flight and one DN flight. Changing an existing arrow label to <code>both</code> is not enough.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/102">#102 flip staircases</a><a href="https://github.com/SchemaTex/SchemaTex/issues/106">#106 split-level stairs</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">四种 primitive，只有 rotate 和 UP/DN label</p></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Four primitives with rotation and UP/DN labels only</p></div>
             <div class="diagram-stage" id="stairs-before"></div>
-            <p class="diagnostics problem">入口在错误一侧时，只能旋转整个楼梯；split-level 需要手工叠两个 symbol。</p>
+            <p class="diagnostics problem">If the entry is on the wrong side, the only option is rotating the whole stair. Split-level stairs require manually stacking two symbols.</p>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">After · mixed 1.0.14 scope</span><p class="panel-title">mirror ships；split stair 不支持</p></div>
+            <div class="panel-head"><span class="state">After · mixed 1.0.14 scope</span><p class="panel-title">Mirror ships; split stairs do not</p></div>
             <div class="diagram-stage split-stairs">
               <figure><figcaption>stairs-u mirror</figcaption><div id="stairs-mirror"></div></figure>
               <figure><figcaption>stairs-split</figcaption>
@@ -489,51 +489,51 @@ wall between room_a room_b thickness 0.20</pre></details>
                 </svg>
               </figure>
             </div>
-            <p class="diagnostics fixed">左侧 mirror 由 production renderer 生成；右侧 split stair 只验证目标 geometry，尚未进入 catalog。</p>
+            <p class="diagnostics fixed">The mirrored stair on the left is produced by the production renderer. The split stair on the right only illustrates target geometry and is not in the catalog.</p>
             <details><summary>Canonical proposal</summary><pre>furniture stairs-u S1 in hall <span class="new-token">mirror x</span>
 furniture <span class="new-token">stairs-split</span> S2 in entry size 1.8x2.6</pre></details>
           </article>
-          <div class="callout"><strong>Split status</strong><span><code>mirror x|y</code> 是 1.0.14 的明确轴向 reflection；不使用 bare <code>flip</code> 或负 rotation。右侧的 <code>stairs-split</code> 仍只是需求示意，不进入 release。</span></div>
+          <div class="callout"><strong>Split status</strong><span><code>mirror x|y</code> provides explicit axis reflection in 1.0.14 without a bare <code>flip</code> or negative rotation. The <code>stairs-split</code> example on the right remains a requirement illustration and is not part of the release.</span></div>
         </div>
       </section>
 
       <section class="inspection-sheet" id="labels">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 05</span>
-          <h2>房间名固定居中，正好压在灯具上</h2>
-          <p>旧 renderer 只取 room 最大矩形的中心。新 layout 不做不可预测的自由搜索，而是在中心附近测试一组固定候选点，选择离中心最近、与 symbol overlap 最少的位置。</p>
+          <h2>A fixed centered room name lands directly on a light fixture</h2>
+          <p>The old renderer used the center of the room's largest rectangle. The new layout avoids unpredictable free-form search: it tests a stable set of candidates near the center and chooses the nearest position with the lowest symbol overlap.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/97">#97 room label overlap</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">room label 与 ceiling light 共用中心</p></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Room label and ceiling light share the center</p></div>
             <div class="diagram-stage" id="label-before"></div>
-            <p class="diagnostics problem">文字仍会绘制，但读者无法同时辨认 room name 和 electrical symbol。</p>
+            <p class="diagnostics problem">Both elements render, but the room name and electrical symbol cannot be read at the same time.</p>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">layout 选择最低碰撞分数的位置</p></div>
+            <div class="panel-head"><span class="state">After · ships in 1.0.14</span><p class="panel-title">Layout chooses the lowest-collision position</p></div>
             <div class="diagram-stage" id="label-after"></div>
-            <p class="diagnostics fixed">结果 deterministic；先不增加手动 keyword，真实使用证明自动 placement 不够时再设计 escape hatch。</p>
+            <p class="diagnostics fixed">The result is deterministic. A manual keyword is deferred until real usage shows that automatic placement needs an escape hatch.</p>
           </article>
-          <div class="callout"><strong>Implemented rule</strong><span>候选点从中心向外稳定排序，评分考虑 furniture 与 door-swing sector；小房间自动切成只显示 room name 的 compact label，避免 area 行压墙。</span></div>
+          <div class="callout"><strong>Implemented rule</strong><span>Candidates are stably ordered outward from the center and scored against furniture and door-swing sectors. Small rooms automatically use a compact room-name-only label so the area line does not touch a wall.</span></div>
         </div>
       </section>
 
       <section class="inspection-sheet" id="electrical">
         <div class="sheet-copy">
           <span class="sheet-index">Inspection 06</span>
-          <h2>一个插座，不该在两张图里变成两个陌生对象</h2>
-          <p>当前 IEC glyph 和 switch-to-light control line 已经存在，但 floorplan 不知道 circuit。POC 给 device 增加稳定 ID、system 和 circuit metadata：同一个 ID 同时进入 floorplan 与 SLD。</p>
+          <h2>One outlet should not become two unrelated objects across two views</h2>
+          <p>IEC glyphs and switch-to-light control lines already exist, but the floorplan does not know about circuits. The POC gives each device a stable ID plus system and circuit metadata so the same identity can appear in both the floorplan and SLD.</p>
           <div class="issue-links"><a href="https://github.com/SchemaTex/SchemaTex/issues/82">#82 European conventions</a><a href="https://github.com/SchemaTex/SchemaTex/issues/98">#98 toggle layers</a><a href="https://github.com/SchemaTex/SchemaTex/issues/99">#99 floorplan + SLD</a><a href="https://github.com/SchemaTex/SchemaTex/issues/100">#100 electrical symbols</a></div>
         </div>
         <div class="comparison">
           <article class="panel">
-            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">有 symbol 和 controls，没有 circuit identity</p></div>
+            <div class="panel-head"><span class="state">Before · 1.0.13</span><p class="panel-title">Symbols and controls exist without circuit identity</p></div>
             <div class="diagram-stage" id="electrical-before"></div>
-            <p class="diagnostics problem">可以看出哪个 switch 控制哪盏灯，却不能回答它们属于哪个 breaker。</p>
+            <p class="diagnostics problem">The view shows which switch controls which light, but cannot identify their breaker.</p>
           </article>
           <article class="panel after">
-            <div class="panel-head"><span class="state">Not shipped · model only</span><p class="panel-title">一套 device IDs，两个 linked views</p></div>
+            <div class="panel-head"><span class="state">Not shipped · model only</span><p class="panel-title">One set of device IDs across two linked views</p></div>
             <div class="layer-controls" aria-label="Layer controls">
               <label><input type="checkbox" data-layer="electrical" checked> Electrical devices</label>
               <label><input type="checkbox" data-layer="controls" checked> Control lines</label>
@@ -554,22 +554,22 @@ furniture <span class="new-token">stairs-split</span> S2 in entry size 1.8x2.6</
                 </svg>
               </div>
             </div>
-            <p class="diagnostics fixed" id="electrical-status" aria-live="polite">Circuit C1 同时高亮 floorplan 的 O1/L1 和 SLD branch。</p>
+            <p class="diagnostics fixed" id="electrical-status" aria-live="polite">Circuit C1 highlights O1/L1 on the floorplan and the matching SLD branch.</p>
             <details><summary>Canonical proposal</summary><pre>fixture outlet O1 in living on south at 25% <span class="new-token">circuit C1</span>
 furniture ceiling-light L1 in living at 2.4,1.7 <span class="new-token">circuit C1</span>
 controls SW1 -&gt; L1
 # Circuit declaration belongs to the shared electrical model.</pre></details>
           </article>
-          <div class="callout"><strong>Architecture change</strong><span>“拼成一张 SVG”不是解法。先让两个 view 消费同一组 <code>Device</code> / <code>Circuit</code>，layer toggle 和 cross-highlight 才会自然成立。</span></div>
+          <div class="callout"><strong>Architecture change</strong><span>Combining two drawings into one SVG is not the solution. Both views must consume the same <code>Device</code> and <code>Circuit</code> records before layer toggles and cross-highlighting can work reliably.</span></div>
         </div>
       </section>
 
       <section class="decision" aria-labelledby="decision-title">
-        <h2 id="decision-title">1.0.14 解决 visual contract；不冒充 electrical domain model。</h2>
+        <h2 id="decision-title">1.0.14 fixes the visual contract without pretending to ship an electrical domain model.</h2>
         <ol>
-          <li><strong>已完成 geometry contract：</strong><code>fit</code>、opening offsets、wall segments、door clearance 和 label placement 已走 production pipeline。</li>
-          <li><strong>已完成安全的 symbol extension：</strong><code>mirror x|y</code> 不改变 catalog footprint，也不会镜像文字。</li>
-          <li><strong>仍需真正的新模型：</strong><code>stairs-split</code> 需要新 primitive；Device/Circuit 需要 floorplan 与 SLD 共享 domain model，不能靠 renderer metadata 假装完成。</li>
+          <li><strong>Geometry contract complete:</strong> <code>fit</code>, opening offsets, wall segments, door clearance, and label placement run through the production pipeline.</li>
+          <li><strong>Safe symbol extension complete:</strong> <code>mirror x|y</code> preserves catalog footprints and never mirrors text.</li>
+          <li><strong>New models still required:</strong> <code>stairs-split</code> needs a new primitive. Device/Circuit support needs a domain model shared by floorplan and SLD rather than renderer metadata.</li>
         </ol>
       </section>
     </main>
@@ -722,8 +722,8 @@ controls SW1 -> L1`;
             node.classList.toggle("circuit-muted", !control.checked);
           });
           status.textContent = control.checked
-            ? "Circuit C1 同时高亮 floorplan 的 O1/L1 和 SLD branch。"
-            : "Circuit highlight 已关闭；device identity 仍保留。";
+            ? "Circuit C1 highlights O1/L1 on the floorplan and the matching SLD branch."
+            : "Circuit highlighting is off; device identities remain available.";
         }
       });
     });
