@@ -6,6 +6,31 @@ import { render } from "../../src/core/api";
 const item = (lo: ReturnType<typeof layoutCircuitNetlist>, id: string) =>
   lo.items.find((i) => i.component.id === id)!;
 
+const routeSegments = (
+  lo: ReturnType<typeof layoutCircuitNetlist>,
+  net: string
+) =>
+  lo.routes
+    .filter((route) => route.netId === net || route.netId.startsWith(`${net}.`))
+    .flatMap((route) =>
+      route.points.slice(1).map((point, index) => [route.points[index]!, point] as const)
+    );
+
+const orthogonalSegmentsIntersect = (
+  [a, b]: readonly [{ x: number; y: number }, { x: number; y: number }],
+  [c, d]: readonly [{ x: number; y: number }, { x: number; y: number }]
+) => {
+  const between = (value: number, p: number, q: number) =>
+    value >= Math.min(p, q) && value <= Math.max(p, q);
+  if (a.x === b.x && c.y === d.y) {
+    return between(a.x, c.x, d.x) && between(c.y, a.y, b.y);
+  }
+  if (a.y === b.y && c.x === d.x) {
+    return between(c.x, a.x, b.x) && between(a.y, c.y, d.y);
+  }
+  return false;
+};
+
 describe("circuit netlist auto-layout — compaction", () => {
   test("shunt cap (pin on GND) drops below the series row, not stranded in it", () => {
     const lo = layoutCircuitNetlist(
@@ -197,5 +222,91 @@ R5 r2 0 500`;
     expect(item(lo, "D3A").x).toBeLessThan(
       Math.min(item(lo, "L3A").x, item(lo, "L4A").x)
     );
+  });
+});
+
+describe("circuit netlist auto-layout — single IC hub", () => {
+  const astable = `V1 VCC GND value="9 V" label="BAT1"
+U1 GND TIMING OUT VCC CTRL TIMING DISCH VCC type=555_timer label="U1"
+R1 VCC DISCH value="10 kΩ" label="R1"
+R2 DISCH TIMING value="100 kΩ" label="R2"
+C1 TIMING GND value="10 µF" label="C1"
+C2 CTRL GND value="10 nF" label="C2"
+R3 OUT LED_A value="470 Ω" label="R3"
+D1 LED_A GND type=led label="LED1"`;
+
+  test("places passive branches on the pin side of one functional block", () => {
+    const lo = layoutCircuitNetlist(parseNetlist(astable));
+    const hub = item(lo, "U1");
+    const timing = ["R1", "R2", "C1"].map((id) => item(lo, id).x);
+    const output = ["R3", "D1"].map((id) => item(lo, id).x);
+
+    expect(Math.max(...timing)).toBeLessThan(hub.x);
+    expect(Math.min(...output)).toBeGreaterThan(hub.x + hub.length);
+    expect(item(lo, "C2").x).toBeLessThan(item(lo, "R3").x);
+    expect(lo.width / lo.height).toBeGreaterThan(1.1);
+
+    const timingSpine = lo.routes.find(
+      (route) => route.netId === "TIMING" && route.points.every((point) => point.x === route.points[0]!.x)
+    );
+    const dischargeSpine = lo.routes.find(
+      (route) => route.netId === "DISCH" && route.points.every((point) => point.x === route.points[0]!.x)
+    );
+    expect(timingSpine).toBeDefined();
+    expect(dischargeSpine).toBeDefined();
+    expect(
+      Math.abs(timingSpine!.points[0]!.x - dischargeSpine!.points[0]!.x)
+    ).toBeGreaterThanOrEqual(16);
+    expect(
+      routeSegments(lo, "DISCH").some((discharge) =>
+        routeSegments(lo, "TIMING").some((timing) =>
+          orthogonalSegmentsIntersect(discharge, timing)
+        )
+      )
+    ).toBe(false);
+  });
+
+  test("keeps every signal net routed after declarations and ids change", () => {
+    const renamed = astable.replace(/^(\S+)/gm, "$1_ALT");
+    const ast = parseNetlist(renamed);
+    ast.components.reverse();
+    const lo = layoutCircuitNetlist(ast);
+    const routed = new Set(
+      lo.routes.map((route) => route.netId.split(".")[0])
+    );
+
+    for (const net of ["TIMING", "OUT", "CTRL", "DISCH", "LED_A"]) {
+      expect(routed.has(net)).toBe(true);
+    }
+    expect(new Set(lo.items.map((entry) => entry.component.id))).toEqual(
+      new Set(ast.components.map((entry) => entry.id))
+    );
+  });
+
+  test("uses topology rather than the 555 type or fixture labels", () => {
+    const genericController = `V9 PWR GND value="5 V"
+X9 SENSE DRIVE GND OUT CTRL PWR pins_left="SENSE,DRIVE,GND" pins_right="PWR,CTRL,OUT" label="CONTROL"
+R9 PWR SENSE value="22 kΩ"
+R8 SENSE DRIVE value="47 kΩ"
+C9 DRIVE GND value="1 µF"
+R7 OUT LOAD value="330 Ω"
+D9 LOAD GND type=led
+C8 CTRL GND value="10 nF"`;
+    const lo = layoutCircuitNetlist(parseNetlist(genericController));
+    const hub = item(lo, "X9");
+
+    expect(item(lo, "R9").x).toBeLessThan(hub.x);
+    expect(item(lo, "R7").x).toBeGreaterThan(hub.x + hub.length);
+    expect(item(lo, "C8").x).toBeGreaterThan(hub.x + hub.length);
+    expect(new Set(lo.items.map((entry) => entry.component.id))).toEqual(
+      new Set(parseNetlist(genericController).components.map((entry) => entry.id))
+    );
+  });
+
+  test("falls back when the author provides an explicit orientation", () => {
+    const explicit = astable.replace("R3 OUT LED_A", "R3 OUT LED_A dir=right");
+    const lo = layoutCircuitNetlist(parseNetlist(explicit));
+
+    expect(item(lo, "R3").rotation).toBe(0);
   });
 });

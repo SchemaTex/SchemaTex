@@ -13,13 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.14] — 2026-09-04
 
-### Changed — P&ID and SLD layouts follow topology without adding new DSL syntax
+### Changed — P&ID, circuit, and SLD layouts follow topology without adding new DSL syntax
 
 - **P&ID now follows process flow.** Parallel trains share a stage, recycle and bypass paths use separate return channels, shared process endpoints receive junction dots, and field instruments stay clear of equipment labels. Catalog-style P&IDs with no process connections keep their previous declaration-order layout.
 - **Portrait SLD feeders now adapt to a review canvas.** The decision comes from measured content bounds rather than a fixed example depth or branch count. Source fan-in labels stay with their own drops, long bypass feeders are identified by skipped graph ranks, and side annotations are used only on uncrowded levels so branch banks keep centered, unclipped labels.
 - **Every structurally skipped-rank SLD source becomes a side feeder.** The earlier three-rank cutoff happened to fit the commercial-solar benchmark but failed on ordinary two-stage systems, placing Utility inside the PV source bank. The rule now follows the graph relationship itself; true peer sources keep their normal spacing.
 - **Auxiliary circuit branches no longer collapse a recognized load bank into generic fallback.** Output groups are discovered from connectivity and routed from their actual owner component, so a pilot or status branch can sit between left and right load banks while retaining the shared return rail. Reordered declarations and renamed components are covered explicitly.
-- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID and SLD forms; existing agents do not need a migration or compatibility mode.
+- **Single-controller circuits now read by function instead of declaration order.** When one multi-pin functional block is surrounded by simple two-terminal branches, connectivity places each branch on the side of the pins it serves, aligns branch junctions with those pins, separates signal routing channels, and shares the power rails. The 555 symbol now keeps its physical DIP netlist order while drawing supply, timing, control, and output pins in their conventional schematic groups. The rule also covers generic controller blocks, ignores IDs and labels, respects explicit `dir=` by falling back, and leaves multi-IC or non-chain graphs on the general layout.
+- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID, circuit, and SLD forms; existing agents do not need a migration or compatibility mode.
 
 ### Changed — the npm-facing agent contract is shorter and copyable
 
@@ -29,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added — repeatable visual evidence
 
-- **One flat visual-contract page covers five P&ID and electrical stress cases.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. New audit cases expose an auxiliary circuit branch and a two-stage SLD feeder, while the 555 remains visibly unchanged and deferred after its example-specific template was removed during robustness review.
+- **One flat visual-contract page covers five P&ID and electrical stress cases.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. New audit cases expose an auxiliary circuit branch and a two-stage SLD feeder. The first 555 attempt was removed because it encoded one fixture; its replacement is visibly verified against the same target and driven by the reusable single-controller topology instead.
 
 ### Added — floor plans now preserve the visual intent, not just valid syntax
 

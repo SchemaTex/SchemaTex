@@ -1075,19 +1075,59 @@ const generic_ic: SymbolDef = icSymbol(
   "IC"
 );
 
-/** 555 timer — 8-pin standard pinout */
-const timer_555: SymbolDef = (() => {
-  const left = ["GND", "TRG", "OUT", "RST"];
-  const right = ["VCC", "DIS", "THR", "CTL"];
-  const sym = icSymbol(left, right, "555");
-  const leftNames = ["gnd", "trg", "out", "rst"];
-  const rightNames = ["vcc", "dis", "thr", "ctl"];
-  return {
-    ...sym,
-    anchors: icPinAnchors({ left, right }, leftNames, rightNames),
-    netlistPins: ["gnd", "trg", "out", "rst", "ctl", "thr", "dis", "vcc"],
-  };
-})();
+/**
+ * 555 timer — functionally arranged schematic symbol.
+ *
+ * The netlist order remains the physical DIP pin order, but a schematic is
+ * not a package drawing: supply pins belong on top/bottom, timing pins on the
+ * left, and the output on the right. Keeping those two contracts separate
+ * makes every 555 circuit readable without recognizing one particular astable
+ * fixture or assigning any surrounding component a fixed coordinate.
+ */
+const timer_555: SymbolDef = {
+  length: 112,
+  netlistPins: ["gnd", "trg", "out", "rst", "ctl", "thr", "dis", "vcc"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 112, y: 0 },
+    dis: { x: -8, y: -30 },
+    trg: { x: -8, y: 0 },
+    thr: { x: -8, y: 30 },
+    out: { x: 120, y: -16 },
+    ctl: { x: 120, y: 30 },
+    vcc: { x: 32, y: -68 },
+    rst: { x: 80, y: -68 },
+    gnd: { x: 56, y: 68 },
+  },
+  svg: () => {
+    const pinLabel = (
+      x: number,
+      y: number,
+      value: string,
+      anchor: "start" | "middle" | "end" = "start"
+    ) => `<text x="${x}" y="${y}" text-anchor="${anchor}" class="schematex-circuit-pol">${value}</text>`;
+    return [
+      `<rect x="0" y="-60" width="112" height="120" fill="white" ${BODY}/>`,
+      lineWire(-8, -30, 0, -30),
+      lineWire(-8, 0, 0, 0),
+      lineWire(-8, 30, 0, 30),
+      lineWire(112, -16, 120, -16),
+      lineWire(112, 30, 120, 30),
+      lineWire(32, -68, 32, -60),
+      lineWire(80, -68, 80, -60),
+      lineWire(56, 60, 56, 68),
+      pinLabel(5, -27, "7  DISCH"),
+      pinLabel(5, 3, "2  TRIG"),
+      pinLabel(5, 33, "6  THR"),
+      pinLabel(107, -13, "OUT  3", "end"),
+      pinLabel(107, 33, "CTRL  5", "end"),
+      pinLabel(32, -48, "8  VCC", "middle"),
+      pinLabel(80, -48, "4  RESET", "middle"),
+      pinLabel(56, 52, "GND  1", "middle"),
+      `<text x="56" y="18" text-anchor="middle" class="schematex-circuit-meter">555</text>`,
+    ].join("");
+  },
+};
 
 const voltage_regulator: SymbolDef = {
   length: 60,
