@@ -9,6 +9,8 @@ const target = resolve(root, "preview/professional-visual-contract");
 const refreshBaseline = process.argv.includes("--refresh-baseline");
 const baselineDistArg = process.argv.find((arg) => arg.startsWith("--baseline-dist="));
 const baselineDist = baselineDistArg?.slice("--baseline-dist=".length);
+const caseArg = process.argv.find((arg) => arg.startsWith("--case="));
+const requestedCase = caseArg?.slice("--case=".length);
 const baselineRender = baselineDist
   ? (await import(pathToFileURL(resolve(baselineDist, "index.js")).href)).render
   : render;
@@ -17,9 +19,19 @@ const cases = [
   ["pid-hydraulic-test-stand", 1800],
   ["circuit-555-astable", 1400],
   ["sld-commercial-solar", 1400],
+  ["circuit-load-bank-pilot", 1600],
+  ["sld-side-feeder-threshold", 1400],
 ];
 
-for (const [name, width] of cases) {
+const selectedCases = requestedCase
+  ? cases.filter(([name]) => name === requestedCase)
+  : cases;
+
+if (requestedCase && selectedCases.length === 0) {
+  throw new Error(`Unknown visual-contract case: ${requestedCase}`);
+}
+
+for (const [name, width] of selectedCases) {
   const source = await readFile(resolve(target, `${name}.sx`), "utf8");
   const svg = render(source);
   const png = new Resvg(svg, {
@@ -58,5 +70,5 @@ await writeFile(
 );
 
 console.log(
-  `Generated ${cases.length} implementation candidates${refreshBaseline || baselineDist ? " and refreshed baselines" : ""} in ${target}`
+  `Generated ${selectedCases.length} implementation candidates${refreshBaseline || baselineDist ? " and refreshed baselines" : ""} in ${target}`
 );

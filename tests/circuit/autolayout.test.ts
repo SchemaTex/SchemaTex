@@ -135,3 +135,67 @@ L1 switched neutral type=lamp`)
     ).toBe(true);
   });
 });
+
+describe("circuit netlist auto-layout — reusable load-bank motifs", () => {
+  const withPilot = `B1 bat 0 12V type=battery
+F1 bat p1 15A
+S1 p1 p2 type=switch_spst
+K1 p2 fl_out pilot type=automotive_flasher_3pin
+S2 fl_out left right type=switch_spdt_center_off
+L1 left 0 type=lamp
+L2 left 0 type=lamp
+D1 left l1 type=led
+R1 l1 0 500
+D2 left l2 type=led
+R2 l2 0 500
+D3 pilot p3 type=led
+R3 p3 0 1k
+L3 right 0 type=lamp
+L4 right 0 type=lamp
+D4 right r1 type=led
+R4 r1 0 500
+D5 right r2 type=led
+R5 r2 0 500`;
+
+  test("keeps an auxiliary pilot branch inside the same load-bank layout", () => {
+    const lo = layoutCircuitNetlist(parseNetlist(withPilot));
+    const left = ["L1", "L2", "D1", "D2"].map((id) => item(lo, id).x);
+    const pilot = item(lo, "D3").x;
+    const right = ["L3", "L4", "D4", "D5"].map((id) => item(lo, id).x);
+
+    expect(Math.max(...left)).toBeLessThan(pilot);
+    expect(pilot).toBeLessThan(Math.min(...right));
+    expect(
+      lo.routes.some(
+        (route) =>
+          route.netId === "GND" &&
+          route.points.length === 2 &&
+          route.points[0]!.y === route.points[1]!.y
+      )
+    ).toBe(true);
+  });
+
+  test("preserves the load-bank structure after declarations are reordered", () => {
+    const ast = parseNetlist(withPilot);
+    ast.components.reverse();
+    const lo = layoutCircuitNetlist(ast);
+
+    expect(new Set(lo.items.map((entry) => entry.component.id))).toEqual(
+      new Set(ast.components.map((entry) => entry.id))
+    );
+    expect(item(lo, "D3").y).toBeGreaterThan(item(lo, "K1").y);
+    expect(lo.routes.some((route) => route.netId === "pilot")).toBe(true);
+  });
+
+  test("recognizes the same topology after every component id is renamed", () => {
+    const renamed = withPilot.replace(/^(\S+)/gm, "$1A");
+    const lo = layoutCircuitNetlist(parseNetlist(renamed));
+
+    expect(Math.max(item(lo, "L1A").x, item(lo, "L2A").x)).toBeLessThan(
+      item(lo, "D3A").x
+    );
+    expect(item(lo, "D3A").x).toBeLessThan(
+      Math.min(item(lo, "L3A").x, item(lo, "L4A").x)
+    );
+  });
+});

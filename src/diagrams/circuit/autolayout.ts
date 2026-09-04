@@ -559,11 +559,13 @@ function routePlacedNetlist(
 }
 
 /**
- * Plan a source → series spine → multi-output selector → parallel load bank.
+ * Plan a source → series spine → multi-output selector → load banks.
  *
  * This is topology-driven: no label/language checks and no case coordinates.
  * Repeated branches receive independent lanes; their return pins share one
- * continuous ground rail.
+ * continuous ground rail. Auxiliary outputs from any spine component (for
+ * example a flasher pilot terminal) become ordinary branch groups instead of
+ * invalidating the entire layout and forcing a visually unrelated fallback.
  */
 function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
   const pinMap = ast.pinMap ?? {};
@@ -601,18 +603,63 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       selector.id,
       ...spinePath.map((component) => component.id),
     ]);
-    const completeBranchGroups: CircuitComponent[][][] = [];
+    type BranchGroup = {
+      net: string;
+      ownerId: string;
+      branches: CircuitComponent[][];
+    };
+    const selectorGroups: BranchGroup[] = [];
     for (const net of outputNets) {
       const branches = seriesBranchesToGround(ast, net, excluded);
       if (!branches || branches.length < 2) break;
-      completeBranchGroups.push(branches);
+      selectorGroups.push({ net, ownerId: selector.id, branches });
     }
-    if (completeBranchGroups.length !== outputNets.length) continue;
+    if (selectorGroups.length !== outputNets.length) continue;
+
+    // Discover auxiliary output groups from the already identified source /
+    // spine / selector path. This is graph decomposition, not a component-name
+    // rule: any otherwise unused pin net that forms one or more series paths
+    // to ground is laid out with the same branch primitive.
+    const usedBranchIds = new Set(
+      selectorGroups.flatMap((group) =>
+        group.branches.flatMap((branch) => branch.map((component) => component.id))
+      )
+    );
+    const coreComponents = [source, ...spinePath, selector];
+    const auxiliaryGroups: BranchGroup[] = [];
+    const consideredNets = new Set([...outputNets, "GND"]);
+    for (const owner of coreComponents) {
+      for (const [, net] of pinsForComponent(pinMap, owner)) {
+        if (consideredNets.has(net)) continue;
+        consideredNets.add(net);
+        const branchExcluded = new Set([
+          ...excluded,
+          ...usedBranchIds,
+          ...auxiliaryGroups.flatMap((group) =>
+            group.branches.flatMap((branch) =>
+              branch.map((component) => component.id)
+            )
+          ),
+        ]);
+        const branches = seriesBranchesToGround(ast, net, branchExcluded);
+        if (!branches || branches.length === 0) continue;
+        auxiliaryGroups.push({ net, ownerId: owner.id, branches });
+      }
+    }
+
+    // Keep a selector's two output banks at the outside edges and place any
+    // auxiliary groups between them. This remains stable as pilot/status
+    // branches are added or removed.
+    const completeBranchGroups: BranchGroup[] = [
+      selectorGroups[0]!,
+      ...auxiliaryGroups,
+      selectorGroups[1]!,
+    ];
     const expectedBranchIds = ast.components
       .filter((component) => !isGround(component) && !excluded.has(component.id))
       .map((component) => component.id);
     const branchIds = completeBranchGroups
-      .flat()
+      .flatMap((group) => group.branches)
       .flat()
       .map((component) => component.id);
     const uniqueBranchIds = new Set(branchIds);
@@ -664,7 +711,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     }
     const selectorItem = putSpineComponent(selector);
 
-    const branches = completeBranchGroups.flat();
+    const branches = completeBranchGroups.flatMap((group) => group.branches);
     const widestBranchLabel = Math.max(
       0,
       ...branches
@@ -688,7 +735,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     let maxBranchY = branchStartY;
     let laneIndex = 0;
     for (const group of completeBranchGroups) {
-      for (const branch of group) {
+      for (const branch of group.branches) {
         const laneX = firstLaneX + laneIndex * laneGap;
         let y = branchStartY;
         for (const component of branch) {
@@ -710,7 +757,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       )
     );
 
-    const outputNetSet = new Set(outputNets);
+    const outputNetSet = new Set(completeBranchGroups.map((group) => group.net));
     const routes = routePlacedNetlist(ast, items).filter((route) => {
       for (const outputNet of outputNetSet) {
         if (
@@ -723,18 +770,20 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       return true;
     });
 
-    // A selector owns two electrically distinct output rails. The generic
-    // median-spine router can place both on the same y and make a short visual
-    // overlap near the selector. Give each group its own bounded rail and feed
-    // trunk instead.
-    completeBranchGroups.forEach((group, groupIndex) => {
-      const outputNet = outputNets[groupIndex]!;
-      const selectorAnchor = anchorForNet(
+    // Each output owns an electrically distinct rail. The generic median-spine
+    // router can place several on the same y and make a short visual overlap
+    // near their owners, so each group gets a bounded rail and feed trunk.
+    completeBranchGroups.forEach((group) => {
+      const outputNet = group.net;
+      const ownerItem = items.find(
+        (candidate) => candidate.component.id === group.ownerId
+      );
+      const ownerAnchor = ownerItem && anchorForNet(
         pinMap,
-        selectorItem,
+        ownerItem,
         outputNet
       );
-      const loadAnchors = group
+      const loadAnchors = group.branches
         .map((branch) => {
           const first = branch[0];
           const item = first
@@ -745,35 +794,35 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
             : undefined;
         })
         .filter((anchor): anchor is { x: number; y: number } => !!anchor);
-      if (!selectorAnchor || loadAnchors.length === 0) return;
+      if (!ownerAnchor || loadAnchors.length === 0) return;
 
       const railY =
         loadAnchors.reduce((sum, anchor) => sum + anchor.y, 0) /
         loadAnchors.length;
       const minLoadX = Math.min(...loadAnchors.map((anchor) => anchor.x));
       const maxLoadX = Math.max(...loadAnchors.map((anchor) => anchor.x));
-      const feedX =
-        groupIndex === 0
-          ? maxLoadX + Math.min(46, laneGap / 3)
-          : minLoadX - Math.min(46, laneGap / 3);
-      const groupBoundaryX = groupIndex === 0 ? maxLoadX : minLoadX;
+      const groupCenterX = (minLoadX + maxLoadX) / 2;
+      const ownerIsRight = ownerAnchor.x >= groupCenterX;
+      const feedX = ownerIsRight
+        ? maxLoadX + Math.min(46, laneGap / 3)
+        : minLoadX - Math.min(46, laneGap / 3);
+      const groupBoundaryX = ownerIsRight ? maxLoadX : minLoadX;
       const rail: RoutedWire = {
         netId: outputNet,
         points: [
           { x: minLoadX, y: railY },
           { x: maxLoadX, y: railY },
         ],
-        junctions: loadAnchors.map((anchor) => ({
-          x: anchor.x,
-          y: railY,
-        })),
+        junctions: loadAnchors.length > 1
+          ? loadAnchors.map((anchor) => ({ x: anchor.x, y: railY }))
+          : undefined,
       };
       routes.push(rail);
       routes.push({
-        netId: `${outputNet}.${selector.id}`,
+        netId: `${outputNet}.${group.ownerId}`,
         points: compactPoints([
-          selectorAnchor,
-          { x: feedX, y: selectorAnchor.y },
+          ownerAnchor,
+          { x: feedX, y: ownerAnchor.y },
           { x: feedX, y: railY },
           { x: groupBoundaryX, y: railY },
         ]),

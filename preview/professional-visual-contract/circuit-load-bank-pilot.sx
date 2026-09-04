@@ -1,0 +1,20 @@
+circuit "12 V Automotive Indicator with Pilot" netlist
+B1 bat 0 12V type=battery label="12 V Battery"
+F1 bat p1 15A label="Main Fuse"
+S1 p1 p2 type=switch_spst label="Activation"
+K1 p2 fl_out pilot type=automotive_flasher_3pin label="Flasher B/L/P"
+S2 fl_out left right type=switch_spdt_center_off label="Left / OFF / Right"
+L1 left 0 type=lamp label="Left Front"
+L2 left 0 type=lamp label="Left Rear"
+D1 left l1 type=led label="Left LED 1"
+R1 l1 0 500
+D2 left l2 type=led label="Left LED 2"
+R2 l2 0 500
+D3 pilot p3 type=led label="Pilot LED"
+R3 p3 0 1k
+L3 right 0 type=lamp label="Right Front"
+L4 right 0 type=lamp label="Right Rear"
+D4 right r1 type=led label="Right LED 1"
+R4 r1 0 500
+D5 right r2 type=led label="Right LED 2"
+R5 r2 0 500

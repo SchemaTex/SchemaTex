@@ -68,7 +68,6 @@ const H_SPACING = 150;
 const LEFT_PADDING = 80;
 const TOP_PADDING = 40;
 const BUS_OVERHANG = 20;
-const SIDE_FEEDER_MIN_SKIPPED_RANKS = 3;
 
 function computeLevels(ast: SLDAST): Map<string, number> {
   const levels = new Map<string, number>();
@@ -330,17 +329,18 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     }
   }
 
-  // A source whose first edge skips several graph ranks is a side feeder, not
-  // another member of the main source bank. This is derived from the edge's
-  // topology rather than from the total depth of a particular example.
+  // A source whose first edge is a long edge is a lateral feeder, not another
+  // member of the upstream source bank. "Long" has a structural definition:
+  // the child was pushed below the next rank by another incoming path. This
+  // avoids a depth threshold where adding one legitimate protection device
+  // could abruptly change the source arrangement.
   const sourceNodes = (byLevel.get(0) ?? [])
     .map((id) => byIdLayout.get(id)!)
     .filter(Boolean);
   const sideFeeders = sourceNodes.filter((source) =>
     (children.get(source.node.id) ?? []).some(
       (childId) =>
-        (levels.get(childId) ?? 0) - source.level >=
-        SIDE_FEEDER_MIN_SKIPPED_RANKS
+        (levels.get(childId) ?? 0) > source.level + 1
     )
   );
   let rightmostSourceX = Math.max(

@@ -33,3 +33,25 @@ Generated with the built-in ImageGen workflow on 2026-09-03. The P&ID and SLD as
 **Correction:** Change the DC generation zone label from `400 V` to `600 Vdc`.
 
 **Final asset:** `after-sld-commercial-solar.png`
+
+## Circuit audit — load bank with auxiliary pilot branch
+
+**Input:** `before-circuit-load-bank-pilot.png`
+
+**Primary prompt:** Redraw the same 12 V automotive indicator circuit as a clean professional service schematic. Keep a left load bank, a centered pilot-indicator branch, and a right load bank beneath the battery, fuse, switch, flasher, and selector spine. Use orthogonal wiring, explicit junctions, and one continuous ground-return rail.
+
+**Visual acceptance:** The three output groups are distinguishable before reading labels, the supply path remains above them, and all returns share one coherent lower rail.
+
+**Engineering limitation:** The generated reference is used only for composition. Terminal labels and connectivity in the fixed renderer are judged from the authored DSL because ImageGen does not provide an electrical-net guarantee.
+
+**Final asset:** `after-circuit-load-bank-pilot.png`
+
+## SLD audit — two-stage side feeder
+
+**Input:** `before-sld-side-feeder-threshold.png`
+
+**Primary prompt:** Redraw the same two-stage photovoltaic single-line diagram as a professional IEC-style review sheet. Align the three PV arrays as one generation bank feeding a DC combiner, keep Utility in a separate lateral lane, and connect both sources cleanly to the main switchboard bus above the building load.
+
+**Visual acceptance:** Utility is not grouped with the PV arrays, the independent feeder reaches the bus without crossing the generation chain, and the voltage zones remain readable.
+
+**Final asset:** `after-sld-side-feeder-threshold.png`

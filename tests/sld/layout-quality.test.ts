@@ -44,6 +44,17 @@ ${Array.from({ length: 7 }, (_, index) => {
   return `BUS -> CB${n}\nCB${n} -> L${n}`;
 }).join("\n")}`;
 
+const TWO_STAGE_SIDE_FEED = `sld "Two-stage PV Side Feed" [standard: ansi]
+PV = solar [label: "PV Array"]
+CMB = hub [label: "DC Combiner"]
+UTIL = utility [label: "Utility"]
+MSB = bus [label: "Main Switchboard"]
+LOAD = load [label: "Building Loads"]
+PV -> CMB
+CMB -> MSB
+UTIL -> MSB
+MSB -> LOAD`;
+
 describe("SLD layout — professional review contract", () => {
   it("gives portrait commercial feeders at least a square review canvas", () => {
     const layout = layoutSLD(parseSLDDSL(COMMERCIAL_PV));
@@ -68,6 +79,23 @@ describe("SLD layout — professional review contract", () => {
         .map((node) => node.x)
     );
     expect(utility.x - rightmostPv).toBeGreaterThanOrEqual(140);
+  });
+
+  it("treats any structurally skipped rank as a side feed without a depth threshold", () => {
+    const layout = layoutSLD(parseSLDDSL(TWO_STAGE_SIDE_FEED));
+    const utility = layout.nodes.find((node) => node.node.id === "UTIL")!;
+    const pv = layout.nodes.find((node) => node.node.id === "PV")!;
+
+    expect(utility.x - pv.x).toBeGreaterThanOrEqual(140);
+  });
+
+  it("keeps true peer sources together when neither edge skips a rank", () => {
+    const peerSources = TWO_STAGE_SIDE_FEED.replace("PV -> CMB\nCMB -> MSB", "PV -> MSB");
+    const layout = layoutSLD(parseSLDDSL(peerSources));
+    const utility = layout.nodes.find((node) => node.node.id === "UTIL")!;
+    const pv = layout.nodes.find((node) => node.node.id === "PV")!;
+
+    expect(Math.abs(utility.x - pv.x)).toBeLessThanOrEqual(150);
   });
 
   it("keeps labels centered on deep residential boards with wide branch banks", () => {

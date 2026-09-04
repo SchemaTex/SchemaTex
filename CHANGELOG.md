@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **P&ID now follows process flow.** Parallel trains share a stage, recycle and bypass paths use separate return channels, shared process endpoints receive junction dots, and field instruments stay clear of equipment labels. Catalog-style P&IDs with no process connections keep their previous declaration-order layout.
 - **Portrait SLD feeders now adapt to a review canvas.** The decision comes from measured content bounds rather than a fixed example depth or branch count. Source fan-in labels stay with their own drops, long bypass feeders are identified by skipped graph ranks, and side annotations are used only on uncrowded levels so branch banks keep centered, unclipped labels.
+- **Every structurally skipped-rank SLD source becomes a side feeder.** The earlier three-rank cutoff happened to fit the commercial-solar benchmark but failed on ordinary two-stage systems, placing Utility inside the PV source bank. The rule now follows the graph relationship itself; true peer sources keep their normal spacing.
+- **Auxiliary circuit branches no longer collapse a recognized load bank into generic fallback.** Output groups are discovered from connectivity and routed from their actual owner component, so a pilot or status branch can sit between left and right load banks while retaining the shared return rail. Reordered declarations and renamed components are covered explicitly.
 - **The public DSL is unchanged.** These are renderer improvements over the existing P&ID and SLD forms; existing agents do not need a migration or compatibility mode.
 
 ### Changed — the npm-facing agent contract is shorter and copyable
@@ -27,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added — repeatable visual evidence
 
-- **One flat visual-contract page covers a duplex hydraulic P&ID, 555 astable, and commercial solar SLD.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. The 555 remains visibly unchanged and deferred after its example-specific template was removed during robustness review.
+- **One flat visual-contract page covers five P&ID and electrical stress cases.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. New audit cases expose an auxiliary circuit branch and a two-stage SLD feeder, while the 555 remains visibly unchanged and deferred after its example-specific template was removed during robustness review.
 
 ### Added — floor plans now preserve the visual intent, not just valid syntax
 
