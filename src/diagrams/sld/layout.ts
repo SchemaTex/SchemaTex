@@ -68,6 +68,7 @@ const H_SPACING = 150;
 const LEFT_PADDING = 80;
 const TOP_PADDING = 40;
 const BUS_OVERHANG = 20;
+const SIDE_FEEDER_MIN_SKIPPED_RANKS = 3;
 
 function computeLevels(ast: SLDAST): Map<string, number> {
   const levels = new Map<string, number>();
@@ -211,17 +212,6 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
 
   const sortedLevels = Array.from(byLevel.keys()).sort((a, b) => a - b);
   const maxLevel = sortedLevels.length ? sortedLevels[sortedLevels.length - 1] : 0;
-  // Side annotations are for a deep feeder chain, not merely any drawing with
-  // many voltage levels. Residential boards are deep too, but their last level
-  // fans out into many adjacent circuits; moving those labels to the right
-  // makes neighbouring labels collide and can push the last one off-canvas.
-  const maxParallelBelowSources = Math.max(
-    0,
-    ...sortedLevels
-      .filter((level) => level > 0)
-      .map((level) => byLevel.get(level)?.length ?? 0)
-  );
-  const useSideLabels = maxLevel >= 6 && maxParallelBelowSources <= 3;
 
   // Assign sequential X for non-bus leaf-like nodes within each level.
   // Then propagate bus positions by averaging their children.
@@ -243,10 +233,6 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       bottomY: y + geom.bottomY,
       level: lvl,
       halfWidth: geom.halfWidth,
-      labelSide:
-        useSideLabels && lvl > 0 && node.nodeType !== "bus" && node.nodeType !== "hub"
-          ? "right"
-          : undefined,
     };
     byIdLayout.set(id, ln);
     layoutNodes.push(ln);
@@ -344,29 +330,28 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     }
   }
 
-  // A source that bypasses most of a deep conversion chain (for example the
-  // Utility feeder landing directly on the main switchboard) is an independent
-  // side feeder, not another member of the generation fan-in. Keep it outside
-  // the source bank so its long drop cannot cut through equipment labels.
-  if (maxLevel >= 6) {
-    const sourceNodes = (byLevel.get(0) ?? [])
-      .map((id) => byIdLayout.get(id)!)
-      .filter(Boolean);
-    const sideFeeders = sourceNodes.filter((source) =>
-      (children.get(source.node.id) ?? []).some(
-        (childId) => (levels.get(childId) ?? 0) >= maxLevel - 2
-      )
-    );
-    let rightmostSourceX = Math.max(
-      LEFT_PADDING,
-      ...sourceNodes
-        .filter((source) => !sideFeeders.includes(source))
-        .map((source) => source.x)
-    );
-    for (const feeder of sideFeeders) {
-      rightmostSourceX += H_SPACING;
-      feeder.x = rightmostSourceX;
-    }
+  // A source whose first edge skips several graph ranks is a side feeder, not
+  // another member of the main source bank. This is derived from the edge's
+  // topology rather than from the total depth of a particular example.
+  const sourceNodes = (byLevel.get(0) ?? [])
+    .map((id) => byIdLayout.get(id)!)
+    .filter(Boolean);
+  const sideFeeders = sourceNodes.filter((source) =>
+    (children.get(source.node.id) ?? []).some(
+      (childId) =>
+        (levels.get(childId) ?? 0) - source.level >=
+        SIDE_FEEDER_MIN_SKIPPED_RANKS
+    )
+  );
+  let rightmostSourceX = Math.max(
+    LEFT_PADDING,
+    ...sourceNodes
+      .filter((source) => !sideFeeders.includes(source))
+      .map((source) => source.x)
+  );
+  for (const feeder of sideFeeders) {
+    rightmostSourceX += H_SPACING;
+    feeder.x = rightmostSourceX;
   }
 
   // Bus-tie lateral placement: place tie and its "second bus" to the right
@@ -428,15 +413,19 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
   // Label-aware collision resolution within each level.
   // For each non-bus node, estimate displayed label width so sibling
   // placement respects text, not just symbol geometry.
-  const labelHalfWidth = (ln: SLDLayoutNode): number => {
+  const annotationWidth = (ln: SLDLayoutNode): number => {
     if (ln.nodeType === "bus" || ln.nodeType === "bus_tie") return 0;
     const node = ln.node;
-    const txtParts: string[] = [node.label ?? node.id];
-    if (node.rating) txtParts.push(node.rating);
-    const longest = txtParts.reduce((m, s) => Math.max(m, s.length), 0);
-    // Bold 11px sans-serif id is ~6.2px per char at widest; pad a bit.
-    return (longest * 6.2) / 2 + 4;
+    return Math.max(
+      estimateTextWidth(node.label ?? node.id, 11, { fontWeight: 700 }),
+      node.rating ? estimateTextWidth(node.rating, 9) : 0,
+      node.voltage ? estimateTextWidth(node.voltage, 9) : 0,
+      ...Object.entries(node.nameplate ?? {}).map(([key, value]) =>
+        estimateTextWidth(`${key}: ${value}`, 9)
+      )
+    );
   };
+  const labelHalfWidth = (ln: SLDLayoutNode): number => annotationWidth(ln) / 2 + 4;
 
   for (const lvl of sortedLevels) {
     const ids = byLevel.get(lvl)!;
@@ -484,6 +473,43 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       ln.busLeft = left;
       ln.busRight = right;
       ln.x = (Math.min(...xs) + Math.max(...xs)) / 2;
+    }
+  }
+
+  // Choose a review treatment from the geometry we actually produced. A
+  // portrait canvas with one annotated item on a level benefits from labels
+  // beside the symbol; a wide branch bank does not. This removes the former
+  // depth/count thresholds and keeps the decision stable when authors rename,
+  // reorder, add, or remove nodes.
+  const height = TOP_PADDING + maxLevel * LEVEL_SPACING + 120;
+  let naturalLeft = Infinity;
+  let naturalRight = -Infinity;
+  for (const ln of layoutNodes) {
+    if (ln.nodeType === "bus") {
+      naturalLeft = Math.min(naturalLeft, ln.busLeft ?? ln.x);
+      naturalRight = Math.max(naturalRight, ln.busRight ?? ln.x);
+      continue;
+    }
+    const half = Math.max(ln.halfWidth, labelHalfWidth(ln));
+    naturalLeft = Math.min(naturalLeft, ln.x - half);
+    naturalRight = Math.max(naturalRight, ln.x + half);
+  }
+  const naturalWidth = Number.isFinite(naturalLeft)
+    ? naturalRight - naturalLeft + LEFT_PADDING * 2
+    : 400;
+  const useReviewCanvas = height > Math.max(400, naturalWidth);
+  if (useReviewCanvas) {
+    for (const lvl of sortedLevels) {
+      if (lvl === 0) continue;
+      const candidates = (byLevel.get(lvl) ?? [])
+        .map((id) => byIdLayout.get(id)!)
+        .filter(
+          (ln) =>
+            ln.nodeType !== "bus" &&
+            ln.nodeType !== "hub" &&
+            annotationWidth(ln) > 0
+        );
+      if (candidates.length === 1) candidates[0]!.labelSide = "right";
     }
   }
 
@@ -600,27 +626,18 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
   for (const ln of layoutNodes) {
     let right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
     if (ln.labelSide === "right") {
-      const labelWidths = [
-        estimateTextWidth(ln.node.label ?? ln.node.id, 11, { fontWeight: 700 }),
-        ln.node.rating ? estimateTextWidth(ln.node.rating, 9) : 0,
-        ln.node.voltage ? estimateTextWidth(ln.node.voltage, 9) : 0,
-        ...Object.entries(ln.node.nameplate ?? {}).map(([key, value]) =>
-          estimateTextWidth(`${key}: ${value}`, 9)
-        ),
-      ];
       right = Math.max(
         right,
-        ln.x + ln.halfWidth + 18 + Math.max(0, ...labelWidths) + 24
+        ln.x + ln.halfWidth + 18 + annotationWidth(ln) + 24
       );
     }
     if (right > maxX) maxX = right;
   }
   let width = Math.max(400, maxX + 40);
-  // A deep, narrow feeder is technically valid but unusable in a report: when
-  // fitted to a page it becomes a phone-shaped strip and every annotation is
-  // magnified into the one available column. Give these drawings a landscape
-  // review canvas while keeping shallow residential diagrams compact.
-  const reviewWidth = maxLevel >= 6 ? 960 : width;
+  // A portrait feeder is technically valid but awkward in a report. Preserve
+  // at least a square review canvas; branch-heavy drawings already earn their
+  // width from their content and are left untouched.
+  const reviewWidth = useReviewCanvas ? Math.max(width, height) : width;
   if (reviewWidth > width) {
     const centerShift = (reviewWidth - width) / 2;
     for (const ln of layoutNodes) {
@@ -637,8 +654,6 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     }
     width = reviewWidth;
   }
-  const height = TOP_PADDING + maxLevel * LEVEL_SPACING + 120;
-
   return {
     width,
     height,

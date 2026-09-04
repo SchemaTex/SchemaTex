@@ -45,10 +45,9 @@ ${Array.from({ length: 7 }, (_, index) => {
 }).join("\n")}`;
 
 describe("SLD layout — professional review contract", () => {
-  it("gives deep commercial feeders a landscape review canvas", () => {
+  it("gives portrait commercial feeders at least a square review canvas", () => {
     const layout = layoutSLD(parseSLDDSL(COMMERCIAL_PV));
-    expect(layout.width).toBeGreaterThanOrEqual(960);
-    expect(layout.width / layout.height).toBeGreaterThan(0.85);
+    expect(layout.width).toBeGreaterThanOrEqual(layout.height);
   });
 
   it("keeps fan-in cable labels beside their own source drops", () => {
@@ -88,6 +87,46 @@ describe("SLD layout — professional review contract", () => {
       const estimatedRight =
         node.x + node.halfWidth + 18 + (node.node.label ?? node.node.id).length * 6;
       expect(estimatedRight).toBeLessThan(layout.width);
+    }
+  });
+
+  it("keeps the same structural decisions after declaration reordering", () => {
+    const original = parseSLDDSL(COMMERCIAL_PV);
+    const reordered = parseSLDDSL(COMMERCIAL_PV);
+    reordered.nodes.reverse();
+    reordered.connections.reverse();
+
+    const before = layoutSLD(original);
+    const after = layoutSLD(reordered);
+    const beforeById = new Map(before.nodes.map((node) => [node.node.id, node]));
+    const afterById = new Map(after.nodes.map((node) => [node.node.id, node]));
+
+    expect(after.width).toBeGreaterThanOrEqual(after.height);
+    expect(afterById.get("UTIL")!.x).toBeGreaterThan(afterById.get("PV_C")!.x);
+    for (const id of ["DISC_DC", "INV", "CB_AC", "MTR", "LOAD"]) {
+      expect(afterById.get(id)!.labelSide).toBe(beforeById.get(id)!.labelSide);
+    }
+  });
+
+  it("separates fan-in cable labels when a fourth source is added", () => {
+    const fourSourceDsl = COMMERCIAL_PV
+      .replace(
+        "CMB = hub",
+        'PV_D = solar [rating: "50 kWdc", label: "PV Array D"]\nCMB = hub'
+      )
+      .replace(
+        "PV_A -> CMB",
+        'PV_D -> CMB [cable: "PV1-F 2×35 mm²"]\nPV_A -> CMB'
+      );
+    const layout = layoutSLD(parseSLDDSL(fourSourceDsl));
+    const cables = layout.edges
+      .filter((edge) => edge.to === "CMB")
+      .map((edge) => edge.midX)
+      .sort((a, b) => a - b);
+
+    expect(cables).toHaveLength(4);
+    for (let index = 1; index < cables.length; index++) {
+      expect(cables[index]! - cables[index - 1]!).toBeGreaterThanOrEqual(100);
     }
   });
 });

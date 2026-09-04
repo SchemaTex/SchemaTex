@@ -165,18 +165,6 @@ Q1 c b e npn
 Re e 0 1k`,
   },
   {
-    file: 'examples/circuit/555-astable.svg',
-    text: `circuit "555 Astable LED Flasher" netlist
-V1 VCC GND value="9 V" label="BAT1"
-U1 GND TIMING OUT VCC CTRL TIMING DISCH VCC type=555_timer label="U1"
-R1 VCC DISCH value="10 kΩ" label="R1"
-R2 DISCH TIMING value="100 kΩ" label="R2"
-C1 TIMING GND value="10 µF" label="C1"
-C2 CTRL GND value="10 nF" label="C2"
-R3 OUT LED_A value="470 Ω" label="R3"
-D1 LED_A GND type=led label="LED1"`,
-  },
-  {
     file: 'examples/circuit/household-light.svg',
     text: `circuit "Single-pole household light" netlist
 V1 live neutral 220Vac type=acsource label="V_mains"

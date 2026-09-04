@@ -224,7 +224,7 @@
           <h1>Credibility is a layout feature.</h1>
         </div>
         <div class="hero-note">
-          <strong>Three stress cases. Three explicit states:</strong> the main-branch baseline at commit 4aa244c, the renderer candidate on this branch, and the visual target. Everything is laid out on one page so progress and remaining gaps stay visible.
+          <strong>Three stress cases. Three explicit states:</strong> the main-branch baseline at commit 4aa244c, the renderer candidate on this branch, and the visual target. The circuit candidate intentionally matches main after robustness review removed an example-specific template.
         </div>
       </section>
 
@@ -245,7 +245,7 @@
           <header class="board-head"><div><h2>555 astable LED flasher</h2><p>The current renderer knows the parts but does not budget space for a readable electrical story. The target uses functionally arranged pins, shared rails, explicit junctions, and zero ambiguous crossings.</p></div><div class="issue-tags"><span class="issue-tag">Electrical credibility stress case</span></div></header>
           <div class="compare-grid">
             <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source">commit 4aa244c</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-555-astable.png" alt="Main-branch SchemaTex 555 circuit with sparse vertical layout and ambiguous connections"></div><div class="pane-note">The parts render, but several nets look detached and the page shape hides the circuit's functional structure.</div></figure>
-            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-555-astable.png" alt="Current branch 555 circuit candidate with a functional timing network and output branch"></div><div class="pane-note">The topology recognizer separates timing, control, and output branches while keeping all supply references explicit.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Audit · unchanged</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-555-astable.png" alt="Current branch 555 circuit unchanged from the main-branch generic netlist layout"></div><div class="pane-note">The first candidate only worked for one exact 555 topology and fixed coordinates. It was removed; this case is not claimed as solved.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">Corrected deterministic SVG</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-circuit-555-astable.svg" alt="Correct target 555 astable circuit with shared rails and traceable nets"></div><div class="pane-note">Every pin-to-net relationship is traceable. ImageGen concepts were rejected when they miswired RESET, GND, and TRIG.</div></figure>
           </div>
         </article>
@@ -265,7 +265,7 @@
       </section>
 
       <section class="contract">
-        <header class="section-head"><h2>The renderer contract</h2><p>These targets do not imply three separate hacks. They point to five shared layout guarantees. If those guarantees live below the individual diagram renderers, future examples benefit without adding diagram-specific syntax noise.</p></header>
+        <header class="section-head"><h2>The renderer contract</h2><p>These targets do not justify three separate hacks. This branch ships only guarantees that survive renamed IDs, reordered declarations, and nearby topology changes. The unchanged 555 makes the deferred work explicit.</p></header>
         <div class="contract-grid">
           <article class="contract-item"><code>layout.topology</code><h3>Rank by graph</h3><p>Place by connection meaning, not declaration order. Preserve split, merge, parallel, return, and bus structures.</p><span class="state">Candidate implemented</span></article>
           <article class="contract-item"><code>layout.lanes</code><h3>Own the lane</h3><p>Give branches, services, and voltage zones stable routing lanes before drawing individual segments.</p><span class="state">Candidate implemented</span></article>

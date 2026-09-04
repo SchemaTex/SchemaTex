@@ -83,6 +83,20 @@ line p1 from F-1.out to V-1.in [type: process]
 line p2 from V-1.out to TEST.in [type: process]
 line ret from TEST.bottom to T-1.top [type: process]`;
 
+const UNEVEN_BRANCH_DSL = `pid "Unequal Parallel Trains"
+equip FEED : tank_atm [tag: "Feed"]
+equip SHORT : pump_centrifugal [tag: "Short train"]
+equip LONG_A : pump_centrifugal [tag: "Long train A"]
+equip LONG_B : filter [tag: "Long train B"]
+equip MERGE : vessel_v [tag: "Merge"]
+equip PRODUCT : tank_atm [tag: "Product"]
+line a1 from FEED.bottom to SHORT.in [type: process]
+line a2 from SHORT.out to MERGE.in [type: process]
+line b1 from FEED.bottom to LONG_A.in [type: process]
+line b2 from LONG_A.out to LONG_B.in [type: process]
+line b3 from LONG_B.out to MERGE.in [type: process]
+line out from MERGE.out to PRODUCT.top [type: process]`;
+
 describe("P&ID renderer", () => {
   test("renders process_minor as an unfilled minor process line", () => {
     const svg = renderPid(DISTILLATION_DSL);
@@ -158,6 +172,28 @@ describe("P&ID renderer", () => {
     expect(dutyCheck.cx).toBe(standbyCheck.cx);
     expect(dutyCheck.cy).not.toBe(standbyCheck.cy);
     expect(filter.cx).toBeGreaterThan(dutyCheck.cx);
+  });
+
+  test("keeps topology ranks when declarations and lines are reordered", () => {
+    const original = parsePid(DUPLEX_DSL);
+    const reordered = parsePid(DUPLEX_DSL);
+    reordered.equipment.reverse();
+    reordered.lines.reverse();
+
+    const rankX = (dsl: ReturnType<typeof parsePid>) =>
+      new Map(layoutPid(dsl).equipment.map((item) => [item.equip.id, item.cx]));
+    const before = rankX(original);
+    const after = rankX(reordered);
+
+    for (const id of before.keys()) expect(after.get(id)).toBe(before.get(id));
+  });
+
+  test("places a merge after the longer of two unequal process trains", () => {
+    const layout = layoutPid(parsePid(UNEVEN_BRANCH_DSL));
+    const byId = new Map(layout.equipment.map((item) => [item.equip.id, item]));
+
+    expect(byId.get("MERGE")!.cx).toBeGreaterThan(byId.get("LONG_B")!.cx);
+    expect(byId.get("PRODUCT")!.cx).toBeGreaterThan(byId.get("MERGE")!.cx);
   });
 
   test("routes recycle lines below the equipment field", () => {

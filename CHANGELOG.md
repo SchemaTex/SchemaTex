@@ -13,12 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.14] — 2026-09-04
 
-### Changed — engineering layouts follow topology without adding new DSL syntax
+### Changed — P&ID and SLD layouts follow topology without adding new DSL syntax
 
 - **P&ID now follows process flow.** Parallel trains share a stage, recycle and bypass paths use separate return channels, shared process endpoints receive junction dots, and field instruments stay clear of equipment labels. Catalog-style P&IDs with no process connections keep their previous declaration-order layout.
-- **A canonical 555 astable now reads like its circuit.** The timer pin nets identify the timing network, control capacitor, supply references, and LED output branch. Any extra or ambiguous topology uses the existing generic netlist layout instead of being forced into the template.
-- **Deep, narrow SLD feeders now use a landscape review layout.** Source fan-in labels stay with their own drops, long bypass feeders remain outside the conversion chain, and side annotations are limited to narrow chains so residential branch banks keep centered, unclipped labels.
-- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID, circuit netlist, and SLD forms; existing agents do not need a migration or compatibility mode.
+- **Portrait SLD feeders now adapt to a review canvas.** The decision comes from measured content bounds rather than a fixed example depth or branch count. Source fan-in labels stay with their own drops, long bypass feeders are identified by skipped graph ranks, and side annotations are used only on uncrowded levels so branch banks keep centered, unclipped labels.
+- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID and SLD forms; existing agents do not need a migration or compatibility mode.
 
 ### Changed — the npm-facing agent contract is shorter and copyable
 
@@ -28,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added — repeatable visual evidence
 
-- **One flat visual-contract page covers a duplex hydraulic P&ID, 555 astable, and commercial solar SLD.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline.
+- **One flat visual-contract page covers a duplex hydraulic P&ID, 555 astable, and commercial solar SLD.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. The 555 remains visibly unchanged and deferred after its example-specific template was removed during robustness review.
 
 ### Added — floor plans now preserve the visual intent, not just valid syntax
 

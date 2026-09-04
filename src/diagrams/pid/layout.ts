@@ -37,11 +37,11 @@ interface EquipmentTopology {
  * Assign process equipment to graph ranks instead of declaration slots.
  *
  * A P&ID commonly contains return and recycle lines, so the process graph is
- * not necessarily acyclic. A breadth-first walk from the most plausible feed
- * equipment gives the main process its forward ranks while naturally leaving
- * recycle edges pointing backwards. Declaration order remains the stable tie
- * breaker inside a rank, which keeps the result deterministic for AI-authored
- * documents.
+ * not necessarily acyclic. A depth-first pass identifies only edges that close
+ * a cycle; the remaining DAG is ranked by longest path. That distinction keeps
+ * unequal parallel trains honest: a merge always follows the longer train
+ * instead of sharing its column because a shorter path reached it first.
+ * Declaration order remains the stable tie breaker inside a rank.
  */
 function rankEquipment(ast: PidAST): EquipmentTopology {
   const equipmentIds = new Set(ast.equipment.map((equip) => equip.id));
@@ -73,41 +73,69 @@ function rankEquipment(ast: PidAST): EquipmentTopology {
     return { rankById, byRank };
   }
 
-  const rankById = new Map<string, number>();
   const roots = ast.equipment.filter(
     (equip) => (incomingCount.get(equip.id) ?? 0) === 0
   );
   if (roots.length === 0 && ast.equipment.length > 0) {
-    const preferred = ast.equipment.find(
-      (equip) =>
-        (equip.equipType === "tank_atm" || equip.equipType === "tank_cone_roof") &&
-        (outgoing.get(equip.id)?.length ?? 0) > 0
-    );
-    roots.push(preferred ?? ast.equipment[0]!);
+    // A closed loop has no formal root. Start at its strongest split point;
+    // declaration order breaks ties. This uses connectivity only—assuming a
+    // particular equipment family is the feed would make the layout depend on
+    // the examples in the gallery.
+    const split = [...ast.equipment].sort(
+      (a, b) =>
+        (outgoing.get(b.id)?.length ?? 0) -
+        (outgoing.get(a.id)?.length ?? 0)
+    )[0]!;
+    roots.push(split);
   }
 
-  const queue: string[] = [];
-  for (const root of roots) {
-    if (rankById.has(root.id)) continue;
-    rankById.set(root.id, 0);
-    queue.push(root.id);
-  }
-  while (queue.length > 0) {
-    const id = queue.shift()!;
-    const nextRank = (rankById.get(id) ?? 0) + 1;
+  const visitState = new Map<string, "active" | "done">();
+  const backEdges = new Set<string>();
+  const edgeKey = (from: string, to: string) => `${from}\u0000${to}`;
+  const visit = (id: string): void => {
+    visitState.set(id, "active");
     for (const child of outgoing.get(id) ?? []) {
-      if (rankById.has(child)) continue; // recycle/back edge
-      rankById.set(child, nextRank);
-      queue.push(child);
+      const state = visitState.get(child);
+      if (state === "active") {
+        backEdges.add(edgeKey(id, child));
+      } else if (state !== "done") {
+        visit(child);
+      }
+    }
+    visitState.set(id, "done");
+  };
+  for (const root of roots) {
+    if (!visitState.has(root.id)) visit(root.id);
+  }
+  for (const equip of ast.equipment) {
+    if (!visitState.has(equip.id)) visit(equip.id);
+  }
+
+  const forwardIndegree = new Map(ast.equipment.map((equip) => [equip.id, 0]));
+  for (const [from, children] of outgoing) {
+    for (const child of children) {
+      if (backEdges.has(edgeKey(from, child))) continue;
+      forwardIndegree.set(child, (forwardIndegree.get(child) ?? 0) + 1);
     }
   }
 
-  // Disconnected process islands stay readable and deterministic. Start each
-  // island after the connected train instead of collapsing it onto rank zero.
-  let spareRank = Math.max(0, ...rankById.values()) + 1;
-  for (const equip of ast.equipment) {
-    if (rankById.has(equip.id)) continue;
-    rankById.set(equip.id, spareRank++);
+  const rankById = new Map<string, number>();
+  const queue = ast.equipment
+    .filter((equip) => (forwardIndegree.get(equip.id) ?? 0) === 0)
+    .map((equip) => equip.id);
+  for (const id of queue) rankById.set(id, 0);
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    for (const child of outgoing.get(id) ?? []) {
+      if (backEdges.has(edgeKey(id, child))) continue;
+      rankById.set(
+        child,
+        Math.max(rankById.get(child) ?? 0, (rankById.get(id) ?? 0) + 1)
+      );
+      const remaining = (forwardIndegree.get(child) ?? 0) - 1;
+      forwardIndegree.set(child, remaining);
+      if (remaining === 0) queue.push(child);
+    }
   }
 
   const byRank = new Map<number, PidEquipment[]>();
