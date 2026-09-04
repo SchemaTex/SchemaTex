@@ -115,4 +115,21 @@ describe("public SDK and documentation contracts", () => {
     expect(sourceConfig).toContain("SCHEMATEX_PLAYGROUND");
     expect(read("website/lib/llm-docs.ts")).toContain("SCHEMATEX_PLAYGROUND");
   });
+
+  it("keeps the visual-contract reference between before and candidate", () => {
+    const page = read("preview/professional-visual-contract.html");
+    const comparisons = [...page.matchAll(
+      /<div class="compare-grid">([\s\S]*?)<\/div>\s*<\/article>/g,
+    )].map((match) => match[1]!);
+
+    expect(comparisons).toHaveLength(5);
+    for (const comparison of comparisons) {
+      const states = [...comparison.matchAll(/<figure class="pane (\w+)"/g)]
+        .map((match) => match[1]);
+      expect(states).toEqual(["before", "after", "candidate"]);
+      expect(comparison.indexOf("Ideal reference")).toBeLessThan(
+        comparison.indexOf("Renderer output", comparison.indexOf("Ideal reference")),
+      );
+    }
+  });
 });
