@@ -1,0 +1,33 @@
+pid "Duplex Hydraulic Test Stand" [direction: LR]
+
+equip T-101 : tank_atm [tag: "Reservoir T-101"]
+equip P-101A : pump_centrifugal [tag: "Duty Pump P-101A"]
+equip P-101B : pump_centrifugal [tag: "Standby Pump P-101B"]
+equip V-101A : valve_check [tag: "NRV-101A"]
+equip V-101B : valve_check [tag: "NRV-101B"]
+equip F-101 : filter [tag: "Pressure Filter F-101"]
+equip V-102 : valve_control [tag: "PCV-102"]
+equip V-103 : valve_gate [tag: "Bypass V-103"]
+equip E-101 : hx_shell_tube [tag: "Oil Cooler E-101"]
+equip T-102 : vessel_v [tag: "Test Manifold T-102"]
+
+line S1 from T-101.bottom to P-101A.in [size: "2\"", service: "hydraulic oil", type: "process"]
+line S2 from T-101.bottom to P-101B.in [size: "2\"", service: "hydraulic oil", type: "process"]
+line D1 from P-101A.out to V-101A.in [size: "1.5\"", service: "pressure", type: "process"]
+line D2 from P-101B.out to V-101B.in [size: "1.5\"", service: "pressure", type: "process"]
+line H1 from V-101A.out to F-101.in [size: "2\"", service: "pressure", type: "process"]
+line H2 from V-101B.out to F-101.in [size: "2\"", service: "pressure", type: "process"]
+line H3 from F-101.out to V-102.in [size: "2\"", service: "pressure", type: "process"]
+line H4 from V-102.out to E-101.in [size: "2\"", service: "conditioned oil", type: "process"]
+line H5 from E-101.out to T-102.in [size: "2\"", service: "test supply", type: "process"]
+line R1 from T-102.bottom to T-101.top [size: "2\"", service: "return", type: "process"]
+line B1 from F-101.out to V-103.in [size: "1\"", service: "bypass", type: "process_minor"]
+line B2 from V-103.out to T-101.top [size: "1\"", service: "bypass", type: "process_minor"]
+
+inst PIT-101 : field_discrete
+  measures F-101
+inst PIC-102 : cr_shared
+  measures T-102
+  controls V-102
+inst TIT-101 : field_discrete
+  measures E-101
