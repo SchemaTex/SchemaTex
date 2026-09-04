@@ -190,6 +190,13 @@ R5 r2 0 500`;
 
     expect(Math.max(...left)).toBeLessThan(pilot);
     expect(pilot).toBeLessThan(Math.min(...right));
+    expect(item(lo, "B1").x).toBeLessThan(Math.min(...left));
+    expect(lo.width / lo.height).toBeLessThan(1.9);
+    for (const id of [
+      "L1", "L2", "D1", "D2", "D3", "L3", "L4", "D4", "D5",
+    ]) {
+      expect(item(lo, id).labelPos?.y).toBeLessThan(item(lo, id).y);
+    }
     expect(
       lo.routes.some(
         (route) =>

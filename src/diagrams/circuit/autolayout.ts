@@ -684,8 +684,9 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     };
 
     const mainY = 82;
-    const sourceItem = put(source, 58, mainY + 58, "up");
-    let cursorX = 138;
+    const sourceItem = put(source, 120, mainY + 58, "up");
+    sourceItem.labelPos = { x: sourceItem.x + 58, y: sourceItem.y - 10 };
+    let cursorX = 200;
     let previousLabelRight = sourceItem.x + 64;
     const putSpineComponent = (
       component: CircuitComponent
@@ -710,6 +711,10 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       putSpineComponent(component);
     }
     const selectorItem = putSpineComponent(selector);
+    selectorItem.labelPos = {
+      x: selectorItem.x + selectorItem.length / 2,
+      y: mainY - 30,
+    };
 
     const branches = completeBranchGroups.flatMap((group) => group.branches);
     const widestBranchLabel = Math.max(
@@ -722,30 +727,56 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
           })
         )
     );
-    const laneGap = Math.max(142, Math.min(210, widestBranchLabel + 48));
+    // A bank is a visual group, not one item in a globally uniform row. Keep
+    // repeated loads close enough to read as a bank, then reserve a larger gap
+    // between independent selector/auxiliary outputs. The first component's
+    // label gets its own slot above the rail, so label width no longer forces
+    // every branch in the complete drawing farther apart.
+    const laneGap = Math.max(86, Math.min(120, widestBranchLabel + 24));
+    const groupGap = Math.max(112, laneGap + 28);
+    const staggerBranchLabels = widestBranchLabel > laneGap - 16;
     const selectorOutputX = Math.max(
       selectorItem.anchors.left?.x ?? -Infinity,
       selectorItem.anchors.right?.x ?? -Infinity,
       selectorItem.anchors.nc?.x ?? -Infinity,
       selectorItem.anchors.no?.x ?? -Infinity
     );
-    const branchStartY = 214;
-    const firstLaneX =
-      selectorOutputX - ((branches.length - 1) * laneGap) / 2;
+    const branchStartY = 252;
+    const branchSpan = completeBranchGroups.reduce(
+      (sum, group) => sum + Math.max(0, group.branches.length - 1) * laneGap,
+      0
+    );
+    const totalSpan =
+      branchSpan + Math.max(0, completeBranchGroups.length - 1) * groupGap;
+    const firstLaneX = Math.max(
+      sourceItem.x + 96,
+      selectorOutputX - totalSpan / 2
+    );
     let maxBranchY = branchStartY;
-    let laneIndex = 0;
-    for (const group of completeBranchGroups) {
-      for (const branch of group.branches) {
-        const laneX = firstLaneX + laneIndex * laneGap;
+    let groupStartX = firstLaneX;
+    completeBranchGroups.forEach((group, groupIndex) => {
+      group.branches.forEach((branch, branchIndex) => {
+        const laneX = groupStartX + branchIndex * laneGap;
         let y = branchStartY;
-        for (const component of branch) {
+        branch.forEach((component, componentIndex) => {
           const item = put(component, laneX, y, "down");
+          if (componentIndex === 0) {
+            item.labelPos = {
+              x: laneX,
+              y:
+                branchStartY -
+                22 -
+                (staggerBranchLabels && branchIndex % 2 === 1 ? 18 : 0),
+            };
+          }
           y += item.length + 58;
           maxBranchY = Math.max(maxBranchY, y);
-        }
-        laneIndex++;
-      }
-    }
+        });
+      });
+      groupStartX +=
+        Math.max(0, group.branches.length - 1) * laneGap +
+        (groupIndex < completeBranchGroups.length - 1 ? groupGap : 0);
+    });
 
     const grounds = ast.components.filter(isGround);
     grounds.forEach((ground, index) =>
