@@ -25,6 +25,8 @@ export interface SLDLayoutNode {
   /** For bus nodes: left and right extent (x min/max) */
   busLeft?: number;
   busRight?: number;
+  /** Deep review drawings place equipment annotations beside the symbol. */
+  labelSide?: "right";
 }
 
 export interface SLDLayoutEdge {
@@ -56,8 +58,12 @@ export interface SLDLayoutResult {
   nodeById: Map<string, SLDLayoutNode>;
 }
 
-const LEVEL_SPACING = 100;
-const H_SPACING = 90;
+// SLDs carry ratings and cable schedules between symbols, so their vertical
+// rhythm must reserve text space as well as symbol space. The old 100/90 grid
+// was adequate for icons but routinely stacked engineering annotations on top
+// of one another in deep commercial feeders.
+const LEVEL_SPACING = 112;
+const H_SPACING = 150;
 const LEFT_PADDING = 80;
 const TOP_PADDING = 40;
 const BUS_OVERHANG = 20;
@@ -225,6 +231,10 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       bottomY: y + geom.bottomY,
       level: lvl,
       halfWidth: geom.halfWidth,
+      labelSide:
+        maxLevel >= 6 && lvl > 0 && node.nodeType !== "bus" && node.nodeType !== "hub"
+          ? "right"
+          : undefined,
     };
     byIdLayout.set(id, ln);
     layoutNodes.push(ln);
@@ -319,6 +329,31 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
           }
         }
       }
+    }
+  }
+
+  // A source that bypasses most of a deep conversion chain (for example the
+  // Utility feeder landing directly on the main switchboard) is an independent
+  // side feeder, not another member of the generation fan-in. Keep it outside
+  // the source bank so its long drop cannot cut through equipment labels.
+  if (maxLevel >= 6) {
+    const sourceNodes = (byLevel.get(0) ?? [])
+      .map((id) => byIdLayout.get(id)!)
+      .filter(Boolean);
+    const sideFeeders = sourceNodes.filter((source) =>
+      (children.get(source.node.id) ?? []).some(
+        (childId) => (levels.get(childId) ?? 0) >= maxLevel - 2
+      )
+    );
+    let rightmostSourceX = Math.max(
+      LEFT_PADDING,
+      ...sourceNodes
+        .filter((source) => !sideFeeders.includes(source))
+        .map((source) => source.x)
+    );
+    for (const feeder of sideFeeders) {
+      rightmostSourceX += H_SPACING;
+      feeder.x = rightmostSourceX;
     }
   }
 
@@ -483,6 +518,7 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       pathD = `M ${fx} ${startY} L ${fx} ${midY} L ${tx} ${midY} L ${tx} ${endY}`;
     }
 
+    const converges = (parents.get(c.to)?.length ?? 0) > 1;
     edges.push({
       from: c.from,
       to: c.to,
@@ -492,7 +528,11 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       cableLengthM: c.cableLengthM,
       cableInsulation: c.cableInsulation,
       label: c.label,
-      midX: (fx + tx) / 2,
+      // A fan-in cable belongs visually to its source drop. Putting every
+      // label at the geometric midpoint piles all labels around the merge
+      // node; anchoring each one beside its own drop creates a cable schedule
+      // that can be read left-to-right.
+      midX: converges && !lateralTie ? fx : (fx + tx) / 2,
       midY: (startY + endY) / 2,
     });
   }
@@ -549,7 +589,28 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     const right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
     if (right > maxX) maxX = right;
   }
-  const width = Math.max(400, maxX + 40);
+  let width = Math.max(400, maxX + 40);
+  // A deep, narrow feeder is technically valid but unusable in a report: when
+  // fitted to a page it becomes a phone-shaped strip and every annotation is
+  // magnified into the one available column. Give these drawings a landscape
+  // review canvas while keeping shallow residential diagrams compact.
+  const reviewWidth = maxLevel >= 6 ? 960 : width;
+  if (reviewWidth > width) {
+    const centerShift = (reviewWidth - width) / 2;
+    for (const ln of layoutNodes) {
+      ln.x += centerShift;
+      if (ln.busLeft !== undefined) ln.busLeft += centerShift;
+      if (ln.busRight !== undefined) ln.busRight += centerShift;
+    }
+    for (const e of edges) {
+      e.midX += centerShift;
+      e.path = e.path.replace(
+        /([ML])\s+(-?[\d.]+)\s+(-?[\d.]+)/g,
+        (_m, cmd, x, y) => `${cmd} ${Number(x) + centerShift} ${y}`
+      );
+    }
+    width = reviewWidth;
+  }
   const height = TOP_PADDING + maxLevel * LEVEL_SPACING + 120;
 
   return {

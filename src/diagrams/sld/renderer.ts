@@ -45,7 +45,9 @@ function buildCss(t: IT): string {
 .lt-sld-band-label { font: bold 11px sans-serif; fill: ${t.textMuted}; }
 .lt-sld-title { font: bold 16px sans-serif; fill: ${t.text}; }
 .lt-sld-id { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-sld-id-side { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: start; }
 .lt-sld-rating { font: 9px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-sld-rating-side { font: 9px sans-serif; fill: ${t.textMuted}; text-anchor: start; }
 .lt-sld-voltage { font: bold 10px sans-serif; fill: ${t.textMuted}; }
 .lt-sld-nameplate { font: 9px sans-serif; fill: ${t.textMuted}; }
 .lt-sld-cable { font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: ${t.textMuted}; }
@@ -121,10 +123,17 @@ function renderLabels(ln: SLDLayoutNode): string[] {
     return pieces;
   }
 
-  // ID above
-  const idY = ln.topY - 22;
+  const sideLabel = ln.labelSide === "right";
+  const labelX = sideLabel ? ln.x + ln.halfWidth + 18 : ln.x;
+  // Dense feeder chains read like a conventional one-line when equipment
+  // annotations sit beside the glyph. Shallow diagrams retain the historical
+  // centered label treatment.
+  const idY = sideLabel ? ln.y - 3 : ln.topY - 22;
   pieces.push(
-    textEl({ x: ln.x, y: idY, class: "lt-sld-id" }, node.label ?? node.id)
+    textEl(
+      { x: labelX, y: idY, class: sideLabel ? "lt-sld-id-side" : "lt-sld-id" },
+      node.label ?? node.id
+    )
   );
 
   // Rating below
@@ -143,7 +152,11 @@ function renderLabels(ln: SLDLayoutNode): string[] {
   lines.forEach((l, i) => {
     pieces.push(
       textEl(
-        { x: ln.x, y: ln.bottomY + 14 + i * 11, class: "lt-sld-rating" },
+        {
+          x: labelX,
+          y: sideLabel ? ln.y + 12 + i * 11 : ln.bottomY + 14 + i * 11,
+          class: sideLabel ? "lt-sld-rating-side" : "lt-sld-rating",
+        },
         l
       )
     );

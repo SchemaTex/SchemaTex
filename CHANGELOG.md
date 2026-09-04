@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — P&ID and electrical drawings now expose the engineering topology
+
+- **P&ID equipment is ranked by process flow instead of declaration order.** Split and merge paths place parallel trains in stable lanes, backward process edges receive dedicated recycle channels, and shared process endpoints render explicit junction dots. Existing P&IDs without equipment-to-equipment process lines retain their declaration-order catalog layout.
+- **Field instruments no longer occupy the equipment-tag strip.** Equipment and pipe targets drive instrument placement, while additional clearance keeps ISA bubbles and signal drops out of the label area.
+- **A canonical 555 astable is laid out by function, not by part-list order.** The recognizer follows the timer's actual pin nets, so the timing network, control capacitor, and LED output branch remain traceable even when component IDs change. Ambiguous or extended circuits fall back to the generic schematic layout rather than being forced into the pattern.
+- **Deep commercial SLDs receive a landscape review canvas.** Fan-in cable labels stay beside their own source drops, equipment annotations move beside the vertical feeder, and a source that bypasses most of the conversion chain—such as Utility landing directly on the main switchboard—is kept as an independent side feeder.
+- **The visual contract is now an executable three-state benchmark.** One flat page shows the immutable 1.0.14 baseline, current renderer candidate, and reviewed target for a duplex hydraulic P&ID, 555 astable circuit, and commercial solar SLD. Candidate generation never overwrites the baseline.
+
 ---
 
 ## [1.0.14] — 2026-09-03

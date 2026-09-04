@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-sld" role="img" aria-labelledby="lt-sld-title lt-sld-desc" width="960" height="999" viewBox="0 0 960 999"><title>Commercial PV Interconnection</title>
+<desc>Single-line diagram with 11 nodes and 10 connections</desc>
+<style>.lt-sld { font-family: system-ui, -apple-system, sans-serif; }
+.lt-sld-stroke { stroke: #222222; stroke-width: 1.8; fill: none; }
+.lt-sld-stroke-thick { stroke: #222222; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.lt-sld-fill { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-sld-fill-dark { fill: #222222; stroke: #222222; stroke-width: 1; }
+.lt-sld-dot { fill: #222222; stroke: none; }
+.lt-sld-wire { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-sld-bus { stroke: #111111; stroke-width: 6; stroke-linecap: square; }
+.lt-sld-band-odd { fill: #f7f7f7; stroke: none; }
+.lt-sld-band-even { fill: #fbfbfb; stroke: none; }
+.lt-sld-band-label { font: bold 11px sans-serif; fill: #555555; }
+.lt-sld-title { font: bold 16px sans-serif; fill: #111111; }
+.lt-sld-id { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-sld-id-side { font: bold 11px sans-serif; fill: #111111; text-anchor: start; }
+.lt-sld-rating { font: 9px sans-serif; fill: #555555; text-anchor: middle; }
+.lt-sld-rating-side { font: 9px sans-serif; fill: #555555; text-anchor: start; }
+.lt-sld-voltage { font: bold 10px sans-serif; fill: #555555; }
+.lt-sld-nameplate { font: 9px sans-serif; fill: #555555; }
+.lt-sld-cable { font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #555555; }
+.lt-sld-symbol-text { font: 11px sans-serif; fill: #111111; dominant-baseline: middle; }
+.lt-sld-wdg { font: bold 10px sans-serif; fill: #222222; dominant-baseline: middle; }
+.lt-sld-bus-label { font: bold 11px sans-serif; fill: #1d4e89; }
+.lt-sld-standard-badge { font: bold 10px sans-serif; fill: #555555; letter-spacing: 0.3px; }
+.lt-sld-unknown-box { fill: none; stroke: #1d4e89; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-sld-unknown-mark { font: bold 16px sans-serif; fill: #1d4e89; dominant-baseline: middle; }
+.lt-sld-unknown-type { font: 9px ui-monospace, monospace; fill: #555555; }</style>
+<defs><marker id="lt-sld-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 6 3 L 0 6 z" fill="#555555"/></marker></defs>
+<text x="20" y="22" class="lt-sld-title" data-sld-role="title">Commercial PV Interconnection</text>
+<text x="946" y="22" class="lt-sld-standard-badge" text-anchor="end">Standard: IEC 60617</text>
+<g transform="translate(0, 55)"><rect x="0" y="-6" width="960" height="112" class="lt-sld-band-odd"/>
+<text x="14" y="12" class="lt-sld-band-label">400 V</text>
+<rect x="0" y="106" width="960" height="112" class="lt-sld-band-even"/>
+<rect x="0" y="218" width="960" height="112" class="lt-sld-band-odd"/>
+<rect x="0" y="330" width="960" height="112" class="lt-sld-band-even"/>
+<rect x="0" y="442" width="960" height="112" class="lt-sld-band-odd"/>
+<rect x="0" y="554" width="960" height="112" class="lt-sld-band-even"/>
+<rect x="0" y="666" width="960" height="112" class="lt-sld-band-odd"/>
+<text x="14" y="684" class="lt-sld-band-label">400 V</text>
+<rect x="0" y="778" width="960" height="112" class="lt-sld-band-even"/>
+<path d="M 244 58 L 244 95 L 394 95 L 394 132" class="lt-sld-wire"/>
+<text x="250" y="93" class="lt-sld-cable">PV1-F 2×70 mm²</text>
+<path d="M 394 58 L 394 132" class="lt-sld-wire"/>
+<text x="400" y="93" class="lt-sld-cable">PV1-F 2×70 mm²</text>
+<path d="M 544 58 L 544 95 L 394 95 L 394 132" class="lt-sld-wire"/>
+<text x="550" y="93" class="lt-sld-cable">PV1-F 2×35 mm²</text>
+<path d="M 394 172 L 394 246" class="lt-sld-wire"/>
+<text x="400" y="207" class="lt-sld-cable">2×240 mm² DC</text>
+<path d="M 394 282 L 394 362" class="lt-sld-wire"/>
+<path d="M 394 390 L 394 470" class="lt-sld-wire"/>
+<text x="400" y="428" class="lt-sld-cable">4×240 mm² Cu</text>
+<path d="M 394 506 L 394 586" class="lt-sld-wire"/>
+<path d="M 394 614 L 394 663 L 544 663 L 544 712" class="lt-sld-wire"/>
+<path d="M 694 58 L 694 385 L 544 385 L 544 712" class="lt-sld-wire"/>
+<path d="M 544 712 L 544 761 L 394 761 L 394 810" class="lt-sld-wire"/>
+<g transform="translate(244, 40)" data-type="solar" data-id="PV_A"><g><rect x="-18" y="-12" width="36" height="24" class="lt-sld-fill"/>
+<line x1="-18" y1="-4" x2="18" y2="-4" class="lt-sld-stroke"/>
+<line x1="-18" y1="4" x2="18" y2="4" class="lt-sld-stroke"/>
+<line x1="-6" y1="-12" x2="-6" y2="12" class="lt-sld-stroke"/>
+<line x1="6" y1="-12" x2="6" y2="12" class="lt-sld-stroke"/>
+<line x1="0" y1="12" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="244" y="-6" class="lt-sld-id">PV Array A</text>
+<text x="244" y="72" class="lt-sld-rating">100 kWdc</text>
+<g transform="translate(394, 40)" data-type="solar" data-id="PV_B"><g><rect x="-18" y="-12" width="36" height="24" class="lt-sld-fill"/>
+<line x1="-18" y1="-4" x2="18" y2="-4" class="lt-sld-stroke"/>
+<line x1="-18" y1="4" x2="18" y2="4" class="lt-sld-stroke"/>
+<line x1="-6" y1="-12" x2="-6" y2="12" class="lt-sld-stroke"/>
+<line x1="6" y1="-12" x2="6" y2="12" class="lt-sld-stroke"/>
+<line x1="0" y1="12" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="394" y="-6" class="lt-sld-id">PV Array B</text>
+<text x="394" y="72" class="lt-sld-rating">100 kWdc</text>
+<g transform="translate(544, 40)" data-type="solar" data-id="PV_C"><g><rect x="-18" y="-12" width="36" height="24" class="lt-sld-fill"/>
+<line x1="-18" y1="-4" x2="18" y2="-4" class="lt-sld-stroke"/>
+<line x1="-18" y1="4" x2="18" y2="4" class="lt-sld-stroke"/>
+<line x1="-6" y1="-12" x2="-6" y2="12" class="lt-sld-stroke"/>
+<line x1="6" y1="-12" x2="6" y2="12" class="lt-sld-stroke"/>
+<line x1="0" y1="12" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="544" y="-6" class="lt-sld-id">PV Array C</text>
+<text x="544" y="72" class="lt-sld-rating">50 kWdc</text>
+<g transform="translate(694, 40)" data-type="utility" data-id="UTIL"><g><circle cx="0" cy="0" r="16" class="lt-sld-fill"/>
+<path d="M -8 0 Q -4 -8 0 0 Q 4 8 8 0" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-24" x2="0" y2="-16" class="lt-sld-stroke"/>
+<line x1="0" y1="16" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="694" y="-6" class="lt-sld-id">Utility</text>
+<text x="694" y="72" class="lt-sld-rating">400 V</text>
+<g transform="translate(394, 152)" data-type="hub" data-id="CMB"><g><rect x="-50" y="-18" width="100" height="36" rx="4" ry="4" class="lt-sld-fill" stroke-width="2"/>
+<text x="0" y="4" class="lt-sld-wdg" text-anchor="middle" font-size="11">DC Combiner</text>
+<line x1="0" y1="-20" x2="0" y2="-18" class="lt-sld-stroke"/>
+<line x1="0" y1="18" x2="0" y2="20" class="lt-sld-stroke"/>
+<line x1="-50" y1="0" x2="-54" y2="0" class="lt-sld-stroke"/>
+<line x1="50" y1="0" x2="54" y2="0" class="lt-sld-stroke"/></g></g>
+<text x="394" y="186" class="lt-sld-rating">600 Vdc</text>
+<g transform="translate(394, 264)" data-type="switch_load" data-id="DISC_DC"><g><line x1="-6" y1="10" x2="8" y2="-10" class="lt-sld-stroke-thick"/>
+<rect x="6" y="-14" width="6" height="6" class="lt-sld-fill"/>
+<line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="430" y="261" class="lt-sld-id-side">DC Isolator</text>
+<text x="430" y="276" class="lt-sld-rating-side">600 Vdc / 500 A</text>
+<g transform="translate(394, 376)" data-type="load" data-id="INV"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<text x="432" y="373" class="lt-sld-id-side">Grid-tie Inverter</text>
+<text x="432" y="388" class="lt-sld-rating-side">200 kWac</text>
+<g transform="translate(394, 488)" data-type="breaker" data-id="CB_AC"><g><line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="-6" y1="10" x2="6" y2="-8" class="lt-sld-stroke-thick"/>
+<line x1="-4" y1="-13" x2="4" y2="-7" class="lt-sld-stroke"/>
+<line x1="4" y1="-13" x2="-4" y2="-7" class="lt-sld-stroke"/></g></g>
+<text x="430" y="485" class="lt-sld-id-side">AC Breaker</text>
+<text x="430" y="500" class="lt-sld-rating-side">400 A</text>
+<g transform="translate(394, 600)" data-type="watthour_meter" data-id="MTR"><g><circle cx="0" cy="0" r="12" class="lt-sld-fill"/>
+<text x="0" y="4" class="lt-sld-wdg" text-anchor="middle" font-size="9">Wh</text>
+<line x1="0" y1="-14" x2="0" y2="-12" class="lt-sld-stroke"/>
+<line x1="0" y1="12" x2="0" y2="14" class="lt-sld-stroke"/></g></g>
+<text x="426" y="597" class="lt-sld-id-side">Production Meter</text>
+<line x1="374" y1="712" x2="714" y2="712" class="lt-sld-bus" data-id="MSB"/>
+<text x="378" y="704" class="lt-sld-bus-label">400 V · Main Switchboard</text>
+<g transform="translate(394, 824)" data-type="load" data-id="LOAD"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<text x="432" y="821" class="lt-sld-id-side">Building Loads</text>
+<text x="432" y="836" class="lt-sld-rating-side">Facility</text></g></svg>

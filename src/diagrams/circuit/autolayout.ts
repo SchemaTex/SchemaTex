@@ -559,6 +559,223 @@ function routePlacedNetlist(
 }
 
 /**
+ * Recognize the canonical 555 astable topology and draw it as the functional
+ * blocks an electrical reviewer expects to see: timing network on the timer's
+ * right, output load on the left, and local supply references at each pin.
+ *
+ * This is topology-driven rather than ID-driven. Authors may call the parts
+ * anything; the nets attached to the 555 pins determine each role. Returning
+ * null for any extra or ambiguous part keeps the generic schematic layout as
+ * the honest fallback instead of forcing an incorrect template.
+ */
+function tryLayoutTimer555Astable(ast: CircuitAST): AutoLayoutResult | null {
+  const pinMap = ast.pinMap ?? {};
+  const timers = ast.components.filter((c) => c.componentType === "555_timer");
+  if (timers.length !== 1) return null;
+  const timer = timers[0]!;
+  const tp = pinMap[timer.id] ?? {};
+  const required = [tp.vcc, tp.gnd, tp.dis, tp.thr, tp.trg, tp.ctl, tp.out, tp.rst];
+  if (required.some((net) => !net)) return null;
+  if (tp.thr !== tp.trg) return null;
+  // RESET belongs on the positive rail in the canonical astable. Rendering a
+  // local VCC flag on any other reset net would change the circuit's meaning.
+  if (tp.rst !== tp.vcc) return null;
+
+  const twoPinNets = (component: CircuitComponent): [string, string] | null => {
+    const nets = Object.values(pinMap[component.id] ?? {});
+    return nets.length === 2 && nets[0] && nets[1] ? [nets[0], nets[1]] : null;
+  };
+  const between = (
+    types: Set<CircuitComponent["componentType"]>,
+    a: string,
+    b: string
+  ): CircuitComponent | undefined =>
+    ast.components.find((component) => {
+      if (!types.has(component.componentType)) return false;
+      const nets = twoPinNets(component);
+      return !!nets && nets.includes(a) && nets.includes(b);
+    });
+
+  const resistorTypes = new Set<CircuitComponent["componentType"]>([
+    "resistor",
+    "rheostat",
+  ]);
+  const capacitorTypes = new Set<CircuitComponent["componentType"]>([
+    "capacitor",
+    "electrolytic_cap",
+  ]);
+  const rCharge = between(resistorTypes, tp.vcc!, tp.dis!);
+  const rTiming = between(resistorTypes, tp.dis!, tp.thr!);
+  const cTiming = between(capacitorTypes, tp.thr!, tp.gnd!);
+  const cControl = between(capacitorTypes, tp.ctl!, tp.gnd!);
+  const led = ast.components.find((c) => {
+    if (c.componentType !== "led") return false;
+    const nets = twoPinNets(c);
+    return !!nets && nets.includes(tp.gnd!);
+  });
+  if (!rCharge || !rTiming || !cTiming || !cControl || !led) return null;
+  const ledNets = twoPinNets(led)!;
+  const ledSignal = ledNets.find((net) => net !== tp.gnd);
+  if (!ledSignal) return null;
+  const ledPins = pinMap[led.id] ?? {};
+  if (ledPins.start !== ledSignal || ledPins.end !== tp.gnd) return null;
+  const rOutput = between(resistorTypes, tp.out!, ledSignal);
+  if (!rOutput) return null;
+
+  const sources = ast.components.filter(isPowerSource);
+  if (sources.length !== 1) return null;
+  const source = sources[0]!;
+  const sourceNets = twoPinNets(source);
+  if (!sourceNets?.includes(tp.vcc!) || !sourceNets.includes(tp.gnd!)) return null;
+
+  const matched = new Set([
+    timer.id,
+    source.id,
+    rCharge.id,
+    rTiming.id,
+    cTiming.id,
+    cControl.id,
+    rOutput.id,
+    led.id,
+  ]);
+  if (ast.components.some((component) => !matched.has(component.id) && !isAutoGround(component))) {
+    return null;
+  }
+
+  const items: LaidOutComponent[] = [];
+  const put = (
+    component: CircuitComponent,
+    x: number,
+    y: number,
+    direction: "right" | "left" | "up" | "down",
+    labelPos: PinAnchor
+  ): LaidOutComponent => {
+    const item = placeComponent(component, x, y, direction);
+    item.labelPos = labelPos;
+    items.push(item);
+    return item;
+  };
+
+  const sourceItem = put(source, 72, 166, "up", { x: 112, y: 150 });
+  const outputResistorItem = put(rOutput, 202, 166, "left", { x: 182, y: 143 });
+  const ledItem = put(led, 162, 210, "down", { x: 132, y: 228 });
+  const timerItem = put(timer, 252, 160, "right", { x: 282, y: 113 });
+  const chargeItem = put(rCharge, 392, 80, "down", { x: 432, y: 99 });
+  const timingResistorItem = put(rTiming, 392, 188, "down", { x: 432, y: 207 });
+  const timingCapItem = put(cTiming, 392, 270, "down", { x: 432, y: 282 });
+  const controlCapItem = put(cControl, 462, 238, "down", { x: 502, y: 249 });
+
+  const at = (item: LaidOutComponent, net: string): PinAnchor | null =>
+    anchorForNet(pinMap, item, net) ?? null;
+  const timerOut = at(timerItem, tp.out!);
+  const timerDis = at(timerItem, tp.dis!);
+  const timerTrig = at(timerItem, tp.trg!);
+  const timerThresh = at(timerItem, tp.thr!);
+  const timerCtrl = at(timerItem, tp.ctl!);
+  const outputIn = at(outputResistorItem, tp.out!);
+  const outputLed = at(outputResistorItem, ledSignal);
+  const ledIn = at(ledItem, ledSignal);
+  const chargeDis = at(chargeItem, tp.dis!);
+  const timingDis = at(timingResistorItem, tp.dis!);
+  const timingNode = at(timingResistorItem, tp.thr!);
+  const timingCap = at(timingCapItem, tp.thr!);
+  const controlCap = at(controlCapItem, tp.ctl!);
+  if (
+    !timerOut || !timerDis || !timerTrig || !timerThresh || !timerCtrl ||
+    !outputIn || !outputLed || !ledIn || !chargeDis || !timingDis ||
+    !timingNode || !timingCap || !controlCap
+  ) return null;
+
+  const routes: RoutedWire[] = [
+    { netId: tp.out!, points: compactPoints([timerOut, outputIn]) },
+    {
+      netId: ledSignal,
+      points: compactPoints([outputLed, { x: ledIn.x, y: outputLed.y }, ledIn]),
+    },
+    {
+      netId: tp.dis!,
+      points: compactPoints([
+        chargeDis,
+        { x: chargeDis.x, y: timerDis.y },
+        timerDis,
+      ]),
+      junctions: [{ x: chargeDis.x, y: timerDis.y }],
+    },
+    {
+      netId: `${tp.dis!}.${rTiming.id}`,
+      points: compactPoints([
+        timingDis,
+        { x: chargeDis.x, y: timerDis.y },
+      ]),
+    },
+    {
+      netId: tp.thr!,
+      points: compactPoints([
+        timerTrig,
+        { x: 218, y: timerTrig.y },
+        { x: 218, y: timingNode.y },
+        timingNode,
+      ]),
+      junctions: [
+        { x: timerThresh.x + 30, y: timingNode.y },
+        { x: timingNode.x, y: timingNode.y },
+      ],
+    },
+    {
+      netId: `${tp.thr!}.${timer.id}`,
+      points: compactPoints([
+        timerThresh,
+        { x: timerThresh.x + 30, y: timerThresh.y },
+        { x: timerThresh.x + 30, y: timingNode.y },
+      ]),
+    },
+    {
+      netId: `${tp.thr!}.${cTiming.id}`,
+      points: compactPoints([timingCap, timingNode]),
+    },
+    {
+      netId: tp.ctl!,
+      points: compactPoints([
+        timerCtrl,
+        { x: controlCap.x, y: timerCtrl.y },
+        controlCap,
+      ]),
+    },
+  ];
+
+  const flags: SupplyFlagMark[] = [];
+  const addFlag = (
+    item: LaidOutComponent,
+    net: string,
+    kind: SupplyFlagMark["kind"],
+    dx = 0,
+    dy = 0
+  ): void => {
+    const pin = at(item, net);
+    if (!pin) return;
+    if (dx !== 0 || dy !== 0) {
+      const flagAt = { x: pin.x + dx, y: pin.y + dy };
+      routes.push({ netId: `${net}.${item.component.id}`, points: [pin, flagAt] });
+      flags.push({ kind, at: flagAt });
+    } else {
+      flags.push({ kind, at: pin });
+    }
+  };
+
+  addFlag(sourceItem, tp.vcc!, "vcc");
+  addFlag(sourceItem, tp.gnd!, "ground");
+  addFlag(timerItem, tp.vcc!, "vcc", 26);
+  addFlag(timerItem, tp.gnd!, "ground", -26);
+  addFlag(timerItem, tp.rst!, "vcc", -26);
+  addFlag(chargeItem, tp.vcc!, "vcc", 0, -26);
+  addFlag(timingCapItem, tp.gnd!, "ground");
+  addFlag(controlCapItem, tp.gnd!, "ground");
+  addFlag(ledItem, tp.gnd!, "ground");
+
+  return { ...finalizeAutoLayout(items, routes), flags };
+}
+
+/**
  * Plan a source → series spine → multi-output selector → parallel load bank.
  *
  * This is topology-driven: no label/language checks and no case coordinates.
@@ -1057,6 +1274,8 @@ function tryLayoutTwoWireLighting(ast: CircuitAST): AutoLayoutResult | null {
 
 export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
   const pinMap = ast.pinMap ?? {};
+  const timer555 = tryLayoutTimer555Astable(ast);
+  if (timer555) return timer555;
   const parallelLoadBank = tryLayoutParallelLoadBank(ast);
   if (parallelLoadBank) return parallelLoadBank;
   const twoWireLighting = tryLayoutTwoWireLighting(ast);

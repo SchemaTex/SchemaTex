@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parse, render } from "../../src/core/api";
+import type { CircuitAST } from "../../src/core/types";
+import { layoutCircuitNetlist } from "../../src/diagrams/circuit/autolayout";
 
 /**
  * Layout quality is not a matter of taste here — the old band layout failed on
@@ -194,5 +196,39 @@ describe("schematic layout — labels do not collide", () => {
       }
     }
     expect(collisions).toBe(0);
+  });
+});
+
+describe("schematic layout — 555 astable functional contract", () => {
+  const dsl = `circuit "555 Astable LED Flasher" netlist
+V1 VCC GND value="9 V" label="BAT1"
+U1 GND TIMING OUT VCC CTRL TIMING DISCH VCC type=555_timer label="U1"
+R1 VCC DISCH value="10 kΩ" label="R1"
+R2 DISCH TIMING value="100 kΩ" label="R2"
+C1 TIMING GND value="10 µF" label="C1"
+C2 CTRL GND value="10 nF" label="C2"
+R3 OUT LED_A value="470 Ω" label="R3"
+D1 LED_A GND type=led label="LED1"`;
+
+  it("puts the timing network beside the IC and the output branch on the other side", () => {
+    const layout = layoutCircuitNetlist(parse(dsl) as CircuitAST);
+    const byId = new Map(layout.items.map((item) => [item.component.id, item]));
+    const timer = byId.get("U1")!;
+    expect(byId.get("R1")!.x).toBeGreaterThan(timer.x);
+    expect(byId.get("R2")!.x).toBeGreaterThan(timer.x);
+    expect(byId.get("C1")!.x).toBeGreaterThan(timer.x);
+    expect(byId.get("C2")!.x).toBeGreaterThan(timer.x);
+    expect(byId.get("R3")!.x).toBeLessThan(timer.x);
+    expect(byId.get("D1")!.x).toBeLessThan(timer.x);
+  });
+
+  it("keeps feedback nets explicit while rendering supply nets as local flags", () => {
+    const layout = layoutCircuitNetlist(parse(dsl) as CircuitAST);
+    const routed = new Set(layout.routes.map((route) => route.netId.split(".")[0]));
+    for (const net of ["OUT", "LED_A", "DISCH", "TIMING", "CTRL"]) {
+      expect(routed.has(net)).toBe(true);
+    }
+    expect(layout.flags?.filter((flag) => flag.kind === "vcc").length).toBeGreaterThanOrEqual(3);
+    expect(layout.flags?.filter((flag) => flag.kind === "ground").length).toBeGreaterThanOrEqual(4);
   });
 });

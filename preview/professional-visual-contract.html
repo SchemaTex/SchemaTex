@@ -33,7 +33,6 @@
       --space-4: 2rem;
       --space-5: 3.5rem;
       --space-6: 6rem;
-      --before-share: 50%;
     }
 
     * { box-sizing: border-box; }
@@ -103,28 +102,8 @@
     }
     .hero-note strong { color: var(--blueprint); }
 
-    .case-tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--blueprint);
-      background: var(--white);
-    }
-    .case-tab {
-      border: 0;
-      border-right: 1px solid var(--blueprint);
-      padding: 16px 20px;
-      color: var(--blueprint);
-      background: transparent;
-      cursor: pointer;
-      text-align: left;
-    }
-    .case-tab:last-child { border-right: 0; }
-    .case-tab[aria-selected="true"] { color: var(--white); background: var(--blueprint); }
-    .case-tab span { display: block; font: 600 1.25rem/1 var(--display); text-transform: uppercase; }
-    .case-tab small { display: block; margin-top: 6px; font: 400 0.68rem/1.2 var(--mono); opacity: 0.72; }
-
     .review-board {
-      margin-top: var(--space-3);
+      margin-top: var(--space-4);
       padding: var(--space-3);
       background: var(--white);
       border: 1px solid var(--rule);
@@ -145,8 +124,8 @@
 
     .compare-grid {
       display: grid;
-      grid-template-columns: minmax(240px, var(--before-share)) minmax(240px, calc(100% - var(--before-share)));
-      min-height: 610px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      min-height: 540px;
       border: 1px solid var(--rule);
       border-radius: var(--radius-m);
       overflow: hidden;
@@ -157,17 +136,14 @@
     .pane-head { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
     .pane-label { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
     .pane.before .pane-label { color: var(--fault); }
+    .pane.candidate .pane-label { color: var(--amber); }
     .pane.after .pane-label { color: var(--process); }
     .pane-source { font: 400 0.66rem/1 var(--mono); color: #74818c; }
-    .image-well { display: grid; place-items: center; min-height: 500px; padding: 18px; overflow: hidden; background: #fff; }
-    .image-well img { display: block; width: 100%; height: 100%; max-height: 540px; object-fit: contain; }
+    .image-well { display: grid; place-items: center; min-height: 430px; padding: 14px; overflow: hidden; background: #fff; }
+    .image-well img { display: block; width: 100%; height: 100%; max-height: 500px; object-fit: contain; }
     .pane-note { min-height: 82px; padding: 12px 16px; border-top: 1px solid var(--rule); color: #536270; font-size: 0.78rem; line-height: 1.5; }
 
-    .split-control { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 18px 8px 4px; }
-    .split-control label, .split-control output { font: 500 0.68rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
-    .split-control input { width: 100%; accent-color: var(--process); cursor: ew-resize; }
-
-    .case-panel[hidden] { display: none; }
+    .case-panel + .case-panel { margin-top: var(--space-6); }
     .findings {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -221,15 +197,11 @@
     @media (max-width: 760px) {
       .shell { width: min(100% - 20px, 1580px); }
       .hero { padding-top: var(--space-5); }
-      .case-tabs { grid-template-columns: 1fr; }
-      .case-tab { border-right: 0; border-bottom: 1px solid var(--blueprint); }
-      .case-tab:last-child { border-bottom: 0; }
       .board-head, .findings { grid-template-columns: 1fr; }
       .issue-tags { justify-content: flex-start; }
       .compare-grid { grid-template-columns: 1fr; min-height: 0; }
       .pane + .pane { border-left: 0; border-top: 3px solid var(--blueprint); }
       .image-well { min-height: 360px; }
-      .split-control { display: none; }
       .contract-grid { grid-template-columns: 1fr; }
       .contract-item { border-right: 0; }
       .truth-note { grid-template-columns: 1fr; }
@@ -242,7 +214,7 @@
   <div class="shell">
     <header class="topline">
       <a href="index.html">SchemaTex / Preview Lab</a>
-      <span class="status">Visual contract · not renderer output</span>
+      <span class="status">Implementation branch · live candidates</span>
     </header>
 
     <main>
@@ -252,48 +224,42 @@
           <h1>Credibility is a layout feature.</h1>
         </div>
         <div class="hero-note">
-          <strong>Three stress cases. One standard:</strong> a professional must be able to follow the topology without guessing. The left side is SchemaTex 1.0.14 today; the right side is the visual contract for the next renderer work.
+          <strong>Three stress cases. Three explicit states:</strong> the shipped 1.0.14 baseline, the renderer candidate on this branch, and the visual target. Everything is laid out on one page so progress and remaining gaps stay visible.
         </div>
       </section>
 
-      <nav class="case-tabs" aria-label="Benchmark cases" role="tablist">
-        <button class="case-tab" role="tab" aria-selected="true" aria-controls="case-pid" data-case="pid"><span>P&amp;ID</span><small>parallel process topology</small></button>
-        <button class="case-tab" role="tab" aria-selected="false" aria-controls="case-circuit" data-case="circuit"><span>Circuit</span><small>electrical traceability</small></button>
-        <button class="case-tab" role="tab" aria-selected="false" aria-controls="case-sld" data-case="sld"><span>SLD</span><small>power hierarchy</small></button>
-      </nav>
-
-      <section id="case-pid" class="case-panel" role="tabpanel" data-panel="pid">
+      <section id="case-pid" class="case-panel">
         <article class="review-board">
           <header class="board-head"><div><h2>Duplex hydraulic test stand</h2><p>A declaration-order layout turns two parallel pumps into a serial-looking chain. The target reads topology first: split, parallel lanes, merge, treatment, control, test, and return.</p></div><div class="issue-tags"><span class="issue-tag">#113 P&amp;ID gaps</span><span class="issue-tag">UserSay: hydraulic test stand</span></div></header>
           <div class="compare-grid">
             <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-pid-hydraulic-test-stand.png" alt="Current SchemaTex P and ID rendering flattened into one row"></div><div class="pane-note">The symbols are recognizable, but the layout implies a process topology that is not true.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-pid-hydraulic-test-stand.png" alt="Current branch P and ID candidate with topology-ranked equipment and parallel pump lanes"></div><div class="pane-note">Graph ranks now expose the duplex lanes, merge, bypass, and return. Dedicated control-signal lanes remain the largest visual gap.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">ImageGen + visual QA</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-pid-hydraulic-test-stand.png" alt="Target P and ID with parallel pump lanes and explicit return paths"></div><div class="pane-note">Parallel lanes, scope boundary, service paths, and signal ownership are visible before reading the labels.</div></figure>
           </div>
-          <div class="split-control"><label for="split-pid">Before space</label><input id="split-pid" type="range" min="32" max="68" value="50" data-split><output>50 / 50</output></div>
         </article>
         <div class="findings"><section class="finding-column"><h3>What fails today</h3><ul class="finding-list"><li>Duty and standby pumps read as serial equipment.</li><li>Bypass and return paths collapse into the main row.</li><li>Instrument lines compete with equipment labels.</li></ul></section><section class="finding-column after-list"><h3>What the target requires</h3><ul class="finding-list"><li>Topology-aware ranks with explicit split and merge junctions.</li><li>Lane ownership for parallel equipment and return services.</li><li>Semantic package boundaries and instrument signal layers.</li></ul></section></div>
       </section>
 
-      <section id="case-circuit" class="case-panel" role="tabpanel" data-panel="circuit" hidden>
+      <section id="case-circuit" class="case-panel">
         <article class="review-board">
           <header class="board-head"><div><h2>555 astable LED flasher</h2><p>The current renderer knows the parts but does not budget space for a readable electrical story. The target uses functionally arranged pins, shared rails, explicit junctions, and zero ambiguous crossings.</p></div><div class="issue-tags"><span class="issue-tag">#92 route corners</span><span class="issue-tag">#94 label collision</span><span class="issue-tag">#95 symbol geometry</span></div></header>
           <div class="compare-grid">
             <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-555-astable.png" alt="Current SchemaTex 555 circuit with sparse vertical layout and ambiguous connections"></div><div class="pane-note">The parts render, but several nets look detached and the page shape hides the circuit's functional structure.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-555-astable.png" alt="Current branch 555 circuit candidate with a functional timing network and output branch"></div><div class="pane-note">The topology recognizer separates timing, control, and output branches while keeping all supply references explicit.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">Corrected deterministic SVG</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-circuit-555-astable.svg" alt="Correct target 555 astable circuit with shared rails and traceable nets"></div><div class="pane-note">Every pin-to-net relationship is traceable. ImageGen concepts were rejected when they miswired RESET, GND, and TRIG.</div></figure>
           </div>
-          <div class="split-control"><label for="split-circuit">Before space</label><input id="split-circuit" type="range" min="32" max="68" value="50" data-split><output>50 / 50</output></div>
         </article>
         <div class="findings"><section class="finding-column"><h3>What fails today</h3><ul class="finding-list"><li>Ground symbols multiply instead of forming a coherent reference rail.</li><li>Connection geometry makes valid nets appear open.</li><li>Label placement is independent of routed-wire clearance.</li></ul></section><section class="finding-column after-list"><h3>What the target requires</h3><ul class="finding-list"><li>Functional pin groups and shared power-net rails.</li><li>Orthogonal routing with explicit junction and crossing rules.</li><li>A single collision pass across symbols, wires, labels, and values.</li></ul></section></div>
       </section>
 
-      <section id="case-sld" class="case-panel" role="tabpanel" data-panel="sld" hidden>
+      <section id="case-sld" class="case-panel">
         <article class="review-board">
           <header class="board-head"><div><h2>Commercial PV interconnection</h2><p>The current one-line is technically present but visually stretched and locally tangled. The target separates generation, conversion, and distribution while keeping Utility independent from the PV feeder.</p></div><div class="issue-tags"><span class="issue-tag">#83 IEC 60617</span><span class="issue-tag">#96 duplicate lines</span><span class="issue-tag">UserSay: solar SLD</span></div></header>
           <div class="compare-grid">
             <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-sld-commercial-solar.png" alt="Current SchemaTex solar single line diagram with a long vertical layout and overlapping labels"></div><div class="pane-note">The top cable labels overlap, the Utility feeder cuts through the chain, and a review requires excessive vertical scanning.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-sld-commercial-solar.png" alt="Current branch solar single line candidate with a landscape review canvas and separated feeder labels"></div><div class="pane-note">Deep feeders now receive a landscape review canvas, and fan-in cable labels stay beside their own source drops.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">ImageGen + visual QA</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-sld-commercial-solar.png" alt="Target IEC solar single line diagram arranged in three functional zones"></div><div class="pane-note">Functional zones, a real bus, and independent feeders turn the same data into a reviewable A3-style drawing.</div></figure>
           </div>
-          <div class="split-control"><label for="split-sld">Before space</label><input id="split-sld" type="range" min="32" max="68" value="50" data-split><output>50 / 50</output></div>
         </article>
         <div class="findings"><section class="finding-column"><h3>What fails today</h3><ul class="finding-list"><li>Parallel PV cable labels occupy the same visual slot.</li><li>Voltage bands do not create functional drawing zones.</li><li>The Utility path visually competes with the PV conversion chain.</li></ul></section><section class="finding-column after-list"><h3>What the target requires</h3><ul class="finding-list"><li>Branch-aware label slots with guaranteed clearance.</li><li>Landscape page packing and semantic zone headers.</li><li>Bus-centric routing with duplicate-segment elimination.</li></ul></section></div>
       </section>
@@ -301,10 +267,10 @@
       <section class="contract">
         <header class="section-head"><h2>The renderer contract</h2><p>These targets do not imply three separate hacks. They point to five shared layout guarantees. If those guarantees live below the individual diagram renderers, future examples benefit without adding diagram-specific syntax noise.</p></header>
         <div class="contract-grid">
-          <article class="contract-item"><code>layout.topology</code><h3>Rank by graph</h3><p>Place by connection meaning, not declaration order. Preserve split, merge, parallel, return, and bus structures.</p><span class="state">Needs implementation</span></article>
-          <article class="contract-item"><code>layout.lanes</code><h3>Own the lane</h3><p>Give branches, services, and voltage zones stable routing lanes before drawing individual segments.</p><span class="state">Needs implementation</span></article>
-          <article class="contract-item"><code>route.orthogonal</code><h3>Route with rules</h3><p>Prefer 90° / 45° paths, reserve crossings, and distinguish joins from pass-throughs deterministically.</p><span class="state">Partial today</span></article>
-          <article class="contract-item"><code>label.clearance</code><h3>Budget the text</h3><p>Treat names, ratings, cable data, and tags as geometry during layout—not paint added afterward.</p><span class="state">Needs implementation</span></article>
+          <article class="contract-item"><code>layout.topology</code><h3>Rank by graph</h3><p>Place by connection meaning, not declaration order. Preserve split, merge, parallel, return, and bus structures.</p><span class="state">Candidate implemented</span></article>
+          <article class="contract-item"><code>layout.lanes</code><h3>Own the lane</h3><p>Give branches, services, and voltage zones stable routing lanes before drawing individual segments.</p><span class="state">Candidate implemented</span></article>
+          <article class="contract-item"><code>route.orthogonal</code><h3>Route with rules</h3><p>Prefer 90° / 45° paths, reserve crossings, and distinguish joins from pass-throughs deterministically.</p><span class="state">Candidate expanded</span></article>
+          <article class="contract-item"><code>label.clearance</code><h3>Budget the text</h3><p>Treat names, ratings, cable data, and tags as geometry during layout—not paint added afterward.</p><span class="state">Partial candidate</span></article>
           <article class="contract-item"><code>render.layers</code><h3>Control z-order</h3><p>Wires sit behind opaque symbols; signals, junctions, and labels follow a documented visual stack.</p><span class="state">Partial today</span></article>
         </div>
       </section>
@@ -315,26 +281,7 @@
       </aside>
     </main>
 
-    <footer><span>Branch: codex/pid-electrical-visual-contract</span><span>Baseline: SchemaTex 1.0.14 · 2026-09-03 PT</span></footer>
+    <footer><span>Branch: codex/pid-electrical-reliability</span><span>Baseline: SchemaTex 1.0.14 · 2026-09-03 PT</span></footer>
   </div>
-
-  <script>
-    const tabs = [...document.querySelectorAll('[data-case]')];
-    const panels = [...document.querySelectorAll('[data-panel]')];
-    tabs.forEach((tab) => tab.addEventListener('click', () => {
-      const active = tab.dataset.case;
-      tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
-      panels.forEach((panel) => { panel.hidden = panel.dataset.panel !== active; });
-    }));
-
-    document.querySelectorAll('[data-split]').forEach((input) => {
-      const board = input.closest('.review-board');
-      const output = input.nextElementSibling;
-      input.addEventListener('input', () => {
-        board.style.setProperty('--before-share', `${input.value}%`);
-        output.value = `${input.value} / ${100 - Number(input.value)}`;
-      });
-    });
-  </script>
 </body>
 </html>

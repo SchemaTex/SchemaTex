@@ -63,6 +63,26 @@ line s3 from TT-201 to TIC-201 [type: "electric"]
 line s4 from TIC-201 to V-202 [type: "pneumatic"]
 line s5 from PT-201 to PSHH-201 [type: "electric"]`;
 
+const DUPLEX_DSL = `pid "Duplex Pump Loop"
+equip T-1 : tank_atm [tag: "Reservoir"]
+equip P-A : pump_centrifugal [tag: "Duty Pump"]
+equip P-B : pump_centrifugal [tag: "Standby Pump"]
+equip NRV-A : valve_check [tag: "NRV-A"]
+equip NRV-B : valve_check [tag: "NRV-B"]
+equip F-1 : filter [tag: "Filter"]
+equip V-1 : valve_control [tag: "PCV"]
+equip TEST : vessel_v [tag: "Test Manifold"]
+
+line s1 from T-1.bottom to P-A.in [type: process]
+line s2 from T-1.bottom to P-B.in [type: process]
+line d1 from P-A.out to NRV-A.in [type: process]
+line d2 from P-B.out to NRV-B.in [type: process]
+line m1 from NRV-A.out to F-1.in [type: process]
+line m2 from NRV-B.out to F-1.in [type: process]
+line p1 from F-1.out to V-1.in [type: process]
+line p2 from V-1.out to TEST.in [type: process]
+line ret from TEST.bottom to T-1.top [type: process]`;
+
 describe("P&ID renderer", () => {
   test("renders process_minor as an unfilled minor process line", () => {
     const svg = renderPid(DISTILLATION_DSL);
@@ -109,11 +129,53 @@ describe("P&ID renderer", () => {
     expect(sortedX[2]! - sortedX[1]!).toBeGreaterThanOrEqual(38);
   });
 
+  test("reserves the equipment-tag strip before placing field instruments", () => {
+    const layout = layoutPid(parsePid(REACTOR_DSL));
+    const reactor = layout.equipment.find((eq) => eq.equip.id === "R-201")!;
+    const tt = layout.instruments.find((inst) => inst.inst.tag === "TT-201")!;
+
+    expect(tt.cy - (reactor.y + reactor.height)).toBeGreaterThanOrEqual(60);
+  });
+
   test("routes CSTR product flow from the right-side outlet in left-to-right layouts", () => {
     const layout = layoutPid(parsePid(REACTOR_DSL));
     const reactor = layout.equipment.find((eq) => eq.equip.id === "R-201")!;
     const productLine = layout.lines.find((line) => line.line.id === "L5")!;
 
     expect(productLine.path).toContain(`M ${reactor.ports.out.x} ${reactor.ports.out.y}`);
+  });
+
+  test("places parallel pump branches in shared ranks instead of a serial declaration row", () => {
+    const layout = layoutPid(parsePid(DUPLEX_DSL));
+    const duty = layout.equipment.find((eq) => eq.equip.id === "P-A")!;
+    const standby = layout.equipment.find((eq) => eq.equip.id === "P-B")!;
+    const dutyCheck = layout.equipment.find((eq) => eq.equip.id === "NRV-A")!;
+    const standbyCheck = layout.equipment.find((eq) => eq.equip.id === "NRV-B")!;
+    const filter = layout.equipment.find((eq) => eq.equip.id === "F-1")!;
+
+    expect(duty.cx).toBe(standby.cx);
+    expect(duty.cy).not.toBe(standby.cy);
+    expect(dutyCheck.cx).toBe(standbyCheck.cx);
+    expect(dutyCheck.cy).not.toBe(standbyCheck.cy);
+    expect(filter.cx).toBeGreaterThan(dutyCheck.cx);
+  });
+
+  test("routes recycle lines below the equipment field", () => {
+    const layout = layoutPid(parsePid(DUPLEX_DSL));
+    const recycle = layout.lines.find((line) => line.line.id === "ret")!;
+    const equipmentBottom = Math.max(
+      ...layout.equipment.map((eq) => eq.y + eq.height)
+    );
+    const ys = [...recycle.path.matchAll(/[ML]\s+-?[\d.]+\s+(-?[\d.]+)/g)].map(
+      (match) => Number(match[1])
+    );
+
+    expect(Math.max(...ys)).toBeGreaterThan(equipmentBottom);
+  });
+
+  test("renders junction dots where process branches split and merge", () => {
+    const svg = renderPid(DUPLEX_DSL);
+    expect(svg).toContain('class="lt-pid-junctions"');
+    expect(svg).toContain('class="lt-pid-junction"');
   });
 });

@@ -1,0 +1,32 @@
+---
+title: 555 astable LED flasher
+description: Electrically traceable 555 timer astable with a timing network, control capacitor, and LED output branch.
+diagram: circuit
+standard: IEEE 315
+industry: [electronics, education]
+persona: For the electronics engineer or maker
+complexity: 3
+tags: [circuit, 555, astable, timer, led, oscillator]
+featured: true
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "555 Astable LED Flasher" netlist
+  V1 VCC GND value="9 V" label="BAT1"
+  U1 GND TIMING OUT VCC CTRL TIMING DISCH VCC type=555_timer label="U1"
+  R1 VCC DISCH value="10 kΩ" label="R1"
+  R2 DISCH TIMING value="100 kΩ" label="R2"
+  C1 TIMING GND value="10 µF" label="C1"
+  C2 CTRL GND value="10 nF" label="C2"
+  R3 OUT LED_A value="470 Ω" label="R3"
+  D1 LED_A GND type=led label="LED1"
+---
+
+## Why this layout is different
+
+The DSL is still a plain netlist: shared node names define connectivity, and the 555 uses its documented eight-pin order. The renderer recognizes the astable from those nets rather than from labels such as `R1` or `C1`, then places the charge/discharge network beside the timer and the LED branch on the output side.
+
+If the topology is incomplete or includes extra ambiguous parts, the renderer uses the generic schematic layout. It never forces a circuit into this arrangement merely because a component happens to be a 555 timer.
+

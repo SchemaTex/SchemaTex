@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Resvg } from "@resvg/resvg-js";
@@ -6,6 +6,7 @@ import { render } from "../dist/index.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const target = resolve(root, "preview/professional-visual-contract");
+const refreshBaseline = process.argv.includes("--refresh-baseline");
 
 const cases = [
   ["pid-hydraulic-test-stand", 1800],
@@ -16,13 +17,21 @@ const cases = [
 for (const [name, width] of cases) {
   const source = await readFile(resolve(target, `${name}.sx`), "utf8");
   const svg = render(source);
-  await writeFile(resolve(target, `before-${name}.svg`), svg);
-
   const png = new Resvg(svg, {
     background: "white",
     fitTo: { mode: "width", value: width },
   }).render().asPng();
-  await writeFile(resolve(target, `before-${name}.png`), png);
+
+  const beforeSvg = resolve(target, `before-${name}.svg`);
+  const beforePng = resolve(target, `before-${name}.png`);
+  const baselineExists = await access(beforeSvg).then(() => true).catch(() => false);
+  if (refreshBaseline || !baselineExists) {
+    await writeFile(beforeSvg, svg);
+    await writeFile(beforePng, png);
+  }
+
+  await writeFile(resolve(target, `candidate-${name}.svg`), svg);
+  await writeFile(resolve(target, `candidate-${name}.png`), png);
 }
 
 const targetCircuit = await readFile(
@@ -38,4 +47,6 @@ await writeFile(
   targetCircuitPng
 );
 
-console.log(`Generated ${cases.length} current-renderer baselines and the corrected circuit target in ${target}`);
+console.log(
+  `Generated ${cases.length} implementation candidates${refreshBaseline ? " and refreshed baselines" : ""} in ${target}`
+);
