@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseSLDDSL } from "../../src/diagrams/sld/parser";
 import { layoutSLD } from "../../src/diagrams/sld/layout";
 
-const COMMERCIAL_PV = `sld "Commercial PV Interconnection" [standard: iec]
+const COMMERCIAL_PV = `sld "Commercial PV Interconnection" [standard: ansi]
 PV_A = solar [rating: "100 kWdc", label: "PV Array A"]
 PV_B = solar [rating: "100 kWdc", label: "PV Array B"]
 PV_C = solar [rating: "50 kWdc", label: "PV Array C"]
@@ -24,6 +24,25 @@ CB_AC -> MTR
 MTR -> MSB
 UTIL -> MSB
 MSB -> LOAD`;
+
+const RESIDENTIAL_BRANCHES = `sld "Residential Consumer Unit"
+UTIL = utility [voltage: "230V"]
+MTR = watthour_meter [label: "kWh meter"]
+ISO = switch_load [label: "Main isolator"]
+RCD = rcd [label: "Main RCD"]
+BUS = bus [voltage: "230V"]
+${Array.from({ length: 7 }, (_, index) => {
+  const n = index + 1;
+  return `CB${n} = breaker [label: "MCB circuit ${n}"]\nL${n} = load [label: "Residential circuit ${n}"]`;
+}).join("\n")}
+UTIL -> MTR
+MTR -> ISO
+ISO -> RCD
+RCD -> BUS
+${Array.from({ length: 7 }, (_, index) => {
+  const n = index + 1;
+  return `BUS -> CB${n}\nCB${n} -> L${n}`;
+}).join("\n")}`;
 
 describe("SLD layout — professional review contract", () => {
   it("gives deep commercial feeders a landscape review canvas", () => {
@@ -50,5 +69,25 @@ describe("SLD layout — professional review contract", () => {
         .map((node) => node.x)
     );
     expect(utility.x - rightmostPv).toBeGreaterThanOrEqual(140);
+  });
+
+  it("keeps labels centered on deep residential boards with wide branch banks", () => {
+    const layout = layoutSLD(parseSLDDSL(RESIDENTIAL_BRANCHES));
+    const branchNodes = layout.nodes.filter((node) => /^CB|^L/.test(node.node.id));
+
+    expect(branchNodes).toHaveLength(14);
+    expect(branchNodes.every((node) => node.labelSide === undefined)).toBe(true);
+  });
+
+  it("reserves canvas width for side annotations on deep narrow feeders", () => {
+    const layout = layoutSLD(parseSLDDSL(COMMERCIAL_PV));
+    const sideNodes = layout.nodes.filter((node) => node.labelSide === "right");
+
+    expect(sideNodes.length).toBeGreaterThan(0);
+    for (const node of sideNodes) {
+      const estimatedRight =
+        node.x + node.halfWidth + 18 + (node.node.label ?? node.node.id).length * 6;
+      expect(estimatedRight).toBeLessThan(layout.width);
+    }
   });
 });

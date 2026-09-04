@@ -13,7 +13,6 @@ import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
  */
 export const COMMON_GENERATION_RULES = [
   "Generate one diagram document with one selected diagram type.",
-  "Use the canonical header and canonical forms from the generation profile first.",
   'Use ASCII double quotes (") for generated labels and titles.',
   "Do not emit DSL comments unless the user explicitly asks for annotated source.",
   "Prefer explicit IDs and declarations when they make validation less ambiguous.",
@@ -280,19 +279,14 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
-      "For household AC lighting, use clear L/N nets: `V1 live neutral 220Vac type=acsource`, then `F1 live protected`, `S1 protected switched`, `L1 switched neutral type=lamp`. The renderer keeps live/control above and neutral return below.",
-      "For two-way/stair lighting, use two `switch_spdt` parts sharing two traveler nets; do not place SPST switches in series.",
-      "For an automotive turn-signal path use `automotive_flasher_3pin` with B/L/P nets and `switch_spdt_center_off` for the left/off/right selector; these are real three-pin symbols, not generic aliases.",
-      "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
-      "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
+      "Omit `dir=` in netlist mode by default so topology can orient each part. Use it only when the requested electrical meaning requires a specific symbol direction.",
     ],
     avoid: [
       "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
       "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
       "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
-      "Do not model two-way/three-way light switching as a simple series chain of `switch_spst`; use traveler nets and `switch_spdt`/crossover switching.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
-      "Don't invent an automotive `flasher` placeholder or model a center-off selector as a two-pin switch; use the supported three-pin automotive types.",
+      "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -391,7 +385,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Annotate nodes with `[label: \"…\", rating: \"…\", voltage: \"…\"]`; for IEC residential boards use `consumer_unit`, `rcd`, breaker `curve`/`icn`, RCD `rcd_type`/`sensitivity`, and edge `cable_csa`/`cable_insulation`.",
     ],
     avoid: [
-      "Avoid nodeTypes not in the catalog — an unrecognised type renders as a flagged `?` placeholder; pick the closest canonical type or alias (meter->watthour_meter, inverter->vfd, isolator->switch_load).",
+      "Avoid nodeTypes not in the catalog — an unrecognised type renders as a flagged `?` placeholder. A PV/static inverter may use a generic `load [label: \"Grid-tie Inverter\"]`; reserve `vfd` for a motor drive.",
       "Avoid chained arrow syntax (`a -> b -> c`) — each connection must be its own line.",
       "Avoid using `[standard: iec]` with ANSI-only devices (`recloser`, `sectionalizer`, `watthour_meter`) — they have no IEC symbol and render with a warning.",
     ],
@@ -399,7 +393,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'Connection references unknown node' -> declare the node with `id = nodeType` before the `->` line that names it.",
       "'Duplicate node id' -> each id must appear on exactly one `id = nodeType` line; rename the second occurrence.",
       "'Cannot parse line' -> every non-blank line must be the `sld` header, a node declaration (`id = type [attrs]`), or a connection (`id -> id [attrs]`).",
-      "'unrecognised type' -> replace the unknown type with a catalog type or alias (e.g. `inverter` -> `vfd`).",
+      "'unrecognised type' -> replace it with a catalog type or alias. Do not map a PV inverter to `vfd`; use a labeled generic `load` until a dedicated static-converter symbol is available.",
     ],
   },
   entity: {
@@ -779,7 +773,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     repair: [
       "'Unparseable line' -> every body line must start with `equip`, `line`, `inst`, `measures`, or `controls`.",
       "'unrecognised type' -> replace the unknown equipment type with a catalog type (exchanger->hx_shell_tube, vessel_horizontal->vessel_h, cstr->reactor_cstr).",
-      "'no signal path to a controller' -> add a signal line from the transmitter to a controller (C in the tag, e.g. FIC), or add the `controls` continuation under the controller.",
+      "'no signal path to a receiving instrument' -> add an electric signal line from the transmitter to a controller, indicator, recorder, alarm, switch, relay, or final driver.",
     ],
   },
   erd: {

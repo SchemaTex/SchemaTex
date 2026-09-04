@@ -27,6 +27,17 @@ jobs:
 
       - run: npm run build
 
+      # The scoped stdio package is installed separately from the root package.
+      # Keep its published npx entrypoint buildable before a release is cut.
+      - run: npm ci
+        working-directory: packages/mcp
+
+      - run: npm run build
+        working-directory: packages/mcp
+
+      - run: npm pack --dry-run
+        working-directory: packages/mcp
+
       # Every bundled example DSL must still render.
       - run: node scripts/validate-examples.mjs
 

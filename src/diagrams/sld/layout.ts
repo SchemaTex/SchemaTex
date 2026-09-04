@@ -1,4 +1,5 @@
 import type { SLDAST, SLDConnection, SLDNode, SLDNodeType } from "../../core/types";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { geometryFor } from "./symbols";
 
 /**
@@ -210,6 +211,17 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
 
   const sortedLevels = Array.from(byLevel.keys()).sort((a, b) => a - b);
   const maxLevel = sortedLevels.length ? sortedLevels[sortedLevels.length - 1] : 0;
+  // Side annotations are for a deep feeder chain, not merely any drawing with
+  // many voltage levels. Residential boards are deep too, but their last level
+  // fans out into many adjacent circuits; moving those labels to the right
+  // makes neighbouring labels collide and can push the last one off-canvas.
+  const maxParallelBelowSources = Math.max(
+    0,
+    ...sortedLevels
+      .filter((level) => level > 0)
+      .map((level) => byLevel.get(level)?.length ?? 0)
+  );
+  const useSideLabels = maxLevel >= 6 && maxParallelBelowSources <= 3;
 
   // Assign sequential X for non-bus leaf-like nodes within each level.
   // Then propagate bus positions by averaging their children.
@@ -232,7 +244,7 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       level: lvl,
       halfWidth: geom.halfWidth,
       labelSide:
-        maxLevel >= 6 && lvl > 0 && node.nodeType !== "bus" && node.nodeType !== "hub"
+        useSideLabels && lvl > 0 && node.nodeType !== "bus" && node.nodeType !== "hub"
           ? "right"
           : undefined,
     };
@@ -586,7 +598,21 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
   // Compute canvas size
   let maxX = 0;
   for (const ln of layoutNodes) {
-    const right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
+    let right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
+    if (ln.labelSide === "right") {
+      const labelWidths = [
+        estimateTextWidth(ln.node.label ?? ln.node.id, 11, { fontWeight: 700 }),
+        ln.node.rating ? estimateTextWidth(ln.node.rating, 9) : 0,
+        ln.node.voltage ? estimateTextWidth(ln.node.voltage, 9) : 0,
+        ...Object.entries(ln.node.nameplate ?? {}).map(([key, value]) =>
+          estimateTextWidth(`${key}: ${value}`, 9)
+        ),
+      ];
+      right = Math.max(
+        right,
+        ln.x + ln.halfWidth + 18 + Math.max(0, ...labelWidths) + 24
+      );
+    }
     if (right > maxX) maxX = right;
   }
   let width = Math.max(400, maxX + 40);

@@ -152,7 +152,7 @@ line H3 from F-101.out to V-102.in [type: process]
 line H4 from V-102.out to E-101.in [type: process]
 line H5 from E-101.out to T-102.in [type: process]
 line R1 from T-102.bottom to T-101.top [service: "return", type: process]
-inst PIT-101 : field_discrete
+inst PI-101 : field_discrete
   measures F-101`,
   },
   {
@@ -230,7 +230,7 @@ brk3 -> feeder3`,
   },
   {
     file: 'examples/sld/commercial-solar-pv.svg',
-    text: `sld "Commercial PV Interconnection" [standard: iec]
+    text: `sld "Commercial PV Interconnection" [standard: ansi]
 PV_A = solar [rating: "100 kWdc", label: "PV Array A"]
 PV_B = solar [rating: "100 kWdc", label: "PV Array B"]
 PV_C = solar [rating: "50 kWdc", label: "PV Array C"]

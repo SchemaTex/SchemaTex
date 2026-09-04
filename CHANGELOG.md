@@ -9,17 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed — P&ID and electrical drawings now expose the engineering topology
-
-- **P&ID equipment is ranked by process flow instead of declaration order.** Split and merge paths place parallel trains in stable lanes, backward process edges receive dedicated recycle channels, and shared process endpoints render explicit junction dots. Existing P&IDs without equipment-to-equipment process lines retain their declaration-order catalog layout.
-- **Field instruments no longer occupy the equipment-tag strip.** Equipment and pipe targets drive instrument placement, while additional clearance keeps ISA bubbles and signal drops out of the label area.
-- **A canonical 555 astable is laid out by function, not by part-list order.** The recognizer follows the timer's actual pin nets, so the timing network, control capacitor, and LED output branch remain traceable even when component IDs change. Ambiguous or extended circuits fall back to the generic schematic layout rather than being forced into the pattern.
-- **Deep commercial SLDs receive a landscape review canvas.** Fan-in cable labels stay beside their own source drops, equipment annotations move beside the vertical feeder, and a source that bypasses most of the conversion chain—such as Utility landing directly on the main switchboard—is kept as an independent side feeder.
-- **The visual contract is now an executable three-state benchmark.** One flat page shows the immutable 1.0.14 baseline, current renderer candidate, and reviewed target for a duplex hydraulic P&ID, 555 astable circuit, and commercial solar SLD. Candidate generation never overwrites the baseline.
-
 ---
 
-## [1.0.14] — 2026-09-03
+## [1.0.14] — 2026-09-04
+
+### Changed — engineering layouts follow topology without adding new DSL syntax
+
+- **P&ID now follows process flow.** Parallel trains share a stage, recycle and bypass paths use separate return channels, shared process endpoints receive junction dots, and field instruments stay clear of equipment labels. Catalog-style P&IDs with no process connections keep their previous declaration-order layout.
+- **A canonical 555 astable now reads like its circuit.** The timer pin nets identify the timing network, control capacitor, supply references, and LED output branch. Any extra or ambiguous topology uses the existing generic netlist layout instead of being forced into the template.
+- **Deep, narrow SLD feeders now use a landscape review layout.** Source fan-in labels stay with their own drops, long bypass feeders remain outside the conversion chain, and side annotations are limited to narrow chains so residential branch banks keep centered, unclipped labels.
+- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID, circuit netlist, and SLD forms; existing agents do not need a migration or compatibility mode.
+
+### Changed — the npm-facing agent contract is shorter and copyable
+
+- **`getSyntax()` now presents its canonical forms as one copyable code pattern.** It removes repeated type/header metadata, preserves indentation for P&ID `measures` and `controls`, and keeps the P&ID, SLD, and circuit cards below 650 words.
+- **Conflicting electrical guidance was removed.** Circuit generation now consistently omits `dir=` unless electrical meaning requires an explicit orientation, and SLD guidance no longer mislabels a PV inverter as a motor `vfd`.
+- **The local MCP package is publishable after the core release.** `@schematex/mcp` now depends on the registry package range `schematex ^1.0.14` rather than a repository-only `file:../../` path. The package itself is not yet published to npm.
+
+### Added — repeatable visual evidence
+
+- **One flat visual-contract page covers a duplex hydraulic P&ID, 555 astable, and commercial solar SLD.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline.
 
 ### Added — floor plans now preserve the visual intent, not just valid syntax
 

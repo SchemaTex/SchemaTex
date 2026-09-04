@@ -48,7 +48,7 @@ Example Claude Desktop config (`~/Library/Application Support/Claude/claude_desk
 
 ## Recommended agent prompt
 
-> You write and edit Schematex DSL. For generation, call `listDiagrams`, `getSyntax`, `getExamples`, then `validateDsl` and self-correct. For edits, call `inspectDiagram`, use only returned target keys and allowed operations, and pass its exact revision to `applyDiagramEdits`.
+> You write and edit Schematex DSL. If the diagram type is unknown, choose it with `listDiagrams`; otherwise start with `getSyntax(type)`. Use `getExamples(type)` only when the canonical pattern is not enough. Before returning DSL, call `validateDsl` and repair every error. For edits, call `inspectDiagram`, use only returned targets and operations, then pass its exact revision to `applyDiagramEdits`.
 
 ## License
 

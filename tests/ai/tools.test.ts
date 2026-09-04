@@ -160,8 +160,24 @@ describe("getSyntax", () => {
     for (const entry of listDiagrams()) {
       const { syntax } = getSyntax(entry.type);
       expect(syntax.detail).toBe("canonical");
-      expect(syntax.content).toContain("## Generation profile");
+      expect(syntax.content).toContain("## Copyable pattern");
+      expect(syntax.content).toContain("## Before returning");
       expect(syntax.content).not.toMatch(/^## 1\. /m);
+    }
+  });
+
+  it("renders canonical forms as copyable code instead of Markdown bullets", () => {
+    const { syntax } = getSyntax("pid");
+
+    expect(syntax.content).toContain("    inst FT-101 : field_discrete");
+    expect(syntax.content).toContain("      measures L2");
+    expect(syntax.content).not.toContain("- inst FT-101 : field_discrete");
+  });
+
+  it("keeps the engineering cards compact enough for an agent tool call", () => {
+    for (const type of ["pid", "sld", "circuit"] as const) {
+      const words = getSyntax(type).syntax.content.trim().split(/\s+/).length;
+      expect(words, type).toBeLessThan(650);
     }
   });
 

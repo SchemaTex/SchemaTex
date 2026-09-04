@@ -24,10 +24,10 @@ line R1 from T-102.bottom to T-101.top [size: "2\"", service: "return", type: "p
 line B1 from F-101.out to V-103.in [size: "1\"", service: "bypass", type: "process_minor"]
 line B2 from V-103.out to T-101.top [size: "1\"", service: "bypass", type: "process_minor"]
 
-inst PIT-101 : field_discrete
+inst PI-101 : field_discrete
   measures F-101
 inst PIC-102 : cr_shared
   measures T-102
   controls V-102
-inst TIT-101 : field_discrete
+inst TI-101 : field_discrete
   measures E-101

@@ -28,7 +28,6 @@
 .lt-sld-unknown-type { font: 9px ui-monospace, monospace; fill: #555555; }</style>
 <defs><marker id="lt-sld-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 6 3 L 0 6 z" fill="#555555"/></marker></defs>
 <text x="20" y="22" class="lt-sld-title" data-sld-role="title">Commercial PV Interconnection</text>
-<text x="946" y="22" class="lt-sld-standard-badge" text-anchor="end">Standard: IEC 60617</text>
 <g transform="translate(0, 55)"><rect x="0" y="-6" width="960" height="112" class="lt-sld-band-odd"/>
 <text x="14" y="12" class="lt-sld-band-label">400 V</text>
 <rect x="0" y="106" width="960" height="112" class="lt-sld-band-even"/>
@@ -100,11 +99,12 @@
 <g transform="translate(394, 376)" data-type="load" data-id="INV"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
 <text x="432" y="373" class="lt-sld-id-side">Grid-tie Inverter</text>
 <text x="432" y="388" class="lt-sld-rating-side">200 kWac</text>
-<g transform="translate(394, 488)" data-type="breaker" data-id="CB_AC"><g><line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
-<line x1="0" y1="10" x2="0" y2="18" class="lt-sld-stroke"/>
-<line x1="-6" y1="10" x2="6" y2="-8" class="lt-sld-stroke-thick"/>
-<line x1="-4" y1="-13" x2="4" y2="-7" class="lt-sld-stroke"/>
-<line x1="4" y1="-13" x2="-4" y2="-7" class="lt-sld-stroke"/></g></g>
+<g transform="translate(394, 488)" data-type="breaker" data-id="CB_AC"><g><line x1="0" y1="-14" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="14" class="lt-sld-stroke"/>
+<line x1="-6" y1="10" x2="8" y2="-10" class="lt-sld-stroke-thick"/>
+<path d="M 8 -10 Q 14 -12 12 -18" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-18" x2="0" y2="-14" class="lt-sld-stroke"/>
+<line x1="0" y1="14" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
 <text x="430" y="485" class="lt-sld-id-side">AC Breaker</text>
 <text x="430" y="500" class="lt-sld-rating-side">400 A</text>
 <text x="430" y="511" class="lt-sld-rating-side">curve: C</text>

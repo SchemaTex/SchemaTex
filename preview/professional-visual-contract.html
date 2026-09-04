@@ -224,7 +224,7 @@
           <h1>Credibility is a layout feature.</h1>
         </div>
         <div class="hero-note">
-          <strong>Three stress cases. Three explicit states:</strong> the shipped 1.0.14 baseline, the renderer candidate on this branch, and the visual target. Everything is laid out on one page so progress and remaining gaps stay visible.
+          <strong>Three stress cases. Three explicit states:</strong> the main-branch baseline at commit 4aa244c, the renderer candidate on this branch, and the visual target. Everything is laid out on one page so progress and remaining gaps stay visible.
         </div>
       </section>
 
@@ -232,7 +232,7 @@
         <article class="review-board">
           <header class="board-head"><div><h2>Duplex hydraulic test stand</h2><p>A declaration-order layout turns two parallel pumps into a serial-looking chain. The target reads topology first: split, parallel lanes, merge, treatment, control, test, and return.</p></div><div class="issue-tags"><span class="issue-tag">#113 P&amp;ID gaps</span><span class="issue-tag">UserSay: hydraulic test stand</span></div></header>
           <div class="compare-grid">
-            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-pid-hydraulic-test-stand.png" alt="Current SchemaTex P and ID rendering flattened into one row"></div><div class="pane-note">The symbols are recognizable, but the layout implies a process topology that is not true.</div></figure>
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source">commit 4aa244c</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-pid-hydraulic-test-stand.png" alt="Main-branch SchemaTex P and ID rendering flattened into one row"></div><div class="pane-note">The symbols are recognizable, but the layout implies a process topology that is not true.</div></figure>
             <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-pid-hydraulic-test-stand.png" alt="Current branch P and ID candidate with topology-ranked equipment and parallel pump lanes"></div><div class="pane-note">Graph ranks now expose the duplex lanes, merge, bypass, and return. Dedicated control-signal lanes remain the largest visual gap.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">ImageGen + visual QA</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-pid-hydraulic-test-stand.png" alt="Target P and ID with parallel pump lanes and explicit return paths"></div><div class="pane-note">Parallel lanes, scope boundary, service paths, and signal ownership are visible before reading the labels.</div></figure>
           </div>
@@ -242,9 +242,9 @@
 
       <section id="case-circuit" class="case-panel">
         <article class="review-board">
-          <header class="board-head"><div><h2>555 astable LED flasher</h2><p>The current renderer knows the parts but does not budget space for a readable electrical story. The target uses functionally arranged pins, shared rails, explicit junctions, and zero ambiguous crossings.</p></div><div class="issue-tags"><span class="issue-tag">#92 route corners</span><span class="issue-tag">#94 label collision</span><span class="issue-tag">#95 symbol geometry</span></div></header>
+          <header class="board-head"><div><h2>555 astable LED flasher</h2><p>The current renderer knows the parts but does not budget space for a readable electrical story. The target uses functionally arranged pins, shared rails, explicit junctions, and zero ambiguous crossings.</p></div><div class="issue-tags"><span class="issue-tag">Electrical credibility stress case</span></div></header>
           <div class="compare-grid">
-            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-555-astable.png" alt="Current SchemaTex 555 circuit with sparse vertical layout and ambiguous connections"></div><div class="pane-note">The parts render, but several nets look detached and the page shape hides the circuit's functional structure.</div></figure>
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source">commit 4aa244c</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-555-astable.png" alt="Main-branch SchemaTex 555 circuit with sparse vertical layout and ambiguous connections"></div><div class="pane-note">The parts render, but several nets look detached and the page shape hides the circuit's functional structure.</div></figure>
             <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-555-astable.png" alt="Current branch 555 circuit candidate with a functional timing network and output branch"></div><div class="pane-note">The topology recognizer separates timing, control, and output branches while keeping all supply references explicit.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">Corrected deterministic SVG</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-circuit-555-astable.svg" alt="Correct target 555 astable circuit with shared rails and traceable nets"></div><div class="pane-note">Every pin-to-net relationship is traceable. ImageGen concepts were rejected when they miswired RESET, GND, and TRIG.</div></figure>
           </div>
@@ -254,9 +254,9 @@
 
       <section id="case-sld" class="case-panel">
         <article class="review-board">
-          <header class="board-head"><div><h2>Commercial PV interconnection</h2><p>The current one-line is technically present but visually stretched and locally tangled. The target separates generation, conversion, and distribution while keeping Utility independent from the PV feeder.</p></div><div class="issue-tags"><span class="issue-tag">#83 IEC 60617</span><span class="issue-tag">#96 duplicate lines</span><span class="issue-tag">UserSay: solar SLD</span></div></header>
+          <header class="board-head"><div><h2>Commercial PV interconnection</h2><p>The current one-line is technically present but visually stretched and locally tangled. The target separates generation, conversion, and distribution while keeping Utility independent from the PV feeder.</p></div><div class="issue-tags"><span class="issue-tag">Commercial PV stress case</span><span class="issue-tag">UserSay: solar SLD</span></div></header>
           <div class="compare-grid">
-            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · 1.0.14</span><span class="pane-source">SchemaTex renderer</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-sld-commercial-solar.png" alt="Current SchemaTex solar single line diagram with a long vertical layout and overlapping labels"></div><div class="pane-note">The top cable labels overlap, the Utility feeder cuts through the chain, and a review requires excessive vertical scanning.</div></figure>
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source">commit 4aa244c</span></figcaption><div class="image-well"><img src="professional-visual-contract/before-sld-commercial-solar.png" alt="Main-branch SchemaTex solar single line diagram with a long vertical layout and overlapping labels"></div><div class="pane-note">The top cable labels overlap, the Utility feeder cuts through the chain, and a review requires excessive vertical scanning.</div></figure>
             <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source">Current renderer code</span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-sld-commercial-solar.png" alt="Current branch solar single line candidate with a landscape review canvas and separated feeder labels"></div><div class="pane-note">Deep feeders now receive a landscape review canvas, and fan-in cable labels stay beside their own source drops.</div></figure>
             <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">After · target</span><span class="pane-source">ImageGen + visual QA</span></figcaption><div class="image-well"><img src="professional-visual-contract/after-sld-commercial-solar.png" alt="Target IEC solar single line diagram arranged in three functional zones"></div><div class="pane-note">Functional zones, a real bus, and independent feeders turn the same data into a reviewable A3-style drawing.</div></figure>
           </div>
@@ -281,7 +281,7 @@
       </aside>
     </main>
 
-    <footer><span>Branch: codex/pid-electrical-reliability</span><span>Baseline: SchemaTex 1.0.14 · 2026-09-03 PT</span></footer>
+    <footer><span>Branch: codex/pid-electrical-reliability</span><span>Baseline: main @ 4aa244c · 2026-09-03 PT</span></footer>
   </div>
 </body>
 </html>

@@ -48,19 +48,15 @@ function buildCanonicalSyntax(profile: GenerationProfile): string {
   return [
     "# Canonical generation syntax",
     "",
-    "Use this compact path for new DSL generation. Ask for `detail: \"reference\"` only when the request needs advanced forms or an imported adapter.",
+    `Start with \`${profile.header}\`.`,
+    `Authoring mode: ${profile.mode}.`,
     "",
-    "## Generation profile",
-    "",
-    `- Canonical type: \`${profile.type}\``,
-    `- Canonical header: \`${profile.header}\``,
-    `- Preferred mode: ${profile.mode}`,
-    profile.keywords ? `- Keywords: ${profile.keywords}` : "",
-    bulletSection("Core forms", profile.forms),
-    bulletSection("Prefer", profile.prefer),
-    bulletSection("Avoid by default", profile.avoid),
-    bulletSection("Repair checks", profile.repair),
-    "## Shared generation rules",
+    codeSection("Copyable pattern", profile.forms),
+    profile.keywords ? ["## Vocabulary", "", profile.keywords, ""].join("\n") : "",
+    bulletSection("Rules", profile.prefer),
+    bulletSection("Avoid", profile.avoid),
+    bulletSection("Fix validation failures", profile.repair),
+    "## Before returning",
     "",
     ...COMMON_GENERATION_RULES.map((rule) => `- ${rule}`),
   ]
@@ -70,4 +66,11 @@ function buildCanonicalSyntax(profile: GenerationProfile): string {
 
 function bulletSection(title: string, items: readonly string[]): string {
   return [`### ${title}`, "", ...items.map((item) => `- ${item}`), ""].join("\n");
+}
+
+function codeSection(title: string, lines: readonly string[]): string {
+  // Four-space indentation is a Markdown code block. Unlike bullets, it keeps
+  // nested DSL continuations such as `measures` and `controls` copyable while
+  // avoiding another fenced block inside buildPromptContext's worked examples.
+  return [`## ${title}`, "", ...lines.map((line) => `    ${line}`), ""].join("\n");
 }
