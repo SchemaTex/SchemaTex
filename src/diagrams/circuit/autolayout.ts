@@ -558,14 +558,78 @@ function routePlacedNetlist(
   return routes;
 }
 
+interface LoadBankBranchGroup {
+  net: string;
+  ownerId: string;
+  branches: CircuitComponent[][];
+}
+
+interface LoadBankSelectorPlan {
+  selector: CircuitComponent;
+  outputNets: string[];
+  spinePath: CircuitComponent[];
+  excluded: Set<string>;
+  selectorGroups: LoadBankBranchGroup[];
+}
+
+/**
+ * Find graph decompositions that support a parallel-load-bank composition.
+ * No component type, id, label, or pin name decides whether a candidate
+ * qualifies; the contract is entirely connectivity-based.
+ */
+function findLoadBankSelectorPlans(
+  ast: CircuitAST,
+  source: CircuitComponent,
+  liveNet: string
+): LoadBankSelectorPlan[] {
+  const pinMap = ast.pinMap ?? {};
+  const plans: LoadBankSelectorPlan[] = [];
+  const selectors = ast.components.filter((component) => {
+    if (component.id === source.id || isGround(component)) return false;
+    const nets = new Set(
+      pinsForComponent(pinMap, component).map(([, net]) => net)
+    );
+    return nets.size === 3;
+  });
+
+  for (const selector of selectors) {
+    const selectorNets = [...new Set(
+      pinsForComponent(pinMap, selector).map(([, net]) => net)
+    )];
+    for (const commonNet of selectorNets) {
+      if (commonNet === "GND") continue;
+      const outputNets = selectorNets.filter((net) => net !== commonNet);
+      const spinePath = shortestComponentPath(
+        ast,
+        liveNet,
+        commonNet,
+        new Set([source.id, selector.id])
+      );
+      if (!spinePath) continue;
+      const excluded = new Set([
+        source.id,
+        selector.id,
+        ...spinePath.map((component) => component.id),
+      ]);
+      const selectorGroups: LoadBankBranchGroup[] = [];
+      for (const net of outputNets) {
+        const branches = seriesBranchesToGround(ast, net, excluded);
+        if (!branches || branches.length < 2) break;
+        selectorGroups.push({ net, ownerId: selector.id, branches });
+      }
+      if (selectorGroups.length === outputNets.length) {
+        plans.push({ selector, outputNets, spinePath, excluded, selectorGroups });
+      }
+    }
+  }
+  return plans;
+}
+
 /**
  * Plan a source → series spine → multi-output selector → load banks.
- *
- * This is topology-driven: no label/language checks and no case coordinates.
  * Repeated branches receive independent lanes; their return pins share one
- * continuous ground rail. Auxiliary outputs from any spine component (for
- * example a flasher pilot terminal) become ordinary branch groups instead of
- * invalidating the entire layout and forcing a visually unrelated fallback.
+ * continuous ground rail. Auxiliary outputs from any spine component become
+ * ordinary branch groups instead of forcing an unrelated generic fallback.
  */
 function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
   const pinMap = ast.pinMap ?? {};
@@ -579,42 +643,8 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     Object.values(sourcePins).find((net) => net !== "GND");
   if (!liveNet || liveNet === "GND") return null;
 
-  const selectors = ast.components.filter(
-    (component) =>
-      component.componentType === "switch_spdt" ||
-      component.componentType === "switch_spdt_center_off"
-  );
-  for (const selector of selectors) {
-    const pins = pinMap[selector.id] ?? {};
-    const commonNet = pins.common;
-    const outputNets =
-      componentSelectorOutputs(selector, pins);
-    if (!commonNet || outputNets.length !== 2) continue;
-
-    const spinePath = shortestComponentPath(
-      ast,
-      liveNet,
-      commonNet,
-      new Set([source.id, selector.id])
-    );
-    if (!spinePath) continue;
-    const excluded = new Set([
-      source.id,
-      selector.id,
-      ...spinePath.map((component) => component.id),
-    ]);
-    type BranchGroup = {
-      net: string;
-      ownerId: string;
-      branches: CircuitComponent[][];
-    };
-    const selectorGroups: BranchGroup[] = [];
-    for (const net of outputNets) {
-      const branches = seriesBranchesToGround(ast, net, excluded);
-      if (!branches || branches.length < 2) break;
-      selectorGroups.push({ net, ownerId: selector.id, branches });
-    }
-    if (selectorGroups.length !== outputNets.length) continue;
+  for (const plan of findLoadBankSelectorPlans(ast, source, liveNet)) {
+    const { selector, outputNets, spinePath, excluded, selectorGroups } = plan;
 
     // Discover auxiliary output groups from the already identified source /
     // spine / selector path. This is graph decomposition, not a component-name
@@ -626,7 +656,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       )
     );
     const coreComponents = [source, ...spinePath, selector];
-    const auxiliaryGroups: BranchGroup[] = [];
+    const auxiliaryGroups: LoadBankBranchGroup[] = [];
     const consideredNets = new Set([...outputNets, "GND"]);
     for (const owner of coreComponents) {
       for (const [, net] of pinsForComponent(pinMap, owner)) {
@@ -650,7 +680,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     // Keep a selector's two output banks at the outside edges and place any
     // auxiliary groups between them. This remains stable as pilot/status
     // branches are added or removed.
-    const completeBranchGroups: BranchGroup[] = [
+    const completeBranchGroups: LoadBankBranchGroup[] = [
       selectorGroups[0]!,
       ...auxiliaryGroups,
       selectorGroups[1]!,
@@ -683,11 +713,21 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       return item;
     };
 
-    const mainY = 82;
-    const sourceItem = put(source, 120, mainY + 58, "up");
-    sourceItem.labelPos = { x: sourceItem.x + 58, y: sourceItem.y - 10 };
-    let cursorX = 200;
-    let previousLabelRight = sourceItem.x + 64;
+    const mainY = TOP_MARGIN + ROW_H / 3;
+    const sourceItem = put(
+      source,
+      LEFT_MARGIN + COL_W / 2,
+      mainY + (ROW_H * 3) / 4,
+      "up"
+    );
+    sourceItem.labelPos = {
+      x: sourceItem.x + (COL_W * 3) / 5,
+      y: sourceItem.y - ROW_H / 8,
+    };
+    let cursorX = sourceItem.x + (COL_W * 5) / 6;
+    let previousLabelRight =
+      sourceItem.labelPos.x +
+      estimateTextWidth(source.label ?? source.id, 11, { fontWeight: 600 }) / 2;
     const putSpineComponent = (
       component: CircuitComponent
     ): LaidOutComponent => {
@@ -699,12 +739,12 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       // multilingual labels on adjacent series components from colliding.
       cursorX = Math.max(
         cursorX,
-        previousLabelRight + 18 - symbolLength / 2 + labelWidth / 2
+        previousLabelRight + COL_W / 5 - symbolLength / 2 + labelWidth / 2
       );
       const item = put(component, cursorX, mainY, "right");
       previousLabelRight =
         item.x + item.length / 2 + labelWidth / 2;
-      cursorX = item.x + item.length + 28;
+      cursorX = item.x + item.length + COL_W / 3;
       return item;
     };
     for (const component of spinePath) {
@@ -713,77 +753,90 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     const selectorItem = putSpineComponent(selector);
     selectorItem.labelPos = {
       x: selectorItem.x + selectorItem.length / 2,
-      y: mainY - 30,
+      y: mainY - ROW_H / 3,
     };
 
-    const branches = completeBranchGroups.flatMap((group) => group.branches);
-    const widestBranchLabel = Math.max(
-      0,
-      ...branches
-        .flat()
-        .map((component) =>
-          estimateTextWidth(component.label ?? component.id, 11, {
-            fontWeight: 600,
-          })
-        )
-    );
     // A bank is a visual group, not one item in a globally uniform row. Keep
-    // repeated loads close enough to read as a bank, then reserve a larger gap
-    // between independent selector/auxiliary outputs. The first component's
-    // label gets its own slot above the rail, so label width no longer forces
-    // every branch in the complete drawing farther apart.
-    const laneGap = Math.max(86, Math.min(120, widestBranchLabel + 24));
-    const groupGap = Math.max(112, laneGap + 28);
-    const staggerBranchLabels = widestBranchLabel > laneGap - 16;
+    // repeated loads close enough to read together, but derive every lane's
+    // footprint from its own symbol and first label. A long label therefore
+    // widens only its adjacent gaps instead of the entire drawing.
+    const laneGutter = COL_W / 6;
+    const groupGutter = (COL_W * 3) / 4;
+    const laneWidths = completeBranchGroups.map((group) =>
+      group.branches.map((branch) => {
+        const first = branch[0]!;
+        const symbol = effectiveSymbolDef(first.componentType, first.attrs);
+        const transverseSpan = Math.max(
+          0,
+          ...Object.values(symbol.anchors).map((anchor) => Math.abs(anchor.y) * 2)
+        );
+        const labelWidth = estimateTextWidth(first.label ?? first.id, 11, {
+          fontWeight: 600,
+        });
+        return Math.max(COL_W / 2, transverseSpan, labelWidth);
+      })
+    );
+    const laneOffsets: number[][] = [];
+    let packedCursor = 0;
+    laneWidths.forEach((widths, groupIndex) => {
+      const offsets: number[] = [];
+      widths.forEach((width, branchIndex) => {
+        if (branchIndex > 0) packedCursor += laneGutter;
+        offsets.push(packedCursor + width / 2);
+        packedCursor += width;
+      });
+      laneOffsets.push(offsets);
+      if (groupIndex < laneWidths.length - 1) packedCursor += groupGutter;
+    });
     const selectorOutputX = Math.max(
-      selectorItem.anchors.left?.x ?? -Infinity,
-      selectorItem.anchors.right?.x ?? -Infinity,
-      selectorItem.anchors.nc?.x ?? -Infinity,
-      selectorItem.anchors.no?.x ?? -Infinity
+      ...outputNets.map(
+        (net) => anchorForNet(pinMap, selectorItem, net)?.x ?? selectorItem.x
+      )
     );
-    const branchStartY = 252;
-    const branchSpan = completeBranchGroups.reduce(
-      (sum, group) => sum + Math.max(0, group.branches.length - 1) * laneGap,
-      0
+    const mainBottom = Math.max(
+      ...items.flatMap((item) => Object.values(item.anchors).map((anchor) => anchor.y)),
+      ...items.flatMap((item) => item.labelPos ? [item.labelPos.y + 12] : [])
     );
-    const totalSpan =
-      branchSpan + Math.max(0, completeBranchGroups.length - 1) * groupGap;
+    const branchStartY = mainBottom + (ROW_H * 3) / 2;
+    const sourceLabelWidth = estimateTextWidth(
+      source.label ?? source.id,
+      11,
+      { fontWeight: 600 }
+    );
+    const sourceRight = Math.max(
+      ...Object.values(sourceItem.anchors).map((anchor) => anchor.x),
+      sourceItem.labelPos.x + sourceLabelWidth / 2
+    );
     const firstLaneX = Math.max(
-      sourceItem.x + 96,
-      selectorOutputX - totalSpan / 2
+      sourceRight + COL_W / 2,
+      selectorOutputX - packedCursor / 2
     );
     let maxBranchY = branchStartY;
-    let groupStartX = firstLaneX;
     completeBranchGroups.forEach((group, groupIndex) => {
       group.branches.forEach((branch, branchIndex) => {
-        const laneX = groupStartX + branchIndex * laneGap;
+        const laneX = firstLaneX + laneOffsets[groupIndex]![branchIndex]!;
         let y = branchStartY;
         branch.forEach((component, componentIndex) => {
           const item = put(component, laneX, y, "down");
           if (componentIndex === 0) {
             item.labelPos = {
               x: laneX,
-              y:
-                branchStartY -
-                22 -
-                (staggerBranchLabels && branchIndex % 2 === 1 ? 18 : 0),
+              y: branchStartY - ROW_H / 4,
             };
           }
-          y += item.length + 58;
+          y += item.length + (ROW_H * 3) / 4;
           maxBranchY = Math.max(maxBranchY, y);
         });
       });
-      groupStartX +=
-        Math.max(0, group.branches.length - 1) * laneGap +
-        (groupIndex < completeBranchGroups.length - 1 ? groupGap : 0);
     });
 
     const grounds = ast.components.filter(isGround);
     grounds.forEach((ground, index) =>
       put(
         ground,
-        selectorOutputX + (index - (grounds.length - 1) / 2) * 72,
-        maxBranchY + 20,
+        selectorOutputX +
+          (index - (grounds.length - 1) / 2) * ((COL_W * 3) / 4),
+        maxBranchY + ROW_H / 4,
         "down"
       )
     );
@@ -835,8 +888,8 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       const groupCenterX = (minLoadX + maxLoadX) / 2;
       const ownerIsRight = ownerAnchor.x >= groupCenterX;
       const feedX = ownerIsRight
-        ? maxLoadX + Math.min(46, laneGap / 3)
-        : minLoadX - Math.min(46, laneGap / 3);
+        ? maxLoadX + COL_W / 2
+        : minLoadX - COL_W / 2;
       const groupBoundaryX = ownerIsRight ? maxLoadX : minLoadX;
       const rail: RoutedWire = {
         netId: outputNet,
@@ -870,20 +923,6 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     return finalizeAutoLayout(items, routes);
   }
   return null;
-}
-
-function componentSelectorOutputs(
-  component: CircuitComponent,
-  pins: Record<string, string>
-): string[] {
-  if (component.componentType === "switch_spdt_center_off") {
-    return [pins.left, pins.right].filter(
-      (net): net is string => typeof net === "string"
-    );
-  }
-  return [pins.nc, pins.no].filter(
-    (net): net is string => typeof net === "string"
-  );
 }
 
 function appendReturnRail(

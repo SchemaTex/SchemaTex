@@ -230,6 +230,39 @@ R5 r2 0 500`;
       Math.min(item(lo, "L3A").x, item(lo, "L4A").x)
     );
   });
+
+  test("recognizes a three-net distributor from topology, not switch type", () => {
+    const genericSelector = withPilot.replace(
+      "S2 fl_out left right type=switch_spdt_center_off",
+      'X7 fl_out left right pins_left="COMMON" pins_right="RIGHT,LEFT"'
+    );
+    const lo = layoutCircuitNetlist(parseNetlist(genericSelector));
+
+    expect(Math.max(item(lo, "L1").x, item(lo, "L2").x)).toBeLessThan(
+      item(lo, "D3").x
+    );
+    expect(item(lo, "D3").x).toBeLessThan(
+      Math.min(item(lo, "L3").x, item(lo, "L4").x)
+    );
+    expect(item(lo, "X7").component.componentType).toBe("generic_ic");
+    expect(item(lo, "D3").labelPos).toBeDefined();
+    expect(lo.width / lo.height).toBeLessThan(1.9);
+  });
+
+  test("a long branch label widens only its neighboring lanes", () => {
+    const baseline = layoutCircuitNetlist(parseNetlist(withPilot));
+    const longLabel = layoutCircuitNetlist(parseNetlist(withPilot.replace(
+      "L1 left 0 type=lamp",
+      'L1 left 0 type=lamp label="Left front marker with service label"'
+    )));
+
+    expect(item(longLabel, "L2").x - item(longLabel, "L1").x).toBeGreaterThan(
+      item(baseline, "L2").x - item(baseline, "L1").x
+    );
+    expect(item(longLabel, "D5").x - item(longLabel, "D4").x).toBe(
+      item(baseline, "D5").x - item(baseline, "D4").x
+    );
+  });
 });
 
 describe("circuit netlist auto-layout — single IC hub", () => {
