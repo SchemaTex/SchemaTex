@@ -11,7 +11,8 @@ on:
   push:
     branches: [main]
 
-# id-token: publish with npm provenance (supply-chain attestation; public repo).
+# id-token: authenticate to npm through Trusted Publishing (OIDC). npm also
+# generates provenance automatically for public packages published this way.
 # contents: create the git tag and GitHub Release.
 permissions:
   contents: write
@@ -27,8 +28,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
-          cache: npm
+          # Trusted Publishing requires npm 11.5.1+ and Node 22.14+. Node 24
+          # supplies a compatible npm CLI without a separately managed token.
+          node-version: 24.x
           registry-url: https://registry.npmjs.org
 
       - run: npm ci
@@ -57,9 +59,7 @@ jobs:
       # once those are green (or carved out) to gate on tests too.
       - name: Publish to npm
         if: steps.check.outputs.should_publish == 'true'
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
 
       # Tag + GitHub Release so every published version is anchored in git too.
       # Release body comes from this version's CHANGELOG.md section; if that
