@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="814" height="522" viewBox="0 0 814 522" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Water Treatment Symbol Coverage</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="407" y="22" class="lt-pid-title" text-anchor="middle">Water Treatment Symbol Coverage</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="raw"><path d="M 115 174 L 115 201 L 236 201" class="lt-pid-process lt-pid-line-path" data-line-id="raw" data-service="raw water"/></g>
+<g class="lt-pid-line" data-id="feed"><path d="M 306 201 L 344 201 L 344 273 L 382 273" class="lt-pid-process lt-pid-line-path" data-line-id="feed" data-service="filter feed"/></g>
+<g class="lt-pid-line" data-id="product"><path d="M 452 273 L 503.5 273 L 503.5 213 L 555 213" class="lt-pid-process lt-pid-line-path" data-line-id="product" data-service="filtered water"/></g>
+<g class="lt-pid-line" data-id="outlet"><path d="M 591 213 L 739 213 L 739 228" class="lt-pid-process lt-pid-line-path" data-line-id="outlet" data-service="clear water"/></g>
+<g class="lt-pid-line" data-id="chemical"><path d="M 115 318 L 115 345 L 236 345" class="lt-pid-process-min lt-pid-line-path" data-line-id="chemical" data-service="chemical dosing"/></g>
+<g class="lt-pid-line" data-id="dose"><path d="M 306 345 L 417 345 L 417 238" class="lt-pid-process-min lt-pid-line-path" data-line-id="dose" data-service="chemical dosing"/></g>
+<g class="lt-pid-line" data-id="backwash"><path d="M 160 417 L 271 417 L 271 295 L 382 295" class="lt-pid-process-min lt-pid-line-path" data-line-id="backwash" data-service="backwash"/></g>
+<g class="lt-pid-line" data-id="drain"><path d="M 417 308 L 417 304 L 573 304 L 573 300" class="lt-pid-process-min lt-pid-line-path" data-line-id="drain" data-service="filter drain"/></g></g>
+<g class="lt-pid-junctions"></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="TK-101" data-type="tank_atm" transform="translate(115 129)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Raw Water</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-201" data-type="tank_atm" transform="translate(115 273)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Chemical Day Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-301" data-type="tank_atm" transform="translate(115 417)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Backwash Water</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-101" data-type="pump_general" transform="translate(271 201)"><g><line x1="-35" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<line x1="22" y1="0" x2="35" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<polygon points="-9,-12 13,0 -9,12" class="lt-pid-tray-line" fill="none"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Transfer Pump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-201" data-type="pump_diaphragm" transform="translate(271 345)"><g><line x1="-35" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<line x1="22" y1="0" x2="35" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<line x1="-9" y1="-15" x2="-9" y2="15" class="lt-pid-tray-line"/>
+<path d="M -9 -15 Q 13 0 -9 15" class="lt-pid-tray-line" fill="none"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Dosing Pump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="F-101" data-type="filter" transform="translate(417 273)"><g><rect x="-35" y="-35" width="70" height="70" class="lt-pid-equip"/>
+<line x1="-35" y1="0" x2="35" y2="0" class="lt-pid-tray-line"/>
+<line x1="-27" y1="-27" x2="27" y2="-8" class="lt-pid-tray-line"/>
+<line x1="-27" y1="8" x2="27" y2="27" class="lt-pid-tray-line"/>
+<rect x="-42.400000000000006" y="38" width="84.80000000000001" height="15" class="lt-pid-equip-tag-bg"/>
+<text x="0" y="49" text-anchor="middle" class="lt-pid-equip-tag">Media Filter</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-101" data-type="valve_control" transform="translate(573 201)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="motor" data-fail="FL"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<circle cx="0" cy="-18" r="12" class="lt-pid-equip"/>
+<text x="0" y="-14" text-anchor="middle" class="lt-pid-actuator-letter">M</text>
+<line x1="0" y1="-34" x2="0" y2="-30" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Outlet MOV</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-401" data-type="tank_atm" transform="translate(573 345)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Drain Sump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-102" data-type="tank_atm" transform="translate(739 273)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Clear Water</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="command"><path d="M 573 70 L 573 70 L 573 167" class="lt-pid-electric lt-pid-line-path" data-line-id="command" data-service=""/></g>
+<g><path d="M 573 84 L 573 84 L 573 163" class="lt-pid-pneumatic"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="FIC-101" data-category="cr_shared" transform="translate(573 70)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<polygon points="7.347880794884119e-16,-12 10.392304845413264,-6 10.392304845413264,5.999999999999998 7.347880794884119e-16,12 -10.392304845413262,6.0000000000000036 -10.392304845413268,-5.999999999999993" class="lt-inst-body" fill="none"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">FIC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g></g></svg>

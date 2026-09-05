@@ -2,6 +2,18 @@
 
 Generated with the built-in ImageGen workflow on 2026-09-03. The P&ID and SLD assets below are visual targets, not parser or renderer output.
 
+## P&ID symbol coverage — accepted as composition reference
+
+**Input:** `before-pid-water-treatment-symbols.png`
+
+**Primary prompt:** Redraw the same water-treatment topology as a professional compact P&ID. Preserve the raw-water main process train, chemical dosing through a diaphragm pump, dedicated filter backwash and drain ports, and an electric command to a motor-operated outlet valve. Use crisp ISO/ISA-style linework and keep auxiliary services visually separate.
+
+**Visual acceptance:** General and diaphragm pumps are distinguishable, filter service connections do not borrow the main inlet/outlet, and the motor actuator is legible before reading the labels.
+
+**Engineering limitation:** ImageGen establishes visual hierarchy only. The authored DSL and deterministic renderer remain authoritative for every connection and symbol attribute.
+
+**Final asset:** `after-pid-water-treatment-symbols.png`
+
 ## P&ID — accepted after one topology correction
 
 **Input:** `before-pid-hydraulic-test-stand.png`

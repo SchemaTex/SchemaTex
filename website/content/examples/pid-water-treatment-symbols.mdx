@@ -31,7 +31,7 @@ dsl: |
   line outlet from XV-101.out to TK-102.top [type: process, service: "clear water"]
   line chemical from TK-201.bottom to P-201.in [type: process_minor, service: "chemical dosing"]
   line dose from P-201.out to F-101.top [type: process_minor, service: "chemical dosing"]
-  line backwash from TK-301.bottom to F-101.backwash [type: process_minor, service: "backwash"]
+  line backwash from TK-301.right to F-101.backwash [type: process_minor, service: "backwash"]
   line drain from F-101.drain to TK-401.top [type: process_minor, service: "filter drain"]
 
   inst FIC-101 : cr_shared

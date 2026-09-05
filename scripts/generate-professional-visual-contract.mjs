@@ -17,6 +17,7 @@ const baselineRender = baselineDist
 
 const cases = [
   ["pid-hydraulic-test-stand", 1800],
+  ["pid-water-treatment-symbols", 1800],
   ["circuit-555-astable", 1400],
   ["sld-commercial-solar", 1400],
   ["circuit-load-bank-pilot", 1600],

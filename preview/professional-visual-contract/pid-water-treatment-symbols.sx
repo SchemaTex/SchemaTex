@@ -1,0 +1,26 @@
+pid "Water Treatment Symbol Coverage"
+
+equip TK-101 : tank_atm [tag: "Raw Water"]
+equip P-101 : pump_general [tag: "Transfer Pump"]
+equip F-101 : filter [tag: "Media Filter"]
+equip XV-101 : valve_control [tag: "Outlet MOV", actuator: "motor", fail: "FL"]
+equip TK-102 : tank_atm [tag: "Clear Water"]
+
+equip TK-201 : tank_atm [tag: "Chemical Day Tank"]
+equip P-201 : pump_diaphragm [tag: "Dosing Pump"]
+equip TK-301 : tank_atm [tag: "Backwash Water"]
+equip TK-401 : tank_atm [tag: "Drain Sump"]
+
+line raw from TK-101.bottom to P-101.in [type: process, service: "raw water"]
+line feed from P-101.out to F-101.in [type: process, service: "filter feed"]
+line product from F-101.out to XV-101.in [type: process, service: "filtered water"]
+line outlet from XV-101.out to TK-102.top [type: process, service: "clear water"]
+
+line chemical from TK-201.bottom to P-201.in [type: process_minor, service: "chemical dosing"]
+line dose from P-201.out to F-101.top [type: process_minor, service: "chemical dosing"]
+line backwash from TK-301.right to F-101.backwash [type: process_minor, service: "backwash"]
+line drain from F-101.drain to TK-401.top [type: process_minor, service: "filter drain"]
+
+inst FIC-101 : cr_shared
+  controls XV-101
+line command from FIC-101 to XV-101.signal [type: electric]

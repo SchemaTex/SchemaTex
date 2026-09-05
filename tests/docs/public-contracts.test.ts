@@ -122,7 +122,7 @@ describe("public SDK and documentation contracts", () => {
       /<div class="compare-grid">([\s\S]*?)<\/div>\s*<\/article>/g,
     )].map((match) => match[1]!);
 
-    expect(comparisons).toHaveLength(5);
+    expect(comparisons).toHaveLength(6);
     for (const comparison of comparisons) {
       const states = [...comparison.matchAll(/<figure class="pane (\w+)"/g)]
         .map((match) => match[1]);
