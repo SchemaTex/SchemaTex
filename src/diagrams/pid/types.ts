@@ -24,7 +24,9 @@ export type PidEquipType =
   | "hx_air_cooled"
   | "reboiler"
   | "condenser"
+  | "pump_general"
   | "pump_centrifugal"
+  | "pump_diaphragm"
   | "pump_pd"
   | "compressor"
   | "blower"
@@ -48,6 +50,17 @@ export type PidEquipType =
   // Graceful-degradation sentinel — an unrecognised type token, drawn as a
   // flagged placeholder rather than blanking the whole diagram.
   | "unknown";
+
+export const PID_ACTUATOR_TYPES = [
+  "diaphragm",
+  "piston",
+  "motor",
+  "solenoid",
+] as const;
+export type PidActuatorType = (typeof PID_ACTUATOR_TYPES)[number];
+
+export const PID_FAIL_POSITIONS = ["FC", "FO", "FL"] as const;
+export type PidFailPosition = (typeof PID_FAIL_POSITIONS)[number];
 
 export interface PidEquipment {
   id: string;

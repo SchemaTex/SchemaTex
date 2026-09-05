@@ -9,7 +9,10 @@ import { resolveSceneTitle } from "../../core/title-scene";
 const STYLE = `
 .lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
 .lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
 .lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
 
 .lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
 .lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
@@ -208,7 +211,8 @@ function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
     const symbol = renderEquip(
       eq.equip.equipType,
       eq.equip.tag ?? eq.equip.id,
-      eq.equip.rawType
+      eq.equip.rawType,
+      eq.equip.attrs
     );
     const wrapAttrs: Record<string, string> = {
       class: "lt-pid-equip-wrap",

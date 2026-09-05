@@ -1,5 +1,6 @@
 import { circle, group, line, path, polygon, rect, text } from "../../core/svg";
-import type { PidEquipType } from "./types";
+import type { PidActuatorType, PidEquipType, PidFailPosition } from "./types";
+import { PID_ACTUATOR_TYPES, PID_FAIL_POSITIONS } from "./types";
 
 /**
  * Symbol library for ISA-5.1 / ISO 10628 equipment.
@@ -143,6 +144,16 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
       out: { x: 65, y: 0 },
     },
   },
+  pump_general: {
+    width: 70,
+    height: 60,
+    ports: {
+      in: { x: -35, y: 0 },
+      out: { x: 35, y: 0 },
+      left: { x: -35, y: 0 },
+      right: { x: 35, y: 0 },
+    },
+  },
   pump_centrifugal: {
     width: 70,
     height: 60,
@@ -152,6 +163,16 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
       top: { x: 28, y: -22 },
       left: { x: -30, y: 0 },
       right: { x: 28, y: -22 },
+    },
+  },
+  pump_diaphragm: {
+    width: 70,
+    height: 60,
+    ports: {
+      in: { x: -35, y: 0 },
+      out: { x: 35, y: 0 },
+      left: { x: -35, y: 0 },
+      right: { x: 35, y: 0 },
     },
   },
   pump_pd: {
@@ -202,6 +223,12 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
     ports: {
       in: { x: -35, y: 0 },
       out: { x: 35, y: 0 },
+      left: { x: -35, y: 0 },
+      right: { x: 35, y: 0 },
+      top: { x: 0, y: -35 },
+      bottom: { x: 0, y: 35 },
+      drain: { x: 0, y: 35 },
+      backwash: { x: -35, y: 22 },
     },
   },
   cyclone: {
@@ -296,9 +323,18 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
     ports: { in: { x: -18, y: 0 }, out: { x: 18, y: 0 } },
   },
   valve_control: {
-    width: 36,
-    height: 60,
-    ports: { in: { x: -18, y: 12 }, out: { x: 18, y: 12 }, top: { x: 0, y: -22 } },
+    // Reserve one stable envelope for every actuator variant. This keeps
+    // layout independent from a particular valve attribute or fixture.
+    width: 44,
+    height: 76,
+    ports: {
+      in: { x: -18, y: 12 },
+      out: { x: 18, y: 12 },
+      left: { x: -18, y: 12 },
+      right: { x: 18, y: 12 },
+      top: { x: 0, y: -34 },
+      signal: { x: 0, y: -34 },
+    },
   },
   valve_psv: {
     width: 36,
@@ -333,7 +369,80 @@ function bowtie(): string {
   });
 }
 
-export function renderEquip(type: PidEquipType, label: string, rawType?: string): string {
+export function normalizePidActuator(value?: string): PidActuatorType | undefined {
+  const normalized = value?.trim().toLowerCase();
+  return PID_ACTUATOR_TYPES.find((item) => item === normalized);
+}
+
+export function normalizePidFailPosition(value?: string): PidFailPosition | undefined {
+  const normalized = value?.trim().toUpperCase();
+  return PID_FAIL_POSITIONS.find((item) => item === normalized);
+}
+
+function renderValveActuator(
+  actuator: PidActuatorType,
+  fail?: PidFailPosition
+): string {
+  const parts: string[] = [
+    // Valve body center is y=12; all operators attach through one stem.
+    line({ x1: 0, y1: 1, x2: 0, y2: -6, class: "lt-pid-tray-line" }),
+  ];
+
+  switch (actuator) {
+    case "motor":
+      parts.push(
+        circle({ cx: 0, cy: -18, r: 12, class: "lt-pid-equip" }),
+        text({ x: 0, y: -14, "text-anchor": "middle", class: "lt-pid-actuator-letter" }, "M"),
+        line({ x1: 0, y1: -34, x2: 0, y2: -30, class: "lt-pid-tray-line" })
+      );
+      break;
+    case "solenoid":
+      parts.push(
+        rect({ x: -12, y: -30, width: 24, height: 22, class: "lt-pid-equip" }),
+        text({ x: 0, y: -15, "text-anchor": "middle", class: "lt-pid-actuator-letter" }, "S"),
+        line({ x1: 0, y1: -34, x2: 0, y2: -30, class: "lt-pid-tray-line" })
+      );
+      break;
+    case "piston":
+      parts.push(
+        rect({ x: -13, y: -28, width: 26, height: 18, class: "lt-pid-equip" }),
+        line({ x1: -10, y1: -19, x2: 10, y2: -19, class: "lt-pid-tray-line" }),
+        line({ x1: 0, y1: -19, x2: 0, y2: -6, class: "lt-pid-tray-line" }),
+        line({ x1: 0, y1: -34, x2: 0, y2: -28, class: "lt-pid-tray-line" })
+      );
+      break;
+    case "diaphragm":
+      parts.push(
+        path({
+          d: "M -14 -9 A 14 8 0 0 1 14 -9 L -14 -9 Z",
+          class: "lt-pid-equip",
+        }),
+        line({ x1: 0, y1: -34, x2: 0, y2: -17, class: "lt-pid-tray-line" })
+      );
+      break;
+  }
+
+  if (fail) {
+    parts.push(
+      text(
+        { x: 18, y: -14, "text-anchor": "start", class: "lt-pid-fail-position" },
+        fail
+      )
+    );
+  }
+
+  return group(
+    { class: "lt-pid-actuator", "data-actuator": actuator, ...(fail ? { "data-fail": fail } : {}) },
+    parts
+  );
+}
+
+export function renderEquip(
+  type: PidEquipType,
+  label: string,
+  rawType?: string,
+  attrs: Record<string, string> = {}
+): string {
   switch (type) {
     case "unknown": {
       // Visibly-flagged placeholder: a dashed box with a "?" — deliberately NOT
@@ -664,10 +773,24 @@ export function renderEquip(type: PidEquipType, label: string, rawType?: string)
         text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     }
+    case "pump_general": {
+      const r = 22;
+      return group({}, [
+        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
+        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
+        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
+        polygon({ points: "-9,-12 13,0 -9,12", class: "lt-pid-tray-line", fill: "none" }),
+        text(
+          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
+          label
+        ),
+      ]);
+    }
     case "pump_centrifugal": {
       // Circle + right-side triangle outlet.
       const r = 22;
       return group({}, [
+        line({ x1: -30, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
         circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
         polygon({
           points: `${r * 0.4},${-r * 0.9} ${r + 6},${-r * 0.9} ${r * 0.4},${0}`,
@@ -679,9 +802,29 @@ export function renderEquip(type: PidEquipType, label: string, rawType?: string)
         ),
       ]);
     }
+    case "pump_diaphragm": {
+      const r = 22;
+      return group({}, [
+        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
+        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
+        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
+        line({ x1: -9, y1: -15, x2: -9, y2: 15, class: "lt-pid-tray-line" }),
+        path({
+          d: "M -9 -15 Q 13 0 -9 15",
+          class: "lt-pid-tray-line",
+          fill: "none",
+        }),
+        text(
+          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
+          label
+        ),
+      ]);
+    }
     case "pump_pd": {
       const r = 22;
       return group({}, [
+        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
+        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
         circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
         circle({ cx: -8, cy: 0, r: 6, class: "lt-pid-tray-line", fill: "none" }),
         circle({ cx: 8, cy: 0, r: 6, class: "lt-pid-tray-line", fill: "none" }),
@@ -766,12 +909,20 @@ export function renderEquip(type: PidEquipType, label: string, rawType?: string)
     case "filter": {
       const w = 70;
       const h = 70;
+      const labelWidth = Math.max(34, label.length * 6.4 + 8);
       // diagonal hatch via 3 lines
       return group({}, [
         rect({ x: -w / 2, y: -h / 2, width: w, height: h, class: "lt-pid-equip" }),
         line({ x1: -w / 2, y1: 0, x2: w / 2, y2: 0, class: "lt-pid-tray-line" }),
         line({ x1: -w / 2 + 8, y1: -h / 2 + 8, x2: w / 2 - 8, y2: -8, class: "lt-pid-tray-line" }),
         line({ x1: -w / 2 + 8, y1: 8, x2: w / 2 - 8, y2: h / 2 - 8, class: "lt-pid-tray-line" }),
+        rect({
+          x: -labelWidth / 2,
+          y: h / 2 + 3,
+          width: labelWidth,
+          height: 15,
+          class: "lt-pid-equip-tag-bg",
+        }),
         text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     }
@@ -888,14 +1039,15 @@ export function renderEquip(type: PidEquipType, label: string, rawType?: string)
         path({ d: "M -10 -8 A 10 10 0 0 1 -10 8", class: "lt-pid-tray-line", fill: "none" }),
         text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
-    case "valve_control":
+    case "valve_control": {
+      const actuator = normalizePidActuator(attrs.actuator) ?? "diaphragm";
+      const fail = normalizePidFailPosition(attrs.fail);
       return group({}, [
-        bowtie(),
-        // actuator: diaphragm
-        line({ x1: 0, y1: -11, x2: 0, y2: -22, class: "lt-pid-tray-line" }),
-        path({ d: "M -14 -22 A 14 8 0 0 1 14 -22 L -14 -22 Z", class: "lt-pid-equip" }),
-        text({ x: 0, y: 24, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        group({ transform: "translate(0 12)" }, [bowtie()]),
+        renderValveActuator(actuator, fail),
+        text({ x: 0, y: 36, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
+    }
     case "valve_psv":
       return group({}, [
         bowtie(),

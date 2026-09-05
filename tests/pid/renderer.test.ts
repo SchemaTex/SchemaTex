@@ -214,4 +214,36 @@ describe("P&ID renderer", () => {
     expect(svg).toContain('class="lt-pid-junctions"');
     expect(svg).toContain('class="lt-pid-junction"');
   });
+
+  test("routes filter backwash and drain from distinct named ports", () => {
+    const ast = parsePid(`pid "Filter services"
+equip BW : tank_atm
+equip F-1 : filter
+equip SUMP : tank_atm
+line bw from BW.bottom to F-1.backwash [type: process_minor]
+line drain from F-1.drain to SUMP.top [type: process_minor]`);
+    const layout = layoutPid(ast);
+    const filter = layout.equipment.find((eq) => eq.equip.id === "F-1")!;
+    const backwash = layout.lines.find((item) => item.line.id === "bw")!;
+    const drain = layout.lines.find((item) => item.line.id === "drain")!;
+
+    expect(filter.ports.backwash).not.toEqual(filter.ports.in);
+    expect(filter.ports.drain).not.toEqual(filter.ports.out);
+    expect(backwash.path).toContain(`L ${filter.ports.backwash.x} ${filter.ports.backwash.y}`);
+    expect(drain.path).toContain(`M ${filter.ports.drain.x} ${filter.ports.drain.y}`);
+  });
+
+  test.each([
+    ["diaphragm", "FC"],
+    ["piston", "FO"],
+    ["motor", "FL"],
+    ["solenoid", "FC"],
+  ])("composes a %s actuator over one control-valve body", (actuator, fail) => {
+    const svg = renderPid(`pid "Valve actuator"
+equip XV-1 : valve_control [actuator: "${actuator}", fail: "${fail}"]`);
+
+    expect(svg).toContain(`data-actuator="${actuator}"`);
+    expect(svg).toContain(`data-fail="${fail}"`);
+    expect(svg.match(/lt-pid-valve-body/g)).toHaveLength(2); // stylesheet + one body
+  });
 });

@@ -745,12 +745,12 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'pid "Title"',
     mode: "equipment + process/signal lines + instrument declarations",
     keywords:
-      'pid "title" [direction: LR|TB] · equip ID : type [tag:"…"] · line ID from A[.port] to B[.port] [type: process|process_minor|pneumatic|electric|hydraulic|capillary|software|mechanical, size:"…", service:"…"] · inst TAG : category + indented measures EQUIP_OR_LINE / controls EQUIP · equipment: tank_atm tank_cone_roof vessel_v vessel_h sphere column_tray column_packed hx_shell_tube hx_air_cooled reboiler condenser pump_centrifugal pump_pd compressor blower reactor_cstr reactor_pfr filter cyclone flare cooling_tower boiler burner generator valve_gate valve_ball valve_globe valve_butterfly valve_check valve_control valve_psv · instrument categories: field_discrete field_shared field_computer field_plc cr_discrete cr_shared cr_computer cr_plc local_discrete local_shared',
+      'pid "title" [direction: LR|TB] · equip ID : type [tag:"…"] · pumps: pump_general|pump_centrifugal|pump_diaphragm|pump_pd · filter ports: in|out|top|backwash|drain · valve_control [actuator:diaphragm|piston|motor|solenoid, fail:FC|FO|FL] with .signal port · line ID from A[.port] to B[.port] [type: process|process_minor|pneumatic|electric|hydraulic|capillary|software|mechanical, size:"…", service:"…"] · inst TAG : category + indented measures EQUIP_OR_LINE / controls EQUIP · equipment: tank_atm tank_cone_roof vessel_v vessel_h sphere column_tray column_packed hx_shell_tube hx_air_cooled reboiler condenser pump_general pump_centrifugal pump_diaphragm pump_pd compressor blower reactor_cstr reactor_pfr filter cyclone flare cooling_tower boiler burner generator valve_gate valve_ball valve_globe valve_butterfly valve_check valve_control valve_psv · instrument categories: field_discrete field_shared field_computer field_plc cr_discrete cr_shared cr_computer cr_plc local_discrete local_shared',
     forms: [
       'pid "Water Pump Flow Control"',
       'equip T-101 : tank_atm [tag: "Feed Tank"]',
       'equip P-101 : pump_centrifugal [tag: "Feed Pump"]',
-      'equip V-101 : valve_control',
+      'equip V-101 : valve_control [actuator: "diaphragm", fail: "FC"]',
       'line L1 from T-101.bottom to P-101.in [service: "water", type: "process"]',
       'line L2 from P-101.out to V-101.in [type: "process"]',
       "inst FT-101 : field_discrete",
@@ -763,16 +763,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Declare `equip` first, then `line` connections, then `inst` bubbles. Use ISA tag conventions (`FT-101` flow transmitter, `FIC-101` flow indicating controller).",
       "Use the indented `measures LINE_OR_EQUIP` and `controls EQUIP` continuations under an `inst` to declare loop membership.",
-      "Use canonical `[type: …]` line types: `electric` for transmitter->controller, `pneumatic` for controller->control-valve, `software` for DCS/PLC bus.",
+      "Use canonical `[type: …]` signal types: `electric` for transmitter->controller and motor/solenoid actuators; `pneumatic` for diaphragm/piston actuators; `software` for DCS/PLC bus.",
+      "Name filter service anchors explicitly: `.backwash` for the wash connection and `.drain` for the bottom drain. A misspelled explicit port produces `PID_UNKNOWN_PORT` instead of being silently trusted.",
     ],
     avoid: [
       "Avoid SLD electrical nodes (`transformer`, `breaker`, `bus`) inside a P&ID — use `sld` for electrical single-lines.",
       "Don't invent equipment types; an unrecognised type renders as a flagged placeholder (use `hx_shell_tube` not `heat_exchanger`, `vessel_h` not `vessel_horizontal`, `reactor_cstr` not `cstr`).",
-      "Don't omit `[type: electric]` on a transmitter->controller line or `[type: pneumatic]` on a controller->control-valve line — both default to `process` pipe with a warning.",
+      "Don't omit the explicit signal `line`: `measures` and `controls` establish semantic ownership and placement, but do not invent connectivity. Match the line type to the actuator.",
     ],
     repair: [
       "'Unparseable line' -> every body line must start with `equip`, `line`, `inst`, `measures`, or `controls`.",
       "'unrecognised type' -> replace the unknown equipment type with a catalog type (exchanger->hx_shell_tube, vessel_horizontal->vessel_h, cstr->reactor_cstr).",
+      "'not a supported port' -> replace the misspelled anchor with a port listed in the diagnostic; filter service ports are `backwash` and `drain`, and a control-valve signal terminates at `.signal`.",
       "'no signal path to a receiving instrument' -> add an electric signal line from the transmitter to a controller, indicator, recorder, alarm, switch, relay, or final driver.",
     ],
   },

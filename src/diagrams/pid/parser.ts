@@ -37,7 +37,7 @@ const EQUIP_TYPES = new Set<PidEquipType>([
   "vessel_v", "vessel_h", "sphere",
   "column_tray", "column_packed",
   "hx_shell_tube", "hx_air_cooled", "reboiler", "condenser",
-  "pump_centrifugal", "pump_pd",
+  "pump_general", "pump_centrifugal", "pump_diaphragm", "pump_pd",
   "compressor", "blower",
   "reactor_cstr", "reactor_pfr",
   "filter", "cyclone", "flare", "cooling_tower",

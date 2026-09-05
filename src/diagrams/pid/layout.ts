@@ -168,9 +168,9 @@ function defaultPort(
 }
 
 function resolveSide(port: string): "left" | "right" | "top" | "bottom" {
-  if (port === "top" || port === "vapor_out" || port === "reflux") return "top";
-  if (port === "bottom" || port === "liquid_out" || port === "bottom_return") return "bottom";
-  if (port === "left" || port === "in" || port === "feed" || port === "tube_in" || port === "shell_in") return "left";
+  if (port === "top" || port === "signal" || port === "vapor_out" || port === "reflux") return "top";
+  if (port === "bottom" || port === "drain" || port === "liquid_out" || port === "bottom_return") return "bottom";
+  if (port === "left" || port === "in" || port === "feed" || port === "backwash" || port === "tube_in" || port === "shell_in") return "left";
   return "right";
 }
 
