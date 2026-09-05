@@ -3,6 +3,8 @@ import { renderResult } from "../../src/core/api";
 import { parsePid } from "../../src/diagrams/pid/parser";
 
 const FIXTURES = [
+  "equip P-100 : pump_general [tag: \"Transfer Pump\"]",
+  "equip P-101 : pump_diaphragm [tag: \"Dosing Pump\"]",
   "equip B-101 : boiler [tag: \"Package Boiler\"]",
   "equip BR-101 : burner [tag: \"Natural Gas Burner\"]",
   "equip G-101 : generator [tag: \"Standby Generator\"]",
@@ -33,5 +35,18 @@ line fuel from BR-1.flame to B-1.fuel [type: process_minor]
 line steam from B-1.steam to G-1.in [type: process]`, { type: "pid" });
     expect(result.ok).toBe(true);
     expect(result.status).toBe("valid");
+  });
+
+  it("renders general and diaphragm pumps as distinct known symbols", () => {
+    const result = renderResult(`pid "Pump variants"
+equip P-1 : pump_general [tag: "General"]
+equip P-2 : pump_diaphragm [tag: "Diaphragm"]
+line flow from P-1.out to P-2.in [type: process]`, { type: "pid" });
+
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe("valid");
+    expect(result.svg).toContain('data-type="pump_general"');
+    expect(result.svg).toContain('data-type="pump_diaphragm"');
+    expect(result.svg).not.toContain("data-raw-type");
   });
 });

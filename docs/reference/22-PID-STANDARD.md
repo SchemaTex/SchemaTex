@@ -361,15 +361,17 @@ statement   = comment
 comment     = "#" [^\n]* NEWLINE
 
 equipment_def = "equip" IDENT ":" equip_type attr_list? NEWLINE
-equip_type    = "pump" | "pump_centrifugal" | "pump_pd" | "pump_reciprocating"
-              | "compressor" | "turbine" | "blower"
-              | "hx_shell_tube" | "hx_plate" | "hx_air_cooled" | "reboiler" | "condenser"
+equip_type    = "pump_general" | "pump_centrifugal" | "pump_diaphragm" | "pump_pd"
+              | "compressor" | "blower"
+              | "hx_shell_tube" | "hx_air_cooled" | "reboiler" | "condenser"
               | "vessel_v" | "vessel_h" | "sphere"
-              | "tank_atm" | "tank_floating_roof" | "tank_cone_roof" | "silo"
+              | "tank_atm" | "tank_cone_roof"
               | "column_tray" | "column_packed"
-              | "reactor_cstr" | "reactor_pfr" | "reactor_fixed_bed"
-              | "filter" | "cyclone" | "mixer" | "cooling_tower" | "flare"
+              | "reactor_cstr" | "reactor_pfr"
+              | "filter" | "cyclone" | "cooling_tower" | "flare"
               | "boiler" | "burner" | "generator"
+              | "valve_gate" | "valve_ball" | "valve_globe" | "valve_butterfly"
+              | "valve_check" | "valve_control" | "valve_psv"
 
 attr_list   = "[" attr ("," attr)* "]"
 attr        = IDENT ":" attr_value
@@ -383,7 +385,6 @@ line_attrs  = "[" ("size:" quoted_string
                  | "tag:" quoted_string)+ "]"
 line_type   = "process" | "process_minor" | "pneumatic" | "electric"
             | "hydraulic" | "capillary" | "software" | "mechanical"
-            | "heat_traced" | "jacketed"
 
 instrument_def = "inst" tag ":" inst_category attr_list? NEWLINE
                  ("measures" anchor)?

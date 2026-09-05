@@ -2,10 +2,10 @@
 title: Commercial solar PV interconnection
 description: Single-line diagram for a commercial PV array feeding a combiner, inverter, AC disconnect, production meter, and main switchboard.
 diagram: sld
-standard: IEEE 315 / NEC 690
+standard: IEEE 315 / utility interconnection practice
 industry: [renewables, industrial]
 persona: For the solar designer
-complexity: 2
+complexity: 3
 tags: [sld, solar, pv, inverter, interconnection]
 featured: false
 relatedLink:
@@ -13,31 +13,38 @@ relatedLink:
   href: /docs/sld
 status: published
 dsl: |
-  sld "Commercial PV Interconnection"
-  PV1 = solar [rating: "250 kWdc", label: "PV Array"]
+  sld "Commercial PV Interconnection" [standard: ansi]
+  PV_A = solar [rating: "100 kWdc", label: "PV Array A"]
+  PV_B = solar [rating: "100 kWdc", label: "PV Array B"]
+  PV_C = solar [rating: "50 kWdc", label: "PV Array C"]
   CMB = hub [rating: "600 Vdc", label: "DC Combiner"]
-  DISC_DC = switch_load [rating: "600 Vdc", label: "DC Disconnect"]
+  DISC_DC = switch_load [rating: "600 Vdc / 500 A", label: "DC Isolator"]
   INV = load [rating: "200 kWac", label: "Grid-tie Inverter"]
-  DISC_AC = switch_load [rating: "480V 400A", label: "AC Disconnect"]
+  CB_AC = breaker [rating: "400 A", curve: "C", icn: "25 kA", label: "AC Breaker"]
   MTR = watthour_meter [label: "Production Meter"]
-  MSB = bus [voltage: "480V", label: "Main Switchboard"]
-  UTIL = utility [voltage: "480V", label: "Utility"]
+  MSB = bus [voltage: "400 V", label: "Main Switchboard"]
+  UTIL = utility [voltage: "400 V", label: "Utility"]
+  LOAD = load [rating: "Facility", label: "Building Loads"]
 
-  PV1 -> CMB [cable: "PV string conductors"]
-  CMB -> DISC_DC
+  PV_A -> CMB [cable: "PV1-F 2×70 mm²"]
+  PV_B -> CMB [cable: "PV1-F 2×70 mm²"]
+  PV_C -> CMB [cable: "PV1-F 2×35 mm²"]
+  CMB -> DISC_DC [cable: "2×240 mm² DC"]
   DISC_DC -> INV
-  INV -> DISC_AC
-  DISC_AC -> MTR
+  INV -> CB_AC [cable: "4×240 mm² Cu"]
+  CB_AC -> MTR
   MTR -> MSB
   UTIL -> MSB
+  MSB -> LOAD
 ---
 
 ## Scenario
 
-Commercial PV one-lines have a recognizable chain: DC array, combiner, inverter, AC disconnect, meter, and point of interconnection. This example uses standard SLD equipment while preserving PV-specific ratings in labels.
+Commercial PV one-lines have a recognizable chain: parallel DC arrays, combiner, isolator, inverter, AC protection, meter, and point of interconnection. The Utility feeder lands independently on the switchboard instead of masquerading as another step in the PV conversion chain.
 
 ## Annotation key
 
 - `solar` marks the generation source.
+- Repeated `solar -> hub` connections create a real fan-in with one cable label per source drop.
 - `hub` stands in for the combiner point.
 - `watthour_meter` captures the production metering requirement.

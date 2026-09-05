@@ -1,4 +1,5 @@
 import type { SLDAST, SLDConnection, SLDNode, SLDNodeType } from "../../core/types";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { geometryFor } from "./symbols";
 
 /**
@@ -25,6 +26,8 @@ export interface SLDLayoutNode {
   /** For bus nodes: left and right extent (x min/max) */
   busLeft?: number;
   busRight?: number;
+  /** Deep review drawings place equipment annotations beside the symbol. */
+  labelSide?: "right";
 }
 
 export interface SLDLayoutEdge {
@@ -56,8 +59,12 @@ export interface SLDLayoutResult {
   nodeById: Map<string, SLDLayoutNode>;
 }
 
-const LEVEL_SPACING = 100;
-const H_SPACING = 90;
+// SLDs carry ratings and cable schedules between symbols, so their vertical
+// rhythm must reserve text space as well as symbol space. The old 100/90 grid
+// was adequate for icons but routinely stacked engineering annotations on top
+// of one another in deep commercial feeders.
+const LEVEL_SPACING = 112;
+const H_SPACING = 150;
 const LEFT_PADDING = 80;
 const TOP_PADDING = 40;
 const BUS_OVERHANG = 20;
@@ -322,6 +329,31 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     }
   }
 
+  // A source whose first edge is a long edge is a lateral feeder, not another
+  // member of the upstream source bank. "Long" has a structural definition:
+  // the child was pushed below the next rank by another incoming path. This
+  // avoids a depth threshold where adding one legitimate protection device
+  // could abruptly change the source arrangement.
+  const sourceNodes = (byLevel.get(0) ?? [])
+    .map((id) => byIdLayout.get(id)!)
+    .filter(Boolean);
+  const sideFeeders = sourceNodes.filter((source) =>
+    (children.get(source.node.id) ?? []).some(
+      (childId) =>
+        (levels.get(childId) ?? 0) > source.level + 1
+    )
+  );
+  let rightmostSourceX = Math.max(
+    LEFT_PADDING,
+    ...sourceNodes
+      .filter((source) => !sideFeeders.includes(source))
+      .map((source) => source.x)
+  );
+  for (const feeder of sideFeeders) {
+    rightmostSourceX += H_SPACING;
+    feeder.x = rightmostSourceX;
+  }
+
   // Bus-tie lateral placement: place tie and its "second bus" to the right
   // of the "first bus" at the same level. Shift the entire busB cluster
   // (all nodes reachable from busB excluding busA/tie) so the whole
@@ -381,15 +413,19 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
   // Label-aware collision resolution within each level.
   // For each non-bus node, estimate displayed label width so sibling
   // placement respects text, not just symbol geometry.
-  const labelHalfWidth = (ln: SLDLayoutNode): number => {
+  const annotationWidth = (ln: SLDLayoutNode): number => {
     if (ln.nodeType === "bus" || ln.nodeType === "bus_tie") return 0;
     const node = ln.node;
-    const txtParts: string[] = [node.label ?? node.id];
-    if (node.rating) txtParts.push(node.rating);
-    const longest = txtParts.reduce((m, s) => Math.max(m, s.length), 0);
-    // Bold 11px sans-serif id is ~6.2px per char at widest; pad a bit.
-    return (longest * 6.2) / 2 + 4;
+    return Math.max(
+      estimateTextWidth(node.label ?? node.id, 11, { fontWeight: 700 }),
+      node.rating ? estimateTextWidth(node.rating, 9) : 0,
+      node.voltage ? estimateTextWidth(node.voltage, 9) : 0,
+      ...Object.entries(node.nameplate ?? {}).map(([key, value]) =>
+        estimateTextWidth(`${key}: ${value}`, 9)
+      )
+    );
   };
+  const labelHalfWidth = (ln: SLDLayoutNode): number => annotationWidth(ln) / 2 + 4;
 
   for (const lvl of sortedLevels) {
     const ids = byLevel.get(lvl)!;
@@ -440,6 +476,43 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     }
   }
 
+  // Choose a review treatment from the geometry we actually produced. A
+  // portrait canvas with one annotated item on a level benefits from labels
+  // beside the symbol; a wide branch bank does not. This removes the former
+  // depth/count thresholds and keeps the decision stable when authors rename,
+  // reorder, add, or remove nodes.
+  const height = TOP_PADDING + maxLevel * LEVEL_SPACING + 120;
+  let naturalLeft = Infinity;
+  let naturalRight = -Infinity;
+  for (const ln of layoutNodes) {
+    if (ln.nodeType === "bus") {
+      naturalLeft = Math.min(naturalLeft, ln.busLeft ?? ln.x);
+      naturalRight = Math.max(naturalRight, ln.busRight ?? ln.x);
+      continue;
+    }
+    const half = Math.max(ln.halfWidth, labelHalfWidth(ln));
+    naturalLeft = Math.min(naturalLeft, ln.x - half);
+    naturalRight = Math.max(naturalRight, ln.x + half);
+  }
+  const naturalWidth = Number.isFinite(naturalLeft)
+    ? naturalRight - naturalLeft + LEFT_PADDING * 2
+    : 400;
+  const useReviewCanvas = height > Math.max(400, naturalWidth);
+  if (useReviewCanvas) {
+    for (const lvl of sortedLevels) {
+      if (lvl === 0) continue;
+      const candidates = (byLevel.get(lvl) ?? [])
+        .map((id) => byIdLayout.get(id)!)
+        .filter(
+          (ln) =>
+            ln.nodeType !== "bus" &&
+            ln.nodeType !== "hub" &&
+            annotationWidth(ln) > 0
+        );
+      if (candidates.length === 1) candidates[0]!.labelSide = "right";
+    }
+  }
+
   // Update terminal Ys
   for (const ln of layoutNodes) {
     const geom = geometryFor(ln.nodeType);
@@ -483,6 +556,7 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       pathD = `M ${fx} ${startY} L ${fx} ${midY} L ${tx} ${midY} L ${tx} ${endY}`;
     }
 
+    const converges = (parents.get(c.to)?.length ?? 0) > 1;
     edges.push({
       from: c.from,
       to: c.to,
@@ -492,7 +566,11 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       cableLengthM: c.cableLengthM,
       cableInsulation: c.cableInsulation,
       label: c.label,
-      midX: (fx + tx) / 2,
+      // A fan-in cable belongs visually to its source drop. Putting every
+      // label at the geometric midpoint piles all labels around the merge
+      // node; anchoring each one beside its own drop creates a cable schedule
+      // that can be read left-to-right.
+      midX: converges && !lateralTie ? fx : (fx + tx) / 2,
       midY: (startY + endY) / 2,
     });
   }
@@ -546,12 +624,36 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
   // Compute canvas size
   let maxX = 0;
   for (const ln of layoutNodes) {
-    const right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
+    let right = (ln.busRight ?? (ln.x + ln.halfWidth)) + 60;
+    if (ln.labelSide === "right") {
+      right = Math.max(
+        right,
+        ln.x + ln.halfWidth + 18 + annotationWidth(ln) + 24
+      );
+    }
     if (right > maxX) maxX = right;
   }
-  const width = Math.max(400, maxX + 40);
-  const height = TOP_PADDING + maxLevel * LEVEL_SPACING + 120;
-
+  let width = Math.max(400, maxX + 40);
+  // A portrait feeder is technically valid but awkward in a report. Preserve
+  // at least a square review canvas; branch-heavy drawings already earn their
+  // width from their content and are left untouched.
+  const reviewWidth = useReviewCanvas ? Math.max(width, height) : width;
+  if (reviewWidth > width) {
+    const centerShift = (reviewWidth - width) / 2;
+    for (const ln of layoutNodes) {
+      ln.x += centerShift;
+      if (ln.busLeft !== undefined) ln.busLeft += centerShift;
+      if (ln.busRight !== undefined) ln.busRight += centerShift;
+    }
+    for (const e of edges) {
+      e.midX += centerShift;
+      e.path = e.path.replace(
+        /([ML])\s+(-?[\d.]+)\s+(-?[\d.]+)/g,
+        (_m, cmd, x, y) => `${cmd} ${Number(x) + centerShift} ${y}`
+      );
+    }
+    width = reviewWidth;
+  }
   return {
     width,
     height,

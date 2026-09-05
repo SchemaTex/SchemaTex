@@ -1,0 +1,55 @@
+---
+title: Duplex hydraulic test stand P&ID
+description: Process and instrumentation diagram for duty/standby hydraulic pumps, pressure filtration, bypass control, cooling, a test manifold, and the return loop.
+diagram: pid
+standard: ANSI/ISA-5.1-2009 + ISO 10628-1:2014
+industry: [industrial, manufacturing, hydraulics]
+persona: For the process or test engineer
+complexity: 4
+tags: [pid, duplex-pump, hydraulic, bypass, recycle, instrumentation]
+featured: true
+relatedLink:
+  label: P&ID syntax
+  href: /docs/pid
+status: published
+dsl: |
+  pid "Duplex Hydraulic Test Stand" [direction: LR]
+
+  equip T-101 : tank_atm [tag: "Reservoir T-101"]
+  equip P-101A : pump_centrifugal [tag: "Duty Pump P-101A"]
+  equip P-101B : pump_centrifugal [tag: "Standby Pump P-101B"]
+  equip V-101A : valve_check [tag: "NRV-101A"]
+  equip V-101B : valve_check [tag: "NRV-101B"]
+  equip F-101 : filter [tag: "Pressure Filter F-101"]
+  equip V-102 : valve_control [tag: "PCV-102"]
+  equip V-103 : valve_gate [tag: "Bypass V-103"]
+  equip E-101 : hx_shell_tube [tag: "Oil Cooler E-101"]
+  equip T-102 : vessel_v [tag: "Test Manifold T-102"]
+
+  line S1 from T-101.bottom to P-101A.in [size: "2\"", service: "hydraulic oil", type: "process"]
+  line S2 from T-101.bottom to P-101B.in [size: "2\"", service: "hydraulic oil", type: "process"]
+  line D1 from P-101A.out to V-101A.in [size: "1.5\"", service: "pressure", type: "process"]
+  line D2 from P-101B.out to V-101B.in [size: "1.5\"", service: "pressure", type: "process"]
+  line H1 from V-101A.out to F-101.in [type: "process"]
+  line H2 from V-101B.out to F-101.in [type: "process"]
+  line H3 from F-101.out to V-102.in [type: "process"]
+  line H4 from V-102.out to E-101.in [type: "process"]
+  line H5 from E-101.out to T-102.in [type: "process"]
+  line R1 from T-102.bottom to T-101.top [service: "return", type: "process"]
+  line B1 from F-101.out to V-103.in [service: "bypass", type: "process_minor"]
+  line B2 from V-103.out to T-101.top [service: "bypass", type: "process_minor"]
+
+  inst PI-101 : field_discrete
+    measures F-101
+  inst PIC-102 : cr_shared
+    measures T-102
+    controls V-102
+  inst TI-101 : field_discrete
+    measures E-101
+---
+
+## Why this is a useful stress case
+
+The equipment list alone is misleading: declaration order can make the duty and standby pumps look like a serial train. The connection topology says something different—one reservoir splits into two pump/check-valve lanes, those lanes merge at the pressure filter, and two backward paths return to the reservoir.
+
+The renderer ranks equipment from those process connections. Parallel equipment shares a process stage but receives separate lanes; merge points get explicit junction dots; recycle and bypass edges use channels below the forward process path. The same syntax remains readable to an AI agent because no coordinates or layout-only aliases are required.

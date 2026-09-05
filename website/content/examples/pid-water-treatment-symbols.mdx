@@ -1,0 +1,46 @@
+---
+title: Water-treatment pump, filter, and actuator symbols
+description: A compact process train that demonstrates a general liquid pump, diaphragm dosing pump, media-filter service ports, and a motor-operated outlet valve.
+diagram: pid
+standard: ANSI/ISA-5.1-2024 + ISO 10628-2:2012
+industry: [water-treatment, industrial, utilities]
+persona: For the process or controls engineer
+complexity: 3
+tags: [pid, water-treatment, diaphragm-pump, media-filter, motor-actuator]
+featured: true
+relatedLink:
+  label: P&ID syntax
+  href: /docs/pid
+status: published
+dsl: |
+  pid "Water Treatment Symbol Coverage"
+
+  equip TK-101 : tank_atm [tag: "Raw Water"]
+  equip P-101 : pump_general [tag: "Transfer Pump"]
+  equip F-101 : filter [tag: "Media Filter"]
+  equip XV-101 : valve_control [tag: "Outlet MOV", actuator: "motor", fail: "FL"]
+  equip TK-102 : tank_atm [tag: "Clear Water"]
+  equip TK-201 : tank_atm [tag: "Chemical Day Tank"]
+  equip P-201 : pump_diaphragm [tag: "Dosing Pump"]
+  equip TK-301 : tank_atm [tag: "Backwash Water"]
+  equip TK-401 : tank_atm [tag: "Drain Sump"]
+
+  line raw from TK-101.bottom to P-101.in [type: process, service: "raw water"]
+  line feed from P-101.out to F-101.in [type: process, service: "filter feed"]
+  line product from F-101.out to XV-101.in [type: process, service: "filtered water"]
+  line outlet from XV-101.out to TK-102.top [type: process, service: "clear water"]
+  line chemical from TK-201.bottom to P-201.in [type: process_minor, service: "chemical dosing"]
+  line dose from P-201.out to F-101.top [type: process_minor, service: "chemical dosing"]
+  line backwash from TK-301.right to F-101.backwash [type: process_minor, service: "backwash"]
+  line drain from F-101.drain to TK-401.top [type: process_minor, service: "filter drain"]
+
+  inst FIC-101 : cr_shared
+    controls XV-101
+  line command from FIC-101 to XV-101.signal [type: electric]
+---
+
+## What this example proves
+
+The process meaning stays in the topology and named ports, not in coordinates or colors. The filter's main inlet/outlet, chemical injection, backwash, and drain connections remain distinct. The outlet valve uses the same `valve_control` body as a pneumatic loop, but composes a motor actuator and therefore expects an electric controller signal.
+
+If an agent writes a port such as `F-101.drian`, SchemaTex keeps a partial preview visible but reports `PID_UNKNOWN_PORT`; it no longer silently routes the line through an unrelated default port.

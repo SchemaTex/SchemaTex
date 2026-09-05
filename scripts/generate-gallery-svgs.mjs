@@ -131,6 +131,31 @@ G -> H ["Y(s)"]
 H -> err ["Y_m(s)"]`,
   },
   {
+    file: 'examples/pid/duplex-hydraulic-test-stand.svg',
+    text: `pid "Duplex Hydraulic Test Stand" [direction: LR]
+equip T-101 : tank_atm [tag: "Reservoir T-101"]
+equip P-101A : pump_centrifugal [tag: "Duty Pump P-101A"]
+equip P-101B : pump_centrifugal [tag: "Standby Pump P-101B"]
+equip V-101A : valve_check [tag: "NRV-101A"]
+equip V-101B : valve_check [tag: "NRV-101B"]
+equip F-101 : filter [tag: "Pressure Filter F-101"]
+equip V-102 : valve_control [tag: "PCV-102"]
+equip E-101 : hx_shell_tube [tag: "Oil Cooler E-101"]
+equip T-102 : vessel_v [tag: "Test Manifold T-102"]
+line S1 from T-101.bottom to P-101A.in [type: process]
+line S2 from T-101.bottom to P-101B.in [type: process]
+line D1 from P-101A.out to V-101A.in [type: process]
+line D2 from P-101B.out to V-101B.in [type: process]
+line H1 from V-101A.out to F-101.in [type: process]
+line H2 from V-101B.out to F-101.in [type: process]
+line H3 from F-101.out to V-102.in [type: process]
+line H4 from V-102.out to E-101.in [type: process]
+line H5 from E-101.out to T-102.in [type: process]
+line R1 from T-102.bottom to T-101.top [service: "return", type: process]
+inst PI-101 : field_discrete
+  measures F-101`,
+  },
+  {
     file: 'examples/circuit/ce-amplifier.svg',
     text: `circuit "CE Amp (netlist)" netlist
 V1 vcc 0 9V
@@ -190,6 +215,31 @@ bus_mv -> brk2
 brk2 -> feeder2
 bus_mv -> brk3
 brk3 -> feeder3`,
+  },
+  {
+    file: 'examples/sld/commercial-solar-pv.svg',
+    text: `sld "Commercial PV Interconnection" [standard: ansi]
+PV_A = solar [rating: "100 kWdc", label: "PV Array A"]
+PV_B = solar [rating: "100 kWdc", label: "PV Array B"]
+PV_C = solar [rating: "50 kWdc", label: "PV Array C"]
+CMB = hub [rating: "600 Vdc", label: "DC Combiner"]
+DISC_DC = switch_load [rating: "600 Vdc / 500 A", label: "DC Isolator"]
+INV = load [rating: "200 kWac", label: "Grid-tie Inverter"]
+CB_AC = breaker [rating: "400 A", label: "AC Breaker"]
+MTR = watthour_meter [label: "Production Meter"]
+MSB = bus [voltage: "400 V", label: "Main Switchboard"]
+UTIL = utility [voltage: "400 V", label: "Utility"]
+LOAD = load [rating: "Facility", label: "Building Loads"]
+PV_A -> CMB [cable: "PV1-F 2×70 mm²"]
+PV_B -> CMB [cable: "PV1-F 2×70 mm²"]
+PV_C -> CMB [cable: "PV1-F 2×35 mm²"]
+CMB -> DISC_DC [cable: "2×240 mm² DC"]
+DISC_DC -> INV
+INV -> CB_AC [cable: "4×240 mm² Cu"]
+CB_AC -> MTR
+MTR -> MSB
+UTIL -> MSB
+MSB -> LOAD`,
   },
   {
     file: 'examples/entity/holding-company.svg',

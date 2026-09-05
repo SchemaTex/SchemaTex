@@ -75,6 +75,44 @@ describe("signal-type vs device-type consistency", () => {
     );
     expect(diags).toHaveLength(0);
   });
+
+  test("an electric controller link is correct for a motor actuator", () => {
+    const diags = lintPid(
+      `pid "Test"\nequip XV-1 : valve_control [actuator: motor]\ninst FIC-1 : cr_shared\n  controls XV-1\nline s1 from FIC-1 to XV-1.signal [type: electric]`
+    );
+    expect(diags).toHaveLength(0);
+  });
+
+  test("a pneumatic controller link is wrong for a solenoid actuator", () => {
+    const diags = lintPid(
+      `pid "Test"\nequip XV-1 : valve_control [actuator: solenoid]\ninst FIC-1 : cr_shared\n  controls XV-1\nline s1 from FIC-1 to XV-1.signal [type: pneumatic]`
+    );
+    expect(diags.some((d) => d.code === "PID_SIGNAL_TYPE_MISMATCH" && d.message.includes("should be 'electric'"))).toBe(true);
+  });
+});
+
+describe("equipment modifiers and named ports", () => {
+  test("a valid filter drain and backwash port stay warning-free", () => {
+    const diags = lintPid(
+      `pid "Test"\nequip F-1 : filter\nequip S : tank_atm\nline d from F-1.drain to S.top [type: process_minor]\nline b from S.bottom to F-1.backwash [type: process_minor]`
+    );
+    expect(diags).toHaveLength(0);
+  });
+
+  test("a misspelled explicit port is visible instead of silently trusted", () => {
+    const diags = lintPid(
+      `pid "Test"\nequip F-1 : filter\nequip S : tank_atm\nline d from F-1.drian to S.top [type: process_minor]`
+    );
+    expect(diags.some((d) => d.code === "PID_UNKNOWN_PORT" && d.message.includes("F-1.drian"))).toBe(true);
+  });
+
+  test("unsupported actuator and fail values each produce a repair hint", () => {
+    const diags = lintPid(
+      `pid "Test"\nequip XV-1 : valve_control [actuator: servo, fail: sideways]`
+    );
+    expect(diags.some((d) => d.code === "PID_UNKNOWN_ACTUATOR")).toBe(true);
+    expect(diags.some((d) => d.code === "PID_UNKNOWN_FAIL_POSITION")).toBe(true);
+  });
 });
 
 describe("integration via parseResult", () => {

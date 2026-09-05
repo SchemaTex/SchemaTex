@@ -9,7 +9,10 @@ import { resolveSceneTitle } from "../../core/title-scene";
 const STYLE = `
 .lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
 .lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
 .lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
 
 .lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
 .lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
@@ -29,6 +32,7 @@ const STYLE = `
 .lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
 
 .lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
 .lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
 .lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
 
@@ -64,6 +68,33 @@ function lineClass(t: PidLayoutLine["line"]["lineType"]): string {
 
 function isSignalLine(l: PidLayoutLine): boolean {
   return SIGNAL_LINE_TYPES.has(l.line.lineType);
+}
+
+function processJunctions(lines: PidLayoutLine[]): string[] {
+  const endpoints = new Map<string, { x: number; y: number; count: number }>();
+  for (const line of lines) {
+    if (isSignalLine(line)) continue;
+    const points = [...line.path.matchAll(/[ML]\s+(-?[\d.]+)\s+(-?[\d.]+)/g)].map(
+      (match) => ({ x: Number(match[1]), y: Number(match[2]) })
+    );
+    for (const point of [points[0], points[points.length - 1]]) {
+      if (!point) continue;
+      const key = `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+      const existing = endpoints.get(key);
+      if (existing) existing.count++;
+      else endpoints.set(key, { ...point, count: 1 });
+    }
+  }
+  return [...endpoints.values()]
+    .filter((point) => point.count > 1)
+    .map((point) =>
+      el("circle", {
+        cx: point.x,
+        cy: point.y,
+        r: 3.6,
+        class: "lt-pid-junction",
+      })
+    );
 }
 
 function renderLine(l: PidLayoutLine, scene?: SceneItem[], index = 0): string {
@@ -180,7 +211,8 @@ function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
     const symbol = renderEquip(
       eq.equip.equipType,
       eq.equip.tag ?? eq.equip.id,
-      eq.equip.rawType
+      eq.equip.rawType,
+      eq.equip.attrs
     );
     const wrapAttrs: Record<string, string> = {
       class: "lt-pid-equip-wrap",
@@ -328,6 +360,7 @@ function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
         { class: "lt-pid-lines lt-pid-process-lines" },
         layout.lines.filter((l) => !isSignalLine(l)).map((line) => renderLine(line, config?.__scene, layout.lines.indexOf(line)))
       ),
+      group({ class: "lt-pid-junctions" }, processJunctions(layout.lines)),
       group({ class: "lt-pid-equipment" }, equipNodes),
       group(
         { class: "lt-pid-lines lt-pid-signal-lines" },

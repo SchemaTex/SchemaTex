@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchemaTex · Professional Visual Contract</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blueprint: #14253d;
+      --process: #2f718f;
+      --amber: #d18b33;
+      --fault: #ba4e58;
+      --paper: #f4f7f6;
+      --rule: #cbd6d9;
+      --white: #ffffff;
+      --display: "Barlow Condensed", "Avenir Next Condensed", sans-serif;
+      --body: "Manrope", "Avenir Next", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+      --display-size: clamp(3.4rem, 7vw, 7.6rem);
+      --headline-size: clamp(1.8rem, 3vw, 3.2rem);
+      --body-size: 1rem;
+      --caption-size: 0.74rem;
+      --radius-s: 4px;
+      --radius-m: 10px;
+      --radius-l: 18px;
+      --shadow-sheet: 0 28px 70px rgba(20, 37, 61, 0.13);
+      --space-1: 0.5rem;
+      --space-2: 0.85rem;
+      --space-3: 1.25rem;
+      --space-4: 2rem;
+      --space-5: 3.5rem;
+      --space-6: 6rem;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--blueprint);
+      font-family: var(--body);
+      font-size: var(--body-size);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(rgba(47, 113, 143, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47, 113, 143, 0.045) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .shell { width: min(1580px, calc(100% - 32px)); margin: 0 auto; }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: var(--caption-size);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .topline a { text-decoration: none; }
+    .status { display: flex; align-items: center; gap: 8px; }
+    .status::before { content: ""; width: 8px; height: 8px; background: var(--amber); border-radius: 50%; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: var(--space-5);
+      align-items: end;
+      padding: var(--space-6) 0 var(--space-5);
+    }
+    .eyebrow {
+      margin: 0 0 var(--space-2);
+      font: 500 var(--caption-size)/1 var(--mono);
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--process);
+    }
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font: 600 1 var(--display);
+      font-size: var(--display-size);
+      letter-spacing: -0.035em;
+      text-transform: uppercase;
+    }
+    .hero-note {
+      padding: var(--space-3) 0 var(--space-1) var(--space-3);
+      border-left: 3px solid var(--amber);
+      color: #455666;
+      line-height: 1.7;
+    }
+    .hero-note strong { color: var(--blueprint); }
+
+    .review-board {
+      margin-top: var(--space-4);
+      padding: var(--space-3);
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-l);
+      box-shadow: var(--shadow-sheet);
+    }
+    .board-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-3);
+      align-items: start;
+      padding: var(--space-2) var(--space-2) var(--space-3);
+    }
+    .board-head h2 { margin: 0; font: 600 var(--headline-size)/1 var(--display); text-transform: uppercase; }
+    .board-head p { max-width: 820px; margin: 10px 0 0; color: #5f6c79; line-height: 1.55; }
+    .issue-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .issue-tag { padding: 6px 8px; border: 1px solid var(--rule); border-radius: 999px; font: 500 0.65rem/1 var(--mono); }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      min-height: 540px;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+      background: #e9eeed;
+    }
+    .pane { position: relative; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; background: var(--white); }
+    .pane + .pane { border-left: 3px solid var(--blueprint); }
+    .pane-head { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+    .pane-label { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+    .pane.before .pane-label { color: var(--fault); }
+    .pane.candidate .pane-label { color: var(--amber); }
+    .pane.after .pane-label { color: var(--process); }
+    .pane-source { display: grid; gap: 4px; justify-items: end; text-align: right; font-family: var(--mono); color: #74818c; }
+    .pane-source strong { padding: 4px 6px; border: 1px solid currentColor; border-radius: var(--radius-s); font-size: 0.6rem; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; }
+    .pane-source small { font-size: 0.58rem; line-height: 1.25; }
+    .pane.before .pane-source strong { color: var(--fault); background: #fdf4f5; }
+    .pane.candidate .pane-source strong { color: #94601f; background: #fff8ec; }
+    .pane.after .pane-source strong { color: var(--process); background: #eef7f8; }
+    .image-well { display: grid; place-items: center; min-height: 430px; padding: 14px; overflow: hidden; background: #fff; }
+    .image-well img { display: block; width: 100%; height: 100%; max-height: 500px; object-fit: contain; }
+    .pane-note { min-height: 82px; padding: 12px 16px; border-top: 1px solid var(--rule); color: #536270; font-size: 0.78rem; line-height: 1.5; }
+
+    .case-panel + .case-panel { margin-top: var(--space-6); }
+    .findings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-top: var(--space-3);
+    }
+    .finding-column { padding: var(--space-3); border: 1px solid var(--rule); border-radius: var(--radius-m); background: rgba(255,255,255,0.7); }
+    .finding-column h3 { margin: 0 0 14px; font: 600 1.25rem/1 var(--display); text-transform: uppercase; }
+    .finding-list { list-style: none; padding: 0; margin: 0; }
+    .finding-list li { position: relative; padding: 9px 0 9px 22px; border-top: 1px solid var(--rule); line-height: 1.45; }
+    .finding-list li::before { content: ""; position: absolute; left: 0; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--fault); }
+    .finding-column.after-list li::before { background: var(--process); }
+
+    .contract { padding: var(--space-6) 0; }
+    .section-head { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--space-5); margin-bottom: var(--space-4); }
+    .section-head h2 { margin: 0; font: 600 var(--headline-size)/1 var(--display); text-transform: uppercase; }
+    .section-head p { margin: 0; color: #536270; line-height: 1.7; }
+    .contract-grid { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--blueprint); background: var(--white); }
+    .contract-item { min-height: 220px; padding: var(--space-3); border-right: 1px solid var(--blueprint); }
+    .contract-item:last-child { border-right: 0; }
+    .contract-item code { font: 500 0.68rem/1.2 var(--mono); color: var(--process); }
+    .contract-item h3 { margin: 18px 0 10px; font: 600 1.45rem/1 var(--display); text-transform: uppercase; }
+    .contract-item p { margin: 0; color: #5b6976; font-size: 0.8rem; line-height: 1.6; }
+    .contract-item .state { display: inline-block; margin-top: 22px; padding: 6px 8px; background: #f8ecee; color: var(--fault); font: 500 0.64rem/1 var(--mono); text-transform: uppercase; }
+
+    .truth-note {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-3);
+      align-items: start;
+      margin-bottom: var(--space-6);
+      padding: var(--space-4);
+      color: var(--white);
+      background: var(--blueprint);
+      border-radius: var(--radius-l);
+    }
+    .truth-mark { font: 600 4.4rem/0.8 var(--display); color: var(--amber); }
+    .truth-note h2 { margin: 0 0 10px; font: 600 2rem/1 var(--display); text-transform: uppercase; }
+    .truth-note p { max-width: 980px; margin: 0; color: #cbd6df; line-height: 1.7; }
+    .truth-note a { color: var(--white); }
+
+    footer { display: flex; justify-content: space-between; gap: 20px; padding: 20px 0 40px; border-top: 1px solid var(--rule); font: 400 0.68rem/1.4 var(--mono); color: #687784; }
+
+    @media (max-width: 1080px) {
+      .hero, .section-head { grid-template-columns: 1fr; }
+      .contract-grid { grid-template-columns: 1fr 1fr; }
+      .contract-item { border-bottom: 1px solid var(--blueprint); }
+      .contract-item:nth-child(even) { border-right: 0; }
+      .contract-item:last-child { border-bottom: 0; }
+    }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 20px, 1580px); }
+      .hero { padding-top: var(--space-5); }
+      .board-head, .findings { grid-template-columns: 1fr; }
+      .issue-tags { justify-content: flex-start; }
+      .compare-grid { grid-template-columns: 1fr; min-height: 0; }
+      .pane + .pane { border-left: 0; border-top: 3px solid var(--blueprint); }
+      .image-well { min-height: 360px; }
+      .contract-grid { grid-template-columns: 1fr; }
+      .contract-item { border-right: 0; }
+      .truth-note { grid-template-columns: 1fr; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topline">
+      <a href="index.html">SchemaTex / Preview Lab</a>
+      <span class="status">Implementation branch · live candidates</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">P&amp;ID + Electrical reliability study</p>
+          <h1>Credibility is a layout feature.</h1>
+        </div>
+        <div class="hero-note">
+          <strong>Six stress cases. Three explicit states:</strong> a frozen pre-fix renderer, an independently generated visual target, and the current branch output. The audit cases prove nearby topology and catalog changes no longer trigger layout cliffs.
+        </div>
+      </section>
+
+      <section id="case-pid" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>Duplex hydraulic test stand</h2><p>A declaration-order layout turns two parallel pumps into a serial-looking chain. The target reads topology first: split, parallel lanes, merge, treatment, control, test, and return.</p></div><div class="issue-tags"><span class="issue-tag">#113 P&amp;ID gaps</span><span class="issue-tag">UserSay: hydraulic test stand</span></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 4aa244c</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-pid-hydraulic-test-stand.png" alt="Main-branch SchemaTex P and ID rendering flattened into one row"></div><div class="pane-note">The symbols are recognizable, but the layout implies a process topology that is not true.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Image reference</strong><small>ImageGen PNG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-pid-hydraulic-test-stand.png" alt="Target P and ID with parallel pump lanes and explicit return paths"></div><div class="pane-note">Parallel lanes, scope boundary, service paths, and signal ownership are visible before reading the labels.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 6e81920</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-pid-hydraulic-test-stand.png" alt="Current branch P and ID candidate with topology-ranked equipment and parallel pump lanes"></div><div class="pane-note">Graph ranks now expose the duplex lanes, merge, bypass, and return. Dedicated control-signal lanes remain the largest visual gap.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>What fails today</h3><ul class="finding-list"><li>Duty and standby pumps read as serial equipment.</li><li>Bypass and return paths collapse into the main row.</li><li>Instrument lines compete with equipment labels.</li></ul></section><section class="finding-column after-list"><h3>What the target requires</h3><ul class="finding-list"><li>Topology-aware ranks with explicit split and merge junctions.</li><li>Lane ownership for parallel equipment and return services.</li><li>Semantic package boundaries and instrument signal layers.</li></ul></section></div>
+      </section>
+
+      <section id="case-pid-symbols" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>Water-treatment symbol coverage</h2><p>The old engine could parse the process, but it did not know two requested pump families, silently borrowed the filter's main ports for backwash and drain, and ignored the motor actuator attribute.</p></div><div class="issue-tags"><span class="issue-tag">#113 P&amp;ID symbols</span><span class="issue-tag">Semantic port audit</span><a class="issue-tag" href="pid-symbol-parts.html">Open parts bench →</a></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Previous engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 62fb8f9</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-pid-water-treatment-symbols.png" alt="Previous renderer showing unknown pump placeholders, collapsed filter service ports, and a diaphragm operator on a motor valve"></div><div class="pane-note">The topology renders, but two pumps are unknown, drain and backwash attach to plausible-looking wrong anchors, and the MOV still carries a diaphragm operator.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Image reference</strong><small>ImageGen PNG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-pid-water-treatment-symbols.png" alt="ImageGen visual reference with distinct transfer and dosing pumps, filter service nozzles, and a motor-operated valve"></div><div class="pane-note">The reference separates the main water train, chemical injection, backwash, drain, and electric motor command before any label is read.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Fixed engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · fc075c9</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-pid-water-treatment-symbols.png" alt="Fixed SchemaTex renderer with ISO-style pump variants, explicit filter service ports, and a composed motor actuator"></div><div class="pane-note">One reusable symbol catalog now owns glyphs and ports. The valve body composes its actuator, and lint checks named anchors plus actuator-to-signal consistency.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>What the baseline gets wrong</h3><ul class="finding-list"><li>Unknown pump families degrade to visible placeholders.</li><li>Invalid named ports silently fall back to a main process connection.</li><li>Every control valve looks pneumatic regardless of its authored actuator.</li></ul></section><section class="finding-column after-list"><h3>What the fix guarantees</h3><ul class="finding-list"><li>General liquid and diaphragm pumps are first-class catalog types.</li><li>Filter top, backwash, and drain anchors remain geometrically distinct.</li><li>Diaphragm, piston, motor, and solenoid operators share one valve-body contract.</li><li>Motor/solenoid expect electric signals; diaphragm/piston expect pneumatic signals.</li></ul></section></div>
+      </section>
+
+      <section id="case-circuit" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>555 astable LED flasher</h2><p>The baseline knew the parts but did not budget space for a readable electrical story. The fixed renderer now groups pins by function, shares the supply rails, and separates every signal channel without changing the DSL.</p></div><div class="issue-tags"><span class="issue-tag">Electrical credibility stress case</span></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 4aa244c</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-555-astable.png" alt="Main-branch SchemaTex 555 circuit with sparse vertical layout and ambiguous connections"></div><div class="pane-note">The parts render, but several nets look detached and the page shape hides the circuit's functional structure.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Manual reference</strong><small>Hand-authored SVG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-circuit-555-astable.svg" alt="Correct target 555 astable circuit with shared rails and traceable nets"></div><div class="pane-note">Every pin-to-net relationship is traceable. ImageGen concepts were rejected when they miswired RESET, GND, and TRIG.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Fixed engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · ab86006</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-555-astable.png" alt="Fixed SchemaTex 555 circuit with functional pin groups, shared rails, and isolated timing, control, and output branches"></div><div class="pane-note">A topology-driven single-controller layout replaces the rejected fixture template. It also covers generic controller blocks, renamed IDs, and reordered declarations.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>What the baseline fails</h3><ul class="finding-list"><li>Ground symbols multiply instead of forming a coherent reference rail.</li><li>Connection geometry makes valid nets appear open.</li><li>Package-order pins hide the timing, control, and output structure.</li></ul></section><section class="finding-column after-list"><h3>What the candidate guarantees</h3><ul class="finding-list"><li>Functional pin groups and shared power-net rails.</li><li>Orthogonal routing with isolated signal spines and explicit junctions.</li><li>Topology-based branch placement with no title, ID, or fixture matching.</li></ul></section></div>
+      </section>
+
+      <section id="case-sld" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>Commercial PV interconnection</h2><p>The current one-line is technically present but visually stretched and locally tangled. The target separates generation, conversion, and distribution while keeping Utility independent from the PV feeder.</p></div><div class="issue-tags"><span class="issue-tag">Commercial PV stress case</span><span class="issue-tag">UserSay: solar SLD</span></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Before · main</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 4aa244c</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-sld-commercial-solar.png" alt="Main-branch SchemaTex solar single line diagram with a long vertical layout and overlapping labels"></div><div class="pane-note">The top cable labels overlap, the Utility feeder cuts through the chain, and a review requires excessive vertical scanning.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Image reference</strong><small>ImageGen PNG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-sld-commercial-solar.png" alt="Target IEC solar single line diagram arranged in three functional zones"></div><div class="pane-note">Functional zones, a real bus, and independent feeders turn the same data into a reviewable A3-style drawing.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Candidate · branch</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 6e81920</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-sld-commercial-solar.png" alt="Current branch solar single line candidate with a landscape review canvas and separated feeder labels"></div><div class="pane-note">Deep feeders now receive a landscape review canvas, and fan-in cable labels stay beside their own source drops.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>What fails today</h3><ul class="finding-list"><li>Parallel PV cable labels occupy the same visual slot.</li><li>Voltage bands do not create functional drawing zones.</li><li>The Utility path visually competes with the PV conversion chain.</li></ul></section><section class="finding-column after-list"><h3>What the target requires</h3><ul class="finding-list"><li>Branch-aware label slots with guaranteed clearance.</li><li>Landscape page packing and semantic zone headers.</li><li>Bus-centric routing with duplicate-segment elimination.</li></ul></section></div>
+      </section>
+
+      <section id="case-circuit-pilot" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>Automotive load bank with pilot</h2><p>A valid pilot indicator used to invalidate the complete automotive layout motif. The renderer would abandon the left/right bank structure and fall back to a generic netlist drawing even though the underlying circuit was still the same.</p></div><div class="issue-tags"><span class="issue-tag">Audit: layout cliff</span><span class="issue-tag">Circuit topology regression</span></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Previous engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 61b8a0a</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-circuit-load-bank-pilot.png" alt="Previous circuit renderer falling back to a tall scattered layout when a pilot indicator is added"></div><div class="pane-note">One auxiliary output branch breaks motif recognition. Loads scatter vertically, grounds multiply, and the left/right operating story disappears.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Image reference</strong><small>ImageGen PNG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-circuit-load-bank-pilot.png" alt="Ideal automotive indicator schematic organized into left bank pilot branch and right bank"></div><div class="pane-note">The desired composition is obvious at a glance: supply spine above, left and right banks outside, pilot branch in the center, and one return rail below.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Fixed engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 0529fb0</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-circuit-load-bank-pilot.png" alt="Fixed SchemaTex circuit renderer with compact left, pilot, and right groups over one return rail"></div><div class="pane-note">Topology—not a switch type or pin-name list—discovers the distributor and every branch. Measured symbol and label footprints pack each bank without letting one long label stretch the complete drawing.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>Why the old structure fails</h3><ul class="finding-list"><li>Recognition depends on a named SPDT type and its catalog pin names.</li><li>One legitimate auxiliary branch invalidates the entire specialized layout.</li><li>A global lane gap turns repeated banks into an unreadable horizontal strip.</li></ul></section><section class="finding-column after-list"><h3>What the fix guarantees</h3><ul class="finding-list"><li>Any qualifying three-net distributor is recognized from connectivity alone.</li><li>Auxiliary output branches become first-class topology groups.</li><li>Renamed IDs, reordered declarations, and uneven labels retain the structure.</li></ul></section></div>
+      </section>
+
+      <section id="case-sld-side-feeder" class="case-panel">
+        <article class="review-board">
+          <header class="board-head"><div><h2>Two-stage SLD side feeder</h2><p>The old side-feeder rule required an edge to skip three graph ranks. A Utility source that legitimately skipped two ranks therefore stayed inside the PV bank and made an otherwise ordinary one-line diagram read incorrectly.</p></div><div class="issue-tags"><span class="issue-tag">Audit: magic threshold</span><span class="issue-tag">SLD topology regression</span></div></header>
+          <div class="compare-grid">
+            <figure class="pane before"><figcaption class="pane-head"><span class="pane-label">Previous engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 61b8a0a</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/before-sld-side-feeder-threshold.png" alt="Previous SLD renderer placing Utility between three photovoltaic sources"></div><div class="pane-note">Utility is visually grouped with the PV arrays, while its route cuts through the combiner region before reaching the switchboard.</div></figure>
+            <figure class="pane after"><figcaption class="pane-head"><span class="pane-label">Ideal reference</span><span class="pane-source"><strong>Image reference</strong><small>ImageGen PNG · not engine output</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/after-sld-side-feeder-threshold.png" alt="Ideal single line diagram with a separate Utility lane beside the photovoltaic generation chain"></div><div class="pane-note">Generation remains one aligned bank. Utility owns a separate lateral lane and joins the main switchboard without pretending to be part of the PV chain.</div></figure>
+            <figure class="pane candidate"><figcaption class="pane-head"><span class="pane-label">Fixed engine</span><span class="pane-source"><strong>Renderer output</strong><small>SchemaTex v1.0.14 · 6e81920</small></span></figcaption><div class="image-well"><img src="professional-visual-contract/candidate-sld-side-feeder-threshold.png" alt="Fixed SchemaTex SLD renderer moving Utility to a lateral feeder beside the main switchboard"></div><div class="pane-note">Any source edge that structurally skips a rank is now a side feeder. True peer sources remain in the normal level spacing.</div></figure>
+          </div>
+        </article>
+        <div class="findings"><section class="finding-column"><h3>Why the old structure fails</h3><ul class="finding-list"><li>A three-rank constant decides visual meaning without an engineering reason.</li><li>Common two-stage systems fall just below the threshold.</li><li>The source bank mixes independent supply domains.</li></ul></section><section class="finding-column after-list"><h3>What the fix guarantees</h3><ul class="finding-list"><li>Skipped-rank source edges receive a lateral feeder by structure alone.</li><li>Peer sources still share the ordinary level layout.</li><li>No title, label, node ID, or shipped example is consulted.</li></ul></section></div>
+      </section>
+
+      <section class="contract">
+        <header class="section-head"><h2>The renderer contract</h2><p>These targets do not justify five separate hacks. This branch ships only guarantees that survive renamed IDs, reordered declarations, and nearby topology changes. The 555 now exercises a reusable single-controller primitive; arbitrary multi-IC routing remains on the general layout rather than pretending to be solved.</p></header>
+        <div class="contract-grid">
+          <article class="contract-item"><code>layout.topology</code><h3>Rank by graph</h3><p>Place by connection meaning, not declaration order. Preserve split, merge, parallel, return, and bus structures.</p><span class="state">Candidate implemented</span></article>
+          <article class="contract-item"><code>layout.lanes</code><h3>Own the lane</h3><p>Give branches, services, and voltage zones stable routing lanes before drawing individual segments.</p><span class="state">Candidate implemented</span></article>
+          <article class="contract-item"><code>route.orthogonal</code><h3>Route with rules</h3><p>Prefer 90° / 45° paths, reserve crossings, and distinguish joins from pass-throughs deterministically.</p><span class="state">Candidate expanded</span></article>
+          <article class="contract-item"><code>label.clearance</code><h3>Budget the text</h3><p>Treat names, ratings, cable data, and tags as geometry during layout—not paint added afterward.</p><span class="state">Partial candidate</span></article>
+          <article class="contract-item"><code>render.layers</code><h3>Control z-order</h3><p>Wires sit behind opaque symbols; signals, junctions, and labels follow a documented visual stack.</p><span class="state">Partial today</span></article>
+        </div>
+      </section>
+
+      <aside class="truth-note">
+        <div class="truth-mark">!</div>
+        <div><h2>ImageGen is the art director, not the electrical engineer.</h2><p>The generated references establish grouping, hierarchy, and page composition. Connectivity is judged against the authored DSL and deterministic SVG, not inferred from the generated image. The 555 concepts were rejected when attractive wiring was electrically wrong. Prompt history and limitations remain in <a href="professional-visual-contract/prompts.md">the benchmark folder</a> so the evaluation is auditable.</p></div>
+      </aside>
+    </main>
+
+    <footer><span>Branch: codex/pid-electrical-reliability</span><span>Baseline: main @ 4aa244c · 2026-09-03 PT</span></footer>
+  </div>
+</body>
+</html>

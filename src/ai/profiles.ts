@@ -13,7 +13,6 @@ import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
  */
 export const COMMON_GENERATION_RULES = [
   "Generate one diagram document with one selected diagram type.",
-  "Use the canonical header and canonical forms from the generation profile first.",
   'Use ASCII double quotes (") for generated labels and titles.',
   "Do not emit DSL comments unless the user explicitly asks for annotated source.",
   "Prefer explicit IDs and declarations when they make validation less ambiguous.",
@@ -280,19 +279,14 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
-      "For household AC lighting, use clear L/N nets: `V1 live neutral 220Vac type=acsource`, then `F1 live protected`, `S1 protected switched`, `L1 switched neutral type=lamp`. The renderer keeps live/control above and neutral return below.",
-      "For two-way/stair lighting, use two `switch_spdt` parts sharing two traveler nets; do not place SPST switches in series.",
-      "For an automotive turn-signal path use `automotive_flasher_3pin` with B/L/P nets and `switch_spdt_center_off` for the left/off/right selector; these are real three-pin symbols, not generic aliases.",
-      "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
-      "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
+      "Omit `dir=` in netlist mode by default so topology can orient each part. Use it only when the requested electrical meaning requires a specific symbol direction.",
     ],
     avoid: [
       "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
       "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
       "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
-      "Do not model two-way/three-way light switching as a simple series chain of `switch_spst`; use traveler nets and `switch_spdt`/crossover switching.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
-      "Don't invent an automotive `flasher` placeholder or model a center-off selector as a two-pin switch; use the supported three-pin automotive types.",
+      "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -391,7 +385,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Annotate nodes with `[label: \"…\", rating: \"…\", voltage: \"…\"]`; for IEC residential boards use `consumer_unit`, `rcd`, breaker `curve`/`icn`, RCD `rcd_type`/`sensitivity`, and edge `cable_csa`/`cable_insulation`.",
     ],
     avoid: [
-      "Avoid nodeTypes not in the catalog — an unrecognised type renders as a flagged `?` placeholder; pick the closest canonical type or alias (meter->watthour_meter, inverter->vfd, isolator->switch_load).",
+      "Avoid nodeTypes not in the catalog — an unrecognised type renders as a flagged `?` placeholder. A PV/static inverter may use a generic `load [label: \"Grid-tie Inverter\"]`; reserve `vfd` for a motor drive.",
       "Avoid chained arrow syntax (`a -> b -> c`) — each connection must be its own line.",
       "Avoid using `[standard: iec]` with ANSI-only devices (`recloser`, `sectionalizer`, `watthour_meter`) — they have no IEC symbol and render with a warning.",
     ],
@@ -399,7 +393,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'Connection references unknown node' -> declare the node with `id = nodeType` before the `->` line that names it.",
       "'Duplicate node id' -> each id must appear on exactly one `id = nodeType` line; rename the second occurrence.",
       "'Cannot parse line' -> every non-blank line must be the `sld` header, a node declaration (`id = type [attrs]`), or a connection (`id -> id [attrs]`).",
-      "'unrecognised type' -> replace the unknown type with a catalog type or alias (e.g. `inverter` -> `vfd`).",
+      "'unrecognised type' -> replace it with a catalog type or alias. Do not map a PV inverter to `vfd`; use a labeled generic `load` until a dedicated static-converter symbol is available.",
     ],
   },
   entity: {
@@ -751,12 +745,12 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'pid "Title"',
     mode: "equipment + process/signal lines + instrument declarations",
     keywords:
-      'pid "title" [direction: LR|TB] · equip ID : type [tag:"…"] · line ID from A[.port] to B[.port] [type: process|process_minor|pneumatic|electric|hydraulic|capillary|software|mechanical, size:"…", service:"…"] · inst TAG : category + indented measures EQUIP_OR_LINE / controls EQUIP · equipment: tank_atm tank_cone_roof vessel_v vessel_h sphere column_tray column_packed hx_shell_tube hx_air_cooled reboiler condenser pump_centrifugal pump_pd compressor blower reactor_cstr reactor_pfr filter cyclone flare cooling_tower boiler burner generator valve_gate valve_ball valve_globe valve_butterfly valve_check valve_control valve_psv · instrument categories: field_discrete field_shared field_computer field_plc cr_discrete cr_shared cr_computer cr_plc local_discrete local_shared',
+      'pid "title" [direction: LR|TB] · equip ID : type [tag:"…"] · pumps: pump_general|pump_centrifugal|pump_diaphragm|pump_pd · filter ports: in|out|top|backwash|drain · valve_control [actuator:diaphragm|piston|motor|solenoid, fail:FC|FO|FL] with .signal port · line ID from A[.port] to B[.port] [type: process|process_minor|pneumatic|electric|hydraulic|capillary|software|mechanical, size:"…", service:"…"] · inst TAG : category + indented measures EQUIP_OR_LINE / controls EQUIP · equipment: tank_atm tank_cone_roof vessel_v vessel_h sphere column_tray column_packed hx_shell_tube hx_air_cooled reboiler condenser pump_general pump_centrifugal pump_diaphragm pump_pd compressor blower reactor_cstr reactor_pfr filter cyclone flare cooling_tower boiler burner generator valve_gate valve_ball valve_globe valve_butterfly valve_check valve_control valve_psv · instrument categories: field_discrete field_shared field_computer field_plc cr_discrete cr_shared cr_computer cr_plc local_discrete local_shared',
     forms: [
       'pid "Water Pump Flow Control"',
       'equip T-101 : tank_atm [tag: "Feed Tank"]',
       'equip P-101 : pump_centrifugal [tag: "Feed Pump"]',
-      'equip V-101 : valve_control',
+      'equip V-101 : valve_control [actuator: "diaphragm", fail: "FC"]',
       'line L1 from T-101.bottom to P-101.in [service: "water", type: "process"]',
       'line L2 from P-101.out to V-101.in [type: "process"]',
       "inst FT-101 : field_discrete",
@@ -769,17 +763,19 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Declare `equip` first, then `line` connections, then `inst` bubbles. Use ISA tag conventions (`FT-101` flow transmitter, `FIC-101` flow indicating controller).",
       "Use the indented `measures LINE_OR_EQUIP` and `controls EQUIP` continuations under an `inst` to declare loop membership.",
-      "Use canonical `[type: …]` line types: `electric` for transmitter->controller, `pneumatic` for controller->control-valve, `software` for DCS/PLC bus.",
+      "Use canonical `[type: …]` signal types: `electric` for transmitter->controller and motor/solenoid actuators; `pneumatic` for diaphragm/piston actuators; `software` for DCS/PLC bus.",
+      "Name filter service anchors explicitly: `.backwash` for the wash connection and `.drain` for the bottom drain. A misspelled explicit port produces `PID_UNKNOWN_PORT` instead of being silently trusted.",
     ],
     avoid: [
       "Avoid SLD electrical nodes (`transformer`, `breaker`, `bus`) inside a P&ID — use `sld` for electrical single-lines.",
       "Don't invent equipment types; an unrecognised type renders as a flagged placeholder (use `hx_shell_tube` not `heat_exchanger`, `vessel_h` not `vessel_horizontal`, `reactor_cstr` not `cstr`).",
-      "Don't omit `[type: electric]` on a transmitter->controller line or `[type: pneumatic]` on a controller->control-valve line — both default to `process` pipe with a warning.",
+      "Don't omit the explicit signal `line`: `measures` and `controls` establish semantic ownership and placement, but do not invent connectivity. Match the line type to the actuator.",
     ],
     repair: [
       "'Unparseable line' -> every body line must start with `equip`, `line`, `inst`, `measures`, or `controls`.",
       "'unrecognised type' -> replace the unknown equipment type with a catalog type (exchanger->hx_shell_tube, vessel_horizontal->vessel_h, cstr->reactor_cstr).",
-      "'no signal path to a controller' -> add a signal line from the transmitter to a controller (C in the tag, e.g. FIC), or add the `controls` continuation under the controller.",
+      "'not a supported port' -> replace the misspelled anchor with a port listed in the diagnostic; filter service ports are `backwash` and `drain`, and a control-valve signal terminates at `.signal`.",
+      "'no signal path to a receiving instrument' -> add an electric signal line from the transmitter to a controller, indicator, recorder, alarm, switch, relay, or final driver.",
     ],
   },
   erd: {

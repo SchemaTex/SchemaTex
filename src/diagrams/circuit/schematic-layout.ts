@@ -13,12 +13,11 @@
  *
  * Three conventions drive this module:
  *
- *   1. POWER AND GROUND ARE NOT WIRES. A real schematic almost never runs a
- *      supply bus across the page; each pin that sits on a supply net gets a
- *      local flag (a Vcc bar, a ground rake) right next to it. That removes
- *      the majority of the wires from the drawing — and, more importantly, it
- *      frees placement, because components no longer have to line up along a
- *      rail to reach power.
+ *   1. POWER AND GROUND ARE NOT SIGNAL WIRES. The general path gives supply
+ *      pins local flags instead of dragging buses across an arbitrary graph.
+ *      A compact single-controller circuit is the deliberate exception: its
+ *      peripheral branches share short top and bottom rails, which expose the
+ *      circuit's functional grouping without constraining a multi-IC layout.
  *
  *   2. SIGNAL FLOWS LEFT TO RIGHT. X comes from topological depth along the
  *      signal path, not from the order the author happened to type components.
@@ -391,6 +390,400 @@ function finalize(
   };
 }
 
+interface HubBranch {
+  ordered: Array<{
+    component: CircuitComponent;
+    fromNet: string;
+    toNet: string;
+  }>;
+  hubAnchors: PinAnchor[];
+  side: "left" | "right";
+}
+
+/**
+ * Lay out a single functional block with a passive network around it.
+ *
+ * The trigger is deliberately structural: exactly one large multi-pin symbol,
+ * one optional source, and two-terminal peripheral branches. The renderer does
+ * not inspect the IC type, title, labels, reference designators, or exact net
+ * names. This covers the common timer/controller/regulator schematic grammar
+ * while falling back safely for multi-IC and genuinely arbitrary graphs.
+ */
+function trySingleIcHubLayout(
+  ast: CircuitAST,
+  allPins: PinRef[],
+  groundNets: Set<string>,
+  powerNets: Set<string>
+): AutoLayoutResult | null {
+  const isSupplyNet = (net: string) =>
+    groundNets.has(net) || powerNets.has(net);
+  const sources = ast.components.filter(isPowerSourceType);
+  if (sources.length > 1) return null;
+
+  // An author-specified orientation is an explicit visual contract. This
+  // primitive chooses orientations as part of arranging vertical branches,
+  // so let the generic layout preserve the hint instead of second-guessing it.
+  if (ast.components.some((component) => component.attrs?.dirExplicit === "true")) {
+    return null;
+  }
+
+  const hubs = ast.components.filter((component) => {
+    if (isPowerSourceType(component) || isGroundType(component)) return false;
+    const entries = pinEntriesOf(ast, component);
+    if (entries.length < 4) return false;
+    const sym = effectiveSymbolDef(component.componentType, component.attrs);
+    const anchors = entries
+      .map(([pinName]) => sym.anchors[pinName])
+      .filter((anchor): anchor is PinAnchor => !!anchor);
+    if (anchors.length < 4 || sym.length < 60) return false;
+    const ys = anchors.map((anchor) => anchor.y);
+    return Math.max(...ys) - Math.min(...ys) >= 36;
+  });
+  if (hubs.length !== 1) return null;
+  const hub = hubs[0]!;
+  const peripherals = ast.components.filter(
+    (component) =>
+      component.id !== hub.id &&
+      !isPowerSourceType(component) &&
+      !isGroundType(component)
+  );
+  if (
+    peripherals.length < 2 ||
+    peripherals.some((component) => pinEntriesOf(ast, component).length !== 2)
+  ) {
+    return null;
+  }
+
+  const hubSym = effectiveSymbolDef(hub.componentType, hub.attrs);
+  const hubPinNets = new Map<string, PinAnchor[]>();
+  const hubX = 280;
+  const hubY = 210;
+  const hubItem = placeAt(hub, hubX, hubY, "right");
+  for (const [pinName, net] of pinEntriesOf(ast, hub)) {
+    const anchor = hubItem.anchors[pinName];
+    if (!anchor) return null;
+    const list = hubPinNets.get(net) ?? [];
+    list.push(anchor);
+    hubPinNets.set(net, list);
+  }
+
+  // Peripheral connected components are branch groups. Supply nets do not
+  // glue otherwise unrelated branches together; signal nets do.
+  const idsBySignalNet = new Map<string, string[]>();
+  for (const component of peripherals) {
+    for (const [, net] of pinEntriesOf(ast, component)) {
+      if (isSupplyNet(net)) continue;
+      const ids = idsBySignalNet.get(net) ?? [];
+      ids.push(component.id);
+      idsBySignalNet.set(net, ids);
+    }
+  }
+  const byId = new Map(peripherals.map((component) => [component.id, component]));
+  const neighbours = new Map(peripherals.map((component) => [component.id, new Set<string>()]));
+  for (const ids of idsBySignalNet.values()) {
+    for (const a of ids) {
+      for (const b of ids) if (a !== b) neighbours.get(a)!.add(b);
+    }
+  }
+  const groups: string[][] = [];
+  const seen = new Set<string>();
+  for (const component of peripherals) {
+    if (seen.has(component.id)) continue;
+    const ids: string[] = [];
+    const queue = [component.id];
+    seen.add(component.id);
+    while (queue.length) {
+      const id = queue.shift()!;
+      ids.push(id);
+      for (const next of neighbours.get(id) ?? []) {
+        if (seen.has(next)) continue;
+        seen.add(next);
+        queue.push(next);
+      }
+    }
+    groups.push(ids);
+  }
+
+  const branches: HubBranch[] = [];
+  const hubCenterX = hubX + hubSym.length / 2;
+  for (const ids of groups) {
+    const edges = ids.map((id) => {
+      const component = byId.get(id)!;
+      const pins = pinEntriesOf(ast, component);
+      return { component, a: pins[0]![1], b: pins[1]![1] };
+    });
+    const degree = new Map<string, number>();
+    for (const edge of edges) {
+      degree.set(edge.a, (degree.get(edge.a) ?? 0) + 1);
+      degree.set(edge.b, (degree.get(edge.b) ?? 0) + 1);
+    }
+    const endpoints = [...degree]
+      .filter(([, count]) => count === 1)
+      .map(([net]) => net);
+    if (endpoints.length !== 2) return null;
+    const startNet =
+      endpoints.find((net) => powerNets.has(net)) ??
+      endpoints.find((net) => hubPinNets.has(net) && !isSupplyNet(net)) ??
+      endpoints[0]!;
+    const ordered: HubBranch["ordered"] = [];
+    const used = new Set<string>();
+    let currentNet = startNet;
+    while (ordered.length < edges.length) {
+      const candidates = edges.filter(
+        (edge) =>
+          !used.has(edge.component.id) &&
+          (edge.a === currentNet || edge.b === currentNet)
+      );
+      if (candidates.length !== 1) return null;
+      const edge = candidates[0]!;
+      const toNet = edge.a === currentNet ? edge.b : edge.a;
+      ordered.push({ component: edge.component, fromNet: currentNet, toNet });
+      used.add(edge.component.id);
+      currentNet = toNet;
+    }
+    if (!endpoints.includes(currentNet)) return null;
+
+    const groupNets = new Set(
+      ordered.flatMap((edge) => [edge.fromNet, edge.toNet])
+    );
+    const hubAnchors = [...groupNets]
+      .filter((net) => !isSupplyNet(net))
+      .flatMap((net) => hubPinNets.get(net) ?? []);
+    if (hubAnchors.length === 0) return null;
+    const averageX =
+      hubAnchors.reduce((sum, anchor) => sum + anchor.x, 0) /
+      hubAnchors.length;
+    if (Math.abs(averageX - hubCenterX) < hubSym.length * 0.2) return null;
+    branches.push({
+      ordered,
+      hubAnchors,
+      side: averageX < hubCenterX ? "left" : "right",
+    });
+  }
+
+  const leftBranches = branches
+    .filter((branch) => branch.side === "left")
+    .sort(
+      (a, b) =>
+        Math.min(...a.hubAnchors.map((anchor) => anchor.y)) -
+        Math.min(...b.hubAnchors.map((anchor) => anchor.y))
+    );
+  const rightBranches = branches
+    .filter((branch) => branch.side === "right")
+    .sort(
+      (a, b) =>
+        Math.min(...a.hubAnchors.map((anchor) => anchor.y)) -
+        Math.min(...b.hubAnchors.map((anchor) => anchor.y))
+    );
+
+  const topRailY = 44;
+  const bottomRailY = 392;
+  const railLeftX = 62;
+  const railRightX =
+    hubX + hubSym.length + 145 + Math.max(0, rightBranches.length - 1) * 72;
+  const items: LaidOutComponent[] = [hubItem];
+  const placed = new Map<string, LaidOutComponent>([[hub.id, hubItem]]);
+
+  if (sources[0]) {
+    const source = placeAt(
+      sources[0],
+      railLeftX + 18,
+      (topRailY + bottomRailY) / 2 + 12,
+      "up"
+    );
+    source.labelPos = {
+      x: railLeftX + 68,
+      y: (topRailY + bottomRailY) / 2 - 4,
+    };
+    items.push(source);
+    placed.set(source.component.id, source);
+  }
+
+  const placeBranch = (branch: HubBranch, index: number) => {
+    const x =
+      branch.side === "left"
+        ? hubX - 92 - index * 72
+        : hubX +
+          hubSym.length +
+          92 +
+          (rightBranches.length - 1 - index) * 72;
+    const firstNet = branch.ordered[0]!.fromNet;
+    const lastNet = branch.ordered[branch.ordered.length - 1]!.toNet;
+    const startHubY = hubPinNets.get(firstNet)?.[0]?.y;
+    const endHubY = hubPinNets.get(lastNet)?.[0]?.y;
+    const lo = powerNets.has(firstNet)
+      ? topRailY + 28
+      : startHubY !== undefined
+        ? startHubY + 24
+        : topRailY + 60;
+    const hi = groundNets.has(lastNet)
+      ? bottomRailY - 48
+      : endHubY !== undefined
+        ? endHubY - 24
+        : bottomRailY - 60;
+    if (hi <= lo) return false;
+    const step = (hi - lo) / (branch.ordered.length + 1);
+    for (const [edgeIndex, edge] of branch.ordered.entries()) {
+      const entries = pinEntriesOf(ast, edge.component);
+      const fromPin = entries.find(([, net]) => net === edge.fromNet)?.[0];
+      const toPin = entries.find(([, net]) => net === edge.toNet)?.[0];
+      const sym = effectiveSymbolDef(edge.component.componentType, edge.component.attrs);
+      if (!fromPin || !toPin || !sym.anchors[fromPin] || !sym.anchors[toPin]) {
+        return false;
+      }
+      const direction =
+        sym.anchors[fromPin]!.x <= sym.anchors[toPin]!.x ? "down" : "up";
+      const rotation = rotationOf(direction);
+      const fromOffset = rotatePt(sym.anchors[fromPin]!, rotation).y;
+      const toOffset = rotatePt(sym.anchors[toPin]!, rotation).y;
+      const signalY = (net: string) => {
+        if (isSupplyNet(net)) return undefined;
+        const anchors = hubPinNets.get(net);
+        if (!anchors?.length) return undefined;
+        return anchors.reduce((sum, anchor) => sum + anchor.y, 0) / anchors.length;
+      };
+      const fromTarget = signalY(edge.fromNet);
+      const toTarget = signalY(edge.toNet);
+      const fallbackY = lo + step * (edgeIndex + 1);
+      const y =
+        fromTarget !== undefined && toTarget !== undefined
+          ? ((fromTarget - fromOffset) + (toTarget - toOffset)) / 2
+          : fromTarget !== undefined
+            ? fromTarget - fromOffset
+            : toTarget !== undefined
+              ? toTarget - toOffset
+              : fallbackY;
+      const laid = placeAt(edge.component, x, y, direction);
+      items.push(laid);
+      placed.set(edge.component.id, laid);
+    }
+    return true;
+  };
+  if (leftBranches.some((branch, index) => !placeBranch(branch, index))) return null;
+  if (rightBranches.some((branch, index) => !placeBranch(branch, index))) return null;
+
+  // A declared ground remains a visible component at the rail endpoint. The
+  // parser-generated ground uses the same path, so the rail has one reference
+  // mark instead of a rake under every ground-connected pin.
+  const groundComponents = ast.components.filter(isGroundType);
+  groundComponents.forEach((ground, index) => {
+    const laid = placeAt(
+      ground,
+      railRightX - index * 28,
+      bottomRailY,
+      "down"
+    );
+    items.push(laid);
+    placed.set(ground.id, laid);
+  });
+
+  const pinsByNet = new Map<
+    string,
+    Array<{ pt: PinAnchor; compId: string; pinName: string }>
+  >();
+  for (const pin of allPins) {
+    const host = placed.get(pin.compId);
+    const anchor = host?.anchors[pin.pinName];
+    if (!anchor) continue;
+    const list = pinsByNet.get(pin.net) ?? [];
+    list.push({ pt: anchor, compId: pin.compId, pinName: pin.pinName });
+    pinsByNet.set(pin.net, list);
+  }
+
+  const routes: RoutedWire[] = [];
+  for (const net of [...powerNets, ...groundNets]) {
+    const pins = pinsByNet.get(net) ?? [];
+    if (pins.length === 0) continue;
+    const railY = groundNets.has(net) ? bottomRailY : topRailY;
+    routes.push({
+      netId: net,
+      points: [
+        { x: railLeftX, y: railY },
+        { x: railRightX, y: railY },
+      ],
+      junctions: pins.map((pin) => ({ x: pin.pt.x, y: railY })),
+    });
+    for (const pin of pins) {
+      if (Math.abs(pin.pt.y - railY) < 0.5) continue;
+      routes.push({
+        netId: `${net}.${pin.compId}.${pin.pinName}`,
+        points: [pin.pt, { x: pin.pt.x, y: railY }],
+      });
+    }
+  }
+
+  const signalSpines: Array<{ side: "left" | "right"; x: number }> = [];
+  for (const [net, pins] of pinsByNet) {
+    if (isSupplyNet(net) || pins.length < 2) continue;
+    const hubPins = pins.filter((pin) => pin.compId === hub.id);
+    const allLeft = hubPins.length > 0 && hubPins.every((pin) => pin.pt.x < hubCenterX);
+    const allRight = hubPins.length > 0 && hubPins.every((pin) => pin.pt.x > hubCenterX);
+    if (allLeft || allRight) {
+      const outsidePins = pins.filter((pin) => pin.compId !== hub.id);
+      if (outsidePins.length === 0) continue;
+      const outerX = allLeft
+        ? Math.max(...outsidePins.map((pin) => pin.pt.x))
+        : Math.min(...outsidePins.map((pin) => pin.pt.x));
+      const blockEdgeX = allLeft
+        ? Math.max(...hubPins.map((pin) => pin.pt.x))
+        : Math.min(...hubPins.map((pin) => pin.pt.x));
+      let spineX = (outerX + blockEdgeX) / 2;
+      const side = allLeft ? "left" : "right";
+      const towardBlock = allLeft ? 18 : -18;
+      while (
+        signalSpines.some(
+          (spine) => spine.side === side && Math.abs(spine.x - spineX) < 16
+        )
+      ) {
+        spineX += towardBlock;
+      }
+      signalSpines.push({ side, x: spineX });
+      const minY = Math.min(...pins.map((pin) => pin.pt.y));
+      const maxY = Math.max(...pins.map((pin) => pin.pt.y));
+      if (maxY - minY > 0.5) {
+        routes.push({
+          netId: net,
+          points: [
+            { x: spineX, y: minY },
+            { x: spineX, y: maxY },
+          ],
+          junctions:
+            pins.length > 2
+              ? pins.map((pin) => ({ x: spineX, y: pin.pt.y }))
+              : undefined,
+        });
+      }
+      for (const pin of pins) {
+        routes.push({
+          netId: `${net}.${pin.compId}.${pin.pinName}`,
+          points: compactPoints([pin.pt, { x: spineX, y: pin.pt.y }]),
+        });
+      }
+      continue;
+    }
+
+    const sorted = [...pins].sort((a, b) => a.pt.x - b.pt.x);
+    for (let index = 1; index < sorted.length; index++) {
+      const a = sorted[index - 1]!.pt;
+      const b = sorted[index]!.pt;
+      const midY = freeChannelY(a, b, items.map((item) => boxOf(item, 5)));
+      routes.push({
+        netId: net,
+        points: compactPoints([
+          a,
+          { x: a.x, y: midY },
+          { x: b.x, y: midY },
+          b,
+        ]),
+      });
+    }
+  }
+
+  placeLabels(items, routes);
+  hubItem.labelPos = { x: hubCenterX, y: hubY + 88 };
+  return finalize(items, routes, []);
+}
+
 /**
  * Lay a netlist out along schematic conventions. Returns null when the netlist
  * carries no pin map, which is the one case where there is nothing to reason
@@ -425,6 +818,14 @@ export function schematicNetlistLayout(
   }
 
   const isSupplyNet = (net: string) => groundNets.has(net) || powerNets.has(net);
+
+  const singleIcHub = trySingleIcHubLayout(
+    ast,
+    allPins,
+    groundNets,
+    powerNets
+  );
+  if (singleIcHub) return singleIcHub;
 
   // Ground symbols the author declared are not discarded — every declared
   // component must appear in the layout. They are re-used as the local flag

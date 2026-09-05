@@ -1,6 +1,8 @@
 import type { SchematexDiagnostic } from "../../core/diagnostics";
 import type { PidAST, PidInstrument, PidLineType } from "./types";
+import { PID_ACTUATOR_TYPES, PID_FAIL_POSITIONS } from "./types";
 import { parsePid } from "./parser";
+import { GEOMETRY, normalizePidActuator } from "./symbols";
 
 /**
  * ISA-5.1 instrument-loop completeness lint.
@@ -79,11 +81,62 @@ export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
     });
   }
 
+  const equipById = new Map(ast.equipment.map((eq) => [eq.id, eq]));
+
+  // ── Rule 0b: explicit equipment ports must exist ───────────────
+  // A misspelled port must never be routed through a plausible-looking
+  // default inlet/outlet. The renderer still draws a partial result, while
+  // the diagnostic makes the semantic substitution visible.
+  for (const line of ast.lines) {
+    for (const [role, anchor] of [["from", line.from], ["to", line.to]] as const) {
+      if (!anchor.port) continue;
+      const eq = equipById.get(anchor.id);
+      if (!eq || eq.equipType === "unknown") continue;
+      const ports = GEOMETRY[eq.equipType].ports;
+      if (anchor.port in ports) continue;
+      out.push({
+        severity: "warning",
+        code: "PID_UNKNOWN_PORT",
+        message: `line ${line.id} ${role} anchor ${anchor.id}.${anchor.port} is not a supported port`,
+        hint: `${eq.equipType} supports: ${Object.keys(ports).join(", ")}. Fix the named port; the partial preview uses the normal ${role === "from" ? "outlet" : "inlet"} only to keep the diagram inspectable.`,
+        fatal: false,
+      });
+    }
+  }
+
+  // ── Rule 0c: control-valve modifiers use a small typed contract ─
+  for (const eq of ast.equipment) {
+    if (eq.equipType !== "valve_control") continue;
+    if (eq.attrs.actuator && !normalizePidActuator(eq.attrs.actuator)) {
+      out.push({
+        severity: "warning",
+        code: "PID_UNKNOWN_ACTUATOR",
+        message: `control valve ${eq.id} has unsupported actuator '${eq.attrs.actuator}'`,
+        hint: `Use one of: ${PID_ACTUATOR_TYPES.join(", ")}. The partial preview uses diaphragm.`,
+        fatal: false,
+      });
+    }
+    if (
+      eq.attrs.fail &&
+      !PID_FAIL_POSITIONS.includes(eq.attrs.fail.trim().toUpperCase() as (typeof PID_FAIL_POSITIONS)[number])
+    ) {
+      out.push({
+        severity: "warning",
+        code: "PID_UNKNOWN_FAIL_POSITION",
+        message: `control valve ${eq.id} has unsupported fail position '${eq.attrs.fail}'`,
+        hint: `Use FC (fail closed), FO (fail open), or FL (fail in last position).`,
+        fatal: false,
+      });
+    }
+  }
+
   const instByTag = new Map<string, PidInstrument>();
   for (const inst of ast.instruments) instByTag.set(inst.tag, inst);
 
-  const controlValveIds = new Set(
-    ast.equipment.filter((e) => e.equipType === "valve_control").map((e) => e.id)
+  const controlValves = new Map(
+    ast.equipment
+      .filter((e) => e.equipType === "valve_control")
+      .map((e) => [e.id, e])
   );
 
   // ── Adjacency among instruments via signal lines ───────────────
@@ -159,16 +212,24 @@ export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
       continue;
     }
 
-    // controller ↔ control valve → expect pneumatic (3–15 psi to actuator)
-    const ctrlToValve =
-      (aInst && isController(a) && controlValveIds.has(b)) ||
-      (bInst && isController(b) && controlValveIds.has(a));
-    if (ctrlToValve && ln.lineType !== "pneumatic") {
+    // Controller ↔ control valve follows the authored actuator energy source.
+    const valve =
+      aInst && isController(a) ? controlValves.get(b) :
+      bInst && isController(b) ? controlValves.get(a) : undefined;
+    const actuator = valve
+      ? (normalizePidActuator(valve.attrs.actuator) ?? (valve.attrs.actuator ? undefined : "diaphragm"))
+      : undefined;
+    const expectedSignal = actuator === "motor" || actuator === "solenoid"
+      ? "electric"
+      : actuator === "diaphragm" || actuator === "piston"
+        ? "pneumatic"
+        : undefined;
+    if (valve && expectedSignal && ln.lineType !== expectedSignal) {
       out.push({
         severity: "warning",
         code: "PID_SIGNAL_TYPE_MISMATCH",
-        message: `signal line ${a}→${b} is '${ln.lineType}' but a controller→control-valve link should be 'pneumatic' (ISA-5.1 §5.2)`,
-        hint: `Set [type: pneumatic] on this line, or use [type: electric] only if the valve has an electric actuator.`,
+        message: `signal line ${a}→${b} is '${ln.lineType}' but a ${actuator} actuator should be '${expectedSignal}'`,
+        hint: `Set [type: ${expectedSignal}] on this line, or change the valve's actuator attribute to match the actual final control element.`,
         fatal: false,
       });
     }
