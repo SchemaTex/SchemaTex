@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.14] — 2026-09-04
+## [1.0.14] — 2026-09-05
 
-### Changed — P&ID, circuit, and SLD layouts follow topology without adding new DSL syntax
+### Changed — P&ID, circuit, and SLD layouts follow topology; P&ID gains reusable parts
 
 - **P&ID now follows process flow.** Parallel trains share a stage, recycle and bypass paths use separate return channels, shared process endpoints receive junction dots, and field instruments stay clear of equipment labels. Catalog-style P&IDs with no process connections keep their previous declaration-order layout.
 - **Water-treatment P&IDs can name the equipment they actually contain.** Added ISO 10628-style `pump_general` and `pump_diaphragm` glyphs; media filters expose distinct `.top`, `.backwash`, and `.drain` anchors; and `valve_control` composes `diaphragm`, `piston`, `motor`, or `solenoid` actuators with `FC`/`FO`/`FL` state. Controller-line lint follows the selected actuator—electric for motor/solenoid, pneumatic for diaphragm/piston—and a misspelled explicit port now produces `PID_UNKNOWN_PORT` instead of silently borrowing a plausible inlet or outlet.
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Every structurally skipped-rank SLD source becomes a side feeder.** The earlier three-rank cutoff happened to fit the commercial-solar benchmark but failed on ordinary two-stage systems, placing Utility inside the PV source bank. The rule now follows the graph relationship itself; true peer sources keep their normal spacing.
 - **Auxiliary circuit branches no longer collapse a recognized load bank into generic fallback.** Selector-like distributors and output groups are discovered from connectivity—not component types, ids, labels, or pin names—and routed from their actual owner component, so a pilot or status branch can sit between the two outer load banks while retaining the shared return rail. Banks pack from each lane's measured symbol and label footprint, so a long label widens only its neighboring lanes; the source return stays outside the load rails. Reordered declarations, renamed components, generic three-net distributors, and uneven label lengths are covered explicitly.
 - **Single-controller circuits now read by function instead of declaration order.** When one multi-pin functional block is surrounded by simple two-terminal branches, connectivity places each branch on the side of the pins it serves, aligns branch junctions with those pins, separates signal routing channels, and shares the power rails. The 555 symbol now keeps its physical DIP netlist order while drawing supply, timing, control, and output pins in their conventional schematic groups. The rule also covers generic controller blocks, ignores IDs and labels, respects explicit `dir=` by falling back, and leaves multi-IC or non-chain graphs on the general layout.
-- **The public DSL is unchanged.** These are renderer improvements over the existing P&ID, circuit, and SLD forms; existing agents do not need a migration or compatibility mode.
+- **Existing syntax remains valid, and the new P&ID vocabulary is additive.** Agents can now author `pump_general` and `pump_diaphragm`, connect filter `.top` / `.backwash` / `.drain` ports, and select a control-valve `actuator` plus `fail` position. Circuit and SLD forms do not change, and no compatibility mode is required.
 
 ### Changed — the npm-facing agent contract is shorter and copyable
 
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added — repeatable visual evidence
 
-- **One flat visual-contract page covers five P&ID and electrical stress cases.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. New audit cases expose an auxiliary circuit branch and a two-stage SLD feeder. The first 555 attempt was removed because it encoded one fixture; its replacement is visibly verified against the same target and driven by the reusable single-controller topology instead.
+- **One flat visual-contract page covers six P&ID and electrical stress cases.** Each case retains its baseline, current renderer candidate, and reviewed target; candidate generation never overwrites the baseline. A separate P&ID parts bench enlarges every new pump and actuator glyph, shows all fail positions, and overlays the filter's named port map directly from production geometry. New audit cases expose an auxiliary circuit branch and a two-stage SLD feeder. The first 555 attempt was removed because it encoded one fixture; its replacement is visibly verified against the same target and driven by the reusable single-controller topology instead.
 
 ### Added — floor plans now preserve the visual intent, not just valid syntax
 
