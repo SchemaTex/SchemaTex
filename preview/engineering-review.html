@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SchemaTex — Engineering evidence review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="engineering-review/review.css">
+</head>
+<body>
+  <header class="masthead"><a href="#top">SchemaTex <span>/ Engineering review</span></a><span class="stamp">LOCAL PREVIEW · 06 SEP 2026 PT</span></header>
+  <main id="top">
+    <section class="intro">
+      <p class="eyebrow">Real evidence → visual intent → testable behavior</p>
+      <h1>A credible drawing starts<br>with a credible model.</h1>
+      <p class="lead">Before → ideal reference → actual candidate rendering. Original inputs stay unchanged. This implementation improves Logic routing, Breadboard DIP geometry and styling, and Floorplan electrical annotations. Unresolved cases remain visible, not silently corrected.</p>
+      <div class="legend"><span><i class="dot current"></i>Before · v1.0.14 / 5009338</span><span><i class="dot ideal"></i>Ideal · authored SVG or ImageGen concept</span><span><i class="dot proposal"></i>After · actual candidate SVG</span></div>
+      <p class="notice">Local implementation candidate, not an npm release. The ideal stays in the middle. P&amp;ID packages/services and malformed LM741 pin semantics are not solved by this change. No example-name or component-ID layout rules were added.</p>
+      <p class="notice">Audit: 2,976 tests passed across 199 files, including 221 published SVG fixtures. Typecheck and build passed. Thirteen candidate replays match the actual renderer. Desktop/mobile, keyboard, linked selection and image dialog checked. Lint: zero errors; warnings remain.</p>
+      <p class="notice">Research correction: 165 users / 253 electrical quotes described a use-case cluster, not 165 confirmed failures. UserSay evidence below is dated and anonymized. A reconstructed fixture is never labelled as an original user drawing.</p>
+    </section>
+    <nav aria-label="Review cases"><a href="#logic">Logic routing</a><a href="#opamp">Circuit semantics</a><a href="#pid">P&amp;ID scope</a><a href="#linked">Linked views</a><a href="#breadboard">Physical pins</a><a href="#replays">More replays</a><a href="#architecture">System plan</a></nav>
+    <div id="cases"><p>Loading review evidence…</p></div>
+    <section id="replays" class="section"><p class="eyebrow">Published examples + original production artifacts</p><h2>Keep the awkward cases in the test set.</h2><p>These are additional current-version replays, not hand-corrected drawings. A green parser status does not certify electrical correctness or visual readability. Open any image to inspect it at full size.</p><div id="replay-grid" class="replay-grid"></div></section>
+    <section id="architecture" class="section architecture">
+      <p class="eyebrow">Implementation direction · proposed, not shipped</p><h2>Share the geometry tools. Keep each domain's meaning.</h2>
+      <p class="lead">Circuit nets, P&amp;ID services, floorplan objects and breadboard contacts are different models. They can share bounds, text measurement, stable scene identity and collision tests without being forced into one universal layout engine.</p>
+      <div class="pipeline"><article><b>1 · Author intent</b><p>Exact components, ports, package members, circuit membership and physical orientation.</p></article><article><b>2 · Resolve meaning</b><p>Domain adapter resolves named connections and rejects unknown pins or ambiguous ownership.</p></article><article><b>3 · Place + route</b><p>Domain layout supplies ports, obstacles and label bounds to reusable geometry tools.</p></article><article><b>4 · Check + publish</b><p>Scene carries diagnostics and identities. The host displays partial results honestly.</p></article></div>
+      <div class="plan-grid">
+        <article><h3>Start with the reproduced errors</h3><p>Fix DIP numbering, footprint pitch and pin markers together. Give Circuit an exact pin-count contract. Make Logic gate bodies opaque and route around symbol/label obstacles. These have concrete, inspectable failures now.</p><p class="accept">Acceptance: 8 physical pins agree with 8 resolved holes; no surplus pin tokens become a label; no unrelated wire crosses a gate body.</p></article>
+        <article><h3>Add packages to P&amp;ID</h3><p>Reuse the existing grouping concepts from Network / UML where useful, but keep process connectivity separate. Authored member IDs determine a frame's bounds. Initially reject overlapping or nested packages clearly if they are not implemented.</p><p class="accept">Acceptance: rename IDs or reorder equipment and membership stays identical. Pipes cross a frame without clipping. Service styles preserve engineering line types.</p></article>
+        <article><h3>Make linked views a host capability</h3><p>Start with authored outlet IDs and a small circuit-membership map in the host. Expose those IDs consistently through the current renderers. The live experiment demonstrates selection without inventing a universal document model.</p><p class="accept">Acceptance: selecting either outlet occurrence highlights both; hiding electrical annotations leaves walls intact; source changes invalidate transient bindings. Durable edit reconciliation remains separate work.</p></article>
+        <article><h3>Measure the final drawing</h3><p>Check node/label intersections, false junctions, component coverage and text size at the intended viewport. A known partial remains visible as partial; the renderer must not silently change the user's circuit to make it prettier.</p><p class="accept">Acceptance: a deliberately disconnected feedback net remains flagged. Dense drawings explain why they need more space instead of shrinking silently.</p></article>
+      </div>
+      <details><summary>How we prevent case-specific fixes</summary><ul><li>Run the same fixture with renamed IDs, reordered declarations and longer labels.</li><li>Add and remove one branch; verify that layout degrades gradually without discarding the topology.</li><li>Test sparse and dense circuits, feedback loops, multi-pin parts, and intentional no-connects.</li><li>Verify light, dark, grayscale and narrow viewport output. Junctions cannot depend on color alone.</li><li>For breadboards, test DIP-8 and DIP-14, opposite orientations, half/full boards and rail breaks. Never infer rail continuity from a colored stripe.</li><li>Keep the original DSL unchanged in regression fixtures. A corrected-intent fixture is a separate source with an explicit change list.</li></ul></details>
+      <p class="notice">The right-hand column now shows real candidate output from the exact original DSL. Architecture proposals above include remaining work; they are not claims that every acceptance check has been implemented.</p>
+    </section>
+    <footer><p>Source trail: GitHub issues, three original production artifacts, dated UserSay messages, and published SchemaTex examples. Private user names and email addresses are omitted. Production artifacts were not linked to UserSay sessions unless the relationship was verified.</p><p><a href="engineering-review/results.json">Replay results</a> · <a href="engineering-review/imagegen-prompts.json">ImageGen prompts</a> · <a href="engineering-review/review-notes.md">Evidence & architecture notes</a></p></footer>
+  </main>
+  <dialog id="viewer" aria-label="Full-size diagram"><div class="dialog-tools"><strong id="viewer-label"></strong><button id="close-viewer" type="button">Close ×</button></div><img id="viewer-image" alt=""><p>Scroll to inspect the full image. Press Escape to close.</p></dialog>
+  <script type="module" src="engineering-review/review.js"></script>
+</body>
+</html>

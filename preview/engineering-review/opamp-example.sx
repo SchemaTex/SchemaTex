@@ -1,0 +1,8 @@
+circuit "Inverting Op-Amp (netlist)" netlist
+Vin vin 0 AC1V
+Rin vin inv 10k
+Rf out inv 100k
+U1 noninv inv out type=opamp label="U1 TL072"
+Rbias noninv 0 10k
+Vp vcc 0 +12V
+Vn vee 0 -12V

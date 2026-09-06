@@ -86,6 +86,18 @@ function draw(type: FurnitureType, symbols: "nec" | "iec"): string {
 }
 
 describe("floorplan electrical symbol standards", () => {
+  it("draws a North American duplex with two strokes, not four", () => {
+    expect(draw("duplex-outlet", "nec").match(/<line /g)).toHaveLength(2);
+  });
+
+  it.each(WALL_SIDES)("places the outlet label outside its glyph on %s and exposes its authored ID", side => {
+    const svg = renderFloorplan(`floorplan\nroom r at 0,0 size 4x4\nfixture duplex-outlet O12 in r on ${side} at 50% "Outlet 1.2"`);
+    expect(svg).toContain('data-instance-id="O12"');
+    const position = svg.match(/data-furniture="duplex-outlet"[^>]*translate\(([\d.]+),([\d.]+)\)/)!;
+    const label = svg.match(/class="sx-fp-furn-label" x="([\d.]+)" y="([\d.]+)"[^>]*>Outlet 1.2/)!;
+    expect(position).not.toBeNull(); expect(label).not.toBeNull();
+    expect(Math.hypot(+position[1]! - +label[1]!, +position[2]! - +label[2]!)).toBeGreaterThan(15);
+  });
   it("marks every north-authored wall-facing glyph as directional", () => {
     const directional = Object.entries(FLOORPLAN_SYMBOLS)
       .filter(([, definition]) => definition.directional)

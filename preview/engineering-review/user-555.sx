@@ -1,0 +1,35 @@
+circuit "555 Timer Bin-Full Sensor Relay Control" netlist
+V1 vcc 0 12V label="+12V DC"
+
+R7 trig1 base1 10k label="R7 10K"
+Q1 base1 vcc n1 label="Q1 2N2222/8050"
+C7 base1 0 1u label="1uF 25V"
+
+R1 n1 disth 1k label="R1 1K"
+R2 disth trig 82k label="R2 82K"
+C_timing trig 0 100u label="100uF 25V C"
+
+U1 reset=n1 vcc=vcc dis=disth thr=trig trig=trig out=out gnd=0 ctrl=ctrlp type=ic555 label="IC 555"
+C_ctrl ctrlp 0 10n label="10nF"
+
+R3 n1 zd1a 1k label="R3 1K"
+D_zener1 zd1a out type=zener label="ZD1"
+
+R5 out relbase 10k label="R5 10K"
+Q2 relbase vcc n2 label="Q2 2N2222"
+
+R4 out zd2a 1k label="R4 1K"
+D_zener2 zd2a 0 type=zener label="ZD2"
+
+K1 vcc n2 no nc type=relay label="Relay 12V/15A"
+D_fly vcc n2 1N4007 label="Flyback Diode"
+
+D_load1 vcc lamp1a 1N5408 label="1N5408"
+Lamp1 lamp1a 0 type=lamp label="Load 1"
+D_load2 vcc lamp2a 1N5408 label="1N5408"
+Lamp2 lamp2a 0 type=lamp label="Load 2"
+
+R6 trig2 0 10k label="R6 10K"
+
+W1 trig1 trig1 label="Trigger from Bin 3/4th Sensor"
+W2 trig2 trig2 label="Trigger from Bin-Full Sensor"

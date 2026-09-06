@@ -8,6 +8,8 @@ export interface GateGeometry {
   outputPins: Array<{ id: string; x: number; y: number; label?: string; bubble?: boolean }>;
   /** Body SVG path (ANSI) */
   ansiPath: string;
+  /** Layout expands crowded pin rows; the outline follows the same transform. */
+  bodyScaleY?: number;
   /** Output bubble? */
   outputBubble?: boolean;
   /** Clock triangle pin id (sequential) */

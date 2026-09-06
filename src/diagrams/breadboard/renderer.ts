@@ -25,7 +25,7 @@ import {
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { resolveSceneTitle } from "../../core/title-scene";
 import { partSpec } from "./parts";
-import { breadboardCoordXY, layoutBreadboard, BB_CONST } from "./layout";
+import { breadboardCoordXY, breadboardPartBounds, layoutBreadboard, BB_CONST } from "./layout";
 import { parseBreadboard } from "./parser";
 
 const WIRE_COLOR_MAP: Record<string, string> = {
@@ -45,22 +45,27 @@ function buildCss(t: BaseTheme): string {
   return `
 .lt-bb { font-family: system-ui, -apple-system, sans-serif; }
 .lt-bb-title { font: 700 16px sans-serif; fill: ${t.text}; }
-.lt-bb-substrate { fill: #e7d8b6; stroke: #b08c4f; stroke-width: 1.5; }
+.lt-bb-substrate { fill: #f0f2f4; stroke: #9ca6af; stroke-width: 1.5; }
+.lt-bb-rail-break { fill: #f0f2f4; }
 .lt-bb-rail-pos { fill: #fde2e2; stroke: #dc2626; stroke-width: 0.6; }
 .lt-bb-rail-neg { fill: #dde7fa; stroke: #2563eb; stroke-width: 0.6; }
 .lt-bb-rail-stripe-pos { stroke: #dc2626; stroke-width: 1.2; }
 .lt-bb-rail-stripe-neg { stroke: #2563eb; stroke-width: 1.2; }
-.lt-bb-trough { fill: #fcfaf3; stroke: #b08c4f; stroke-width: 0.6; }
-.lt-bb-hole { fill: #fafaf6; stroke: #78350f; stroke-width: 0.4; }
-.lt-bb-hole-rail { fill: #fafaf6; stroke: #78350f; stroke-width: 0.4; }
-.lt-bb-col-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; }
-.lt-bb-row-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; dominant-baseline: middle; }
+.lt-bb-trough { fill: #dce1e5; stroke: #9ca6af; stroke-width: 0.6; }
+.lt-bb-hole { fill: #727d86; stroke: #fff; stroke-width: 0.4; }
+.lt-bb-hole-rail { fill: #727d86; stroke: #fff; stroke-width: 0.4; }
+.lt-bb-col-label { font: 7px sans-serif; fill: #47515a; text-anchor: middle; }
+.lt-bb-row-label { font: 7px sans-serif; fill: #47515a; text-anchor: middle; dominant-baseline: middle; }
 .lt-bb-lead { stroke: #94a3b8; stroke-width: 1.6; fill: none; stroke-linecap: round; }
 .lt-bb-resistor { fill: #f5e9c8; stroke: #92400e; stroke-width: 0.7; }
 .lt-bb-cap-can { fill: #94a3b8; stroke: #1f2937; stroke-width: 0.8; }
 .lt-bb-button { fill: #475569; stroke: #1e293b; stroke-width: 0.8; rx: 1; }
 .lt-bb-dip-body { fill: #1f2937; stroke: #475569; stroke-width: 0.8; }
 .lt-bb-dip-silk { font: 600 8px sans-serif; fill: #f3f4f6; }
+.lt-bb-dip-lead { stroke: #8c8c8c; stroke-width: 3; }
+.lt-bb-dip-number { font: 5px sans-serif; fill: #f3f4f6; }
+.lt-bb-dip-notch { fill: #111820; stroke: #8c8c8c; stroke-width: .6; }
+.lt-bb-dip-marker { fill: #f3f4f6; }
 .lt-bb-pin-label { font: 6.5px sans-serif; fill: #f3f4f6; dominant-baseline: middle; }
 .lt-bb-pin-label-sensor { font: 6.5px sans-serif; fill: #f3f4f6; dominant-baseline: middle; }
 .lt-bb-board-title { font: 600 9px sans-serif; fill: #f3f4f6; }
@@ -115,7 +120,7 @@ function renderSubstrate(sub: BreadboardLayoutSubstrate): string {
         const breakX2 = breakX1 + PITCH;
         elements.push(rectEl({
           x: breakX1, y: r.y, width: breakX2 - breakX1, height: BB_CONST.RAIL_HEIGHT,
-          fill: "#e7d8b6",
+          class: "lt-bb-rail-break",
         }));
       }
       // Rail holes
@@ -178,11 +183,12 @@ function editableCoord(coord: BreadboardCoord): { kind: "hole" | "rail"; col: nu
 function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[]): string {
   const spec = partSpec(lp.part.kind, lp.part.args);
   const body = spec.body(lp.part, lp.width, lp.height);
+  const bounds = breadboardPartBounds(lp);
   const labelText = lp.part.label ?? defaultPartLabel(lp);
   const labelEl = labelText
     ? textEl({
-        x: lp.x + lp.width / 2,
-        y: spec.category === "side" ? lp.y - 6 : lp.y - 4,
+        x: bounds.x + bounds.width / 2,
+        y: bounds.y - 6,
         class: "lt-bb-part-label",
       }, labelText)
     : "";
@@ -208,7 +214,7 @@ function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, sc
       kind: "node",
       semanticId: lp.part.id,
       label: lp.part.label ?? lp.part.id,
-      bbox: { x: lp.x, y: lp.y, width: lp.width, height: lp.height },
+      bbox: bounds,
       positionSource: {
         kind: "breadboard",
         range: lp.part.placementSourceRange!,
@@ -232,7 +238,7 @@ function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, sc
       "data-sx-owner": scene && canMove ? key : undefined,
     },
     [
-      group({ transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})` }, [body]),
+      group({ transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})${lp.rotation ? ` rotate(${lp.rotation} 0 ${lp.height / 2})` : ""}` }, [body]),
       labelEl,
     ],
   );

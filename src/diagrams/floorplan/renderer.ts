@@ -42,6 +42,7 @@ import type {
   RoutePoint,
 } from "./types";
 import { renderStageplotLayout } from "./stageplot";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 type Theme = ResolvedTheme<FloorplanTokens>;
 type EvacuationTheme = ResolvedTheme<EvacuationTokens>;
@@ -943,6 +944,13 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const warnSet = config?.__scene
     ? new Set(lay.warnItems)
     : new Set<number>();
+  const annotationBoxes: { x: number; y: number; width: number; height: number }[] = [];
+  const glyphBoxes = lay.items.map(item => {
+    const rad = item.rotate * Math.PI / 180;
+    const width = px(Math.abs(item.w * Math.cos(rad)) + Math.abs(item.h * Math.sin(rad)));
+    const height = px(Math.abs(item.w * Math.sin(rad)) + Math.abs(item.h * Math.cos(rad)));
+    return { x: X(item.x + item.w / 2) - width / 2, y: Y(item.y + item.h / 2) - height / 2, width, height };
+  });
   lay.items.forEach((it, idx) => {
     if (
       isEvacuation &&
@@ -965,6 +973,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     config?.__scene?.push({
       key: itemKey,
       kind: "node",
+      semanticId: it.instanceId,
       label: it.label ?? it.type,
       sourceRange: it.labelSourceRange,
       bbox: { x: X(it.x), y: Y(it.y) + titleH, width: wpx, height: hpx },
@@ -996,6 +1005,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       {
         class: "sx-fp-item",
         "data-furniture": it.type,
+        "data-instance-id": it.instanceId,
         "data-fixture": it.anchored ? it.type : undefined,
         "data-sx-key": config?.__scene ? itemKey : undefined,
         "data-sx-owner": config?.__scene ? itemKey : undefined,
@@ -1012,6 +1022,32 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       itemLayer.furniture.push(itemShape);
     }
     if (overlayLabel && (!def.consumesLabel || it.mirror)) {
+      const labelWidth = estimateTextWidth(overlayLabel, 11) + 6;
+      let labelX = cx, labelY = cy + 4;
+      if (def.externalLabel) {
+        const own = glyphBoxes[idx]!;
+        const room = lay.rooms.find(room => room.id === it.roomId && room.floor === it.floor);
+        const candidates = [];
+        for (const gap of [8, 24, 40]) {
+          candidates.push(
+            { x: cx, y: own.y + own.height + gap + 8 },
+            { x: own.x + own.width + gap + labelWidth / 2, y: cy + 4 },
+            { x: own.x - gap - labelWidth / 2, y: cy + 4 },
+            { x: cx, y: own.y - gap },
+          );
+        }
+        const scored = candidates.map((p, order) => {
+          const box = { x: p.x - labelWidth / 2, y: p.y - 11, width: labelWidth, height: 16 };
+          const overlap = [...glyphBoxes, ...annotationBoxes].reduce((sum, other) => sum +
+            Math.max(0, Math.min(box.x + box.width, other.x + other.width) - Math.max(box.x, other.x)) *
+            Math.max(0, Math.min(box.y + box.height, other.y + other.height) - Math.max(box.y, other.y)), 0);
+          const outside = room && !room.parts.some(part => box.x >= X(part.x) && box.y >= Y(part.y) && box.x + box.width <= X(part.x + part.w) && box.y + box.height <= Y(part.y + part.h));
+          return { ...p, box, score: overlap * 100 + (outside ? 10000 : 0) + order };
+        }).sort((a,b) => a.score - b.score);
+        const best = scored[0]!;
+        labelX = best.x; labelY = best.y;
+        annotationBoxes.push(best.box);
+      }
       const labelKey = legacySingle
         ? `label:furniture:${it.roomId}:${it.type}:${it.seq}`
         : `label:floor:${it.floor}:furniture:${it.roomId}:${it.type}:${it.seq}`;
@@ -1020,13 +1056,13 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         kind: "label",
         label: overlayLabel,
         sourceRange: it.labelSourceRange,
-        bbox: { x: cx - Math.max(24, overlayLabel.length * 3.2), y: cy - 8 + titleH, width: Math.max(48, overlayLabel.length * 6.4), height: 16 },
+        bbox: { x: labelX - labelWidth / 2, y: labelY - 11 + titleH, width: labelWidth, height: 16 },
         editable: { label: it.labelSourceRange !== undefined, position: "none" },
       });
       const label = textEl({
         class: "sx-fp-furn-label",
-        x: cx,
-        y: r2(cy + 4),
+        x: r2(labelX),
+        y: r2(labelY),
         "text-anchor": "middle",
         "data-sx-key": config?.__scene && it.labelSourceRange ? labelKey : undefined,
         "data-sx-owner": config?.__scene ? itemKey : undefined,

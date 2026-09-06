@@ -70,6 +70,14 @@ Mini boards (`board: mini`) have **no power rails** — `@+t…` / `@-b…` are 
 
 ## 3. Board sizes
 
+### DIP placement and drawing convention
+
+Use `u1: dip pins=8 @15e`, not `dip 8`. The coordinate anchors the upper-left pin row, with the notch facing left. In this top view, pins 1–4 land on 15f–18f and pins 8–5 on 15e–18e. Opposing e/f holes are three 0.1-inch pitches apart. Pin counts must be even integers from 4 to 126; choose a placement that fits the board. Arbitrary DIP rotation is not supported.
+
+Two-terminal spans place the first pin at the first hole and the second pin at the second hole, including vertical and reversed spans. The renderer does not repair a disconnected circuit: matching hole coordinates and correct pin names do not establish that an entire circuit is electrically valid.
+
+The neutral board, contrasting sockets and gray leads follow practical breadboard illustration conventions. [Fritzing's graphic standards](https://fritzing.org/fritzings-graphic-standards) are a useful visual reference, not an IEC-mandated color theme. [SparkFun's board documentation](https://learn.sparkfun.com/tutorials/large-solderable-breadboard-hookup-guide/quick-overview) documents the 0.3-inch opposing-row spacing used here. Verify the actual board's rail segmentation before wiring; profiles are not a universal claim about all manufacturers.
+
 ```
 breadboard
 board: half          // default — 30 columns, 400 tie-points, rails (continuous)

@@ -436,15 +436,15 @@ function symbolText(
 
 function necReceptacleDraw(
   c: SymbolDrawCtx,
-  duplex: boolean,
+  _duplex: boolean,
   annotation?: string
 ): string {
   const cx = c.w / 2;
   const cy = c.h * 0.34;
   const r = Math.min(c.w, c.h) * 0.18;
-  const offsets = duplex
-    ? [-0.62, -0.2, 0.2, 0.62]
-    : [-0.3, 0.3];
+  // Generic receptacle and explicit duplex share the US duplex convention.
+  // Four parallel strokes are not a duplex symbol.
+  const offsets = [-0.3, 0.3];
   const stemEnd = c.h * (annotation ? 0.62 : 0.86);
   return [
     circle({
@@ -1811,32 +1811,32 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   },
 
   // ── electrical overlay fixtures ──
-  outlet: { w: 0.28, h: 0.28, underlay: true, directional: true, draw: outletDraw(false) },
-  "duplex-outlet": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: outletDraw(true) },
-  switch: { w: 0.28, h: 0.28, underlay: true, directional: true, draw: electricalSwitchDraw("single") },
-  "switch-3way": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("3way") },
-  "switch-4way": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("4way") },
-  "switch-dimmer": { w: 0.3, h: 0.3, underlay: true, directional: true, draw: electricalSwitchDraw("dimmer") },
-  "gfci-outlet": { w: 0.42, h: 0.42, underlay: true, directional: true, draw: outletDraw(false, "GFCI") },
-  "outlet-240v": { w: 0.4, h: 0.4, underlay: true, directional: true, draw: outletDraw(false, "240V") },
-  "floor-outlet": { w: 0.34, h: 0.34, underlay: true, draw: floorOutletDraw },
-  "weatherproof-outlet": { w: 0.38, h: 0.38, underlay: true, directional: true, draw: outletDraw(false, "WP") },
-  light: { w: 0.35, h: 0.35, underlay: true, draw: lightDraw },
-  "ceiling-light": { w: 0.45, h: 0.45, underlay: true, draw: lightDraw },
-  "recessed-light": { w: 0.42, h: 0.42, underlay: true, draw: recessedLightDraw },
-  "wall-light": { w: 0.38, h: 0.38, underlay: true, directional: true, draw: wallLightDraw },
-  "pendant-light": { w: 0.3, h: 0.42, underlay: true, draw: pendantLightDraw },
-  "fluorescent-light": { w: 1.2, h: 0.3, underlay: true, draw: fluorescentLightDraw },
-  "emergency-light": { w: 0.45, h: 0.32, underlay: true, draw: emergencyLightDraw },
-  "smoke-detector": { w: 0.38, h: 0.38, underlay: true, draw: circularLabelDraw("SD") },
-  thermostat: { w: 0.32, h: 0.32, underlay: true, draw: circularLabelDraw("T") },
-  "motion-sensor": { w: 0.4, h: 0.32, underlay: true, draw: motionSensorDraw },
-  "data-outlet": { w: 0.28, h: 0.24, underlay: true, draw: squareLabelDraw("D") },
-  "tv-outlet": { w: 0.34, h: 0.26, underlay: true, draw: squareLabelDraw("TV") },
-  "phone-outlet": { w: 0.34, h: 0.28, underlay: true, draw: phoneOutletDraw },
-  "junction-box": { w: 0.3, h: 0.3, underlay: true, draw: squareLabelDraw("J") },
-  "electrical-panel": { w: 0.55, h: 0.24, underlay: true, draw: panelDraw("PANEL") },
-  "distribution-board": { w: 0.6, h: 0.28, underlay: true, draw: distributionBoardDraw },
+  outlet: { w: 0.28, h: 0.28, underlay: true, externalLabel: true, directional: true, draw: outletDraw(false) },
+  "duplex-outlet": { w: 0.3, h: 0.3, underlay: true, externalLabel: true, directional: true, draw: outletDraw(true) },
+  switch: { w: 0.28, h: 0.28, underlay: true, externalLabel: true, directional: true, draw: electricalSwitchDraw("single") },
+  "switch-3way": { w: 0.3, h: 0.3, underlay: true, externalLabel: true, directional: true, draw: electricalSwitchDraw("3way") },
+  "switch-4way": { w: 0.3, h: 0.3, underlay: true, externalLabel: true, directional: true, draw: electricalSwitchDraw("4way") },
+  "switch-dimmer": { w: 0.3, h: 0.3, underlay: true, externalLabel: true, directional: true, draw: electricalSwitchDraw("dimmer") },
+  "gfci-outlet": { w: 0.42, h: 0.42, underlay: true, externalLabel: true, directional: true, draw: outletDraw(false, "GFCI") },
+  "outlet-240v": { w: 0.4, h: 0.4, underlay: true, externalLabel: true, directional: true, draw: outletDraw(false, "240V") },
+  "floor-outlet": { w: 0.34, h: 0.34, underlay: true, externalLabel: true, draw: floorOutletDraw },
+  "weatherproof-outlet": { w: 0.38, h: 0.38, underlay: true, externalLabel: true, directional: true, draw: outletDraw(false, "WP") },
+  light: { w: 0.35, h: 0.35, underlay: true, externalLabel: true, draw: lightDraw },
+  "ceiling-light": { w: 0.45, h: 0.45, underlay: true, externalLabel: true, draw: lightDraw },
+  "recessed-light": { w: 0.42, h: 0.42, underlay: true, externalLabel: true, draw: recessedLightDraw },
+  "wall-light": { w: 0.38, h: 0.38, underlay: true, externalLabel: true, directional: true, draw: wallLightDraw },
+  "pendant-light": { w: 0.3, h: 0.42, underlay: true, externalLabel: true, draw: pendantLightDraw },
+  "fluorescent-light": { w: 1.2, h: 0.3, underlay: true, externalLabel: true, draw: fluorescentLightDraw },
+  "emergency-light": { w: 0.45, h: 0.32, underlay: true, externalLabel: true, draw: emergencyLightDraw },
+  "smoke-detector": { w: 0.38, h: 0.38, underlay: true, externalLabel: true, draw: circularLabelDraw("SD") },
+  thermostat: { w: 0.32, h: 0.32, underlay: true, externalLabel: true, draw: circularLabelDraw("T") },
+  "motion-sensor": { w: 0.4, h: 0.32, underlay: true, externalLabel: true, draw: motionSensorDraw },
+  "data-outlet": { w: 0.28, h: 0.24, underlay: true, externalLabel: true, draw: squareLabelDraw("D") },
+  "tv-outlet": { w: 0.34, h: 0.26, underlay: true, externalLabel: true, draw: squareLabelDraw("TV") },
+  "phone-outlet": { w: 0.34, h: 0.28, underlay: true, externalLabel: true, draw: phoneOutletDraw },
+  "junction-box": { w: 0.3, h: 0.3, underlay: true, externalLabel: true, draw: squareLabelDraw("J") },
+  "electrical-panel": { w: 0.55, h: 0.24, underlay: true, externalLabel: true, draw: panelDraw("PANEL") },
+  "distribution-board": { w: 0.6, h: 0.28, underlay: true, externalLabel: true, draw: distributionBoardDraw },
 
   // ── site / outdoor ──
   // Circular courtyard fountain: basin wall, inner water ring, and four

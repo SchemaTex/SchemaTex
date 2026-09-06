@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — engineering drawing correctness
+
+- Logic uses obstacle-aware orthogonal paths around gate bodies and captions, opaque theme-aware symbols, same-net branch dots, and clearance at crossings. IEC inputs terminate at the rectangular body edge. Port labels reserve measured space; routing does not depend on example names or IDs.
+- Breadboard e/f hole centers now match the 0.3-inch DIP footprint. Notch-left DIP numbering runs counterclockwise, and visible leads/numbers derive from the same footprint as wire endpoints. Invalid DIP pin counts are rejected. Title-space translation applies once per physical pin, including aliases.
+- Two-terminal breadboard spans honor both authored holes, including vertical, reversed, and diagonal placements. Body rotation, scene bounds, and wire endpoints share the resolved geometry. The board uses a neutral surface with contrasting sockets and metal leads.
+- Floorplan electrical annotations are placed outside their glyphs using measured text and collision scoring. US-convention duplex outlets use two strokes. Authored fixture IDs are exposed as `data-instance-id` and scene `semanticId`; cross-document selection remains a host responsibility.
+
+No DSL extension or standards-compliance certification is introduced. P&ID package/service semantics, malformed powered-op-amp input, and breadboard electrical connectivity validation remain outside this change.
+
 ---
 
 ## [1.0.14] — 2026-09-05

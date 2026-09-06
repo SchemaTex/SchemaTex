@@ -1,0 +1,5 @@
+circuit "Pull-up + push button" netlist
+V1 vcc 0 5V
+R1 vcc sig 10k dir=down
+SW1 sig 0 type=switch
+C1 sig 0 100n

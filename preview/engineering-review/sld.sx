@@ -1,0 +1,38 @@
+sld "Residential Consumer Unit — IEC 60364"
+SERVICE = utility [voltage: "230V", label: "Service head 230V/63A"]
+KWHM = watthour_meter [label: "kWh meter"]
+ISO = breaker [rating: "63A 6kA", label: "Main isolator"]
+RCD = ground_fault [rating: "63A / 30mA Type AC", label: "Main RCD"]
+CU = bus [voltage: "230V", label: "Consumer-unit busbar"]
+MCB1 = breaker [rating: "6A B-curve", label: "MCB lighting"]
+MCB2 = breaker [rating: "16A B-curve", label: "MCB sockets ground floor"]
+MCB3 = breaker [rating: "16A B-curve", label: "MCB sockets first floor"]
+MCB4 = breaker [rating: "20A C-curve", label: "MCB kitchen ring"]
+MCB5 = breaker [rating: "20A C-curve", label: "MCB water heater"]
+RCBO_EV = ground_fault [rating: "32A / 30mA Type B", label: "RCBO EV charger"]
+MCB6 = breaker [rating: "10A B-curve", label: "MCB outdoor"]
+L1 = load [label: "Lighting circuit"]
+L2 = load [label: "Sockets — ground floor"]
+L3 = load [label: "Sockets — first floor"]
+L4 = load [label: "Kitchen ring final"]
+L5 = load [label: "Water heater 4.5 kW"]
+EV = load [label: "EV charger 7.4 kW Mode 3"]
+L6 = load [label: "Outdoor / garden"]
+SERVICE -> KWHM
+KWHM -> ISO
+ISO -> RCD
+RCD -> CU
+CU -> MCB1
+MCB1 -> L1 [cable: "1.5 mm² Cu PVC"]
+CU -> MCB2
+MCB2 -> L2 [cable: "2.5 mm² Cu PVC"]
+CU -> MCB3
+MCB3 -> L3 [cable: "2.5 mm² Cu PVC"]
+CU -> MCB4
+MCB4 -> L4 [cable: "4 mm² Cu PVC"]
+CU -> MCB5
+MCB5 -> L5 [cable: "4 mm² Cu PVC"]
+CU -> RCBO_EV
+RCBO_EV -> EV [cable: "6 mm² Cu XLPE"]
+CU -> MCB6
+MCB6 -> L6 [cable: "2.5 mm² Cu XLPE"]

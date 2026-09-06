@@ -254,16 +254,16 @@ function dipSpec(): PartSpec {
     pins: [],
     straddlesTrough: true,
     body: (part, w, h) => {
-      const pins = Math.max(4, Number(part.args.pins ?? 8));
-      const perSide = pins / 2;
-      const bodyMargin = PITCH / 2;
+      const spec = partSpec("dip", part.args);
+      const bodyLeft = -PITCH / 2;
+      const bodyTop = PITCH * 0.55;
       return [
-        rectShape(bodyMargin, 4, w - 2 * bodyMargin, h - 8, { class: "lt-bb-dip-body", rx: 2 }),
-        // notch
-        circShape(bodyMargin + 6, h / 2, 3, { fill: "#0f172a", stroke: "#475569", "stroke-width": 0.5 }),
-        // pin 1 dot
-        circShape(bodyMargin + PITCH * 0.6, h / 2 + (h / 2 - 6), 1.2, { fill: "#fbbf24" }),
-        textShape(w / 2, h / 2 + 1, `IC${perSide * 2}`, { class: "lt-bb-dip-silk", "text-anchor": "middle", "dominant-baseline": "middle" }),
+        ...spec.pins.map(pin => lineShape(pin.x, pin.y, pin.x, pin.y === 0 ? bodyTop : h - bodyTop, { class: "lt-bb-dip-lead", "data-pin": pin.name })),
+        rectShape(bodyLeft, bodyTop, w, h - 2 * bodyTop, { class: "lt-bb-dip-body", rx: 2 }),
+        circShape(bodyLeft + 2, h / 2, 3, { class: "lt-bb-dip-notch" }),
+        circShape(0, h - bodyTop - 3, 1.5, { class: "lt-bb-dip-marker", "data-pin-marker": "1" }),
+        ...spec.pins.map(pin => textShape(pin.x, pin.y === 0 ? bodyTop + 6 : h - bodyTop - 2, pin.name, { class: "lt-bb-dip-number", "text-anchor": "middle" })),
+        textShape((w - PITCH) / 2, h / 2 + 1, `IC${spec.pins.length}`, { class: "lt-bb-dip-silk", "text-anchor": "middle", "dominant-baseline": "middle" }),
       ].join("");
     },
   };
@@ -665,14 +665,18 @@ export function partSpec(kind: BreadboardPartKind, args: Record<string, string |
   }
   // DIP: width = (pins/2) cols; pins along long edges
   if (kind === "dip") {
-    const pinCount = Math.max(4, Number(args.pins ?? 8));
+    const pinCount = Number(args.pins ?? 8);
+    if (!Number.isSafeInteger(pinCount) || pinCount < 4 || pinCount % 2 !== 0 || pinCount > 126) {
+      throw new Error("DIP pins must be an even integer from 4 to 126 (maximum full-board footprint)");
+    }
     const perSide = pinCount / 2;
     const w = perSide * PITCH;
     const h = 3 * PITCH; // straddles trough: 3 rows tall (top half row e + trough + bottom half row f)
     const pins: PartPin[] = [];
     for (let i = 0; i < perSide; i++) {
-      pins.push({ name: String(i + 1), x: i * PITCH, y: 0 });
-      pins.push({ name: String(pinCount - i), x: i * PITCH, y: h });
+      // Top view, notch on the left: numbering runs counterclockwise.
+      pins.push({ name: String(i + 1), x: i * PITCH, y: h });
+      pins.push({ name: String(pinCount - i), x: i * PITCH, y: 0 });
     }
     return { ...base, width: w, height: h, pins };
   }

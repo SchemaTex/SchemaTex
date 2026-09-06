@@ -1028,6 +1028,8 @@ export interface SymbolDef {
   underlay?: boolean;
   /** Glyph is authored with its wall-facing edge toward north and rotates with an anchored wall side. */
   directional?: boolean;
+  /** Annotation belongs beside the glyph, never over its electrical meaning. */
+  externalLabel?: boolean;
   /** Draw into a w×h meter box at origin; returns SVG fragment (theme classes only). */
   draw: (ctx: SymbolDrawCtx) => string;
 }
