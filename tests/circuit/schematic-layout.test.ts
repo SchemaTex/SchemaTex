@@ -51,7 +51,7 @@ C1 mid 0 100n`;
     const svg = svgOf(dsl);
     // The rake's short horizontal strokes are the ground glyph; several of them
     // means each pin got its own flag.
-    const rakes = svg.match(/x1="6" y1="4" x2="14" y2="4"/g) ?? [];
+    const rakes = svg.match(/x1="14" y1="-5" x2="14" y2="5"/g) ?? [];
     expect(rakes.length).toBeGreaterThanOrEqual(2);
   });
 

@@ -263,7 +263,6 @@ function dipSpec(): PartSpec {
         circShape(bodyLeft + 2, h / 2, 3, { class: "lt-bb-dip-notch" }),
         circShape(0, h - bodyTop - 3, 1.5, { class: "lt-bb-dip-marker", "data-pin-marker": "1" }),
         ...spec.pins.map(pin => textShape(pin.x, pin.y === 0 ? bodyTop + 6 : h - bodyTop - 2, pin.name, { class: "lt-bb-dip-number", "text-anchor": "middle" })),
-        textShape((w - PITCH) / 2, h / 2 + 1, `IC${spec.pins.length}`, { class: "lt-bb-dip-silk", "text-anchor": "middle", "dominant-baseline": "middle" }),
       ].join("");
     },
   };

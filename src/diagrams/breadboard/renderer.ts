@@ -27,6 +27,7 @@ import { resolveSceneTitle } from "../../core/title-scene";
 import { partSpec } from "./parts";
 import { breadboardCoordXY, breadboardPartBounds, layoutBreadboard, BB_CONST } from "./layout";
 import { parseBreadboard } from "./parser";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 const WIRE_COLOR_MAP: Record<string, string> = {
   red: "#dc2626",
@@ -61,7 +62,6 @@ function buildCss(t: BaseTheme): string {
 .lt-bb-cap-can { fill: #94a3b8; stroke: #1f2937; stroke-width: 0.8; }
 .lt-bb-button { fill: #475569; stroke: #1e293b; stroke-width: 0.8; rx: 1; }
 .lt-bb-dip-body { fill: #1f2937; stroke: #475569; stroke-width: 0.8; }
-.lt-bb-dip-silk { font: 600 8px sans-serif; fill: #f3f4f6; }
 .lt-bb-dip-lead { stroke: #8c8c8c; stroke-width: 3; }
 .lt-bb-dip-number { font: 5px sans-serif; fill: #f3f4f6; }
 .lt-bb-dip-notch { fill: #111820; stroke: #8c8c8c; stroke-width: .6; }
@@ -180,15 +180,15 @@ function editableCoord(coord: BreadboardCoord): { kind: "hole" | "rail"; col: nu
     : { kind: "rail", col: coord.col, rail: coord.rail };
 }
 
-function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[]): string {
+function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[], labelPosition?: {x:number;y:number}): string {
   const spec = partSpec(lp.part.kind, lp.part.args);
   const body = spec.body(lp.part, lp.width, lp.height);
   const bounds = breadboardPartBounds(lp);
   const labelText = lp.part.label ?? defaultPartLabel(lp);
   const labelEl = labelText
     ? textEl({
-        x: bounds.x + bounds.width / 2,
-        y: bounds.y - 6,
+        x: labelPosition?.x ?? bounds.x + bounds.width / 2,
+        y: labelPosition?.y ?? bounds.y - 6,
         class: "lt-bb-part-label",
       }, labelText)
     : "";
@@ -314,7 +314,25 @@ export function renderBreadboardLayout(layout: BreadboardLayoutResult, config?: 
     : "";
 
   const substrate = renderSubstrate(layout.substrate);
-  const parts = layout.parts.map((part) => renderPart(part, layout.substrate, config?.__scene)).join("\n");
+  const taken = layout.parts.map(breadboardPartBounds);
+  for (const wire of layout.wires) {
+    const points=[...wire.path.matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(m=>({x:+m[1]!,y:+m[2]!}));
+    for (let i=1;i<points.length;i++) {
+      const a=points[i-1]!,b=points[i]!;
+      taken.push({x:Math.min(a.x,b.x)-2,y:Math.min(a.y,b.y)-2,width:Math.abs(a.x-b.x)+4,height:Math.abs(a.y-b.y)+4});
+    }
+  }
+  const parts = layout.parts.map(part => {
+    const label=part.part.label ?? defaultPartLabel(part) ?? "",b=breadboardPartBounds(part);
+    const width=estimateTextWidth(label,9),cx=b.x+b.width/2;
+    const candidates=[{x:cx,y:b.y-6},{x:cx,y:b.y-20},{x:cx,y:b.y+b.height+16},{x:b.x+b.width+width/2+8,y:b.y+6},{x:b.x-width/2-8,y:b.y+6}];
+    const box=(p:{x:number;y:number})=>({x:p.x-width/2-2,y:p.y-10,width:width+4,height:14});
+    const overlap=(a:ReturnType<typeof box>,b:ReturnType<typeof box>)=>Math.max(0,Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
+    const cost=(p:{x:number;y:number},i:number)=>taken.reduce((sum,b)=>sum+overlap(box(p),b),0)+i;
+    const position=candidates.map((p,i)=>({p,cost:cost(p,i)})).sort((a,b)=>a.cost-b.cost)[0]!.p;
+    if(label)taken.push(box(position));
+    return renderPart(part,layout.substrate,config?.__scene,position);
+  }).join("\n");
   const wires = layout.wires.map((wire, index) => renderWire(wire, config?.__scene, index)).join("\n");
 
   const inner = [

@@ -162,7 +162,7 @@ wires
   uno:D13 --yellow-- @9a via @8c
 ```
 
-Most wires don't need `via` — the layout engine produces a natural arc on its own.
+Most wires don't need `via`: automatic jumpers use orthogonal paths around part bodies, leaving side-board pins outward so wires do not obscure the pin legend. An authored `via` retains its curved routing intent. Nearby component labels are placed separately to reduce collisions. These visual rules do not validate terminal-strip connectivity.
 
 ---
 

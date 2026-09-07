@@ -66,11 +66,11 @@ async function main(){
  document.querySelector('#replay-grid').innerHTML=replays.map(([id,title,source,note])=>`<article class="replay">${image(id+'.svg',title+' — current renderer output')}<div class="replay-copy"><h3>${title}</h3><p class="meta">${source} ${status(id)}</p><p>${note}</p>${sourceDetails(id)}</div></article>`).join('');
  await Promise.all([...document.querySelectorAll('[data-source]')].map(async el=>{const r=await fetch(root+el.dataset.source+'.sx');if(!r.ok)throw Error('Source failed to load');el.textContent=await r.text();}));
  const outcomes={
-  logic:'Implemented: obstacle-aware orthogonal routing, opaque bodies, same-net branch dots and crossing clearance. All five gates and twelve connections are retained. This is a first automatic routing pass, not a general circuit simulator.',
-  opamp:'Unchanged / NOT RESOLVED. Original malformed source remains partial. The engine does not invent the missing feedback connection or power pins.',
-  pid:'Unchanged / NOT RESOLVED. Existing pump families, filter ports and actuator remain intact. Package membership and service styling are still proposals.',
+  logic:'Improved: gate rows leave room for branches, Sum/Cout align with their drivers, and obstacle-aware paths preserve all five gates and twelve connections. Dots mean a shared signal; crossing clearance is not a junction. This is automatic layout, not a full-adder template.',
+  opamp:'INPUT STILL NEEDS CORRECTION. Surplus pin tokens now produce a clear pin-count diagnostic instead of becoming text. The floating feedback net remains reported. Supply marks and general routing are improved; the engine has not invented a repair. The separately corrected source is shown below.',
+  pid:'Routing improved: backwash avoids the dosing pump, port exits follow actual symbol geometry, tank captions wrap, and the filter label leaves the drain exit clear. Package membership and service styling remain UNIMPLEMENTED; this is not the complete middle reference.',
   linked:'Implemented: electrical labels sit outside glyphs; authored fixture IDs are exposed in SVG and scene. The US duplex glyph now uses two strokes. Cross-view selection below is host code, not a new shared-model engine API.',
-  breadboard:'Implemented: neutral board styling, a three-pitch e/f gap, counterclockwise DIP numbering, visible leads and pin numbers generated from the footprint. This fixes the DIP mismatch; terminal-strip/rail connectivity validation is not yet implemented.'
+  breadboard:'Implemented: neutral board styling, a three-pitch e/f gap, counterclockwise DIP numbering and footprint-derived leads. Automatic jumpers now avoid side-board pin legends; component labels use collision scoring. Terminal-strip/rail connectivity validation is not yet implemented.'
  };
  for(const c of studies){
    const section=document.getElementById(c.id),panel=section.querySelector('.panel-system');
@@ -79,10 +79,41 @@ async function main(){
    section.querySelector('.panel-current .panel-label').innerHTML=`Before engine ${status(c.current)}`;
    panel.innerHTML=`<div class="panel-head"><span class="panel-label">After engine · ${escape(result.status)}</span><small>Actual SVG · v${result.version} candidate · ${escape(result.commit)}</small></div>${c.id==='linked'?`<div class="dual-images">${image('after/floorplan.svg','After floorplan — actual candidate SVG')}${image('after/linked-sld.svg','Unchanged SLD — actual candidate SVG')}</div>`:image('after/'+c.current+'.svg',c.title+' — actual candidate output')}<div class="panel-caption"><p>${outcomes[c.id]}</p><a href="${root}after/${c.current}.svg" target="_blank">Open candidate SVG</a></div>`;
  }
+ const corrected=document.createElement('section');corrected.className='corrected-source';
+ corrected.innerHTML=`<h3>Corrected intent — separate input, real engine output</h3><p>This is not the same-input After above. R1 now joins output to the feedback node; U1 explicitly binds plus, minus, output and both supplies. No components were removed. Supply flags sharing a name refer to the same net.</p>${image('after/opamp-corrected.svg','LM741 — actual renderer output from explicitly corrected input')}<details><summary>See the exact input changes</summary><pre>R1 feedback inv 10k → R1 output inv 10k\nU1 inv input VCC VEE output type=opamp\n→ U1 input inv output VCC VEE type=opamp pins="plus,minus,out,supply+,supply-"</pre><a href="${root}opamp-corrected.sx">Corrected DSL</a> · <a href="${root}after/opamp-corrected.svg">Actual SVG</a></details>`;
+ document.querySelector('#opamp').append(corrected);
+ for(const c of studies){
+   const panel=document.querySelector(`#${c.id} .panel-system`);
+   panel.querySelector('.panel-label').textContent=`After engine · render status: ${after[c.current].status}`;
+   if(after[c.current].diagnostics.length)panel.querySelector('.panel-caption').insertAdjacentHTML('beforeend',`<details><summary>Candidate diagnostics</summary><pre>${escape(JSON.stringify(after[c.current].diagnostics,null,2))}</pre></details>`);
+ }
+ // Additional replays are candidate output too; the immutable original remains
+ // linked in each source disclosure, never regenerated from current code.
+ for(const [i,[id]] of replays.entries()){
+   const card=document.querySelectorAll('.replay')[i],button=card.querySelector('[data-image]');
+   button.dataset.image=root+'after/'+id+'.svg';button.querySelector('img').src=button.dataset.image;
+   button.dataset.label+=' — candidate';
+   card.querySelector('.meta').insertAdjacentHTML('beforeend',` · Candidate: ${escape(after[id].status)}`);
+ }
  const { mountLinkedDemo } = await import('./linked-demo.js');
  await mountLinkedDemo(document.querySelector('#linked'));
  const mapping=await (await fetch(root+'after/breadboard-mapping.json')).json();
  document.querySelector('#breadboard .panel-system .panel-caption').insertAdjacentHTML('beforeend',`<table><caption>Actual candidate mapping · resolved pins matched to real holes</caption><thead><tr><th>Pin</th><th>Hole</th></tr></thead><tbody>${mapping.map(p=>`<tr><td>${p.pin}</td><td>${escape(p.hole)}</td></tr>`).join('')}</tbody></table>`);
+ await Promise.all([...document.querySelectorAll('.comparison')].map(async comparison=>{
+   // Floorplan+SLD are different physical units, not a common-scale comparison.
+   if(comparison.querySelector('.dual-images'))return;
+   const images=[...comparison.querySelectorAll('img')].filter(img=>img.src.endsWith('.svg'));
+   const dimensions=await Promise.all(images.map(async img=>{
+     const svg=new DOMParser().parseFromString(await (await fetch(img.src)).text(),'image/svg+xml').documentElement;
+     const view=(svg.getAttribute('viewBox')??'').split(/[ ,]+/).map(Number);
+     return {img,width:view[2]||Number(svg.getAttribute('width')),height:view[3]||Number(svg.getAttribute('height'))};
+   }));
+   const resize=()=>{
+     const scale=Math.min(...dimensions.map(({img,width,height})=>Math.min((img.parentElement.clientWidth-24)/width,(img.parentElement.clientHeight-48)/height)));
+     for(const {img,width,height} of dimensions){img.style.width=`${width*scale}px`;img.style.height=`${height*scale}px`;}
+   };
+   new ResizeObserver(resize).observe(comparison);resize();
+ }));
  document.body.dataset.ready='true';
  if(location.hash)document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
 }

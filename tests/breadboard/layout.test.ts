@@ -45,7 +45,7 @@ wires
     expect(layout.wires).toHaveLength(3);
   });
 
-  it("emits a wire path that's a Bézier (contains C)", () => {
+  it("routes automatic jumpers orthogonally outside the side board", () => {
     const ast = parseBreadboard(`breadboard
 parts
   uno: mcu uno @beside-left
@@ -54,7 +54,7 @@ wires
 `);
     const layout = layoutBreadboard(ast);
     expect(layout.wires).toHaveLength(1);
-    expect(layout.wires[0]!.path).toMatch(/M [\d.]+ [\d.]+ C/);
+    expect(layout.wires[0]!.path).toMatch(/M [\d.]+ [\d.]+ L/);
   });
 
   it("returns positive width and height", () => {

@@ -1,6 +1,17 @@
 import { circle, group, line, path, polygon, rect, text } from "../../core/svg";
 import type { PidActuatorType, PidEquipType, PidFailPosition } from "./types";
 import { PID_ACTUATOR_TYPES, PID_FAIL_POSITIONS } from "./types";
+import { estimateTextWidth } from "../../core/text-metrics";
+
+function insideLabel(label: string, width: number): string {
+  const rows: string[] = [];
+  for (const word of label.split(/\s+/)) {
+    const last = rows.at(-1);
+    if (last && estimateTextWidth(`${last} ${word}`,11) <= width-14) rows[rows.length-1] = `${last} ${word}`;
+    else rows.push(word);
+  }
+  return rows.map((row,i)=>text({x:0,y:4+(i-(rows.length-1)/2)*14,"text-anchor":"middle",class:"lt-pid-equip-tag"},row)).join("");
+}
 
 /**
  * Symbol library for ISA-5.1 / ISO 10628 equipment.
@@ -487,10 +498,7 @@ export function renderEquip(
           class: "lt-pid-equip",
         }),
         // tag
-        text(
-          { x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        insideLabel(label,w),
       ];
       return group({ class: "lt-pid-equip-group" }, parts);
     }
@@ -917,13 +925,13 @@ export function renderEquip(
         line({ x1: -w / 2 + 8, y1: -h / 2 + 8, x2: w / 2 - 8, y2: -8, class: "lt-pid-tray-line" }),
         line({ x1: -w / 2 + 8, y1: 8, x2: w / 2 - 8, y2: h / 2 - 8, class: "lt-pid-tray-line" }),
         rect({
-          x: -labelWidth / 2,
+          x: 8,
           y: h / 2 + 3,
           width: labelWidth,
           height: 15,
           class: "lt-pid-equip-tag-bg",
         }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        text({ x: 12, y: h / 2 + 14, "text-anchor": "start", class: "lt-pid-equip-tag" }, label),
       ]);
     }
     case "cyclone": {

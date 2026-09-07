@@ -242,8 +242,8 @@ const ground: SymbolDef = {
     [
       `<line x1="0" y1="0" x2="10" y2="0" ${WIRE}/>`,
       `<line x1="10" y1="-8" x2="10" y2="8" ${BODY}/>`,
-      `<line x1="6" y1="4" x2="14" y2="4" ${BODY}/>`,
-      `<line x1="8" y1="8" x2="12" y2="8" ${BODY}/>`,
+      `<line x1="14" y1="-5" x2="14" y2="5" ${BODY}/>`,
+      `<line x1="18" y1="-2" x2="18" y2="2" ${BODY}/>`,
     ].join(""),
 };
 
@@ -263,7 +263,7 @@ const vcc: SymbolDef = {
   svg: () =>
     [
       `<line x1="0" y1="0" x2="10" y2="0" ${WIRE}/>`,
-      `<line x1="4" y1="-6" x2="16" y2="-6" ${BODY}/>`,
+      `<line x1="10" y1="-6" x2="10" y2="6" ${BODY}/>`,
     ].join(""),
 };
 
@@ -539,11 +539,13 @@ const opamp: SymbolDef = {
     "supply+": { x: 25, y: -20 },
     "supply-": { x: 25, y: 20 },
   },
-  svg: () =>
+  svg: (_label, _value, attrs) =>
     [
       `<polygon points="0,-20 0,20 50,0" fill="white" ${BODY}/>`,
       `<text x="5" y="-6" class="schematex-circuit-pol">+</text>`,
       `<text x="5" y="14" class="schematex-circuit-pol">−</text>`,
+      ...(attrs?.pins?.split(",").includes("supply+") ? [lineWire(25,-10,25,-20)] : []),
+      ...(attrs?.pins?.split(",").includes("supply-") ? [lineWire(25,10,25,20)] : []),
     ].join(""),
 };
 

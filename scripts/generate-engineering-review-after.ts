@@ -10,6 +10,7 @@ const root = new URL("../preview/engineering-review/", import.meta.url);
 const after = new URL("after/", root);
 await mkdir(after, { recursive: true });
 const cases = JSON.parse(await readFile(new URL("results.json", root), "utf8"));
+cases.push({id:"opamp-corrected",type:"circuit"});
 const version = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8")).version;
 const base = execFileSync("git", ["log", "-1", "--format=%h", "--", "src"], { encoding: "utf8" }).trim();
 const dirty = execFileSync("git", ["status", "--porcelain", "--", "src"], { encoding: "utf8" }).trim();
@@ -21,7 +22,7 @@ for (const c of cases) {
   const elapsedMs = Math.round(performance.now() - start);
   await writeFile(new URL(`${c.id}.svg`, after), result.svg);
   await writeFile(new URL(`${c.id}.png`, after), new Resvg(result.svg, { background: "white", fitTo: { mode: "width", value: 1400 }, font: { loadSystemFonts: false, fontFiles: [new URL("../website/app/(home)/examples/[slug]/_assets/noto-sans-regular.ttf", import.meta.url).pathname], defaultFontFamily: "Noto Sans" } }).render().asPng());
-  results.push({ id: c.id, type: c.type, version, commit: `${base}${dirty ? " + uncommitted engine changes" : ""}`, sourceHash: createHash("sha256").update(source).digest("hex"), status: result.status, diagnostics: result.diagnostics, changed: result.svg !== await readFile(new URL(`${c.id}.svg`, root), "utf8"), elapsedMs });
+  results.push({ id: c.id, type: c.type, version, commit: `${base}${dirty ? " + uncommitted engine changes" : ""}`, sourceHash: createHash("sha256").update(source).digest("hex"), status: result.status, diagnostics: result.diagnostics, changed: c.id === "opamp-corrected" || result.svg !== await readFile(new URL(`${c.id}.svg`, root), "utf8"), elapsedMs });
 }
 const layout = layoutBreadboard(parseBreadboard(await readFile(new URL("breadboard.sx", root), "utf8")));
 const mapping = Object.entries(layout.parts[0]!.pins).filter(([pin]) => /^\d+$/.test(pin)).map(([pin, point]) => {

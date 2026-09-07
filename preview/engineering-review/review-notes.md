@@ -1,13 +1,16 @@
 # Engineering visual review — 2026-09-06 PT
 
-This preview now includes a local implementation candidate on `codex/engineering-visual-correctness`. The baseline files remain unchanged; `after/` contains actual renders of the same source. No npm release or production deployment has been performed.
+This preview includes a local implementation candidate on `codex/engineering-visual-correctness`. All 13 baseline inputs remain unchanged; `after/` contains their actual renders plus a separately labelled corrected-intent LM741 input. No npm release or production deployment has been performed.
 
 ## Implementation audit
 
-Final validation: 199 test files / 2,976 tests passed, including all 221 published SVG XML-conformance fixtures. Typecheck and ESM/CJS/declaration builds passed. ESLint exited successfully with zero errors and 1,664 warnings (including non-null assertion warnings; this is not a warning-free change). The 13 candidate files match direct renderer output; browser selection, stale-binding, keyboard, modal, English-only, ideal-second and desktop/mobile overflow checks passed.
+Final validation: 200 test files / 2,982 tests passed, including all 221 published SVG XML-conformance fixtures. Existing performance thresholds were retained. Typecheck and ESM/CJS/declaration builds passed. The 14 candidate files match direct renderer output; browser selection, stale-binding, keyboard, modal, English-only, ideal-second and desktop/mobile overflow checks passed. This is not a warning-free codebase or proof of optimal routing.
+
+- Visual follow-up: shared orthogonal geometry now serves Logic, Circuit, P&ID and automatic Breadboard jumpers without merging their domain models. Gate rows/outputs are aligned; signal sources remain signals; supply/ground geometry and title offsets are corrected; P&ID routes use actual port sides and reserve captions; Breadboard jumpers keep their exact endpoints and leave side boards outward. No fixture name or authored ID selects a production layout.
+- Explicit pin contract: fixed circuit symbols accept the existing `pins=` attribute for real named anchors, including optional op-amp supplies. Original malformed LM741 input remains partial. `opamp-corrected.sx` separately changes the isolated feedback net and names the pin order; its output is an actual render, not an automatic repair or electrical simulation. Its feedback layout still differs from the authored reference.
 
 - Implemented: Logic obstacle routing, opaque symbols, same-net junctions, crossing clearance, measured terminal labels and pin-spacing-driven gate height; Breadboard DIP geometry/numbering/leads, title/alias translation, neutral styling and two-terminal span transforms; Floorplan external electrical labels, two-stroke US duplex glyph and authored ID exposure.
-- Not implemented: powered op-amp grammar repair; P&ID package membership/service presentation; electrical connectivity/ERC for breadboards; arbitrary DIP rotation; persistent shared-document state.
+- Not implemented: inferred repair of malformed op-amp input; P&ID package membership/service presentation; electrical connectivity/ERC for breadboards; arbitrary DIP rotation; persistent shared-document state. The original Arduino resistor/LED strip mismatch is preserved and disclosed.
 - Regression strategy: preserve the 13 original fixtures, compare the candidate against those exact sources, retain invalid/partial statuses, test renamed/reordered logic and 3/8/16-input gates, DIP-8/14/16/28, reversed/vertical/diagonal spans, all four fixture wall orientations, and all supported themes in Logic.
 - Browser checks: ideal remains second, English-only page, desktop/mobile overflow, both-view selection, keyboard, layer visibility, stale-binding rejection and image dialog.
 - The earlier two-pitch Breadboard ideal was incorrect. The replacement uses three pitches, consistent with the supported 0.3-inch DIP footprint. The numbered lead model and resolved-hole table are authoritative; generated images are not a netlist or engineering certification.
@@ -102,7 +105,7 @@ Built-in image generation was used. Prompts and iterative edits are saved in `im
 
 Generated imagery sets composition and readability expectations. Exact domain correctness must come from the semantic contract, deterministic geometry and tests. No ImageGen image is labelled as SchemaTex renderer output.
 
-## Preview verification
+## Initial proposal verification (historical)
 
 Verified locally on 2026-09-06 PT using Chrome and agent-browser. All 18 displayed diagram images loaded, all five ideal references occupy the second comparison position, and no runtime page errors were observed. Desktop (1536 px) and mobile (390 px) had no document-level horizontal overflow. Image enlargement and Escape-to-close passed. All eight full-adder input combinations matched the expected Sum/Cout equations; this validates the written equations only, not generated raster wiring. The engine build passed; this preview makes no engine-source changes.
 

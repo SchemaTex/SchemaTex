@@ -65,6 +65,18 @@ C1 out 0 100n dir=down    # draw C1 as a shunt cap hanging to ground
 
 This is the lightweight layout-control layer (like Lcapy's per-component orientation): netlist connectivity does the heavy lifting, `dir=` only refines appearance. For full geometric control, use positional mode below.
 
+### Explicit named pins
+
+Fixed symbols accept `pins="..."` using their real anchor names. The nodes bind in that exact order; no coordinates or new component type are needed. An op-amp defaults to `plus,minus,out`. To include power connections:
+
+```text
+U1 input feedback output VCC VEE type=opamp pins="plus,minus,out,supply+,supply-" label="LM741"
+R1 output feedback 10k
+R2 feedback 0 2.2k
+```
+
+Use `value=` for a component value when declaring pins explicitly. Unknown or duplicate pin names are rejected; surplus op-amp/comparator nets produce `CIRCUIT_PIN_OVERSPECIFIED` instead of becoming display text. A floating feedback net remains a diagnostic: the renderer never invents the missing connection. Named supply flags indicate shared nets; this is not electrical simulation or a manufacturer-specific pin-number model.
+
 ### 2.2 Positional mode syntax (hand-drawing)
 
 > Positional mode is for manually laying out a schematic geometrically. **Prefer netlist mode for generated output** — positional mode requires tracking a moving "cursor" across lines, which is error-prone for LLMs.

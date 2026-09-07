@@ -1,0 +1,8 @@
+circuit "LM741 — explicit pin contract and corrected feedback" netlist
+Vcc VCC 0 15V
+Vee 0 VEE 15V
+Vin input 0 sin 1Vpk 1kHz
+R1 output inv 10k
+R2 inv 0 2.2k
+U1 input inv output VCC VEE type=opamp pins="plus,minus,out,supply+,supply-" label="LM741"
+Rload output 0 1k

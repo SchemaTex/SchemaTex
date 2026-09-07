@@ -19,6 +19,7 @@ import type {
 } from "../../core/types";
 import { partSpec, HOLE_PITCH } from "./parts";
 import { PIN_ALIASES } from "./pin-aliases";
+import { compactRoute, orthogonalRoute, type RoutePoint } from "../../core/orthogonal-router";
 
 export const BB_CONST = {
   PITCH: HOLE_PITCH,
@@ -439,6 +440,32 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     };
   });
 
+  // Side-board pin labels live inside the body. Escape toward the nearest
+  // edge before routing, rather than bowing a jumper across the pin legend.
+  const routedPoints = new Map<BreadboardLayoutWire, RoutePoint[]>();
+  for (const [wireIndex,wire] of wires.entries()) {
+    if (wire.wire.via) continue; // authored bend intent stays authoritative
+    const escape = (endpoint: BreadboardEndpoint, p: RoutePoint): RoutePoint => {
+      if (endpoint.kind !== "pin") return p;
+      const part = parts.find(part=>part.part.id===endpoint.partId)!;
+      if (partSpec(part.part.kind,part.part.args).category !== "side") return p;
+      const b = breadboardPartBounds(part);
+      return [
+        {x:b.x-14-wireIndex*8,y:p.y}, {x:b.x+b.width+14+wireIndex*8,y:p.y},
+        {x:p.x,y:b.y-14-wireIndex*8}, {x:p.x,y:b.y+b.height+14+wireIndex*8},
+      ].sort((a,b)=>Math.abs(a.x-p.x)+Math.abs(a.y-p.y)-Math.abs(b.x-p.x)-Math.abs(b.y-p.y))[0]!;
+    };
+    const start = escape(wire.wire.from,wire.fromXY), end = escape(wire.wire.to,wire.toXY);
+    const contains = (p: RoutePoint,b: ReturnType<typeof breadboardPartBounds>) => p.x>=b.x&&p.x<=b.x+b.width&&p.y>=b.y&&p.y<=b.y+b.height;
+    const boxes = parts.flatMap(part=>{
+      const b = breadboardPartBounds(part);
+      if (contains(start,b)||contains(end,b)) return [];
+      const clearance = partSpec(part.part.kind,part.part.args).category === "side" ? 3+wireIndex*8 : 3;
+      return [{left:b.x-clearance,right:b.x+b.width+clearance,top:b.y-clearance,bottom:b.y+b.height+clearance}];
+    });
+    routedPoints.set(wire,compactRoute([wire.fromXY,...orthogonalRoute(start,end,boxes),wire.toXY]).map(p=>({...p})));
+  }
+
   // Canvas size — bounding box across substrate + side parts + wires.
   let minX = sub.x;
   let minY = sub.y;
@@ -460,6 +487,9 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     minY = Math.min(minY, lw.fromXY.y, lw.toXY.y);
     maxX = Math.max(maxX, lw.fromXY.x, lw.toXY.x);
     maxY = Math.max(maxY, lw.fromXY.y, lw.toXY.y);
+    for (const p of routedPoints.get(lw) ?? []) {
+      minX=Math.min(minX,p.x);minY=Math.min(minY,p.y);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y);
+    }
   }
   // Translate everything so origin is at (MARGIN, MARGIN).
   const shiftX = BB_CONST.MARGIN - minX;
@@ -490,7 +520,8 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     const lw = wires[i]!;
     const wire = ast.wires[i]!;
     const viaXY = wire.via ? holeXY(sub, wire.via) : undefined;
-    lw.path = bezierPath(lw.fromXY, lw.toXY, viaXY);
+    const points = routedPoints.get(lw);
+    lw.path = points ? points.map((p,i)=>`${i?"L":"M"} ${p.x+shiftX} ${p.y+shiftY}`).join(" ") : bezierPath(lw.fromXY, lw.toXY, viaXY);
   }
   const width = (maxX - minX) + BB_CONST.MARGIN * 2;
   const height = (maxY - minY) + BB_CONST.MARGIN * 2 + titleHeight;
