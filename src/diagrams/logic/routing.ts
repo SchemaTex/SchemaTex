@@ -3,7 +3,7 @@ import {
   compactRoute,
   orthogonalRoute,
   type RoutedNet,
-} from "../../core/orthogonal-router";
+} from "./orthogonal-router";
 
 /** Route a signal's destinations together and reuse its existing fan-out trunk. */
 export function routeLogicWires(

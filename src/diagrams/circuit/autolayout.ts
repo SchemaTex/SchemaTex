@@ -70,7 +70,6 @@ export interface RoutedWire {
  * in an export that enumerates components.
  */
 export interface SupplyFlagMark {
-  direction?: "up" | "down";
   kind: "ground" | "vcc";
   /** Where the glyph's connection point sits, in world coordinates. */
   at: PinAnchor;

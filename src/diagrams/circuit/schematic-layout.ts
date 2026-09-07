@@ -44,7 +44,6 @@ import type {
   SupplyFlagMark,
 } from "./autolayout";
 import { estimateTextWidth } from "../../core/text-metrics";
-import { compactRoute, orthogonalRoute, type RoutedNet } from "../../core/orthogonal-router";
 
 /** Horizontal distance between adjacent signal-flow layers. */
 const LAYER_W = 104;
@@ -79,7 +78,6 @@ interface PinRef {
 }
 
 function isPowerSourceType(c: CircuitComponent): boolean {
-  if (isSignalSource(c)) return false;
   return (
     c.componentType === "voltage_source" ||
     c.componentType === "current_source" ||
@@ -88,11 +86,6 @@ function isPowerSourceType(c: CircuitComponent): boolean {
     c.componentType === "solar_cell" ||
     c.componentType === "vcc"
   );
-}
-
-function isSignalSource(c: CircuitComponent): boolean {
-  return c.componentType === "ac_source" ||
-    ((c.componentType === "voltage_source" || c.componentType === "current_source") && /^(sin|pulse|pwl)\b/i.test(c.value ?? ""));
 }
 
 function isGroundType(c: CircuitComponent): boolean {
@@ -247,14 +240,9 @@ function freeChannelY(
  */
 function placeLabels(
   items: LaidOutComponent[],
-  routes: RoutedWire[],
-  flags: SupplyFlagMark[] = []
+  routes: RoutedWire[]
 ): number {
   const taken: Box[] = [];
-  for (const flag of flags) {
-    taken.push({minX:flag.at.x-12,maxX:flag.at.x+12,minY:flag.at.y-12,maxY:flag.at.y+12});
-    if (flag.label) taken.push({minX:flag.at.x+20,maxX:flag.at.x+24+estimateTextWidth(flag.label,11),minY:flag.at.y-22,maxY:flag.at.y-6});
-  }
   for (const it of items) taken.push(boxOf(it, 2));
   for (const r of routes) {
     for (let i = 0; i + 1 < r.points.length; i++) {
@@ -853,7 +841,7 @@ export function schematicNetlistLayout(
     }
   }
   const placeable = ast.components.filter((c) => !isGroundType(c));
-  const nonSource = placeable.filter((c) => !isPowerSourceType(c) && !isSignalSource(c));
+  const nonSource = placeable.filter((c) => !isPowerSourceType(c));
   if (nonSource.length === 0) return null;
 
   // A two-terminal part with exactly one leg on a supply is a shunt. It does
@@ -1090,10 +1078,9 @@ export function schematicNetlistLayout(
 
   // Power sources own the left column, standing upright the way a supply is
   // conventionally drawn, with their own flags top and bottom.
-  const sources = placeable.filter(c=>isPowerSourceType(c)||isSignalSource(c));
+  const sources = placeable.filter(isPowerSourceType);
   sources.forEach((src, i) => {
-    const groundAtPlus = pinEntriesOf(ast,src).some(([pin,net])=>pin==="plus"&&groundNets.has(net));
-    const laid = placeAt(src, LEFT_MARGIN + i * LAYER_W * 1.4, TOP_MARGIN - SLOT_H * 1.8, groundAtPlus?"down":"up");
+    const laid = placeAt(src, LEFT_MARGIN - LAYER_W, TOP_MARGIN + i * SLOT_H * 2, "up");
     items.push(laid);
     placed.set(src.id, laid);
   });
@@ -1171,26 +1158,11 @@ export function schematicNetlistLayout(
       x: LEFT_MARGIN + layers.length * LAYER_W,
       y: TOP_MARGIN,
     };
-    const hostBottom = Math.max(base.y,...items.filter(it=>Object.values(it.anchors).some(p=>p===anchor)).map(it=>boxOf(it,0).maxY));
-    const hostTop = Math.min(base.y,...items.filter(it=>Object.values(it.anchors).some(p=>p===anchor)).map(it=>boxOf(it,0).minY));
-    const x = base.x + nth * 64;
-    const y = toGround ? hostBottom + SLOT_H * .75 : hostTop - effectiveSymbolDef(comp.componentType,comp.attrs).length - 36;
+    const x = base.x + nth * 46;
+    const y = toGround ? base.y + SLOT_H * 0.55 : base.y - SLOT_H * 1.15;
     const laid = placeAt(comp, x, y, "down");
     items.push(laid);
     placed.set(comp.id, laid);
-  }
-
-  // Align a waveform source with the pin it drives, independent of its name
-  // or position among the DC supplies in the source file.
-  for (const comp of sources.filter(isSignalSource)) {
-    const entry=pinEntriesOf(ast,comp).find(([,net])=>!isSupplyNet(net));
-    if (!entry) continue;
-    const target=allPins.find(p=>p.net===entry[1]&&p.compId!==comp.id&&placed.has(p.compId));
-    const destination=target && placed.get(target.compId)!.anchors[target.pinName];
-    if (!destination) continue;
-    const current=placed.get(comp.id)!;
-    const laid=placeAt(comp,destination.x-LAYER_W,destination.y+current.length,"up");
-    items[items.indexOf(current)]=laid;placed.set(comp.id,laid);
   }
 
   // ── 6. Implicit supply flags ──────────────────────────────────
@@ -1201,12 +1173,10 @@ export function schematicNetlistLayout(
     if (!isSupplyNet(p.net)) continue;
     const host = placed.get(p.compId);
     if (!host) continue;
-    if (isGroundType(host.component)) continue;
     const anchor = host.anchors[p.pinName] ?? host.anchors.end;
     if (!anchor) continue;
     const ground = groundNets.has(p.net);
-    const downward = ground || p.pinName === "supply-";
-    const at = { x: anchor.x, y: anchor.y + (downward ? FLAG_REACH : -FLAG_REACH) };
+    const at = { x: anchor.x, y: anchor.y + (ground ? FLAG_REACH : -FLAG_REACH) };
     // Naming the rail is only informative when there is more than one to tell
     // apart. On a single-supply circuit the name repeated at every pin is
     // noise, and the bar glyph already says "this goes to the supply".
@@ -1223,7 +1193,6 @@ export function schematicNetlistLayout(
     } else {
       flags.push({
         kind: ground ? "ground" : "vcc",
-        direction: downward ? "down" : "up",
         at,
         label: ground || !nameRails ? undefined : p.net,
       });
@@ -1260,51 +1229,72 @@ export function schematicNetlistLayout(
 
   // ── 7. Route signal nets ──────────────────────────────────────
   const routes: RoutedWire[] = [...supplyStubs];
-  const routed: RoutedNet[] = [];
+  const obstacles = items.map((it) => boxOf(it, 6));
+
   const netPins = new Map<string, Array<{ pt: PinAnchor; compId: string }>>();
   for (const p of allPins) {
     if (isSupplyNet(p.net)) continue;
-    const a = placed.get(p.compId)?.anchors[p.pinName];
+    const host = placed.get(p.compId);
+    if (!host) continue;
+    const a = host.anchors[p.pinName];
     if (!a) continue;
     const list = netPins.get(p.net) ?? [];
-    list.push({pt:a,compId:p.compId}); netPins.set(p.net,list);
+    list.push({ pt: a, compId: p.compId });
+    netPins.set(p.net, list);
   }
+
   let routedNets = 0;
-  for (const [net,pins] of netPins) {
-    if (pins.length<2) continue;
+  for (const [net, pins] of netPins) {
+    if (pins.length < 2) continue;
     routedNets++;
-    const sorted=[...pins].sort((a,b)=>a.pt.x-b.pt.x||a.pt.y-b.pt.y);
-    const root=sorted[0]!;
-    const escape = (pin: typeof root) => {
-      const b=boxOf(placed.get(pin.compId)!,0),p=pin.pt;
-      return [
-        {x:b.minX-18,y:p.y},{x:b.maxX+18,y:p.y},
-        {x:p.x,y:b.minY-18},{x:p.x,y:b.maxY+18},
-      ].sort((a,c)=>{
-        const distance=Math.abs(a.x-p.x)+Math.abs(a.y-p.y)-Math.abs(c.x-p.x)-Math.abs(c.y-p.y);
-        if (Math.abs(distance)>1e-6) return distance;
-        const dx=p.x-(b.minX+b.maxX)/2,dy=p.y-(b.minY+b.maxY)/2;
-        return (c.x-p.x)*dx+(c.y-p.y)*dy-(a.x-p.x)*dx-(a.y-p.y)*dy;
-      })[0]!;
-    };
-    const boxes=items.map(it=>{const b=boxOf(it,6);return {left:b.minX,right:b.maxX,top:b.minY,bottom:b.maxY};});
-    for (const target of sorted.slice(1)) {
-      const points=compactRoute([root.pt,...orthogonalRoute(escape(root),escape(target),boxes,routed,net),target.pt]);
-      // Branch dots derive only from this net's existing geometry.
-      const junctions: PinAnchor[]=[];
-      for (const p of points) for (const previous of routed.filter(r=>r.net===net)) {
-        for (let i=1;i<previous.points.length;i++) {
-          const a=previous.points[i-1]!,b=previous.points[i]!;
-          if ((a.x===b.x&&p.x===a.x&&p.y>Math.min(a.y,b.y)&&p.y<Math.max(a.y,b.y)) ||
-              (a.y===b.y&&p.y===a.y&&p.x>Math.min(a.x,b.x)&&p.x<Math.max(a.x,b.x))) junctions.push(p);
-        }
+    const sorted = [...pins].sort((a, b) => a.pt.x - b.pt.x);
+    if (sorted.length === 2) {
+      const [a, b] = [sorted[0]!.pt, sorted[1]!.pt];
+      if (Math.abs(a.y - b.y) < 0.5) {
+        routes.push({ netId: net, points: compactPoints([a, b]) });
+      } else {
+        const my = freeChannelY(a, b, obstacles);
+        routes.push({
+          netId: net,
+          points: compactPoints([
+            a,
+            { x: a.x, y: my },
+            { x: b.x, y: my },
+            b,
+          ]),
+        });
       }
-      routes.push({netId:net,points,junctions});routed.push({net,points});
+      continue;
+    }
+    // 3+ pins: one horizontal spine in a free channel, each pin drops to it.
+    const spineY = freeChannelY(
+      sorted[0]!.pt,
+      sorted[sorted.length - 1]!.pt,
+      obstacles
+    );
+    const minX = Math.min(...sorted.map((p) => p.pt.x));
+    const maxX = Math.max(...sorted.map((p) => p.pt.x));
+    routes.push({
+      netId: net,
+      points: [
+        { x: minX, y: spineY },
+        { x: maxX, y: spineY },
+      ],
+      junctions: sorted
+        .filter((p) => Math.abs(p.pt.y - spineY) > 0.5)
+        .map((p) => ({ x: p.pt.x, y: spineY })),
+    });
+    for (const p of sorted) {
+      if (Math.abs(p.pt.y - spineY) < 0.5) continue;
+      routes.push({
+        netId: `${net}.${p.compId}`,
+        points: [p.pt, { x: p.pt.x, y: spineY }],
+      });
     }
   }
 
   // ── 8. Labels ─────────────────────────────────────────────────
-  const labelsMoved = placeLabels(items, routes, flags);
+  const labelsMoved = placeLabels(items, routes);
 
   const result = finalize(items, routes, flags) as AutoLayoutResult & {
     stats?: SchematicLayoutStats;

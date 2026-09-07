@@ -9,23 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed — engineering drawing correctness
+### Fixed — Logic routing and readability
 
-- Logic aligns driven outputs and separates gate rows; a shared orthogonal geometry router checks obstacles, bends, other conductors and reusable same-net branches. Circuit and P&ID retain their own pin/net models.
-- Circuit supply flags no longer receive the title offset twice. Ground/supply strokes use consistent native orientation, negative-rail source orientation respects the return pin, and waveform sources remain signal connections. Signal routes avoid component bounds; labels reserve supply annotations.
-- P&ID routing follows the actual side of each equipment port and clear instrument-bubble exits. Auxiliary pipes avoid unrelated equipment and captions. Tank labels wrap and filter captions leave the drain exit clear.
-- Breadboard automatic jumpers leave side-board pins outward, avoid part bodies and preserve exact endpoints after translation. Part labels use collision-scored positions; authored `via` retains its curve.
+- Logic wires route around gate bodies and captions. Opaque, theme-aware symbols prevent show-through; same-net branch dots and crossing clearance distinguish connected branches from unrelated crossings.
+- Gate rows leave room for fan-out, driven outputs align with their source, and terminal labels reserve measured space. Crowded gate bodies and input spacing adapt to pin count, including ANSI and IEC notation.
+- The full-adder preview preserves the original five gates and twelve connections. Regression tests cover renamed/reordered signals, active-low inputs, long labels, 3/8/16-input gates, and all eight full-adder input combinations. No example-specific layout template is used.
 
-### Added
-
-- Existing `pins="..."` syntax can select named anchors on fixed circuit symbols, including op-amp supply pins. Duplicate/unknown names are rejected; extra op-amp/comparator positional nets are diagnosed rather than rendered as values. The review includes a separate, explicitly corrected LM741 source; original user input is unchanged.
-
-- Logic uses obstacle-aware orthogonal paths around gate bodies and captions, opaque theme-aware symbols, same-net branch dots, and clearance at crossings. IEC inputs terminate at the rectangular body edge. Port labels reserve measured space; routing does not depend on example names or IDs.
-- Breadboard e/f hole centers now match the 0.3-inch DIP footprint. Notch-left DIP numbering runs counterclockwise, and visible leads/numbers derive from the same footprint as wire endpoints. Invalid DIP pin counts are rejected. Title-space translation applies once per physical pin, including aliases.
-- Two-terminal breadboard spans honor both authored holes, including vertical, reversed, and diagonal placements. Body rotation, scene bounds, and wire endpoints share the resolved geometry. The board uses a neutral surface with contrasting sockets and metal leads.
-- Floorplan electrical annotations are placed outside their glyphs using measured text and collision scoring. US-convention duplex outlets use two strokes. Authored fixture IDs are exposed as `data-instance-id` and scene `semanticId`; cross-document selection remains a host responsibility.
-
-No standards-compliance certification is introduced. P&ID package/service semantics and breadboard electrical connectivity validation remain outside this change. Malformed circuit input is diagnosed, not silently repaired.
+This change is Logic-only. Circuit, P&ID, Breadboard, Floorplan and linked-view changes from the review were withdrawn. No new DSL syntax, electrical simulation or standards certification is introduced.
 
 ---
 

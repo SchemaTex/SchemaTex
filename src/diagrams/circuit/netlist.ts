@@ -293,18 +293,6 @@ export function parseNetlist(
       );
     }
 
-    // The existing pins= contract also names real anchors on fixed symbols.
-    // This exposes optional supply pins without guessing a five-net convention.
-    if (kv.pins && cType !== "generic_ic" && cType !== "terminal_block") {
-      const declared = kv.pins.split(",").map(pin => pin.trim());
-      const symbol = getSymbol(cType);
-      const required = getNetlistPinOrder(cType) ?? ["start","end"];
-      if (!symbol || declared.some(pin => !symbol.anchors[pin]) || new Set(declared).size !== declared.length || required.some(pin=>!declared.includes(pin))) {
-        throw new NetlistParseError(`Invalid pins for ${cType}: ${kv.pins}. Available anchors: ${Object.keys(symbol?.anchors ?? {}).join(", ")}`, lineIdx+1);
-      }
-      pinOrder = declared;
-    }
-
     // Net refs consumption depends on type: last net ref may actually be the
     // "value" / "model" if it doesn't look like a net name.
     // Heuristic: if we have more refs than expected pins+0, last one is value.
@@ -313,7 +301,8 @@ export function parseNetlist(
     let valueFromTail: string | undefined;
 
     if (
-      (genericIcHasExplicitPins || Boolean(kv.pins) || cType === "opamp" || cType === "comparator") &&
+      cType === "generic_ic" &&
+      genericIcHasExplicitPins &&
       netRefs.length > expectedPins
     ) {
       const got = netRefs.length;

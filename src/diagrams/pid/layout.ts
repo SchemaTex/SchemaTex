@@ -9,7 +9,6 @@ import type {
   PidLine,
 } from "./types";
 import { applyPins } from "../../core/editing";
-import { compactRoute, orthogonalRoute, type RouteBox } from "../../core/orthogonal-router";
 
 const PADDING = 30;
 const TITLE_AREA = 26;
@@ -188,17 +187,52 @@ function getAnchor(
   }
   const p = ports[key] ?? ports.right ?? ports.out ?? ports.left ?? ports.in;
   if (!p) return { x: layoutEq.cx, y: layoutEq.cy, side: "right" };
-  // Port names are semantic, not geometric: shell_in can be on the top of a
-  // heat exchanger, and out can be on the bottom of a reactor.
-  const sides = [
-    {side:"left" as const,d:Math.abs(p.x-layoutEq.x)},
-    {side:"right" as const,d:Math.abs(p.x-layoutEq.x-layoutEq.width)},
-    {side:"top" as const,d:Math.abs(p.y-layoutEq.y)},
-    {side:"bottom" as const,d:Math.abs(p.y-layoutEq.y-layoutEq.height)},
-  ];
-  const preferred = resolveSide(key ?? "right");
-  sides.sort((a,b)=>a.d-b.d || Number(b.side===preferred)-Number(a.side===preferred));
-  return { x: p.x, y: p.y, side: sides[0]!.side };
+  return { x: p.x, y: p.y, side: resolveSide(key ?? "right") };
+}
+
+function manhattanPath(
+  fromX: number,
+  fromY: number,
+  fromSide: AnchorPoint["side"],
+  toX: number,
+  toY: number,
+  toSide: AnchorPoint["side"]
+): { d: string; midX: number; midY: number } {
+  // Choose elbow strategy based on the originating side.
+  // For horizontal exits (left/right) we route H → V → H.
+  // For vertical exits (top/bottom) we route V → H → V.
+  const isHFrom = fromSide === "left" || fromSide === "right";
+  const isHTo = toSide === "left" || toSide === "right";
+
+  if (isHFrom && isHTo) {
+    const midX = (fromX + toX) / 2;
+    return {
+      d: `M ${fromX} ${fromY} L ${midX} ${fromY} L ${midX} ${toY} L ${toX} ${toY}`,
+      midX,
+      midY: (fromY + toY) / 2,
+    };
+  }
+  if (!isHFrom && !isHTo) {
+    const midY = (fromY + toY) / 2;
+    return {
+      d: `M ${fromX} ${fromY} L ${fromX} ${midY} L ${toX} ${midY} L ${toX} ${toY}`,
+      midX: (fromX + toX) / 2,
+      midY,
+    };
+  }
+  // Mixed: simple L-shape.
+  if (isHFrom) {
+    return {
+      d: `M ${fromX} ${fromY} L ${toX} ${fromY} L ${toX} ${toY}`,
+      midX: toX,
+      midY: (fromY + toY) / 2,
+    };
+  }
+  return {
+    d: `M ${fromX} ${fromY} L ${fromX} ${toY} L ${toX} ${toY}`,
+    midX: (fromX + toX) / 2,
+    midY: toY,
+  };
 }
 
 export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number }>): PidLayoutResult {
@@ -502,45 +536,14 @@ function routeLine(
     );
   }
 
-  const escape = (a: AnchorPoint) => ({
-    x: a.x + (a.side === "left" ? -18 : a.side === "right" ? 18 : 0),
-    y: a.y + (a.side === "top" ? -18 : a.side === "bottom" ? 18 : 0),
-  });
-  const boxes: RouteBox[] = [...equipById.values()].map(e => ({left:e.x-5,right:e.x+e.width+5,top:e.y-5,bottom:e.y+e.height+5}));
-  for (const e of equipById.values()) {
-    if (e.equip.equipType === "filter") {
-      boxes.push({left:e.cx+8,right:e.cx+16+(e.equip.tag ?? e.equip.id).length*6.4,top:e.y+e.height+3,bottom:e.y+e.height+20});
-      continue;
-    }
-    if (e.equip.id === ln.from.id || e.equip.id === ln.to.id) continue;
-    const half = Math.max(e.width/2,(e.equip.tag ?? e.equip.id).length*3.3);
-    boxes.push({left:e.x+e.width/2-half-5,right:e.x+e.width/2+half+5,top:e.y+e.height,bottom:e.y+e.height+22});
-  }
-  for (const i of instById.values()) {
-    if (i.inst.tag === ln.from.id || i.inst.tag === ln.to.id) continue;
-    boxes.push({left:i.cx-i.r-5,right:i.cx+i.r+5,top:i.cy-i.r-5,bottom:i.cy+i.r+5});
-  }
-  // A bubble has no directional process port: choose a clear perimeter exit.
-  const candidates = (id: string, anchor: AnchorPoint): AnchorPoint[] => {
-    const i = instById.get(id);
-    return i ? [
-      {x:i.cx-i.r,y:i.cy,side:"left"}, {x:i.cx+i.r,y:i.cy,side:"right"},
-      {x:i.cx,y:i.cy-i.r,side:"top"}, {x:i.cx,y:i.cy+i.r,side:"bottom"},
-    ] : [anchor];
-  };
-  const pairs = candidates(ln.from.id,fromAnchor).flatMap(a=>candidates(ln.to.id,toAnchor).map(b=>({a,b})));
-  pairs.sort((p,q)=>Math.abs(p.a.x-p.b.x)+Math.abs(p.a.y-p.b.y)-Math.abs(q.a.x-q.b.x)-Math.abs(q.a.y-q.b.y));
-  let points: Array<{x:number;y:number}> | undefined;
-  for (const {a,b} of pairs) {
-    const start=escape(a),end=escape(b);
-    if (boxes.some(box=>[start,end].some(p=>p.x>box.left&&p.x<box.right&&p.y>box.top&&p.y<box.bottom))) continue;
-    points=compactRoute([a,...orthogonalRoute(start,end,boxes),b]);
-    break;
-  }
-  if (!points) throw new Error(`P&ID line ${ln.id}: no clear port exit; equipment or labels overlap its endpoints`);
-  const d = points.map((p,i)=>`${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
-  const middle = points[Math.floor(points.length/2)]!;
-  const midX = middle.x, midY = middle.y;
+  const { d, midX, midY } = manhattanPath(
+    fromAnchor.x,
+    fromAnchor.y,
+    fromAnchor.side,
+    toAnchor.x,
+    toAnchor.y,
+    toAnchor.side
+  );
 
   return {
     line: ln,
@@ -633,7 +636,7 @@ function resolveAnchor(
   const inst = instById.get(id);
   if (inst) {
     return {
-      x: inst.cx + (fallback === "out" ? inst.r : -inst.r),
+      x: inst.cx,
       y: inst.cy,
       side: fallback === "out" ? "right" : "left",
     };

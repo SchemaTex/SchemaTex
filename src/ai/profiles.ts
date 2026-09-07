@@ -277,7 +277,6 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     prefer: [
       "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
-      'Op-amp default pins are plus,minus,out. For power pins use: U1 input feedback output VCC VEE type=opamp pins="plus,minus,out,supply+,supply-". Names must be real symbol anchors; nets bind in that order. Use value= for explicit-pin component values. Never guess extra positional power nets.',
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
       "Omit `dir=` in netlist mode by default so topology can orient each part. Use it only when the requested electrical meaning requires a specific symbol direction.",

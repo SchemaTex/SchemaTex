@@ -19,13 +19,11 @@ import type {
 } from "../../core/types";
 import { partSpec, HOLE_PITCH } from "./parts";
 import { PIN_ALIASES } from "./pin-aliases";
-import { compactRoute, orthogonalRoute, type RoutePoint } from "../../core/orthogonal-router";
 
 export const BB_CONST = {
   PITCH: HOLE_PITCH,
   RAIL_HEIGHT: 18,
-  // Extra space beyond the regular row pitch: opposing e/f holes are 0.3" apart.
-  TROUGH: 2 * HOLE_PITCH,
+  TROUGH: HOLE_PITCH,
   BOARD_PAD_X: 24,
   BOARD_PAD_Y: 16,
   ROW_LABEL_W: 14,
@@ -62,7 +60,7 @@ function buildSubstrate(form: BreadboardAst["board"], originX: number, originY: 
   const height = innerH + BB_CONST.BOARD_PAD_Y * 2;
   // Trough sits between row e and row f. Top rails (if any) → col labels → rows a..e → trough → rows f..j → col labels → bottom rails.
   const topRailsH = hasRails ? BB_CONST.RAIL_HEIGHT : 0;
-  const troughY = y + BB_CONST.BOARD_PAD_Y + topRailsH + BB_CONST.COL_LABEL_H + 5 * PITCH + BB_CONST.TROUGH / 2;
+  const troughY = y + BB_CONST.BOARD_PAD_Y + topRailsH + BB_CONST.COL_LABEL_H + 5 * PITCH + PITCH / 2;
   return {
     x, y, width, height, pitch: PITCH, cols, hasRails, railsBreak,
     troughY, troughHeight: BB_CONST.TROUGH,
@@ -162,16 +160,6 @@ function placePart(
   }
   const anchorXY = holeXY(sub, anchor);
 
-  if (part.placement.kind === "span" && spec.pins.length === 2) {
-    const end = holeXY(sub, part.placement.to);
-    const dx = end.x - anchorXY.x, dy = end.y - anchorXY.y;
-    const pins = { [spec.pins[0]!.name]: anchorXY, [spec.pins[1]!.name]: end };
-    addPinAliases(part.kind, pins);
-    return { part, x: anchorXY.x, y: anchorXY.y - spec.height / 2,
-      width: Math.hypot(dx, dy), height: spec.height,
-      rotation: Math.atan2(dy, dx) * 180 / Math.PI, pins };
-  }
-
   // For module parts (sensors / displays): anchor is the first pin (lower-left of module),
   // so module sits *above* the anchor with pin row at its bottom edge.
   if (spec.category === "module") {
@@ -201,7 +189,7 @@ function placePart(
     y = anchorXY.y - spec.height / 2;
   }
   const pins: Record<string, { x: number; y: number }> = {};
-  for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y + (spec.height === BB_CONST.PITCH ? spec.height / 2 : 0) };
+  for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
   addPinAliases(part.kind, pins);
   return { part, x, y, width: spec.width, height: spec.height, rotation: 0, pins };
 }
@@ -390,17 +378,6 @@ function bezierPath(p1: { x: number; y: number }, p2: { x: number; y: number }, 
 
 // ─── Public API ─────────────────────────────────────────────
 
-/** Bounds of the same rotated body frame used by SVG and scene hit testing. */
-export function breadboardPartBounds(part: BreadboardLayoutPart): { x: number; y: number; width: number; height: number } {
-  const angle = part.rotation * Math.PI / 180;
-  const corners = [[0, 0], [part.width, 0], [part.width, part.height], [0, part.height]].map(([x, y]) => ({
-    x: part.x + x! * Math.cos(angle) - (y! - part.height / 2) * Math.sin(angle),
-    y: part.y + part.height / 2 + x! * Math.sin(angle) + (y! - part.height / 2) * Math.cos(angle),
-  }));
-  const x = Math.min(...corners.map(p => p.x)), y = Math.min(...corners.map(p => p.y));
-  return { x, y, width: Math.max(...corners.map(p => p.x)) - x, height: Math.max(...corners.map(p => p.y)) - y };
-}
-
 export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
   // Place parts to discover side reservations.
   const reserved = { left: 0, right: 0, above: 0, below: 0 };
@@ -440,61 +417,26 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     };
   });
 
-  // Side-board pin labels live inside the body. Escape toward the nearest
-  // edge before routing, rather than bowing a jumper across the pin legend.
-  const routedPoints = new Map<BreadboardLayoutWire, RoutePoint[]>();
-  for (const [wireIndex,wire] of wires.entries()) {
-    if (wire.wire.via) continue; // authored bend intent stays authoritative
-    const escape = (endpoint: BreadboardEndpoint, p: RoutePoint): RoutePoint => {
-      if (endpoint.kind !== "pin") return p;
-      const part = parts.find(part=>part.part.id===endpoint.partId)!;
-      if (partSpec(part.part.kind,part.part.args).category !== "side") return p;
-      const b = breadboardPartBounds(part);
-      return [
-        {x:b.x-14-wireIndex*8,y:p.y}, {x:b.x+b.width+14+wireIndex*8,y:p.y},
-        {x:p.x,y:b.y-14-wireIndex*8}, {x:p.x,y:b.y+b.height+14+wireIndex*8},
-      ].sort((a,b)=>Math.abs(a.x-p.x)+Math.abs(a.y-p.y)-Math.abs(b.x-p.x)-Math.abs(b.y-p.y))[0]!;
-    };
-    const start = escape(wire.wire.from,wire.fromXY), end = escape(wire.wire.to,wire.toXY);
-    const contains = (p: RoutePoint,b: ReturnType<typeof breadboardPartBounds>) => p.x>=b.x&&p.x<=b.x+b.width&&p.y>=b.y&&p.y<=b.y+b.height;
-    const boxes = parts.flatMap(part=>{
-      const b = breadboardPartBounds(part);
-      if (contains(start,b)||contains(end,b)) return [];
-      const clearance = partSpec(part.part.kind,part.part.args).category === "side" ? 3+wireIndex*8 : 3;
-      return [{left:b.x-clearance,right:b.x+b.width+clearance,top:b.y-clearance,bottom:b.y+b.height+clearance}];
-    });
-    routedPoints.set(wire,compactRoute([wire.fromXY,...orthogonalRoute(start,end,boxes),wire.toXY]).map(p=>({...p})));
-  }
-
   // Canvas size — bounding box across substrate + side parts + wires.
   let minX = sub.x;
   let minY = sub.y;
   let maxX = sub.x + sub.width;
   let maxY = sub.y + sub.height;
   for (const lp of parts) {
-    const bounds = breadboardPartBounds(lp);
-    minX = Math.min(minX, bounds.x);
-    minY = Math.min(minY, bounds.y);
-    maxX = Math.max(maxX, bounds.x + bounds.width);
-    maxY = Math.max(maxY, bounds.y + bounds.height);
-    for (const pin of Object.values(lp.pins)) {
-      minX = Math.min(minX, pin.x - 8); minY = Math.min(minY, pin.y - 8);
-      maxX = Math.max(maxX, pin.x + 8); maxY = Math.max(maxY, pin.y + 8);
-    }
+    minX = Math.min(minX, lp.x);
+    minY = Math.min(minY, lp.y);
+    maxX = Math.max(maxX, lp.x + lp.width);
+    maxY = Math.max(maxY, lp.y + lp.height);
   }
   for (const lw of wires) {
     minX = Math.min(minX, lw.fromXY.x, lw.toXY.x);
     minY = Math.min(minY, lw.fromXY.y, lw.toXY.y);
     maxX = Math.max(maxX, lw.fromXY.x, lw.toXY.x);
     maxY = Math.max(maxY, lw.fromXY.y, lw.toXY.y);
-    for (const p of routedPoints.get(lw) ?? []) {
-      minX=Math.min(minX,p.x);minY=Math.min(minY,p.y);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y);
-    }
   }
   // Translate everything so origin is at (MARGIN, MARGIN).
   const shiftX = BB_CONST.MARGIN - minX;
-  const titleHeight = ast.title ? 30 : 0;
-  const shiftY = BB_CONST.MARGIN + titleHeight - minY;
+  const shiftY = BB_CONST.MARGIN - minY;
   if (shiftX !== 0 || shiftY !== 0) {
     sub.x += shiftX;
     sub.y += shiftY;
@@ -502,10 +444,9 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     for (const lp of parts) {
       lp.x += shiftX;
       lp.y += shiftY;
-      // Aliases share coordinates; translate each physical point exactly once.
-      for (const pin of new Set(Object.values(lp.pins))) {
-        pin.x += shiftX;
-        pin.y += shiftY;
+      for (const k of Object.keys(lp.pins)) {
+        lp.pins[k]!.x += shiftX;
+        lp.pins[k]!.y += shiftY;
       }
     }
     for (const lw of wires) {
@@ -520,11 +461,10 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     const lw = wires[i]!;
     const wire = ast.wires[i]!;
     const viaXY = wire.via ? holeXY(sub, wire.via) : undefined;
-    const points = routedPoints.get(lw);
-    lw.path = points ? points.map((p,i)=>`${i?"L":"M"} ${p.x+shiftX} ${p.y+shiftY}`).join(" ") : bezierPath(lw.fromXY, lw.toXY, viaXY);
+    lw.path = bezierPath(lw.fromXY, lw.toXY, viaXY);
   }
   const width = (maxX - minX) + BB_CONST.MARGIN * 2;
-  const height = (maxY - minY) + BB_CONST.MARGIN * 2 + titleHeight;
+  const height = (maxY - minY) + BB_CONST.MARGIN * 2;
 
   return { ast, substrate: sub, parts, wires, width, height };
 }

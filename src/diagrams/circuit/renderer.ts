@@ -241,10 +241,9 @@ function renderRoute(
   if (r.points.length < 2) return "";
   const pts = r.points.map((point) => `${point.x + offX},${point.y + offY}`).join(" ");
   const d = r.points.map((point, pointIndex) => `${pointIndex === 0 ? "M" : "L"}${point.x + offX} ${point.y + offY}`).join(" ");
-  const conductor = scene
+  const line = scene
     ? pathEl({ d, class: "schematex-circuit-wire", "data-sx-live-edge": "true" })
     : `<polyline points="${pts}" class="schematex-circuit-wire" fill="none"/>`;
-  const line = pathEl({d,class:"schematex-circuit-wire-clearance"}) + conductor;
   const dots = (r.junctions ?? [])
     .map(
       (j) =>
@@ -333,9 +332,9 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const flagSvg = (layout.flags ?? [])
     .map((f: SupplyFlagMark) => {
       const sym = effectiveSymbolDef(f.kind, undefined);
-      const rot = f.kind === "ground" || f.direction === "down" ? 90 : 270;
+      const rot = f.kind === "ground" ? 90 : 270;
       const x = f.at.x + offsetX;
-      const y = f.at.y + offsetY;
+      const y = f.at.y + offsetY + topOff;
       const glyph = `<g transform="translate(${x}, ${y}) rotate(${rot})">${sym.svg()}</g>`;
       if (!f.label) return glyph;
       return (
@@ -357,10 +356,8 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
 .schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-circuit-hit { fill: transparent; stroke: none; pointer-events: all; }
 .schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.schematex-circuit-body[fill="white"] { fill: ${t.bg}; }
 .schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
 .schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
-.schematex-circuit-wire-clearance { stroke: ${t.bg}; stroke-width: 5; fill: none; }
 .schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
 .schematex-circuit-label { font: 600 11px system-ui, sans-serif; fill: ${t.text}; }
 .schematex-circuit-value { font: italic 10px system-ui, sans-serif; fill: ${t.textMuted}; }
