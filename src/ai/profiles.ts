@@ -48,7 +48,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'genogram "Title"',
     mode: "individual declarations + couple lines + indented children",
     keywords:
-      'sex: male female unknown other · status: deceased stillborn miscarriage abortion · couple ops: -- (married) ~/~ (cohabiting-ended) ~x~ (divorced) -/- (separated) -o- (engaged) == (consanguineous) ~ (cohabiting) · child props: adopted foster guardian twin-identical twin-fraternal · individual attrs: age:N dob:"…" dod:"…" death:YYYY note:"…" birth:out-of-wedlock|adopted|legitimate label:"…" sibling-of:ID index · conditions: name(fill[,#color]) + … · fills: full half-left half-right half-top half-bottom quad-tl quad-tr quad-bl quad-br quarter striped dotted · emotional ops: -TYPE- or -TYPE-> where TYPE ∈ harmony close love hostile conflict cutoff fused distant nevermet abuse neglect controlling jealous focused distrust',
+      'sex: male female unknown other · status: deceased stillborn miscarriage abortion · couple ops: -- (married) ~/~ (cohabiting-ended) ~x~ (divorced) -/- (separated) -o- (engaged) == (consanguineous) ~ (cohabiting) · child props: adopted foster guardian twin-identical twin-fraternal · individual attrs: age:N dob:"…" dod:"…" death:YYYY note:"…" birth:out-of-wedlock|adopted|legitimate label:"…" sibling-of:ID external:true|false index · conditions: name(fill[,#color]) + … · fills: full half-left half-right half-top half-bottom quad-tl quad-tr quad-bl quad-br quarter striped dotted · emotional ops: -TYPE- or -TYPE-> where TYPE ∈ harmony close love hostile conflict cutoff fused distant nevermet abuse neglect controlling jealous focused distrust',
     forms: [
       'genogram "Smith Family"',
       "  john [male, 1975]",
@@ -62,11 +62,14 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use couple operators `--` (married), `~/~` (cohabiting-ended), `~x~` (divorced), `-/-` (separated), `==` (consanguineous), `~` (cohabiting) on their own line; indent children beneath.",
       "Annotate conditions as `conditions: name(fill, #color) + name2(fill2)`, e.g. `conditions: diabetes(half-left, #ff9800) + cancer(quad-tr, #9c27b0)`.",
       "Mark the identified patient with the `index` attribute so the concentric double-border is drawn.",
+      'Use `helper [other, label: "Counsellor", external: true]` for an outside support contact, then connect them with an emotional line such as `helper -close- alice`. Contacts with only emotional ties sit beside directly connected family members; actual family relationships take precedence.',
+      "Describe people and relationships; the engine chooses coordinates, spacing and emotional routes.",
     ],
     avoid: [
       "Don't use pedigree genetic-status tokens (`affected`, `carrier`, `proband`) in a genogram — use `conditions:` fill patterns instead.",
       "Don't attach emotional-operator labels with `[label:]`; place the optional quoted label after the right-hand id: `john -conflict- mary \"ongoing\"`.",
       "Don't invent fill patterns — use only `full`, `half-left/right/top/bottom`, `quad-tl/tr/bl/br`, `quarter`, `striped`, `dotted`.",
+      "Unknown `key:value` attributes are metadata only: they do not create layout or visual features. Household boundaries are not supported; do not invent `household`, coordinates or routing attributes to simulate them.",
     ],
     repair: [
       "'Unknown individual' -> declare `id [sex]` before any couple or emotional line that references that id.",
@@ -264,7 +267,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · production aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · relay: type=relay (coil_a coil_b common no) or type=relay_spdt (coil_a coil_b common nc no) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · pins="…" · ORIENTATION: in netlist mode layout places and orients every part itself, including mirroring a polarised part whose upstream pin is written second — do NOT set dir= there, it overrides that and is usually wrong; dir=(right|left|up|down) is for positional mode · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect`,
+      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · production aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · relay: type=relay (coil_a coil_b common no) or type=relay_spdt (coil_a coil_b common nc no) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · pins="…" · named pin connection: Wlink NET Component.pin`,
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -279,12 +282,13 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
-      "Omit `dir=` in netlist mode by default so topology can orient each part. Use it only when the requested electrical meaning requires a specific symbol direction.",
+      "Declare electrical connectivity and pin identity; the engine owns placement, wire routing and label clearance. Do not repair a drawing by adding coordinates, component dimensions or `dir=` overrides to a generated netlist.",
     ],
     avoid: [
-      "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
-      "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
+      "Do not switch to positional cursor mode to fix a schematic. Physical cabinet placement is a separate user request; consult the reference syntax only for that task.",
+      "Do not invent coordinates or route hints; use explicit net names and named pin connections for electrical intent.",
       "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
+      'A `terminal_block` with `pins="1,2"` has two independent terminals, not an internal jumper. Use a shared net or explicit wire when those terminals must be electrically connected.',
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
       "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
     ],
@@ -364,7 +368,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'sld "Title"',
     mode: "equipment declarations + directed power-flow edges",
     keywords:
-      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…" curve:"…" icn:"…" rcd_type:"…" sensitivity:"…"] · ID -> ID [cable:"…" cable_csa:"…" cable_length_m:"…" cable_insulation:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub consumer_unit · switching: breaker breaker_vacuum switch switch_load ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault rcd · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->rcd isolator/disconnector->switch_load panel/consumer_unit/distribution_board->consumer_unit',
+      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…" curve:"…" icn:"…" rcd_type:"…" sensitivity:"…"] · ID -> ID [cable:"…" cable_csa:"…" cable_length_m:"…" cable_insulation:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub consumer_unit · switching: breaker breaker_vacuum switch switch_load contactor ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault rcd · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->rcd isolator/disconnector->switch_load panel/consumer_unit/distribution_board->consumer_unit',
     forms: [
       'sld "Utility + Generator Backup"',
       'UTIL = utility [voltage: "480V", label: "Utility"]',
@@ -432,7 +436,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'fishbone "Title"',
     mode: "effect + structured category ribs + cause lines",
     keywords:
-      'effect "…" · category id "Label" [side:top|bottom order:N color:"#hex"] · catId : "cause text" · compact: category Label: cause1; cause2 · sub-cause: indent >=2 + "- text" · config direction = left|right · config sides = both|top|bottom · config density = compact|normal|spacious',
+      'effect "…" · category id "Label" · catId : "cause text" · compact: category Label: cause1; cause2 · sub-cause: indent >=2 + "- text" · config direction = left|right · config sides = both|top|bottom · config density = compact|normal|spacious',
     forms: [
       'fishbone "Manufacturing defect spike"',
       'effect "Solder joint defect > 3%"',
@@ -446,7 +450,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     prefer: [
       "Declare each `category id \"Label\"` before referencing `id : \"cause\"` — the structured form keeps category ids unambiguous.",
-      "Use `[side: top]` / `[side: bottom]` and `[order: N]` on a category to pin important categories (e.g. the 6M) to a specific rib instead of auto-alternating.",
+      "Describe the effect, categories, causes and sub-causes; let the engine choose sides, ordering, spacing and wrapping. Use manual layout options only when the user explicitly asks for that presentation.",
       "For second-level sub-causes, indent >= 2 spaces and prefix with `- `; they attach to the last Level-1 cause above them.",
     ],
     avoid: [
@@ -1145,7 +1149,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'network "Title"',
     mode: "device declarations + links (annotations are optional)",
     keywords:
-      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
+      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf · spines: / leaves:',
     forms: [
       'network "Branch office"',
       'site hq "HQ Building" {',
@@ -1168,6 +1172,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Common kinds: router, switch, l3switch, firewall, ap, server, pc, laptop, camera, nvr, poeswitch, internet, cloud.",
     ],
     avoid: [
+      "Do not supply coordinates or routing instructions. Describe devices, connections, and semantic tiers; the engine owns placement and wire geometry.",
       "Avoid linking to an undeclared device id.",
       "Don't omit a boundary id — `site \"HQ\" {` is invalid because the quoted text is a label, not an id.",
       "Add verbose per-link annotations (`vlan:`, `port:`, speeds, `trunk`/`access`) and `subnet \"cidr\" { ... }` boundaries ONLY when the request needs them — they don't affect layout and are where generation most often breaks.",

@@ -271,7 +271,6 @@ rung_element   = series_element
 series_element = contact | coil | function_block | jump
 
 parallel_block = "parallel:" NEWLINE INDENT
-                   (series_element+)
                    ("branch:" NEWLINE INDENT series_element+ DEDENT)+
                  DEDENT
 
@@ -305,13 +304,6 @@ NEWLINE        = /\n/
 ```
 ladder "Motor Control"
 
-var StartBtn: bool
-var StopBtn: bool
-var EmergencyStop: bool = false
-var MotorLatch: bool = false
-var MotorRun: bool = false
-var RunIndicator: bool = false
-
 rung 0 "Start latch with stop condition":
   XIC(StartBtn)
   XIO(StopBtn)
@@ -334,11 +326,6 @@ rung 3 "Run indicator":
 **DSL 示例（Timer + Counter）：**
 ```
 ladder "Timer Counter Example"
-
-var RunSignal: bool
-var RunTimer: timer
-var CycleCounter: counter
-var AlarmOut: bool
 
 rung 0 "TON timer when running":
   XIC(RunSignal)
@@ -459,7 +446,6 @@ rung 0:
 ### Case 4: TON Timer
 ```
 ladder
-var RunTimer: timer
 rung 0:
   XIC(StartSignal)
   TON(RunTimer, StartSignal, T#10s)
@@ -484,7 +470,6 @@ rung 1:
 ### Case 6: Counter
 ```
 ladder
-var PulseCnt: counter
 rung 0:
   XIC(PulseInput)
   CTU(PulseCnt, PulseInput, 50)
