@@ -25,7 +25,7 @@ const ALIAS_RE = new RegExp(
   "u"
 );
 const STEREOTYPE_RE = new RegExp(
-  `^state\\s+(${IDENTIFIER_SOURCE})\\s+<<\\s*(choice|fork|join|end)\\s*>>\\s*$`,
+  `^state\\s+(${IDENTIFIER_SOURCE})\\s+<<\\s*(choice|fork|join|end|accepting|final)\\s*>>\\s*$`,
   "u"
 );
 const STATE_LABEL_RE = new RegExp(`^state\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
@@ -211,7 +211,6 @@ interface ParseContext {
   transCounter: number;
   byId: Map<string, StateNode>;
   initialAlias?: string;
-  finalAlias?: string;
 }
 
 function newPseudoId(ctx: ParseContext, kind: PseudoStateKind): string {
@@ -255,28 +254,8 @@ function ensureInitialAlias(ctx: ParseContext, parent?: StateNode): StateNode {
   return node;
 }
 
-function ensureFinalAlias(ctx: ParseContext, parent?: StateNode): StateNode {
-  if (!parent) {
-    if (ctx.finalAlias) {
-      const existing = ctx.byId.get(ctx.finalAlias);
-      if (existing) return existing;
-    }
-    const node: StateNode = {
-      id: newPseudoId(ctx, "final"),
-      label: "",
-      kind: "pseudo",
-      pseudoKind: "final",
-      activities: [],
-      children: [],
-    };
-    ctx.finalAlias = node.id;
-    ctx.byId.set(node.id, node);
-    ctx.states.push(node);
-    return node;
-  }
-  for (const child of parent.children) {
-    if (child.id.startsWith("__final_") && child.label === "") return child;
-  }
+function createFinalAlias(ctx: ParseContext, parent?: StateNode): StateNode {
+  // Each anonymous target ends this transition; only named finals are shared.
   const node: StateNode = {
     id: newPseudoId(ctx, "final"),
     label: "",
@@ -284,10 +263,11 @@ function ensureFinalAlias(ctx: ParseContext, parent?: StateNode): StateNode {
     pseudoKind: "final",
     activities: [],
     children: [],
-    parent: parent.id,
+    parent: parent?.id,
   };
   ctx.byId.set(node.id, node);
-  parent.children.push(node);
+  if (parent) parent.children.push(node);
+  else ctx.states.push(node);
   return node;
 }
 
@@ -465,10 +445,15 @@ export function parseStateDiagram(src: string): StateDiagramAST {
       continue;
     }
 
-    // ── Mermaid stereotype: `state ID <<choice>>` / `<<fork>>` / `<<join>>` / `<<end>>` ──
+    // ── State stereotypes: pseudo-states or a labelled accepting state ──
     const stereoMatch = text.match(STEREOTYPE_RE);
     if (stereoMatch) {
       const id = stereoMatch[1];
+      if (stereoMatch[2] === "accepting" || stereoMatch[2] === "final") {
+        ensureSimpleState(ctx, id, parent).accepting = true;
+        i++;
+        continue;
+      }
       const kind = MERMAID_STEREOTYPE[stereoMatch[2]];
       const node: StateNode = {
         id,
@@ -611,7 +596,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
       ): string => {
         if (tok === "[*]") {
           if (position === "from") return ensureInitialAlias(ctx, parent).id;
-          return ensureFinalAlias(ctx, parent).id;
+          return createFinalAlias(ctx, parent).id;
         }
         return ensureSimpleState(ctx, tok, parent).id;
       };
