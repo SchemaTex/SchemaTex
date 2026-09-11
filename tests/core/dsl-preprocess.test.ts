@@ -75,9 +75,10 @@ describe("parseFrontmatter", () => {
     expect(r.body).toContain("---");
   });
 
-  it("treats a malformed line inside the block as not-frontmatter", () => {
+  it("strips frontmatter content without requiring key/value metadata", () => {
     const r = parseFrontmatter("---\nno colon here\n---\nbody\n");
     expect(r.data).toEqual({});
+    expect(r.body).toBe("body\n");
   });
 
   it("preserves the body trailing newline structure", () => {

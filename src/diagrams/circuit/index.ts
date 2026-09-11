@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import { parseCircuit } from "./parser";
 import { lintCircuit } from "./lint";
@@ -7,7 +8,7 @@ export const circuit: DiagramPlugin = {
   type: "circuit",
   capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("circuit");
   },
   parse: parseCircuit,

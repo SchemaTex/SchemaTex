@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parsePid } from "./parser";
 import { renderPidAST } from "./renderer";
@@ -7,7 +8,7 @@ export const pid: DiagramPlugin = {
   type: "pid" as DiagramPlugin["type"],
   capabilities: { scene: true, editablePosition: true },
   detect(text) {
-    return /^\s*pid\b/i.test(text);
+    return /^\s*pid\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parsePid,
   lint: lintPid,

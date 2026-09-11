@@ -1,10 +1,11 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseFmea } from "./parser";
 import { renderFmea } from "./renderer";
 
 export const fmea: DiagramPlugin = {
   type: "fmea" as DiagramPlugin["type"],
-  detect: (t: string) => /^\s*fmea\b/i.test(t),
+  detect: (t: string) => /^\s*fmea\b/i.test(firstContentLine(t) ?? ""),
   parse: parseFmea,
   render(text: string, config?: RenderConfig) {
     return renderFmea(text, config);

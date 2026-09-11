@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import type { SchematexDiagnostic } from "../../core/diagnostics";
 import { parseTimeline } from "./parser";
@@ -7,7 +8,7 @@ export const timeline: DiagramPlugin = {
   type: "timeline" as DiagramPlugin["type"],
   capabilities: { scene: true, editablePosition: true },
   detect(text) {
-    return /^\s*timeline\b/i.test(text);
+    return /^\s*timeline\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseTimeline,
   render(text, config?: RenderConfig) {

@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseDecisionTree } from "./parser";
 import { renderDecisionTree } from "./renderer";
@@ -6,7 +7,7 @@ export const decisiontree: DiagramPlugin = {
   type: "decisiontree" as DiagramPlugin["type"],
   capabilities: { scene: true },
   detect(text) {
-    return /^\s*decisiontree\b/i.test(text);
+    return /^\s*decisiontree\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseDecisionTree,
 

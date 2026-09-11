@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import { parseOrgchart } from "./parser";
 import { lintOrgchart } from "./lint";
@@ -7,7 +8,7 @@ export const orgchart: DiagramPlugin = {
   type: "orgchart",
   capabilities: { scene: true, editablePosition: true },
   detect(text) {
-    return /^\s*orgchart\b/i.test(text);
+    return /^\s*orgchart\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseOrgchart,
   lint: lintOrgchart,

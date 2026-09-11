@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseMarkov } from "./parser";
 import { renderMarkov } from "./renderer";
@@ -6,7 +7,7 @@ export const markov: DiagramPlugin = {
   // Cast: the `markov` literal is not yet in the shared DiagramType union
   // (folder-isolated build — api.ts registration is intentionally deferred).
   type: "markov" as DiagramPlugin["type"],
-  detect: (t: string): boolean => /^\s*(markov|markovchain)\b/i.test(t),
+  detect: (t: string): boolean => /^\s*(markov|markovchain)\b/i.test(firstContentLine(t) ?? ""),
   parse: parseMarkov,
   render: (text: string, config?: RenderConfig): string => renderMarkov(text, config),
 };
