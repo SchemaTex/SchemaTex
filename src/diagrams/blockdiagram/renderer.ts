@@ -1,5 +1,5 @@
 import type { BlockAST, RenderConfig } from "../../core/types";
-import { resolveBlockTheme } from "../../core/theme";
+import { resolveBlockTheme, TITLE } from "../../core/theme";
 import { layoutBlockDiagram } from "./layout";
 import {
   svgRoot,
@@ -18,7 +18,7 @@ import {
 export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string {
   const t = resolveBlockTheme(config?.theme ?? "default");
   const layout = layoutBlockDiagram(ast);
-  const titleOffset = ast.title ? 26 : 0;
+  const titleOffset = ast.title ? TITLE.bandH : 0;
   const { width } = layout;
   const height = layout.height + titleOffset;
 
@@ -34,7 +34,7 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
 .schematex-bd-signal-label-bg { fill: ${t.sumFill}; opacity: .94; stroke: none; }
 .schematex-bd-signal-label { font: italic 12px serif; fill: ${t.signalStroke}; }
 .schematex-bd-port-label { font: italic 13px serif; fill: ${t.blockText}; }
-.schematex-bd-title { font: 700 16px sans-serif; fill: ${t.blockText}; }
+.schematex-bd-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${t.blockText}; }
 .schematex-bd-branch { fill: ${t.signalStroke}; stroke: none; }
 `.trim();
 
@@ -191,7 +191,7 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
     ? text(
         {
           x: width / 2,
-          y: 18,
+          y: TITLE.y,
           "text-anchor": "middle",
           class: "schematex-bd-title",
         },

@@ -19,6 +19,9 @@
  * folder-isolated feature; network/ sets the precedent of an own palette).
  */
 
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
+
 import type { RenderConfig } from "../../core/types";
 import {
   circle,
@@ -103,7 +106,8 @@ export function renderGitGraphLayout(layout: GitGraphLayout, config?: RenderConf
   const { ast } = layout;
 
   const width = layout.width + pad * 2;
-  const height = layout.height + pad * 2;
+  const titleHeight = ast.title ? TITLE.bandH : 0;
+  const height = layout.height + pad * 2 + titleHeight;
   const a11y = ast.title ?? "Git commit graph";
 
   const styleBlock = buildStyle(pal, ast.showBranches);
@@ -138,13 +142,20 @@ export function renderGitGraphLayout(layout: GitGraphLayout, config?: RenderConf
     group(
       {
         class: "sx-gg-root",
-        transform: `translate(${pad}, ${pad})`,
+        transform: `translate(${pad}, ${pad + titleHeight})`,
         "data-diagram-type": "gitgraph",
         "font-family": fontFamily,
       },
       inner
     )
   );
+
+  if (ast.title) {
+    const resolved = resolveSceneTitle(ast.title, undefined, width / 2, pad + TITLE.y, config);
+    children.push(svgText({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": fontFamily,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: pal.labelInk }, ast.title));
+  }
 
   return svgRoot(
     {

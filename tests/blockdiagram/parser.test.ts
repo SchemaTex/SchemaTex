@@ -117,3 +117,9 @@ A -> [B]`);
     });
   });
 });
+
+test.each(["title System Architecture", 'title: "System Architecture"'])("accepts %s", (title) => {
+  const ast = parseBlockDiagram(`blockdiagram\n${title}\nA = block("Plant")`);
+  expect(ast.title).toBe("System Architecture");
+  expect(ast.blocks[0]?.label).toBe("Plant");
+});

@@ -303,7 +303,7 @@ export function parseBlockDiagram(text: string): BlockAST {
       'Start with `blockdiagram` or `blockdiagram "Title"`.'
     );
   }
-  const title = parseBlockHeader(headerLine, header.line);
+  let title = parseBlockHeader(headerLine, header.line);
   const blocks: BlockNode[] = [];
   const sums: SummingJunction[] = [];
   const connections: BlockEdge[] = [];
@@ -350,6 +350,12 @@ export function parseBlockDiagram(text: string): BlockAST {
         line,
         "BLOCK_MULTIPLE_HEADERS"
       );
+    }
+
+    const titleMatch = /^title(?:\s*:\s*|\s+)(.+)$/i.exec(line);
+    if (titleMatch) {
+      title = unquoteAttr(titleMatch[1]!.trim());
+      continue;
     }
 
     const blockMatch = line.match(BLOCK_DECL_RE);

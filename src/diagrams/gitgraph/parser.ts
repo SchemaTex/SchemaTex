@@ -21,7 +21,7 @@
  * Zero runtime deps, hand-written, strict TS.
  */
 
-import { extractQuotedString } from "../../core/quotes";
+import { extractQuotedString, matchQuotedTitle } from "../../core/quotes";
 import type {
   GitCommitType,
   GitGraphAst,
@@ -74,9 +74,10 @@ export function parseGitGraph(text: string): GitGraphAst {
       );
     }
     // Inline orientation: `gitGraph LR:` / `gitGraph TB:` / `gitGraph BT:`
+    ast.title = matchQuotedTitle(t) ?? ast.title;
     const after = (h[1] ?? "").trim();
     if (after) {
-      const o = /^(LR|TB|BT)\s*:?\s*$/i.exec(after);
+      const o = /^(LR|TB|BT)\b/i.exec(after);
       if (o) {
         // Safe: the regex above only matches LR|TB|BT, so the upper-cased
         // value is exactly a GitGraphOrientation member.

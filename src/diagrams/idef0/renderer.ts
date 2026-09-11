@@ -11,6 +11,9 @@
  * tokens), <title>/<desc>, data-* for interactivity, svg.ts builder only.
  */
 
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
+
 import type { RenderConfig } from "../../core/types";
 import {
   group,
@@ -72,7 +75,7 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
 .sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: ${theme.accent}; }
 .sx-idef0-label { fill: ${theme.text}; font-size: ${FONT_SIZE.small + 1}px; }
 .sx-idef0-icom { fill: ${theme.textMuted}; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
-.sx-idef0-title { fill: ${theme.text}; font-size: ${FONT_SIZE.title}px; font-weight: 700; }
+.sx-idef0-title { fill: ${theme.text}; font-size: ${TITLE.size}px; font-weight: ${TITLE.weight}; }
 .sx-idef0-meta { fill: ${theme.textMuted}; font-size: ${FONT_SIZE.small + 1}px; }
 .sx-idef0-tb { fill: none; stroke: ${theme.stroke}; stroke-width: ${STROKE_WIDTH.thin}; }
 .sx-idef0-tb-text { fill: ${theme.text}; font-size: ${FONT_SIZE.small + 1}px; }
@@ -91,8 +94,9 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
 
   // Title.
   if (ast.title) {
+    const title = resolveSceneTitle(ast.title, undefined, layout.width / 2, TITLE.y, config);
     inner.push(
-      svgText({ x: layout.width / 2, y: 24, class: "sx-idef0-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
+      svgText({ x: title.x, y: title.y, ...title.attrs, class: "sx-idef0-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
     );
   }
 
@@ -266,8 +270,9 @@ function renderTitleBlock(width: number, height: number, node: string, title: st
     svgText({ x: x0 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "NODE"),
     svgText({ x: x0 + 6, y: y + 27, class: "sx-idef0-tb-text" }, node),
     svgText({ x: c1 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "TITLE"),
-    svgText({ x: c1 + 6, y: y + 27, class: "sx-idef0-tb-text" }, clip(title || "—", 60)),
+    svgText({ x: c1 + 6, y: y + 27, class: "sx-idef0-tb-text" }, clip(title, 60)),
     svgText({ x: c2 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "NUMBER"),
+    svgText({ x: c2 + 6, y: y + 27, class: "sx-idef0-tb-text" }, node),
   ]);
 }
 

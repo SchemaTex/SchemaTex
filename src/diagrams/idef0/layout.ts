@@ -13,6 +13,8 @@
  * Pure + deterministic: same AST → identical geometry.
  */
 
+import { TITLE } from "../../core/theme";
+
 import { analyseIdef0 } from "./analysis";
 import type {
   BoxSide,
@@ -38,7 +40,6 @@ export const IDEF0_CONST = {
   ARROW_HEAD: 9,
   /** Horizontal lead-in so a feedback arrow enters the input (left) edge cleanly. */
   FEEDBACK_LEADIN: 28,
-  TITLE_H: 30,
   /** Title-block strip height at the page bottom. */
   TITLEBLOCK_H: 34,
 } as const;
@@ -49,7 +50,7 @@ export function layoutIdef0(astIn: Idef0Ast): Idef0LayoutResult {
 
   // ── 1. Place boxes on the diagonal staircase ──
   const ox = C.MARGIN;
-  const oy = C.MARGIN + C.TITLE_H;
+  const oy = C.MARGIN + TITLE.bandH;
   const boxes: Idef0LayoutBox[] = ast.boxes.map((box, idx) => ({
     box,
     x: ox + idx * C.STEP_X,
@@ -142,7 +143,7 @@ function routeArrow(
   // Feedback (target is earlier on the staircase): route through the LEFT/TOP
   // margin so the arrow never crosses a box. Out the right, up over the top
   // margin, back down into the target side.
-  const marginY = C.MARGIN / 2 + C.TITLE_H;
+  const marginY = C.MARGIN / 2 + TITLE.bandH;
   let d: string;
   if (targetSide === "left") {
     // Input edge: drop down in the margin to the LEFT of the target box, then run
