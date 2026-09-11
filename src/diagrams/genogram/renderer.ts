@@ -1,9 +1,12 @@
-import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType, SceneItem } from "../../core/types";
-import { svgRoot, el, group, text, title, desc } from "../../core/svg";
+import { captionGeometry } from "./captions";
+import { relationshipCaptions, EMOTIONAL_REL_TYPES } from "./routing";
+import { renderEmotionalForm } from "./line-forms";
+import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, SceneItem } from "../../core/types";
+import { svgRoot, el, group, text, title, desc, escapeXml } from "../../core/svg";
 import { cssCustomProperties, resolveGenogramTheme, STROKE_WIDTH } from "../../core/theme";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 import { applyLegendOverrides, renderLegend } from "../../core/legend";
-import { buildGenogramLegend } from "./legend";
+import { buildGenogramLegend, renderGenogramLegendForms } from "./legend";
 import { resolveSceneTitle } from "../../core/title-scene";
 
 // ─── Public API ─────────────────────────────────────────────
@@ -25,13 +28,7 @@ export function renderGenogram(
 
   const edgeLayers = renderEdges(structuralEdges, config.__scene);
   const emotionalLayer = renderEmotionalEdges(emotionalEdges, config.__scene);
-  // Secondary parent-child rels carry their own visible label (e.g. "foster")
-  // already embedded in the relationship; suppress edge labels for them so
-  // the sentinel from layout doesn't render as text.
-  const labelEdges = structuralEdges.filter(
-    (e) => !e.relationship.secondary
-  );
-  const edgeLabelLayer = renderEdgeLabels(labelEdges, config);
+  const edgeLabelLayer = renderEdgeLabels(layout, config);
   const siblingOfLayer = renderSiblingOfBrackets(layout, ast, config.__scene);
 
   const nodeCount = layout.nodes.length;
@@ -42,7 +39,7 @@ export function renderGenogram(
   // Adjust viewBox and add title offset if title exists
   const titleHeight = chartTitle ? 40 : 0;
   const totalHeight = layout.height + titleHeight;
-  const nodeLayers = renderNodes(genGroups, titleHeight, config.__scene);
+  const nodeLayers = renderNodes(genGroups, titleHeight, config.__scene, ast?.metadata?.asOf === undefined ? undefined : Number(ast.metadata.asOf));
   const labelLayer = renderLabels(layout.nodes, config, config.__scene);
 
   const layers: string[] = [
@@ -50,6 +47,9 @@ export function renderGenogram(
     desc(
       `Genogram diagram with ${nodeCount} individuals across ${genCount} generations`
     ),
+    ...(ast?.warnings ?? []).map(warning => el("desc", {
+      "data-severity": warning.severity, "data-code": warning.code, "data-line": warning.line,
+    }, escapeXml(warning.message))),
     defsStr,
     styleStr,
   ];
@@ -106,7 +106,7 @@ export function renderGenogram(
         { fontFamily: config.fontFamily, fontSize: config.fontSize }
       );
       if (svg) {
-        legendSvg = svg;
+        legendSvg = renderGenogramLegendForms(svg, finalSpec);
         const overflowX = lb.x + lb.w + 8;
         const overflowY = lb.y + lb.h + 8;
         if (overflowX > finalWidth) finalWidth = overflowX;
@@ -152,7 +152,7 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram-unknown .schematex-genogram-shape { fill: ${t.unknownFill}; }
 .schematex-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
 .schematex-genogram-vitals { font-family: ${config.fontFamily}; font-size: ${Math.max(9, config.fontSize - 1)}px; text-anchor: middle; fill: ${t.textMuted}; }
-.schematex-genogram-note { font-family: ${config.fontFamily}; font-size: ${Math.max(9, config.fontSize - 1)}px; font-style: italic; text-anchor: middle; fill: ${t.textMuted}; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: ${config.fontFamily}; font-size: ${Math.max(9, config.fontSize - 1)}px; font-style: italic; text-anchor: middle; fill: ${t.textMuted}; }
 .schematex-genogram-edge { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
@@ -161,6 +161,7 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
 /* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
 .schematex-genogram-edge-secondary path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
 /* Sibling-of bracket (known relative, unknown ancestry) — dashed */
 .schematex-genogram-sibling-of path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
 .schematex-genogram-unknown-siblings-mark { fill: ${t.text}; pointer-events: none; }
@@ -177,100 +178,13 @@ function buildStyles(config: RenderConfig): string {
 
 // ─── Emotional Relationship Types ───────────────────────────
 
-const EMOTIONAL_REL_TYPES = new Set<string>([
-  "harmony", "close", "bestfriends", "love", "inlove", "friendship",
-  "hostile", "conflict", "enmity", "distant-hostile", "cutoff",
-  "close-hostile", "fused", "fused-hostile",
-  "distant", "normal", "nevermet",
-  "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect",
-  "manipulative", "controlling", "jealous",
-  "focused", "focused-neg", "distrust", "admirer", "limerence",
-]);
-
-function getEmotionalColor(type: RelationshipType): string {
-  // Positive: green
-  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(type)) return "#4caf50";
-  // Negative: red
-  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff"].includes(type)) return "#e53935";
-  // Ambivalent: purple
-  if (["close-hostile", "fused", "fused-hostile"].includes(type)) return "#9c27b0";
-  // Distance: gray
-  if (["distant", "normal", "nevermet"].includes(type)) return "#9e9e9e";
-  // Abuse: dark red
-  if (["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect"].includes(type)) return "#b71c1c";
-  // Control: orange
-  if (["manipulative", "controlling", "jealous"].includes(type)) return "#e65100";
-  // Special: blue
-  return "#1565c0";
-}
-
-function getEmotionalLineStyle(type: RelationshipType): string {
-  // Hostile types: zigzag rendered as stroke-dasharray
-  if (["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(type)) {
-    return "stroke-dasharray: 8,3,2,3;";
-  }
-  // Distant types: dashed
-  if (["distant", "distant-hostile", "nevermet"].includes(type)) {
-    return "stroke-dasharray: 6,4;";
-  }
-  // Cutoff: gap
-  if (type === "cutoff") {
-    return "stroke-dasharray: 2,8;";
-  }
-  return "";
-}
-
-function getEmotionalStrokeWidth(type: RelationshipType): number {
-  // Fused/best friends: thick (3 lines visually)
-  if (["fused", "fused-hostile", "bestfriends"].includes(type)) return 4;
-  // Close/love: medium (2 lines)
-  if (["close", "close-hostile", "love", "inlove"].includes(type)) return 3;
-  return 2;
-}
-
 function renderEmotionalEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
   if (edges.length === 0) return group({ class: "schematex-genogram-emotional-edges" }, []);
 
   const children: string[] = [];
   for (const [index, edge] of edges.entries()) {
     const type = edge.relationship.type;
-    const color = getEmotionalColor(type);
-    const lineStyle = getEmotionalLineStyle(type);
-    const strokeWidth = getEmotionalStrokeWidth(type);
-    const directional = edge.relationship.directional;
-
-    const elements: string[] = [
-      el("path", {
-        d: edge.path,
-        fill: "none",
-        stroke: color,
-        "stroke-width": strokeWidth,
-        style: lineStyle || undefined,
-        "marker-end": directional ? "url(#schematex-genogram-arrow)" : undefined,
-        "data-sx-live-edge": scene ? "true" : undefined,
-      }),
-    ];
-
-    // Render label on emotional edge
-    if (edge.relationship.label) {
-      const mid = pathMidpoint(edge.path);
-      if (mid) {
-        elements.push(
-          text(
-            {
-              x: mid.x,
-              y: mid.y - 6,
-              class: "schematex-genogram-edge-label",
-              "text-anchor": "middle",
-              "font-size": "10",
-              fill: color,
-              "data-sx-live-midpoint": scene ? "true" : undefined,
-            },
-            edge.relationship.label
-          )
-        );
-      }
-    }
+    const elements = [renderEmotionalForm(edge.path, type, edge.relationship.directional)];
 
     const key = `edge:emotional:${index}`;
     scene?.push({ key, kind: "edge", path: edge.path, editable: { label: false, position: "none" } });
@@ -284,7 +198,7 @@ function renderEmotionalEdges(edges: LayoutEdge[], scene?: SceneItem[]): string 
           "data-sx-live-explicit": scene ? "true" : undefined,
           "data-sx-live-start": scene ? edge.from : undefined,
           "data-sx-live-end": scene ? edge.to : undefined,
-          "data-sx-live-mode": scene ? "quadratic" : undefined,
+          "data-sx-live-mode": scene ? "sampled" : undefined,
           "data-relationship-type": type,
         },
         elements
@@ -297,29 +211,18 @@ function renderEmotionalEdges(edges: LayoutEdge[], scene?: SceneItem[]): string 
 
 // ─── Edge Labels ────────────────────────────────────────────
 
-function renderEdgeLabels(edges: LayoutEdge[], config: RenderConfig): string {
+function renderEdgeLabels(layout: LayoutResult, config: RenderConfig): string {
   const labels: string[] = [];
-
-  for (const edge of edges) {
-    if (!edge.relationship.label) continue;
-    const mid = pathMidpoint(edge.path);
-    if (!mid) continue;
-
-    labels.push(
-      text(
-        {
-          x: mid.x,
-          y: mid.y - 6,
-          class: "schematex-genogram-edge-label",
-          "text-anchor": "middle",
-          "font-size": "10",
-          "font-family": config.fontFamily,
-        },
-        edge.relationship.label
-      )
-    );
+  for (const { edge, box, leader } of relationshipCaptions(layout, config.fontSize)) {
+    const elements: string[] = [];
+    if (leader) elements.push(el("line", { x1: leader.from.x, y1: leader.from.y, x2: leader.to.x, y2: leader.to.y,
+      stroke: resolveGenogramTheme(config.theme).neutral, "stroke-width": 1 }));
+    elements.push(el("rect", { ...box, fill: "white", "fill-opacity": 0.9 }), text({
+      x: box.x + box.width / 2, y: box.y + 11, class: "schematex-genogram-edge-label",
+      "text-anchor": "middle", "font-size": 10, "font-family": config.fontFamily,
+    }, edge.relationship.label!));
+    labels.push(group({ "data-from": edge.from, "data-to": edge.to }, elements));
   }
-
   return group({ class: "schematex-genogram-edge-labels" }, labels);
 }
 
@@ -388,9 +291,18 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
       ? `schematex-genogram-edge schematex-genogram-edge-secondary schematex-genogram-edge-secondary-${relType}`
       : `schematex-genogram-edge schematex-genogram-edge-${relType}`;
 
+    // Secondary links already have two elbows from the shared route. A step
+    // link without biological parents still needs its visual elbows on the
+    // ordinary primary child drop; this does not change family layout.
+    const edgePath = relType === "step" && !isSecondary ? stepConnector(edge.path) : edge.path;
     const elements: string[] = [
-      el("path", { d: edge.path, class: "schematex-genogram-edge-path", "data-sx-live-edge": scene ? "true" : undefined }),
+      el("path", { d: edgePath, class: "schematex-genogram-edge-path", "data-sx-live-edge": scene ? "true" : undefined }),
     ];
+
+    if (isSecondary) {
+      elements.unshift(el("path", { d: edgePath, class: "schematex-genogram-placement-halo",
+        style: "stroke: white; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none" }));
+    }
 
     // cohabiting-ended: single slash mark like separation
     if (relType === "cohabiting-ended" && !isSecondary) {
@@ -460,7 +372,7 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
     }
 
     const key = `edge:structural:${index}`;
-    scene?.push({ key, kind: "edge", path: edge.path, editable: { label: false, position: "none" } });
+    scene?.push({ key, kind: "edge", path: edgePath, editable: { label: false, position: "none" } });
     const publicEndpoints = structuralPublicEndpoints(edge);
     children.push(
       group(
@@ -477,6 +389,18 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
   }
 
   return group({ class: "schematex-genogram-edges" }, children);
+}
+
+function stepConnector(pathData: string): string {
+  // Primary child drops are M/L polylines produced by layout, with at least
+  // two points. Preserve their endpoints and draw exactly two right angles.
+  const coordinates = pathData.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+  const [x1, y1] = coordinates;
+  const [x2, y2] = coordinates.slice(-2);
+  const midY = (y1 + y2) / 2;
+  return x1 === x2
+    ? `M ${x1} ${y1} L ${x1 + 12} ${y1} L ${x1 + 12} ${y2} L ${x2} ${y2}`
+    : `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
 }
 
 function pathMidpoint(
@@ -507,7 +431,8 @@ function groupByGeneration(nodes: LayoutNode[]): Map<number, LayoutNode[]> {
 function renderNodes(
   genGroups: Map<number, LayoutNode[]>,
   titleHeight: number,
-  scene?: SceneItem[]
+  scene?: SceneItem[],
+  asOf?: number
 ): string[] {
   const layers: string[] = [];
   const sortedGens = Array.from(genGroups.keys()).sort((a, b) => a - b);
@@ -529,7 +454,7 @@ function renderNodes(
         bbox: { x: node.x, y: node.y + titleHeight, width: node.width, height: node.height },
         editable: { label: node.individual.labelSourceRange !== undefined, position: "move-x" },
       });
-      const symbol = renderIndividualSymbol(node.individual, cx, cy, node.width);
+      const symbol = renderIndividualSymbol(node.individual, cx, cy, node.width, asOf);
       nodeElements.push(scene
         ? group({ "data-sx-key": key, "data-sx-owner": key, "data-individual-id": node.id }, [symbol])
         : symbol);
@@ -610,116 +535,20 @@ function renderLabels(
   scene?: SceneItem[]
 ): string {
   const labels: string[] = [];
-  const captionStep = config.fontSize + 1;
 
   for (const node of nodes) {
     const ind = node.individual;
-    const label = ind.label || ind.id;
-    const cx = node.x + node.width / 2;
-    const labelY = node.y + node.height + 6 + config.fontSize;
-    const nameText = label.charAt(0).toUpperCase() + label.slice(1);
-
-    const datesLine = vitalDatesLine(ind);
-    const usesGenealogy = datesLine !== null || !!ind.note;
-
-    // Clinical (McGoldrick) mode keeps the inline `(b. year)` suffix; genealogy
-    // / legal family-tree mode lifts dates onto their own `* … † …` caption line
-    // so they're visibly rendered under the symbol (Arboré-style vital records).
-    let nameLabel = nameText;
-    if (!usesGenealogy) {
-      if (ind.birthYear && ind.deathYear) {
-        nameLabel += ` (${ind.birthYear}–${ind.deathYear})`;
-      } else if (ind.birthYear) {
-        nameLabel += ` (b. ${ind.birthYear})`;
-      }
-    }
-
-    labels.push(
-      text(
-        {
-          x: cx,
-          y: labelY,
-          class: "schematex-genogram-label",
-          "data-individual-id": ind.id,
-          "data-sx-owner": scene ? `node:${ind.id}` : undefined,
-          "data-sx-role": scene && ind.labelSourceRange ? "label" : undefined,
-        },
-        nameLabel
-      )
-    );
-
-    let lineY = labelY;
-    if (datesLine !== null) {
-      lineY += captionStep;
-      labels.push(
-        text(
-          {
-            x: cx,
-            y: lineY,
-            class: "schematex-genogram-vitals",
-            "data-individual-id": ind.id,
-            "data-sx-owner": scene ? `node:${ind.id}` : undefined,
-          },
-          datesLine
-        )
-      );
-    }
-    if (ind.note) {
-      lineY += captionStep;
-      labels.push(
-        text(
-          {
-            x: cx,
-            y: lineY,
-            class: "schematex-genogram-note",
-            "data-individual-id": ind.id,
-            "data-sx-owner": scene ? `node:${ind.id}` : undefined,
-          },
-          ind.note
-        )
-      );
+    for (const [index, caption] of captionGeometry(node, config.fontSize).entries()) {
+      labels.push(text({
+        x: caption.x,
+        y: caption.y,
+        class: `schematex-genogram-${caption.kind}`,
+        "data-individual-id": ind.id,
+        "data-sx-owner": scene ? `node:${ind.id}` : undefined,
+        "data-sx-role": scene && index === 0 && ind.labelSourceRange ? "label" : undefined,
+      }, caption.text));
     }
   }
 
   return group({ class: "schematex-genogram-labels" }, labels);
-}
-
-/**
- * Build the genealogy vital-records caption line, e.g. `* 1940-03-12 † 2018-11-04`.
- * Returns null when no full date / birth-status / death info applies (clinical
- * mode keeps the inline year suffix instead). The born glyph encodes German
- * Ahnentafel birth status: legitimate `*`, out-of-wedlock `(*)`, adopted `[*]`.
- */
-function vitalDatesLine(ind: {
-  dob?: string;
-  dod?: string;
-  birthYear?: number;
-  deathYear?: number;
-  status?: string;
-  birthStatus?: "legitimate" | "out-of-wedlock" | "adopted";
-}): string | null {
-  const bornText = ind.dob ?? (ind.birthYear ? String(ind.birthYear) : undefined);
-  const diedText = ind.dod ?? (ind.deathYear ? String(ind.deathYear) : undefined);
-  const isDeceased = ind.status === "deceased" || diedText !== undefined;
-
-  // Switch to the dedicated `* … † …` caption only when a year suffix can't
-  // express it: a full ISO date or a legal birth status. Pure year-only
-  // (clinical McGoldrick) individuals keep the inline `(1930–1990)` suffix so
-  // existing genograms render unchanged.
-  const hasFullDate = !!ind.dob || !!ind.dod;
-  if (!hasFullDate && !ind.birthStatus) return null;
-
-  const bornGlyph =
-    ind.birthStatus === "adopted"
-      ? "[*]"
-      : ind.birthStatus === "out-of-wedlock"
-      ? "(*)"
-      : "*";
-
-  const parts: string[] = [];
-  if (bornText) parts.push(`${bornGlyph} ${bornText}`);
-  else if (ind.birthStatus) parts.push(bornGlyph);
-  if (isDeceased) parts.push(diedText ? `† ${diedText}` : "†");
-
-  return parts.length > 0 ? parts.join("  ") : null;
 }

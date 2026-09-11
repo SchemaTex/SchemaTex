@@ -216,6 +216,8 @@ export interface DiagramAST {
   individuals: Individual[];
   relationships: Relationship[];
   metadata?: Record<string, string>;
+  /** Non-blocking parser diagnostics, surfaced by the plugin and SVG. */
+  warnings?: SchematexDiagnostic[];
   /** Exact authored title token, including quotes when present. */
   titleSourceRange?: SourceRange;
   /** Legacy: pedigree-style trait legend. To be migrated into LegendOverrides.added. */
@@ -588,6 +590,7 @@ export type RelationshipType =
   | "parent-child"
   | "adopted"
   | "foster"
+  | "step"
   | "twin-identical"
   | "twin-fraternal"
   // Emotional relationships — Positive/Close (genogram)

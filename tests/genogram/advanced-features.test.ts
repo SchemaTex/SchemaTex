@@ -62,9 +62,10 @@ describe("age display", () => {
     expect(svg).toContain(">44<");
   });
 
-  test("auto-calculates age from birth and death years", () => {
+  test("keeps deceased years in the caption and shows age at death", () => {
     const svg = render(`genogram\n  john [male, 1950, 1996, deceased]\n  mary [female, 1952]\n  john -- mary`);
-    expect(svg).toContain(">46<");
+    expect(svg).toMatch(/<text\b[^>]*class="schematex-genogram-age"[^>]*>46<\/text>/);
+    expect(svg).toContain("1950–1996");
   });
 });
 
@@ -220,7 +221,7 @@ describe("cross-generation emotional relationships", () => {
     dad [male, 1955]
   dad -close- grandma`);
     expect(svg).toContain("schematex-genogram-emotional-close");
-    expect(svg).toContain("Q"); // quadratic curve for cross-gen
+    expect(svg).toMatch(/<path d="M [^"]+ L [^"]+" fill="none" stroke="#4caf50"/); // quadratic curve for cross-gen
   });
 });
 

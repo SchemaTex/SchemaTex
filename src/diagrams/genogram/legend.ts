@@ -1,3 +1,5 @@
+import { el } from "../../core/svg";
+import { emotionalForm, renderEmotionalForm, twinPaths } from "./line-forms";
 /**
  * Auto-derive a LegendSpec from a genogram AST.
  *
@@ -45,7 +47,7 @@ const EMOTIONAL_TYPES: ReadonlySet<string> = new Set([
 const STRUCTURAL_TYPES: ReadonlySet<string> = new Set([
   "married", "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
   "domestic-partnership", "consanguineous",
-  "parent-child", "adopted", "foster",
+  "parent-child", "adopted", "foster", "step",
   "twin-identical", "twin-fraternal",
 ]);
 
@@ -73,6 +75,10 @@ export function buildGenogramLegend(
   const items: LegendItem[] = [];
 
   items.push(...buildSymbolItems(ast.individuals, theme));
+  if (ast.individuals.some(ind => ind.external)) {
+    items.push({ key: "external", label: "External contact", kind: "shape", shape: "diamond",
+      pattern: "dashed", color: theme?.stroke, fill: theme?.fill, section: "symbols" });
+  }
   items.push(...buildStructuralItems(ast.relationships, theme));
   items.push(...buildRelationshipItems(ast.relationships));
   items.push(...buildConditionItems(ast.individuals));
@@ -97,6 +103,12 @@ export function buildGenogramLegend(
 // status overlays (deceased X, stillborn, miscarriage…) into the auto-derived
 // legend.
 const OBVIOUS_SEX: ReadonlySet<Sex> = new Set<Sex>(["male", "female"]);
+
+const STATUS_SYMBOL_ITEMS: Partial<Record<IndividualStatus, Partial<LegendItem>>> = {
+  stillborn: { marker: "SB" },
+  miscarriage: { kind: "shape", shape: "triangle" },
+  pregnancy: { kind: "shape", shape: "triangle", pattern: "dashed" },
+};
 
 function buildSymbolItems(
   individuals: Individual[],
@@ -141,7 +153,9 @@ function buildSymbolItems(
       kind: "marker",
       marker: statusMarker(st),
       color: theme?.deceasedMark,
+      fill: theme?.fill ?? "#fff",
       section: "symbols",
+      ...STATUS_SYMBOL_ITEMS[st],
     });
   }
 
@@ -199,9 +213,7 @@ function sexLabel(s: Sex): string {
 function statusMarker(s: IndividualStatus): string {
   switch (s) {
     case "deceased":
-    case "stillborn":
       return "X";
-    case "miscarriage":
     case "sab":
     case "tab":
     case "abortion":
@@ -257,7 +269,7 @@ function buildStructuralItems(
   const order: RelationshipType[] = [
     "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
     "domestic-partnership", "consanguineous",
-    "adopted", "foster",
+    "adopted", "foster", "step",
     "twin-identical", "twin-fraternal",
   ];
   const items: LegendItem[] = [];
@@ -296,6 +308,8 @@ function structuralItem(t: RelationshipType, theme?: GenogramThemeLike): LegendI
     case "adopted":
     case "foster":
       return { ...base, pattern: "dashed" };
+    case "step":
+      return { ...base, label: "Step-child", pattern: "step" };
     case "consanguineous":
       return { ...base, pattern: "double" };
     case "twin-identical":
@@ -327,40 +341,18 @@ function buildRelationshipItems(rels: { type: RelationshipType }[]): LegendItem[
   const items: LegendItem[] = [];
   for (const t of order) {
     if (!used.has(t)) continue;
+    const form = emotionalForm(t);
     items.push({
       key: t,
       label: humanize(t),
       kind: "line",
-      color: emotionalColor(t),
-      pattern: emotionalPattern(t),
-      strokeWidth: emotionalStrokeWidth(t),
+      color: form.color,
+      pattern: form.pattern,
+      strokeWidth: form.width,
       section: "relationships",
     });
   }
   return items;
-}
-
-function emotionalColor(t: RelationshipType): string {
-  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(t)) return "#4caf50";
-  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff"].includes(t)) return "#e53935";
-  if (["close-hostile", "fused", "fused-hostile"].includes(t)) return "#9c27b0";
-  if (["distant", "normal", "nevermet"].includes(t)) return "#9e9e9e";
-  if (["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect"].includes(t)) return "#b71c1c";
-  if (["manipulative", "controlling", "jealous"].includes(t)) return "#e65100";
-  return "#1565c0";
-}
-
-function emotionalPattern(t: RelationshipType): "solid" | "dashed" | "zigzag" | "broken" {
-  if (["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(t)) return "zigzag";
-  if (["distant", "nevermet"].includes(t)) return "dashed";
-  if (t === "cutoff") return "broken";
-  return "solid";
-}
-
-function emotionalStrokeWidth(t: RelationshipType): number {
-  if (["fused", "fused-hostile", "bestfriends"].includes(t)) return 4;
-  if (["close", "close-hostile", "love", "inlove"].includes(t)) return 3;
-  return 2;
 }
 
 // ─── Conditions ──────────────────────────────────────────────
@@ -501,4 +493,25 @@ function humanize(s: string): string {
   return s
     .replace(/[-_]+/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** The shared legend lays out rows; genogram supplies the clinical line forms.
+ * Its line swatches expose their endpoints, so no legend dimensions are copied.
+ */
+export function renderGenogramLegendForms(svg: string, spec: LegendSpec): string {
+  return svg.replace(/(<g[^>]*data-legend-key="([^"]+)"[^>]*>)([\s\S]*?)(<text[^>]*class="schematex-legend-label"[\s\S]*?<\/text>)(<\/g>)/g,
+    (row: string, open: string, key: string, swatch: string, label: string, close: string) => {
+      const item = spec.items.find(candidate => candidate.key === key);
+      const twin = key === "twin-identical" || key === "twin-fraternal";
+      if (!item || (!EMOTIONAL_TYPES.has(key) && !twin)) return row;
+      const line = /<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"/.exec(swatch)!;
+      if (twin) {
+        const x1 = Number(line[1]), y = Number(line[2]), x2 = Number(line[3]);
+        const paths = twinPaths({ x: (x1 + x2) / 2, y: y - 6 }, [{ x: x1, y: y + 6 }, { x: x2, y: y + 6 }], key === "twin-identical");
+        return open + paths.map(d => el("path", { d, fill: "none", stroke: item.color, "stroke-width": 2 })).join("") + label + close;
+      }
+      // EMOTIONAL_TYPES is the genogram RelationshipType subset used above.
+      const type = key as RelationshipType;
+      return open + renderEmotionalForm(`M ${line[1]} ${line[2]} L ${line[3]} ${line[4]}`, type) + label + close;
+    });
 }

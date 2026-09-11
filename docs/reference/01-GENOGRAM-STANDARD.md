@@ -62,9 +62,9 @@ jordan [intersex, 1990]          # → diamond (UAAB)
 
 | Type | Visual | DSL |
 |------|--------|-----|
-| Identical twins | V-shape: two child lines meet at single point on sibship line | `[twin-identical]` |
-| Fraternal twins | Inverted-V with horizontal bar connecting at top | `[twin-fraternal]` |
-| Triplets+ | Same pattern, 3+ lines from single point or bar | `[triplet-identical]` / `[triplet-fraternal]` |
+| Identical twins | Both child lines meet at a single point on the sibship line, **with a horizontal bar joining them** | `[twin-identical]` |
+| Fraternal twins | Both child lines meet at a single point, **no bar** | `[twin-fraternal]` |
+| Triplets+ | Same pattern with 3+ lines from the single point; the bar again marks identical | `[triplet-identical]` / `[triplet-fraternal]` |
 
 ### 1.5 SVG Implementation Notes
 
@@ -523,9 +523,9 @@ M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
 | **Dual parents** (bio + current caregiver) | Bio link primary; secondary dotted line from caregiver couple | Redeclare child under second couple with `[foster]` / `[adopted]` / `[guardian]` | 寄养/收养/监护中"现照护人"链接，layout 仍由 bio couple 主导 — see §3.4.1 |
 | Unknown-count siblings placeholder | Single diamond with `?` glyph | Bare `?` on a child line, or `[unknown-siblings]` marker | 已知存在但身份不明的兄弟姐妹 |
 | Sibling-of (known relative, unknown ancestry) | Dashed bracket between two same-generation nodes, no parents drawn | `[sibling-of: <id>]` property | 已知亲属、家系未知（标准 pedigree 约定） |
-| Identical twins | Lines meet at single point (V) | `[twin-identical]` | 同卵双胞胎 |
-| Fraternal twins | Lines connect with bar | `[twin-fraternal]` | 异卵双胞胎 |
-| Triplets+ | 3+ lines from single point/bar | `[triplet-identical]` | 三胞胎+ |
+| Identical twins | Lines meet at a single point, **with a horizontal bar joining them** | `[twin-identical]` | 同卵双胞胎 |
+| Fraternal twins | Lines meet at a single point, **no bar** | `[twin-fraternal]` | 异卵双胞胎 |
+| Triplets+ | 3+ lines from the single point; the bar again marks identical | `[triplet-identical]` | 三胞胎+ |
 | Surrogacy | Dotted line + S label | `[surrogate]` | 代孕 |
 | Donor gamete | Dotted line + D label | `[donor]` | 供体配子 |
 | Step-child | Step-shaped line (two right angles) | `[step]` | 继子女 |
@@ -679,9 +679,12 @@ Father ────── Mother       (couple line)
 
 ### 4.7 Emotional Relationship Line Routing
 - Emotional relationship lines 渲染在 structural lines（couple/parent-child）之上
-- 如果 A 和 B 在不同 generation，line 绕过中间 nodes（避免穿过 shapes）
-- 同 generation 内的 emotional lines 画在 nodes 下方（curved path）
-- 不同 generation 的 emotional lines 画在右侧（避开 parent-child 区域）
+- 所有 emotional types 使用同一个 occupancy-aware router：人物轮廓、姓名、annotations、亲缘线的连接点和 relationship captions 共同约束路线。
+- 优先搜索由两端人物位置推导的 cubic arcs；同时搜索绕障通道。评分先比较碰撞，再比较实际路径长度与累计转角（乘 clearance），不按候选输入点数扣分，不依赖 case ID、姓名或 target 坐标。
+- 所有 emotional 路线确定后统一放置关系标签，标签避让全部路线，避免先声明的关系标签阻断后续路线。
+- Cubic handle 从 clearance 到画布范围倍增搜索，两个垂直于入口的方向对称参与。布局修复属于引擎；不通过新增 DSL 坐标、曲线选择或 case hints 让 LLM 补救。
+- 以实际绘制的平行线、锯齿、cutoff caps 和箭头检查空间；不能只用中心线宣称不碰撞。短的直线入口保留明确的符号 attachment。
+- `external: true` 保留为 typed boolean，使用虚线人物轮廓和自动图例。只有 emotional ties、且直接连接家庭成员的外部联系人退出祖辈布局，排在所支持成员附近；有真实亲缘关系的节点仍按家庭结构排列。
 
 ---
 

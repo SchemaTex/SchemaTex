@@ -13,48 +13,87 @@ import {
   path,
 } from "../../core/svg";
 
+interface StatusSymbol {
+  scale: number;
+  shape?: Individual["shape"];
+  dasharray?: string;
+  marks: (sex: Individual["sex"], half: number) => string[];
+}
+
+const PLAIN_SYMBOL: StatusSymbol = { scale: 1, marks: () => [] };
+const STATUS_SYMBOLS: Partial<Record<Individual["status"], StatusSymbol>> = {
+  deceased: { scale: 1, marks: deceasedOverlay },
+  stillborn: {
+    scale: 0.5,
+    marks: (_sex, half) => [text({
+      x: 0, y: half + 12, "text-anchor": "middle", "font-size": 10,
+      class: "schematex-genogram-stillborn-mark",
+    }, "SB")],
+  },
+  miscarriage: { ...PLAIN_SYMBOL, scale: 0.3, shape: "triangle" },
+  pregnancy: { ...PLAIN_SYMBOL, scale: 0.5, shape: "triangle", dasharray: "4,3" },
+};
+
+const SEX_SHAPES: Record<Individual["sex"], NonNullable<Individual["shape"]>> = {
+  male: "square", female: "circle", unknown: "diamond", other: "diamond",
+  nonbinary: "diamond", intersex: "diamond",
+};
+
 // ─── Public API ─────────────────────────────────────────────
+
+/** Visible perimeter used for emotional attachment and occupied symbol bounds. */
+export function individualPerimeter(individual: Individual, size: number) {
+  const treatment = STATUS_SYMBOLS[individual.status] ?? PLAIN_SYMBOL;
+  return {
+    half: size / 2 * treatment.scale + (individual.markers?.includes("index-person") ? 4 : 0),
+    shape: treatment.shape ?? individual.shape ?? SEX_SHAPES[individual.sex],
+  };
+}
 
 export function renderIndividualSymbol(
   individual: Individual,
   x: number,
   y: number,
-  size: number
+  size: number,
+  asOf?: number
 ): string {
-  const half = size / 2;
+  const treatment = STATUS_SYMBOLS[individual.status] ?? PLAIN_SYMBOL;
+  const half = size / 2 * treatment.scale;
+  const shape = treatment.shape ?? individual.shape;
   const classes = [
     "schematex-genogram-node",
+    `schematex-genogram-${individual.status}`,
     `schematex-genogram-${individual.sex === "other" ? "unknown" : individual.sex}`,
   ];
-  if (individual.status === "deceased") classes.push("schematex-genogram-deceased");
 
   const titleText = formatTitle(individual);
+  if (individual.external) classes.push("schematex-genogram-external");
   const children: string[] = [title(titleText)];
 
   // Index person: outer gold border (concentric shape, slightly larger)
   const isIndex = individual.markers?.includes("index-person");
   if (isIndex) {
-    children.push(indexBorder(individual.sex, half));
+    children.push(baseShape(individual.sex, half + 4, shape, { class: "schematex-genogram-index-border" }));
     classes.push("schematex-genogram-index-person");
   }
 
   // Base shape
-  children.push(baseShape(individual.sex, half, individual.shape));
+  children.push(baseShape(individual.sex, half, shape, {
+    "stroke-dasharray": individual.external ? "4,3" : treatment.dasharray,
+  }));
 
   // Condition fills
   if (individual.conditions?.length) {
     for (const cond of individual.conditions) {
-      children.push(conditionFillElement(individual.sex, half, cond));
+      children.push(conditionFillElement(individual.sex, half, cond, shape));
     }
   }
 
-  // Deceased overlay
-  if (individual.status === "deceased") {
-    children.push(...deceasedOverlay(individual.sex, half));
-  }
+  // Status marks follow the fills so they remain visible.
+  children.push(...treatment.marks(individual.sex, half));
 
   // Age display inside node
-  const ageToShow = individual.age ?? calcAge(individual);
+  const ageToShow = individual.age ?? calcAge(individual, asOf);
   if (ageToShow !== undefined) {
     children.push(
       text(
@@ -64,6 +103,7 @@ export function renderIndividualSymbol(
           class: "schematex-genogram-age",
           "text-anchor": "middle",
           "font-size": "11",
+          style: ageStyle(individual),
         },
         String(ageToShow)
       )
@@ -94,6 +134,7 @@ export function renderIndividualSymbol(
     {
       class: classes.join(" "),
       "data-individual-id": individual.id,
+      "data-status": individual.status,
       transform: `translate(${x}, ${y})`,
     },
     children
@@ -216,101 +257,69 @@ function formatTitle(ind: Individual): string {
   return name;
 }
 
-function calcAge(ind: Individual): number | undefined {
-  if (!ind.birthYear) return undefined;
-  if (ind.deathYear) return ind.deathYear - ind.birthYear;
-  if (ind.status === "deceased") return undefined;
-  return undefined;
+function calcAge(ind: Individual, asOf?: number): number | undefined {
+  if (ind.birthYear === undefined) return undefined;
+  const endYear = ind.status === "deceased" ? ind.deathYear : ind.status === "alive" ? asOf : undefined;
+  return endYear === undefined ? undefined : endYear - ind.birthYear;
 }
 
-function indexBorder(sex: Individual["sex"], half: number): string {
-  const outer = half + 4;
-  switch (sex) {
-    case "male":
-      return rect({
-        x: -outer,
-        y: -outer,
-        width: outer * 2,
-        height: outer * 2,
-        class: "schematex-genogram-index-border",
-      });
-    case "female":
-      return circle({
-        cx: 0,
-        cy: 0,
-        r: outer,
-        class: "schematex-genogram-index-border",
-      });
-    case "unknown":
-    case "other":
-    case "nonbinary":
-    case "intersex":
-      return polygon({
-        points: `0,${-outer} ${outer},0 0,${outer} ${-outer},0`,
-        class: "schematex-genogram-index-border",
-      });
+function ageStyle(ind: Individual): string | undefined {
+  if (!ind.conditions?.length) {
+    return ind.status === "deceased" ? "stroke: white; stroke-width: 2; paint-order: stroke; stroke-linejoin: round" : undefined;
   }
+  // Documented condition colours are hex. A contrasting outline also protects
+  // the numeral where half/quarter fills, patterns or the deceased cross meet.
+  const dark = ind.conditions.some(condition => {
+    const hex = (condition.color ?? "#333").replace(/^#/, "");
+    if (!/^(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) return true;
+    const rgb = hex.length === 3 ? [...hex].map(c => c + c).join("") : hex;
+    const [r, g, b] = [0, 2, 4].map(i => {
+      const c = parseInt(rgb.slice(i, i + 2), 16) / 255;
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.179;
+  });
+  return `fill: ${dark ? "white" : "black"}; stroke: ${dark ? "black" : "white"}; stroke-width: 2; paint-order: stroke; stroke-linejoin: round`;
 }
 
 function baseShape(
   sex: Individual["sex"],
   half: number,
-  shape?: Individual["shape"]
+  shape?: Individual["shape"],
+  attrs: Record<string, string | number | undefined> = {}
 ): string {
-  const cls = "schematex-genogram-shape";
-  switch (shape) {
+  const style = { class: "schematex-genogram-shape", ...attrs };
+  switch (shape ?? SEX_SHAPES[sex]) {
     case "square":
-      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: cls });
+      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, ...style });
     case "circle":
-      return circle({ cx: 0, cy: 0, r: half, class: cls });
+      return circle({ cx: 0, cy: 0, r: half, ...style });
     case "diamond":
-      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: cls });
+      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, ...style });
     case "triangle":
-      return polygon({ points: `0,${-half} ${half},${half} ${-half},${half}`, class: cls });
+      return polygon({ points: `0,${-half} ${half},${half} ${-half},${half}`, ...style });
     case "triangle-down":
-      return polygon({ points: `${-half},${-half} ${half},${-half} 0,${half}`, class: cls });
-  }
-  switch (sex) {
-    case "male":
-      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: cls });
-    case "female":
-      return circle({ cx: 0, cy: 0, r: half, class: cls });
-    case "unknown":
-    case "other":
-    case "nonbinary":
-    case "intersex":
-      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: cls });
+      return polygon({ points: `${-half},${-half} ${half},${-half} 0,${half}`, ...style });
   }
 }
 
 function deceasedOverlay(sex: Individual["sex"], half: number): string[] {
   const extend = sex === "female" ? half * 0.707 : half;
-  return [
-    line({
-      x1: -extend,
-      y1: -extend,
-      x2: extend,
-      y2: extend,
-      class: "schematex-genogram-deceased-mark",
-      stroke: "#333",
-      "stroke-width": "2",
-    }),
-    line({
-      x1: extend,
-      y1: -extend,
-      x2: -extend,
-      y2: extend,
-      class: "schematex-genogram-deceased-mark",
-      stroke: "#333",
-      "stroke-width": "2",
-    }),
-  ];
+  // Paint both white under-strokes before the coloured cross.
+  return ["halo", "mark"].flatMap(layer => [1, -1].map(direction => line({
+    x1: -extend * direction, y1: -extend, x2: extend * direction, y2: extend,
+    class: `schematex-genogram-deceased-${layer}`,
+    stroke: layer === "halo" ? "white" : "#333",
+    "stroke-width": layer === "halo" ? 5 : 2,
+    "stroke-linecap": "round",
+  })));
 }
 
 function conditionFillElement(
   sex: Individual["sex"],
   half: number,
-  cond: Condition
+  cond: Condition,
+  shape?: Individual["shape"]
 ): string {
   const fillColor = cond.color ?? "#333";
   const attrs: Record<string, string | number> = {};
@@ -329,19 +338,5 @@ function conditionFillElement(
 
   attrs.class = `schematex-genogram-condition-fill schematex-genogram-condition-${cond.label}`;
 
-  switch (sex) {
-    case "male":
-      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, ...attrs });
-    case "female":
-      return circle({ cx: 0, cy: 0, r: half, ...attrs });
-    case "unknown":
-    case "other":
-    case "nonbinary":
-    case "intersex":
-    default:
-      return polygon({
-        points: `0,${-half} ${half},0 0,${half} ${-half},0`,
-        ...attrs,
-      });
-  }
+  return baseShape(sex, half, shape, attrs);
 }

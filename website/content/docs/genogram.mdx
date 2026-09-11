@@ -72,7 +72,12 @@ An individual line is `id [attr1, attr2, …]`. Attributes are comma-separated, 
 | `label:"…"` | e.g. `label:"Dr. Smith"` | Display label override |
 | `sibling-of:<id>` | e.g. `sibling-of:monica` | Pins same generation as the referenced sibling, draws a dashed bracket — for known relatives with unknown ancestry. |
 | `conditions:…` | see §5 | Medical/psychological conditions |
-| `key:value` | any custom | Stored as metadata |
+| `external:true` | `true` or `false` | Dashed outline for an outside support contact. With only emotional ties, placed beside directly connected family members; family relationships take precedence. |
+| `key:value` | any custom | Stored as metadata only; does not affect rendering or layout. |
+
+Describe people and relationships; the engine chooses positions and routes.
+Household boundaries are not currently supported. A custom `household:` attribute
+will not draw a boundary.
 
 <Playground initial={`genogram
   grandma [female, 1920, 2002, deceased]
