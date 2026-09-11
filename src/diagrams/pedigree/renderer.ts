@@ -1,3 +1,5 @@
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   LayoutResult,
   LayoutNode,
@@ -5,6 +7,7 @@ import type {
   RenderConfig,
   Individual,
   DiagramAST,
+  LegendItem,
 } from "../../core/types";
 import {
   svgRoot,
@@ -18,11 +21,39 @@ import {
   title,
   desc,
   defs,
-  path,
 } from "../../core/svg";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { cssCustomProperties, resolvePersonTheme, STROKE_WIDTH, type ResolvedTheme, type PersonTokens } from "../../core/theme";
 import { applyLegendOverrides, renderLegend as renderLegendCore } from "../../core/legend";
-import { buildPedigreeLegend } from "./legend";
+import { buildPedigreeLegend, geneticStatusItem, sexShapeItem } from "./legend";
+
+interface RenderedSymbols {
+  svg: string;
+  legendItems: LegendItem[];
+}
+
+const POINTER = { length: 24, headLength: 6, headWidth: 5, gap: 3, labelGap: 4, fontSize: 10, stroke: 1.5 };
+
+/** A southwest pointer terminates outside the actual outline, not its bounding box. */
+function pointerGeometry(ind: Individual, size: number) {
+  const roles = (["proband", "consultand"] as const).filter(role => ind.markers?.includes(role));
+  if (!roles.length || ["sab", "tab", "ectopic"].includes(ind.status ?? "")) return undefined;
+  const half = size / 2;
+  const edge = ind.sex === "male" ? half : ind.sex === "female" ? half / Math.SQRT2 : half / 2;
+  const tip = edge + POINTER.gap / Math.SQRT2;
+  return { roles, tip, base: tip + POINTER.headLength / Math.SQRT2,
+    tail: tip + POINTER.length / Math.SQRT2 };
+}
+
+function captionOffset(ind: Individual, size: number, fontSize: number, normal: number): number {
+  const pointer = pointerGeometry(ind, size);
+  if (!pointer || ind.label === ind.id) return normal;
+  const halfWidth = estimateTextWidth(ind.label, fontSize) / 2;
+  // Short generation IDs can sit alongside the pointer; a wide caption needs
+  // its own row below the shaft and role label.
+  return halfWidth >= pointer.tip && normal - fontSize <= pointer.tail + POINTER.labelGap
+    ? Math.max(normal, pointer.tail + POINTER.labelGap + fontSize + 6) : normal;
+}
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -32,12 +63,12 @@ export function renderPedigree(
   ast?: DiagramAST
 ): string {
   const t = resolvePersonTheme(config.theme);
-  const defsStr = buildDefs(layout.nodes, t);
+  const defsStr = buildDefs(layout.nodes);
   const styleStr = buildStyles(config, t);
 
   const genGroups = groupByGeneration(layout.nodes);
-  const edgeLayers = renderEdges(layout.edges);
-  const nodeLayers = renderNodes(genGroups);
+  const edges = renderEdges(layout.edges, t);
+  const nodes = renderNodes(genGroups, config, t);
   const labelLayer = renderLabels(layout.nodes, genGroups, config);
   const genLabels = renderGenerationLabels(genGroups, config);
 
@@ -54,21 +85,24 @@ export function renderPedigree(
   ];
 
   // Defer chart-content push until legend bbox is known so we can center.
-  const chartContent = [genLabels, edgeLayers, ...nodeLayers, labelLayer];
+  const chartContent = [genLabels, edges.svg, nodes.svg, labelLayer];
+  const chartHeight = Math.max(layout.height, nodes.bottom + 16);
 
+  const chartTitle = ast?.metadata?.title;
+  const titleHeight = chartTitle ? TITLE.bandH : 0;
   let finalWidth = layout.width;
-  let finalHeight = layout.height;
+  let finalHeight = chartHeight;
   let legendSvg = "";
 
   if (ast) {
-    const autoSpec = buildPedigreeLegend(ast, t);
+    const autoSpec = buildPedigreeLegend([...edges.legendItems, ...nodes.legendItems], ast.legend, t);
     const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
     if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
       const { svg, bbox: lb } = renderLegendCore(
         finalSpec,
         {
           canvasWidth: layout.width,
-          canvasHeight: layout.height,
+          canvasHeight: chartHeight,
           padding: 16,
         },
         t,
@@ -87,11 +121,18 @@ export function renderPedigree(
   const chartXOffset = Math.max(0, (finalWidth - layout.width) / 2);
   layers.push(
     group(
-      { transform: chartXOffset > 0 ? `translate(${chartXOffset}, 0)` : undefined },
+      { transform: `translate(${chartXOffset}, ${titleHeight})` },
       chartContent
     )
   );
-  if (legendSvg) layers.push(legendSvg);
+  if (legendSvg) layers.push(group({ transform: `translate(0, ${titleHeight})` }, [legendSvg]));
+  finalHeight += titleHeight;
+  if (chartTitle) {
+    const resolved = resolveSceneTitle(chartTitle, ast?.titleSourceRange, finalWidth / 2, TITLE.y, config);
+    layers.push(text({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": config.fontFamily,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: t.text }, chartTitle));
+  }
 
   return svgRoot(
     {
@@ -106,7 +147,7 @@ export function renderPedigree(
 
 // ─── Defs ──────────────────────────────────────────────────
 
-function buildDefs(nodes: LayoutNode[], t: ResolvedTheme<PersonTokens>): string {
+function buildDefs(nodes: LayoutNode[]): string {
   const children: string[] = [];
   const needs = new Set<string>();
 
@@ -126,21 +167,6 @@ function buildDefs(nodes: LayoutNode[], t: ResolvedTheme<PersonTokens>): string 
     );
   }
 
-  // Proband arrow marker
-  children.push(
-    el("marker", {
-      id: "schematex-pedigree-proband-arrow",
-      viewBox: "0 0 10 10",
-      refX: "0",
-      refY: "5",
-      markerWidth: "8",
-      markerHeight: "8",
-      orient: "auto-start-reverse",
-    }, [
-      path({ d: "M 0 0 L 10 5 L 0 10 z", fill: t.stroke }),
-    ])
-  );
-
   return defs(children);
 }
 
@@ -159,9 +185,10 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 .schematex-pedigree-carrier-fill { fill: ${t.conditionFill}; }
 .schematex-pedigree-carrier-x-dot { fill: ${t.conditionFill}; }
 .schematex-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.normal}; }
-.schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; marker-end: url(#schematex-pedigree-proband-arrow); }
-.schematex-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.stroke}; }
-.schematex-pedigree-loss-shape { fill: ${t.stroke}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
+.schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${POINTER.stroke}; fill: none; }
+.schematex-pedigree-proband-arrow-head { fill: ${t.stroke}; stroke: none; }
+.schematex-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: ${POINTER.fontSize}px; font-weight: bold; fill: ${t.stroke}; }
+.schematex-pedigree-loss-shape { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-pedigree-tab-slash { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-pedigree-status-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.text}; }
 .schematex-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: ${t.text}; }
@@ -172,8 +199,9 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 
 // ─── Edges ─────────────────────────────────────────────────
 
-function renderEdges(edges: LayoutEdge[]): string {
+function renderEdges(edges: LayoutEdge[], t: ResolvedTheme<PersonTokens>): RenderedSymbols {
   const children: string[] = [];
+  const legendItems: LegendItem[] = [];
 
   for (const edge of edges) {
     const relType = edge.relationship.type;
@@ -193,15 +221,25 @@ function renderEdges(edges: LayoutEdge[]): string {
             class: "schematex-pedigree-edge",
           })
         );
+        legendItems.push({
+          key: "relationship.separated", label: "No longer together",
+          kind: "marker", marker: "slash", color: t.stroke, section: "symbols",
+        });
       }
     }
 
     children.push(
       group({ class: cssClass, "data-from": edge.from, "data-to": edge.to }, elements)
     );
+    if (relType === "consanguineous" && edge.relationship.label === "_double") {
+      legendItems.push({
+        key: "relationship.consanguineous", label: "Consanguineous union",
+        kind: "line", pattern: "double", color: t.stroke, section: "symbols",
+      });
+    }
   }
 
-  return group({ class: "schematex-pedigree-edges" }, children);
+  return { svg: group({ class: "schematex-pedigree-edges" }, children), legendItems };
 }
 
 function pathMidpoint(pathData: string): { x: number; y: number } | null {
@@ -225,8 +263,14 @@ function groupByGeneration(nodes: LayoutNode[]): Map<number, LayoutNode[]> {
   return groups;
 }
 
-function renderNodes(genGroups: Map<number, LayoutNode[]>): string[] {
+function renderNodes(
+  genGroups: Map<number, LayoutNode[]>,
+  config: RenderConfig,
+  t: ResolvedTheme<PersonTokens>
+): RenderedSymbols & { bottom: number } {
   const layers: string[] = [];
+  const legendItems: LegendItem[] = [];
+  let bottom = 0;
   const sortedGens = Array.from(genGroups.keys()).sort((a, b) => a - b);
 
   for (const genIdx of sortedGens) {
@@ -236,7 +280,12 @@ function renderNodes(genGroups: Map<number, LayoutNode[]>): string[] {
     for (const node of nodes) {
       const cx = node.x + node.width / 2;
       const cy = node.y + node.height / 2;
-      nodeElements.push(renderPedigreeSymbol(node.individual, cx, cy, node.width));
+      const rendered = renderPedigreeSymbol(
+        node.individual, cx, cy, node.width, captionOffset(node.individual, node.width, config.fontSize, node.height / 2 + 6 + config.fontSize), t
+      );
+      nodeElements.push(rendered.svg);
+      legendItems.push(...rendered.legendItems);
+      bottom = Math.max(bottom, rendered.bottom);
     }
 
     layers.push(
@@ -247,16 +296,19 @@ function renderNodes(genGroups: Map<number, LayoutNode[]>): string[] {
     );
   }
 
-  return layers;
+  return { svg: layers.join("\n"), legendItems, bottom };
 }
 
 function renderPedigreeSymbol(
   ind: Individual,
   x: number,
   y: number,
-  size: number
-): string {
+  size: number,
+  labelOffset: number,
+  theme: ResolvedTheme<PersonTokens>
+): RenderedSymbols & { bottom: number } {
   const half = size / 2;
+  const legendItems: LegendItem[] = [];
   const classes = ["schematex-pedigree-node", `schematex-pedigree-${ind.sex === "other" ? "unknown" : ind.sex}`];
   if (ind.status === "deceased") classes.push("schematex-pedigree-deceased");
   if (ind.geneticStatus) classes.push(`schematex-pedigree-${ind.geneticStatus}`);
@@ -264,17 +316,27 @@ function renderPedigreeSymbol(
   const titleText = formatTitle(ind);
   const children: string[] = [title(titleText)];
 
-  // NSGC pregnancy-loss: filled point-down triangle (~60% size). TAB adds slash; Ectopic adds "ECT".
+  // Loss status replaces the sex shape; fill still records affected status.
   const pregLoss = ind.status === "sab" || ind.status === "tab" || ind.status === "ectopic";
   if (pregLoss) {
     classes.push(`schematex-pedigree-${ind.status}`);
     const t = half * 0.6;
+    const affected = ind.geneticStatus === "affected";
+    const fill = affected ? theme.conditionFill : theme.fill;
     children.push(
       polygon({
-        points: `${-t},${-t} ${t},${-t} 0,${t}`,
+        points: `0,${-t} ${t},${t} ${-t},${t}`,
+        fill,
         class: `schematex-pedigree-loss-shape schematex-pedigree-${ind.status}-shape`,
       })
     );
+    const lossLabel = ind.status === "sab" ? "Spontaneous abortion (SAB)"
+      : ind.status === "tab" ? "Induced abortion (TAB)" : "Ectopic pregnancy (ECT)";
+    legendItems.push({
+      key: `status.${ind.status}${affected ? ".affected" : ""}`,
+      label: affected ? `Affected ${lossLabel.charAt(0).toLowerCase()}${lossLabel.slice(1)}` : lossLabel,
+      kind: "shape", shape: "triangle", fill, color: theme.stroke, section: "symbols",
+    });
     if (ind.status === "tab") {
       children.push(
         line({
@@ -291,19 +353,25 @@ function renderPedigreeSymbol(
         )
       );
     }
-    // Skip regular shape + genetic-status fills — not applicable.
-    return group(
+    if (ind.status === "sab") {
+      children.push(text(
+        { x: 0, y: labelOffset + 15, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
+        "SAB"
+      ));
+    }
+    // Record only the replacement glyph, not suppressed sex/fill/marker declarations.
+    return { svg: group(
       {
         class: classes.join(" "),
         "data-individual-id": ind.id,
         transform: `translate(${x}, ${y})`,
       },
       children
-    );
+    ), legendItems, bottom: y + (ind.status === "sab" ? labelOffset + 19 : half) };
   }
 
   // Base shape
-  children.push(baseShape(ind.sex, half));
+  children.push(baseShape(ind.sex, half, legendItems, theme));
 
   // Stillborn: keep the sex-based shape, add an "SB" label below.
   if (ind.status === "stillborn") {
@@ -314,16 +382,23 @@ function renderPedigreeSymbol(
         "SB"
       )
     );
+    legendItems.push({
+      key: "status.stillborn", label: "Stillborn (SB)",
+      kind: "marker", marker: "SB", section: "symbols",
+    });
   }
 
   // Genetic status fills
   const gs = ind.geneticStatus;
   if (gs === "affected") {
     children.push(affectedFill(ind.sex, half));
+    legendItems.push(geneticStatusItem(gs, theme));
   } else if (gs === "carrier") {
     children.push(carrierFill(ind.sex, half));
+    legendItems.push(geneticStatusItem(gs, theme));
   } else if (gs === "carrier-x" || gs === "obligate-carrier") {
     children.push(carrierDot(half));
+    legendItems.push(geneticStatusItem(gs, theme));
   }
 
   // Presymptomatic vertical line
@@ -331,6 +406,7 @@ function renderPedigreeSymbol(
     children.push(
       line({ x1: 0, y1: -half, x2: 0, y2: half, class: "schematex-pedigree-presymptomatic-mark" })
     );
+    legendItems.push(geneticStatusItem(gs, theme));
   }
 
   // Deceased: diagonal slash (pedigree uses / not X)
@@ -339,38 +415,31 @@ function renderPedigreeSymbol(
     children.push(
       line({ x1: ext, y1: -ext, x2: -ext, y2: ext, class: "schematex-pedigree-deceased-mark" })
     );
+    legendItems.push({
+      key: "status.deceased", label: "Deceased", kind: "marker",
+      marker: "slash", color: theme.deceasedMark, section: "symbols",
+    });
   }
 
-  // Proband arrow
-  if (ind.markers?.includes("proband")) {
-    const arrowLen = 20;
+  // Render the shaft and head directly: their direction and size remain the
+  // same in browsers and SVG rasterizers, independent of marker scaling.
+  const pointer = pointerGeometry(ind, size);
+  if (pointer) {
+    const { tip, base, tail, roles } = pointer;
+    const wing = POINTER.headWidth / 2 / Math.SQRT2;
     children.push(
-      line({
-        x1: -half - arrowLen, y1: half + arrowLen,
-        x2: -half - 2, y2: half + 2,
-        class: "schematex-pedigree-proband-arrow-line",
-      }),
-      text(
-        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "schematex-pedigree-proband-label", "text-anchor": "end" },
-        "P"
-      )
+      line({ x1: -tail, y1: tail, x2: -base, y2: base,
+        class: "schematex-pedigree-proband-arrow-line" }),
+      polygon({ points: `${-tip},${tip} ${-base + wing},${base + wing} ${-base - wing},${base - wing}`,
+        class: "schematex-pedigree-proband-arrow-head" }),
+      text({ x: -tail - POINTER.labelGap, y: tail + POINTER.labelGap,
+        class: "schematex-pedigree-proband-label", "text-anchor": "end" },
+      roles.map(role => role === "proband" ? "P" : "C").join("/"))
     );
-  }
-
-  // Consultand arrow
-  if (ind.markers?.includes("consultand")) {
-    const arrowLen = 20;
-    children.push(
-      line({
-        x1: -half - arrowLen, y1: half + arrowLen,
-        x2: -half - 2, y2: half + 2,
-        class: "schematex-pedigree-proband-arrow-line",
-      }),
-      text(
-        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "schematex-pedigree-proband-label", "text-anchor": "end" },
-        "C"
-      )
-    );
+    for (const role of roles) legendItems.push({
+      key: `marker.${role}`, label: role === "proband" ? "Proband (P)" : "Consultand (C)",
+      kind: "marker", marker: "diagonal-arrow", color: theme.stroke, section: "symbols",
+    });
   }
 
   // Evaluated marker
@@ -381,25 +450,33 @@ function renderPedigreeSymbol(
         "E"
       )
     );
+    legendItems.push({
+      key: "marker.evaluated", label: "Evaluated (E)",
+      kind: "marker", marker: "E", section: "symbols",
+    });
   }
 
-  return group(
+  return { svg: group(
     {
       class: classes.join(" "),
       "data-individual-id": ind.id,
       transform: `translate(${x}, ${y})`,
     },
     children
-  );
+  ), legendItems, bottom: y + Math.max(half, labelOffset, pointer ? pointer.tail + POINTER.labelGap + 3 : 0) };
 }
 
-function baseShape(sex: Individual["sex"], half: number): string {
+function baseShape(
+  sex: Individual["sex"], half: number,
+  legendItems: LegendItem[], theme: ResolvedTheme<PersonTokens>
+): string {
   switch (sex) {
     case "male":
       return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: "schematex-pedigree-shape" });
     case "female":
       return circle({ cx: 0, cy: 0, r: half, class: "schematex-pedigree-shape" });
     default:
+      legendItems.push(sexShapeItem(sex, theme));
       return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: "schematex-pedigree-shape" });
   }
 }
@@ -468,7 +545,7 @@ function renderLabels(
   for (const node of nodes) {
     const ind = node.individual;
     const cx = node.x + node.width / 2;
-    const labelY = node.y + node.height + 6 + config.fontSize;
+    const labelY = node.y + node.height / 2 + captionOffset(ind, node.width, config.fontSize, node.height / 2 + 6 + config.fontSize);
 
     const pedigreeId = genNumbering.get(ind.id) ?? ind.id;
     const displayLabel = ind.label !== ind.id ? ind.label : pedigreeId;

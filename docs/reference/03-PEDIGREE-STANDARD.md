@@ -131,9 +131,9 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 | Biological | Solid vertical | (default) |
 | Adopted in | Dashed vertical + brackets on child | `[adopted-in]` |
 | Adopted out | Dashed vertical + brackets, line goes to new parents | `[adopted-out]` |
-| Identical twins | V-shape (meet at single point) | `[twin-mz]` (monozygotic) |
-| Fraternal twins | Inverted-V with horizontal bar | `[twin-dz]` (dizygotic) |
-| Twins (unknown zygosity) | Inverted-V, question mark on bar | `[twin-unknown]` |
+| Identical twins | Meet at a single point, **with a horizontal bar joining the two sibling lines** | `[twin-mz]` (monozygotic) |
+| Fraternal twins | Meet at a single point, **no bar** | `[twin-dz]` (dizygotic) |
+| Twins (unknown zygosity) | Meet at a single point, question mark between the lines | `[twin-unknown]` |
 | Triplets+ | 3+ lines from point/bar | `[triplet-mz]` etc. |
 
 ---
@@ -205,7 +205,7 @@ Row keys:
 2. **Individual numbering：** Shape 下方显示 "II-3" 格式的标识
 3. **No emotional lines：** 不需要 emotional relationship routing
 4. **Consanguinity emphasis：** 双线要明显可见，因为这是遗传学的关键信息
-5. **Proband arrow：** 从左下 45° 指向 proband shape，长度 20px
+5. **Proband / consultand arrow：** 从左下 45° 指向实际 shape 轮廓，尖端留出 3px；总长 24px，箭头头部 6×5px，直接绘制 shaft + triangle，避免 SVG marker 的缩放和方向差异。P/C 标签在尾部左侧；长名字与箭头相交时下移至独立一行。图例显示相同方向的箭头。
 6. **Legend box：** 右下角或底部，包含 trait 说明
 
 ### 5.2 Spacing (Pedigree-Specific Adjustments)
