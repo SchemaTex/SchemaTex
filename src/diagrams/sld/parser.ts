@@ -23,7 +23,7 @@ const NODE_TYPES = new Set<SLDNodeType>([
   "transformer", "transformer_dy", "transformer_yd", "transformer_yy",
   "transformer_dd", "autotransformer", "transformer_3winding",
   "bus", "bus_tie", "hub",
-  "breaker", "breaker_vacuum", "switch", "switch_load", "ground_switch",
+  "breaker", "breaker_vacuum", "switch", "switch_load", "contactor", "ground_switch",
   "ats", "recloser", "sectionalizer", "fuse", "fuse_cl",
   "ct", "pt", "relay", "surge_arrester", "ground_fault",
   "rcd",

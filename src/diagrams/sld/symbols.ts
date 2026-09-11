@@ -6,13 +6,15 @@ import { el, group, line, path as pathEl, text as textEl } from "../../core/svg"
  * Symbol renderers — each returns SVG markup centered at (0,0)
  * Used by the renderer after applying transform="translate(cx,cy)".
  *
- * Every symbol exposes a conceptual top/bottom terminal on the vertical axis,
- * so the layout only needs to draw vertical wires between them.
+ * Geometry declares terminal positions used by both symbols and routing.
+ * Changeover devices have independent input terminals; ties are lateral.
  */
 
 export interface SymbolGeometry {
   /** Bounding half-width for layout */
   halfWidth: number;
+  /** Multiple independent top terminals, relative to the symbol centre. */
+  inputXs?: readonly number[];
   /** Y-offset of the top terminal (negative = above center) */
   topY: number;
   /** Y-offset of the bottom terminal (positive = below center) */
@@ -42,18 +44,21 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
       return { halfWidth: 22, topY: -24, bottomY: 24 };
     case "breaker":
     case "breaker_vacuum":
-    case "recloser":
     case "switch":
     case "switch_load":
     case "ground_switch":
-    case "sectionalizer":
       return { halfWidth: 18, topY: -18, bottomY: 18 };
+    case "contactor":
+    case "sectionalizer":
+    case "recloser":
+      return { halfWidth: 26, topY: -18, bottomY: 18 };
     case "fuse":
     case "fuse_cl":
       return { halfWidth: 14, topY: -18, bottomY: 18 };
     case "motor":
       return { halfWidth: 16, topY: -16, bottomY: 22 };
     case "load":
+      return { halfWidth: 20, topY: -12, bottomY: 12 };
     case "capacitor_bank":
     case "harmonic_filter":
       return { halfWidth: 20, topY: -14, bottomY: 14 };
@@ -61,7 +66,7 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
     case "ups":
       return { halfWidth: 24, topY: -18, bottomY: 18 };
     case "ats":
-      return { halfWidth: 22, topY: -18, bottomY: 18 };
+      return { halfWidth: 28, topY: -28, bottomY: 24, inputXs: [-22, 22] };
     case "ct":
     case "pt":
       return { halfWidth: 10, topY: -16, bottomY: 16 };
@@ -72,8 +77,9 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
     case "watthour_meter":
     case "demand_meter":
     case "ground_fault":
-    case "rcd":
       return { halfWidth: 14, topY: -14, bottomY: 14 };
+    case "rcd":
+      return { halfWidth: 14, topY: -18, bottomY: 18 };
     case "consumer_unit":
       return { halfWidth: 52, topY: -24, bottomY: 24 };
     case "bus":
@@ -81,7 +87,7 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
     case "hub":
       return { halfWidth: 52, topY: -20, bottomY: 20 };
     case "bus_tie":
-      return { halfWidth: 16, topY: -10, bottomY: 10 };
+      return { halfWidth: 18, topY: -16, bottomY: 4 };
     default:
       return DEFAULT_GEOMETRY;
   }
@@ -217,80 +223,62 @@ function threeWindingSymbol(): string {
   ]);
 }
 
-/** Circuit breaker: diagonal line + top arc. */
-function breakerSymbol(): string {
+/** Shared open contact: a blade pivots on the lower conductor, not beside it.
+ * The shown open position is diagram notation, not a live operating state. */
+function contactBlade(x1 = 0, y1 = 8, x2 = 11, y2 = -7): string {
+  return line({ x1, y1, x2, y2, class: "lt-sld-stroke-thick", "data-sld-role": "blade" });
+}
+function contactDot(x: number, y: number): string {
+  return el("circle", { cx: x, cy: y, r: 1.8, class: "lt-sld-dot" });
+}
+function openContact(): string[] {
+  return [lineEl(0, -18, 0, -10), lineEl(0, 8, 0, 18),
+    contactBlade(), contactDot(0, 8)];
+}
+function breakerMark(iec: boolean): string[] {
+  return iec
+    ? [lineEl(-3, -13, 3, -7), lineEl(3, -13, -3, -7)]
+    : [pathEl({ d: "M 0 -10 Q 7 -10 7 -16", class: "lt-sld-stroke" })];
+}
+function breakerSymbol(iec = false): string {
+  return group({}, [...openContact(), ...breakerMark(iec)]);
+}
+function vacuumBreakerSymbol(iec = false): string {
   return group({}, [
-    lineEl(0, -14, 0, -10, "lt-sld-stroke"),
-    lineEl(0, 10, 0, 14, "lt-sld-stroke"),
-    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
-    pathEl({ d: "M 8 -10 Q 14 -12 12 -18", class: "lt-sld-stroke", fill: "none" }),
-    lineEl(0, -18, 0, -14),
-    lineEl(0, 14, 0, 18),
+    el("rect", {x:-7,y:-14,width:23,height:27,rx:8,class:"lt-sld-stroke"}),
+    ...openContact(), ...breakerMark(iec),
   ]);
 }
-
-function vacuumBreakerSymbol(): string {
-  return group({}, [
-    el("ellipse", { cx: 0, cy: 0, rx: 10, ry: 14, class: "lt-sld-fill" }),
-    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
-    textEl({ x: -2, y: -4, class: "lt-sld-symbol-text", "text-anchor": "middle", "font-size": "8" }, "V"),
-    lineEl(0, -18, 0, -14),
-    lineEl(0, 14, 0, 18),
-  ]);
-}
-
 function recloserSymbol(): string {
-  return group({}, [
-    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
-    pathEl({ d: "M 8 -10 Q 14 -12 12 -18", class: "lt-sld-stroke", fill: "none" }),
-    pathEl({ d: "M 14 -6 A 5 5 0 1 1 18 -4", class: "lt-sld-stroke", fill: "none" }),
-    el("polygon", { points: "18,-4 20,-8 15,-7", class: "lt-sld-dot" }),
-    lineEl(0, -18, 0, -14),
-    lineEl(0, 14, 0, 18),
+  return group({}, [...openContact(), ...breakerMark(false),
+    pathEl({d:"M 18 3 A 5 5 0 1 0 18 -7",class:"lt-sld-stroke"}),
+    el("polygon",{points:"18,-7 22,-8 20,-4",class:"lt-sld-dot"}),
   ]);
 }
-
-function switchSymbol(open = false): string {
-  const pieces: string[] = [];
-  if (open) {
-    pieces.push(line({ x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }));
-    pieces.push(el("circle", { cx: 10, cy: -8, r: 2, class: "lt-sld-fill" }));
-  } else {
-    pieces.push(line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }));
-  }
-  pieces.push(lineEl(0, -18, 0, -10));
-  pieces.push(lineEl(0, 10, 0, 18));
-  return group({}, pieces);
+function switchSymbol(): string {
+  return group({}, [...openContact(), contactDot(0,-10)]);
 }
-
 function loadSwitchSymbol(): string {
-  return group({}, [
-    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
-    el("rect", { x: 6, y: -14, width: 6, height: 6, class: "lt-sld-fill" }),
-    lineEl(0, -18, 0, -10),
-    lineEl(0, 10, 0, 18),
+  return group({}, [...openContact(),
+    el("rect", {x:-2.5,y:-12.5,width:5,height:5,class:"lt-sld-fill"}),
   ]);
 }
-
+function contactorSymbol(): string {
+  return group({}, [...openContact(), lineEl(-4,-10,4,-10),
+    // Electromagnetic operation, separated from the conducting contact.
+    line({x1:6,y1:1,x2:17,y2:1,class:"lt-sld-stroke","stroke-dasharray":"2 2"}),
+    el("rect", {x:17,y:-4,width:7,height:10,class:"lt-sld-fill"}),
+  ]);
+}
 function groundSwitchSymbol(): string {
-  return group({}, [
-    line({ x1: -6, y1: 0, x2: 8, y2: -14, class: "lt-sld-stroke-thick" }),
-    lineEl(0, -18, 0, -4),
-    // ground symbol
-    lineEl(-8, 6, 8, 6),
-    lineEl(-5, 10, 5, 10),
-    lineEl(-2, 14, 2, 14),
-    lineEl(0, 0, 0, 6),
+  return group({}, [lineEl(0,-18,0,-10),contactDot(0,-10),
+    contactBlade(0,3,11,-7), lineEl(0,3,0,9),contactDot(0,3),
+    lineEl(-9,9,9,9),lineEl(-6,13,6,13),lineEl(-3,17,3,17),
   ]);
 }
-
 function sectionalizerSymbol(): string {
-  return group({}, [
-    line({ x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }),
-    el("circle", { cx: 10, cy: -8, r: 2, class: "lt-sld-fill" }),
-    textEl({ x: 14, y: -4, class: "lt-sld-wdg", "text-anchor": "start" }, "S"),
-    lineEl(0, -18, 0, -10),
-    lineEl(0, 10, 0, 18),
+  return group({}, [...openContact(),contactDot(0,-10),
+    textEl({x:18,y:2,class:"lt-sld-wdg","text-anchor":"middle","font-size":9},"S"),
   ]);
 }
 
@@ -361,15 +349,16 @@ function vfdSymbol(): string {
   ]);
 }
 
+/** Changeover contact with two separate fixed contacts and one common blade.
+ * Both throws are shown clear of the blade. Do not invent a preferred source or
+ * an operating state from a label such as "normal", "standby" or "open". */
 function atsSymbol(): string {
-  return group({}, [
-    el("rect", { x: -22, y: -16, width: 44, height: 32, class: "lt-sld-fill" }),
-    line({ x1: -14, y1: -8, x2: -2, y2: 6, class: "lt-sld-stroke-thick" }),
-    line({ x1: 14, y1: -8, x2: 2, y2: 6, class: "lt-sld-stroke-thick" }),
-    textEl({ x: 0, y: 14, class: "lt-sld-symbol-text", "text-anchor": "middle", "font-weight": "bold", "font-size": "9" }, "ATS"),
-    lineEl(-12, -18, -12, -16),
-    lineEl(12, -18, 12, -16),
-    lineEl(0, 16, 0, 18),
+  const g = geometryFor("ats");
+  const pieces = g.inputXs!.flatMap(x => [lineEl(x,g.topY,x,-10),contactDot(x,-10)]);
+  return group({}, [...pieces,
+    lineEl(0,10,0,g.bottomY), contactBlade(0,10,-16,-4), contactDot(0,10),
+    // Dashed sweep is mechanical travel, not another conducting branch.
+    pathEl({d:"M -12 -10 Q 0 -21 12 -10",class:"lt-sld-stroke","stroke-dasharray":"2 3"}),
   ]);
 }
 
@@ -422,8 +411,8 @@ function groundFaultSymbol(): string {
 function rcdSymbol(): string {
   return group({}, [
     el("rect", { x: -14, y: -14, width: 28, height: 28, rx: 3, class: "lt-sld-fill" }),
-    textEl({ x: 0, y: -1, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "8" }, "RCD"),
-    textEl({ x: 0, y: 9, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "7" }, "IΔn"),
+    textEl({ x: 0, y: -5, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "8" }, "RCD"),
+    textEl({ x: 0, y: 6, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "7" }, "IΔn"),
     lineEl(0, -14, 0, -18),
     lineEl(0, 14, 0, 18),
   ]);
@@ -443,10 +432,7 @@ function consumerUnitSymbol(label?: string): string {
     }),
     lineEl(-38, -8, 38, -8, "lt-sld-stroke-thick"),
     lineEl(-38, 8, 38, 8, "lt-sld-stroke-thick"),
-    lineEl(-22, -15, -22, 15),
-    lineEl(0, -15, 0, 15),
-    lineEl(22, -15, 22, 15),
-    textEl({ x: 0, y: 4, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "10" }, txt),
+    textEl({ x: 0, y: 0, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "10" }, txt),
     lineEl(0, -24, 0, -22),
     lineEl(0, 22, 0, 24),
   ]);
@@ -472,14 +458,10 @@ function hubSymbol(label?: string): string {
   ]);
 }
 
-function busTieSymbol(): string {
-  // Horizontal breaker: two stubs + diagonal switch bar + arc above
-  return group({}, [
-    lineEl(-16, 0, -4, 0),
-    lineEl(4, 0, 16, 0),
-    pathEl({ d: "M -4 0 L 4 -6", class: "lt-sld-stroke-thick" }),
-    pathEl({ d: "M -4 -6 Q 0 -10 4 -6", class: "lt-sld-stroke", fill: "none" }),
-  ]);
+function busTieSymbol(iec = false): string {
+  // Rotate the same breaker artwork so its terminal and contact conventions
+  // remain identical to those of a vertical feeder breaker.
+  return group({transform:"rotate(-90)"}, [breakerSymbol(iec)]);
 }
 
 function meterSymbol(label: string): string {
@@ -511,22 +493,6 @@ function transformerSymbolIEC(type: SLDNodeType): string {
   return group({}, pieces);
 }
 
-/**
- * IEC circuit breaker: a contact arm whose fixed contact carries the `×`
- * breaking-function mark (vs the ANSI contact + quarter-arc).
- */
-function breakerSymbolIEC(): string {
-  return group({}, [
-    lineEl(0, -18, 0, -10),
-    lineEl(0, 10, 0, 18),
-    // open contact arm pivoting from the bottom terminal
-    line({ x1: -6, y1: 10, x2: 6, y2: -8, class: "lt-sld-stroke-thick" }),
-    // × at the fixed contact
-    line({ x1: -4, y1: -13, x2: 4, y2: -7, class: "lt-sld-stroke" }),
-    line({ x1: 4, y1: -13, x2: -4, y2: -7, class: "lt-sld-stroke" }),
-  ]);
-}
-
 /** IEC fuse: rectangle with a conductor line through the long axis (vs ANSI plain box). */
 function fuseSymbolIEC(): string {
   return group({}, [
@@ -552,7 +518,9 @@ export function renderSymbol(
       case "transformer_dd":
         return transformerSymbolIEC(type);
       case "breaker":
-        return breakerSymbolIEC();
+        return breakerSymbol(true);
+      case "breaker_vacuum": return vacuumBreakerSymbol(true);
+      case "bus_tie": return busTieSymbol(true);
       case "fuse":
         return fuseSymbolIEC();
     }
@@ -574,8 +542,9 @@ export function renderSymbol(
     case "breaker": return breakerSymbol();
     case "breaker_vacuum": return vacuumBreakerSymbol();
     case "recloser": return recloserSymbol();
-    case "switch": return switchSymbol(true);
+    case "switch": return switchSymbol();
     case "switch_load": return loadSwitchSymbol();
+    case "contactor": return contactorSymbol();
     case "ground_switch": return groundSwitchSymbol();
     case "sectionalizer": return sectionalizerSymbol();
     case "fuse": return fuseSymbol();

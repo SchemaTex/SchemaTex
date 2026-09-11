@@ -298,7 +298,7 @@ ATS1 -> BUS1`);
     const firstSourceLabelTop = Math.min(
       ...layout.nodes
         .filter((node) => node.level === 0 && node.nodeType !== "bus")
-        .map((node) => node.topY - 22 - 11 + contentOffset)
+        .flatMap((node) => [node.topY + contentOffset, ...node.labels.map((label) => label.y - label.fontSize + contentOffset)])
     );
     expect(firstSourceLabelTop).toBeGreaterThanOrEqual(38);
   });

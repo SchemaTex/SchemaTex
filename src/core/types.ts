@@ -1361,8 +1361,9 @@ export type SLDNodeType =
   | "breaker_vacuum"    // Vacuum CB (diagonal + "V" inside oval)
   | "switch"            // Disconnect switch (diagonal, no arc, open tip)
   | "switch_load"       // Load interrupter switch
+  | "contactor"         // Electromagnetically operated power contact
   | "ground_switch"     // Grounding disconnect (diagonal + ground symbol)
-  | "ats"               // Automatic transfer switch (two breakers + tie)
+  | "ats"               // Automatic transfer switch (two independent inputs, one common contact)
   | "recloser"          // Auto-reclosing breaker (diagonal + arc + circling arrow)
   | "sectionalizer"     // Sectionalizer (diagonal + "S" designation)
   | "fuse"              // Expulsion fuse cutout (diagonal in oval)

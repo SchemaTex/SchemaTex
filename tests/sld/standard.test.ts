@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { parseSLDDSL } from "../../src/diagrams/sld/parser";
 import { renderSLD } from "../../src/diagrams/sld/renderer";
+import { renderSymbol } from "../../src/diagrams/sld/symbols";
 import { lintSLD } from "../../src/diagrams/sld/lint";
 
 // ─── B-2: standard symbol switching (ANSI ↔ IEC ↔ ABNT ↔ AS-NZS) ──
@@ -39,12 +40,12 @@ describe("header parsing", () => {
 
 describe("breaker glyph differs by standard", () => {
   test("ANSI breaker draws the contact-arc (Q quarter-circle)", () => {
-    const svg = render("ansi");
-    expect(svg).toMatch(/Q\s*14\s*-12/);
+    const svg = renderSymbol("breaker", undefined, "ansi");
+    expect(svg).toMatch(/<path[^>]*d="[^"]*Q/);
   });
   test("IEC breaker drops the arc and adds the × breaking mark", () => {
-    const svg = render("iec");
-    expect(svg).not.toMatch(/Q\s*14\s*-12/);
+    const svg = renderSymbol("breaker", undefined, "iec");
+    expect(svg).not.toMatch(/<path[^>]*d="[^"]*Q/);
     // the × is two crossing short strokes at the fixed contact
     expect(svg).toMatch(/y1="-13"/);
   });
