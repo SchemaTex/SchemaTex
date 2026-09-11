@@ -7,6 +7,7 @@ import type {
   LayoutNode,
   LayoutEdge,
 } from "../../core/types";
+import { systemCaption } from "./labels";
 import { estimateTextWidth } from "../../core/text-metrics";
 
 // ─── Constants ─────────────────────────────────────────────
@@ -24,11 +25,8 @@ function getCenterRadius(center: Individual): number {
   const w = estimateTextWidth(label, CENTER_LABEL_FONT, { fontWeight: 600 });
   return Math.max(CENTER_R, Math.ceil(w / 2) + 10);
 }
-const SYS_R = 30;
-const SYS_R_LARGE = 40;
-const SYS_R_SMALL = 20;
-const PADDING = 40;
-const LABEL_CLEARANCE = 60;
+const PADDING = 28;
+const LABEL_CLEARANCE = 0;
 
 // ─── Public API ────────────────────────────────────────────
 
@@ -68,7 +66,9 @@ export function layoutEcomap(
     };
   }
 
-  const ringRadii = getRingRadii(n);
+  const systemR = Math.max(...systems.map(getSystemRadius));
+  const radialMinimum = Math.max(centerR + systemR + 80, (systemR + 16) / Math.sin(Math.PI / Math.max(n, 3)));
+  const ringRadii = getRingRadii(n).map((r, _i, all) => radialMinimum + r - all[0]);
   const ringAssignment = assignToRings(
     center.id,
     systems,
@@ -78,7 +78,7 @@ export function layoutEcomap(
   const systemPositions = placeOnRings(systems, ringAssignment, ringRadii);
 
   const maxRing = ringRadii[ringRadii.length - 1] ?? 180;
-  const canvasSize = (maxRing + SYS_R_LARGE + LABEL_CLEARANCE + PADDING) * 2;
+  const canvasSize = (maxRing + systemR + LABEL_CLEARANCE + PADDING) * 2;
   const cx = canvasSize / 2;
   const cy = canvasSize / 2;
 
@@ -131,11 +131,8 @@ function assignToRings(
 ): Map<string, number> {
   const relBySys = new Map<string, Relationship>();
   for (const r of rels) {
-    const sysId =
-      r.from === _centerId ? r.to : r.from === _centerId ? r.to : r.to;
-    if (!relBySys.has(sysId)) relBySys.set(sysId, r);
-    const otherId = r.from === _centerId ? r.to : r.from;
-    if (!relBySys.has(otherId)) relBySys.set(otherId, r);
+    if (r.from === _centerId) relBySys.set(r.to, r);
+    else if (r.to === _centerId) relBySys.set(r.from, r);
   }
 
   const result = new Map<string, number>();
@@ -177,30 +174,15 @@ function placeOnRings(
   ringAssignment: Map<string, number>,
   ringRadii: number[]
 ): Map<string, SysPos> {
-  const ringGroups = new Map<number, Individual[]>();
-  for (const s of systems) {
-    const ring = ringAssignment.get(s.id) ?? 0;
-    const grp = ringGroups.get(ring) ?? [];
-    grp.push(s);
-    ringGroups.set(ring, grp);
-  }
-
   const positions = new Map<string, SysPos>();
-
-  for (const [ring, grp] of ringGroups) {
-    const radius = ringRadii[ring] ?? ringRadii[ringRadii.length - 1] ?? 180;
-    const n = grp.length;
-    const startAngle = -Math.PI / 2;
-
-    for (let idx = 0; idx < n; idx++) {
-      const angle = startAngle + (2 * Math.PI * idx) / n;
-      positions.set(grp[idx].id, {
-        x: radius * Math.cos(angle),
-        y: radius * Math.sin(angle),
-        ring,
-      });
-    }
-  }
+  // One angular slot per system across all rings: outer ties cannot pass
+  // through inner-ring nodes just because both rings start at twelve o'clock.
+  systems.forEach((system, index) => {
+    const ring = ringAssignment.get(system.id) ?? 0;
+    const radius = ringRadii[ring];
+    const angle = -Math.PI / 2 + 2 * Math.PI * index / systems.length;
+    positions.set(system.id, { x: radius * Math.cos(angle), y: radius * Math.sin(angle), ring });
+  });
 
   return positions;
 }
@@ -255,15 +237,5 @@ function computeEdges(
 // ─── Helpers ───────────────────────────────────────────────
 
 function getSystemRadius(ind: Individual): number {
-  const imp = ind.properties?.importance ?? ind.properties?.size;
-  switch (imp) {
-    case "major":
-    case "large":
-      return SYS_R_LARGE;
-    case "minor":
-    case "small":
-      return SYS_R_SMALL;
-    default:
-      return SYS_R;
-  }
+  return systemCaption(ind).radius;
 }
