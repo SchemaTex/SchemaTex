@@ -138,3 +138,37 @@ pool "P" {
     }
   });
 });
+
+const chainedProcess = `bpmn
+pool "Process" {
+  z: end
+  choice: gateway xor
+  work: task "Work"
+  begin: start
+}
+flows
+`;
+
+describe("bpmn flow chains", () => {
+  it("preserves every connector and its own kind and label", () => {
+    const ast = parseBpmn(chainedProcess + 'begin --> choice --? "go" --> work --> z : "done"');
+    expect(ast.flows).toEqual([
+      { from: "begin", to: "choice", kind: "sequence" },
+      { from: "choice", to: "work", kind: "conditional", label: "go" },
+      { from: "work", to: "z", kind: "sequence", label: "done" },
+    ]);
+    const defaults = parseBpmn(chainedProcess + 'choice --* "otherwise" --> work --> z');
+    expect(defaults.flows.map((f) => f.kind)).toEqual(["default", "sequence"]);
+  });
+
+  it("validates unknown endpoints at the end of chains", () => {
+    expect(() => parseBpmn(chainedProcess + "begin --> work --> missing"))
+      .toThrow(/unknown target id/);
+  });
+
+  it("validates pool ownership for every link", () => {
+    const source = chainedProcess.replace('flows\n', 'pool "Other" {\n remote: end\n}\nflows\n');
+    expect(() => parseBpmn(source + "begin --> work --> remote"))
+      .toThrow(/crosses pool boundary/);
+  });
+});

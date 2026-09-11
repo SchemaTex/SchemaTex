@@ -8,22 +8,23 @@
  *      objects from the same lane share a column, stack them vertically
  *      inside the lane.
  *   3. Lane height = max stack count × row pitch + padding.
- *   4. Pools stacked vertically with a gap; black-box pools render as a
+ *   4. Transpose geometry for TB. Pools stack across the flow axis;
+ *      black-box pools render as a
  *      thin label band.
  *   5. Routing: Manhattan / orthogonal. Sequence flows bend at the channel
- *      midpoint between adjacent columns. Message flows escape upward
- *      from the source pool to a routing channel, traverse horizontally,
- *      and descend into the target pool.
+ *      midpoint between columns; feedback routes around the objects.
+ *      Message flows connect the facing boundaries of their endpoints.
  */
 import type {
   BpmnAst,
+  BpmnFlow,
+  BpmnDirection,
   BpmnFlowObject,
   BpmnLayoutFlow,
   BpmnLayoutLane,
   BpmnLayoutObject,
   BpmnLayoutPool,
   BpmnLayoutResult,
-  BpmnPool,
 } from "../../core/types";
 
 export const BPMN_CONST = {
@@ -50,6 +51,10 @@ export const BPMN_CONST = {
   padding: 16,
   /** Black-box pool height. */
   blackboxHeight: 60,
+  /** Loop channels stay 12px from the pool edge, inside the lane padding. */
+  loopInset: 12,
+  /** Keep flow labels 6px above their routing segment. */
+  flowLabelGap: 6,
   /** Char width approximation at 12px. */
   charW: 6.4,
   cjkCharW: 12,
@@ -98,12 +103,8 @@ export function layoutBpmn(ast: BpmnAst): BpmnLayoutResult {
   const objById = new Map<string, BpmnFlowObject>();
   for (const o of allObjects) objById.set(o.id, o);
 
-  // ── 1. Per-pool layering (longest path from sources via sequence-type flows)
-  const colByObj = new Map<string, number>();
-  for (const pool of ast.pools) {
-    if (pool.blackbox) continue;
-    layerPool(ast, pool, colByObj);
-  }
+  const vertical = ast.direction === "TB";
+  const { ranks: colByObj, backEdges } = rankBpmnSequences(ast);
 
   // ── 2. Per-lane stacking within columns (when multiple lane-objs share col)
   // Within each lane: assign a row index to each object based on column order.
@@ -134,8 +135,14 @@ export function layoutBpmn(ast: BpmnAst): BpmnLayoutResult {
 
   // ── 4. Pool / lane geometry.
   const padding = BPMN_CONST.padding;
-  const colPitch = BPMN_CONST.colPitch;
-  const rowPitch = BPMN_CONST.rowPitch;
+  // Keep a routing gutter even when a task label widens its box.
+  const colPitch = Math.max(BPMN_CONST.colPitch, ...allObjects.map((o) =>
+    (vertical ? objBox(o).h : objBox(o).w) + 2 * BPMN_CONST.lanePadX));
+  // Work in LR coordinates, then transpose geometry (not text) for TB.
+  // TB stacks task widths across each lane, so derive its pitch from the boxes.
+  const rowPitch = vertical
+    ? Math.max(BPMN_CONST.rowPitch, ...allObjects.map((o) => objBox(o).w + 2 * BPMN_CONST.lanePadY))
+    : BPMN_CONST.rowPitch;
   const labelBand = BPMN_CONST.poolLabelWidth + BPMN_CONST.laneLabelWidth;
 
   const innerW = numCols * colPitch + 2 * BPMN_CONST.lanePadX;
@@ -202,7 +209,9 @@ export function layoutBpmn(ast: BpmnAst): BpmnLayoutResult {
         const row = rowByObj.get(childId) ?? 0;
         const cx = laneInnerLeft + col * colPitch + colPitch / 2;
         const cy = laneInnerTop + row * rowPitch + rowPitch / 2;
-        const { w, h } = objBox(obj);
+        const box = objBox(obj);
+        const w = vertical ? box.h : box.w;
+        const h = vertical ? box.w : box.h;
         objectLayouts.push({
           obj,
           x: cx - w / 2,
@@ -249,125 +258,88 @@ export function layoutBpmn(ast: BpmnAst): BpmnLayoutResult {
   const flowLayouts: BpmnLayoutFlow[] = [];
   for (const f of ast.flows) {
     if (f.kind === "message") {
-      flowLayouts.push(routeMessageFlow(f, objCenter, poolCenter));
+      flowLayouts.push(routeMessageFlow(f, objCenter, poolCenter, ast.direction));
     } else {
-      const path = routeSequenceFlow(f, objCenter, objById);
+      const pool = poolLayouts.find((p) => p.pool.id === objById.get(f.from)!.poolId)!;
+      const path = routeSequenceFlow(f, objCenter, backEdges.has(f), pool, colPitch, ast.direction);
       flowLayouts.push(path);
     }
   }
 
   return {
     ast,
-    pools: poolLayouts,
-    lanes: laneLayouts,
-    objects: objectLayouts,
+    pools: vertical ? poolLayouts.map((p) => ({
+      ...transposeBox(p), labelX: p.labelY, labelY: p.labelX,
+    })) : poolLayouts,
+    lanes: vertical ? laneLayouts.map((l) => ({
+      ...transposeBox(l), labelX: l.labelY, labelY: l.labelX,
+    })) : laneLayouts,
+    objects: vertical ? objectLayouts.map(transposeBox) : objectLayouts,
     flows: flowLayouts,
-    width: totalWidth,
-    height: totalHeight,
+    width: vertical ? totalHeight : totalWidth,
+    height: vertical ? totalWidth : totalHeight,
   };
 }
 
 // ─── Per-pool layering ────────────────────────────────────────
 
-function layerPool(
-  ast: BpmnAst,
-  pool: BpmnPool,
-  colByObj: Map<string, number>
-): void {
-  // Collect objects in this pool.
-  const inPool = (id: string): boolean => {
-    const ev = ast.events.find((e) => e.id === id);
-    if (ev) return ev.poolId === pool.id;
-    const a = ast.activities.find((x) => x.id === id);
-    if (a) return a.poolId === pool.id;
-    const g = ast.gateways.find((x) => x.id === id);
-    if (g) return g.poolId === pool.id;
-    return false;
+/** Sequence-only longest paths; DFS ancestor edges are genuine feedback loops. */
+export function rankBpmnSequences(ast: BpmnAst): {
+  ranks: Map<string, number>;
+  backEdges: Set<BpmnFlow>;
+} {
+  const objects = [...ast.events, ...ast.activities, ...ast.gateways];
+  const adj = new Map<string, BpmnFlow[]>(objects.map((o) => [o.id, []]));
+  const inDegree = new Map(objects.map((o) => [o.id, 0]));
+  for (const flow of ast.flows) {
+    if (flow.kind === "message") continue;
+    adj.get(flow.from)!.push(flow);
+    inDegree.set(flow.to, inDegree.get(flow.to)! + 1);
+  }
+
+  // Like the layered state layout, remove feedback before assigning ranks,
+  // retaining the original edges for routing. Prefer start events and sources.
+  const backEdges = new Set<BpmnFlow>();
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (id: string): void => {
+    visited.add(id);
+    visiting.add(id);
+    for (const flow of adj.get(id)!) {
+      if (visiting.has(flow.to)) backEdges.add(flow);
+      else if (!visited.has(flow.to)) visit(flow.to);
+    }
+    visiting.delete(id);
   };
-  const ids = [
-    ...ast.events.filter((e) => e.poolId === pool.id).map((e) => e.id),
-    ...ast.activities.filter((a) => a.poolId === pool.id).map((a) => a.id),
-    ...ast.gateways.filter((g) => g.poolId === pool.id).map((g) => g.id),
-  ];
-
-  // Adjacency from sequence-type flows.
-  const adj = new Map<string, string[]>();
-  const inDeg = new Map<string, number>();
-  for (const id of ids) {
-    adj.set(id, []);
-    inDeg.set(id, 0);
-  }
-  const allEdges: Array<[string, string]> = [];
-  for (const f of ast.flows) {
-    if (f.kind === "message") continue;
-    if (!inPool(f.from) || !inPool(f.to)) continue;
-    if (f.from === f.to) continue;
-    adj.get(f.from)!.push(f.to);
-    inDeg.set(f.to, (inDeg.get(f.to) ?? 0) + 1);
-    allEdges.push([f.from, f.to]);
+  const starts = ast.events.filter((e) => e.kind === "start");
+  const sources = objects.filter((o) => inDegree.get(o.id) === 0);
+  for (const obj of [...starts, ...sources, ...objects]) {
+    if (!visited.has(obj.id)) visit(obj.id);
   }
 
-  // Cycle break via DFS — back edges (u→v where v is ancestor of u in the
-  // DFS tree) get tagged and excluded from longest-path layering. BPMN
-  // rework loops (D → C → G → D) are common, so we must handle them.
-  const backEdges = new Set<string>();
-  const color = new Map<string, number>(); // 0=white, 1=gray, 2=black
-  for (const id of ids) color.set(id, 0);
-  const dfs = (v: string): void => {
-    color.set(v, 1);
-    for (const w of adj.get(v) ?? []) {
-      const c = color.get(w) ?? 0;
-      if (c === 1) {
-        // back edge
-        backEdges.add(`${v}\0${w}`);
-      } else if (c === 0) {
-        dfs(w);
-      }
-    }
-    color.set(v, 2);
-  };
-  // Start DFS from start events first, then any remaining whites.
-  const starts = ast.events.filter((e) => e.poolId === pool.id && e.kind === "start").map((e) => e.id);
-  for (const s of starts) if ((color.get(s) ?? 0) === 0) dfs(s);
-  for (const id of ids) if ((color.get(id) ?? 0) === 0) dfs(id);
-
-  // Forward-edge longest path (back edges excluded).
-  const fwdAdj = new Map<string, string[]>();
-  for (const id of ids) fwdAdj.set(id, []);
-  for (const [u, v] of allEdges) {
-    if (backEdges.has(`${u}\0${v}`)) continue;
-    fwdAdj.get(u)!.push(v);
+  for (const flow of backEdges) {
+    inDegree.set(flow.to, inDegree.get(flow.to)! - 1);
   }
-  // Topo sort over forward DAG.
-  const fwdInDeg = new Map<string, number>();
-  for (const id of ids) fwdInDeg.set(id, 0);
-  for (const [u, v] of allEdges) {
-    if (backEdges.has(`${u}\0${v}`)) continue;
-    fwdInDeg.set(v, (fwdInDeg.get(v) ?? 0) + 1);
-  }
-  const queue: string[] = [];
-  for (const id of ids) if ((fwdInDeg.get(id) ?? 0) === 0) queue.push(id);
-  const order: string[] = [];
-  const remIn = new Map(fwdInDeg);
-  while (queue.length > 0) {
-    const v = queue.shift()!;
-    order.push(v);
-    for (const w of fwdAdj.get(v) ?? []) {
-      const d = (remIn.get(w) ?? 0) - 1;
-      remIn.set(w, d);
-      if (d === 0) queue.push(w);
+  const queue = objects.filter((o) => inDegree.get(o.id) === 0).map((o) => o.id);
+  const ranks = new Map(objects.map((o) => [o.id, 0]));
+  for (const id of queue) {
+    for (const flow of adj.get(id)!) {
+      if (backEdges.has(flow)) continue;
+      ranks.set(flow.to, Math.max(ranks.get(flow.to)!, ranks.get(id)! + 1));
+      const remaining = inDegree.get(flow.to)! - 1;
+      inDegree.set(flow.to, remaining);
+      if (remaining === 0) queue.push(flow.to);
     }
   }
-  for (const id of ids) if (!order.includes(id)) order.push(id);
+  return { ranks, backEdges };
+}
 
-  for (const id of ids) colByObj.set(id, 0);
-  for (const v of order) {
-    const lv = colByObj.get(v) ?? 0;
-    for (const w of fwdAdj.get(v) ?? []) {
-      const lw = colByObj.get(w) ?? 0;
-      if (lw < lv + 1) colByObj.set(w, lv + 1);
-    }
-  }
+interface Box { x: number; y: number; width: number; height: number }
+interface Center { x: number; y: number; w: number; h: number }
+interface Point { x: number; y: number }
+
+function transposeBox<T extends Box>(box: T): T {
+  return { ...box, x: box.y, y: box.x, width: box.height, height: box.width };
 }
 
 // ─── Routing ──────────────────────────────────────────────────
@@ -376,88 +348,71 @@ function fmt(n: number): string {
   return (Math.round(n * 100) / 100).toString();
 }
 
+function routedFlow(
+  flow: BpmnFlow,
+  points: Point[],
+  labelAnchor: Point,
+  direction: BpmnDirection
+): BpmnLayoutFlow {
+  const orient = (p: Point): Point => direction === "TB" ? { x: p.y, y: p.x } : p;
+  return {
+    flow,
+    path: points.map(orient).map((p, i) => `${i === 0 ? "M" : "L"} ${fmt(p.x)} ${fmt(p.y)}`).join(" "),
+    labelAnchor: orient(labelAnchor),
+  };
+}
+
 function routeSequenceFlow(
-  f: BpmnAst["flows"][number],
-  objCenter: Map<string, { x: number; y: number; w: number; h: number }>,
-  objById: Map<string, BpmnFlowObject>
+  f: BpmnFlow,
+  objCenter: Map<string, Center>,
+  backEdge: boolean,
+  pool: BpmnLayoutPool,
+  colPitch: number,
+  direction: BpmnDirection
 ): BpmnLayoutFlow {
   const a = objCenter.get(f.from)!;
   const b = objCenter.get(f.to)!;
-  // Choose entry/exit sides based on relative position.
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-
-  let from = { x: a.x, y: a.y };
-  let to = { x: b.x, y: b.y };
-
-  // Exit point on source.
-  if (Math.abs(dx) >= Math.abs(dy)) {
-    from = { x: a.x + (dx >= 0 ? a.w / 2 : -a.w / 2), y: a.y };
-    to = { x: b.x + (dx >= 0 ? -b.w / 2 : b.w / 2), y: b.y };
-  } else {
-    from = { x: a.x, y: a.y + (dy >= 0 ? a.h / 2 : -a.h / 2) };
-    to = { x: b.x, y: b.y + (dy >= 0 ? -b.h / 2 : b.h / 2) };
+  const from = { x: a.x + a.w / 2, y: a.y };
+  const to = { x: b.x - b.w / 2, y: b.y };
+  if (backEdge) {
+    // Leave on the forward side, return above the pool's objects, and re-enter
+    // from the earlier side. This also gives self-loops a nonzero route.
+    const channelY = pool.y + BPMN_CONST.loopInset;
+    const exitX = a.x + colPitch / 2;
+    const entryX = b.x - colPitch / 2;
+    return routedFlow(f, [from, { x: exitX, y: a.y },
+      { x: exitX, y: channelY }, { x: entryX, y: channelY },
+      { x: entryX, y: b.y }, to],
+    { x: (exitX + entryX) / 2, y: channelY - BPMN_CONST.flowLabelGap }, direction);
   }
-
-  // Adjust for diamond/circle shapes (use square exit for simplicity in v0.1).
-  void objById;
-
-  // Manhattan: midpoint bend on the dominant axis.
-  let path: string;
-  let labelAnchor: { x: number; y: number } | undefined;
-  if (Math.abs(dx) >= Math.abs(dy)) {
-    const midX = (from.x + to.x) / 2;
-    path =
-      `M ${fmt(from.x)} ${fmt(from.y)} ` +
-      `L ${fmt(midX)} ${fmt(from.y)} ` +
-      `L ${fmt(midX)} ${fmt(to.y)} ` +
-      `L ${fmt(to.x)} ${fmt(to.y)}`;
-    labelAnchor = { x: midX, y: (from.y + to.y) / 2 - 6 };
-  } else {
-    const midY = (from.y + to.y) / 2;
-    path =
-      `M ${fmt(from.x)} ${fmt(from.y)} ` +
-      `L ${fmt(from.x)} ${fmt(midY)} ` +
-      `L ${fmt(to.x)} ${fmt(midY)} ` +
-      `L ${fmt(to.x)} ${fmt(to.y)}`;
-    labelAnchor = { x: (from.x + to.x) / 2, y: midY - 6 };
-  }
-
-  return { flow: f, path, labelAnchor };
+  // Always exit and enter along the process axis, including cross-lane edges.
+  const midX = (from.x + to.x) / 2;
+  return routedFlow(f, [from, { x: midX, y: from.y }, { x: midX, y: to.y }, to],
+    { x: midX, y: (from.y + to.y) / 2 - BPMN_CONST.flowLabelGap }, direction);
 }
 
 function routeMessageFlow(
-  f: BpmnAst["flows"][number],
-  objCenter: Map<string, { x: number; y: number; w: number; h: number }>,
-  poolByLabel: Map<string, BpmnLayoutPool>
+  f: BpmnFlow,
+  objCenter: Map<string, Center>,
+  poolByLabel: Map<string, BpmnLayoutPool>,
+  direction: BpmnDirection
 ): BpmnLayoutFlow {
-  // Endpoint = either pool label (use pool's edge midpoint) or object center.
-  const endpoint = (
-    ep: string
-  ): { x: number; y: number; isPool: boolean; poolY?: number; poolH?: number } => {
-    if (poolByLabel.has(ep)) {
-      const p = poolByLabel.get(ep)!;
-      return {
-        x: p.x + p.width / 2,
-        y: p.y + p.height / 2,
-        isPool: true,
-        poolY: p.y,
-        poolH: p.height,
-      };
-    }
-    const c = objCenter.get(ep)!;
-    return { x: c.x, y: c.y, isPool: false };
+  const endpoint = (ep: string): Center => {
+    const pool = poolByLabel.get(ep);
+    if (pool) return {
+      x: pool.x + pool.width / 2, y: pool.y + pool.height / 2,
+      w: pool.width, h: pool.height,
+    };
+    return objCenter.get(ep)!;
   };
-  const A = endpoint(f.from);
-  const B = endpoint(f.to);
-
-  // Strategy: route via vertical channel between the two y's, with a
-  // horizontal segment at the midpoint. Sufficient for v0.1.
-  const midY = (A.y + B.y) / 2;
-  const path =
-    `M ${fmt(A.x)} ${fmt(A.y)} ` +
-    `L ${fmt(A.x)} ${fmt(midY)} ` +
-    `L ${fmt(B.x)} ${fmt(midY)} ` +
-    `L ${fmt(B.x)} ${fmt(B.y)}`;
-  return { flow: f, path, labelAnchor: { x: (A.x + B.x) / 2, y: midY - 6 } };
+  const a = endpoint(f.from);
+  const b = endpoint(f.to);
+  // Pools are separated on the cross axis. Clip both endpoints to their
+  // facing boundary, including blackboxes, before choosing the channel.
+  const sign = b.y >= a.y ? 1 : -1;
+  const from = { x: a.x, y: a.y + sign * a.h / 2 };
+  const to = { x: b.x, y: b.y - sign * b.h / 2 };
+  const midY = (from.y + to.y) / 2;
+  return routedFlow(f, [from, { x: from.x, y: midY }, { x: to.x, y: midY }, to],
+    { x: (from.x + to.x) / 2, y: midY - BPMN_CONST.flowLabelGap }, direction);
 }

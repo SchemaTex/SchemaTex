@@ -552,101 +552,108 @@ function parseFlowLine(
     return { ep: id.value, rest: t.slice(id.end).trimStart() };
   }
 
-  const head = takeEndpoint(text);
+  let head = takeEndpoint(text);
   if (!head) {
     throw new BpmnParseError(
       `flow line: cannot parse source endpoint`,
       ln.no
     );
   }
-  let rest = head.rest.trimStart();
+  // Each connector contributes an edge, including the tail of a chain.
+  while (true) {
+    let rest = head.rest.trimStart();
 
-  // Detect connector kind.
-  let kind: BpmnFlowKind;
-  let connectorLen: number;
-  let connectorLabel: string | undefined;
+    // Detect connector kind.
+    let kind: BpmnFlowKind;
+    let connectorLen: number;
+    let connectorLabel: string | undefined;
 
-  if (rest.startsWith("~~>")) {
-    kind = "message";
-    connectorLen = 3;
-  } else if (rest.startsWith("--?")) {
-    // conditional with inline quoted label, then -->
-    kind = "conditional";
-    let r = rest.slice(3).trimStart();
-    const q = takeQuoted(r);
-    if (q) {
-      connectorLabel = q.value;
-      r = q.rest.trimStart();
-    }
-    if (!r.startsWith("-->")) {
+    if (rest.startsWith("~~>")) {
+      kind = "message";
+      connectorLen = 3;
+    } else if (rest.startsWith("--?")) {
+      // conditional with inline quoted label, then -->
+      kind = "conditional";
+      let r = rest.slice(3).trimStart();
+      const q = takeQuoted(r);
+      if (q) {
+        connectorLabel = q.value;
+        r = q.rest.trimStart();
+      }
+      if (!r.startsWith("-->")) {
+        throw new BpmnParseError(
+          `conditional flow must end with --> (got '${r.slice(0, 20)}')`,
+          ln.no
+        );
+      }
+      connectorLen = rest.length - r.length + 3;
+    } else if (rest.startsWith("--*")) {
+      kind = "default";
+      let r = rest.slice(3).trimStart();
+      const q = takeQuoted(r);
+      if (q) {
+        connectorLabel = q.value;
+        r = q.rest.trimStart();
+      }
+      if (!r.startsWith("-->")) {
+        throw new BpmnParseError(
+          `default flow must end with --> (got '${r.slice(0, 20)}')`,
+          ln.no
+        );
+      }
+      connectorLen = rest.length - r.length + 3;
+    } else if (rest.startsWith("-->")) {
+      kind = "sequence";
+      connectorLen = 3;
+    } else {
       throw new BpmnParseError(
-        `conditional flow must end with --> (got '${r.slice(0, 20)}')`,
+        `unknown flow connector at '${rest.slice(0, 20)}' — use --> / --? / --* / ~~>`,
         ln.no
       );
     }
-    connectorLen = rest.length - r.length + 3;
-  } else if (rest.startsWith("--*")) {
-    kind = "default";
-    let r = rest.slice(3).trimStart();
-    const q = takeQuoted(r);
-    if (q) {
-      connectorLabel = q.value;
-      r = q.rest.trimStart();
-    }
-    if (!r.startsWith("-->")) {
-      throw new BpmnParseError(
-        `default flow must end with --> (got '${r.slice(0, 20)}')`,
-        ln.no
-      );
-    }
-    connectorLen = rest.length - r.length + 3;
-  } else if (rest.startsWith("-->")) {
-    kind = "sequence";
-    connectorLen = 3;
-  } else {
-    throw new BpmnParseError(
-      `unknown flow connector at '${rest.slice(0, 20)}' — use --> / --? / --* / ~~>`,
-      ln.no
-    );
-  }
 
-  rest = rest.slice(connectorLen).trimStart();
-  const tail = takeEndpoint(rest);
-  if (!tail) {
-    throw new BpmnParseError(`flow line: cannot parse target endpoint`, ln.no);
-  }
-  const trailing = tail.rest.trimStart();
-
-  // Optional `: "label"` (mainly for message flows but allowed everywhere).
-  let label: string | undefined = connectorLabel;
-  if (trailing.startsWith(":")) {
-    const q = takeQuoted(trailing.slice(1));
-    if (q) label = q.value;
-  }
-
-  // For message flows, endpoints may be pool names (quoted) — keep raw.
-  // Sequence-class flows must have flow-object ids on both ends.
-  if (kind !== "message") {
-    if (poolByLabel.has(head.ep) || poolByLabel.has(tail.ep)) {
-      throw new BpmnParseError(
-        `non-message flow cannot use a pool name as endpoint`,
-        ln.no
-      );
+    rest = rest.slice(connectorLen).trimStart();
+    const tail = takeEndpoint(rest);
+    if (!tail) {
+      throw new BpmnParseError(`flow line: cannot parse target endpoint`, ln.no);
     }
-    if (!objectOwner.has(head.ep)) {
-      throw new BpmnParseError(`unknown source id '${head.ep}'`, ln.no);
-    }
-    if (!objectOwner.has(tail.ep)) {
-      throw new BpmnParseError(`unknown target id '${tail.ep}'`, ln.no);
-    }
-  } else {
-    const fromOk = poolByLabel.has(head.ep) || objectOwner.has(head.ep);
-    const toOk = poolByLabel.has(tail.ep) || objectOwner.has(tail.ep);
-    if (!fromOk) throw new BpmnParseError(`unknown source '${head.ep}' in message flow`, ln.no);
-    if (!toOk) throw new BpmnParseError(`unknown target '${tail.ep}' in message flow`, ln.no);
-  }
+    let trailing = tail.rest.trimStart();
 
-  flows.push({ from: head.ep, to: tail.ep, kind, label });
+    // Optional `: "label"` (mainly for message flows but allowed everywhere).
+    let label: string | undefined = connectorLabel;
+    if (trailing.startsWith(":")) {
+      const q = takeQuoted(trailing.slice(1));
+      if (!q) throw new BpmnParseError("flow label must be quoted", ln.no);
+      label = q.value;
+      trailing = q.rest.trimStart();
+    }
+
+    // For message flows, endpoints may be pool names (quoted) — keep raw.
+    // Sequence-class flows must have flow-object ids on both ends.
+    if (kind !== "message") {
+      if (poolByLabel.has(head.ep) || poolByLabel.has(tail.ep)) {
+        throw new BpmnParseError(
+          `non-message flow cannot use a pool name as endpoint`,
+          ln.no
+        );
+      }
+      if (!objectOwner.has(head.ep)) {
+        throw new BpmnParseError(`unknown source id '${head.ep}'`, ln.no);
+      }
+      if (!objectOwner.has(tail.ep)) {
+        throw new BpmnParseError(`unknown target id '${tail.ep}'`, ln.no);
+      }
+    } else {
+      const fromOk = poolByLabel.has(head.ep) || objectOwner.has(head.ep);
+      const toOk = poolByLabel.has(tail.ep) || objectOwner.has(tail.ep);
+      if (!fromOk) throw new BpmnParseError(`unknown source '${head.ep}' in message flow`, ln.no);
+      if (!toOk) throw new BpmnParseError(`unknown target '${tail.ep}' in message flow`, ln.no);
+    }
+
+    flows.push({ from: head.ep, to: tail.ep, kind, label });
+    if (trailing.length === 0) return;
+    head = { ep: tail.ep, rest: trailing };
+  }
 }
 
 // Re-export helpers in case tests want them.

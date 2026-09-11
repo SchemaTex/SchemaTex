@@ -6,6 +6,9 @@
  * open-triangle for message) and the small source-end glyphs
  * (conditional diamond, default slash, message-start circle).
  */
+
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import {
   defs,
   desc,
@@ -55,18 +58,20 @@ export function renderBpmnLayout(
 
   out.push(buildDefs(t));
 
+  const vertical = ast.direction === "TB";
+
   // Pools
-  for (const pl of layout.pools) out.push(renderPool(pl, t));
+  for (const pl of layout.pools) out.push(renderPool(pl, t, vertical));
 
   // Lanes
   for (const lan of layout.lanes) {
     out.push(
       group({ class: "schematex-bpmn-lane" }, [
         rect({
-          x: lan.x + lan.labelHeight,
-          y: lan.y,
-          width: lan.width - lan.labelHeight,
-          height: lan.height,
+          x: lan.x + (vertical ? 0 : lan.labelHeight),
+          y: lan.y + (vertical ? lan.labelHeight : 0),
+          width: lan.width - (vertical ? 0 : lan.labelHeight),
+          height: lan.height - (vertical ? lan.labelHeight : 0),
           fill: t.laneFill,
           stroke: t.bpmnStroke,
           "stroke-width": 1,
@@ -74,17 +79,17 @@ export function renderBpmnLayout(
         rect({
           x: lan.x,
           y: lan.y,
-          width: lan.labelHeight,
-          height: lan.height,
+          width: vertical ? lan.width : lan.labelHeight,
+          height: vertical ? lan.labelHeight : lan.height,
           fill: t.labelBandFill,
           stroke: t.bpmnStroke,
           "stroke-width": 1,
         }),
         text(
           {
-            x: lan.x + lan.labelHeight / 2,
-            y: lan.y + lan.height / 2,
-            transform: `rotate(-90 ${lan.x + lan.labelHeight / 2} ${lan.y + lan.height / 2})`,
+            x: lan.x + (vertical ? lan.width : lan.labelHeight) / 2,
+            y: lan.y + (vertical ? lan.labelHeight : lan.height) / 2,
+            transform: vertical ? undefined : `rotate(-90 ${lan.x + lan.labelHeight / 2} ${lan.y + lan.height / 2})`,
             "text-anchor": "middle",
             "dominant-baseline": "middle",
             "font-family": FONT_FAMILY,
@@ -103,11 +108,21 @@ export function renderBpmnLayout(
   // Objects
   for (const ol of layout.objects) out.push(renderObject(ol, t));
 
+  const titleHeight = ast.title ? TITLE.bandH : 0;
+  const body = group({ transform: `translate(0, ${titleHeight})` }, out.splice(3));
+  out.push(body);
+  if (ast.title) {
+    const resolved = resolveSceneTitle(ast.title, undefined, width / 2, TITLE.y, config);
+    out.push(text({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": config?.fontFamily ?? FONT_FAMILY,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: t.bpmnText }, ast.title));
+  }
+
   return svgRoot(
     {
       width,
-      height,
-      viewBox: `0 0 ${width} ${height}`,
+      height: height + titleHeight,
+      viewBox: `0 0 ${width} ${height + titleHeight}`,
       class: "schematex-bpmn",
     },
     out
@@ -179,46 +194,10 @@ function buildDefs(t: BpmnTheme): string {
 
 // ─── Pool ──────────────────────────────────────────────────────
 
-function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
-  const labelCx = pl.labelX + pl.labelWidth / 2;
-  const labelCy = pl.labelY + pl.height / 2;
-  if (pl.pool.blackbox) {
-    return group({ class: "schematex-bpmn-pool blackbox" }, [
-      rect({
-        x: pl.x,
-        y: pl.y,
-        width: pl.width,
-        height: pl.height,
-        fill: t.poolFill,
-        stroke: t.bpmnStroke,
-        "stroke-width": 1.5,
-      }),
-      rect({
-        x: pl.x,
-        y: pl.y,
-        width: pl.labelWidth,
-        height: pl.height,
-        fill: t.labelBandFill,
-        stroke: t.bpmnStroke,
-        "stroke-width": 1,
-      }),
-      text(
-        {
-          x: labelCx,
-          y: labelCy,
-          transform: `rotate(-90 ${labelCx} ${labelCy})`,
-          "text-anchor": "middle",
-          "dominant-baseline": "middle",
-          "font-family": FONT_FAMILY,
-          "font-size": 13,
-          "font-weight": "bold",
-          fill: t.bpmnText,
-        },
-        pl.pool.label
-      ),
-    ]);
-  }
-  return group({ class: "schematex-bpmn-pool" }, [
+function renderPool(pl: BpmnLayoutPool, t: BpmnTheme, vertical: boolean): string {
+  const labelCx = pl.labelX + (vertical ? pl.width : pl.labelWidth) / 2;
+  const labelCy = pl.labelY + (vertical ? pl.labelWidth : pl.height) / 2;
+  return group({ class: `schematex-bpmn-pool${pl.pool.blackbox ? " blackbox" : ""}` }, [
     rect({
       x: pl.x,
       y: pl.y,
@@ -231,8 +210,8 @@ function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
     rect({
       x: pl.x,
       y: pl.y,
-      width: pl.labelWidth,
-      height: pl.height,
+      width: vertical ? pl.width : pl.labelWidth,
+      height: vertical ? pl.labelWidth : pl.height,
       fill: t.labelBandFill,
       stroke: t.bpmnStroke,
       "stroke-width": 1,
@@ -241,7 +220,7 @@ function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
       {
         x: labelCx,
         y: labelCy,
-        transform: `rotate(-90 ${labelCx} ${labelCy})`,
+        transform: vertical ? undefined : `rotate(-90 ${labelCx} ${labelCy})`,
         "text-anchor": "middle",
         "dominant-baseline": "middle",
         "font-family": FONT_FAMILY,
