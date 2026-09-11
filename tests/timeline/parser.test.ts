@@ -121,3 +121,27 @@ section Phase 1
     });
   });
 });
+
+describe("production section entries", () => {
+  test.each(["Something happened", "Algo sucedió", "发生了一件事", "Quelque chose est arrivé", "حدث شيء"])("accepts bare event text: %s", (label) => {
+    const ast = parseTimeline(`timeline\n  section S\n    2024 : ${label}`);
+    expect(ast.events[0]).toMatchObject({ label, trackId: ast.tracks[0]?.id, start: { raw: "2024", precision: "year" } });
+  });
+
+  test("bare labels work across sections, tracks, dates, ranges and ordinal keys", () => {
+    const ast = parseTimeline('timeline\nsection S\n2024 : Launch\nsection T\nPhase 2 : Review\ntrack "U":\n  2025 - 2026 : Development');
+    expect(ast.events.map((event) => event.label)).toEqual(["Launch", "Review", "Development"]);
+    expect(ast.events.map((event) => event.trackId)).toEqual(ast.tracks.map((track) => track.id));
+  });
+});
+
+describe("malformed timeline diagnostics", () => {
+  test.each([
+    "timeline\nsection S\n  missing colon",
+    'timeline\nsection S\n  2024 : "Unterminated',
+    "timeline\nconfig: style = unknown",
+  ])("raises a parser diagnostic for %j", (source) => {
+    expect(() => parseTimeline(source)).toThrow(/Line \d+:/);
+    expect(() => parseTimeline(source)).not.toThrow(TypeError);
+  });
+});
