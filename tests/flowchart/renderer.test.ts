@@ -95,3 +95,10 @@ D --> I[/Input/] --> R(Round)`);
     });
   });
 });
+
+test.each(["C>Output]", ">C([Output])"])("renders %s as the flag polygon", (node) => {
+  const svg = renderFlowchart(`flowchart TD\nA --> ${node}`);
+  expect(svg).toContain('data-shape="asymmetric"');
+  expect(svg).toMatch(/<polygon[^>]*class="sx-fc-node"/);
+  expect(svg).toContain("Output");
+});

@@ -346,7 +346,9 @@ function parseEdgeOp(line: string, pos: number): EdgeOp | null {
 
 /** Parse one node reference: identifier + optional shape-suffix. */
 function parseNodeRef(line: string, pos: number): { ref: NodeRef; end: number } | null {
-  const identifier = readIdentifier(line, pos);
+  // Model-authored prefix form: >C([Output]) uses C as the flag node id.
+  const asymmetric = line[pos] === ">";
+  const identifier = readIdentifier(line, asymmetric ? pos + 1 : pos);
   if (!identifier) return null;
   const id = identifier.value;
   const i = identifier.end;
@@ -355,14 +357,14 @@ function parseNodeRef(line: string, pos: number): { ref: NodeRef; end: number } 
     return {
       ref: {
         id,
-        shape: shape.shape,
+        shape: asymmetric ? "asymmetric" : shape.shape,
         label: shape.label,
         labelRange: { start: shape.labelStart, end: shape.labelEnd },
       },
       end: shape.end,
     };
   }
-  return { ref: { id }, end: i };
+  return { ref: asymmetric ? { id, shape: "asymmetric", label: id } : { id }, end: i };
 }
 
 /** Parse pipe label segment: "|yes|" */
