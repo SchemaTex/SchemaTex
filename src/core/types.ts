@@ -1183,6 +1183,8 @@ export interface CircuitNet {
   id: string;
   /** Anchor refs sharing the same node (e.g. ["R2.end", "U1.out", "OUT.start"]) */
   anchors: string[];
+  /** Authored conductor identities and annotations; never placed as components. */
+  conductors?: { id: string; label?: string; value?: string }[];
 }
 
 export interface CircuitAST {

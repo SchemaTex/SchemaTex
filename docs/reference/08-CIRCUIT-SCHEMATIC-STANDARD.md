@@ -469,6 +469,12 @@ Anything else (e.g. `N1`, `MyComponent`) → must declare with `type=<...>`.
 
 > **Scope note:** Schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617 conventions). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar. An id with no inferable prefix and no `type=` remains an error. An explicit but unknown `type=` is well-formed, so it renders as a neutral labeled generic-IC box with all declared nets bound to numbered pins and emits a structured `circuit/unknown-component-type` warning (`token`, `line`). It is never rendered as an error-coloured `?` placeholder.
 
+Netlist `W` declarations are ideal conductors, not placed two-pin components. Both
+`W1 NET_A NET_B` and `W1 U1.out U2.in` merge their endpoint nets transitively.
+Labels and values remain visible as annotations on the resulting net, including
+redundant ground bonds. Terminal-block pins remain independent unless explicitly
+connected. A shared net does not specify physical cable order or device location.
+
 ### 4.5.2 Ground nets
 
 Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd | vss | com)` (case-insensitive, with optional `_<word>` or `<digit>` suffix) canonicalize to ground. Examples: `0`, `GND`, `gnd_ref`, `AGND`, `DGND_DIG`, `EARTH1`, `PE`, `VSS`, `COM`.
@@ -487,12 +493,20 @@ After the pin nets, the parser interprets extras in this order:
 
 ### 4.5.5 Auto-layout
 
-Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layout is computed by [autolayout.ts](../../src/diagrams/circuit/autolayout.ts). The engine first checks for common readable idioms:
+Netlist mode uses one schematic placement and routing pipeline through
+[autolayout.ts](../../src/diagrams/circuit/autolayout.ts) and
+[schematic-layout.ts](../../src/diagrams/circuit/schematic-layout.ts). It derives
+source/return nets, signal layers, shunt branches and pin orientations from
+connectivity and symbol geometry. Household lighting, repeated loads and single
+IC circuits use this same pipeline; they do not dispatch to separate templates.
 
-- single-phase source + protection/control + lamp/load + neutral return → a two-rail household loop (`L` path above, `N` return below);
-- two `switch_spdt` devices sharing two traveler nets → a two-way / stair-lighting layout with the two travelers drawn between switches;
-- source + series protection/control + three-way selector + repeated loads → a topology-derived parallel load bank. Each selector output owns a separate positive rail, repeated branches receive independent lanes, and all return pins share one continuous ground rail;
-- otherwise, the generic electronic schematic layout uses a top spine row, shunt band, and ground rail.
+A bounded search compares alternative traversals and folds. Body, caption and
+junction clearance improvements take precedence over wire length and bend cost;
+no candidate may worsen those constraints to lower its ink cost. The result still
+requires visual review: these measurements do not define aesthetic quality.
+
+Junction clearance and nearby caption placement are engine responsibilities. No
+per-wire coordinates, curve selection or caption offsets are required from the DSL.
 
 For exact publication drawings, positional DSL is still available, but generated ordinary schematics should prefer netlist mode.
 

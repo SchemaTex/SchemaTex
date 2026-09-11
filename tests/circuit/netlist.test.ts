@@ -2,22 +2,23 @@ import { describe, test, expect } from "vitest";
 import { parseCircuit } from "../../src/diagrams/circuit/parser";
 
 describe("circuit netlist parser", () => {
-  test("W-prefix ID infers wire type", () => {
+  test("W-prefix pin references connect declared serial pins", () => {
     const dsl = `circuit "RFID" netlist
-U_UNO gnd vcc arduino_uno label="Arduino Uno"
-U_ESP32 gnd 3v3 esp32 label="ESP32 (IoT)"
+U_UNO gnd vcc tx_a rx_a pins="GND,VCC,TX,RX" label="Arduino Uno"
+U_ESP32 gnd 3v3 tx_b rx_b pins="GND,VCC,TX,RX" label="ESP32 (IoT)"
 W1 U_UNO.TX U_ESP32.RX label="Serial TX->RX"
 W2 U_UNO.RX U_ESP32.TX label="Serial RX->TX"`;
     const ast = parseCircuit(dsl);
-    expect(ast.components.find((c) => c.id === "W1")?.componentType).toBe("wire");
-    expect(ast.components.find((c) => c.id === "W2")?.componentType).toBe("wire");
+    expect(ast.pinMap?.U_UNO?.tx).toBe(ast.pinMap?.U_ESP32?.rx);
+    expect(ast.pinMap?.U_UNO?.rx).toBe(ast.pinMap?.U_ESP32?.tx);
   });
 
   test("explicit type=wire still works for non-W ids", () => {
     const dsl = `circuit "test" netlist
 N1 a b type=wire`;
     const ast = parseCircuit(dsl);
-    expect(ast.components.find((c) => c.id === "N1")?.componentType).toBe("wire");
+    expect(ast.components.some((c) => c.id === "N1")).toBe(false);
+    expect(ast.nets[0]?.conductors?.[0]?.id).toBe("N1");
   });
 
   test("explicit motor type uses the motor pins instead of the M-prefix MOSFET pins", () => {

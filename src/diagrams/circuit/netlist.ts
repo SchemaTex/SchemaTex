@@ -33,6 +33,7 @@ import type {
   SchematexDiagnostic,
 } from "../../core/types";
 import {
+  effectiveSymbolDef,
   getGenericIcPinSides,
   getNetlistPinOrder,
   getSymbol,
@@ -144,6 +145,7 @@ export function parseNetlist(
   const netByName = new Map<string, CircuitNet>();
   const pinMap: Record<string, Record<string, string>> = {};
   let autoGnd = 0;
+  const componentLines = new Map<string, number>();
   const underspecified: { id: string; type: string; expected: number; got: number }[] = [];
   const overspecified: {
     id: string;
@@ -189,6 +191,7 @@ export function parseNetlist(
     }
 
     const id = tokens[0];
+    componentLines.set(id, lineIdx + 1 + lineOffset);
     if (!/^[a-zA-Z_][\w]*$/.test(id)) {
       throw new NetlistParseError(`Invalid component id: "${id}"`, lineIdx + 1);
     }
@@ -260,6 +263,7 @@ export function parseNetlist(
     // side labels into attrs so the symbol renderer and effectiveSymbolDef()
     // build pin legs and wire anchors from the exact same inputs.
     if (cType === "generic_ic") {
+      kv.ic_label = kv.label ?? kv.ic_label ?? id;
       let orderedLabels: string[];
       if (kv.pins !== undefined) {
         orderedLabels = kv.pins.split(",").map((label) => label.trim()).filter(Boolean);
@@ -291,6 +295,13 @@ export function parseNetlist(
       pinOrder = getTerminalBlockPinLabels(kv).map((label, index) =>
         normalizePinName(label, `t${index + 1}`)
       );
+    }
+
+    // An explicit value leaves five transformer positions unambiguously nets;
+    // keep the winding order and the painted centre tap in agreement.
+    if (cType === "transformer" && netRefs.length === 5 && kv.value !== undefined) {
+      kv.pins = "5";
+      pinOrder = effectiveSymbolDef(cType, kv).netlistPins!;
     }
 
     // Net refs consumption depends on type: last net ref may actually be the
@@ -362,6 +373,10 @@ export function parseNetlist(
       underspecified.push({ id, type: cType, expected: pinOrder.length, got });
     }
 
+    if (new Set(pinOrder).size !== pinOrder.length) {
+      throw new NetlistParseError(`Component "${id}" has duplicate pin names after normalization: ${pinOrder.join(", ")}`, lineIdx + 1 + lineOffset);
+    }
+
     // Build pinMap entry, binding each pin to a net. Ground net aliases are
     // normalized to a shared canonical name.
     const pins: Record<string, string> = {};
@@ -403,6 +418,76 @@ export function parseNetlist(
       comp.attrs![k] = v;
     }
     components.push(comp);
+  }
+
+  // Resolve wire pin references after all components exist (forward references
+  // are valid). A dotted net is literal when declared on a non-wire component;
+  // an existing component prefix always denotes a pin and must validate.
+  const byId = new Map(components.map((component) => [component.id, component]));
+  const declaredNets = new Set(components.filter((component) => component.componentType !== "wire")
+    .flatMap((component) => Object.values(pinMap[component.id]!)));
+  const aliases = new Map<string, string>();
+  const rootNet = (net: string): string => {
+    while (aliases.has(net)) net = aliases.get(net)!;
+    return net;
+  };
+  const joinNets = (a: string, b: string): void => {
+    const from = rootNet(a), to = rootNet(b);
+    if (from !== to) aliases.set(from === "GND" ? to : from, from === "GND" ? from : to);
+  };
+  const wires = components.filter((component) => component.componentType === "wire");
+  const wireNets = new Map<string, string>();
+  for (const wire of wires) {
+    const endpoints = Object.values(pinMap[wire.id]!);
+    for (const endpoint of endpoints) {
+      const dot = endpoint.indexOf(".");
+      if (dot < 0) continue;
+      const id = endpoint.slice(0, dot), requestedPin = endpoint.slice(dot + 1);
+      const target = byId.get(id);
+      if (!target && declaredNets.has(endpoint)) continue;
+      if (!target) {
+        throw new NetlistParseError(`Unknown component "${id}" in endpoint "${endpoint}". Available components and pins: ` +
+          components.filter((component) => component.componentType !== "wire").map((component) =>
+            `${component.id}: ${Object.keys(effectiveSymbolDef(component.componentType, component.attrs).anchors).join(", ")}`).join("; "),
+          componentLines.get(wire.id));
+      }
+      const anchors = effectiveSymbolDef(target.componentType, target.attrs).anchors;
+      const pin = Object.keys(anchors).find((name) => name === requestedPin) ??
+        Object.keys(anchors).find((name) => name === normalizePinName(requestedPin, requestedPin));
+      if (!pin) {
+        throw new NetlistParseError(`Unknown pin "${requestedPin}" on component "${id}". Available pins: ${Object.keys(anchors).join(", ")}`,
+          componentLines.get(wire.id));
+      }
+      // Alias anchors (e.g. collector/c) are the same physical terminal.
+      const anchor = anchors[pin]!;
+      const boundPin = Object.keys(pinMap[id]!).find((name) =>
+        anchors[name]?.x === anchor.x && anchors[name]?.y === anchor.y);
+      const targetPin = boundPin ?? pin;
+      const net = pinMap[id]![targetPin] ?? endpoint;
+      pinMap[id]![targetPin] = net;
+      joinNets(endpoint, net);
+
+    }
+    joinNets(endpoints[1]!, endpoints[0]!);
+    wireNets.set(wire.id, endpoints[0]!);
+  }
+  // Every ideal conductor joins its endpoint nets, including redundant bonds.
+  for (let index = components.length - 1; index >= 0; index--) {
+    if (!wireNets.has(components[index]!.id)) continue;
+    Reflect.deleteProperty(pinMap, components[index]!.id);
+    components.splice(index, 1);
+  }
+  netByName.clear();
+  for (const [id, pins] of Object.entries(pinMap)) {
+    for (const [pin, net] of Object.entries(pins)) {
+      pins[pin] = rootNet(net);
+      ensureNet(pins[pin]!).anchors.push(`${id}.${pin}`);
+    }
+  }
+
+  for (const wire of wires) {
+    const net = ensureNet(rootNet(wireNets.get(wire.id)!));
+    (net.conductors ??= []).push({ id: wire.id, label: wire.label, value: wire.value });
   }
 
   // Auto-emit ground symbols for the GND net if any component pin references it
