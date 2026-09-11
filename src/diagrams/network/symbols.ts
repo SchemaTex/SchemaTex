@@ -8,6 +8,7 @@
  */
 
 import { group, rect, circle, line, path as pathEl, polygon, text as textEl } from "../../core/svg";
+import { wrapTextToWidth, estimateTextWidth } from "../../core/text-metrics";
 import type { DeviceKind, NetworkDevice } from "./types";
 
 // CSS classes (defined by the renderer's <style> block):
@@ -40,42 +41,28 @@ function arrow(x1: number, y1: number, x2: number, y2: number, hs = 4): string {
 // ─── Infrastructure ──────────────────────────────────────────────
 
 function router(b: Box): string {
-  const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  const rw = b.w * 0.78, rh = b.h * 0.62;
-  const x = cx - rw / 2, y = cy - rh / 2;
-  const parts: string[] = [
-    rect({ class: BODY, x: r2(x), y: r2(y), width: r2(rw), height: r2(rh), rx: rh / 2, ry: rh / 2 }),
-  ];
-  // four directional arrows: two out (right), two in (left) — the router glyph
-  parts.push(arrow(cx - 2, cy - rh * 0.18, x + rw - 5, cy - rh * 0.18));
-  parts.push(arrow(cx + 2, cy + rh * 0.18, x + 5, cy + rh * 0.18));
-  parts.push(arrow(cx + rw * 0.18, cy + 2, cx + rw * 0.18, y + rh - 4));
-  parts.push(arrow(cx - rw * 0.18, cy - 2, cx - rw * 0.18, y + 4));
-  return group({}, parts);
+  const cx=b.x+b.w/2,cy=b.y+b.h/2,r=Math.min(b.w,b.h)*0.4;
+  return group({},[
+    circle({class:BODY,cx,cy,r}),
+    arrow(cx-3,cy-4,cx-3,cy-r+5,3),
+    arrow(cx+3,cy+4,cx+3,cy+r-5,3),
+    arrow(cx-4,cy+3,cx-r+5,cy+3,3),
+    arrow(cx+4,cy-3,cx+r-5,cy-3,3),
+  ]);
 }
 
-function switchBox(b: Box, glyph: "straight" | "circular"): string {
-  const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  const rw = b.w * 0.86, rh = b.h * 0.5;
-  const x = cx - rw / 2, y = cy - rh / 2;
-  const parts: string[] = [
-    rect({ class: BODY, x: r2(x), y: r2(y), width: r2(rw), height: r2(rh), rx: 3, ry: 3 }),
-  ];
-  if (glyph === "circular") {
-    // two curved arrows suggesting routing
-    parts.push(arrow(x + rw * 0.25, cy - rh * 0.16, x + rw * 0.75, cy - rh * 0.16));
-    parts.push(arrow(x + rw * 0.75, cy + rh * 0.16, x + rw * 0.25, cy + rh * 0.16));
-    parts.push(arrow(x + rw * 0.62, cy - rh * 0.16, x + rw * 0.78, cy - rh * 0.16));
-  } else {
-    parts.push(arrow(x + rw * 0.2, cy - rh * 0.18, x + rw * 0.8, cy - rh * 0.18));
-    parts.push(arrow(x + rw * 0.8, cy + rh * 0.18, x + rw * 0.2, cy + rh * 0.18));
+/** Rack face, with port sockets; routing and powered variants keep distinct marks. */
+function switchBox(b: Box, kind: "switch" | "l3switch" | "poeswitch"): string {
+  const w=b.w*0.88,h=b.h*0.46,x=b.x+(b.w-w)/2,y=b.y+(b.h-h)/2;
+  const parts=[rect({class:BODY,x,y,width:w,height:h,rx:2})];
+  const count=kind==="switch"?6:4;
+  for(let i=0;i<count;i++)parts.push(rect({class:GLY,x:x+6+i*7,y:y+h/2-2,width:4,height:5,rx:0.5}));
+  if(kind==="l3switch") {
+    parts.push(arrow(x+w-15,y+7,x+w-5,y+7,2.5),arrow(x+w-5,y+15,x+w-15,y+15,2.5));
+  } else if(kind==="poeswitch") {
+    parts.push(pathEl({class:GLY,d:`M ${x+w-9} ${y+4} l -5 8 h 4 l -2 7 7 -10 h -4 Z`}));
   }
-  return group({}, parts);
-}
-
-function poeSwitch(b: Box): string {
-  const cx = b.x + b.w / 2;
-  return group({}, [switchBox(b, "straight"), textEl({ class: ITAG, x: r2(cx), y: r2(b.y + b.h * 0.78 + 8), "text-anchor": "middle" }, "PoE")]);
+  return group({},parts);
 }
 
 function firewall(b: Box): string {
@@ -125,13 +112,15 @@ function accessPoint(b: Box): string {
 // ─── Endpoints ───────────────────────────────────────────────────
 
 function server(b: Box): string {
-  const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  const rw = b.w * 0.46, rh = b.h * 0.82;
-  const x = cx - rw / 2, y = cy - rh / 2;
-  const parts: string[] = [rect({ class: BODY, x: r2(x), y: r2(y), width: r2(rw), height: r2(rh), rx: 2, ry: 2 })];
-  for (let i = 1; i <= 3; i++) parts.push(line({ class: DET, x1: r2(x + 4), y1: r2(y + i * (rh / 4)), x2: r2(x + rw - 4), y2: r2(y + i * (rh / 4)) }));
-  parts.push(circle({ class: GLY, cx: r2(x + rw - 7), cy: r2(y + 6), r: 1.6 }));
-  return group({}, parts);
+  const w=b.w*0.48,h=b.h*0.84,x=b.x+(b.w-w)/2,y=b.y+(b.h-h)/2;
+  const parts=[rect({class:BODY,x,y,width:w,height:h,rx:2})];
+  for(let i=0;i<3;i++) {
+    const yy=y+5+i*10;
+    parts.push(rect({class:DET,x:x+4,y:yy,width:w-8,height:7,rx:0.6}),
+      circle({class:GLY,cx:x+w-8,cy:yy+3.5,r:1}),
+      line({class:GLYL,x1:x+7,y1:yy+3.5,x2:x+w-13,y2:yy+3.5}));
+  }
+  return group({},parts);
 }
 
 function serverFarm(b: Box, d: NetworkDevice): string {
@@ -176,13 +165,12 @@ function mobile(b: Box): string {
 }
 
 function ipphone(b: Box): string {
-  const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  const rw = b.w * 0.6, rh = b.h * 0.6;
-  const x = cx - rw / 2, y = cy - rh / 2;
-  return group({}, [
-    rect({ class: BODY, x: r2(x), y: r2(y), width: r2(rw), height: r2(rh * 0.7), rx: 2, ry: 2 }),
-    pathEl({ class: GLYL, d: `M ${r2(x + rw * 0.2)} ${r2(y + 5)} q ${r2(rw * 0.3)} ${r2(rh * 0.5)} ${r2(rw * 0.6)} 0` }),
-  ]);
+  const x=b.x+b.w*.2,y=b.y+b.h*.17,w=b.w*.6,h=b.h*.66;
+  const parts=[rect({class:BODY,x,y,width:w,height:h,rx:3}),
+    rect({class:BODY,x:x+4,y:y+3,width:7,height:h-6,rx:3}),
+    rect({class:DET,x:x+15,y:y+5,width:w-20,height:8,rx:1})];
+  for(let r=0;r<2;r++)for(let c=0;c<3;c++)parts.push(circle({class:GLY,cx:x+17+c*5,cy:y+19+r*5,r:1}));
+  return group({},parts);
 }
 
 function printer(b: Box): string {
@@ -214,14 +202,14 @@ function storage(b: Box): string {
 function camera(b: Box, d: NetworkDevice): string {
   const t = d.cameraType ?? "fixed";
   const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  if (t === "dome" || t === "ptz") {
-    const rr = b.w * (t === "ptz" ? 0.34 : 0.28);
-    const parts = [
-      pathEl({ class: BODY, d: `M ${r2(cx - rr)} ${r2(cy + rr * 0.2)} A ${r2(rr)} ${r2(rr)} 0 0 1 ${r2(cx + rr)} ${r2(cy + rr * 0.2)} Z` }),
-      rect({ class: BODY, x: r2(cx - rr * 1.15), y: r2(cy + rr * 0.2), width: r2(rr * 2.3), height: r2(b.h * 0.12), rx: 1, ry: 1 }),
-      circle({ class: GLY, cx: r2(cx), cy: r2(cy - rr * 0.15), r: r2(rr * 0.3) }),
-    ];
-    return group({}, parts);
+  if (t === "dome" || t === "ptz" || t === "turret") {
+    const r=b.w*.26,top=cy-r*.35;
+    const parts=[pathEl({class:BODY,d:`M ${cx-r} ${top} A ${r} ${r} 0 0 0 ${cx+r} ${top} Z`}),
+      rect({class:BODY,x:cx-r-3,y:top-4,width:r*2+6,height:5,rx:1}),
+      circle({class:GLY,cx,cy:top+r*.4,r:r*.25})];
+    if(t==="ptz")parts.push(pathEl({class:GLYL,d:`M ${cx-r-5} ${top+4} Q ${cx-r-10} ${top+r+5} ${cx} ${top+r+6} Q ${cx+r+10} ${top+r+5} ${cx+r+5} ${top+4}`,"stroke-dasharray":"3 3"}));
+    if(t==="turret")parts.push(circle({class:DET,cx,cy:top+r*.4,r:r*.48}));
+    return group({},parts);
   }
   if (t === "bullet") {
     const bw = b.w * 0.6, bh = b.h * 0.34;
@@ -269,22 +257,19 @@ function monitor(b: Box, grid: boolean): string {
 
 // ─── Clouds ──────────────────────────────────────────────────────
 
+export function cloudText(label: string): string[] { return wrapTextToWidth(label,13,150,{fontWeight:600}); }
+export function cloudSize(label: string): {w:number;h:number} {
+  const lines=cloudText(label);
+  return {w:Math.max(110,...lines.map(l=>estimateTextWidth(l,13,{fontWeight:600})+40)),h:Math.max(64,lines.length*17+38)};
+}
 function cloud(b: Box, label: string): string {
-  // Symmetric cloud authored in a 200×110 design space, mapped into the box so
-  // stroke width stays uniform (no non-uniform scale transform).
-  const mx = (dx: number) => r2(b.x + (dx / 200) * b.w);
-  const my = (dy: number) => r2(b.y + (dy / 110) * b.h);
-  const d =
-    `M ${mx(50)} ${my(96)} ` +
-    `C ${mx(24)} ${my(96)} ${mx(24)} ${my(62)} ${mx(50)} ${my(58)} ` +
-    `C ${mx(50)} ${my(30)} ${mx(94)} ${my(26)} ${mx(100)} ${my(50)} ` +
-    `C ${mx(106)} ${my(26)} ${mx(150)} ${my(30)} ${mx(150)} ${my(58)} ` +
-    `C ${mx(176)} ${my(62)} ${mx(176)} ${my(96)} ${mx(150)} ${my(96)} ` +
-    `Z`;
-  return group({}, [
-    pathEl({ class: CLOUD, d }),
-    textEl({ class: CTX, x: r2(b.x + b.w / 2), y: my(80), "text-anchor": "middle" }, label),
-  ]);
+  const x=(n:number)=>r2(b.x+n*b.w),y=(n:number)=>r2(b.y+n*b.h);
+  const d=`M ${x(.18)} ${y(.88)} C ${x(-.02)} ${y(.88)} ${x(-.02)} ${y(.42)} ${x(.2)} ${y(.42)} `+
+    `C ${x(.16)} ${y(.08)} ${x(.58)} ${y(.03)} ${x(.64)} ${y(.3)} `+
+    `C ${x(.85)} ${y(.17)} ${x(.97)} ${y(.39)} ${x(.9)} ${y(.51)} `+
+    `C ${x(1.07)} ${y(.58)} ${x(1)} ${y(.88)} ${x(.84)} ${y(.88)} Z`;
+  const lines=cloudText(label),baseline=b.y+b.h*.59-(lines.length-1)*8.5+4;
+  return group({},[pathEl({class:CLOUD,d}),...lines.map((l,i)=>textEl({class:CTX,x:b.x+b.w/2,y:baseline+i*17,"text-anchor":"middle"},l))]);
 }
 
 function busBar(b: Box): string {
@@ -307,9 +292,9 @@ export function drawDeviceIcon(d: NetworkDevice, b: Box): string {
     case "router": return router(b);
     case "gateway": return group({}, [router(b), textEl({ class: ITAG, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "GW")]);
     case "vpngw": return group({}, [router(b), textEl({ class: ITAG, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "VPN")]);
-    case "switch": return switchBox(b, "straight");
-    case "l3switch": return switchBox(b, "circular");
-    case "poeswitch": return poeSwitch(b);
+    case "switch": return switchBox(b, "switch");
+    case "l3switch": return switchBox(b, "l3switch");
+    case "poeswitch": return switchBox(b, "poeswitch");
     case "firewall": return firewall(b);
     case "loadbalancer": return brickless(b, "LB");
     case "ids": return brickless(b, "IDS");

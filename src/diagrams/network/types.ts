@@ -187,6 +187,8 @@ export interface DeviceBox {
   /** Icon center. */
   cx: number;
   cy: number;
+  /** Engine-owned caption placement, never authored in DSL. */
+  captionSide?: "right" | "below";
   /** Resolved tier band index (for data-tier / debugging). */
   band: number;
 }

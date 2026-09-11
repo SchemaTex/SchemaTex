@@ -1108,9 +1108,9 @@ export interface NetworkTokens {
 }
 
 const DEFAULT_NETWORK: NetworkTokens = {
-  deviceFill: "#1d6fb8",
-  deviceStroke: "#0f3a5f",
-  deviceAccent: "#bfe0f7",
+  deviceFill: "#f8fafc",
+  deviceStroke: "#334155",
+  deviceAccent: "#256b8a",
   cloudFill: "#ffffff",
   cloudStroke: "#334155",
   label: "#0f172a",
@@ -1157,9 +1157,9 @@ const MONOCHROME_NETWORK: NetworkTokens = {
 };
 
 const DARK_NETWORK: NetworkTokens = {
-  deviceFill: "#6d8fff",
-  deviceStroke: "#0f172a",
-  deviceAccent: "#0f172a",
+  deviceFill: "#172033",
+  deviceStroke: "#cbd5e1",
+  deviceAccent: "#7dd3fc",
   cloudFill: "#172033",
   cloudStroke: "#f8fafc",
   label: "#f8fafc",
