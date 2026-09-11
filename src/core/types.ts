@@ -146,10 +146,13 @@ export type LegendItemKind =
   | "edge";
 
 export type LegendLinePattern =
+  | "step"
   | "solid"
   | "dashed"
   | "dotted"
   | "double"
+  | "triple"
+  | "cutoff"
   | "wavy"
   | "zigzag"
   | "broken";
@@ -170,7 +173,7 @@ export interface LegendItem {
   strokeWidth?: number;
   /** For kind: "shape" — "square" | "circle" | "diamond" | "triangle" | "concentric-square" | "concentric-circle". */
   shape?: string;
-  /** For kind: "marker" / "edge" — "arrow" | "X" | "dot" | "P" | "C" | "E" | "star" | "slash". */
+  /** For kind: "marker" / "edge" — "arrow" | "diagonal-arrow" | "X" | "dot" | "P" | "C" | "E" | "star" | "slash". */
   marker?: string;
   /** Section group id (e.g. "symbols", "structural", "relationships", "conditions"). */
   section?: string;
