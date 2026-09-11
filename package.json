@@ -147,6 +147,11 @@
     "preview:quality": "node scripts/generate-quality-hardening-preview.mjs",
     "gallery": "node scripts/generate-gallery-svgs.mjs",
     "gallery:check": "node scripts/generate-gallery-svgs.mjs && git diff --exit-code -- examples/",
+    "eval": "vite-node scripts/visual-eval/run.mts",
+    "eval:snapshot": "vite-node scripts/visual-eval/record-snapshot.mts",
+    "eval:target": "node scripts/visual-eval/propose-target.mjs",
+    "eval:audit": "node scripts/visual-eval/audit-case.mjs",
+    "eval:verify": "node scripts/visual-eval/verify.mjs",
     "prepublishOnly": "npm run build && npm run typecheck"
   },
   "keywords": [
