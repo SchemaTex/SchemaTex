@@ -1,0 +1,12 @@
+# Scenario: Counter Batch IEC 61131-3 function block logic.
+fbd "Counter Batch"
+var Start: bool
+var Stop: bool
+var Inhibit: bool
+var Output: bool
+var Latch: bool
+network 0 "Permissive latch":
+  Latch = OR(Start, AND(Latch, ~Stop, ~Inhibit))
+network 1 "Output command":
+  Output = MOVE(Latch)
+

@@ -1,0 +1,24 @@
+# Loan origination assessment.
+bpmn
+direction: LR
+title: "Loan Origination"
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Score risk"
+    D: task user "Review loan"
+    H: gateway xor "Approve?"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+flows
+A --> B --> G
+G --? "yes" --> C --> D --> H
+G --* "no" --> F
+H --? "yes" --> E
+H --* "no" --> F

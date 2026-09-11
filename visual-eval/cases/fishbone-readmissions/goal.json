@@ -1,0 +1,40 @@
+{
+  "id": "fishbone-readmissions",
+  "type": "fishbone",
+  "title": "Heart-failure readmission causes",
+  "goal": "A hospital team can organise readmission causes across service categories.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A horizontal fishbone spine, forked into a tail at the left, runs into the readmission effect drawn as one emphasised head that is clearly not another category."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "All 4 category bones (People, Process, Policy, Place) angle off the spine and carry their category name at the bone tip."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Every category bone carries at least 4 causes (17 in total, up to 5 on one bone), each drawn as its own branch meeting that bone."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "All 4 sub-causes hang off the cause they explain rather than off the bone: \"Weekend scheduling gap\" sits under \"Follow-up not booked before discharge\", not on the Process bone."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "At this density nothing collides: no label overlaps a bone, the spine, another label, or the canvas edge, and causes stay visually subordinate to their category."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "A line-art fish. A forked tail at the far left starts a horizontal spine that runs right and ends in an arrowhead entering the head — one closed outline with a curved back tapering to a blunt nose, stroked dark slate over a near-white fill, with a single hairline gill that meets the outline at both ends and no eye or mouth. The head carries the effect \"30-day readmissions above target\" under a small letterspaced EFFECT label, and is the one element that is not a category. 4 category bones leave the spine at exactly 60 degrees in 2 mirrored pairs that share 2 V junctions — People, Process above, Policy, Place below — and every bone runs to the same length, so the name pills sit on two clean lines however unevenly the causes are spread. Each category owns one hue, and colour is allowed on exactly two things: that category's lines (bone, cause rules, sub-cause twigs) and the solid pill carrying its name in white. Everything else is neutral slate — the fish outline, cause text, sub-cause text, the effect statement, title and deck — so the labels stay calm instead of turning into confetti. 17 causes are horizontal rules that underline their own label and end in an arrowhead touching the bone; 4 sub-causes hang off the cause they explain (not off the bone) as 32px twigs at the same 60 degrees as the bone, pointing back toward the spine, with the label at the free end. The second level is the first level shrunk one step, introducing no new kind of mark. Row pitch, junction spacing and canvas size are solved from browser-measured text widths, and every label box was tested against every other label, every line and the canvas edge: zero overlaps."
+  }
+}

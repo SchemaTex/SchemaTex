@@ -1,0 +1,45 @@
+{
+  "id": "faulttree-loss-of-cooling",
+  "type": "faulttree",
+  "title": "Loss of reactor cooling",
+  "goal": "Show the quantified failure logic for redundant cooling pumps and their electrical supply.",
+  "rubric": [
+    {
+      "id": "top-event",
+      "severity": "blocker",
+      "must": "The top rectangle visibly states loss of reactor/process cooling."
+    },
+    {
+      "id": "redundant-pumps",
+      "severity": "blocker",
+      "must": "Two cooling-pump basic events visibly meet at an AND gate for both-pumps failure."
+    },
+    {
+      "id": "shared-cause",
+      "severity": "blocker",
+      "must": "The pump-house flood basic event is visibly repeated beneath both the pump-train and power-supply branches."
+    },
+    {
+      "id": "power-redundancy",
+      "severity": "major",
+      "must": "Normal bus and standby diesel-generator failures visibly combine before the power-supply branch."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Every basic event visibly carries a plausible probability."
+    },
+    {
+      "id": "cutset-summary",
+      "severity": "minor",
+      "must": "A computed cut-set or probability summary is visible without obscuring the tree."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all six rules, while image 2 omits the required repeated pump-house flood event and uses generic power-supply labels."
+  }
+}

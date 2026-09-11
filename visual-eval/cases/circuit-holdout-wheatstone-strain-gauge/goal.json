@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-wheatstone-strain-gauge",
+  "type": "circuit",
+  "title": "Wheatstone strain-gauge bridge",
+  "split": "holdout",
+  "goal": "A reader must be able to identify the excited four-arm bridge, its two active gauges, and the differential amplifier pickup.",
+  "rubric": [
+    {
+      "id": "four-arm-bridge",
+      "severity": "blocker",
+      "must": "Four 350 Ω arms form a closed diamond or bridge between the two VEXC terminals."
+    },
+    {
+      "id": "active-opposite-arms",
+      "severity": "blocker",
+      "must": "SG1 ACTIVE and SG2 ACTIVE are visibly in opposite bridge arms, while R2 and R3 are fixed arms."
+    },
+    {
+      "id": "differential-pickup",
+      "severity": "blocker",
+      "must": "The two bridge midpoints VL and VR connect separately to the plus and minus inputs of the INA333 op-amp triangle."
+    },
+    {
+      "id": "excitation",
+      "severity": "major",
+      "must": "A 5 V source labelled VEXC is visibly connected across the top and bottom bridge nodes."
+    },
+    {
+      "id": "amplifier-output",
+      "severity": "major",
+      "must": "The INA333 triangle has a clearly labelled VOUT leading to a 10 kΩ load."
+    },
+    {
+      "id": "split-rails",
+      "severity": "minor",
+      "must": "The amplifier supply connections show both +5 V and −5 V rails."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed."
+  }
+}

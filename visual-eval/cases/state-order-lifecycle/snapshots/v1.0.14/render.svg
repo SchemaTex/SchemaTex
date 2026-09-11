@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="381.25" height="1124" viewBox="0 0 381.25 1124" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="268.25" cy="64" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="Draft"><rect x="232.25" y="180" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="268.25" y="206" text-anchor="middle" class="lt-state-name"><tspan x="268.25" dy="0">Draft</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Submitted"><rect x="221.25" y="300" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="268.25" y="326" text-anchor="middle" class="lt-state-name"><tspan x="268.25" dy="0">Submitted</tspan></text></g>
+<g class="lt-state lt-simple" data-id="PaymentPending"><rect x="152" y="420" width="128" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="216" y="446" text-anchor="middle" class="lt-state-name"><tspan x="216" dy="0">PaymentPending</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Paid"><rect x="41.5" y="540" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="77.5" y="566" text-anchor="middle" class="lt-state-name"><tspan x="77.5" dy="0">Paid</tspan></text></g>
+<g class="lt-state lt-simple" data-id="PaymentFailed"><rect x="155.5" y="540" width="121" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="216" y="566" text-anchor="middle" class="lt-state-name"><tspan x="216" dy="0">PaymentFailed</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Fulfillment"><rect x="24" y="660" width="107" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="77.5" y="686" text-anchor="middle" class="lt-state-name"><tspan x="77.5" dy="0">Fulfillment</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Cancelled"><rect x="221.25" y="660" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="268.25" y="686" text-anchor="middle" class="lt-state-name"><tspan x="268.25" dy="0">Cancelled</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Shipped"><rect x="37.5" y="780" width="80" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="77.5" y="806" text-anchor="middle" class="lt-state-name"><tspan x="77.5" dy="0">Shipped</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Delivered"><rect x="30.5" y="900" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="77.5" y="926" text-anchor="middle" class="lt-state-name"><tspan x="77.5" dy="0">Delivered</tspan></text></g>
+<g class="lt-state lt-pseudo" data-id="__final_2" data-kind="final"><circle cx="198" cy="1060" r="11" class="lt-ps-final-outer"/>
+<circle cx="198" cy="1060" r="6" class="lt-ps-final-inner"/></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="Draft"><path d="M 268.25 72 L 268.25 142 L 268.25 142 L 268.25 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="Draft"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="Draft" data-to="Submitted"><path d="M 268.25 224 L 268.25 262 L 268.25 262 L 268.25 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Draft" data-to="Submitted"/>
+<rect x="274.25" y="254" width="99" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="274.25" y="265" text-anchor="start" class="lt-transition-label"><tspan x="274.25" dy="0">submit [cartValid]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="Submitted" data-to="PaymentPending"><path d="M 268.25 344 L 268.25 382 L 216 382 L 216 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Submitted" data-to="PaymentPending"/>
+<rect x="150.125" y="366" width="184" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="242.125" y="377" text-anchor="middle" class="lt-transition-label"><tspan x="242.125" dy="0">reserveInventory [stockAvailable]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="Submitted" data-to="Cancelled"><path d="M 268.25 344 L 268.25 382 L 320.5 382 L 320.5 442 L 320.5 502 L 320.5 502 L 320.5 562 L 320.5 622 L 268.25 622 L 268.25 660" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Submitted" data-to="Cancelled"/>
+<rect x="224.875" y="366" width="139" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="294.375" y="377" text-anchor="middle" class="lt-transition-label"><tspan x="294.375" dy="0">cancel [customerRequest]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="PaymentPending" data-to="Paid"><path d="M 216 464 L 216 502 L 77.5 502 L 77.5 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="PaymentPending" data-to="Paid"/>
+<rect x="97.75" y="486" width="98" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="146.75" y="497" text-anchor="middle" class="lt-transition-label"><tspan x="146.75" dy="0">paymentApproved</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="PaymentPending" data-to="PaymentFailed"><path d="M 216 464 L 216 502 L 216 502 L 216 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="PaymentPending" data-to="PaymentFailed"/>
+<rect x="222" y="494" width="93" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="222" y="505" text-anchor="start" class="lt-transition-label"><tspan x="222" dy="0">paymentDeclined</tspan></text></g>
+<g class="lt-edge" data-edge-id="t7" data-from="PaymentFailed" data-to="PaymentPending"><path d="M 216 464 L 216 502 L 216 502 L 216 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="PaymentFailed" data-to="PaymentPending"/>
+<rect x="222" y="494" width="105" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="222" y="505" text-anchor="start" class="lt-transition-label"><tspan x="222" dy="0">retry [retries &lt; 3]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t8" data-from="PaymentFailed" data-to="Cancelled"><path d="M 216 584 L 216 622 L 268.25 622 L 268.25 660" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="PaymentFailed" data-to="Cancelled"/>
+<rect x="183.125" y="606" width="118" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="242.125" y="617" text-anchor="middle" class="lt-transition-label"><tspan x="242.125" dy="0">cancel [retries &gt;= 3]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t9" data-from="Paid" data-to="Fulfillment"><path d="M 77.5 584 L 77.5 622 L 77.5 622 L 77.5 660" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Paid" data-to="Fulfillment"/>
+<rect x="83.5" y="614" width="116" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="83.5" y="625" text-anchor="start" class="lt-transition-label"><tspan x="83.5" dy="0">releaseToWarehouse</tspan></text></g>
+<g class="lt-edge" data-edge-id="t10" data-from="Fulfillment" data-to="Shipped"><path d="M 77.5 704 L 77.5 742 L 77.5 742 L 77.5 780" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Fulfillment" data-to="Shipped"/>
+<rect x="83.5" y="734" width="95" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="83.5" y="745" text-anchor="start" class="lt-transition-label"><tspan x="83.5" dy="0">carrierCollected</tspan></text></g>
+<g class="lt-edge" data-edge-id="t11" data-from="Shipped" data-to="Delivered"><path d="M 77.5 824 L 77.5 862 L 77.5 862 L 77.5 900" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Shipped" data-to="Delivered"/>
+<rect x="83.5" y="854" width="102" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="83.5" y="865" text-anchor="start" class="lt-transition-label"><tspan x="83.5" dy="0">deliveryConfirmed</tspan></text></g>
+<g class="lt-edge" data-edge-id="t12" data-from="Delivered" data-to="__final_2"><path d="M 77.5 944 L 77.5 982 L 198 982 L 198 1049" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Delivered" data-to="__final_2"/></g>
+<g class="lt-edge" data-edge-id="t13" data-from="Cancelled" data-to="__final_2"><path d="M 268.25 704 L 268.25 742 L 268.25 742 L 268.25 802 L 268.25 862 L 268.25 862 L 268.25 922 L 268.25 982 L 198 982 L 198 1049" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Cancelled" data-to="__final_2"/></g></g>
+<g class="lt-notes"></g></svg>

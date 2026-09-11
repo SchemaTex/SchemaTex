@@ -1,0 +1,49 @@
+{
+  "id": "pedigree-twins-art",
+  "type": "pedigree",
+  "title": "Twins and assisted reproduction family",
+  "goal": "A reader can identify both twin types, an assisted-reproduction child, and a deceased family member in one pedigree.",
+  "rubric": [
+    {
+      "id": "three-numbered-generations",
+      "severity": "major",
+      "must": "Three aligned generation rows are visibly labeled I, II, and III."
+    },
+    {
+      "id": "monozygotic-twin-geometry",
+      "severity": "blocker",
+      "must": "III-1 and III-2 form a twin pair whose two child lines meet at one point and are joined by the monozygotic twin bar."
+    },
+    {
+      "id": "dizygotic-twin-geometry",
+      "severity": "blocker",
+      "must": "III-3 and III-4 descend from a single shared point on the sibship line with NO horizontal bar between their lines, which is what marks them dizygotic rather than monozygotic."
+    },
+    {
+      "id": "ivf-label",
+      "severity": "blocker",
+      "must": "III-5 has a readable IVF donor-sperm child label and remains connected to the generation-II parents."
+    },
+    {
+      "id": "assisted-reproduction-child",
+      "severity": "major",
+      "must": "The assisted-reproduction label is visually separate from the twin-pair labels and does not obscure a symbol or descent line."
+    },
+    {
+      "id": "deceased-slash",
+      "severity": "major",
+      "must": "I-1 has a single diagonal deceased slash through the square."
+    },
+    {
+      "id": "separate-twin-pairs",
+      "severity": "major",
+      "must": "The two twin pairs are visually distinct from each other and from III-5, with no connector ambiguity."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "One sibship line carries monozygotic twins joined at a point with a connecting bar, dizygotic twins joined at a point without one, and the diamond IVF donor-sperm child III-5 marked as proband, below deceased I-1."
+  }
+}

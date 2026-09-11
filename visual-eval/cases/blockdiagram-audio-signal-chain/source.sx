@@ -1,0 +1,17 @@
+# Studio audio playback chain from source signal to loudspeaker output.
+blockdiagram "Audio Signal Chain"
+input = block("Audio Input") [role: input]
+preamp = block("Mic / Line Preamp") [role: generic]
+hpf = block("High-Pass Filter") [role: generic]
+eq = block("Parametric EQ") [role: generic]
+dsp = block("DSP / Limiter") [role: controller]
+dac = block("DAC") [role: generic]
+amp = block("Power Amplifier") [role: actuator]
+speaker = block("Monitor Speaker") [role: output]
+input -> preamp ["balanced analogue"]
+preamp -> hpf ["line level"]
+hpf -> eq ["filtered audio"]
+eq -> dsp ["EQ signal"]
+dsp -> dac ["24-bit digital"]
+dac -> amp ["analogue line"]
+amp -> speaker ["speaker level"]

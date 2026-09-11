@@ -1,0 +1,40 @@
+{
+  "id": "network-industrial-plant-ethernet",
+  "type": "network",
+  "title": "Industrial plant Ethernet",
+  "goal": "Show a resilient industrial Ethernet control network isolated by an industrial DMZ.",
+  "rubric": [
+    {
+      "id": "closed-ring",
+      "severity": "blocker",
+      "must": "Four managed switches visibly form a closed fiber ring."
+    },
+    {
+      "id": "dmz-boundary",
+      "severity": "blocker",
+      "must": "An Industrial DMZ boundary visibly separates the historian and DMZ switch from the OT control zone."
+    },
+    {
+      "id": "dual-firewall-boundary",
+      "severity": "major",
+      "must": "IT and OT firewalls visibly form the security path into the DMZ."
+    },
+    {
+      "id": "control-assets",
+      "severity": "major",
+      "must": "SCADA server, two HMIs, and two PLCs are visibly connected to the control network."
+    },
+    {
+      "id": "ring-annotation",
+      "severity": "minor",
+      "must": "Each ring segment visibly carries an MRP ring label."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG more clearly satisfies the closed fiber ring, DMZ separation, required device counts, and per-segment MRP labeling."
+  }
+}

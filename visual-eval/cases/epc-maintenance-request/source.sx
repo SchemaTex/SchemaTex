@@ -1,0 +1,16 @@
+# Scenario: Maintenance Request event-driven process chain.
+epc "Maintenance Request"
+  layout: tb
+  event E1 "Request received"
+  function F1 "Assess request"
+  xor X1
+  event E2 "Request approved"
+  event E3 "Request rejected"
+  function F2 "Perform service"
+  function F3 "Notify requester"
+  event E4 "Service completed"
+  event E5 "Request closed"
+  E1 -> F1 -> X1
+  X1 -> E2 -> F2 -> E4
+  X1 -> E3 -> F3 -> E5
+

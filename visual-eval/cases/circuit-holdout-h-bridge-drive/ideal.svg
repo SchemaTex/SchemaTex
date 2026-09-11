@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" width="1600" height="1100">
+<title>N-Channel MOSFET H-Bridge Drive</title>
+<rect width="1600" height="1100" fill="white"/>
+<defs>
+ <g id="dot"><circle r="5" fill="#17212b" stroke="none"/></g>
+ <g id="ground" fill="none" stroke="#17212b" stroke-width="3"><path d="M0 0v12m-17 0h34m-12 8h-10m3 8h4"/></g>
+ <!-- N-channel enhancement MOSFET: drain above, source below, gate at left -->
+ <g id="nmos" fill="none" stroke="#17212b" stroke-width="3" stroke-linejoin="round">
+  <path d="M0-65v35h-18v12m0 10v16m0 10v12H0v35M-29-28v56M-65 0h36M-18 22H0V42"/>
+  <path d="M0 0h-15"/><path d="M-10-5l-8 5 8 5"/>
+ </g>
+</defs>
+<g font-family="Helvetica, Arial, sans-serif" fill="#17212b">
+<text x="65" y="55" font-size="30" font-weight="700">N-Channel MOSFET H-Bridge Drive</text>
+<text x="65" y="88" font-size="18" fill="#526170">24 V motor bridge · dedicated high / low-side gate drivers</text>
+</g>
+<!-- Power rails, source and bulk capacitor -->
+<g fill="none" stroke="#17212b" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+ <path d="M110 150H1370 M110 150V427 M110 493V960H1370 M260 150V429 M260 451V960"/>
+ <circle cx="110" cy="460" r="33"/>
+ <path d="M101 448h18m-9-9v18m-9 19h18 M238 429h44 M238 451h44"/>
+ <!-- bridge switch power connections -->
+ <path d="M660 150V275 M660 405V625 M660 755V845H1080V755 M1080 150V275 M1080 405V625"/>
+ <!-- motor only across bridge midpoint nets -->
+ <path d="M660 515H822 M918 515H1080"/>
+ <circle cx="870" cy="515" r="48"/>
+ <!-- sense resistor -->
+ <path d="M870 845V880 M870 928V960"/>
+ <rect x="856" y="880" width="28" height="48"/>
+ <!-- left driver gate outputs -->
+ <path d="M510 340H595 M510 690H595"/>
+ <!-- right driver gate outputs routed outside the leg -->
+ <path d="M1250 340H1145 M1250 690H1145"/>
+ <!-- Drivers' supply / COM -->
+ <path d="M385 150V275 M385 755V960 M1390 275V150H1370 M1390 755V960H1370"/>
+ <!-- left BOOT and switching reference -->
+ <path d="M510 410H550V439 M528 439H572 M528 461H572 M550 461V515H660 M510 550H550V515"/>
+ <!-- right BOOT and switching reference -->
+ <path d="M1250 410H1200V439 M1178 439H1222 M1178 461H1222 M1200 461V515H1080 M1250 550H1200V515"/>
+</g>
+<!-- MOSFET symbols: right leg gates face right -->
+<use href="#nmos" transform="translate(660 340)"/>
+<use href="#nmos" transform="translate(660 690)"/>
+<use href="#nmos" transform="translate(1080 340) scale(-1 1)"/>
+<use href="#nmos" transform="translate(1080 690) scale(-1 1)"/>
+<!-- Driver blocks -->
+<g fill="#f5f8fb" stroke="#17212b" stroke-width="2.5">
+ <rect x="320" y="275" width="190" height="480"/>
+ <rect x="1250" y="275" width="220" height="480"/>
+</g>
+<g font-family="Helvetica, Arial, sans-serif" fill="#17212b" font-size="20">
+ <text x="680" y="138" font-weight="700">VBUS · +24 V</text>
+ <text x="64" y="540" font-weight="700">V1</text><text x="64" y="567">MOTOR</text><text x="64" y="594">SUPPLY</text><text x="64" y="624">24 V DC</text>
+ <text x="194" y="368" font-weight="700">C1 BULK</text><text x="194" y="395">470 µF, 35 V</text>
+ <text x="277" y="427" font-size="22">+</text>
+ <!-- MOSFET labels -->
+ <text x="697" y="315" font-weight="700">Q1 HIGH LEFT</text><text x="697" y="343">IRLZ44N</text><text x="697" y="371" font-size="17">N-MOS</text>
+ <text x="1040" y="315" text-anchor="end" font-weight="700">Q3 HIGH RIGHT</text><text x="1040" y="343" text-anchor="end">IRLZ44N</text><text x="1040" y="371" text-anchor="end" font-size="17">N-MOS</text>
+ <text x="697" y="671" font-weight="700">Q2 LOW LEFT</text><text x="697" y="699">IRLZ44N</text><text x="697" y="727" font-size="17">N-MOS</text>
+ <text x="1040" y="671" text-anchor="end" font-weight="700">Q4 LOW RIGHT</text><text x="1040" y="699" text-anchor="end">IRLZ44N</text><text x="1040" y="727" text-anchor="end" font-size="17">N-MOS</text>
+ <text x="870" y="527" text-anchor="middle" font-size="34">M</text>
+ <text x="870" y="435" text-anchor="middle" font-weight="700">M1 DC MOTOR</text><text x="870" y="464" text-anchor="middle">24 V, 5 A</text>
+ <text x="676" y="498" font-weight="700">OUTA</text><text x="1065" y="498" text-anchor="end" font-weight="700">OUTB</text>
+ <text x="892" y="833" font-weight="700">SENSE</text>
+ <text x="903" y="893" font-weight="700">RSHUNT</text><text x="903" y="922">10 mΩ, 3 W</text>
+ <!-- Driver pin names -->
+ <text x="385" y="306" text-anchor="middle">VDD</text>
+ <text x="497" y="347" text-anchor="end">HO</text><text x="497" y="417" text-anchor="end">BOOT</text><text x="497" y="557" text-anchor="end">SW</text><text x="497" y="697" text-anchor="end">LO</text>
+ <text x="385" y="741" text-anchor="middle">COM</text>
+ <text x="415" y="475" text-anchor="middle" font-size="25" font-weight="700">U1</text><text x="415" y="506" text-anchor="middle" font-size="25" font-weight="700">IR2104</text>
+ <text x="415" y="600" text-anchor="middle" font-size="16">LEFT GATE</text><text x="415" y="623" text-anchor="middle" font-size="16">DRIVER</text>
+ <text x="1390" y="306" text-anchor="middle">VDD</text>
+ <text x="1263" y="347">HO</text><text x="1263" y="417">BOOT</text><text x="1263" y="557">SW</text><text x="1263" y="697">LO</text>
+ <text x="1390" y="741" text-anchor="middle">COM</text>
+ <text x="1360" y="475" text-anchor="middle" font-size="25" font-weight="700">U2</text><text x="1360" y="506" text-anchor="middle" font-size="25" font-weight="700">IR2104</text>
+ <text x="1360" y="600" text-anchor="middle" font-size="16">RIGHT GATE</text><text x="1360" y="623" text-anchor="middle" font-size="16">DRIVER</text>
+ <!-- Bootstrap labels -->
+ <text x="577" y="407" font-size="16" font-weight="700">CBOOT1</text><text x="577" y="434" font-size="16">100 nF</text><text x="577" y="457" font-size="16">50 V</text>
+ <text x="1174" y="407" text-anchor="end" font-size="16" font-weight="700">CBOOT2</text><text x="1174" y="434" text-anchor="end" font-size="16">100 nF</text><text x="1174" y="457" text-anchor="end" font-size="16">50 V</text>
+ <text x="554" y="325" font-size="16">GH1</text><text x="554" y="675" font-size="16">GL1</text>
+ <text x="1178" y="325" font-size="16">GH2</text><text x="1178" y="675" font-size="16">GL2</text>
+ <text x="909" y="996" font-weight="700">GND</text>
+</g>
+<!-- Explicit junctions -->
+<g>
+ <use href="#dot" x="260" y="150"/><use href="#dot" x="385" y="150"/><use href="#dot" x="660" y="150"/><use href="#dot" x="1080" y="150"/>
+ <use href="#dot" x="660" y="515"/><use href="#dot" x="1080" y="515"/><use href="#dot" x="550" y="515"/><use href="#dot" x="1200" y="515"/>
+ <use href="#dot" x="870" y="845"/><use href="#dot" x="870" y="960"/><use href="#dot" x="260" y="960"/><use href="#dot" x="385" y="960"/>
+ <use href="#ground" x="870" y="960"/>
+</g>
+</svg>

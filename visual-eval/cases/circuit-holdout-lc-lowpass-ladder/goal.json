@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-lc-lowpass-ladder",
+  "type": "circuit",
+  "title": "Five-element LC low-pass ladder",
+  "split": "holdout",
+  "goal": "A reader must be able to trace a 50 Ω source through a five-element LC ladder to a 50 Ω load.",
+  "rubric": [
+    {
+      "id": "five-element-ladder",
+      "severity": "blocker",
+      "must": "Exactly three labelled inductors are in series along the source-to-load path and exactly two capacitors are shunted from intermediate nodes to ground."
+    },
+    {
+      "id": "series-order",
+      "severity": "blocker",
+      "must": "The visible signal path is RSOURCE, L1, C1 shunt node, L2, C2 shunt node, L3, then VOUT."
+    },
+    {
+      "id": "shunt-grounding",
+      "severity": "blocker",
+      "must": "C1 and C2 each terminate at the ground rail and neither shorts across a series inductor."
+    },
+    {
+      "id": "terminations",
+      "severity": "major",
+      "must": "A 50 Ω source resistance appears before L1 and a 50 Ω load resistance appears from VOUT to ground."
+    },
+    {
+      "id": "component-values",
+      "severity": "major",
+      "must": "L1 and L3 read 3.3 µH, L2 reads 4.7 µH, and both capacitors read 1 nF, C0G."
+    },
+    {
+      "id": "output-label",
+      "severity": "minor",
+      "must": "The final node is clearly labelled VOUT."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed."
+  }
+}

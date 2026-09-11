@@ -1,0 +1,44 @@
+# Scenario: growth team investigates a decline in completed website subscriptions.
+fishbone "Subscription conversion decline"
+
+effect "Trial-to-paid conversion fell from 8.2% to 5.9%"
+
+category people "People"
+category process "Process"
+category product "Product"
+category platform "Platform"
+category promotion "Promotion"
+category place "Place"
+
+people: "Chat coverage reduced at evenings"
+  - "Two agents moved to onboarding"
+people: "No owner for the trial experience"
+people: "Sales follows up on enterprise only"
+
+process: "Checkout adds an extra confirmation"
+  - "Card details re-entered after error"
+process: "Trial needs manual account approval"
+process: "Refund terms shown after payment"
+process: "Welcome email sends a day late"
+
+product: "Annual plan benefit unclear"
+  - "Savings shown only at checkout"
+product: "Usage limit hit before first value"
+product: "Export stays locked during trial"
+product: "Pricing page rebuilt without a test"
+
+platform: "Mobile payment error rate increased"
+  - "Wallet callback timeout"
+platform: "Signup API latency doubled"
+platform: "Failed payments offer no retry"
+platform: "Checkout bundle grew 40 percent"
+
+promotion: "Campaign targets low-intent audience"
+  - "Broad-match keywords expanded"
+promotion: "Launch discount ended without notice"
+promotion: "Ad copy promises a free tier"
+
+place: "Landing page loads slowly in Brazil"
+  - "No CDN edge in South America"
+place: "Local payment methods missing"
+place: "Prices shown in USD only"

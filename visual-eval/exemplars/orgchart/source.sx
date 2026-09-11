@@ -1,0 +1,21 @@
+# Q3 2026 operating structure. Solid lines are direct reports; the dashed line is
+# design-system accountability that crosses from Product into Engineering.
+orgchart "Lumen Health · Operating Structure, Q3 2026"
+CEO : "Amara Osei" | Chief Executive Officer | Executive
+  CTO : "Dmitri Kovac" | Chief Technology Officer | Engineering
+    Platform : "Lena Fischer" | Director, Platform | Engineering
+      Backend : "Yusuf Rahman" | Backend Lead | Engineering
+      SRE : "Marta Silva" | Site Reliability Lead | Engineering
+    Apps : "Kai Tanaka" | Director, Applications | Engineering
+      Web : "Ines Duarte" | Web Engineering Lead | Engineering
+      MobileLead : "Open position" | Mobile Platform Lead | Engineering [open: true]
+  CPO : "Priya Raman" | VP Product | Product
+    GPM : "Noor Haddad" | Group Product Manager | Product
+    Design : "Elias Brandt" | Head of Design | Product
+  CRO : "Sofia Ricci" | VP Revenue | Revenue
+    Sales : "Tomas Neruda" | Director, Sales | Revenue
+    Success : "Hana Kim" | Director, Success | Revenue
+  CFO : "Gabriel Costa" | VP Finance & Operations | Operations
+    People : "Aisha Bello" | Head of People | Operations
+CoS : "Rowan Vale" | Chief of Staff | Executive [assistant-of: CEO]
+Design -.-> Web [label: "Design system"]

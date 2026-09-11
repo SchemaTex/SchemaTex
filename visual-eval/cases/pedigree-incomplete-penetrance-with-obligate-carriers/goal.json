@@ -1,0 +1,45 @@
+{
+  "id": "pedigree-incomplete-penetrance-with-obligate-carriers",
+  "type": "pedigree",
+  "title": "Incomplete penetrance with obligate carriers",
+  "goal": "Show a dominant variant with an unaffected obligate carrier and affected descendant.",
+  "rubric": [
+    {
+      "id": "founder",
+      "severity": "blocker",
+      "must": "The pedigree visibly shows an affected founder."
+    },
+    {
+      "id": "inheritance",
+      "severity": "blocker",
+      "must": "The drawing visibly shows an unaffected obligate carrier parent."
+    },
+    {
+      "id": "proband",
+      "severity": "blocker",
+      "must": "The drawing visibly marks an affected proband child."
+    },
+    {
+      "id": "generations",
+      "severity": "major",
+      "must": "Roman generation labels and individual identifiers are visibly ordered across generations."
+    },
+    {
+      "id": "symbols",
+      "severity": "major",
+      "must": "Standard pedigree sex and affected/carrier symbol fills are visibly distinguishable."
+    },
+    {
+      "id": "relationships",
+      "severity": "minor",
+      "must": "Partnership and parent-child lines make biological relationships unambiguous."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Affected founder I-1 passes the variant through clinically unaffected obligate carrier II-1, drawn with a central dot, to affected proband III-1."
+  }
+}

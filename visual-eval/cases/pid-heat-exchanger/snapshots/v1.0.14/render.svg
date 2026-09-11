@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="656.4" height="583" viewBox="0 0 656.4 583" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Shell and Tube Heat Exchanger</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="328.2" y="22" class="lt-pid-title" text-anchor="middle">Shell and Tube Heat Exchanger</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="hotIn"><path d="M 108 252 L 179.5 252 L 179.5 287 L 251 287" class="lt-pid-process lt-pid-line-path" data-line-id="hotIn" data-service="hot glycol supply"/></g>
+<g class="lt-pid-line" data-id="hotOut"><path d="M 251 347 L 322.5 347 L 322.5 122 L 394 122" class="lt-pid-process lt-pid-line-path" data-line-id="hotOut" data-service="hot glycol return"/></g>
+<g class="lt-pid-line" data-id="hotControl"><path d="M 430 122 L 471 122 L 471 329 L 512 329" class="lt-pid-process lt-pid-line-path" data-line-id="hotControl" data-service="hot glycol return"/></g>
+<g class="lt-pid-line" data-id="coldIn"><path d="M 108 382 L 147 382 L 147 317 L 186 317" class="lt-pid-process lt-pid-line-path" data-line-id="coldIn" data-service="cooling water supply"/></g>
+<g class="lt-pid-line" data-id="coldOut"><path d="M 316 317 L 355 317 L 355 252 L 394 252" class="lt-pid-process lt-pid-line-path" data-line-id="coldOut" data-service="cooling water return"/></g>
+<g class="lt-pid-line" data-id="vent"><path d="M 316 317 L 355 317 L 355 382 L 394 382" class="lt-pid-process-min lt-pid-line-path" data-line-id="vent" data-service="vent"/></g>
+<g class="lt-pid-line" data-id="drain"><path d="M 186 317 L 290 317 L 290 512 L 394 512" class="lt-pid-process-min lt-pid-line-path" data-line-id="drain" data-service="drain"/></g></g>
+<g class="lt-pid-junctions"><circle cx="186" cy="317" r="3.6" class="lt-pid-junction"/>
+<circle cx="316" cy="317" r="3.6" class="lt-pid-junction"/></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="XV-101" data-type="valve_gate" transform="translate(90 252)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Hot Inlet Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-201" data-type="valve_gate" transform="translate(90 382)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Cold Inlet Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="E-101" data-type="hx_shell_tube" transform="translate(251 317)"><g><path d="M -53 -30
+              L 53 -30
+              A 12 30 0 0 1 53 30
+              L -53 30
+              A 12 30 0 0 1 -53 -30
+              Z" class="lt-pid-equip"/>
+<line x1="-49" y1="-18" x2="49" y2="-18" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-10" x2="49" y2="-10" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-2" x2="49" y2="-2" class="lt-pid-tray-line"/>
+<line x1="-49" y1="6" x2="49" y2="6" class="lt-pid-tray-line"/>
+<line x1="-49" y1="14" x2="49" y2="14" class="lt-pid-tray-line"/>
+<text x="0" y="44" text-anchor="middle" class="lt-pid-equip-tag">E-101 Shell-and-Tube Exchanger</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-102" data-type="valve_gate" transform="translate(412 122)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Hot Outlet Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-202" data-type="valve_gate" transform="translate(412 252)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Cold Outlet Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-301" data-type="valve_gate" transform="translate(412 382)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">High-point Vent</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-302" data-type="valve_gate" transform="translate(412 512)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Low-point Drain</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TV-101" data-type="valve_control" transform="translate(530 317)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="diaphragm" data-fail="FO"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<path d="M -14 -9 A 14 8 0 0 1 14 -9 L -14 -9 Z" class="lt-pid-equip"/>
+<line x1="0" y1="-34" x2="0" y2="-17" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FO</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Hot Outlet Temperature Valve</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="temperatureTap"><path d="M 251 347 L 251 347 L 251 409 L 251 409" class="lt-pid-capillary lt-pid-line-path" data-line-id="temperatureTap" data-service=""/></g>
+<g class="lt-pid-line" data-id="temperatureSignal"><path d="M 251 409 L 390.5 409 L 390.5 73 L 530 73" class="lt-pid-electric lt-pid-line-path" data-line-id="temperatureSignal" data-service=""/></g>
+<g class="lt-pid-line" data-id="valveCommand"><path d="M 530 73 L 530 73 L 530 283" class="lt-pid-pneumatic lt-pid-line-path" data-line-id="valveCommand" data-service=""/>
+<line x1="526" y1="87" x2="534" y2="95" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="113" x2="534" y2="121" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="139" x2="534" y2="147" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="165" x2="534" y2="173" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="191" x2="534" y2="199" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="217" x2="534" y2="225" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="243" x2="534" y2="251" class="lt-pid-pneumatic-tick"/>
+<line x1="526" y1="269" x2="534" y2="277" class="lt-pid-pneumatic-tick"/></g>
+<g><path d="M 251 409 L 251 355 L 251 355 L 251 347" class="lt-pid-electric"/></g>
+<g><path d="M 530 87 L 530 87 L 530 279" class="lt-pid-pneumatic"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="TT-101" data-category="field_discrete" transform="translate(251 409)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g>
+<g class="lt-inst" data-tag="TIC-101" data-category="cr_shared" transform="translate(530 73)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<polygon points="7.347880794884119e-16,-12 10.392304845413264,-6 10.392304845413264,5.999999999999998 7.347880794884119e-16,12 -10.392304845413262,6.0000000000000036 -10.392304845413268,-5.999999999999993" class="lt-inst-body" fill="none"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TIC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g></g></svg>

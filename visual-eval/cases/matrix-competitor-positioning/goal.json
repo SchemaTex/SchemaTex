@@ -1,0 +1,34 @@
+{
+  "id": "matrix-competitor-positioning",
+  "type": "matrix",
+  "title": "Laboratory supplier positioning",
+  "goal": "A procurement team can compare suppliers on price and assay quality.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Named suppliers are visibly positioned against price and assay-quality axes."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "At least one value supplier and one premium-quality supplier are visually distinct."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Bubble sizes visibly differentiate suppliers."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Supplier labels are readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Quadrant dividers are visible."
+    }
+  ],
+  "split": "train"
+}

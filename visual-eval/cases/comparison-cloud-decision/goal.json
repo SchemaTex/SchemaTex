@@ -1,0 +1,35 @@
+{
+  "id": "comparison-cloud-decision",
+  "type": "comparison",
+  "variant": "decision",
+  "title": "Cloud provider selection",
+  "goal": "A platform team can use weighted scoring to select the strongest cloud provider.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A weighted criteria-by-provider decision table is visible."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A computed weighted-total row visibly ranks providers and identifies AWS as winner."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "All criteria show visible weights and numeric option scores."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "AWS, Azure, and GCP columns are visible."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The winning option is visually distinguished."
+    }
+  ],
+  "split": "train"
+}

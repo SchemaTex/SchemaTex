@@ -1,0 +1,40 @@
+{
+  "id": "orgchart-holding-group-subsidiaries",
+  "type": "orgchart",
+  "title": "Holding group subsidiaries",
+  "goal": "Show parent ownership of operating subsidiaries.",
+  "rubric": [
+    {
+      "id": "parent",
+      "severity": "blocker",
+      "must": "Harbour Group plc is visibly the single parent at the top."
+    },
+    {
+      "id": "subsidiaries",
+      "severity": "blocker",
+      "must": "Technology, Retail, Property, and Ventures subsidiaries visibly connect beneath the parent."
+    },
+    {
+      "id": "ownership",
+      "severity": "blocker",
+      "must": "Visible labels show 100%, 80%, and 60% ownership interests on the appropriate subsidiaries."
+    },
+    {
+      "id": "divisions",
+      "severity": "major",
+      "must": "Technology, Retail, and Property operating divisions visibly nest under their companies."
+    },
+    {
+      "id": "readability",
+      "severity": "minor",
+      "must": "Company names and ownership text are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all five rules, while Image 2 uses the wrong parent and subsidiaries, omits the 80% and 60% interests, and lacks operating divisions."
+  }
+}

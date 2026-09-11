@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 302" width="960" height="302" class="st-timeline st-timeline-swimlane" data-diagram-type="timeline" data-style="swimlane" role="graphics-document"><title>Timeline — Mobile Platform Delivery</title>
+<desc>Schematex timeline diagram</desc>
+<defs><style>
+    .st-timeline { 
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+      --st-axis: #334155;
+      --st-axis-label: #475569;
+      --st-era-label: #0f172a;
+      --st-lane-stripe: #f1f5f9;
+      --st-marker-ring: #2563eb;
+      --st-marker-fill: #ffffff;
+      --st-milestone-fill: #d97706;
+      --st-pin-shaft: #94a3b8;
+      --st-card-bg: #ffffff;
+      --st-card-stroke: #cbd5e1;
+      --st-card-text: #0f172a;
+      --st-legend-bg: #f8fafc;
+      --st-legend-stroke: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif; }
+    .st-title { font-size: 16px; font-weight: 600; fill: var(--schematex-text); }
+    .st-axis-line { stroke: var(--st-axis); stroke-width: 1.5; fill: none; }
+    .st-axis-tick { stroke: var(--st-axis); stroke-width: 1; opacity: 0.55; }
+    .st-axis-label { font-size: 11px; fill: var(--st-axis-label); }
+    .st-era-rect { opacity: 0.55; }
+    .st-era-strip { opacity: 0.14; }
+    .st-era-label { font-size: 11px; font-weight: 500; fill: var(--st-era-label); }
+    .st-event-dot { stroke: var(--st-marker-fill); stroke-width: 1.5; }
+    .st-event-label { font-size: 12px; fill: var(--schematex-text); }
+    .st-range-bar { opacity: 0.88; }
+    .st-range-label { font-size: 11px; fill: #fff; font-weight: 500; }
+    .st-milestone { stroke: var(--st-marker-fill); stroke-width: 2; }
+    .st-milestone-label { font-size: 12px; fill: var(--schematex-text); font-weight: 600; }
+    .st-track-label { font-size: 12px; font-weight: 600; fill: var(--schematex-text); }
+    .st-lane-stripe { fill: var(--st-lane-stripe); opacity: 0.6; }
+    .st-callout-line { stroke: var(--st-axis); stroke-width: 0.8; stroke-dasharray: 2 2; opacity: 0.5; fill: none; }
+    .st-callout-text { font-size: 10.5px; fill: var(--schematex-text-muted); }
+    .st-label-leader { stroke: var(--st-axis); stroke-width: 0.75; opacity: 0.35; fill: none; }
+    .st-icon { font-size: 14px; }
+    /* Gantt */
+    .st-pin-shaft { stroke: var(--st-pin-shaft); stroke-width: 1.25; stroke-dasharray: 3 2; fill: none; }
+    .st-pin-label { font-size: 11.5px; fill: var(--schematex-text); font-weight: 500; }
+    .st-pin-head { stroke: var(--st-marker-fill); stroke-width: 1.5; }
+    .st-lane-label { font-size: 11px; fill: var(--schematex-text-muted); font-weight: 500; }
+    .st-legend-box { fill: var(--st-legend-bg); stroke: var(--st-legend-stroke); stroke-width: 1; }
+    .st-legend-title { font-size: 11px; font-weight: 600; fill: var(--schematex-text-muted); }
+    .st-legend-label { font-size: 11px; fill: var(--schematex-text); }
+    /* Lollipop */
+    .st-card { fill: var(--st-card-bg); stroke: var(--st-card-stroke); stroke-width: 1; }
+    .st-card-title { font-size: 12px; font-weight: 600; fill: var(--st-card-text); }
+    .st-card-date { font-size: 10.5px; fill: var(--schematex-text-muted); }
+    .st-card-icon { font-size: 16px; }
+    .st-stem { stroke: var(--st-axis); stroke-width: 1.25; opacity: 0.55; fill: none; }
+    .st-lp-marker-ring { stroke-width: 2.5; }
+    .st-lp-marker-core { stroke: none; }
+    .sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: ew-resize; }
+    .sx-native-handle:hover, .sx-native-handle.sx-interactive-selected { fill: #dbeafe; stroke-width: 2; }
+  </style></defs>
+<text x="480" y="26" text-anchor="middle" class="st-title">Mobile Platform Delivery</text>
+<g class="st-eras"><rect x="154.99999999998525" y="54" width="93.74999999990777" height="16" fill="#2563eb" class="st-era-rect" data-era-id="era-1"/><rect x="140" y="86" width="108.74999999989302" height="152" fill="#2563eb" class="st-era-strip"/><text x="160.99999999998525" y="66" class="st-era-label">Discovery</text>
+<rect x="342.50000000005656" y="54" width="187.49999999981554" height="16" fill="#059669" class="st-era-rect" data-era-id="era-2"/><rect x="342.50000000005656" y="86" width="187.49999999981554" height="152" fill="#059669" class="st-era-strip"/><text x="348.50000000005656" y="66" class="st-era-label">Build</text>
+<rect x="623.7500000000357" y="54" width="93.74999999990769" height="16" fill="#d97706" class="st-era-rect" data-era-id="era-3"/><rect x="623.7500000000357" y="86" width="93.74999999990769" height="152" fill="#d97706" class="st-era-strip"/><text x="629.7500000000357" y="66" class="st-era-label">Validation</text>
+<rect x="811.2499999998512" y="54" width="93.7500000001636" height="16" fill="#7c3aed" class="st-era-rect" data-era-id="era-4"/><rect x="811.2499999998512" y="86" width="108.75000000014882" height="152" fill="#7c3aed" class="st-era-strip"/><text x="817.2499999998512" y="66" class="st-era-label">Launch</text></g>
+<g class="st-track-labels"><text x="128" y="112" text-anchor="end" class="st-track-label">Discovery</text>
+<text x="128" y="148" text-anchor="end" class="st-track-label">Build</text>
+<text x="128" y="184" text-anchor="end" class="st-track-label">Validation</text>
+<text x="128" y="220" text-anchor="end" class="st-track-label">Launch</text></g><g class="st-lanes"><rect x="140" y="94" width="780" height="28" class="st-lane-stripe"/>
+<rect x="140" y="166" width="780" height="28" class="st-lane-stripe"/></g><g class="st-ranges"></g><g class="st-points"><circle cx="176.5753424656789" cy="108" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-6"/>
+<circle cx="225.8904109588757" cy="108" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-7"/>
+<path d="M290.62,98.00 L292.97,104.76 L300.13,104.91 L294.42,109.24 L296.49,116.09 L290.62,112.00 L284.74,116.09 L286.81,109.24 L281.11,104.91 L288.27,104.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-8"/>
+<circle cx="343.013698630186" cy="144" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-10"/>
+<circle cx="484.7945205479669" cy="144" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-11"/>
+<path d="M614.25,134.00 L616.60,140.76 L623.76,140.91 L618.05,145.24 L620.12,152.09 L614.25,148.00 L608.37,152.09 L610.44,145.24 L604.74,140.91 L611.90,140.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-12"/>
+<circle cx="654.315068492995" cy="180" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-14"/>
+<path d="M765.27,170.00 L767.63,176.76 L774.78,176.91 L769.08,181.24 L771.15,188.09 L765.27,184.00 L759.40,188.09 L761.47,181.24 L755.76,176.91 L762.92,176.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-15"/>
+<circle cx="817.6712328767254" cy="216" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-17"/>
+<path d="M903.97,206.00 L906.32,212.76 L913.48,212.91 L907.78,217.24 L909.85,224.09 L903.97,220.00 L898.09,224.09 L900.17,217.24 L894.46,212.91 L901.62,212.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-18"/></g><g class="st-labels"><text x="176.5753424656789" y="94" text-anchor="middle" class="st-event-label">Kickoff</text>
+<text x="225.8904109588757" y="126" text-anchor="middle" class="st-event-label">User research complete</text>
+<text x="290.6164383562124" y="94" text-anchor="middle" class="st-milestone-label">Requirements approved</text>
+<text x="343.013698630186" y="162" text-anchor="middle" class="st-event-label">Architecture baseline</text>
+<text x="484.7945205479669" y="130" text-anchor="middle" class="st-event-label">Feature complete</text>
+<text x="614.2465753423846" y="130" text-anchor="middle" class="st-milestone-label">Internal beta</text>
+<text x="654.315068492995" y="166" text-anchor="middle" class="st-event-label">Security review</text>
+<text x="765.2739726027518" y="166" text-anchor="middle" class="st-milestone-label">Release candidate</text>
+<text x="817.6712328767254" y="202" text-anchor="middle" class="st-event-label">Production rollout</text>
+<text x="903.9726027397559" y="234" text-anchor="middle" class="st-milestone-label">Project closeout</text></g><g class="st-notes"></g>
+<g class="st-axis"><line x1="140" y1="242" x2="920" y2="242" class="st-axis-line"/>
+<line x1="154.99999999998525" y1="242" x2="154.99999999998525" y2="247" class="st-axis-tick"/>
+<text x="154.99999999998525" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="267.49999999987455" y1="242" x2="267.49999999987455" y2="247" class="st-axis-tick"/>
+<text x="267.49999999987455" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="379.9999999997639" y1="242" x2="379.9999999997639" y2="247" class="st-axis-tick"/>
+<text x="379.9999999997639" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="492.4999999996532" y1="242" x2="492.4999999996532" y2="247" class="st-axis-tick"/>
+<text x="492.4999999996532" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="604.9999999995425" y1="242" x2="604.9999999995425" y2="247" class="st-axis-tick"/>
+<text x="604.9999999995425" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="717.4999999994319" y1="242" x2="717.4999999994319" y2="247" class="st-axis-tick"/>
+<text x="717.4999999994319" y="260" text-anchor="middle" class="st-axis-label">2025</text>
+<line x1="829.9999999993212" y1="242" x2="829.9999999993212" y2="247" class="st-axis-tick"/>
+<text x="829.9999999993212" y="260" text-anchor="middle" class="st-axis-label">2026</text></g>
+</svg>

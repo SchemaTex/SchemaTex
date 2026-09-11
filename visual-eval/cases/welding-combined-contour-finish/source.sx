@@ -1,0 +1,7 @@
+# Scenario: Combined fillet symbol with convex contour and grinding finish.
+welding "Combined Contour And Finish" [standard: aws]
+joint "Stiffener joint" {
+  arrow: fillet size=8 contour=convex finish=G
+  other: fillet size=6 contour=flush finish=G
+  tail: "GMAW; WPS-31"
+}

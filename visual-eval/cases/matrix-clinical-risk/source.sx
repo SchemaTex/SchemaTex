@@ -1,0 +1,9 @@
+# Scenario: outpatient clinic risk register; cells use likelihood by impact.
+matrix heatmap 5x5
+title: "Outpatient clinic risk register"
+rows: [Rare, Unlikely, Possible, Likely, Almost certain]
+cols: [Negligible, Minor, Moderate, Major, Catastrophic]
+cell (4,5) value: 20 label: "Missed sepsis escalation"
+cell (3,4) value: 12 label: "Vaccine cold-chain breach"
+cell (2,3) value: 6 label: "Late referral letter"
+cell (1,2) value: 2 label: "Duplicate appointment"

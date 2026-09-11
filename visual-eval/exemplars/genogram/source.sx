@@ -1,0 +1,22 @@
+# Bennett family case file. Index person: Chloe, 18, referred for depression.
+# Condition fills follow the McGoldrick/GenogramAI category colours.
+genogram "Bennett Family · Three-Generation Assessment"
+  harold [male, 1938, deceased, death: 2016, label: "Harold", conditions: alcohol-use(half-left, #FCD34D)]
+  margaret [female, 1941, label: "Margaret"]
+  harold -- margaret "m. 1965"
+    daniel [male, 1972, label: "Daniel", conditions: alcohol-use(half-left, #FCD34D)]
+    susan [female, 1976, label: "Susan"]
+
+  karen [female, 1974, label: "Karen"]
+  daniel -x- karen "m. 2005 · div. 2016"
+    chloe [female, 2008, index, label: "Chloe", conditions: depression(half-left, #A5B4FC)]
+    ethan [male, 2011, label: "Ethan"]
+
+  priya [female, 1980, label: "Priya"]
+  daniel -- priya "m. 2018"
+    ravi [male, 2020, label: "Ravi"]
+
+  karen -fused- chloe
+  daniel -conflict- chloe
+  margaret -cutoff- susan
+  chloe -close- ethan

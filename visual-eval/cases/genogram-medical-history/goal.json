@@ -1,0 +1,49 @@
+{
+  "id": "genogram-medical-history",
+  "type": "genogram",
+  "title": "Wilson family medical history",
+  "goal": "A reader can trace three generations of the Wilson family, identify Emma as the index person, and associate each relative with the correct medical conditions and birth or death years.",
+  "rubric": [
+    {
+      "id": "three-generation-parentage",
+      "severity": "blocker",
+      "must": "Robert and Helen occupy the top generation row and connect as parents of David and Linda on the middle row; David and Susan connect as parents of Emma and James on the bottom row, with Linda clearly outside their parental union."
+    },
+    {
+      "id": "distinguishable-conditions",
+      "severity": "blocker",
+      "must": "Heart disease, diabetes, depression, and asthma have four visibly different condition colors, and readable medical annotations or legend labels identify the conditions represented by those colors."
+    },
+    {
+      "id": "correct-condition-associations",
+      "severity": "blocker",
+      "must": "Robert is visibly associated with coronary artery disease and type 2 diabetes, Helen and Susan with major depressive disorder, David with type 2 diabetes, Linda with asthma, and Emma with major depressive disorder and asthma; James has no condition fill."
+    },
+    {
+      "id": "multiple-condition-separation",
+      "severity": "major",
+      "must": "Robert's heart-disease and diabetes colors occupy separately visible halves of his square, and Emma's depression and asthma colors occupy separately visible halves of her circle."
+    },
+    {
+      "id": "readable-life-dates",
+      "severity": "major",
+      "must": "Readable birth years appear with the correct names: Robert 1940, Helen 1943, David 1966, Linda 1969, Susan 1968, Emma 1994, and James 1997; Robert also has a readable death year of 2018."
+    },
+    {
+      "id": "deceased-and-index-markers",
+      "severity": "blocker",
+      "must": "Robert alone has a deceased X through his symbol and Emma alone has the double outline identifying the index person, with both people's condition fills and symbol shapes still distinguishable."
+    },
+    {
+      "id": "unobstructed-identities-and-lines",
+      "severity": "major",
+      "must": "Every person's name and medical annotation is readable without overlapping another label, and condition fills remain inside their own symbols without obscuring partnership or descent lines."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Three Wilson generations show Robert’s crossed, split-colour square and Emma’s split-colour index circle, with full fills for single diagnoses and a colour-keyed medical legend. Names, life dates, and haloed ages remain readable."
+  }
+}

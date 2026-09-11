@@ -1,0 +1,13 @@
+# District administration structure; the elected board governs through the superintendent rather than managing schools directly.
+orgchart "Pine Valley School District"
+Board : "Board of Education" | Elected Governing Board | Governance [role: Advisor]
+  Super : "Dr Elena Park" | Superintendent | District Office [role: CEO]
+    Elementary : "Mark Ellis" | Executive Director, Elementary | Schools
+      Oak : "Sarah Dunn" | Principal, Oak Elementary | Oak Elementary
+      Maple : "Tom Nguyen" | Principal, Maple Elementary | Maple Elementary
+    Secondary : "Dr Aisha Bell" | Executive Director, Secondary | Schools
+      Middle : "Ken Wallace" | Principal, Valley Middle | Valley Middle
+      High : "Dana Holt" | Principal, Valley High | Valley High
+    Teaching : "Lila Stone" | Director, Teaching & Learning | Academics
+      Maths : "Ravi Mehta" | Mathematics Department Head | Academics
+      Student : "Jo Grant" | Student Services Head | Academics

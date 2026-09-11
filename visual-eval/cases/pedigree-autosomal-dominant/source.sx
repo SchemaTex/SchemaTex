@@ -1,0 +1,14 @@
+pedigree "Autosomal Dominant Family"
+  I-1 [male, affected]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-3 [female, unaffected]
+  II-2 [female, unaffected]
+  II-1 -- II-2
+    III-1 [male, affected]
+    III-3 [female, unaffected]
+  III-2 [female, unaffected]
+  III-1 -- III-2
+    IV-1 [female, affected, proband]
+    IV-2 [male, unaffected]

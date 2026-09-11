@@ -1,0 +1,45 @@
+{
+  "id": "blockdiagram-embedded-system",
+  "type": "blockdiagram",
+  "title": "Embedded telemetry node",
+  "goal": "Show sensors, compute, memory, radio, and a distinct power distribution path.",
+  "rubric": [
+    {
+      "id": "power-distribution",
+      "severity": "blocker",
+      "must": "Battery and power-management blocks visibly distribute a labelled 3.3 V rail to the powered electronics."
+    },
+    {
+      "id": "sensor-to-mcu",
+      "severity": "blocker",
+      "must": "Temperature and pressure sensors visibly converge through an I2C bus into the microcontroller."
+    },
+    {
+      "id": "memory-bus",
+      "severity": "major",
+      "must": "The microcontroller visibly connects to SPI flash through a labelled SPI bus."
+    },
+    {
+      "id": "radio-output",
+      "severity": "major",
+      "must": "Telemetry flows visibly from the microcontroller through LoRa radio to an antenna."
+    },
+    {
+      "id": "power-distinction",
+      "severity": "major",
+      "must": "Power lines are visually distinguishable from data-bus connections."
+    },
+    {
+      "id": "component-count",
+      "severity": "minor",
+      "must": "All principal battery, PMIC, MCU, two sensors, radio, flash, and antenna blocks are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-blockdiagram-target.mjs`, which draws all eight cases from one kit so the set is one drawing repeated. A functional block diagram of Embedded Telemetry Node. 8 blocks carry the forward signal path, folded into 2 rows joined by a labelled channel so the chain stays readable. Every wire is orthogonal, every arrowhead lands on a block edge, signal names are set in italic beside the wire they name, and a legend at the foot states the line codes. Drawn in the idiom of the block-diagram exemplar (`visual-eval/exemplars/blockdiagram/ideal.svg`): ink outlines, block labels at 13 over at most two lines, signal names in italic slate beside the wire they name, a 34 px summing junction with its signs set just outside the circle, a filled dot at every pickoff, orthogonal wires only, and terracotta spent on nothing but the measured/feedback path. A long chain is folded into bands joined by a labelled channel, the exemplar's own solution to a chain too long for one row. One extension of the exemplar: each block body carries a pale fill keyed to the `role:` the DSL declares for it — input, control, actuator, plant, sensor, output — with a swatch legend at the foot. The exemplar leaves every body white, which discards information the author supplied on every single block; the fills are kept pale and the outlines ink so terracotta remains the loudest thing on the page and still means only one thing. Routing picks whichever corner misses every other block, and the checker tests each label against every other label, every block body, every wire segment and the canvas edge, plus every wire against every block body: 0 overlaps and no wire runs through a block."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "flowchart-ci-cd-pipeline",
+  "type": "flowchart",
+  "title": "CI/CD pipeline",
+  "goal": "Show a production deployment pipeline with quality gates, approval, and rollback.",
+  "rubric": [
+    {
+      "id": "quality-gates",
+      "severity": "blocker",
+      "must": "Build, test, and security decisions visibly gate the path before staging deployment."
+    },
+    {
+      "id": "rollback-path",
+      "severity": "blocker",
+      "must": "A failed production health-check branch visibly reaches Rollback production and then Incident opened."
+    },
+    {
+      "id": "developer-feedback",
+      "severity": "major",
+      "must": "Failed build, test, or security outcomes visibly feed a developer notification loop back toward the commit."
+    },
+    {
+      "id": "approval-gate",
+      "severity": "major",
+      "must": "Staging integration tests visibly lead to a release-approval decision before production deployment."
+    },
+    {
+      "id": "success-terminator",
+      "severity": "major",
+      "must": "Passing production health checks visibly reach the Release complete terminator."
+    },
+    {
+      "id": "emphasised-mainline",
+      "severity": "minor",
+      "must": "The early commit-to-build path is visually emphasised relative to ordinary connectors."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required gates, notification loop, approval sequence, and rollback-to-incident path, while the picture omits several required outcomes."
+  }
+}

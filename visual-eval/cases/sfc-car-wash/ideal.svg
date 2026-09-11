@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <title>Car Wash — IEC 61131-3 Sequential Function Chart</title>
+  <rect width="1536" height="1024" fill="white"/>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="black"/></marker>
+  </defs>
+  <g fill="black" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <text x="768" y="76" font-size="68" font-weight="700">CAR WASH</text>
+    <text x="768" y="135" font-size="46" font-weight="700">Sequential Function Chart</text>
+  </g>
+  <!-- Main sequence and orthogonal reset loop. -->
+  <g fill="none" stroke="black" stroke-width="3.2" stroke-linejoin="miter">
+    <path d="M490 285 V375 M490 465 V550 M490 640 V725 M490 815 V925 H210 V195 H490 V225" marker-end="url(#arrow)"/>
+    <path d="M575 270 H625 M575 420 H625 M575 595 H625 M575 770 H625"/>
+    <rect x="405" y="225" width="170" height="90" fill="white"/>
+    <rect x="414" y="234" width="152" height="72"/>
+    <rect x="405" y="375" width="170" height="90" fill="white"/>
+    <rect x="405" y="550" width="170" height="90" fill="white"/>
+    <rect x="405" y="725" width="170" height="90" fill="white"/>
+    <rect x="625" y="238" width="380" height="64"/>
+    <path d="M679 238 V302"/>
+    <rect x="625" y="388" width="380" height="64"/>
+    <path d="M679 388 V452"/>
+    <rect x="625" y="563" width="380" height="64"/>
+    <path d="M679 563 V627"/>
+    <rect x="625" y="738" width="380" height="64"/>
+    <path d="M679 738 V802"/>
+  </g>
+  <g stroke="black" stroke-width="6">
+    <path d="M453 345 H527 M453 508 H527 M453 683 H527 M453 865 H527"/>
+  </g>
+  <g fill="black" font-family="Arial, Helvetica, sans-serif" font-size="28">
+    <g text-anchor="middle" font-weight="700">
+      <text x="490" y="281">S0</text>
+      <text x="490" y="412">S1</text><text x="490" y="446" font-size="26">Prepare</text>
+      <text x="490" y="587">S2</text><text x="490" y="621" font-size="26">Operate</text>
+      <text x="490" y="762">S3</text><text x="490" y="796" font-size="26">Complete</text>
+      <text x="652" y="280">N</text><text x="652" y="430">N</text><text x="652" y="605">D</text><text x="652" y="780">N</text>
+    </g>
+    <text x="697" y="280">Idle</text>
+    <text x="697" y="430">PrepareOutput</text>
+    <text x="697" y="605">RunOutput</text><text x="979" y="605" text-anchor="end" font-size="25">T#10s</text>
+    <text x="697" y="780">CompleteOutput</text>
+    <text x="550" y="355">Start</text><text x="550" y="518">Ready</text><text x="550" y="693">Complete</text><text x="550" y="875">Reset</text>
+  </g>
+  <g fill="black" font-family="Arial, Helvetica, sans-serif" font-size="24">
+    <text x="1110" y="255" font-size="25" font-weight="700">VARIABLES</text>
+    <text x="1110" y="300">Start: bool</text>
+    <text x="1110" y="342">Ready: bool</text>
+    <text x="1110" y="384">Complete: bool</text>
+    <text x="1110" y="426">Reset: bool</text>
+  </g>
+</svg>

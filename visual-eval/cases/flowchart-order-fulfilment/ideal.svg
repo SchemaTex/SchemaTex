@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1700" viewBox="0 0 1500 1700">
+<title>E-commerce order fulfilment with payment, inventory and carrier exceptions</title>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#334155"/></marker>
+  <style>
+    text{font-family:Helvetica,Arial,sans-serif;font-size:21px;fill:#172b40;text-anchor:middle;dominant-baseline:middle}
+    .node{fill:#fff;stroke:#334155;stroke-width:2.3}
+    .decision{fill:#fff8e9;stroke:#334155;stroke-width:2.3}
+    .terminal{fill:#edf5f7;stroke:#334155;stroke-width:2.3}
+    .edge{fill:none;stroke:#334155;stroke-width:2.3;marker-end:url(#arrow);stroke-linejoin:round}
+    .loop{stroke-dasharray:8 6}
+    .label{font-size:19px;font-weight:bold;paint-order:stroke;stroke:#fff;stroke-width:7px;stroke-linejoin:round}
+  </style>
+</defs>
+<rect width="1500" height="1700" fill="white"/>
+<!-- Orthogonal connectors -->
+<g class="edge">
+  <path d="M650 102 V145"/>
+  <path d="M650 207 V245"/>
+  <path d="M480 320 H290"/>
+  <path d="M170 353 V427"/>
+  <path d="M650 395 V439"/>
+  <path d="M650 521 V575"/>
+  <path d="M820 655 H1000"/>
+  <path d="M1150 688 V745"/>
+  <path d="M990 825 H920 V545 H320 V458 H290"/>
+  <path d="M1150 905 V955"/>
+  <path class="loop" d="M1285 989 H1430 V480 H785"/>
+  <path d="M650 735 V795"/>
+  <path d="M650 863 V925" stroke-width="5"/>
+  <path d="M650 989 V1045"/>
+  <path d="M650 1109 V1175"/>
+  <path d="M820 1260 H1020"/>
+  <path class="loop" d="M1160 1294 V1370 H875 V1138 H650 V1175"/>
+  <path d="M650 1345 V1430"/>
+  <path d="M650 1496 V1560"/>
+</g>
+<!-- Intake -->
+<rect class="terminal" x="530" y="40" width="240" height="62" rx="31"/>
+<text x="650" y="71">Order received</text>
+<rect class="node" x="530" y="145" width="240" height="62"/>
+<text x="650" y="176">Validate order</text>
+<!-- Payment decision and cancellation -->
+<path class="decision" d="M650 245 L820 320 L650 395 L480 320 Z"/>
+<text x="650" y="308"><tspan x="650">Payment</tspan><tspan x="650" dy="27">authorised?</tspan></text>
+<rect class="node" x="50" y="287" width="240" height="66"/>
+<text x="170" y="307"><tspan x="170">Notify payment</tspan><tspan x="170" dy="27">failure</tspan></text>
+<rect class="terminal" x="50" y="427" width="240" height="62" rx="31"/>
+<text x="170" y="458">Order cancelled</text>
+<!-- Inventory cylinder -->
+<path class="node" d="M515 454 C515 434 785 434 785 454 V506 C785 526 515 526 515 506 Z"/>
+<path d="M515 454 C515 474 785 474 785 454" fill="none" stroke="#334155" stroke-width="2.3"/>
+<text x="650" y="493">Reserve inventory</text>
+<path class="decision" d="M650 575 L820 655 L650 735 L480 655 Z"/>
+<text x="650" y="643"><tspan x="650">All items</tspan><tspan x="650" dy="27">available?</tspan></text>
+<!-- Backorder branch -->
+<rect class="node" x="1000" y="622" width="300" height="66"/>
+<text x="1150" y="642"><tspan x="1150">Offer backorder</tspan><tspan x="1150" dy="27">or refund</tspan></text>
+<path class="decision" d="M1150 745 L1310 825 L1150 905 L990 825 Z"/>
+<text x="1150" y="801"><tspan x="1150">Customer accepts</tspan><tspan x="1150" dy="27">backorder?</tspan></text>
+<rect class="node" x="1015" y="955" width="270" height="68"/>
+<text x="1150" y="976"><tspan x="1150">Create replenishment</tspan><tspan x="1150" dy="27">order</tspan></text>
+<!-- Pick and pack -->
+<rect class="node" x="515" y="795" width="270" height="68"/>
+<path d="M529 795 V863 M771 795 V863" stroke="#334155" stroke-width="2.3"/>
+<text x="650" y="829">Release pick list</text>
+<rect class="node" x="530" y="925" width="240" height="64"/>
+<text x="650" y="957">Pick items</text>
+<rect class="node" x="515" y="1045" width="270" height="64"/>
+<text x="650" y="1077">Pack and label</text>
+<!-- Carrier exception -->
+<path class="decision" d="M650 1175 L820 1260 L650 1345 L480 1260 Z"/>
+<text x="650" y="1236"><tspan x="650">Carrier collection</tspan><tspan x="650" dy="27">confirmed?</tspan></text>
+<rect class="node" x="1020" y="1226" width="280" height="68"/>
+<text x="1160" y="1247"><tspan x="1160">Hold for next</tspan><tspan x="1160" dy="27">collection</tspan></text>
+<!-- Asymmetric dispatch symbol and completion -->
+<path class="node" d="M510 1430 H790 V1496 H510 L540 1463 Z"/>
+<text x="658" y="1463">Dispatch shipment</text>
+<rect class="terminal" x="515" y="1560" width="270" height="64" rx="32"/>
+<text x="650" y="1592">Confirmation sent</text>
+<!-- Explicit branch labels -->
+<g class="label">
+<text x="382" y="301">No</text>
+<text x="680" y="416">Yes</text>
+<text x="873" y="636">No</text>
+<text x="680" y="765">Yes</text>
+<text x="952" y="804">No</text>
+<text x="1180" y="930">Yes</text>
+<text x="923" y="1240">No</text>
+<text x="680" y="1390">Yes</text>
+</g>
+</svg>

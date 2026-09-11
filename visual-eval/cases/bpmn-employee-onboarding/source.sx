@@ -1,0 +1,27 @@
+# Employee onboarding across HR and IT.
+bpmn
+direction: LR
+title: "Employee Onboarding"
+pool "Employee" blackbox
+pool "Company" {
+ lane "HR" {
+   A: start "Offer accepted"
+   B: task user "Collect documents"
+   G: gateway and "Provision in parallel"
+   E: end "Onboarded"
+ }
+ lane "IT" {
+   C: task service "Create accounts"
+   D: task user "Issue equipment"
+   J: gateway and "Ready"
+ }
+}
+flows
+"Employee" ~~> A : "Accept offer"
+A --> B --> G
+G --> C
+G --> D
+C --> J
+D --> J
+J --> E
+E ~~> "Employee" : "Welcome"

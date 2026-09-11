@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+  <title>Reversing Motor Starter</title>
+  <rect width="1200" height="620" fill="white"/>
+  <style>
+    .wire{fill:none;stroke:#111;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}
+    .label{font-family:Helvetica,Arial,sans-serif;font-size:23px;fill:#111;text-anchor:middle}
+    .note{font-family:Helvetica,Arial,sans-serif;font-size:19px;fill:#444}
+    .junction{fill:#111}
+  </style>
+  <text x="600" y="52" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="32" font-weight="bold" fill="#111">Reversing Motor Starter</text>
+  <!-- Power rails -->
+  <path class="wire" d="M70 112V550 M1130 112V550"/>
+  <text class="note" x="92" y="124">0 — Forward start and hold</text>
+  <!-- Forward rung: series protection, holding branch, reverse interlock, coil -->
+  <path class="wire" d="M70 200H190 M210 200H350 M370 200H495 M495 200H605 M625 200H750 M750 200H845 M865 200H1000 M1040 200H1130"/>
+  <text class="label" x="200" y="168">Stop</text>
+  <path class="wire" d="M190 183V217 M210 183V217 M180 218L220 182"/>
+  <text class="label" x="360" y="168">Overload</text>
+  <path class="wire" d="M350 183V217 M370 183V217 M340 218L380 182"/>
+  <text class="label" x="615" y="168">FwdStart</text>
+  <path class="wire" d="M605 183V217 M625 183V217"/>
+  <path class="wire" d="M495 200V295H605 M625 295H750V200"/>
+  <text class="label" x="615" y="263">Forward</text>
+  <path class="wire" d="M605 278V312 M625 278V312"/>
+  <circle class="junction" cx="495" cy="200" r="5"/><circle class="junction" cx="750" cy="200" r="5"/>
+  <text class="label" x="855" y="168">Reverse</text>
+  <path class="wire" d="M845 183V217 M865 183V217 M835 218L875 182"/>
+  <text class="label" x="1020" y="160">Forward</text>
+  <path class="wire" d="M1010 179Q990 200 1010 221 M1030 179Q1050 200 1030 221"/>
+  <!-- Reverse rung -->
+  <text class="note" x="92" y="364">1 — Reverse start and hold</text>
+  <path class="wire" d="M70 440H190 M210 440H350 M370 440H495 M495 440H605 M625 440H750 M750 440H845 M865 440H1000 M1040 440H1130"/>
+  <text class="label" x="200" y="408">Stop</text>
+  <path class="wire" d="M190 423V457 M210 423V457 M180 458L220 422"/>
+  <text class="label" x="360" y="408">Overload</text>
+  <path class="wire" d="M350 423V457 M370 423V457 M340 458L380 422"/>
+  <text class="label" x="615" y="408">RevStart</text>
+  <path class="wire" d="M605 423V457 M625 423V457"/>
+  <path class="wire" d="M495 440V535H605 M625 535H750V440"/>
+  <text class="label" x="615" y="503">Reverse</text>
+  <path class="wire" d="M605 518V552 M625 518V552"/>
+  <circle class="junction" cx="495" cy="440" r="5"/><circle class="junction" cx="750" cy="440" r="5"/>
+  <text class="label" x="855" y="408">Forward</text>
+  <path class="wire" d="M845 423V457 M865 423V457 M835 458L875 422"/>
+  <text class="label" x="1020" y="400">Reverse</text>
+  <path class="wire" d="M1010 419Q990 440 1010 461 M1030 419Q1050 440 1030 461"/>
+</svg>

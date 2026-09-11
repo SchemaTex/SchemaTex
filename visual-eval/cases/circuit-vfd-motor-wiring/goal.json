@@ -1,0 +1,44 @@
+{
+  "id": "circuit-vfd-motor-wiring",
+  "type": "circuit",
+  "title": "VFD motor wiring",
+  "goal": "A reader must be able to follow three-phase power through protection and a line reactor into a drive, then identify its motor, braking, and control connections.",
+  "rubric": [
+    {
+      "id": "three-phase-supply",
+      "severity": "blocker",
+      "must": "Three supply phases L1, L2, and L3 are visibly shown through a 16 A three-pole breaker."
+    },
+    {
+      "id": "line-reactor",
+      "severity": "major",
+      "must": "Three clearly labelled LR1 line-reactor legs are visible between the breaker and drive."
+    },
+    {
+      "id": "rated-vfd",
+      "severity": "blocker",
+      "must": "A variable frequency drive labelled 400 VAC and 4 kW is visible."
+    },
+    {
+      "id": "three-phase-motor",
+      "severity": "blocker",
+      "must": "A 400 VAC 4 kW three-phase motor is visibly connected to U, V, and W drive outputs."
+    },
+    {
+      "id": "braking-resistor",
+      "severity": "major",
+      "must": "A braking resistor with a 100 ohm 300 W rating is visible at the drive braking terminals."
+    },
+    {
+      "id": "drive-controls",
+      "severity": "major",
+      "must": "RUN, FORWARD REVERSE, speed potentiometer, and VFD fault relay control items are visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Split into power, braking and control. The drive's terminals carry the names real drives use — R/L1 S/L2 T/L3 in, U/T1 V/T2 W/T3 out, P+/PB braking, DI/AI control, RA/AC fault contact — with the line reactor in the supply and the speed pot's wiper on the analogue input."
+  }
+}

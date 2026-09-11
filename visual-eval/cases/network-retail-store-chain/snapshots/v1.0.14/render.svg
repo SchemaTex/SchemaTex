@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="Retail store chain network" width="669.6" height="613" viewBox="0 0 669.6 613" data-diagram-type="network"><title>Network diagram — Retail store chain network</title>
+<desc>10 devices, 9 links, 3 boundaries. Topology: hierarchical. Links: 4 serial, 1 fiber, 3 copper, 1 poe.</desc>
+<style>.sx-net { font-family: system-ui, -apple-system, sans-serif; }
+.sx-net-body { fill: #1d6fb8; stroke: #0f3a5f; stroke-width: 2; }
+.sx-net-detail { fill: none; stroke: #0f3a5f; stroke-width: 1; }
+.sx-net-glyph { fill: #bfe0f7; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px sans-serif; }
+.sx-net-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<text x="334.8" y="21" class="sx-net-title" text-anchor="middle">Retail store chain network</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Payment"><rect class="sx-net-boundary-vlan" x="169.1" y="420" width="155.4" height="133" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="181.1" y="433">VLAN VLAN 10 Payment</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 20 Management"><rect class="sx-net-boundary-vlan" x="332.5" y="420" width="168" height="133" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="344.5" y="433">VLAN VLAN 20 Management</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 30 Guest Wi-Fi"><rect class="sx-net-boundary-vlan" x="335.65" y="316" width="149.1" height="121" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="347.65" y="329">VLAN VLAN 30 Guest Wi-Fi</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="wan" data-to="hqfw" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="279.8,85.64 124.85,152.25"/>
+<text class="sx-net-linklabel" x="202.33" y="115.94" text-anchor="middle">MPLS</text></g>
+<g class="sx-net-link-g" data-from="hqfw" data-to="hub" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="124.85,179.75 302.8,256.25"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="197.21" y1="207.59" x2="194.85" y2="213.11"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="223.91" y1="219.07" x2="221.54" y2="224.58"/>
+<text class="sx-net-linklabel" x="235.18" y="224.18" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="wan" data-to="north" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="311.6,94 276.8,142"/>
+<text class="sx-net-linklabel" x="294.2" y="115" text-anchor="middle">SD-WAN</text></g>
+<g class="sx-net-link-g" data-from="wan" data-to="south" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="361.88,94 402.49,142"/>
+<text class="sx-net-linklabel" x="387.06" y="120.76" text-anchor="middle">SD-WAN</text></g>
+<g class="sx-net-link-g" data-from="wan" data-to="west" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="389.8,85.04 551.05,152.59"/>
+<text class="sx-net-linklabel" x="489.78" y="123.92" text-anchor="middle">SD-WAN</text></g>
+<g class="sx-net-link-g" data-from="north" data-to="pos" data-type="copper" data-vlan="10,20,30" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="259.04,190 256.61,350"/>
+<text class="sx-net-linklabel" x="256.95" y="324.6" text-anchor="middle">Trunk · VLAN 10,20,30 · 1G</text></g>
+<g class="sx-net-link-g" data-from="pos" data-to="till" data-type="copper" data-vlan="10" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="254.07,398 248.98,454"/>
+<text class="sx-net-linklabel" x="250.91" y="429.72" text-anchor="middle">Access · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="pos" data-to="manager" data-type="copper" data-vlan="20" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="288.25,394.77 384.5,457.23"/>
+<text class="sx-net-linklabel" x="347.92" y="430.5" text-anchor="middle">Access · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="pos" data-to="guest" data-type="poe" data-vlan="30" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="288.25,374 378.2,374"/>
+<text class="sx-net-linklabel" x="333.23" y="371" text-anchor="middle">Access · VLAN 30 · 1G · PoE</text></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="wan" data-kind="internet"><g><path class="sx-net-cloud-body" d="M 307.3 85.85 C 293 85.85 293 66.07 307.3 63.75 C 307.3 47.45 331.5 45.13 334.8 59.09 C 338.1 45.13 362.3 47.45 362.3 63.75 C 376.6 66.07 376.6 85.85 362.3 85.85 Z"/>
+<text class="sx-net-cloudtext" x="334.8" y="76.55" text-anchor="middle">Managed SD-WAN</text></g></g>
+<g class="sx-net-device" data-id="hqfw" data-kind="firewall" data-tier="edge"><g><rect class="sx-net-body" x="67.89" y="151.12" width="49.92" height="29.76" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="67.89" y1="161.04" x2="117.81" y2="161.04"/>
+<line class="sx-net-detail" x1="67.89" y1="170.96" x2="117.81" y2="170.96"/>
+<line class="sx-net-detail" x1="84.53" y1="151.12" x2="84.53" y2="161.04"/>
+<line class="sx-net-detail" x1="101.17" y1="151.12" x2="101.17" y2="161.04"/>
+<line class="sx-net-detail" x1="76.21" y1="161.04" x2="76.21" y2="170.96"/>
+<line class="sx-net-detail" x1="92.85" y1="161.04" x2="92.85" y2="170.96"/>
+<line class="sx-net-detail" x1="109.49" y1="161.04" x2="109.49" y2="170.96"/>
+<line class="sx-net-detail" x1="84.53" y1="170.96" x2="84.53" y2="180.88"/>
+<line class="sx-net-detail" x1="101.17" y1="170.96" x2="101.17" y2="180.88"/></g>
+<text class="sx-net-label" x="92.85" y="207" text-anchor="middle">HQ security gateway</text></g>
+<g class="sx-net-device" data-id="hub" data-kind="router" data-tier="core"><g><rect class="sx-net-body" x="309.84" y="255.12" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="332.8" y1="264.64" x2="354.76" y2="264.64"/><polygon class="sx-net-glyph" points="354.76,264.64 351.25,266.56 351.25,262.73"/>
+<line class="sx-net-glyph-line" x1="336.8" y1="275.36" x2="314.84" y2="275.36"/><polygon class="sx-net-glyph" points="314.84,275.36 318.35,273.44 318.35,277.27"/>
+<line class="sx-net-glyph-line" x1="343.79" y1="272" x2="343.79" y2="280.88"/><polygon class="sx-net-glyph" points="343.79,280.88 341.87,277.37 345.7,277.37"/>
+<line class="sx-net-glyph-line" x1="325.81" y1="268" x2="325.81" y2="259.12"/><polygon class="sx-net-glyph" points="325.81,259.12 327.73,262.63 323.9,262.63"/></g>
+<text class="sx-net-label" x="334.8" y="311" text-anchor="middle">Retail service hub</text></g>
+<g class="sx-net-device" data-id="north" data-kind="router" data-tier="edge"><g><rect class="sx-net-body" x="234.44" y="151.12" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="257.4" y1="160.64" x2="279.36" y2="160.64"/><polygon class="sx-net-glyph" points="279.36,160.64 275.85,162.56 275.85,158.73"/>
+<line class="sx-net-glyph-line" x1="261.4" y1="171.36" x2="239.44" y2="171.36"/><polygon class="sx-net-glyph" points="239.44,171.36 242.95,169.44 242.95,173.27"/>
+<line class="sx-net-glyph-line" x1="268.39" y1="168" x2="268.39" y2="176.88"/><polygon class="sx-net-glyph" points="268.39,176.88 266.47,173.37 270.3,173.37"/>
+<line class="sx-net-glyph-line" x1="250.41" y1="164" x2="250.41" y2="155.12"/><polygon class="sx-net-glyph" points="250.41,155.12 252.33,158.63 248.5,158.63"/></g>
+<text class="sx-net-label" x="259.4" y="207" text-anchor="middle">North store router</text></g>
+<g class="sx-net-device" data-id="south" data-kind="router" data-tier="edge"><g><rect class="sx-net-body" x="397.84" y="151.12" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="420.8" y1="160.64" x2="442.76" y2="160.64"/><polygon class="sx-net-glyph" points="442.76,160.64 439.25,162.56 439.25,158.73"/>
+<line class="sx-net-glyph-line" x1="424.8" y1="171.36" x2="402.84" y2="171.36"/><polygon class="sx-net-glyph" points="402.84,171.36 406.35,169.44 406.35,173.27"/>
+<line class="sx-net-glyph-line" x1="431.79" y1="168" x2="431.79" y2="176.88"/><polygon class="sx-net-glyph" points="431.79,176.88 429.87,173.37 433.7,173.37"/>
+<line class="sx-net-glyph-line" x1="413.81" y1="164" x2="413.81" y2="155.12"/><polygon class="sx-net-glyph" points="413.81,155.12 415.73,158.63 411.9,158.63"/></g>
+<text class="sx-net-label" x="422.8" y="207" text-anchor="middle">South store router</text></g>
+<g class="sx-net-device" data-id="west" data-kind="router" data-tier="edge"><g><rect class="sx-net-body" x="558.09" y="151.12" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="581.05" y1="160.64" x2="603.01" y2="160.64"/><polygon class="sx-net-glyph" points="603.01,160.64 599.5,162.56 599.5,158.73"/>
+<line class="sx-net-glyph-line" x1="585.05" y1="171.36" x2="563.09" y2="171.36"/><polygon class="sx-net-glyph" points="563.09,171.36 566.6,169.44 566.6,173.27"/>
+<line class="sx-net-glyph-line" x1="592.04" y1="168" x2="592.04" y2="176.88"/><polygon class="sx-net-glyph" points="592.04,176.88 590.12,173.37 593.95,173.37"/>
+<line class="sx-net-glyph-line" x1="574.06" y1="164" x2="574.06" y2="155.12"/><polygon class="sx-net-glyph" points="574.06,155.12 575.98,158.63 572.15,158.63"/></g>
+<text class="sx-net-label" x="583.05" y="207" text-anchor="middle">West store router</text></g>
+<g class="sx-net-device" data-id="pos" data-kind="switch" data-tier="access"><g><rect class="sx-net-body" x="228.73" y="362" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="239.74" y1="369.68" x2="272.76" y2="369.68"/><polygon class="sx-net-glyph" points="272.76,369.68 269.25,371.6 269.25,367.76"/>
+<line class="sx-net-glyph-line" x1="272.76" y1="378.32" x2="239.74" y2="378.32"/><polygon class="sx-net-glyph" points="239.74,378.32 243.25,376.4 243.25,380.24"/></g>
+<text class="sx-net-label" x="256.25" y="415" text-anchor="middle">North POS switch</text></g>
+<g class="sx-net-device" data-id="guest" data-kind="ap" data-tier="access"><g><rect class="sx-net-body" x="394.2" y="371.6" width="32" height="16.32" rx="8.16" ry="8.16"/>
+<path class="sx-net-glyph-line" d="M 399.96 369.6 A 10.24 10.24 0 0 1 420.44 369.6"/>
+<path class="sx-net-glyph-line" d="M 389.72 369.6 A 20.48 20.48 0 0 1 430.68 369.6"/></g>
+<text class="sx-net-label" x="410.2" y="415" text-anchor="middle">North guest Wi-Fi</text></g>
+<g class="sx-net-device" data-id="till" data-kind="pc" data-ip="10.50.10.11"><g><rect class="sx-net-body" x="224.4" y="459.76" width="44.8" height="24.96" rx="2" ry="2"/>
+<rect class="sx-net-detail" x="227.4" y="462.76" width="38.8" height="18.96" rx="1" ry="1" fill="none"/>
+<line class="sx-net-detail" x1="246.8" y1="484.72" x2="246.8" y2="492.4"/>
+<line class="sx-net-detail" x1="234.26" y1="500" x2="259.34" y2="500"/></g>
+<text class="sx-net-label" x="246.8" y="519" text-anchor="middle">North POS terminal</text>
+<text class="sx-net-sublabel" x="246.8" y="531" text-anchor="middle">10.50.10.11</text></g>
+<g class="sx-net-device" data-id="manager" data-kind="laptop" data-ip="10.50.20.11"><g><rect class="sx-net-body" x="397.3" y="461.68" width="38.4" height="22.08" rx="2" ry="2"/>
+<polygon class="sx-net-body" points="390.39,492.4 442.61,492.4 435.7,483.76 397.3,483.76"/></g>
+<text class="sx-net-label" x="416.5" y="519" text-anchor="middle">North manager laptop</text>
+<text class="sx-net-sublabel" x="416.5" y="531" text-anchor="middle">10.50.20.11</text></g></g></g></svg>

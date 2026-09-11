@@ -1,0 +1,14 @@
+genogram "Eleanor's family caregiving" [asOf: 2026]
+  arthur [male, 1940, deceased, death: 2019, label: "Arthur"]
+  eleanor [female, 1942, age: 84, label: "Eleanor", household: eleanor]
+    @medical: "Dementia; needs daily care"
+  arthur -- eleanor
+    dana [female, 1968, age: 58, label: "Dana", index, household: eleanor]
+      @care: "Lives with Eleanor; daily personal care"
+      @burden: "Exhausted; no regular respite"
+    paul [male, 1971, age: 55, label: "Paul"]
+      @care: "Lives separately; weekly transport"
+
+  dana -close- eleanor "Daily care and support"
+  paul -close- eleanor "Weekly transport"
+  dana -conflict- paul "Unequal care workload"

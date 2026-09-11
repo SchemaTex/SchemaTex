@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1240" viewBox="0 0 1440 1240">
+  <title>Tank Fill Level Control — Ladder Diagram</title>
+  <rect width="1440" height="1240" fill="#ffffff"/>
+  <style>
+    .wire{fill:none;stroke:#18232d;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}
+    .label{font-family:Helvetica,Arial,sans-serif;font-size:23px;fill:#18232d;text-anchor:middle}
+    .desc{font-family:Helvetica,Arial,sans-serif;font-size:21px;fill:#44515d}
+    .num{font-family:Helvetica,Arial,sans-serif;font-size:22px;fill:#44515d;text-anchor:middle}
+    .coil{font-family:Helvetica,Arial,sans-serif;font-size:23px;fill:#18232d;text-anchor:middle;dominant-baseline:middle}
+  </style>
+  <text x="70" y="62" font-family="Helvetica,Arial,sans-serif" font-size="36" font-weight="700" fill="#18232d">Tank Fill Level Control</text>
+  <text x="70" y="101" class="desc">Automatic low-level fill · High-level cutoff · Guarded manual fill · High-high alarm with reset</text>
+  <!-- Continuous left and right power rails -->
+  <path class="wire" d="M130 150V1155 M1310 150V1155"/>
+
+  <!-- Rung 0: XIC LowLevel, XIO HighLevel, OTL FillRequest -->
+  <text class="num" x="75" y="233">0</text>
+  <text class="desc" x="160" y="165">Automatic fill latch at low level</text>
+  <text class="label" x="345" y="204">LowLevel</text>
+  <text class="label" x="650" y="204">HighLevel</text>
+  <text class="label" x="1160" y="204">FillRequest</text>
+  <path class="wire" d="M130 235H330 M360 235H635 M665 235H1135 M1185 235H1310 M330 217V253 M360 217V253 M635 217V253 M665 217V253 M630 257L670 213 M1145 214Q1125 235 1145 256 M1175 214Q1195 235 1175 256"/>
+  <text class="coil" x="1160" y="236">S</text>
+
+  <!-- Rung 1: XIC HighLevel, OTU FillRequest -->
+  <text class="num" x="75" y="368">1</text>
+  <text class="desc" x="160" y="300">Stop fill request at high level</text>
+  <text class="label" x="345" y="339">HighLevel</text>
+  <text class="label" x="1160" y="339">FillRequest</text>
+  <path class="wire" d="M130 370H330 M360 370H1135 M1185 370H1310 M330 352V388 M360 352V388 M1145 349Q1125 370 1145 391 M1175 349Q1195 370 1175 391"/>
+  <text class="coil" x="1160" y="371">R</text>
+
+  <!-- Rung 2: XIC ManualOverride, XIO HighHighLevel, OTE ManualFill -->
+  <text class="num" x="75" y="503">2</text>
+  <text class="desc" x="160" y="435">Manual fill override</text>
+  <text class="label" x="345" y="474">ManualOverride</text>
+  <text class="label" x="650" y="474">HighHighLevel</text>
+  <text class="label" x="1160" y="474">ManualFill</text>
+  <path class="wire" d="M130 505H330 M360 505H635 M665 505H1135 M1185 505H1310 M330 487V523 M360 487V523 M635 487V523 M665 487V523 M630 527L670 483 M1145 484Q1125 505 1145 526 M1175 484Q1195 505 1175 526"/>
+
+  <!-- Rung 3: XIO HighHighLevel before parallel automatic/manual demand -->
+  <text class="num" x="75" y="638">3</text>
+  <text class="desc" x="160" y="570">Fill pump from automatic or manual demand</text>
+  <text class="label" x="345" y="609">HighHighLevel</text>
+  <text class="label" x="745" y="609">FillRequest</text>
+  <text class="label" x="745" y="699">ManualFill</text>
+  <text class="label" x="1160" y="609">FillPump</text>
+  <path class="wire" d="M130 640H330 M360 640H730 M760 640H1135 M1185 640H1310 M330 622V658 M360 622V658 M325 662L365 618 M530 640V730H730 M760 730H960V640 M730 622V658 M760 622V658 M730 712V748 M760 712V748 M1145 619Q1125 640 1145 661 M1175 619Q1195 640 1175 661"/>
+  <circle cx="530" cy="640" r="5" fill="#18232d"/><circle cx="960" cy="640" r="5" fill="#18232d"/>
+
+  <!-- Rung 4: XIC HighHighLevel, OTL HighHighAlarm -->
+  <text class="num" x="75" y="838">4</text>
+  <text class="desc" x="160" y="770">Latch high-high alarm</text>
+  <text class="label" x="345" y="809">HighHighLevel</text>
+  <text class="label" x="1160" y="809">HighHighAlarm</text>
+  <path class="wire" d="M130 840H330 M360 840H1135 M1185 840H1310 M330 822V858 M360 822V858 M1145 819Q1125 840 1145 861 M1175 819Q1195 840 1175 861"/>
+  <text class="coil" x="1160" y="841">S</text>
+
+  <!-- Rung 5: XIC HighHighAlarm, OTE AlarmHorn -->
+  <text class="num" x="75" y="973">5</text>
+  <text class="desc" x="160" y="905">High-high alarm horn</text>
+  <text class="label" x="345" y="944">HighHighAlarm</text>
+  <text class="label" x="1160" y="944">AlarmHorn</text>
+  <path class="wire" d="M130 975H330 M360 975H1135 M1185 975H1310 M330 957V993 M360 957V993 M1145 954Q1125 975 1145 996 M1175 954Q1195 975 1175 996"/>
+
+  <!-- Rung 6: XIC AlarmResetPB, XIO HighHighLevel, OTU HighHighAlarm -->
+  <text class="num" x="75" y="1108">6</text>
+  <text class="desc" x="160" y="1040">Reset high-high alarm</text>
+  <text class="label" x="345" y="1079">AlarmResetPB</text>
+  <text class="label" x="650" y="1079">HighHighLevel</text>
+  <text class="label" x="1160" y="1079">HighHighAlarm</text>
+  <path class="wire" d="M130 1110H330 M360 1110H635 M665 1110H1135 M1185 1110H1310 M330 1092V1128 M360 1092V1128 M635 1092V1128 M665 1092V1128 M630 1132L670 1088 M1145 1089Q1125 1110 1145 1131 M1175 1089Q1195 1110 1175 1131"/>
+  <text class="coil" x="1160" y="1111">R</text>
+  <text class="desc" x="130" y="1200">Coil notation: S = set / latch (OTL)    R = reset / unlatch (OTU)    Empty coil = output (OTE)</text>
+</svg>

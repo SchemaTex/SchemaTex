@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-inventory-oscillation",
+  "type": "causalloop",
+  "title": "Retail inventory oscillation",
+  "goal": "An operations team can see a delayed balancing replenishment loop.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The replenishment loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "A visible delay mark appears on the order-to-delivery link."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The loop visibly closes through inventory, perceived gap, orders, and deliveries."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Directional arrows and labels remain readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-causalloop-target.mjs`, which draws all five cases from one kit so the set is one drawing repeated. A causal-loop diagram of Retail inventory oscillation. 4 variables are joined by 4 causal links, each carrying its polarity beside the arrowhead. The engine's job here is to find the feedback loops and classify them by Sterman's even/odd rule, and this drawing shows that answer: B1 runs Inventory → Perceived stock gap → Order rate → Inbound deliveries → Inventory with 1 negative link, so it balances. The slow link wears two hash marks. Each loop glyph is a circular arrow curling in the loop's own direction, labelled with the computed letter and the loop's name. Notation is Sterman's, per `docs/reference/41-CAUSAL-LOOP-STANDARD.md`: variables are plain text, causal links are curved arrows, each link carries its polarity beside the arrowhead, a slow link wears two hash marks, and every feedback loop gets a circular arrow curling in the loop's own direction. The R/B letter is computed by Sterman's even/odd rule — count the negative links round the loop, even (zero included) reinforces, odd balances — never copied from the source, and the footer shows the count so the verdict can be checked. Reinforcing loops are terracotta and balancing loops teal. Every label was checked against every other label and the canvas edge: 0 overlaps."
+  }
+}

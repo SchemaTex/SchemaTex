@@ -1,0 +1,33 @@
+%% CI deployment approval and rollback.
+sequenceDiagram
+actor Developer
+participant Git
+participant CI
+participant Approver
+participant Deploy
+participant Production
+Developer->>Git: Push commit
+Git->>CI: Trigger pipeline
+activate CI
+CI->>CI: Test and scan
+CI-->>Approver: Request approval
+alt [approved]
+Approver-->>CI: Approve
+CI->>Deploy: Deploy image
+activate Deploy
+Deploy->>Production: Roll out
+alt [unhealthy]
+Production-->>Deploy: Failed health check
+Deploy->>Production: Roll back
+Deploy-->>CI: Rolled back
+else [healthy]
+Production-->>Deploy: Healthy
+Deploy-->>CI: Succeeded
+end
+deactivate Deploy
+else [rejected]
+Approver-->>CI: Reject
+end
+CI-->>Developer: Pipeline result
+deactivate CI
+Note over CI,Approver: Human approval required

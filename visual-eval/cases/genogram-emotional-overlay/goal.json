@@ -1,0 +1,49 @@
+{
+  "id": "genogram-emotional-overlay",
+  "type": "genogram",
+  "title": "The Carter emotional relationships",
+  "goal": "A reader can trace the Carter family across three generations and identify the cutoff, enmeshment, and conflict without confusing emotional connections with ancestry or marriage.",
+  "rubric": [
+    {
+      "id": "family-structure",
+      "severity": "blocker",
+      "must": "Arthur and Ruth occupy the top generation row and connect as Michael's parents; Michael and Claire occupy the middle row and connect as the parents of Anna, Ben, and Grace on the bottom row."
+    },
+    {
+      "id": "cross-generation-cutoff",
+      "severity": "blocker",
+      "must": "A broken emotional line with a visible gap joins Arthur to Anna across the middle generation, and the legend identifies its pattern as cutoff."
+    },
+    {
+      "id": "fused-pair",
+      "severity": "blocker",
+      "must": "Three parallel emotional lines join Ruth to Michael, and the legend identifies this pattern as fused or enmeshed."
+    },
+    {
+      "id": "conflictual-pair",
+      "severity": "blocker",
+      "must": "A zigzag emotional line with hash marks joins Michael to Grace, and the legend identifies its pattern as conflict."
+    },
+    {
+      "id": "distinct-family-lines",
+      "severity": "major",
+      "must": "Marriage bars and parent-child branches remain individually traceable as solid family lines, visually distinct from all three emotional patterns; emotional crossings do not appear to create extra spouses or children."
+    },
+    {
+      "id": "clear-emotional-routing",
+      "severity": "major",
+      "must": "No emotional line passes through a person's symbol or label, and the two people joined by each emotional line can be identified without following a family line."
+    },
+    {
+      "id": "readable-identities",
+      "severity": "minor",
+      "must": "Every person's name and birth year is readable without overlapping another label, and Anna's double index outline is visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Arthur and Ruth are the parents of Michael, whose partnership with Claire connects to Anna, Ben and Grace; Anna carries the index outline. Separate smooth gutter arcs identify Arthur–Anna cutoff, Ruth–Michael three-line fusion and Michael–Grace zigzag conflict with hash marks, distinct from the solid family branches."
+  }
+}

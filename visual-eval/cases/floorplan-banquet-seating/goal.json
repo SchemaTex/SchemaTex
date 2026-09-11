@@ -1,0 +1,49 @@
+{
+  "id": "floorplan-banquet-seating",
+  "type": "floorplan",
+  "title": "Wedding reception seating chart",
+  "goal": "A guest can find their named seat and a server can trace open routes from the service entrance to every table without crossing the dance floor.",
+  "rubric": [
+    {
+      "id": "named-guest-seats",
+      "severity": "blocker",
+      "must": "Four distinctly numbered round tables each show eight chairs, and every chair has a readable ordinary guest name."
+    },
+    {
+      "id": "head-table",
+      "severity": "major",
+      "must": "A labeled head table has four individually named seats facing toward the dance floor."
+    },
+    {
+      "id": "dance-floor",
+      "severity": "major",
+      "must": "A labeled dance floor is visible between the round-table groups and contains no tables or chairs."
+    },
+    {
+      "id": "service-circulation",
+      "severity": "blocker",
+      "must": "Open walking routes connect the labeled service entrance to every table without passing through chairs or across the dance floor."
+    },
+    {
+      "id": "chair-clearances",
+      "severity": "blocker",
+      "must": "All chairs are inside the walls, with visible walking space behind them and between neighboring table groups."
+    },
+    {
+      "id": "entrance-swings",
+      "severity": "blocker",
+      "must": "Separate guest and service entrances show door leaves and swing arcs with no furniture in either swept area."
+    },
+    {
+      "id": "readable-plan",
+      "severity": "minor",
+      "must": "Exterior dimensions show a 16 m by 16 m room, and guest names, table labels and entrance labels are readable without overlapping one another."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the seating, head-table, clearance, entrance, and dimension requirements, while the picture omits several required elements."
+  }
+}

@@ -1,0 +1,6 @@
+# Scenario: AWS V-groove weld with a specified root opening.
+welding "V-Groove With Root Opening" [standard: aws]
+joint "Butt joint" {
+  arrow: vgroove size=12 angle=60 root=3
+  tail: "GTAW root; SMAW fill"
+}

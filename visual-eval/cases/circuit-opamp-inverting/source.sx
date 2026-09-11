@@ -1,0 +1,12 @@
+circuit "Inverting Amplifier, Gain -10, Split 12 V Supply" netlist
+# Closed-loop gain: -R2/R1 = -100 kOhm / 10 kOhm = -10 V/V.
+V1 VPOS GND value="12 V" label="V1"
+V2 GND VNEG value="12 V" label="V2"
+V3 VIN GND type=ac_source value="100 mV, 1 kHz" label="V3"
+R1 VIN INV value="10 kOhm" label="R1"
+U1 GND INV VOUT type=opamp value="TL071" label="U1"
+R2 VOUT INV value="100 kOhm" label="R2"
+W1 VPOS U1.supply+
+W2 VNEG U1.supply-
+C1 VPOS GND value="100 nF" label="C1"
+C2 VNEG GND value="100 nF" label="C2"

@@ -1,0 +1,34 @@
+{
+  "id": "evacuation-hotel-guest-floor",
+  "type": "evacuation",
+  "title": "Hotel Guest Floor",
+  "goal": "A practitioner can read the hotel guest floor artefact at a glance.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible YOU ARE HERE marker, legend, and two marked exits are present."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "Primary and secondary routes visibly lead from the marker to separate exits."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "holdout"
+}

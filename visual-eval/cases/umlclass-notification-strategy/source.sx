@@ -1,0 +1,19 @@
+%% Notification service selecting channel strategies and delivery records.
+classDiagram
+class NotificationService { +send(message : Message) : Delivery }
+class NotificationChannel { <<interface>> +deliver(message : Message) : Delivery }
+class EmailChannel { +deliver(message : Message) : Delivery }
+class SmsChannel { +deliver(message : Message) : Delivery }
+class PushChannel { +deliver(message : Message) : Delivery }
+class Message { +subject : String +body : String }
+class Delivery { -sentAt : Instant +status : DeliveryStatus }
+class DeliveryStatus { QUEUED SENT FAILED }
+class Template { +render(message : Message) : String }
+EmailChannel ..|> NotificationChannel
+SmsChannel ..|> NotificationChannel
+PushChannel ..|> NotificationChannel
+NotificationService --> NotificationChannel : chooses
+NotificationService ..> Template : renders with
+NotificationService *-- Delivery : creates
+Delivery --> DeliveryStatus
+NotificationChannel --> Message : delivers

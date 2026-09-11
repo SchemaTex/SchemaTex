@@ -1,0 +1,20 @@
+# Scenario: Shopping Mall Unit ISO 23601 escape plan with routes to two exits.
+evacuation "Shopping Mall Unit" unit m
+compliance iso
+sheet a3 landscape
+room main "Occupied Area" at 0,0 size 7x5
+room corridor "Corridor" below main size 7x2
+room east "East Stair" right-of corridor size 3x2
+room west "West Stair" left-of corridor size 3x2
+opening between main corridor at 50% width 1.2
+door between corridor east at 50% width 1.1
+door between corridor west at 50% width 1.1
+here in main at 3.5,2.5 "YOU ARE HERE"
+exit-final east in east at 2.8,1 side east "EXIT"
+exit-final west in west at 0.2,1 side west "EXIT"
+extinguisher f1 in corridor at 0.5,1 class "ABC"
+assembly muster outside at 9,8 "ASSEMBLY POINT"
+route primary here -> main -> corridor -> east -> east
+route secondary here -> main -> corridor -> west -> west
+legend auto
+

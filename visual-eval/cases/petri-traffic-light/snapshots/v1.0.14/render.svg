@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Traffic Light Cycle" width="538" height="176" viewBox="0 0 538 176" data-diagram-type="petri"><title>Petri net — Traffic Light Cycle</title>
+<desc>3 places, 3 transitions, 6 arcs. Marking {Red:1}. Enabled: ToGreen. Class: state machine, marked graph.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="269" y="22" class="sx-petri-title" text-anchor="middle">Traffic Light Cycle</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="Red" data-to="ToGreen" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 58 70 L 128 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ToGreen" data-to="Green" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 136 70 L 206 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Green" data-to="ToYellow" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 242 70 L 312 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ToYellow" data-to="Yellow" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320 70 L 390 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Yellow" data-to="ToRed" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 426 70 L 496 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ToRed" data-to="Red" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 500 92 C 500 122 40 122 40 88" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="Red" data-tokens="1"><circle class="sx-petri-place" cx="40" cy="70" r="18"/>
+<circle class="sx-petri-token" cx="40" cy="70" r="3.5"/>
+<text class="sx-petri-label" x="40" y="46" text-anchor="middle">Red</text></g>
+<g class="sx-petri-place-g" data-id="Green" data-tokens="0"><circle class="sx-petri-place" cx="224" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="224" y="46" text-anchor="middle">Green</text></g>
+<g class="sx-petri-place-g" data-id="Yellow" data-tokens="0"><circle class="sx-petri-place" cx="408" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="408" y="46" text-anchor="middle">Yellow</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g" data-id="ToGreen" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="124" y="44" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="128" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="132" y="42" text-anchor="middle">ToGreen</text></g>
+<g class="sx-petri-trans-g" data-id="ToYellow" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="312" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="316" y="42" text-anchor="middle">ToYellow</text></g>
+<g class="sx-petri-trans-g" data-id="ToRed" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="496" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="500" y="42" text-anchor="middle">ToRed</text></g></g></g></svg>

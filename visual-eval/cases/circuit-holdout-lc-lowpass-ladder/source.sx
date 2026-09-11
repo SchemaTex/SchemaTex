@@ -1,0 +1,10 @@
+circuit "Five-Element LC Low-Pass Ladder" netlist
+# 50 Ω source and load; nominal 1 MHz low-pass ladder with three series inductors and two shunt capacitors.
+V1 VSRC GND type=acsource value="1 V AC, 1 MHz" label="SOURCE"
+R1 VSRC N1 value="50 Ω" label="RSOURCE"
+L1 N1 N2 value="3.3 µH" label="L1"
+C1 N2 GND value="1 nF, C0G" label="C1"
+L2 N2 N3 value="4.7 µH" label="L2"
+C2 N3 GND value="1 nF, C0G" label="C2"
+L3 N3 VOUT value="3.3 µH" label="L3"
+R2 VOUT GND value="50 Ω" label="RLOAD"

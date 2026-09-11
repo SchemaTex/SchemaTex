@@ -1,0 +1,12 @@
+# Scenario: teaching aid compares common symptom patterns; labels are illustrative, not diagnostic advice.
+venn "Symptom overlap: cold, flu, and allergy"
+set cold "Common cold"
+set flu "Influenza"
+set allergy "Seasonal allergy"
+cold only: "Runny nose"
+flu only: "High fever"
+allergy only: "Itchy eyes"
+cold & flu: "Fatigue"
+cold & allergy: "Sneezing"
+flu & allergy: "Headache"
+cold & flu & allergy: "Congestion"

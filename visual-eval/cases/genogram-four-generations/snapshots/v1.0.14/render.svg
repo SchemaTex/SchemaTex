@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 694.8 654" class="schematex-diagram schematex-genogram" width="694.8" height="654"><title>Genogram</title>
+<desc>Genogram diagram with 13 individuals across 4 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="manuel" data-to="rosa"><path d="M 287.4 60 L 367.4 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="manuel" data-to="rosa"><path d="M 327.4 60 L 327.4 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="manuel" data-to="rosa"><path d="M 147.39999999999998 141 L 507.4 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="manuel+rosa" data-to="sofia"><path d="M 147.39999999999998 141 L 147.39999999999998 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="manuel+rosa" data-to="miguel"><path d="M 267.4 141 L 267.4 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="manuel+rosa" data-to="teresa"><path d="M 507.4 141 L 507.4 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="miguel" data-to="elena"><path d="M 287.4 226 L 367.4 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel" data-to="elena"><path d="M 327.4 226 L 327.4 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel" data-to="elena"><path d="M 87.39999999999999 307 L 567.4 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel+elena" data-to="lucia"><path d="M 87.39999999999999 307 L 87.39999999999999 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel+elena" data-to="diego"><path d="M 207.39999999999998 307 L 207.39999999999998 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel+elena" data-to="ines"><path d="M 447.4 307 L 447.4 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="miguel+elena" data-to="tomas"><path d="M 567.4 307 L 567.4 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="diego" data-to="carlos"><path d="M 227.39999999999998 392 L 307.4 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="carlos" data-to="diego"><path d="M 267.4 392 L 267.4 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="diego" data-to="carlos"><path d="M 207.39999999999998 473 L 327.4 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="diego+carlos" data-to="nora"><path d="M 207.39999999999998 473 L 207.39999999999998 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="diego+carlos" data-to="leo"><path d="M 327.4 473 L 327.4 538" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="manuel" transform="translate(267.4, 60)"><title>Manuel Alvarez (1938)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="rosa" transform="translate(387.4, 60)"><title>Rosa Alvarez (1940)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="miguel" transform="translate(267.4, 226)"><title>Miguel Alvarez (1962)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="elena" transform="translate(387.4, 226)"><title>Elena Alvarez (1963)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="sofia" transform="translate(147.39999999999998, 226)"><title>Sofia Alvarez (1960)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="teresa" transform="translate(507.4, 226)"><title>Teresa Alvarez (1967)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="carlos" transform="translate(327.4, 392)"><title>Carlos Mendoza (1986)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="diego" transform="translate(207.39999999999998, 392)"><title>Diego Alvarez (1989)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="lucia" transform="translate(87.39999999999999, 392)"><title>Lucia Alvarez (1987)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="ines" transform="translate(447.4, 392)"><title>Ines Alvarez (1992)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="tomas" transform="translate(567.4, 392)"><title>Tomas Alvarez (1995)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-3" data-generation="3"><g class="schematex-genogram-node schematex-genogram-female" data-individual-id="nora" transform="translate(207.39999999999998, 558)"><title>Nora Alvarez (2015)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="leo" transform="translate(327.4, 558)"><title>Leo Alvarez (2018)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="267.4" y="98" class="schematex-genogram-label" data-individual-id="manuel">Manuel Alvarez (b. 1938)</text>
+<text x="387.4" y="98" class="schematex-genogram-label" data-individual-id="rosa">Rosa Alvarez (b. 1940)</text>
+<text x="267.4" y="264" class="schematex-genogram-label" data-individual-id="miguel">Miguel Alvarez (b. 1962)</text>
+<text x="387.4" y="264" class="schematex-genogram-label" data-individual-id="elena">Elena Alvarez (b. 1963)</text>
+<text x="147.39999999999998" y="264" class="schematex-genogram-label" data-individual-id="sofia">Sofia Alvarez (b. 1960)</text>
+<text x="507.4" y="264" class="schematex-genogram-label" data-individual-id="teresa">Teresa Alvarez (b. 1967)</text>
+<text x="327.4" y="430" class="schematex-genogram-label" data-individual-id="carlos">Carlos Mendoza (b. 1986)</text>
+<text x="207.39999999999998" y="430" class="schematex-genogram-label" data-individual-id="diego">Diego Alvarez (b. 1989)</text>
+<text x="87.39999999999999" y="430" class="schematex-genogram-label" data-individual-id="lucia">Lucia Alvarez (b. 1987)</text>
+<text x="447.4" y="430" class="schematex-genogram-label" data-individual-id="ines">Ines Alvarez (b. 1992)</text>
+<text x="567.4" y="430" class="schematex-genogram-label" data-individual-id="tomas">Tomas Alvarez (b. 1995)</text>
+<text x="207.39999999999998" y="596" class="schematex-genogram-label" data-individual-id="nora">Nora Alvarez (b. 2015)</text>
+<text x="327.4" y="596" class="schematex-genogram-label" data-individual-id="leo">Leo Alvarez (b. 2018)</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g></svg>

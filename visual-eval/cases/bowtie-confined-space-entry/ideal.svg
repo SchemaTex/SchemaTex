@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+<title>Confined-space entry — bowtie diagram</title>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#435362"/></marker>
+ <style>
+ text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a;font-size:20px;text-anchor:middle} .heading{font-size:32px;font-weight:700}.group{font-size:17px;font-weight:700;letter-spacing:2px}.small{font-size:17px}.label{font-weight:700}.wire{fill:none;stroke:#435362;stroke-width:2.5;marker-end:url(#arrow)}.box{fill:#f5f7f9;stroke:#435362;stroke-width:2}.prevent{fill:#edf6fb;stroke:#286585;stroke-width:2.5}.mitigate{fill:#edf7f1;stroke:#397653;stroke-width:2.5}.escalate{fill:#fff8e9;stroke:#ad7a20;stroke-width:2}.dash{fill:none;stroke:#ad7a20;stroke-width:2;stroke-dasharray:7 5}
+ </style>
+</defs>
+<rect width="1800" height="1050" fill="white"/>
+<text x="900" y="49" class="heading">Confined-space entry</text>
+<rect x="675" y="80" width="450" height="107" rx="4" fill="#fff7e6" stroke="#ab7b26" stroke-width="2"/>
+<text x="900" y="106" class="group">HAZARD</text>
+<text x="900" y="137">Enclosed vessel with oxygen-deficient</text><text x="900" y="164">or toxic atmosphere</text>
+<path d="M900 187V451" fill="none" stroke="#ab7b26" stroke-width="2"/>
+<text x="150" y="235" class="group">THREATS</text><text x="507" y="235" class="group" fill="#286585">PREVENTIVE BARRIERS</text>
+<text x="1293" y="235" class="group" fill="#397653">MITIGATIVE BARRIERS</text><text x="1650" y="235" class="group">CONSEQUENCES</text>
+<!-- Orthogonal paths: three incoming and three outgoing branches. -->
+<path class="wire" d="M265 330H305"/><path class="wire" d="M490 330H525"/><path class="wire" d="M710 330H750V482H799"/>
+<path class="wire" d="M265 530H305"/><path class="wire" d="M490 530H525"/><path class="wire" d="M710 530H785"/>
+<path class="wire" d="M265 900H305"/><path class="wire" d="M490 900H525"/><path class="wire" d="M710 900H750V578H799"/>
+<path class="wire" d="M1001 482H1050V330H1090"/><path class="wire" d="M1275 330H1310"/><path class="wire" d="M1495 330H1535"/>
+<path class="wire" d="M1015 530H1090"/><path class="wire" d="M1275 530H1310"/><path class="wire" d="M1495 530H1535"/>
+<path class="wire" d="M1001 578H1050V900H1195"/><path class="wire" d="M1390 900H1535"/>
+<!-- Threats -->
+<rect class="box" x="35" y="282" width="230" height="96" rx="4"/>
+<text x="150" y="310"><tspan x="150">Incomplete isolation</tspan><tspan x="150" dy="27">of process lines</tspan></text>
+<rect class="box" x="35" y="482" width="230" height="96" rx="4"/>
+<text x="150" y="523"><tspan x="150">Residual toxic gas</tspan><tspan x="150" dy="27">in vessel</tspan></text>
+<rect class="box" x="35" y="852" width="230" height="96" rx="4"/>
+<text x="150" y="907">Unauthorised entry</text>
+<!-- Preventive barriers, shown as vertical control blocks -->
+<rect class="prevent" x="305" y="270" width="185" height="120"/>
+<text x="397.5" y="323"><tspan x="397.5">Lockout-tagout</tspan><tspan x="397.5" dy="27">isolation</tspan></text>
+<rect class="prevent" x="525" y="270" width="185" height="120"/>
+<text x="617.5" y="310"><tspan x="617.5">Blind</tspan><tspan x="617.5" dy="27">installation</tspan><tspan x="617.5" dy="27">verification</tspan></text>
+<rect class="prevent" x="305" y="470" width="185" height="120"/>
+<text x="397.5" y="510"><tspan x="397.5">Atmospheric</tspan><tspan x="397.5" dy="27">testing</tspan><tspan x="397.5" dy="27">before entry</tspan></text>
+<rect class="prevent" x="525" y="470" width="185" height="120"/>
+<text x="617.5" y="523"><tspan x="617.5">Forced-air</tspan><tspan x="617.5" dy="27">ventilation</tspan></text>
+<rect class="prevent" x="305" y="840" width="185" height="120"/>
+<text x="397.5" y="880"><tspan x="397.5">Confined-space</tspan><tspan x="397.5" dy="27">entry permit</tspan></text>
+<rect class="prevent" x="525" y="840" width="185" height="120"/>
+<text x="617.5" y="880"><tspan x="617.5">Attendant controls</tspan><tspan x="617.5" dy="27">entry point</tspan></text>
+<!-- Escalation explicitly attached beneath atmospheric testing -->
+<path class="dash" d="M397.5 590V635"/>
+<rect class="escalate" x="267" y="635" width="261" height="76" rx="4"/>
+<text x="397.5" y="657" class="small label">ESCALATION FACTOR</text>
+<text x="397.5" y="681" class="small"><tspan x="397.5">Gas detector calibration overdue</tspan></text>
+<path class="dash" d="M397.5 711V735"/>
+<rect class="prevent" x="267" y="735" width="261" height="75"/>
+<text x="397.5" y="757" class="small label">ESCALATION BARRIER</text>
+<text x="397.5" y="780" class="small"><tspan x="397.5">Calibration and bump-test</tspan><tspan x="397.5" dy="21">programme</tspan></text>
+<!-- Central loss-of-control event -->
+<ellipse cx="900" cy="530" rx="115" ry="100" fill="#fff0ec" stroke="#ae503d" stroke-width="3"/>
+<text x="900" y="484" class="group">TOP EVENT</text>
+<text x="900" y="519" class="label"><tspan x="900">Entrant exposed</tspan><tspan x="900" dy="28">to hazardous</tspan><tspan x="900" dy="28">atmosphere</tspan></text>
+<!-- Mitigative barriers -->
+<rect class="mitigate" x="1090" y="270" width="185" height="120"/>
+<text x="1182.5" y="310"><tspan x="1182.5">Continuous</tspan><tspan x="1182.5" dy="27">personal</tspan><tspan x="1182.5" dy="27">gas monitor</tspan></text>
+<rect class="mitigate" x="1310" y="270" width="185" height="120"/>
+<text x="1402.5" y="323"><tspan x="1402.5">Standby</tspan><tspan x="1402.5" dy="27">rescue team</tspan></text>
+<rect class="mitigate" x="1090" y="470" width="185" height="120"/>
+<text x="1182.5" y="510"><tspan x="1182.5">Non-entry</tspan><tspan x="1182.5" dy="27">retrieval system</tspan></text>
+<rect class="mitigate" x="1310" y="470" width="185" height="120"/>
+<text x="1402.5" y="523"><tspan x="1402.5">Emergency</tspan><tspan x="1402.5" dy="27">rescue plan</tspan></text>
+<rect class="mitigate" x="1195" y="840" width="195" height="120"/>
+<text x="1292.5" y="880"><tspan x="1292.5">Emergency</tspan><tspan x="1292.5" dy="27">process shutdown</tspan></text>
+<!-- Consequences -->
+<rect class="box" x="1535" y="282" width="230" height="96" rx="4"/>
+<text x="1650" y="323"><tspan x="1650">Entrant loses</tspan><tspan x="1650" dy="27">consciousness</tspan></text>
+<rect class="box" x="1535" y="482" width="230" height="96" rx="4"/>
+<text x="1650" y="523"><tspan x="1650">Multiple-rescuer</tspan><tspan x="1650" dy="27">exposure</tspan></text>
+<rect class="box" x="1535" y="852" width="230" height="96" rx="4"/>
+<text x="1650" y="893"><tspan x="1650">Production release</tspan><tspan x="1650" dy="27">during rescue</tspan></text>
+</svg>

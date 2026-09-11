@@ -1,0 +1,11 @@
+# Comparison exemplar — T-chart
+
+**Scenario.** A mortgage adviser sets fixed-rate and adjustable-rate loans side by side before talking a first-time buyer through rates. Four points a side, one long enough to wrap — the case a T-chart most often gets wrong.
+
+**The shape is the name.** A T-chart is literally a T: the column headings sit above one heavy horizontal rule, and a rule of the same weight drops from it between the columns. The T is drawn in ink at 3 px, heavier than anything else on the page, so the structure reads before a single word does.
+
+**Each side has a colour and a panel.** Headings are set in 20 px bold in the column's own colour — blue on the left, plum on the right, the same pair that fills the two centres of a double bubble — and left-aligned with the bullets below, so heading and points share one edge. Each column's points lie on a pale panel of that colour, square under the crossbar and rounded at the foot. The panels give the chart the weight of a finished page, and both end at the same depth, so the stem runs down a clean gutter between two equal blocks.
+
+**Points read as a calm list.** Each point has a small dot in the column colour and 15 px text on a 23 px line; points are separated by white rules inside the panel rather than grey lines, so the separation is felt rather than seen. Columns flow on their own, because a T-chart's points are rarely pairs and forced shared rows leave holes wherever one side wraps. A long point wraps into even lines and never strands a single word, and a column is only as wide as its longest point needs, up to a comfortable reading measure.
+
+**Kit shared by all five comparison exemplars.** Title 22/600 at the top left. Ink `#1B2430` for text and structural rules, slate `#5F6B7A` for secondary text, hairline `#E4E9EE` between rows, wash `#F4F6F9` for zebra rows and the datum column. Colour appears only where it means something: green `#2E7A4E`, amber `#9A6A14` and red `#B03A3A` for yes / partly / no and for pro / con; green again for a winning option; blue `#28598C` and plum `#6B4F8C` for the things being compared — the columns of a T-chart and the two subjects of a double bubble. Body text is 13.5 on a 21 px line, headings 14–17 semibold. Every label is measured and checked to sit inside its cell, and no label overlaps another.

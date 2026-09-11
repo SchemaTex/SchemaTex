@@ -1,0 +1,45 @@
+{
+  "id": "network-campus-three-tier",
+  "type": "network",
+  "title": "University campus three-tier network",
+  "goal": "Show a tiered campus network with core, distribution, access, and VLAN-separated users.",
+  "rubric": [
+    {
+      "id": "edge",
+      "severity": "blocker",
+      "must": "The drawing visibly includes Campus edge router at the network edge or core."
+    },
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The picture visibly distinguishes core, distribution, and access tiers."
+    },
+    {
+      "id": "segmentation",
+      "severity": "blocker",
+      "must": "Science, Staff, and Wireless VLANs are visibly labelled as separate logical segments."
+    },
+    {
+      "id": "links",
+      "severity": "major",
+      "must": "Visible links show readable media, bandwidth, or VLAN/access annotations."
+    },
+    {
+      "id": "endpoints",
+      "severity": "major",
+      "must": "Representative user or service endpoints visibly attach to the appropriate access layer."
+    },
+    {
+      "id": "direction",
+      "severity": "minor",
+      "must": "The tiered layout makes the upstream WAN and downstream endpoint relationships readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. A campus network drawn as four labelled tier bands stacked down the sheet — edge, core, distribution and access — with the research and Internet WAN above them and the user endpoints below. The campus edge router and the perimeter firewall sit in the edge band, the core switch pair in the core band, the science and library distribution switches in the distribution band, and the two access switches plus the campus Wi-Fi access point in the access band. Every link is annotated with media, speed and either its VLAN trunk list or its access VLAN, and each endpoint wears a chip naming its VLAN. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

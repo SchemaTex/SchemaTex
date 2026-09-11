@@ -1,0 +1,26 @@
+# Supplier onboarding with compliance verification.
+bpmn
+direction: LR
+title: "Supplier Onboarding"
+pool "Supplier" blackbox
+pool "Company" {
+  lane "Procurement" {
+    A: start message "Application received"
+    B: task user "Review supplier profile"
+    G: gateway xor "Compliant?"
+    C: task send "Request remediation"
+  }
+  lane "Compliance" {
+    D: task user "Screen sanctions"
+    E: task user "Approve supplier"
+    F: end "Approved"
+    X: end "Rejected"
+  }
+}
+flows
+"Supplier" ~~> A : "Application"
+A --> B --> D --> G
+G --? "yes" --> E --> F
+G --* "no" --> C --> X
+C ~~> "Supplier" : "Remediation request"
+F ~~> "Supplier" : "Approval notice"

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <title>Insurance Claim Routing</title>
+  <rect width="1600" height="1000" fill="white"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#334155"/></marker>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b40; text-anchor: middle; font-size: 19px; }
+      .decision { fill: #f0f6fb; stroke: #334155; stroke-width: 2; }
+      .destination { fill: #f3f8f5; stroke: #334155; stroke-width: 2; }
+      .link { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+      .label { font-size: 18px; font-weight: 600; }
+    </style>
+  </defs>
+  <text x="800" y="49" style="font-size:30px;font-weight:600">Insurance Claim Routing</text>
+
+  <!-- Orthogonal routing connections -->
+  <path class="link" d="M555 175H420V305"/>
+  <text class="label" x="480" y="158">Yes</text>
+  <path class="link" d="M1045 175H1180V305"/>
+  <text class="label" x="1110" y="158">No</text>
+
+  <path class="link" d="M200 395H180V745"/>
+  <text class="label" x="152" y="450">Yes</text>
+  <path class="link" d="M640 395H650V495"/>
+  <text class="label" x="678" y="450">No</text>
+
+  <path class="link" d="M650 665V700H485V850"/>
+  <text class="label" x="548" y="687">Yes</text>
+  <path class="link" d="M865 580H885V780H780V850"/>
+  <text class="label" x="857" y="738">No</text>
+
+  <path class="link" d="M1400 395H1420V745"/>
+  <text class="label" x="1450" y="450">Yes</text>
+  <path class="link" d="M1180 485V525"/>
+  <text class="label" x="1208" y="512">No</text>
+
+  <path class="link" d="M950 620H920V800H1075V850"/>
+  <text class="label" x="948" y="759">Yes</text>
+  <path class="link" d="M1180 715V840H1390V870"/>
+  <text class="label" x="1235" y="828">No</text>
+
+  <!-- Five decisions from the routing definition -->
+  <polygon class="decision" points="800,85 1045,175 800,265 555,175"/>
+  <text x="800" y="151"><tspan x="800">Is the reported loss above</tspan><tspan x="800" dy="25">the fast-track value</tspan><tspan x="800" dy="25">threshold?</tspan></text>
+
+  <polygon class="decision" points="420,305 640,395 420,485 200,395"/>
+  <text x="420" y="383"><tspan x="420">Does the claim involve</tspan><tspan x="420" dy="25">injury or liability?</tspan></text>
+
+  <polygon class="decision" points="650,495 865,580 650,665 435,580"/>
+  <text x="650" y="568"><tspan x="650">Is there suspected</tspan><tspan x="650" dy="25">fraud indicator?</tspan></text>
+
+  <polygon class="decision" points="1180,305 1400,395 1180,485 960,395"/>
+  <text x="1180" y="371"><tspan x="1180">Is the claim type</tspan><tspan x="1180" dy="25">covered by</tspan><tspan x="1180" dy="25">automated rules?</tspan></text>
+
+  <polygon class="decision" points="1180,525 1410,620 1180,715 950,620"/>
+  <text x="1180" y="596"><tspan x="1180">Does the loss require</tspan><tspan x="1180" dy="25">repair network</tspan><tspan x="1180" dy="25">coordination?</tspan></text>
+
+  <!-- Six operational destinations -->
+  <rect class="destination" x="45" y="745" width="270" height="90"/>
+  <text x="180" y="782"><tspan x="180">Assign complex</tspan><tspan x="180" dy="25">casualty adjuster</tspan></text>
+
+  <rect class="destination" x="350" y="850" width="270" height="90"/>
+  <text x="485" y="887"><tspan x="485">Refer to special</tspan><tspan x="485" dy="25">investigations</tspan></text>
+
+  <rect class="destination" x="645" y="850" width="270" height="90"/>
+  <text x="780" y="887"><tspan x="780">Assign field</tspan><tspan x="780" dy="25">property adjuster</tspan></text>
+
+  <rect class="destination" x="1285" y="745" width="270" height="90"/>
+  <text x="1420" y="782"><tspan x="1420">Route to fast-track</tspan><tspan x="1420" dy="25">settlement</tspan></text>
+
+  <rect class="destination" x="940" y="850" width="270" height="90"/>
+  <text x="1075" y="875"><tspan x="1075">Assign desk adjuster</tspan><tspan x="1075" dy="25">and repair partner</tspan></text>
+
+  <rect class="destination" x="1255" y="870" width="270" height="90"/>
+  <text x="1390" y="907"><tspan x="1390">Assign standard</tspan><tspan x="1390" dy="25">claims handler</tspan></text>
+</svg>

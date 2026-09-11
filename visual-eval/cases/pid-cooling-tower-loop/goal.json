@@ -1,0 +1,45 @@
+{
+  "id": "pid-cooling-tower-loop",
+  "type": "pid",
+  "title": "Cooling tower circulating-water loop",
+  "goal": "A utility engineer can trace circulation, basin makeup and blowdown, and the cold-water temperature loop.",
+  "rubric": [
+    {
+      "id": "circulation-loop",
+      "severity": "blocker",
+      "must": "The basin, circulating pumps, process cooler, and cooling tower form a visible circulating-water path."
+    },
+    {
+      "id": "makeup-control",
+      "severity": "blocker",
+      "must": "LT-601 and LIC-601 visibly connect to LV-601, which is visibly piped from MakeupWater to the basin."
+    },
+    {
+      "id": "blowdown-control",
+      "severity": "major",
+      "must": "AT-601 and AIC-601 visibly connect to AV-601 on the basin blowdown line."
+    },
+    {
+      "id": "temperature-loop",
+      "severity": "major",
+      "must": "TT-601, TIC-601, and TV-601 form a readable temperature-control loop."
+    },
+    {
+      "id": "fail-positions",
+      "severity": "major",
+      "must": "LV-601 and AV-601 visibly show FC, while TV-601 visibly shows FO."
+    },
+    {
+      "id": "duty-standby-pumps",
+      "severity": "minor",
+      "must": "P-601A and P-601B are visibly labelled as circulating and standby pumps."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG visibly satisfies both blockers and the specified control-loop, fail-position, and pump-label requirements, while the picture omits required equipment and uses different tags."
+  }
+}

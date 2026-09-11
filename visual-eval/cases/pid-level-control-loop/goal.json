@@ -1,0 +1,49 @@
+{
+  "id": "pid-level-control-loop",
+  "type": "pid",
+  "title": "Vessel level control and shutdown",
+  "goal": "A reader can trace the vessel level regulation loop and the independent high-level inlet shutdown while distinguishing instrument locations, tags, and signal types.",
+  "rubric": [
+    {
+      "id": "outlet-control-path",
+      "severity": "blocker",
+      "must": "The vessel V-101 outlet is visibly connected through LV-101 to the product tank, and LV-101 is identifiable as an actuated control valve."
+    },
+    {
+      "id": "level-loop-connections",
+      "severity": "blocker",
+      "must": "The level measurement path connects V-101 to LT-101, then LIC-101, then the LV-101 actuator, with each endpoint identifiable."
+    },
+    {
+      "id": "independent-shutdown",
+      "severity": "blocker",
+      "must": "LSHH-202 senses V-101 and has a separate signal path to the inlet shutoff valve XV-202 that does not pass through LIC-101 or LV-101."
+    },
+    {
+      "id": "signal-line-distinctions",
+      "severity": "major",
+      "must": "Solid process piping, dashed electrical signals, pneumatic signals with diagonal marks, and dotted capillary sensing lines are visually distinguishable."
+    },
+    {
+      "id": "instrument-locations",
+      "severity": "major",
+      "must": "LT-101 and LSHH-202 have plain field instrument bubbles, while LIC-101 has a clearly visible control-room horizontal location mark."
+    },
+    {
+      "id": "loop-tag-association",
+      "severity": "major",
+      "must": "LT-101, LIC-101, and LV-101 are readable as loop 101 tags, while LSHH-202 and XV-202 are readable as separate loop 202 tags beside or inside their own symbols."
+    },
+    {
+      "id": "valve-fail-positions",
+      "severity": "major",
+      "must": "FC is legible beside the XV-202 shutoff actuator and FO is legible beside the LV-101 outlet control actuator."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required connections, instrument identities, signal styles, and fail positions, while the picture violates multiple blockers and major requirements."
+  }
+}

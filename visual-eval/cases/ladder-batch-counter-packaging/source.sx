@@ -1,0 +1,30 @@
+# Product photoeye pulses are counted to 12; counter done commands the diverter.
+# Reset is accepted only after the package-clear switch confirms discharge.
+ladder "Batch Counter Packaging"
+
+rung 0 "Count product photoeye pulses":
+  XIC(PackageRun)
+  ONS(ProductPhotoeye)
+  CTU(PackageCounter, PV=12)
+
+rung 1 "Divert full package at preset":
+  XIC(PackageCounter.Q)
+  OTE(DivertGate)
+
+rung 2 "Full package lamp":
+  XIC(PackageCounter.Q)
+  OTE(BatchFullLamp)
+
+rung 3 "Inhibit conveyor while diverting":
+  XIO(PackageCounter.Q)
+  OTE(PackageRun)
+
+rung 4 "Reset counter after discharge":
+  XIC(ResetPB)
+  XIC(PackageClear)
+  RES(PackageCounter)
+
+rung 5 "Reset full indication":
+  XIC(ResetPB)
+  XIC(PackageClear)
+  OTE(ResetAccepted)

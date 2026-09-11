@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000">
+<title>Shell and Tube Heat Exchanger — E-101 piping and temperature control</title>
+<defs>
+ <marker id="hotArrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0 8 3.5 0 7Z" fill="#9b432d"/></marker>
+ <marker id="coldArrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0 8 3.5 0 7Z" fill="#226786"/></marker>
+ <g id="gate"><path d="M-18-12 18 12V-12L-18 12Z" fill="white" stroke="currentColor" stroke-width="2.5"/></g>
+ <style>
+ text{font-family:Arial,Helvetica,sans-serif;fill:#202b32;font-size:18px} .tag{font-weight:700;font-size:21px}.small{font-size:16px}.pipe{fill:none;stroke-width:3;stroke-linejoin:round}.hot{stroke:#9b432d;color:#9b432d}.cold{stroke:#226786;color:#226786}.minor{fill:none;stroke:#226786;stroke-width:2}.instrument{fill:white;stroke:#202b32;stroke-width:2}.signal{fill:none;stroke:#202b32;stroke-width:2}.label{font-size:17px}
+ </style>
+</defs>
+<rect width="1500" height="1000" fill="white"/>
+<text x="60" y="55" font-size="30" font-weight="700">SHELL AND TUBE HEAT EXCHANGER</text>
+<text x="60" y="86" class="small">PIPING &amp; INSTRUMENTATION DIAGRAM · METRIC · FLOW LEFT TO RIGHT</text>
+<path d="M60 108H1440" stroke="#b9c2c8"/>
+<!-- Hot shell-side circuit: independent top entry and bottom outlet. -->
+<path class="pipe hot" d="M70 365H620V450"/>
+<path class="pipe hot" d="M830 600V700H1405"/>
+<path class="pipe hot" d="M120 365H180" marker-end="url(#hotArrow)"/>
+<path class="pipe hot" d="M1320 700H1405" marker-end="url(#hotArrow)"/>
+<use href="#gate" transform="translate(340 365)" class="hot"/>
+<text x="340" y="306" text-anchor="middle" class="tag">XV-101</text>
+<text x="340" y="332" text-anchor="middle" class="label">Hot Inlet Isolation</text>
+<text x="70" y="405" class="tag" fill="#9b432d">HOT GLYCOL SUPPLY</text>
+<text x="70" y="431" class="label">DN80 · shell side</text>
+<use href="#gate" transform="translate(1010 700)" class="hot"/>
+<text x="1010" y="752" text-anchor="middle" class="tag">XV-102</text>
+<text x="1010" y="780" text-anchor="middle" class="label">Hot Outlet Isolation</text>
+<!-- Control valve and diaphragm actuator -->
+<use href="#gate" transform="translate(1210 700)" class="hot"/>
+<path d="M1210 700V653M1184 653Q1210 610 1236 653Z" fill="white" stroke="#202b32" stroke-width="2.5"/>
+<text x="1260" y="626" class="tag">TV-101</text>
+<text x="1260" y="651" class="small">Diaphragm · FO</text>
+<text x="1210" y="817" text-anchor="middle" class="label">Hot Outlet Temperature Valve</text>
+<text x="1405" y="859" text-anchor="end" class="tag">HOT GLYCOL RETURN · DN80</text>
+<!-- Cold tube side: direct horizontal passage; branches have positive junction dots. -->
+<path class="pipe cold" d="M70 525H500M940 525H1405"/>
+<path class="pipe cold" d="M105 525H170M1320 525H1405" marker-end="url(#coldArrow)"/>
+<use href="#gate" transform="translate(290 525)" class="cold"/>
+<text x="290" y="576" text-anchor="middle" class="tag">XV-201</text>
+<text x="290" y="603" text-anchor="middle" class="label">Cold Inlet Isolation</text>
+<text x="70" y="655" class="tag">COOLING WATER SUPPLY</text>
+<text x="70" y="681" class="label">DN65 · tube side</text>
+<use href="#gate" transform="translate(1290 525)" class="cold"/>
+<text x="1290" y="454" text-anchor="middle" class="tag">XV-202</text>
+<text x="1290" y="480" text-anchor="middle" class="label">Cold Outlet Isolation</text>
+<text x="1405" y="568" text-anchor="end" class="tag">COOLING WATER RETURN</text>
+<text x="1405" y="593" text-anchor="end" class="label">DN65</text>
+<!-- Exchanger: capsule shell, tube bundle, and channel heads -->
+<rect x="500" y="450" width="440" height="150" rx="64" fill="white" stroke="#202b32" stroke-width="3"/>
+<path d="M552 458V592M888 458V592" stroke="#202b32" stroke-width="2.5" fill="none"/>
+<path d="M552 496H888M552 515H888M552 535H888M552 554H888" stroke="#226786" stroke-width="2"/>
+<path d="M500 525H552M888 525H940" class="pipe cold"/>
+<text x="740" y="393" text-anchor="middle" font-size="29" font-weight="700">E-101</text>
+<text x="740" y="420" text-anchor="middle">Shell-and-Tube Exchanger</text>
+<text x="597" y="476" text-anchor="end" class="small">S1</text>
+<text x="850" y="589" class="small">S2</text>
+<text x="483" y="502" text-anchor="end" class="small">T1</text>
+<text x="956" y="502" class="small">T2</text>
+<!-- Vent from tube outlet, drain from tube inlet -->
+<path class="minor" d="M1000 525V325"/>
+<circle cx="1000" cy="525" r="5" fill="#226786"/>
+<use href="#gate" transform="translate(1000 365) rotate(90)" class="cold"/>
+<path d="M989 325H1011" stroke="#226786" stroke-width="2"/>
+<text x="1035" y="345" class="tag">XV-301</text>
+<text x="1035" y="372">High-point Vent</text>
+<text x="1035" y="398" class="small">DN15 · vent</text>
+<path class="minor" d="M440 525V800"/>
+<circle cx="440" cy="525" r="5" fill="#226786"/>
+<use href="#gate" transform="translate(440 738) rotate(90)" class="cold"/>
+<path d="M429 800H451" stroke="#226786" stroke-width="2"/>
+<text x="476" y="729" class="tag">XV-302</text>
+<text x="476" y="756">Low-point Drain</text>
+<text x="476" y="783" class="small">DN15 · drain</text>
+<!-- Hot outlet temperature tap and loop, routed clear of both circuits. -->
+<circle cx="830" cy="647" r="4.5" fill="#9b432d"/>
+<path class="signal" d="M830 647H740"/>
+<path d="M770 641V653M777 641V653M784 641V653" stroke="#202b32" stroke-width="1.5"/>
+<circle cx="706" cy="647" r="34" class="instrument"/>
+<text x="706" y="642" text-anchor="middle" class="tag">TT</text>
+<text x="706" y="665" text-anchor="middle">101</text>
+<text x="700" y="705" text-anchor="middle" class="small">Field temperature</text>
+<text x="700" y="726" text-anchor="middle" class="small">transmitter</text>
+<!-- Electric signal goes below vessel, then outside the outlet piping -->
+<path class="signal" stroke-dasharray="8 6" d="M706 681V890H1450V200H874"/>
+<text x="953" y="883" class="small">ELECTRIC · TT-101 → TIC-101</text>
+<rect x="806" y="166" width="68" height="68" class="instrument"/>
+<circle cx="840" cy="200" r="32" class="instrument"/>
+<path d="M808 200H872" stroke="#202b32" stroke-width="2"/>
+<text x="840" y="192" text-anchor="middle" class="tag">TIC</text>
+<text x="840" y="222" text-anchor="middle">101</text>
+<text x="774" y="185" text-anchor="end">Outlet temperature controller</text>
+<text x="774" y="210" text-anchor="end" class="small">Control room · shared display</text>
+<!-- Pneumatic command follows an upper corridor and drops to diaphragm.
+ Crossing cold pipe uses a white underlay and an explicit bridge. -->
+<path d="M840 166V139H1210V510Q1230 525 1210 540V631" stroke="white" stroke-width="9" fill="none"/>
+<path class="signal" d="M840 166V139H1210V510Q1230 525 1210 540V631"/>
+<path d="M929 133 919 145M937 133 927 145M1109 133 1099 145M1117 133 1107 145M1204 275 1216 265M1204 283 1216 273M1204 425 1216 415M1204 433 1216 423M1204 606 1216 596M1204 614 1216 604" stroke="#202b32" stroke-width="2"/>
+<text x="1020" y="126" text-anchor="middle" class="small">PNEUMATIC COMMAND</text>
+<!-- Compact drafting key -->
+<path d="M60 924H1440" stroke="#b9c2c8"/>
+<path d="M60 956H105" class="pipe hot"/><text x="116" y="962" class="small">Hot glycol</text>
+<path d="M270 956H315" class="pipe cold"/><text x="326" y="962" class="small">Cooling water</text>
+<path d="M515 956H560" class="signal" stroke-dasharray="8 6"/><text x="574" y="962" class="small">Electric signal</text>
+<path d="M770 956H815M786 950 778 962M794 950 786 962" class="signal"/><text x="829" y="962" class="small">Pneumatic signal</text>
+<text x="1440" y="962" text-anchor="end" class="small">● Connected branch   ·   FO = fail open</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640">
+  <title>Double Fillet T-Joint — AWS, size 8 and length 100 on both sides</title>
+  <desc>A solid AWS reference line carries matching fillet triangles above and below it. Each triangle has size 8 on its left and length 100 on its right. A leader arrow points to the T-joint. The forked tail reads GMAW; WPS-18.</desc>
+  <rect width="1100" height="640" fill="white"/>
+  <g fill="#111" font-family="Helvetica, Arial, sans-serif">
+    <text x="70" y="75" font-size="32" font-weight="600">Double Fillet T-Joint</text>
+    <text x="70" y="112" font-size="20">AWS A2.4</text>
+  </g>
+  <g stroke="#111" stroke-width="3" fill="none" stroke-linejoin="miter" stroke-linecap="square">
+    <!-- Single AWS reference line and conventional forked tail. -->
+    <path d="M 400,220 H 790 M 790,220 L 835,190 M 790,220 L 835,250"/>
+    <!-- Aligned fillet symbols: other side above, arrow side below. -->
+    <path d="M 550,220 V 180 L 590,220 M 550,220 V 260 L 590,220"/>
+    <!-- Arrow terminates on the right-hand weld face. -->
+    <path d="M 400,220 L 320,470"/>
+    <!-- T-joint, shown in section. -->
+    <path d="M 150,480 H 430 V 514 H 150 Z"/>
+    <path d="M 270,480 V 330 H 310 V 480"/>
+  </g>
+  <g fill="#dadada" stroke="#111" stroke-width="2.5" stroke-linejoin="miter">
+    <path d="M 270,456 L 246,480 H 270 Z"/>
+    <path d="M 310,456 L 334,480 H 310 Z"/>
+  </g>
+  <path d="M 320,470 L 320,449 L 331,453 Z" fill="#111"/>
+  <g fill="#111" font-family="Helvetica, Arial, sans-serif" font-size="30">
+    <text x="514" y="205" text-anchor="end">8</text>
+    <text x="514" y="255" text-anchor="end">8</text>
+    <text x="615" y="205">100</text>
+    <text x="615" y="255">100</text>
+    <text x="850" y="228" font-size="24">GMAW; WPS-18</text>
+    <text x="290" y="562" text-anchor="middle" font-size="23">T-joint, both sides</text>
+  </g>
+</svg>

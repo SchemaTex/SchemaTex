@@ -1,0 +1,8 @@
+circuit "Potentiometer LED Dimmer" netlist
+V1 VCC GND value="12 V DC" label="V1"
+P1 VCC GND WIPER type=potentiometer value="10 kΩ linear" label="P1 DIMMER"
+R1 WIPER BASE value="4.7 kΩ" label="R1 BASE"
+R2 BASE GND value="100 kΩ" label="R2 PULL-DOWN"
+Q1 LED_K BASE GND type=npn value="BC547B" label="Q1"
+R3 VCC LED_A value="330 Ω, 0.5 W" label="R3 LED LIMIT"
+D1 LED_A LED_K type=led value="3 × warm white LEDs" label="D1 LED STRING"

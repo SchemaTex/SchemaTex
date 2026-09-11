@@ -1,0 +1,58 @@
+{
+  "id": "circuit-load-bank",
+  "type": "circuit",
+  "title": "Load bank pilot circuit",
+  "goal": "Reads like a control schematic: contacts and coils in recognisable positions, no wire crossing a symbol.",
+  "rubric": [
+    {
+      "id": "no-wire-through-body",
+      "severity": "blocker",
+      "must": "No wire passes through the inside of a component symbol."
+    },
+    {
+      "id": "all-nets-drawn",
+      "severity": "blocker",
+      "must": "Every component terminal that the netlist connects has a visible wire reaching it."
+    },
+    {
+      "id": "orthogonal-wires",
+      "severity": "minor",
+      "must": "Wires run horizontally or vertically, with corners rather than diagonals."
+    },
+    {
+      "id": "labels-attached",
+      "severity": "major",
+      "must": "Each reference designator and value sits beside its own symbol."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap, and no text is crossed by a wire."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Third pass. Fixes the engine's colliding selector label and sideways ground, gives every branch an even column pitch so no name touches a neighbour, and routes the left feed behind the control chain so nothing crosses."
+  },
+  "audit": {
+    "reviewedBy": "a practising electronics engineer checking a schematic before layout",
+    "at": "2026-09-07T19:03:47.169Z",
+    "verdict": "flawed",
+    "findings": [
+      {
+        "severity": "major",
+        "what": "The bare LED branches have no automotive transient or reverse-voltage protection.",
+        "why": "Series resistors limit forward current but cannot prevent LED reverse breakdown or excessive current during supply surges. The 15 A fuse will not protect these branches. Automotive supply protection requirements are described in [TI’s application note](https://www.ti.com/lit/an/snva681a/snva681a.pdf).",
+        "fix": "Add appropriately rated reverse-polarity protection and automotive transient suppression after F1, with the clamp voltage coordinated to the LED branches’ limits."
+      },
+      {
+        "severity": "minor",
+        "what": "LED current and resistor power ratings are not specified for the vehicle’s charging voltage.",
+        "why": "At 14.4 V with a 2 V LED, each 500 Ω branch draws 24.8 mA and dissipates 0.31 W while illuminated. That exceeds a 20 mA LED rating and a 0.25 W resistor’s continuous rating; flashing requires checking pulse ratings rather than assuming it is safe.",
+        "fix": "Specify LED and resistor ratings against the maximum operating voltage. For ordinary 20 mA LEDs on a supply reaching 14.4 V, use at least 680 Ω, 0.5 W for R1, R2, R4 and R5; also specify R3’s power rating."
+      }
+    ]
+  }
+}

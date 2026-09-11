@@ -1,0 +1,19 @@
+%% Multiplayer game entity hierarchy, components, and rendering dependency.
+classDiagram
+class Entity { <<abstract>> #position : Vector +update() : void }
+class Player { +score : int +move() : void }
+class NonPlayerCharacter { +behavior() : void }
+class Boss { +phase : int }
+class HealthComponent { -hitPoints : int +damage(amount : int) : void }
+class InventoryComponent { +add(item : Item) : void }
+class Item { +name : String }
+class Renderable { <<interface>> +draw() : void }
+class Renderer { +render(target : Renderable) : void }
+Player --|> Entity
+NonPlayerCharacter --|> Entity
+Boss --|> NonPlayerCharacter
+Player *-- HealthComponent
+Player *-- InventoryComponent
+InventoryComponent o-- "0..*" Item
+Player ..|> Renderable
+Renderer ..> Renderable : draws

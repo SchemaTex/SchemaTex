@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1020" width="1800" height="1020" role="img" aria-labelledby="title">
+  <title id="title">Software Architecture Decisions</title>
+  <rect width="1800" height="1020" fill="#ffffff"/>
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, sans-serif; text-anchor: middle; dominant-baseline: middle; fill: #213448; }
+    .connection { fill: none; stroke: #7b8a99; stroke-width: 2; stroke-linejoin: round; }
+    .root { fill: #213448; stroke: #213448; stroke-width: 2; }
+    .group { fill: #eaf0f5; stroke: #526d86; stroke-width: 2; }
+    .decision { fill: #ffffff; stroke: #7890a5; stroke-width: 1.6; }
+    .leaf { fill: #f6f8fa; stroke: #c4cfd9; stroke-width: 1.2; }
+    .root-label { font-size: 28px; font-weight: 700; fill: #ffffff; }
+    .group-label { font-size: 24px; font-weight: 700; }
+    .decision-label { font-size: 22px; font-weight: 600; }
+    .leaf-label { font-size: 20px; }
+  </style>
+  <!-- Orthogonal branches: root → topic → decision → rationale. -->
+  <g class="connection">
+    <path d="M740 510 H680 V255 H625 M680 510 V765 H625"/>
+    <path d="M1060 510 H1120 V255 H1175 M1120 510 V765 H1175"/>
+    <path d="M350 255 H320 V175 H295 M320 255 V335 H295"/>
+    <path d="M350 765 H320 V685 H295 M320 765 V845 H295"/>
+    <path d="M1450 255 H1480 V175 H1505 M1480 255 V335 H1505"/>
+    <path d="M1450 765 H1480 V685 H1505 M1480 765 V845 H1505"/>
+    <path d="M175 203 V225 M175 363 V385 M175 713 V735 M175 873 V895"/>
+    <path d="M1625 203 V225 M1625 363 V385 M1625 713 V735 M1625 873 V895"/>
+  </g>
+  <rect class="root" x="740" y="452" width="320" height="116" rx="8"/>
+  <text class="root-label" x="900" y="491">Software Architecture</text>
+  <text class="root-label" x="900" y="530">Decisions</text>
+
+  <rect class="group" x="350" y="215" width="275" height="80" rx="5"/>
+  <text class="group-label" x="487.5" y="255">System Boundaries</text>
+  <rect class="decision" x="55" y="147" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="175" y="175">Modular monolith</text>
+  <rect class="leaf" x="25" y="225" width="270" height="70" rx="3"/>
+  <text class="leaf-label" x="160" y="248">Extract only proven</text>
+  <text class="leaf-label" x="160" y="274">hotspots</text>
+  <rect class="decision" x="55" y="307" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="175" y="335">Public API</text>
+  <rect class="leaf" x="25" y="385" width="270" height="56" rx="3"/>
+  <text class="leaf-label" x="160" y="413">Versioned contracts</text>
+
+  <rect class="group" x="350" y="725" width="275" height="80" rx="5"/>
+  <text class="group-label" x="487.5" y="765">Data and Integration</text>
+  <rect class="decision" x="55" y="657" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="175" y="685">PostgreSQL</text>
+  <rect class="leaf" x="25" y="735" width="270" height="70" rx="3"/>
+  <text class="leaf-label" x="160" y="758">Transactional source</text>
+  <text class="leaf-label" x="160" y="784">of truth</text>
+  <rect class="decision" x="55" y="817" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="175" y="845">Event bus</text>
+  <rect class="leaf" x="25" y="895" width="270" height="70" rx="3"/>
+  <text class="leaf-label" x="160" y="918">Asynchronous</text>
+  <text class="leaf-label" x="160" y="944">domain events</text>
+
+  <rect class="group" x="1175" y="215" width="275" height="80" rx="5"/>
+  <text class="group-label" x="1312.5" y="255">Reliability</text>
+  <rect class="decision" x="1505" y="147" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="1625" y="175">Observability</text>
+  <rect class="leaf" x="1505" y="225" width="270" height="70" rx="3"/>
+  <text class="leaf-label" x="1640" y="248">Traces, metrics,</text>
+  <text class="leaf-label" x="1640" y="274">and logs</text>
+  <rect class="decision" x="1505" y="307" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="1625" y="335">Resilience</text>
+  <rect class="leaf" x="1505" y="385" width="270" height="56" rx="3"/>
+  <text class="leaf-label" x="1640" y="413">Timeouts and retries</text>
+
+  <rect class="group" x="1175" y="725" width="275" height="80" rx="5"/>
+  <text class="group-label" x="1312.5" y="765">Security</text>
+  <rect class="decision" x="1505" y="657" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="1625" y="685">Identity</text>
+  <rect class="leaf" x="1505" y="735" width="270" height="56" rx="3"/>
+  <text class="leaf-label" x="1640" y="763">OAuth 2.0 and OIDC</text>
+  <rect class="decision" x="1505" y="817" width="240" height="56" rx="4"/>
+  <text class="decision-label" x="1625" y="845">Secrets</text>
+  <rect class="leaf" x="1505" y="895" width="270" height="56" rx="3"/>
+  <text class="leaf-label" x="1640" y="923">Managed vault</text>
+</svg>

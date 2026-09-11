@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1080" viewBox="0 0 880 1080" role="img">
+<title>4-bit Ripple-Carry Adder</title>
+<desc>Gate-level 4-bit ripple-carry adder in ANSI/IEEE Std 91 distinctive-shape symbols, drawn as four identical full-adder stages stacked one above the other, bit 0 at the top. In each stage the two addend bits Ak and Bk enter on the left, drive an exclusive-OR whose output xk is the half sum and an AND whose output ak is the carry generate; a second exclusive-OR adds the incoming carry to xk to give the sum bit Sk, a second AND combines xk with the incoming carry to give the carry propagate bk, and an OR gate sums ak and bk into that stage's carry out. Cin enters the top stage from the left; every other stage takes its carry from the stage above along a lane that runs back across the sheet, which is the ripple the name refers to. The four sum bits and Cout leave on the right margin. All wires are orthogonal; filled dots mark junctions and plain crossings mark wires that pass without connecting.</desc>
+<rect x="0" y="0" width="880" height="1080" fill="#FFFFFF"/>
+<line x1="46" y1="96" x2="834" y2="96" stroke="#E2E8F0" stroke-width="1"/>
+<line x1="46" y1="1010" x2="834" y2="1010" stroke="#E2E8F0" stroke-width="1"/>
+<g fill="none" stroke="#1E293B" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter">
+<polyline points="62,148 186.25,148"/>
+<polyline points="112,148 112,298 190,298"/>
+<polyline points="62,172 186.25,172"/>
+<polyline points="88,172 88,322 190,322"/>
+<polyline points="250,160 332,160"/>
+<polyline points="300,160 300,186 376.25,186"/>
+<polyline points="332,160 332,258 380,258"/>
+<polyline points="62,126 356,126"/>
+<polyline points="344,126 344,282 380,282"/>
+<polyline points="356,126 356,210 376.25,210"/>
+<polyline points="250,310 500,310 500,246 575.25,246"/>
+<polyline points="440,270 575.25,270"/>
+<polyline points="440,198 780,198"/>
+<polyline points="62,358 186.25,358"/>
+<polyline points="112,358 112,508 190,508"/>
+<polyline points="62,382 186.25,382"/>
+<polyline points="88,382 88,532 190,532"/>
+<polyline points="250,370 332,370"/>
+<polyline points="300,370 300,396 376.25,396"/>
+<polyline points="332,370 332,468 380,468"/>
+<polyline points="630,258 680,258 680,336 344,336"/>
+<polyline points="356,336 356,420 376.25,420"/>
+<polyline points="344,336 344,492 380,492"/>
+<polyline points="250,520 500,520 500,456 575.25,456"/>
+<polyline points="440,480 575.25,480"/>
+<polyline points="440,408 780,408"/>
+<polyline points="62,568 186.25,568"/>
+<polyline points="112,568 112,718 190,718"/>
+<polyline points="62,592 186.25,592"/>
+<polyline points="88,592 88,742 190,742"/>
+<polyline points="250,580 332,580"/>
+<polyline points="300,580 300,606 376.25,606"/>
+<polyline points="332,580 332,678 380,678"/>
+<polyline points="630,468 680,468 680,546 344,546"/>
+<polyline points="356,546 356,630 376.25,630"/>
+<polyline points="344,546 344,702 380,702"/>
+<polyline points="250,730 500,730 500,666 575.25,666"/>
+<polyline points="440,690 575.25,690"/>
+<polyline points="440,618 780,618"/>
+<polyline points="62,778 186.25,778"/>
+<polyline points="112,778 112,928 190,928"/>
+<polyline points="62,802 186.25,802"/>
+<polyline points="88,802 88,952 190,952"/>
+<polyline points="250,790 332,790"/>
+<polyline points="300,790 300,816 376.25,816"/>
+<polyline points="332,790 332,888 380,888"/>
+<polyline points="630,678 680,678 680,756 344,756"/>
+<polyline points="356,756 356,840 376.25,840"/>
+<polyline points="344,756 344,912 380,912"/>
+<polyline points="250,940 500,940 500,876 575.25,876"/>
+<polyline points="440,900 575.25,900"/>
+<polyline points="440,828 780,828"/>
+<polyline points="630,888 780,888"/>
+</g>
+<g fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5" stroke-linejoin="round">
+<path d="M 190,136 Q 204,160 190,184 C 216,181.984 236,174.016 250,160 C 236,145.984 216,138.016 190,136 Z"/>
+<path d="M 181,136 Q 195,160 181,184" fill="none"/>
+<path d="M 380,174 Q 394,198 380,222 C 406,219.984 426,212.016 440,198 C 426,183.984 406,176.016 380,174 Z"/>
+<path d="M 371,174 Q 385,198 371,222" fill="none"/>
+<path d="M 380,246 H 416 A 24,24 0 0 1 416,294 H 380 Z"/>
+<path d="M 570,234 Q 584,258 570,282 C 596,279.984 616,272.016 630,258 C 616,243.984 596,236.016 570,234 Z"/>
+<path d="M 190,286 H 226 A 24,24 0 0 1 226,334 H 190 Z"/>
+<path d="M 190,346 Q 204,370 190,394 C 216,391.984 236,384.016 250,370 C 236,355.984 216,348.016 190,346 Z"/>
+<path d="M 181,346 Q 195,370 181,394" fill="none"/>
+<path d="M 380,384 Q 394,408 380,432 C 406,429.984 426,422.016 440,408 C 426,393.984 406,386.016 380,384 Z"/>
+<path d="M 371,384 Q 385,408 371,432" fill="none"/>
+<path d="M 380,456 H 416 A 24,24 0 0 1 416,504 H 380 Z"/>
+<path d="M 570,444 Q 584,468 570,492 C 596,489.984 616,482.016 630,468 C 616,453.984 596,446.016 570,444 Z"/>
+<path d="M 190,496 H 226 A 24,24 0 0 1 226,544 H 190 Z"/>
+<path d="M 190,556 Q 204,580 190,604 C 216,601.984 236,594.016 250,580 C 236,565.984 216,558.016 190,556 Z"/>
+<path d="M 181,556 Q 195,580 181,604" fill="none"/>
+<path d="M 380,594 Q 394,618 380,642 C 406,639.984 426,632.016 440,618 C 426,603.984 406,596.016 380,594 Z"/>
+<path d="M 371,594 Q 385,618 371,642" fill="none"/>
+<path d="M 380,666 H 416 A 24,24 0 0 1 416,714 H 380 Z"/>
+<path d="M 570,654 Q 584,678 570,702 C 596,699.984 616,692.016 630,678 C 616,663.984 596,656.016 570,654 Z"/>
+<path d="M 190,706 H 226 A 24,24 0 0 1 226,754 H 190 Z"/>
+<path d="M 190,766 Q 204,790 190,814 C 216,811.984 236,804.016 250,790 C 236,775.984 216,768.016 190,766 Z"/>
+<path d="M 181,766 Q 195,790 181,814" fill="none"/>
+<path d="M 380,804 Q 394,828 380,852 C 406,849.984 426,842.016 440,828 C 426,813.984 406,806.016 380,804 Z"/>
+<path d="M 371,804 Q 385,828 371,852" fill="none"/>
+<path d="M 380,876 H 416 A 24,24 0 0 1 416,924 H 380 Z"/>
+<path d="M 570,864 Q 584,888 570,912 C 596,909.984 616,902.016 630,888 C 616,873.984 596,866.016 570,864 Z"/>
+<path d="M 190,916 H 226 A 24,24 0 0 1 226,964 H 190 Z"/>
+</g>
+<g fill="#1E293B">
+<circle cx="112" cy="148" r="3.5"/>
+<circle cx="88" cy="172" r="3.5"/>
+<circle cx="300" cy="160" r="3.5"/>
+<circle cx="344" cy="126" r="3.5"/>
+<circle cx="112" cy="358" r="3.5"/>
+<circle cx="88" cy="382" r="3.5"/>
+<circle cx="300" cy="370" r="3.5"/>
+<circle cx="356" cy="336" r="3.5"/>
+<circle cx="112" cy="568" r="3.5"/>
+<circle cx="88" cy="592" r="3.5"/>
+<circle cx="300" cy="580" r="3.5"/>
+<circle cx="356" cy="546" r="3.5"/>
+<circle cx="112" cy="778" r="3.5"/>
+<circle cx="88" cy="802" r="3.5"/>
+<circle cx="300" cy="790" r="3.5"/>
+<circle cx="356" cy="756" r="3.5"/>
+</g>
+<g font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="290" y="151" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">x0</text>
+<text x="330" y="301" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">a0</text>
+<text x="470" y="261" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">b0</text>
+<text x="700" y="249" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">c0</text>
+<text x="290" y="361" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">x1</text>
+<text x="330" y="511" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">a1</text>
+<text x="470" y="471" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">b1</text>
+<text x="700" y="459" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">c1</text>
+<text x="290" y="571" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">x2</text>
+<text x="330" y="721" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">a2</text>
+<text x="470" y="681" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">b2</text>
+<text x="700" y="669" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">c2</text>
+<text x="290" y="781" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">x3</text>
+<text x="330" y="931" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">a3</text>
+<text x="470" y="891" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">b3</text>
+<text x="46" y="1038" font-size="11.5" fill="#64748B" text-anchor="start">Each bit is a full adder: Sk = Ak ⊕ Bk ⊕ ck−1</text>
+<text x="380" y="1038" font-size="11.5" fill="#64748B" text-anchor="start">ck = Ak·Bk + (Ak ⊕ Bk)·ck−1 — the carry ripples down the chain</text>
+<text x="46" y="56" font-size="20" fill="#1E293B" text-anchor="start" font-weight="600">4-bit Ripple-Carry Adder</text>
+<text x="46" y="80" font-size="11.5" fill="#64748B" text-anchor="start">ANSI / IEEE Std 91 distinctive-shape gates · signal flow left to right</text>
+<text x="834" y="80" font-size="11.5" fill="#64748B" text-anchor="end">filled dot = junction · plain crossing = no connection</text>
+<text x="54" y="152.5" font-size="13" fill="#1E293B" text-anchor="end">A0</text>
+<text x="54" y="176.5" font-size="13" fill="#1E293B" text-anchor="end">B0</text>
+<text x="54" y="362.5" font-size="13" fill="#1E293B" text-anchor="end">A1</text>
+<text x="54" y="386.5" font-size="13" fill="#1E293B" text-anchor="end">B1</text>
+<text x="54" y="572.5" font-size="13" fill="#1E293B" text-anchor="end">A2</text>
+<text x="54" y="596.5" font-size="13" fill="#1E293B" text-anchor="end">B2</text>
+<text x="54" y="782.5" font-size="13" fill="#1E293B" text-anchor="end">A3</text>
+<text x="54" y="806.5" font-size="13" fill="#1E293B" text-anchor="end">B3</text>
+<text x="54" y="130.5" font-size="13" fill="#1E293B" text-anchor="end">Cin</text>
+<text x="790" y="202.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">S0</text>
+<text x="790" y="412.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">S1</text>
+<text x="790" y="622.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">S2</text>
+<text x="790" y="832.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">S3</text>
+<text x="790" y="892.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">Cout</text>
+</g>
+</svg>

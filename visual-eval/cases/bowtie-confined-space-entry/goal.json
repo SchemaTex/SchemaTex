@@ -1,0 +1,45 @@
+{
+  "id": "bowtie-confined-space-entry",
+  "type": "bowtie",
+  "title": "Confined-space entry",
+  "goal": "Show controls preventing hazardous-atmosphere exposure and mitigating its consequences.",
+  "rubric": [
+    {
+      "id": "hazard-event",
+      "severity": "blocker",
+      "must": "A named hazard and the central top event Entrant exposed to hazardous atmosphere are visible."
+    },
+    {
+      "id": "preventative",
+      "severity": "blocker",
+      "must": "Multiple labelled threats through preventative barriers visibly lead from the left to the top event."
+    },
+    {
+      "id": "mitigative",
+      "severity": "blocker",
+      "must": "Multiple labelled consequences through mitigative barriers visibly lead from the top event to the right."
+    },
+    {
+      "id": "escalation",
+      "severity": "major",
+      "must": "An escalation factor and its barrier are visibly attached beneath a named preventive barrier."
+    },
+    {
+      "id": "geometry",
+      "severity": "major",
+      "must": "The picture has a clear left-threat, central-event, right-consequence bowtie geometry."
+    },
+    {
+      "id": "barrier-labels",
+      "severity": "minor",
+      "must": "Individual barrier labels are readable and distinguish prevention from mitigation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Both satisfy the blockers, but the SVG also shows the required escalation factor and escalation barrier attached beneath Atmospheric testing before entry, which the picture omits."
+  }
+}

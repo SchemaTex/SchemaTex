@@ -1,0 +1,41 @@
+{
+  "id": "comparison-buy-lease",
+  "type": "comparison",
+  "variant": "matrix",
+  "title": "Buy versus lease packaging line",
+  "goal": "A factory team can compare the trade-offs of buying or leasing a packaging line.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Buy and Lease are visible as parallel option columns."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The table visibly compares cash, maintenance, upgrade, and ownership criteria."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Yes/no and text differences are visually distinguishable."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "All comparison cells are readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The grid structure makes row-to-column comparison clear."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all criteria with parallel columns, four explicit comparison rows, readable cells, and distinct yes/no markers, while the picture lacks aligned upgrade and ownership comparisons."
+  }
+}

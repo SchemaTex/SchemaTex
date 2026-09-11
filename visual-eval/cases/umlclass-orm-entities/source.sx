@@ -1,0 +1,19 @@
+%% ORM entity layer for a clinical appointment application.
+classDiagram
+class BaseEntity { <<abstract>> #id : UUID #createdAt : Instant }
+class Patient { +medicalRecordNumber : String }
+class Practitioner { +licenseNumber : String }
+class Appointment { -startsAt : Instant +cancel() : void }
+class AppointmentNote { -body : Text }
+class Clinic { +name : String }
+class AppointmentRepository { <<interface>> +findByPatient(id : UUID) : Appointment[] }
+class AppointmentStatus { SCHEDULED CANCELLED COMPLETED }
+Patient --|> BaseEntity
+Practitioner --|> BaseEntity
+Appointment --|> BaseEntity
+Clinic --|> BaseEntity
+Appointment "0..*" --> "1" Patient : patient
+Appointment "0..*" --> "1" Practitioner : clinician
+Appointment *-- "0..*" AppointmentNote : notes
+Appointment --> AppointmentStatus : status
+AppointmentRepository ..> Appointment : persists

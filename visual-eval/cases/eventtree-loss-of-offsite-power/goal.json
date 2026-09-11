@@ -1,0 +1,39 @@
+{
+  "id": "eventtree-loss-of-offsite-power",
+  "type": "eventtree",
+  "title": "Loss of offsite power",
+  "goal": "Show generator and battery outcomes following a loss of offsite power.",
+  "rubric": [
+    {
+      "id": "initiating-event",
+      "severity": "blocker",
+      "must": "Loss of offsite power and its initiating frequency are visibly shown at the left."
+    },
+    {
+      "id": "generator-branch",
+      "severity": "blocker",
+      "must": "The emergency-generator function visibly branches to restored-power and failed-generator paths."
+    },
+    {
+      "id": "battery-conditional",
+      "severity": "blocker",
+      "must": "The battery function visibly appears only after the generator failure path."
+    },
+    {
+      "id": "three-outcomes",
+      "severity": "major",
+      "must": "Generator restoration, battery-supported DC power, and loss of essential AC/DC power are visibly distinct outcomes."
+    },
+    {
+      "id": "branch-probabilities",
+      "severity": "major",
+      "must": "Generator and battery success/failure probability labels are visible."
+    },
+    {
+      "id": "pruned-success-path",
+      "severity": "minor",
+      "must": "The generator-success path visibly terminates without proceeding to a battery branch."
+    }
+  ],
+  "split": "holdout"
+}

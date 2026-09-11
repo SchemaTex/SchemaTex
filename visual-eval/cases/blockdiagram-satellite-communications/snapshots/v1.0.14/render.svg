@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 1970 394" width="1970" height="394" role="img" data-diagram-type="blockdiagram"><title>Satellite communications link</title>
+<desc>Block diagram with 8 blocks, 0 summing junctions, 8 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #334155; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #0f172a; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #64748b; }
+.schematex-bd-sum { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #334155; }
+.schematex-bd-signal { stroke: #334155; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #334155; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #334155; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #0f172a; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: #0f172a; }
+.schematex-bd-branch { fill: #334155; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#334155"/></marker></defs>
+<text x="985" y="18" text-anchor="middle" class="schematex-bd-title">Satellite communications link</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 214 107 L 373.16666666666663 107 L 373.16666666666663 59 L 691.5 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="source" data-to="modem"/>
+<rect x="490.73333333333323" y="43" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="532.3333333333333" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="532.3333333333333" dy="0">baseband data</tspan></text>
+<path d="M 754.5 86 L 754.5 312 L 754.5 312 L 754.5 182" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="modem" data-to="antennatx"/>
+<rect x="716.1" y="296" width="76.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="754.5" y="308" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="754.5" dy="0">modulated RF</tspan></text>
+<path d="M 754.5 182 L 754.5 340 L 754.5 340 L 754.5 278" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="antennatx" data-to="satellite"/>
+<rect x="735.3" y="324" width="38.400000000000006" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="754.5" y="336" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="754.5" dy="0">uplink</tspan></text>
+<path d="M 854 251 L 936 251 L 936 155 L 1018 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="satellite" data-to="antennarx"/>
+<rect x="951.4" y="139" width="51.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="977" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="977" dy="0">downlink</tspan></text>
+<path d="M 1220 155 L 1432 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="antennarx" data-to="receiver"/>
+<rect x="1290.8" y="139" width="70.4" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1326" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1326" dy="0">received RF</tspan></text>
+<path d="M 1576 155 L 1798 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="receiver" data-to="destination"/>
+<rect x="1648.6" y="139" width="76.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1687" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1687" dy="0">decoded data</tspan></text>
+<path d="M 226 212 L 512 212 L 512 260 L 655 260" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="control" data-to="satellite"/>
+<rect x="525.9" y="244" width="115.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="583.5" y="256" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="583.5" dy="0">payload allocation</tspan></text>
+<path d="M 226 194 L 516.3333333333333 194 L 516.3333333333333 164 L 661.5 164" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="control" data-to="antennatx"/>
+<rect x="537.7166666666666" y="148" width="102.4" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="588.9166666666666" y="160" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="588.9166666666666" dy="0">pointing command</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(46, 80)" data-block-id="source" data-block-role="input"><rect width="168" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="2"/>
+<text x="84" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="84" dy="0">Ground Data Source</tspan></text></g>
+<g transform="translate(691.5, 32)" data-block-id="modem" data-block-role="generic"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Uplink Modem</tspan></text></g>
+<g transform="translate(661.5, 128)" data-block-id="antennatx" data-block-role="actuator"><rect width="186" height="54" fill="#dcfce7" class="schematex-bd-block" rx="2"/>
+<text x="93" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="93" dy="0">Ground Uplink Antenna</tspan></text></g>
+<g transform="translate(655, 224)" data-block-id="satellite" data-block-role="generic"><rect width="199" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="99.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="99.5" dy="0">Communications Satellite</tspan></text></g>
+<g transform="translate(1018, 128)" data-block-id="antennarx" data-block-role="generic"><rect width="202" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="101" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="101" dy="0">Remote Downlink Antenna</tspan></text></g>
+<g transform="translate(1432, 128)" data-block-id="receiver" data-block-role="generic"><rect width="144" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="72" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="72" dy="0">Remote Receiver</tspan></text></g>
+<g transform="translate(1798, 128)" data-block-id="destination" data-block-role="output"><rect width="138" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="69" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="69" dy="0">Remote Network</tspan></text></g>
+<g transform="translate(34, 176)" data-block-id="control" data-block-role="controller"><rect width="192" height="54" fill="#dbeafe" class="schematex-bd-block" rx="2"/>
+<text x="96" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="96" dy="0">Network Control Centre</tspan></text></g></g>
+<g class="schematex-bd-branches"><circle cx="226" cy="203" r="3.5" class="schematex-bd-branch"/></g></g></svg>

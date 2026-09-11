@@ -1,0 +1,10 @@
+circuit "RS-485 Multidrop Bus" netlist
+# Half-duplex 3.3 V bus; 120 Ω termination is fitted at the two physical ends only.
+V1 VCC COM value="3.3 V" label="V1 LOGIC SUPPLY"
+U1 VCC COM A B type=ic pins="VCC,GND,A,B" value="MAX3485" label="U1 NODE 1 LEFT END"
+U2 VCC COM A B type=ic pins="VCC,GND,A,B" value="MAX3485" label="U2 NODE 2"
+U3 VCC COM A B type=ic pins="VCC,GND,A,B" value="MAX3485" label="U3 NODE 3 RIGHT END"
+R1 A B value="120 Ω" label="RT1 LEFT TERMINATION"
+R2 A B value="120 Ω" label="RT2 RIGHT TERMINATION"
+R3 VCC A value="680 Ω" label="RPU FAIL-SAFE"
+R4 B COM value="680 Ω" label="RPD FAIL-SAFE"

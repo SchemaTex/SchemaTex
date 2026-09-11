@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Building Permit Portal" width="1312" height="619" viewBox="0 0 1312 619" data-diagram-type="usecase"><title>Use Case Diagram — Building Permit Portal</title>
+<desc>Subject: Municipal Permit Portal. 5 actors, 7 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="656" y="24" class="sx-uc-title" text-anchor="middle">Building Permit Portal</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="161.60000000000002" y="58" width="934" height="537" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="628.6" y="82" text-anchor="middle">Municipal Permit Portal</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 65.6 378.5 L 45.6 378.5 L 45.6 258.5 L 65.6 258.5" data-source="LA" data-target="A" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 101.6 260.5 L 245.42 201.58" data-source="A" data-target="Submit"/>
+<path class="sx-uc-assoc" d="M 101.6 260.5 L 241.77 276.11" data-source="A" data-target="Track"/>
+<path class="sx-uc-assoc" d="M 1155.6 200.5 L 742.83 387.76" data-source="PR" data-target="Review"/>
+<path class="sx-uc-include" d="M 483.6 163 L 586.6 163" data-source="Submit" data-target="Property" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 441.7 198.97 L 623.16 262.89" data-source="Submit" data-target="Pay" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 404.28 208.57 L 653.91 384.45" data-source="Submit" data-target="Review" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 772.6 411 L 899.6 411" data-source="Review" data-target="Issue" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 736.08 190.18 L 1155.6 446.5" data-source="Property" data-target="REG"/>
+<path class="sx-uc-assoc" d="M 800.93 296.31 L 1155.6 326.5" data-source="Pay" data-target="PS"/>
+<path class="sx-uc-extend" d="M 663.93 505.76 L 385.36 211.36" data-source="Revise" data-target="Submit" marker-end="url(#sx-uc-open-arrow-accent)"/>
+<path class="sx-uc-assoc" d="M 101.6 260.5 L 634.39 508.38" data-source="A" data-target="Revise"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="A" transform="translate(61.60000000000002, 236.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Applicant</text></g>
+<g class="sx-uc-actor" data-id="LA" transform="translate(61.60000000000002, 356.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Licensed Architect</text></g>
+<g class="sx-uc-actor" data-id="PR" transform="translate(1155.6, 176.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">PlanReviewer</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="PS" transform="translate(1155.6, 302.5)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Payment Service</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="REG" transform="translate(1155.6, 422.5)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Property Registry</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Submit"><ellipse cx="339.6" cy="163" rx="144" ry="51"/>
+<text class="sx-uc-name" x="339.6" y="130" text-anchor="middle">Submit Permit Application</text>
+<line class="sx-uc-div" x1="203.60000000000002" y1="138" x2="475.6" y2="138"/>
+<text class="sx-uc-extpoint-head" x="211.60000000000002" y="152">extension points</text>
+<text class="sx-uc-extpoint" x="211.60000000000002" y="165">incomplete plans</text></g>
+<g class="sx-uc-usecase" data-id="Track"><ellipse cx="339.6" cy="287" rx="105" ry="30"/>
+<text class="sx-uc-name" x="339.6" y="291" text-anchor="middle">Track Application</text></g>
+<g class="sx-uc-usecase" data-id="Property"><ellipse cx="691.6" cy="163" rx="105" ry="30"/>
+<text class="sx-uc-name" x="691.6" y="167" text-anchor="middle">Validate Property</text></g>
+<g class="sx-uc-usecase" data-id="Pay"><ellipse cx="691.6" cy="287" rx="115" ry="30"/>
+<text class="sx-uc-name" x="691.6" y="291" text-anchor="middle">Pay Application Fee</text></g>
+<g class="sx-uc-usecase" data-id="Review"><ellipse cx="691.6" cy="411" rx="81" ry="30"/>
+<text class="sx-uc-name" x="691.6" y="415" text-anchor="middle">Review Plans</text></g>
+<g class="sx-uc-usecase" data-id="Revise"><ellipse cx="691.6" cy="535" rx="124" ry="30"/>
+<text class="sx-uc-name" x="691.6" y="539" text-anchor="middle">Request Plan Revision</text></g>
+<g class="sx-uc-usecase" data-id="Issue"><ellipse cx="980.6" cy="411" rx="81" ry="30"/>
+<text class="sx-uc-name" x="980.6" y="415" text-anchor="middle">Issue Permit</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="504.1" y="155" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="535.1" y="166" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="501.4286130620005" y="222.92826141956837" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="532.4286130620005" y="233.92826141956837" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="498.0925713747448" y="288.50612983220657" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="529.0925713747448" y="299.50612983220657" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="805.1" y="403" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="836.1" y="414" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="415.642851556737" y="338.55664994064244" width="218" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="524.642851556737" y="349.55664994064244" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="524.642851556737" y="361.55664994064244" text-anchor="middle">[documents incomplete]</text>
+<text class="sx-uc-edge-label" x="524.642851556737" y="373.55664994064244" text-anchor="middle">(extension point: incomplete plans)</text></g></g></svg>

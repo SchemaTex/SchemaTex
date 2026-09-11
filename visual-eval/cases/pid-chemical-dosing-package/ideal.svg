@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="900" viewBox="0 0 1800 900">
+<title>Chemical Dosing Package — Piping and Instrumentation Diagram</title>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#172b3a"/></marker>
+ <style>
+ .pipe,.equipment,.instrument{fill:none;stroke:#172b3a;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+ .electric{fill:none;stroke:#235c86;stroke-width:2;stroke-dasharray:9 6;marker-end:url(#arrow)}
+ .pneumatic{fill:none;stroke:#235c86;stroke-width:2}
+ text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a;font-size:18px}
+ .tag{font-size:21px;font-weight:700;text-anchor:middle}
+ .desc{font-size:17px;text-anchor:middle}
+ .small{font-size:15px}
+ .signal-label{font-size:16px;fill:#235c86}
+ .bubble{fill:white;stroke:#172b3a;stroke-width:2.2}
+ </style>
+</defs>
+<rect width="1800" height="900" fill="white"/>
+<text x="60" y="65" font-size="32" font-weight="700">CHEMICAL DOSING PACKAGE</text>
+<text x="60" y="98" font-size="18">PIPING &amp; INSTRUMENTATION DIAGRAM · METRIC · FLOW LEFT TO RIGHT</text>
+<path d="M60 119H1740" stroke="#172b3a" stroke-width="1.5"/>
+<!-- Continuous chemical dosing path -->
+<g class="pipe">
+ <path d="M145 560V650H330V560" marker-end="url(#arrow)"/>
+ <path d="M365 600V680H490V540H524" marker-end="url(#arrow)"/>
+ <path d="M596 540H670V590H726" marker-end="url(#arrow)"/>
+ <path d="M774 465H845V540H903" marker-end="url(#arrow)"/>
+ <path d="M947 540H1078" marker-end="url(#arrow)"/>
+ <path d="M1122 540H1268" marker-end="url(#arrow)"/>
+ <path d="M1312 540H1490" marker-end="url(#arrow)"/>
+</g>
+<!-- TK-701 atmospheric tank: open vented top -->
+<path class="equipment" d="M85 390V560H205V390M85 403H205"/>
+<path d="M87 485H203" stroke="#172b3a" stroke-width="1.5"/>
+<text class="tag" x="145" y="345">TK-701</text>
+<text class="desc" x="145" y="371">Chemical Dosing Tank</text>
+<!-- AG-701 stirred tank -->
+<path class="equipment" d="M300 440Q365 412 430 440V574Q430 600 365 600Q300 600 300 574Z"/>
+<path class="equipment" d="M365 416V549M338 540L392 553M338 553L392 540"/>
+<rect class="equipment" x="349" y="391" width="32" height="25"/>
+<path d="M302 493H428" stroke="#172b3a" stroke-width="1.5"/>
+<text class="tag" x="365" y="345">AG-701</text>
+<text class="desc" x="365" y="371">Agitated Dosing Tank</text>
+<!-- Diaphragm metering pump -->
+<circle class="equipment" cx="560" cy="540" r="36"/>
+<path class="equipment" d="M550 509Q576 540 550 571M541 526H563M541 540H569M541 554H563M544 577L532 598H588L576 577"/>
+<text class="tag" x="560" y="445">P-701</text>
+<text class="desc" x="560" y="471">Metering Pump</text>
+<text class="desc" x="560" y="493">Diaphragm</text>
+<!-- Vertical calibration column -->
+<path class="equipment" d="M726 421C726 400 774 400 774 421V604C774 625 726 625 726 604Z"/>
+<path class="equipment" d="M726 421Q750 436 774 421M726 604Q750 590 774 604"/>
+<path d="M737 445H751M737 461H745M737 477H751M737 493H745M737 509H751M737 525H745M737 541H751M737 557H745M737 573H751" fill="none" stroke="#172b3a" stroke-width="1.4"/>
+<text class="tag" x="750" y="666">C-701</text>
+<text class="desc" x="750" y="692">Calibration Column</text>
+<!-- Calibration isolation gate valve -->
+<path class="equipment" d="M903 523L947 557V523L903 557ZM925 540V501M911 501H939"/>
+<text class="tag" x="925" y="604">XV-701</text>
+<text class="desc" x="925" y="630">Calibration Isolation</text>
+<!-- Dosing control valve, diaphragm actuator, fail closed -->
+<path class="equipment" d="M1078 522L1122 558V522L1078 558ZM1100 540V490M1072 490Q1072 460 1100 460Q1128 460 1128 490Z"/>
+<text x="1141" y="484" font-size="18" font-weight="700">FC</text>
+<text class="tag" x="1100" y="604">FV-701</text>
+<text class="desc" x="1100" y="630">Dosing Control Valve</text>
+<!-- Injection check valve; seat on downstream side -->
+<path class="equipment" d="M1268 522L1298 540L1268 558ZM1303 521V559M1303 540H1312"/>
+<text class="tag" x="1300" y="604">NRV-701</text>
+<text class="desc" x="1300" y="630">Injection Check Valve</text>
+<!-- Process mixing header horizontal vessel -->
+<path class="equipment" d="M1520 485H1685C1725 485 1725 595 1685 595H1520C1480 595 1480 485 1520 485Z"/>
+<path class="equipment" d="M1540 595V613M1665 595V613"/>
+<text class="tag" x="1602" y="657">V-702</text>
+<text class="desc" x="1602" y="683">Process Mixing Header</text>
+<!-- Calibration flow instruments: field transmitter and control room indicator -->
+<path class="instrument" d="M750 407V355"/>
+<circle class="bubble" cx="750" cy="320" r="35"/>
+<text text-anchor="middle" x="750" y="316">FT</text><text text-anchor="middle" x="750" y="339" font-size="17">701</text>
+<path class="electric" d="M750 285V235"/>
+<circle class="bubble" cx="750" cy="200" r="35"/>
+<path class="instrument" d="M715 200H785"/>
+<text text-anchor="middle" x="750" y="190">FI</text><text text-anchor="middle" x="750" y="225" font-size="17">701</text>
+<text class="signal-label" x="793" y="264">Electric</text>
+<!-- pH measurement and controller -->
+<path class="instrument" d="M1602 485V435"/>
+<circle class="bubble" cx="1602" cy="400" r="35"/>
+<text text-anchor="middle" x="1602" y="396">AT</text><text text-anchor="middle" x="1602" y="419" font-size="17">701</text>
+<text x="1650" y="406">pH</text>
+<path class="electric" d="M1602 365V220H1140"/>
+<text class="signal-label" x="1372" y="205">pH measurement · electric</text>
+<!-- Shared display controller: circle in square with room location line -->
+<rect class="bubble" x="1060" y="180" width="80" height="80"/>
+<circle class="bubble" cx="1100" cy="220" r="35"/>
+<path class="instrument" d="M1065 220H1135"/>
+<text text-anchor="middle" x="1100" y="210">AIC</text><text text-anchor="middle" x="1100" y="245" font-size="17">701</text>
+<text x="1160" y="266" font-size="18">Setpoint: pH 7.0</text>
+<!-- Pneumatic command: conventional paired diagonal strokes -->
+<path class="pneumatic" d="M1100 260V460" marker-end="url(#arrow)"/>
+<path class="pneumatic" d="M1093 315L1107 305M1093 324L1107 314M1093 380L1107 370M1093 389L1107 379"/>
+<text class="signal-label" x="1120" y="349">Pneumatic command</text>
+<!-- Pipe sizes and services -->
+<text text-anchor="middle" x="237" y="706" font-size="16">DN25 · chemical solution</text>
+<text text-anchor="middle" x="463" y="733" font-size="16">DN20 · chemical solution</text>
+<text text-anchor="middle" x="644" y="641" font-size="16">DN15</text>
+<text text-anchor="middle" x="889" y="464" font-size="16">DN15</text>
+<text text-anchor="middle" x="1010" y="569" font-size="16">DN15</text>
+<text text-anchor="middle" x="1195" y="569" font-size="16">DN15</text>
+<text text-anchor="middle" x="1395" y="510" font-size="16">DN15</text>
+<text text-anchor="middle" x="1395" y="574" font-size="15">Chemical injection</text>
+<text x="819" y="738" font-size="17">P-701 to NRV-701: dosing solution</text>
+<!-- Legend and operating note -->
+<path d="M60 777H1740" stroke="#172b3a" stroke-width="1.2"/>
+<path class="pipe" d="M60 811H125" marker-end="url(#arrow)"/><text x="140" y="817" font-size="16">Process flow</text>
+<path class="electric" d="M310 811H375"/><text x="390" y="817" font-size="16">Electric signal</text>
+<path class="pneumatic" d="M575 811H640M600 804L592 818M609 804L601 818"/><text x="655" y="817" font-size="16">Pneumatic signal</text>
+<text x="899" y="817" font-size="16">FC = fails closed</text>
+<text x="60" y="861" font-size="17">OPERATING BASIS: Adjust dosing solution to pH 7.0. Verify metering rate in C-701 calibration column.</text>
+</svg>

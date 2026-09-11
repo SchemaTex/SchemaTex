@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="E-learning Platform" width="1042" height="722" viewBox="0 0 1042 722" data-diagram-type="usecase"><title>Use Case Diagram — E-learning Platform</title>
+<desc>Subject: Learning Management System. 4 actors, 7 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="521" y="24" class="sx-uc-title" text-anchor="middle">E-learning Platform</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="158.4" y="58" width="668" height="640" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="492.4" y="82" text-anchor="middle">Learning Management System</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 62.4 430 L 42.4 430 L 42.4 310 L 62.4 310" data-source="PL" data-target="L" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 98.4 312 L 289.67 169.39" data-source="L" data-target="Browse"/>
+<path class="sx-uc-assoc" d="M 98.4 312 L 243.42 282.74" data-source="L" data-target="Enroll"/>
+<path class="sx-uc-assoc" d="M 98.4 312 L 253.02 364.9" data-source="L" data-target="Content"/>
+<path class="sx-uc-assoc" d="M 98.4 312 L 275.3 468.73" data-source="L" data-target="Submit"/>
+<path class="sx-uc-assoc" d="M 886.4 312 L 699.2 485.46" data-source="I" data-target="Grade"/>
+<path class="sx-uc-include" d="M 390.15 289.11 L 610.52 369.01" data-source="Enroll" data-target="Auth" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 460.4 390 L 587.4 390" data-source="Content" data-target="Auth" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 413.54 482.41 L 610.52 410.99" data-source="Submit" data-target="Auth" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 437.4 514 L 568.4 514" data-source="Submit" data-target="Grade" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 738.03 405.33 L 886.4 438" data-source="Auth" data-target="IDP"/>
+<path class="sx-uc-extend" d="M 599.57 613.05 L 413.54 545.59" data-source="Proctor" data-target="Submit" marker-end="url(#sx-uc-open-arrow-accent)"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="L" transform="translate(58.400000000000006, 288)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Learner</text></g>
+<g class="sx-uc-actor" data-id="PL" transform="translate(58.400000000000006, 408)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Proctored Learner</text></g>
+<g class="sx-uc-actor" data-id="I" transform="translate(886.4, 288)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Instructor</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="IDP" transform="translate(886.4, 414)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Identity Provider</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Browse"><ellipse cx="326.4" cy="142" rx="90" ry="30"/>
+<text class="sx-uc-name" x="326.4" y="146" text-anchor="middle">Browse Courses</text></g>
+<g class="sx-uc-usecase" data-id="Enroll"><ellipse cx="326.4" cy="266" rx="100" ry="30"/>
+<text class="sx-uc-name" x="326.4" y="270" text-anchor="middle">Enroll in Course</text></g>
+<g class="sx-uc-usecase" data-id="Content"><ellipse cx="326.4" cy="390" rx="134" ry="30"/>
+<text class="sx-uc-name" x="326.4" y="394" text-anchor="middle">Access Learning Content</text></g>
+<g class="sx-uc-usecase" data-id="Submit"><ellipse cx="326.4" cy="514" rx="111" ry="51"/>
+<text class="sx-uc-name" x="326.4" y="481" text-anchor="middle">Submit Assessment</text>
+<line class="sx-uc-div" x1="223.39999999999998" y1="489" x2="429.4" y2="489"/>
+<text class="sx-uc-extpoint-head" x="231.39999999999998" y="503">extension points</text>
+<text class="sx-uc-extpoint" x="231.39999999999998" y="516">proctoring required</text></g>
+<g class="sx-uc-usecase" data-id="Auth"><ellipse cx="668.4" cy="390" rx="81" ry="30"/>
+<text class="sx-uc-name" x="668.4" y="394" text-anchor="middle">Authenticate</text></g>
+<g class="sx-uc-usecase" data-id="Grade"><ellipse cx="668.4" cy="514" rx="100" ry="30"/>
+<text class="sx-uc-name" x="668.4" y="518" text-anchor="middle">Grade Assessment</text></g>
+<g class="sx-uc-usecase" data-id="Proctor"><ellipse cx="668.4" cy="638" rx="124" ry="30"/>
+<text class="sx-uc-name" x="668.4" y="642" text-anchor="middle">Run Remote Proctoring</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="469.3337259782339" y="321.0636901207632" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="500.3337259782339" y="332.0636901207632" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="492.9" y="382" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="523.9" y="393" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="481.0274368607402" y="438.69648488090115" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="512.0274368607402" y="449.69648488090115" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="471.9" y="506" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="502.9" y="517" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="388.55519980037207" y="559.3194291673864" width="236" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="506.55519980037207" y="570.3194291673864" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="506.55519980037207" y="582.3194291673864" text-anchor="middle">[high-stakes exam]</text>
+<text class="sx-uc-edge-label" x="506.55519980037207" y="594.3194291673864" text-anchor="middle">(extension point: proctoring required)</text></g></g></svg>

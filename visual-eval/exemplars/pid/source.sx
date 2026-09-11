@@ -1,0 +1,41 @@
+# Vessel level control with an independent high-level shutdown.
+# Two level paths leave V-101 and must never touch: LT-101 reports to the DCS
+# controller LIC-101, which modulates LV-101; LSHH-202 trips the inlet valve
+# XV-202 through hardwired interlock I-202, with no path through the DCS.
+pid "Vessel Level Control with High-Level Shutdown"
+
+equip TK-100 : tank_atm [tag: "Feed Tank"]
+equip XV-202 : valve_control [tag: "Inlet Shutoff", actuator: "solenoid", fail: "FC"]
+equip V-101 : vessel_v [tag: "Surge Vessel"]
+equip PSV-105 : valve_psv [tag: "Vessel Relief", set_pressure: "150 psig"]
+equip HV-103 : valve_gate [tag: "Suction Isolation"]
+equip P-101 : pump_centrifugal [tag: "Transfer Pump"]
+equip CV-104 : valve_check [tag: "Discharge Check"]
+equip LV-101 : valve_control [tag: "Level Control Valve", actuator: "diaphragm", fail: "FO"]
+equip TK-102 : tank_atm [tag: "Product Tank"]
+
+line L1 from TK-100.bottom to XV-202.in [type: process]
+line L2 from XV-202.out to V-101.top [type: process]
+line L3 from V-101.bottom to HV-103.in [type: process]
+line L4 from HV-103.out to P-101.in [type: process]
+line L5 from P-101.out to CV-104.in [type: process]
+line L6 from CV-104.out to LV-101.in [type: process]
+line L7 from LV-101.out to TK-102.top [type: process]
+line L8 from V-101.top to PSV-105.in [type: process_minor]
+
+inst LT-101 : field_discrete
+  measures V-101
+inst LIC-101 : cr_shared
+  controls LV-101
+inst LSHH-202 : field_discrete
+  measures V-101
+inst I-202 : interlock
+inst PI-106 : field_discrete
+  measures L5
+
+line s1 from V-101.right to LT-101 [type: capillary]
+line s2 from LT-101 to LIC-101 [type: electric]
+line s3 from LIC-101 to LV-101.signal [type: pneumatic]
+line s4 from V-101.left to LSHH-202 [type: capillary]
+line s5 from LSHH-202 to I-202 [type: electric]
+line s6 from I-202 to XV-202.signal [type: electric]

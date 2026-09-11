@@ -1,0 +1,23 @@
+# Public charging hub concept: supply transformer, protected LV board, managed chargers and a dedicated load-management controller.
+sld "EV Charging Hub · 12 Bay" [standard: ansi]
+GRID = utility [voltage: "11kV", rating: "250 MVA", label: "11 kV Utility Supply"]
+TX = transformer [rating: "1600 kVA, 11kV/400V", label: "Charging Hub Transformer"]
+MAIN = breaker [rating: "2500 A, 50 kA", label: "Main LV Breaker"]
+BUS = bus [voltage: "400V", label: "Charging Distribution Board"]
+F1 = breaker [rating: "630 A", label: "Feeder DC Chargers A"]
+F2 = breaker [rating: "630 A", label: "Feeder DC Chargers B"]
+F3 = breaker [rating: "250 A", label: "Feeder AC Chargers"]
+DC1 = load [rating: "300 kW", label: "DC Chargers 1–4"]
+DC2 = load [rating: "300 kW", label: "DC Chargers 5–8"]
+AC = load [rating: "176 kW", label: "AC Chargers 9–12"]
+LMC = load [rating: "Load management controller", label: "Dynamic Load Management"]
+GRID -> TX
+TX -> MAIN
+MAIN -> BUS
+BUS -> F1
+F1 -> DC1
+BUS -> F2
+F2 -> DC2
+BUS -> F3
+F3 -> AC
+BUS -> LMC

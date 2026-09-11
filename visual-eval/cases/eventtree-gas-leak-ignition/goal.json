@@ -1,0 +1,39 @@
+{
+  "id": "eventtree-gas-leak-ignition",
+  "type": "eventtree",
+  "title": "Gas leak and ignition",
+  "goal": "Show conditional gas-leak outcomes through detection, isolation, and ignition control.",
+  "rubric": [
+    {
+      "id": "initiator",
+      "severity": "blocker",
+      "must": "The initiating event Pressurised gas leak and its frequency are visible at the left."
+    },
+    {
+      "id": "functions",
+      "severity": "blocker",
+      "must": "Ordered function columns visibly show gas detection, automatic isolation, and ignition-source control."
+    },
+    {
+      "id": "outcomes",
+      "severity": "blocker",
+      "must": "Terminal branches visibly distinguish safe isolation, fire, and escalation outcomes."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Each safety-function column visibly shows complementary success and failure branch probabilities."
+    },
+    {
+      "id": "branching",
+      "severity": "major",
+      "must": "Success and failure paths are visibly traceable from the initiator to terminal outcomes."
+    },
+    {
+      "id": "layout",
+      "severity": "minor",
+      "must": "The left-to-right event-tree sequence remains legible without ambiguous crossings."
+    }
+  ],
+  "split": "train"
+}

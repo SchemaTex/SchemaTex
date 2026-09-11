@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <title>Batch Reactor Sequence — IEC 61131-3 Sequential Function Chart</title>
+  <rect width="1536" height="1024" fill="white"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 4 L0 8 Z" fill="black"/></marker>
+  </defs>
+  <g fill="black" font-family="Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="768" y="64" font-size="46" font-weight="700">BATCH REACTOR SEQUENCE</text>
+    <text x="768" y="111" font-size="32" font-weight="600">IEC 61131-3 · Sequential Function Chart (SFC)</text>
+  </g>
+  <!-- Continuous sequence spine; step boxes mask the spine within each step. -->
+  <g fill="none" stroke="black" stroke-width="3">
+    <path d="M340 184 V932 H88 V224 H198" marker-end="url(#arrow)"/>
+    <path d="M308 310 H372 M308 490 H372 M308 670 H372 M308 860 H372"/>
+    <path d="M482 224 H666 M482 400 H666 M482 580 H666 M482 760 H666"/>
+  </g>
+  <!-- S0 initial step: double enclosure. -->
+  <g fill="white" stroke="black" stroke-width="3">
+    <rect x="198" y="184" width="284" height="80"/>
+    <rect x="206" y="192" width="268" height="64"/>
+    <rect x="198" y="362" width="284" height="76"/>
+    <rect x="198" y="542" width="284" height="76"/>
+    <rect x="198" y="722" width="284" height="76"/>
+    <rect x="666" y="188" width="750" height="72"/>
+    <path d="M738 188 V260"/>
+    <rect x="666" y="364" width="750" height="72"/>
+    <path d="M738 364 V436"/>
+    <rect x="666" y="544" width="750" height="72"/>
+    <path d="M738 544 V616 M1216 544 V616"/>
+    <rect x="666" y="724" width="750" height="72"/>
+    <path d="M738 724 V796"/>
+  </g>
+  <g fill="black" font-family="Helvetica, Arial, sans-serif" font-size="28">
+    <g text-anchor="middle" font-weight="700">
+      <text x="340" y="234">S0</text>
+      <text x="340" y="393">S1</text>
+      <text x="340" y="422" font-size="25">Charge reactor</text>
+      <text x="340" y="573">S2</text>
+      <text x="340" y="602" font-size="25">React</text>
+      <text x="340" y="753">S3</text>
+      <text x="340" y="782" font-size="25">Discharge</text>
+      <text x="702" y="234">N</text>
+      <text x="702" y="410">N</text>
+      <text x="702" y="590">D</text>
+      <text x="702" y="770">N</text>
+    </g>
+    <text x="762" y="234">AllValvesClosed</text>
+    <text x="762" y="410">ChargeValveOpen</text>
+    <text x="762" y="590">AgitatorRun</text>
+    <text x="1316" y="590" text-anchor="middle">T#30m</text>
+    <text x="762" y="770">DischargeValveOpen</text>
+    <text x="395" y="320">StartBtn</text>
+    <text x="395" y="500">LevelHigh</text>
+    <text x="395" y="680">ReactionDone</text>
+    <text x="395" y="870">Empty</text>
+  </g>
+  <text x="1416" y="958" text-anchor="end" fill="black" font-family="Helvetica, Arial, sans-serif" font-size="20">BOOL: StartBtn, LevelHigh, ReactionDone, Empty</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-timing" viewBox="0 0 860 170" width="860" height="170" role="img" data-diagram-type="timing"><title>Setup Hold</title>
+<desc>Digital timing diagram with 3 signals</desc>
+<defs><pattern id="schematex-timing-xhatch" patternUnits="userSpaceOnUse" width="6" height="6"><rect x="0" y="0" width="6" height="6" fill="#f1f5f9"/>
+<path d="M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5" stroke="#475569" stroke-width="0.8"/></pattern>
+<style>.schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-timing-name { font: 12px monospace; fill: #0f172a; }
+.schematex-timing-name-activelow { text-decoration: overline; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: #0f172a; }
+.schematex-timing-wave { stroke: #334155; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: #334155; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: #0f172a; }
+.schematex-timing-unknown { stroke: #475569; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: #f1f5f9; stroke-width: 0.5; }
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.sx-native-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
+.sx-native-handle:hover { fill: #f1f5f9; stroke-width: 2; }</style></defs>
+<g class="schematex-timing-grid-g"><line x1="120" y1="40" x2="120" y2="158" class="schematex-timing-grid"/>
+<line x1="200" y1="40" x2="200" y2="158" class="schematex-timing-grid"/>
+<line x1="280" y1="40" x2="280" y2="158" class="schematex-timing-grid"/>
+<line x1="360" y1="40" x2="360" y2="158" class="schematex-timing-grid"/>
+<line x1="440" y1="40" x2="440" y2="158" class="schematex-timing-grid"/>
+<line x1="520" y1="40" x2="520" y2="158" class="schematex-timing-grid"/>
+<line x1="600" y1="40" x2="600" y2="158" class="schematex-timing-grid"/>
+<line x1="680" y1="40" x2="680" y2="158" class="schematex-timing-grid"/>
+<line x1="760" y1="40" x2="760" y2="158" class="schematex-timing-grid"/>
+<line x1="840" y1="40" x2="840" y2="158" class="schematex-timing-grid"/></g>
+<g class="schematex-timing-waves"><g transform="translate(120, 0)" data-signal="CLK"><path class="schematex-timing-wave" d="M 0,70 L 0,46 L 40,46 L 40,70 L 80,70"/><path class="schematex-timing-wave" d="M 80,70 L 80,46 L 120,46 L 120,70 L 160,70"/><path class="schematex-timing-wave" d="M 160,70 L 160,46 L 200,46 L 200,70 L 240,70"/><path class="schematex-timing-wave" d="M 240,70 L 240,46 L 280,46 L 280,70 L 320,70"/><path class="schematex-timing-wave" d="M 320,70 L 320,46 L 360,46 L 360,70 L 400,70"/><path class="schematex-timing-wave" d="M 400,70 L 400,46 L 440,46 L 440,70 L 480,70"/><path class="schematex-timing-wave" d="M 480,70 L 480,46 L 520,46 L 520,70 L 560,70"/><path class="schematex-timing-wave" d="M 560,70 L 560,46 L 600,46 L 600,70 L 640,70"/></g>
+<g transform="translate(120, 0)" data-signal="ENABLE"><path class="schematex-timing-wave" d="M 0,82 L 80,82 L 80,106 L 160,106 L 240,106 L 320,106 L 400,106 L 480,106 L 560,106 L 560,82 L 640,82"/></g>
+<g transform="translate(120, 0)" data-signal="DATA"><rect x="0" y="118" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><rect x="640" y="118" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><path class="schematex-timing-bus" d="M 85,118 L 155,118 L 160,130 L 155,142 L 85,142 L 80,130 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 165,118 L 235,118 L 240,130 L 235,142 L 165,142 L 160,130 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 245,118 L 315,118 L 320,130 L 315,142 L 245,142 L 240,130 Z" data-bus-index="2"/><path class="schematex-timing-bus" d="M 325,118 L 395,118 L 400,130 L 395,142 L 325,142 L 320,130 Z" data-bus-index="3"/><path class="schematex-timing-bus" d="M 405,118 L 475,118 L 480,130 L 475,142 L 405,142 L 400,130 Z" data-bus-index="4"/><path class="schematex-timing-bus" d="M 485,118 L 555,118 L 560,130 L 555,142 L 485,142 L 480,130 Z" data-bus-index="5"/><path class="schematex-timing-bus" d="M 565,118 L 635,118 L 640,130 L 635,142 L 565,142 L 560,130 Z" data-bus-index="6"/></g></g>
+<g class="schematex-timing-labels"><g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"><text x="120" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="200" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="280" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="360" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="440" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="520" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="600" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text></g></g>
+<g class="schematex-timing-names"><text x="112" y="62" class="schematex-timing-name" text-anchor="end">CLK</text>
+<text x="112" y="98" class="schematex-timing-name" text-anchor="end">ENABLE</text>
+<text x="112" y="134" class="schematex-timing-name" text-anchor="end">DATA</text></g>
+<g class="sx-native-handles"></g>
+<text x="430" y="24" text-anchor="middle" class="schematex-timing-title">Setup Hold</text></svg>

@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 677.4 868" class="schematex-diagram schematex-genogram" width="677.4" height="868"><title>Genogram</title>
+<desc>Genogram diagram with 13 individuals across 5 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="christopher" data-to="eleanor"><path d="M 336.79999999999995 60 L 416.79999999999995 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="christopher" data-to="eleanor"><path d="M 376.79999999999995 60 L 376.79999999999995 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="christopher" data-to="eleanor"><path d="M 256.79999999999995 141 L 496.79999999999995 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="christopher+eleanor" data-to="jonathan"><path d="M 256.79999999999995 141 L 256.79999999999995 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="christopher+eleanor" data-to="claire"><path d="M 496.79999999999995 141 L 496.79999999999995 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="jonathan" data-to="margaret"><path d="M 276.79999999999995 226 L 356.79999999999995 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="jonathan" data-to="margaret"><path d="M 316.79999999999995 226 L 316.79999999999995 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="jonathan" data-to="margaret"><path d="M 196.79999999999998 307 L 436.79999999999995 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="jonathan+margaret" data-to="daniel"><path d="M 196.79999999999998 307 L 196.79999999999998 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="jonathan+margaret" data-to="julian"><path d="M 436.79999999999995 307 L 436.79999999999995 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="daniel" data-to="beatrice"><path d="M 216.79999999999998 392 L 296.79999999999995 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="daniel" data-to="beatrice"><path d="M 256.79999999999995 392 L 256.79999999999995 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="daniel" data-to="beatrice"><path d="M 136.79999999999998 473 L 376.79999999999995 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="daniel+beatrice" data-to="alexander"><path d="M 136.79999999999998 473 L 136.79999999999998 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="daniel+beatrice" data-to="lydia"><path d="M 376.79999999999995 473 L 376.79999999999995 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="alexander" data-to="victoria"><path d="M 156.79999999999998 558 L 236.79999999999998 558" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="alexander" data-to="victoria"><path d="M 196.79999999999998 558 L 196.79999999999998 639" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="alexander" data-to="victoria"><path d="M 136.79999999999998 639 L 256.79999999999995 639" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="alexander+victoria" data-to="sophia"><path d="M 136.79999999999998 639 L 136.79999999999998 704" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="alexander+victoria" data-to="henry"><path d="M 256.79999999999995 639 L 256.79999999999995 704" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="christopher" transform="translate(316.79999999999995, 60)"><title>Christopher Montgomery (1930)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="eleanor" transform="translate(436.79999999999995, 60)"><title>Eleanor Harrington Montgomery (1933)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="jonathan" transform="translate(256.79999999999995, 226)"><title>Jonathan Theodore Montgomery (1953)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="margaret" transform="translate(376.79999999999995, 226)"><title>Margaret Eleanor Whitmore (1956)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="claire" transform="translate(496.79999999999995, 226)"><title>Claire Annabelle Montgomery (1958)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="daniel" transform="translate(196.79999999999998, 392)"><title>Daniel Christopher Montgomery (1977)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="beatrice" transform="translate(316.79999999999995, 392)"><title>Beatrice Adelaide Caldwell (1980)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="julian" transform="translate(436.79999999999995, 392)"><title>Julian Sebastian Montgomery (1982)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-3" data-generation="3"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="alexander" transform="translate(136.79999999999998, 558)"><title>Alexander James Montgomery (1999)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="victoria" transform="translate(256.79999999999995, 558)"><title>Victoria Josephine Prescott (2001)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="lydia" transform="translate(376.79999999999995, 558)"><title>Lydia Margaret Montgomery (2004)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-4" data-generation="4"><g class="schematex-genogram-node schematex-genogram-female schematex-genogram-index-person" data-individual-id="sophia" transform="translate(136.79999999999998, 724)"><title>Sophia Eleanor Montgomery (2021)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="henry" transform="translate(256.79999999999995, 724)"><title>Henry Nathaniel Montgomery (2024)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="316.79999999999995" y="98" class="schematex-genogram-label" data-individual-id="christopher">Christopher Montgomery (b. 1930)</text>
+<text x="436.79999999999995" y="98" class="schematex-genogram-label" data-individual-id="eleanor">Eleanor Harrington Montgomery (b. 1933)</text>
+<text x="256.79999999999995" y="264" class="schematex-genogram-label" data-individual-id="jonathan">Jonathan Theodore Montgomery (b. 1953)</text>
+<text x="376.79999999999995" y="264" class="schematex-genogram-label" data-individual-id="margaret">Margaret Eleanor Whitmore (b. 1956)</text>
+<text x="496.79999999999995" y="264" class="schematex-genogram-label" data-individual-id="claire">Claire Annabelle Montgomery (b. 1958)</text>
+<text x="196.79999999999998" y="430" class="schematex-genogram-label" data-individual-id="daniel">Daniel Christopher Montgomery (b. 1977)</text>
+<text x="316.79999999999995" y="430" class="schematex-genogram-label" data-individual-id="beatrice">Beatrice Adelaide Caldwell (b. 1980)</text>
+<text x="436.79999999999995" y="430" class="schematex-genogram-label" data-individual-id="julian">Julian Sebastian Montgomery (b. 1982)</text>
+<text x="136.79999999999998" y="596" class="schematex-genogram-label" data-individual-id="alexander">Alexander James Montgomery (b. 1999)</text>
+<text x="256.79999999999995" y="596" class="schematex-genogram-label" data-individual-id="victoria">Victoria Josephine Prescott (b. 2001)</text>
+<text x="376.79999999999995" y="596" class="schematex-genogram-label" data-individual-id="lydia">Lydia Margaret Montgomery (b. 2004)</text>
+<text x="136.79999999999998" y="762" class="schematex-genogram-label" data-individual-id="sophia">Sophia Eleanor Montgomery (b. 2021)</text>
+<text x="256.79999999999995" y="762" class="schematex-genogram-label" data-individual-id="henry">Henry Nathaniel Montgomery (b. 2024)</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="846.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="86.55" y="840" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="84.55" y="838" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="113.55" y="846.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

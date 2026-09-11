@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 743.4 406" class="schematex-diagram schematex-genogram" width="743.4" height="406"><title>Genogram</title>
+<desc>Genogram diagram with 8 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="arthur" data-to="eleanor"><path d="M 260 60 L 340 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="eleanor"><path d="M 300 60 L 300 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="eleanor"><path d="M 60 141 L 540 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="dana"><path d="M 60 141 L 60 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="paul"><path d="M 180 141 L 180 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="@care: &quot;lives with eleanor; daily personal care&quot;"><path d="M 300 141 L 300 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="@burden: &quot;exhausted; no regular respite&quot;"><path d="M 420 141 L 420 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="@care: &quot;lives separately; weekly transport&quot;"><path d="M 540 141 L 540 206" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="dana" data-to="eleanor" data-relationship-type="close"><path d="M 60 226 Q 410 143 360 60" fill="none" stroke="#4caf50" stroke-width="3"/>
+<text x="235" y="178.5" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#4caf50">Daily care and support</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="paul" data-to="eleanor" data-relationship-type="close"><path d="M 180 226 Q 410 143 360 60" fill="none" stroke="#4caf50" stroke-width="3"/>
+<text x="295" y="178.5" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#4caf50">Weekly transport</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-conflict" data-from="dana" data-to="paul" data-relationship-type="conflict"><path d="M 60 246 Q 120 276 180 246" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 8,3,2,3;"/>
+<text x="90" y="255" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#e53935">Unequal care workload</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="arthur" transform="translate(240, 60)"><title>Arthur (1940-2019)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">79</text></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="eleanor" transform="translate(360, 60)"><title>Eleanor (1942)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">84</text></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;dementia; needs daily care&quot;" transform="translate(520, 60)"><title>@medical: &quot;Dementia; needs daily care&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-female schematex-genogram-index-person" data-individual-id="dana" transform="translate(60, 226)"><title>Dana (1968)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">58</text></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="paul" transform="translate(180, 226)"><title>Paul (1971)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">55</text></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@care: &quot;lives with eleanor; daily personal care&quot;" transform="translate(300, 226)"><title>@care: &quot;Lives with Eleanor; daily personal care&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@burden: &quot;exhausted; no regular respite&quot;" transform="translate(420, 226)"><title>@burden: &quot;Exhausted; no regular respite&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@care: &quot;lives separately; weekly transport&quot;" transform="translate(540, 226)"><title>@care: &quot;Lives separately; weekly transport&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="240" y="98" class="schematex-genogram-label" data-individual-id="arthur">Arthur (1940–2019)</text>
+<text x="360" y="98" class="schematex-genogram-label" data-individual-id="eleanor">Eleanor (b. 1942)</text>
+<text x="520" y="98" class="schematex-genogram-label" data-individual-id="@medical: &quot;dementia; needs daily care&quot;">@medical: &quot;Dementia; needs daily care&quot;</text>
+<text x="60" y="264" class="schematex-genogram-label" data-individual-id="dana">Dana (b. 1968)</text>
+<text x="180" y="264" class="schematex-genogram-label" data-individual-id="paul">Paul (b. 1971)</text>
+<text x="300" y="264" class="schematex-genogram-label" data-individual-id="@care: &quot;lives with eleanor; daily personal care&quot;">@care: &quot;Lives with Eleanor; daily personal care&quot;</text>
+<text x="420" y="264" class="schematex-genogram-label" data-individual-id="@burden: &quot;exhausted; no regular respite&quot;">@burden: &quot;Exhausted; no regular respite&quot;</text>
+<text x="540" y="264" class="schematex-genogram-label" data-individual-id="@care: &quot;lives separately; weekly transport&quot;">@care: &quot;Lives separately; weekly transport&quot;</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="348.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.unknown" data-legend-section="symbols"><polygon points="140.45,340 145.45,345 140.45,350 135.45,345" fill="#f5f5f5" stroke="#334155"/>
+<text x="159.45" y="348.5" class="schematex-legend-label">Unknown</text></g>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="231.45" y1="341" x2="239.45" y2="349" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="239.45" y1="341" x2="231.45" y2="349" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="254.45" y="348.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="366.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><line x1="130.45" y1="363" x2="150.45" y2="363" stroke="#4caf50" stroke-width="3" stroke-linecap="round"/>
+<text x="159.45" y="366.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="conflict" data-legend-section="relationships"><line x1="211.45" y1="363" x2="231.45" y2="363" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,3,2,3"/>
+<text x="240.45" y="366.5" class="schematex-legend-label">Conflict</text></g>
+<text x="16" y="384.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="378" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="130.45" y="376" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="384.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920">
+<title>Wheatstone Strain Gauge Bridge</title>
+<rect width="1400" height="920" fill="white"/>
+<defs>
+ <style>text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:20px} .wire{fill:none;stroke:#17212b;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}.component{fill:white;stroke:#17212b;stroke-width:2.5}.node{fill:#17212b}.small{font-size:18px}.label{font-weight:600}.active{fill:#075c80}</style>
+</defs>
+<text x="60" y="57" font-size="30" class="label">Wheatstone Strain Gauge Bridge</text>
+<text x="60" y="89" class="small">5 V excitation · opposite-arm active gauges · differential output</text>
+<!-- Excitation source across bridge top and bottom -->
+<path class="wire" d="M420 180H110V368 M110 452V650H420"/>
+<circle class="component" cx="110" cy="410" r="42"/>
+<path class="wire" d="M101 391H119 M110 382V400 M101 431H119"/>
+<text x="54" y="488" class="label">V1 · VEXC</text>
+<text x="67" y="517">5 V DC</text>
+<!-- Rectangular four-arm bridge, no diagonal signal-wire crossings -->
+<path class="wire" d="M420 180H280V255 M420 180H560V255 M280 335V480 M560 335V480 M280 560V650H560V560"/>
+<rect class="component" x="268" y="255" width="24" height="80"/>
+<rect class="component" x="548" y="255" width="24" height="80"/>
+<rect class="component" x="268" y="480" width="24" height="80"/>
+<rect class="component" x="548" y="480" width="24" height="80"/>
+<text x="308" y="275" class="label active">SG1 ACTIVE</text>
+<text x="308" y="304" class="small">R1 · 350 Ω</text>
+<text x="590" y="275" class="label">R3 FIXED</text>
+<text x="590" y="304" class="small">350 Ω, 0.1%</text>
+<text x="308" y="506" class="label">R2 FIXED</text>
+<text x="308" y="535" class="small">350 Ω, 0.1%</text>
+<text x="590" y="506" class="label active">SG2 ACTIVE</text>
+<text x="590" y="535" class="small">R4 · 350 Ω</text>
+<circle class="node" cx="420" cy="180" r="5"/>
+<circle class="node" cx="420" cy="650" r="5"/>
+<text x="420" y="158" text-anchor="middle">EXCP</text>
+<text x="420" y="682" text-anchor="middle">EXCM</text>
+<!-- Separate differential pickups. Left pickup runs within bridge, above right pickup. -->
+<path class="wire" d="M280 385H450V350H850 M560 425H850"/>
+<!-- At the R3 vertical leg, an explicit wire hop avoids a false junction -->
+<path d="M550 350H570" fill="none" stroke="white" stroke-width="8"/>
+<path class="wire" d="M550 350Q560 330 570 350"/>
+<circle class="node" cx="280" cy="385" r="5"/>
+<circle class="node" cx="560" cy="425" r="5"/>
+<text x="306" y="373" class="label">VL</text>
+<text x="590" y="412" class="label">VR</text>
+<!-- Instrumentation amplifier represented by requested op-amp triangle -->
+<path class="component" d="M850 300L850 475L1040 387.5Z"/>
+<text x="864" y="358" font-size="27">+</text>
+<text x="864" y="434" font-size="27">−</text>
+<text x="910" y="390" class="label">U1</text>
+<text x="937" y="540" text-anchor="middle" class="label">INA333</text>
+<text x="937" y="569" text-anchor="middle" class="small">INSTRUMENTATION AMP</text>
+<!-- Output and resistive load -->
+<path class="wire" d="M1040 387.5H1170V465 M1170 545V595"/>
+<text x="1070" y="369" class="label">VOUT</text>
+<rect class="component" x="1158" y="465" width="24" height="80"/>
+<text x="1203" y="493" class="label">R5 · RLOAD</text>
+<text x="1203" y="524">10 kΩ</text>
+<path class="wire" d="M1149 595H1191 M1156 603H1184 M1163 611H1177"/>
+<text x="1170" y="644" text-anchor="middle" class="small">GND</text>
+<!-- Positive supply voltage source and W1 rail -->
+<path class="wire" d="M940 341.5V220H1170 M1170 220V232 M1170 308V326"/>
+<circle class="component" cx="1170" cy="270" r="38"/>
+<path class="wire" d="M1162 255H1178 M1170 247V263 M1162 286H1178 M1149 326H1191 M1156 334H1184 M1163 342H1177"/>
+<text x="938" y="194" class="label">W1 · U1 V+ · +5 V</text>
+<text x="1221" y="260" class="label">VP · VAMP+</text>
+<text x="1221" y="289">5 V</text>
+<!-- Negative supply voltage source and W2 rail -->
+<path class="wire" d="M940 433.5V492H1080V710H1170V742 M1170 818V843"/>
+<text x="841" y="695" class="label">W2 · U1 V− · −5 V</text>
+<circle class="component" cx="1170" cy="780" r="38"/>
+<path class="wire" d="M1162 765H1178 M1170 757V773 M1162 796H1178 M1149 843H1191 M1156 851H1184 M1163 859H1177"/>
+<text x="1221" y="770" class="label">VN · VAMP−</text>
+<text x="1221" y="799">−5 V</text>
+<text x="1170" y="887" text-anchor="middle" class="small">GND</text>
+</svg>

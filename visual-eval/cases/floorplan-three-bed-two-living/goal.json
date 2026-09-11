@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-three-bed-two-living",
+  "type": "floorplan",
+  "title": "Family flat",
+  "goal": "A reader must be able to identify a complete three-bedroom family flat and follow the hall to every room.",
+  "rubric": [
+    {
+      "id": "three-independent-bedrooms",
+      "severity": "blocker",
+      "must": "Three separately labeled bedrooms are visible, each with its own door onto the central hall."
+    },
+    {
+      "id": "separate-living-and-dining",
+      "severity": "major",
+      "must": "Living Room and Dining Room are visibly separate labeled spaces."
+    },
+    {
+      "id": "two-bathrooms-visible",
+      "severity": "major",
+      "must": "Two separately labeled bathrooms with sanitary fixtures are visible."
+    },
+    {
+      "id": "kitchen-equipped",
+      "severity": "major",
+      "must": "The kitchen visibly contains a counter, sink, stove, and refrigerator."
+    },
+    {
+      "id": "circulation-clear",
+      "severity": "blocker",
+      "must": "The central hall provides an unobstructed route from the entry to every bedroom and bathroom."
+    },
+    {
+      "id": "doors-and-windows-readable",
+      "severity": "minor",
+      "must": "Door swing arcs and exterior windows are clearly visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture combines the living and dining spaces and lacks a clearly identifiable kitchen sink."
+  }
+}

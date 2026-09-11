@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Markov chain" width="382.1110699893027" height="382.1110699893027" viewBox="0 0 382.1110699893027 382.1110699893027" data-diagram-type="markov"><title>Markov chain</title>
+<desc>3 states, 7 transitions. Classification: 0 recurrent, 2 transient, 1 absorbing. Absorbing: Failed. Stationary π: { Normal=0, Degraded=0, Failed=1 }. Unrecognized line 3: &quot;markov &quot;Credit Migration&quot;&quot;</desc>
+<style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
+.sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
+.sx-markov-state-absorbing { stroke: #2563eb; }
+.sx-markov-state-label { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-markov-state-sublabel { font: 10px sans-serif; fill: #475569; }
+.sx-markov-pi { font: 600 10px sans-serif; fill: #2563eb; }
+.sx-markov-arc { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-arc-self { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
+.sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-markov-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4"/></marker></defs>
+<g><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Normal" data-to="Normal" data-prob="0.8"><path class="sx-markov-arc-self" d="M 173.06 90.5 C 155.06 60.5 227.06 60.5 209.06 90.5" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="191.05553499465134" y="50.999999999999986" text-anchor="middle">0.8</text></g>
+<g class="sx-markov-arc-g" data-from="Normal" data-to="Degraded" data-prob="0.15"><path class="sx-markov-arc" d="M 214.63 134.55 C 230.35 146.92 248.92 179.09 251.78 198.89" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="246.07219549304673" y="162.2916512459885" text-anchor="middle">0.15</text></g>
+<g class="sx-markov-arc-g" data-from="Normal" data-to="Failed" data-prob="0.05"><path class="sx-markov-arc" d="M 181.02 144.27 C 174.98 161.28 157.24 192.02 145.52 205.76" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="168.9478398400646" y="181.2916512459885" text-anchor="middle">0.05</text></g>
+<g class="sx-markov-arc-g" data-from="Degraded" data-to="Normal" data-prob="0.3"><path class="sx-markov-arc" d="M 232.48 210.03 C 216.76 197.66 198.19 165.49 195.33 145.69" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="201.03887449625594" y="188.2916512459885" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Degraded" data-to="Degraded" data-prob="0.45"><path class="sx-markov-arc-self" d="M 287.14 225.74 C 322.12 225.16 286.12 287.51 269.14 256.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="314.9452624519932" y="265.583302491977" text-anchor="middle">0.45</text></g>
+<g class="sx-markov-arc-g" data-from="Degraded" data-to="Failed" data-prob="0.25"><path class="sx-markov-arc" d="M 226.55 234.03 C 208.8 237.31 173.31 237.31 155.56 234.03" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="191.05553499465134" y="243.583302491977" text-anchor="middle">0.25</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Failed" data-to="Failed" data-prob="1"><path class="sx-markov-arc-self" d="M 112.97 256.92 C 95.99 287.51 59.99 225.16 94.97 225.74" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="67.16580753730953" y="265.58330249197707" text-anchor="middle">1</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="Normal" data-class="transient" data-pi="0"><circle class="sx-markov-state" cx="191.05553499465134" cy="115.99999999999999" r="30"/>
+<text class="sx-markov-state-label" x="191.05553499465134" y="119.99999999999999" text-anchor="middle">Normal</text>
+<text class="sx-markov-pi" x="191.05553499465134" y="160" text-anchor="middle">π=0</text></g>
+<g class="sx-markov-state-g" data-id="Degraded" data-class="transient" data-pi="0"><circle class="sx-markov-state" cx="256.05553499465134" cy="228.583302491977" r="30"/>
+<text class="sx-markov-state-label" x="256.05553499465134" y="232.583302491977" text-anchor="middle">Degraded</text>
+<text class="sx-markov-pi" x="256.05553499465134" y="272.583302491977" text-anchor="middle">π=0</text></g>
+<g class="sx-markov-state-g" data-id="Failed" data-class="absorbing" data-pi="1"><circle class="sx-markov-state sx-markov-state-absorbing" cx="126.05553499465135" cy="228.58330249197704" r="30"/>
+<circle class="sx-markov-absorb-ring" cx="126.05553499465135" cy="228.58330249197704" r="25"/>
+<text class="sx-markov-state-label" x="126.05553499465135" y="232.58330249197704" text-anchor="middle">Failed</text>
+<text class="sx-markov-pi" x="126.05553499465135" y="272.58330249197707" text-anchor="middle">π=1</text></g></g></g></svg>

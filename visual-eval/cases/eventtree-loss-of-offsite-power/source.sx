@@ -1,0 +1,9 @@
+# Assumptions: backup-generator and battery outcomes are conditional on loss of offsite power.
+# Battery support is required only after the standby generator fails to restore essential AC power.
+eventtree "Loss of offsite power"
+  initiating LOOP "Loss of offsite power" freq: 0.05
+  function EDG "Emergency diesel generator starts and loads" p: 0.03
+  function BAT "Station battery supports essential DC loads" p: 0.02
+  outcome s * -> "Essential power restored by generator"
+  outcome f s -> "Essential DC power maintained by battery"
+  outcome f f -> "Loss of essential AC and DC power"

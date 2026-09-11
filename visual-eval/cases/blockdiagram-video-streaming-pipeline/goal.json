@@ -1,0 +1,45 @@
+{
+  "id": "blockdiagram-video-streaming-pipeline",
+  "type": "blockdiagram",
+  "title": "Video streaming pipeline",
+  "goal": "Show live-video processing from ingest through adaptive delivery to a viewer.",
+  "rubric": [
+    {
+      "id": "input",
+      "severity": "blocker",
+      "must": "A labelled input block Live Video Source is visibly shown."
+    },
+    {
+      "id": "flow",
+      "severity": "blocker",
+      "must": "The picture visibly shows a continuous ingest-to-viewer stream path."
+    },
+    {
+      "id": "control",
+      "severity": "blocker",
+      "must": "control-plane links to encoder and CDN are visibly distinct from the primary flow."
+    },
+    {
+      "id": "arrows",
+      "severity": "major",
+      "must": "All signal or energy connections visibly use directional arrowheads."
+    },
+    {
+      "id": "roles",
+      "severity": "major",
+      "must": "Input, control, processing, and output blocks are visibly differentiated by role or placement."
+    },
+    {
+      "id": "labels",
+      "severity": "minor",
+      "must": "Connection labels identify the principal signal, energy, or data transformations."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-blockdiagram-target.mjs`, which draws all eight cases from one kit so the set is one drawing repeated. A functional block diagram of Video streaming pipeline. 7 blocks carry the forward signal path. Every wire is orthogonal, every arrowhead lands on a block edge, signal names are set in italic beside the wire they name, and a legend at the foot states the line codes. Drawn in the idiom of the block-diagram exemplar (`visual-eval/exemplars/blockdiagram/ideal.svg`): ink outlines, block labels at 13 over at most two lines, signal names in italic slate beside the wire they name, a 34 px summing junction with its signs set just outside the circle, a filled dot at every pickoff, orthogonal wires only, and terracotta spent on nothing but the measured/feedback path. A long chain is folded into bands joined by a labelled channel, the exemplar's own solution to a chain too long for one row. One extension of the exemplar: each block body carries a pale fill keyed to the `role:` the DSL declares for it — input, control, actuator, plant, sensor, output — with a swatch legend at the foot. The exemplar leaves every body white, which discards information the author supplied on every single block; the fills are kept pale and the outlines ink so terracotta remains the loudest thing on the page and still means only one thing. Routing picks whichever corner misses every other block, and the checker tests each label against every other label, every block body, every wire segment and the canvas edge, plus every wire against every block body: 0 overlaps and no wire runs through a block."
+  }
+}

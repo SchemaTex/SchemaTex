@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2290" height="644" viewBox="0 0 2290 644" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 8 class; 3 generalization, 1 association, 2 composition, 1 directed, 1 dependency; 1 merged inheritance tree.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="2290" height="644" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Account" data-kind="class"><rect x="1560.5857096354168" y="32" width="220" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1560.5857096354168" y="62" width="220" height="120" class="sx-umlclass-box-fill"/>
+<rect x="1560.5857096354168" y="32" width="220" height="150" class="sx-umlclass-box-stroke"/>
+<line x1="1560.5857096354168" y1="62" x2="1780.5857096354168" y2="62" class="sx-umlclass-divider"/>
+<line x1="1560.5857096354168" y1="144" x2="1780.5857096354168" y2="144" class="sx-umlclass-divider"/>
+<text x="1670.5857096354168" y="53" class="sx-umlclass-classname" text-anchor="middle">Account</text>
+<text x="1574.5857096354168" y="86" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;abstract&gt;&gt;</tspan></text>
+<text x="1574.5857096354168" y="108" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan><tspan>number</tspan>: <tspan>String</tspan></text>
+<text x="1574.5857096354168" y="130" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>balance</tspan>: <tspan>Money</tspan></text>
+<text x="1574.5857096354168" y="168" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>credit</tspan>(amount: Money): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="CheckingAccount" data-kind="class"><rect x="1388.7587239583331" y="271" width="180" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1388.7587239583331" y="301" width="180" height="76" class="sx-umlclass-box-fill"/>
+<rect x="1388.7587239583331" y="271" width="180" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="1388.7587239583331" y1="301" x2="1568.7587239583331" y2="301" class="sx-umlclass-divider"/>
+<line x1="1388.7587239583331" y1="339" x2="1568.7587239583331" y2="339" class="sx-umlclass-divider"/>
+<text x="1478.7587239583331" y="292" class="sx-umlclass-classname" text-anchor="middle">CheckingAccount</text>
+<text x="1402.7587239583331" y="325" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>overdraftLimit</tspan>: <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="SavingsAccount" data-kind="class"><rect x="644.0285807291666" y="466" width="180" height="30" class="sx-umlclass-header-fill"/>
+<rect x="644.0285807291666" y="496" width="180" height="76" class="sx-umlclass-box-fill"/>
+<rect x="644.0285807291666" y="466" width="180" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="644.0285807291666" y1="496" x2="824.0285807291666" y2="496" class="sx-umlclass-divider"/>
+<line x1="644.0285807291666" y1="534" x2="824.0285807291666" y2="534" class="sx-umlclass-divider"/>
+<text x="734.0285807291666" y="487" class="sx-umlclass-classname" text-anchor="middle">SavingsAccount</text>
+<text x="658.0285807291666" y="520" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>interestRate</tspan>: <tspan>Percent</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="BusinessAccount" data-kind="class"><rect x="1622.7587239583331" y="271" width="167" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1622.7587239583331" y="301" width="167" height="76" class="sx-umlclass-box-fill"/>
+<rect x="1622.7587239583331" y="271" width="167" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="1622.7587239583331" y1="301" x2="1789.7587239583331" y2="301" class="sx-umlclass-divider"/>
+<line x1="1622.7587239583331" y1="339" x2="1789.7587239583331" y2="339" class="sx-umlclass-divider"/>
+<text x="1706.2587239583331" y="292" class="sx-umlclass-classname" text-anchor="middle">BusinessAccount</text>
+<text x="1636.7587239583331" y="325" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>companyName</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Customer" data-kind="class"><rect x="32" y="54" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="84" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="54" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="84" x2="192" y2="84" class="sx-umlclass-divider"/>
+<line x1="32" y1="122" x2="192" y2="122" class="sx-umlclass-divider"/>
+<text x="112" y="75" class="sx-umlclass-classname" text-anchor="middle">Customer</text>
+<text x="46" y="108" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>name</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="LedgerEntry" data-kind="class"><rect x="1843.7587239583331" y="260" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1843.7587239583331" y="290" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="1843.7587239583331" y="260" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="1843.7587239583331" y1="290" x2="2003.7587239583331" y2="290" class="sx-umlclass-divider"/>
+<line x1="1843.7587239583331" y1="350" x2="2003.7587239583331" y2="350" class="sx-umlclass-divider"/>
+<text x="1923.7587239583331" y="281" class="sx-umlclass-classname" text-anchor="middle">LedgerEntry</text>
+<text x="1857.7587239583331" y="314" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>postedAt</tspan>: <tspan>Instant</tspan></text>
+<text x="1857.7587239583331" y="336" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>amount</tspan>: <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Statement" data-kind="class"><rect x="2057.758723958333" y="271" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="2057.758723958333" y="301" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="2057.758723958333" y="271" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="2057.758723958333" y1="301" x2="2217.758723958333" y2="301" class="sx-umlclass-divider"/>
+<line x1="2057.758723958333" y1="339" x2="2217.758723958333" y2="339" class="sx-umlclass-divider"/>
+<text x="2137.758723958333" y="292" class="sx-umlclass-classname" text-anchor="middle">Statement</text>
+<text x="2071.758723958333" y="325" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>period</tspan>: <tspan>DateRange</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="InterestPolicy" data-kind="class"><rect x="588.0285807291666" y="271" width="292" height="30" class="sx-umlclass-header-fill"/>
+<rect x="588.0285807291666" y="301" width="292" height="76" class="sx-umlclass-box-fill"/>
+<rect x="588.0285807291666" y="271" width="292" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="588.0285807291666" y1="301" x2="880.0285807291666" y2="301" class="sx-umlclass-divider"/>
+<line x1="588.0285807291666" y1="339" x2="880.0285807291666" y2="339" class="sx-umlclass-divider"/>
+<text x="734.0285807291666" y="292" class="sx-umlclass-classname" text-anchor="middle">InterestPolicy</text>
+<text x="602.0285807291666" y="325" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;interface&gt;&gt;</tspan></text>
+<text x="602.0285807291666" y="363" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>accrue</tspan>(account: SavingsAccount): <tspan>Money</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Customer" data-to="Account" data-kind="association" data-source-mult="1" data-target-mult="0..*" data-name="owns"><path d="M 112 54 L 112 6 L 1670.6 6 L 1670.6 32" class="sx-umlclass-rel-line"/>
+
+<text x="112" y="45" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="1670.5857096354168" y="23" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="891.2928548177084" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">owns</text>
+<text x="891.2928548177084" y="1" class="sx-umlclass-edge-name" text-anchor="middle">owns</text></g>
+<g class="sx-umlclass-rel" data-from="Account" data-to="LedgerEntry" data-kind="composition" data-target-mult="0..*" data-name="entries"><path d="M 1758.1 202 L 1849.1 260" class="sx-umlclass-rel-line"/>
+
+<polygon points="1758.0879035258256,182 1764.0879035258256,192 1758.0879035258256,202 1752.0879035258256,192" class="sx-umlclass-diamond-filled"/>
+<text x="1849.0901851718509" y="251" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="1803.5890443488383" y="226" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">entries</text>
+<text x="1803.5890443488383" y="226" class="sx-umlclass-edge-name" text-anchor="middle">entries</text></g>
+<g class="sx-umlclass-rel" data-from="Account" data-to="Statement" data-kind="composition" data-target-mult="0..*" data-name="statements"><path d="M 1800.6 158.1 L 2057.8 286.8" class="sx-umlclass-rel-line"/>
+
+<polygon points="1780.5857096354168,158.09456083330346 1790.5857096354168,152.09456083330346 1800.5857096354168,158.09456083330346 1790.5857096354168,164.09456083330346" class="sx-umlclass-diamond-filled"/>
+<text x="2050.758723958333" y="283.8403193939611" class="sx-umlclass-edge-label" text-anchor="end">0..*</text>
+<text x="1929.172216796875" y="217.46744011363228" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">statements</text>
+<text x="1929.172216796875" y="217.46744011363228" class="sx-umlclass-edge-name" text-anchor="middle">statements</text></g>
+<g class="sx-umlclass-rel" data-from="SavingsAccount" data-to="InterestPolicy" data-kind="directed" data-name="uses"><path d="M 734 466 L 734 388" class="sx-umlclass-rel-line"/>
+<path d="M 728.5285807291666 388 L 734.0285807291666 377 L 739.5285807291666 388" class="sx-umlclass-arrowhead"/>
+<text x="734.0285807291666" y="422" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">uses</text>
+<text x="734.0285807291666" y="422" class="sx-umlclass-edge-name" text-anchor="middle">uses</text></g>
+<g class="sx-umlclass-rel" data-from="InterestPolicy" data-to="SavingsAccount" data-kind="dependency" data-name="calculates for"><path d="M 734 377 L 734 455" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 728.5285807291666 455 L 734.0285807291666 466 L 739.5285807291666 455" class="sx-umlclass-arrowhead"/>
+<text x="734.0285807291666" y="411" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">calculates for</text>
+<text x="734.0285807291666" y="411" class="sx-umlclass-edge-name" text-anchor="middle">calculates for</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Account" data-children="CheckingAccount,SavingsAccount,BusinessAccount"><path d="M 1478.8 271 L 1478.8 226.5 L 1570.6 226.5" class="sx-umlclass-rel-line"/>
+<path d="M 734 466 L 734 226.5 L 1570.6 226.5" class="sx-umlclass-rel-line"/>
+<path d="M 1706.3 271 L 1706.3 226.5 L 1570.6 226.5" class="sx-umlclass-rel-line"/>
+<path d="M 1570.6 226.5 L 1570.6 196" class="sx-umlclass-rel-line"/>
+<polygon points="1570.5857096354168,182 1561.5857096354168,196 1579.5857096354168,196" class="sx-umlclass-triangle"/></g></g></svg>

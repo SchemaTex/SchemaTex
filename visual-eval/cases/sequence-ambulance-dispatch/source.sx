@@ -1,0 +1,31 @@
+%% Emergency ambulance dispatch and hospital pre-alert.
+sequenceDiagram
+actor Caller
+participant EmergencyLine
+participant Dispatcher
+participant CAD
+participant Ambulance
+participant Hospital
+Caller->>EmergencyLine: Report emergency
+EmergencyLine->>Dispatcher: Incident details
+activate Dispatcher
+Dispatcher->>CAD: Create incident
+CAD-->>Dispatcher: Available units
+Dispatcher->>Ambulance: Dispatch
+activate Ambulance
+par
+Dispatcher->>Hospital: Pre-alert
+Hospital-->>Dispatcher: Bed status
+and
+Ambulance->>Ambulance: Assess patient
+Ambulance-->>Dispatcher: Condition
+end
+opt [transport required]
+Dispatcher->>Hospital: Confirm destination
+Hospital-->>Dispatcher: Accept
+end
+Ambulance->>Hospital: Handover
+deactivate Ambulance
+Dispatcher-->>EmergencyLine: Managed
+deactivate Dispatcher
+Note over Dispatcher,Ambulance: Updates recorded

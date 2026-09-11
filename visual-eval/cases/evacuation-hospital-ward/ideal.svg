@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 1400 990">
+<title>Hospital Ward — evacuation plan with routes to East and West exits</title>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0 0L6 3L0 6Z" fill="#00834a"/></marker>
+ <g id="exit"><rect width="64" height="54" rx="1" fill="#00834a"/><path d="M42 8H56V46H42" fill="none" stroke="white" stroke-width="4"/><circle cx="28" cy="12" r="5" fill="white"/><path d="M27 21L20 30L10 30M27 21L36 26L43 26M27 21L30 34L39 44M30 34L20 44" fill="none" stroke="white" stroke-width="5" stroke-linecap="square"/></g>
+ <g id="ext"><rect width="38" height="46" fill="#d52c32"/><path d="M16 13H24V17H16ZM15 19H25V37H15Z" fill="white"/><path d="M19 13V9H28M24 12C32 12 32 20 32 24" fill="none" stroke="white" stroke-width="2.5"/></g>
+ <g id="assembly"><rect width="66" height="66" fill="#00834a"/><g stroke="white" stroke-width="3" fill="none"><path d="M8 8L21 21M8 58L21 45M58 8L45 21M58 58L45 45"/><path d="M13 21H21V13M13 45H21V53M45 13V21H53M45 53V45H53"/></g><g fill="white"><circle cx="33" cy="25" r="5"/><circle cx="25" cy="32" r="4"/><circle cx="41" cy="32" r="4"/><path d="M28 32H38V46H28ZM21 38H27V49H21ZM39 38H45V49H39Z"/></g></g>
+</defs>
+<rect width="1400" height="990" fill="white"/>
+<g font-family="Helvetica, Arial, sans-serif" fill="#202c32">
+<text x="70" y="78" font-size="38" font-weight="700" letter-spacing="1">HOSPITAL WARD</text>
+<text x="70" y="114" font-size="21" letter-spacing="2">ESCAPE PLAN</text>
+<text x="1330" y="80" text-anchor="end" font-size="18">ISO 23601 · A3 landscape</text>
+<path d="M70 137H1330" stroke="#202c32" stroke-width="2"/>
+<!-- Geometry: 80 drawing units per metre. Main 7 × 5 m; corridor 7 × 2 m; stairs 3 × 2 m. -->
+<path d="M420 185H980V585H1220V745H180V585H420Z" fill="#f7faf8"/>
+<!-- Perimeter, with final-exit openings -->
+<g stroke="#202c32" stroke-width="6" fill="none" stroke-linecap="square">
+ <path d="M420 585V185H980V585H1220V621M1220 709V745H180V709M180 621V585H420"/>
+ <!-- Main-to-corridor opening: 1.2 m -->
+ <path d="M420 585H652M748 585H980"/>
+ <!-- Stair door openings: 1.1 m -->
+ <path d="M420 585V621M420 709V745M980 585V621M980 709V745"/>
+</g>
+<!-- Door leaves and swing arcs, clear of the route -->
+<g fill="none" stroke="#65746e" stroke-width="1.7">
+ <path d="M420 621H332M332 621A88 88 0 0 0 420 709"/>
+ <path d="M980 621H1068M1068 621A88 88 0 0 1 980 709"/>
+</g>
+<text x="700" y="237" text-anchor="middle" font-size="27" font-weight="700">Occupied Area</text>
+<text x="700" y="268" text-anchor="middle" font-size="17" fill="#64726b">7 × 5 m</text>
+<text x="300" y="574" text-anchor="middle" font-size="24" font-weight="700">West Stair</text>
+<text x="1100" y="574" text-anchor="middle" font-size="24" font-weight="700">East Stair</text>
+<text x="700" y="724" text-anchor="middle" font-size="23" font-weight="700">Corridor</text>
+<!-- Continuous primary route: here → main opening → corridor → east stair → east final exit -->
+<path d="M706 394V665H1248" fill="none" stroke="#00834a" stroke-width="7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M706 470V524M804 665H864M1084 665H1145" fill="none" stroke="#00834a" stroke-width="6" marker-end="url(#arrow)"/>
+<!-- Secondary route uses a separate parallel lane through the shared opening -->
+<path d="M691 394V681H152" fill="none" stroke="#00834a" stroke-width="5" stroke-dasharray="13 8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M628 681H570M320 681H257" fill="none" stroke="#00834a" stroke-width="5" marker-end="url(#arrow)"/>
+<!-- Blue location marker sits at main-room coordinate 3.5, 2.5 -->
+<circle cx="700" cy="385" r="17" fill="#187bc0" stroke="white" stroke-width="4"/>
+<circle cx="700" cy="385" r="5" fill="white"/>
+<text x="700" y="345" text-anchor="middle" font-size="25" font-weight="700" fill="#126ca9">YOU ARE HERE</text>
+<text x="780" y="641" font-size="17" font-weight="700" fill="#00834a">PRIMARY</text>
+<text x="550" y="655" text-anchor="middle" font-size="17" font-weight="700" fill="#00834a">SECONDARY</text>
+<!-- Exit signs attached to the two open outer boundaries -->
+<use href="#exit" x="1190" y="595"/>
+<text x="1258" y="628" font-size="21" font-weight="700" fill="#00834a">EXIT</text>
+<g transform="translate(210 595) scale(-1 1)"><use href="#exit"/></g>
+<text x="138" y="628" text-anchor="end" font-size="21" font-weight="700" fill="#00834a">EXIT</text>
+<!-- Fire extinguisher at corridor coordinate 0.5, 1; route lane clears the symbol -->
+<use href="#ext" x="441" y="632"/>
+<text x="460" y="704" text-anchor="middle" font-size="15" font-weight="700">f1 · ABC</text>
+<!-- Assembly point outside, at plan coordinate 9,8 -->
+<use href="#assembly" x="1107" y="792"/>
+<text x="1140" y="886" text-anchor="middle" font-size="20" font-weight="700" fill="#00834a">ASSEMBLY POINT</text>
+<!-- Automatic legend -->
+<path d="M70 786H1010" stroke="#bac6bf" stroke-width="1.5"/>
+<text x="70" y="821" font-size="20" font-weight="700" letter-spacing="1">LEGEND</text>
+<circle cx="86" cy="853" r="11" fill="#187bc0"/><circle cx="86" cy="853" r="3.5" fill="white"/>
+<text x="113" y="860" font-size="18">You are here</text>
+<path d="M337 853H406" stroke="#00834a" stroke-width="5" marker-end="url(#arrow)"/>
+<text x="425" y="860" font-size="18">Primary route</text>
+<path d="M655 853H724" stroke="#00834a" stroke-width="4" stroke-dasharray="10 6" marker-end="url(#arrow)"/>
+<text x="742" y="860" font-size="18">Secondary route</text>
+<use href="#exit" transform="translate(70 883) scale(.55)"/>
+<text x="113" y="905" font-size="18">Final exit</text>
+<use href="#ext" transform="translate(340 880) scale(.75)"/>
+<text x="385" y="905" font-size="18">Fire extinguisher · ABC</text>
+<use href="#assembly" transform="translate(660 880) scale(.52)"/>
+<text x="714" y="905" font-size="18">Assembly point</text>
+<path d="M70 939H1330" stroke="#202c32" stroke-width="2"/>
+<text x="70" y="965" font-size="15" fill="#64726b">Hospital Ward · Evacuation</text>
+<text x="1330" y="965" text-anchor="end" font-size="15" fill="#64726b">Plan dimensions in metres</text>
+</g>
+</svg>

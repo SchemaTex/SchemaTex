@@ -1,0 +1,15 @@
+{
+  "id": "ladder-traffic-light-sequence",
+  "type": "ladder",
+  "title": "Timed traffic-light sequence",
+  "goal": "A reviewer can trace the green, amber, and red timer sequence and its reset after the red interval.",
+  "rubric": [
+    {"id":"green-timer","severity":"blocker","must":"A TON block labelled GreenTimer visibly shows a 30000 preset and drives the green phase."},
+    {"id":"chained-timers","severity":"blocker","must":"GreenTimer.Q visibly enables AmberTimer and AmberTimer.Q visibly enables RedTimer."},
+    {"id":"aspect-lamps","severity":"major","must":"GreenLamp, AmberLamp, and RedLamp appear on distinct rungs associated with their named timer contacts."},
+    {"id":"amber-preset","severity":"major","must":"The AmberTimer TON block visibly shows a 4000 preset."},
+    {"id":"red-preset","severity":"major","must":"The RedTimer TON block visibly shows a 30000 preset."},
+    {"id":"cycle-reset","severity":"major","must":"A RedTimer.Q contact visibly operates reset coils for all three named timers."}
+  ],
+  "split": "holdout"
+}

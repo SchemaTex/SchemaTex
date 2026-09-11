@@ -1,0 +1,34 @@
+{
+  "id": "venn-symptom-overlap",
+  "type": "venn",
+  "title": "Cold, flu, and allergy symptom overlap",
+  "goal": "A teaching aid can distinguish shared symptoms from condition-specific symptoms.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Three labelled overlapping condition sets are visibly present."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The central three-way overlap is visibly labelled Congestion."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Pairwise symptom overlaps are visibly labelled."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Each condition has a visible unique symptom."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Labels are readable in or beside their regions."
+    }
+  ],
+  "split": "holdout"
+}

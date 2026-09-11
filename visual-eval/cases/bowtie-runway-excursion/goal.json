@@ -1,0 +1,44 @@
+{
+  "id": "bowtie-runway-excursion",
+  "type": "bowtie",
+  "title": "Aviation runway excursion",
+  "goal": "Show aviation landing threats, barriers, and outcomes around a runway excursion.",
+  "rubric": [
+    {
+      "id": "central-event",
+      "severity": "blocker",
+      "must": "The central top event visibly states runway excursion on landing."
+    },
+    {
+      "id": "landing-threats",
+      "severity": "blocker",
+      "must": "Unstable approach, contaminated runway, excessive speed, and late touchdown are visible as separate left-side threats."
+    },
+    {
+      "id": "preventative-barriers",
+      "severity": "blocker",
+      "must": "Each visible threat path contains labelled preventative barriers before the top event."
+    },
+    {
+      "id": "mitigative-consequences",
+      "severity": "major",
+      "must": "Hull damage, injury, and runway closure visibly lie beyond mitigative barriers on the right."
+    },
+    {
+      "id": "report-escalation",
+      "severity": "major",
+      "must": "The landing-performance path visibly shows an out-of-date report escalation and its inspection/update barrier."
+    },
+    {
+      "id": "aviation-controls",
+      "severity": "major",
+      "must": "RESA, arrestor system, evacuation, and rescue response are visibly labelled mitigations."
+    },
+    {
+      "id": "bowtie-geometry",
+      "severity": "minor",
+      "must": "The drawing visibly reads as a balanced bowtie with threats left and consequences right."
+    }
+  ],
+  "split": "holdout"
+}

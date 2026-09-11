@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 2391 276" width="2391" height="276" role="img" data-diagram-type="blockdiagram"><title>Heat Exchanger Temperature Control Loop</title>
+<desc>Block diagram with 6 blocks, 1 summing junctions, 7 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #334155; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #0f172a; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #64748b; }
+.schematex-bd-sum { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #334155; }
+.schematex-bd-signal { stroke: #334155; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #334155; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #334155; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #0f172a; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: #0f172a; }
+.schematex-bd-branch { fill: #334155; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#334155"/></marker></defs>
+<text x="1195.5" y="18" text-anchor="middle" class="schematex-bd-title">Heat Exchanger Temperature Control Loop</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 212 59 L 417 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="setpoint" data-to="err"/>
+<rect x="288.9" y="43" width="51.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="314.5" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="314.5" dy="0">setpoint</tspan></text>
+<text x="409" y="64" text-anchor="middle" class="schematex-bd-sum-sign">+</text>
+<path d="M 441 59 L 786 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="err" data-to="controller"/>
+<rect x="559.1" y="43" width="108.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="613.5" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="613.5" dy="0">temperature error</tspan></text>
+<path d="M 916 59 L 1158 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="controller" data-to="actuator"/>
+<rect x="995.4" y="43" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1037" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1037" dy="0">valve command</tspan></text>
+<path d="M 1345 59 L 1531 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="actuator" data-to="plant"/>
+<rect x="1406" y="43" width="64" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1438" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1438" dy="0">steam flow</tspan></text>
+<path d="M 1709 50 L 1942.25 50 L 1942.25 59 L 2175.5 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="plant" data-to="display"/>
+<rect x="1966.075" y="43" width="185.60000000000002" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2058.875" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2058.875" dy="0">controlled outlet temperature</tspan></text>
+<path d="M 1709 68 L 1925 68 L 1925 155 L 2141 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="plant" data-to="sensor"/>
+<rect x="1969" y="139" width="128" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2033" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2033" dy="0">measured temperature</tspan></text>
+<path d="M 2249 182 L 2249 216 L 429 216 L 429 71" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="sensor" data-to="err"/>
+<rect x="1284.6" y="200" width="108.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1339" y="212" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1339" dy="0">negative feedback</tspan></text>
+<text x="421" y="81" text-anchor="middle" class="schematex-bd-sum-sign">−</text></g>
+<g class="schematex-bd-nodes"><g transform="translate(34, 32)" data-block-id="setpoint" data-block-role="reference"><rect width="178" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="89" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="89" dy="0">Temperature Setpoint</tspan></text></g>
+<g transform="translate(786, 32)" data-block-id="controller" data-block-role="controller"><rect width="130" height="54" fill="#dbeafe" class="schematex-bd-block" rx="2"/>
+<text x="65" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="65" dy="0">PID Controller</tspan></text></g>
+<g transform="translate(1158, 32)" data-block-id="actuator" data-block-role="actuator"><rect width="187" height="54" fill="#dcfce7" class="schematex-bd-block" rx="2"/>
+<text x="93.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="93.5" dy="0">Control Valve Actuator</tspan></text></g>
+<g transform="translate(1531, 32)" data-block-id="plant" data-block-role="plant"><rect width="178" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="89" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="89" dy="0">Heat Exchanger Plant</tspan></text></g>
+<g transform="translate(2141, 128)" data-block-id="sensor" data-block-role="sensor"><rect width="216" height="54" fill="#f3e8ff" class="schematex-bd-block" rx="2"/>
+<text x="108" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="108" dy="0">Outlet Temperature Sensor</tspan></text></g>
+<g transform="translate(2175.5, 32)" data-block-id="display" data-block-role="output"><rect width="147" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="73.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="73.5" dy="0">Operator Display</tspan></text></g>
+<g data-sum-id="err"><circle cx="429" cy="59" r="12" class="schematex-bd-sum"/></g></g>
+<g class="schematex-bd-branches"><circle cx="1709" cy="59" r="3.5" class="schematex-bd-branch"/></g></g></svg>

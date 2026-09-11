@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="900" viewBox="0 0 1536 900">
+  <title>Setup Hold digital timing relationship</title>
+  <rect width="1536" height="900" fill="white"/>
+  <defs>
+    <pattern id="unknown" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#f0f0f0"/><path d="M-2 2L2-2M0 10L10 0M8 12L12 8" stroke="#999" stroke-width="1"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="black"/></marker>
+  </defs>
+  <g font-family="Helvetica, Arial, sans-serif" fill="black">
+    <text x="768" y="100" text-anchor="middle" font-size="80" font-weight="700">Setup Hold</text>
+    <g stroke="#dedede" stroke-width="1" stroke-dasharray="6 8">
+      <path d="M260 190V685M400 190V685M540 190V685M680 190V685M820 190V685M960 190V685M1100 190V685M1240 190V685M1380 190V685"/>
+    </g>
+    <g font-size="39" text-anchor="end">
+      <text x="220" y="285">CLK</text><text x="220" y="465">ENABLE</text><text x="220" y="640">DATA</text>
+    </g>
+    <g fill="none" stroke="black" stroke-width="4" stroke-linejoin="miter">
+      <path d="M260 315V225H330V315H400V225H470V315H540V225H610V315H680V225H750V315H820V225H890V315H960V225H1030V315H1100V225H1170V315H1240V225H1310V315H1380"/>
+      <path d="M260 405H400V495H1240V405H1380"/>
+    </g>
+    <g stroke="black" stroke-width="3" stroke-linejoin="miter">
+      <path d="M260 585H391L409 675H260Z" fill="url(#unknown)"/>
+      <path d="M391 585H531L549 675H409Z" fill="white"/>
+      <path d="M531 585H671L689 675H549Z" fill="white"/>
+      <path d="M671 585H811L829 675H689Z" fill="white"/>
+      <path d="M811 585H951L969 675H829Z" fill="white"/>
+      <path d="M951 585H1091L1109 675H969Z" fill="white"/>
+      <path d="M1091 585H1231L1249 675H1109Z" fill="white"/>
+      <path d="M1231 585H1371L1389 675H1249Z" fill="white"/>
+      <path d="M1371 585H1490V675H1389Z" fill="url(#unknown)"/>
+    </g>
+    <g fill="white" stroke="black" stroke-width="3">
+      <path d="M391 585L409 585L391 675L409 675"/>
+      <path d="M531 585L549 585L531 675L549 675"/>
+      <path d="M671 585L689 585L671 675L689 675"/>
+      <path d="M811 585L829 585L811 675L829 675"/>
+      <path d="M951 585L969 585L951 675L969 675"/>
+      <path d="M1091 585L1109 585L1091 675L1109 675"/>
+      <path d="M1231 585L1249 585L1231 675L1249 675"/>
+      <path d="M1371 585L1389 585L1371 675L1389 675"/>
+    </g>
+    <g font-size="38" text-anchor="middle">
+      <text x="330" y="643">x</text>
+      <text x="470" y="643">0</text><text x="610" y="643">1</text><text x="750" y="643">0</text><text x="890" y="643">1</text><text x="1030" y="643">1</text><text x="1170" y="643">0</text><text x="1310" y="643">1</text><text x="1435" y="643">0</text>
+    </g>
+    <path d="M260 775H1490" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="1480" y="827" text-anchor="end" font-size="36">Time</text>
+  </g>
+</svg>

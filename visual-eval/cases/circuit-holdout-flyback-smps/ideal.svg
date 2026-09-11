@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200"><title>Isolated Flyback SMPS — mains bridge, primary switch, isolated output and optocoupler feedback</title><rect width="1800" height="1200" fill="white"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#18232d;font-size:19px} .wire{fill:none;stroke:#18232d;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.symbol{fill:white;stroke:#18232d;stroke-width:2.4}.small{font-size:16px}.label{font-weight:600}.heading{font-size:23px;font-weight:600}</style>
+<text x="55" y="48" class="heading" text-anchor="start">ISOLATED FLYBACK SMPS</text>
+<text x="55" y="79" class="" text-anchor="start">230 V AC / 50 Hz  →  isolated 5 V output</text>
+<text x="55" y="122" class="heading" text-anchor="start">01   MAINS RECTIFICATION</text>
+<text x="615" y="122" class="heading" text-anchor="start">02   PRIMARY SWITCHING</text>
+<text x="1160" y="122" class="heading" text-anchor="start">03   ISOLATED OUTPUT &amp; REGULATION</text>
+<path d="M1090 155 V1075" fill="none" stroke="#8c9aa6" stroke-width="1.5" stroke-dasharray="7 8"/>
+<text x="1070" y="1110" class="small" text-anchor="end">PRIMARY</text>
+<text x="1110" y="1110" class="small" text-anchor="start">ISOLATED SECONDARY</text>
+<circle class="symbol" cx="110" cy="400" r="33"/>
+<path class="wire" d="M88 400 C95 378 104 378 110 400 C116 422 125 422 132 400"/>
+<path class="wire" d="M110 367 V330 H270 M110 433 V510 H440 V330"/>
+<text x="55" y="565" class="label" text-anchor="start">V1  AC MAINS</text>
+<text x="55" y="592" class="" text-anchor="start">230 V AC, 50 Hz</text>
+<text x="155" y="321" class="small" text-anchor="start">ACL</text>
+<text x="175" y="501" class="small" text-anchor="start">ACN</text>
+<path class="wire" d="M270 200 H580 M270 200 V225 M270 305 V330 M270 330 V385 M270 465 V640 H580 M440 200 V225 M440 305 V330 M440 330 V385 M440 465 V640"/>
+<g transform="translate(270 265) rotate(-90)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+</g>
+<g transform="translate(270 425) rotate(-90)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+</g>
+<text x="296" y="251" class="label" text-anchor="start">D1</text>
+<text x="296" y="277" class="small" text-anchor="start">1N4007</text>
+<text x="296" y="411" class="label" text-anchor="start">D3</text>
+<text x="296" y="437" class="small" text-anchor="start">1N4007</text>
+<circle cx="270" cy="330" r="4" fill="#18232d"/>
+<circle cx="270" cy="200" r="4" fill="#18232d"/>
+<circle cx="270" cy="640" r="4" fill="#18232d"/>
+<g transform="translate(440 265) rotate(-90)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+</g>
+<g transform="translate(440 425) rotate(-90)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+</g>
+<text x="466" y="251" class="label" text-anchor="start">D2</text>
+<text x="466" y="277" class="small" text-anchor="start">1N4007</text>
+<text x="466" y="411" class="label" text-anchor="start">D4</text>
+<text x="466" y="437" class="small" text-anchor="start">1N4007</text>
+<circle cx="440" cy="330" r="4" fill="#18232d"/>
+<circle cx="440" cy="200" r="4" fill="#18232d"/>
+<circle cx="440" cy="640" r="4" fill="#18232d"/>
+<path class="wire" d="M580 200 V290 M580 370 V640"/>
+<path class="wire" d="M580 290 v30 m-22 0 h44 M558 332 h44 M580 332 v38"/>
+<text x="543" y="315" class="small" text-anchor="start">+</text>
+<text x="546" y="475" class="label" text-anchor="end">C1 BULK</text>
+<text x="546" y="502" class="" text-anchor="end">47 µF, 400 V</text>
+<circle cx="580" cy="200" r="4" fill="#18232d"/>
+<circle cx="580" cy="640" r="4" fill="#18232d"/>
+<path class="wire" d="M580 200 H1010 V230 M580 640 H980"/>
+<text x="680" y="189" class="small" text-anchor="start">HVPLUS</text>
+<text x="680" y="669" class="small" text-anchor="start">HVMINUS / PRIMARY RETURN</text>
+<path class="wire" d="M1010 230 C975 230 975 266 1010 266 C975 266 975 302 1010 302 C975 302 975 338 1010 338 C975 338 975 374 1010 374 V415"/>
+<path class="wire" d="M1063 231 V374 M1075 231 V374"/>
+<path class="wire" d="M1130 200 V230 C1165 230 1165 266 1130 266 C1165 266 1165 302 1130 302 C1165 302 1165 338 1130 338 C1165 338 1165 374 1130 374 V540 H1720"/>
+<circle cx="995" cy="237" r="4" fill="#18232d"/>
+<circle cx="1145" cy="237" r="4" fill="#18232d"/>
+<text x="1070" y="163" class="label" text-anchor="middle">T1  ISOLATION TRANSFORMER</text>
+<text x="1070" y="189" class="" text-anchor="middle">EE16 flyback</text>
+<path class="wire" d="M1010 415 V439 H983 V451 M983 459 V474 M983 482 V495 H1010 V535 M969 439 V497 M940 468 H960 V439 M960 439 V497 M1010 468 H983 M1001 488 l-9 -5 v10 Z"/>
+<text x="1019" y="411" class="small" text-anchor="start">SW</text>
+<text x="820" y="386" class="label" text-anchor="start">Q1 PRIMARY SWITCH</text>
+<text x="820" y="412" class="" text-anchor="start">STP7NK80Z</text>
+<text x="927" y="451" class="small" text-anchor="start">G</text>
+<text x="1022" y="447" class="small" text-anchor="start">D</text>
+<text x="1022" y="505" class="small" text-anchor="start">S</text>
+<path class="wire" d="M1010 545 v15"/>
+<rect class="symbol" x="1001" y="560" width="18" height="50"/>
+<path class="wire" d="M1010 610 v15"/>
+<path class="wire" d="M1010 535 V545 M1010 625 V640 H980"/>
+<text x="1040" y="576" class="small" text-anchor="start">RSENSE</text>
+<text x="1040" y="600" class="small" text-anchor="start">0.33 Ω</text>
+<circle cx="1010" cy="535" r="4" fill="#18232d"/>
+<rect class="symbol" x="670" y="730" width="290" height="185"/>
+<text x="815" y="766" class="label" text-anchor="middle">U1 PWM CONTROLLER</text>
+<text x="815" y="796" class="heading" text-anchor="middle">UC3843</text>
+<text x="685" y="831" class="small" text-anchor="start">HV+</text>
+<text x="685" y="885" class="small" text-anchor="start">HV−</text>
+<text x="941" y="829" class="small" text-anchor="end">GATE</text>
+<text x="941" y="869" class="small" text-anchor="end">CS</text>
+<text x="941" y="901" class="small" text-anchor="end">FB</text>
+<path class="wire" d="M630 200 V827 H670 M650 640 V880 H670 M960 822 H980 V695 H915 V468 H940 M960 862 H1035 V535 H1010"/>
+<circle cx="630" cy="200" r="4" fill="#18232d"/>
+<circle cx="650" cy="640" r="4" fill="#18232d"/>
+<path class="wire" d="M580 640 V696"/>
+<path class="wire" d="M580 696 v12 m-20 0 h40 m-32 7 h24 m-17 7 h10"/>
+<text x="390" y="739" class="small" text-anchor="start">W1  PRIMARY GROUND</text>
+<text x="390" y="762" class="small" text-anchor="start">primary return bond</text>
+<path class="wire" d="M1130 200 H1240"/>
+<g transform="translate(1280 200) rotate(0)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+<path class="wire" d="M15 -16 h-7 v6 M15 16 h7 v-6"/>
+</g>
+<path class="wire" d="M1320 200 H1720"/>
+<text x="1280" y="159" class="label" text-anchor="middle">D5  SS34</text>
+<text x="1280" y="183" class="small" text-anchor="middle">Schottky rectifier</text>
+<text x="1170" y="225" class="small" text-anchor="start">VSEC</text>
+<text x="1720" y="178" class="label" text-anchor="end">VOUT  +5 V</text>
+<path class="wire" d="M1400 200 V290 M1400 370 V540"/>
+<path class="wire" d="M1400 290 v30 m-22 0 h44 M1378 332 h44 M1400 332 v38"/>
+<text x="1363" y="315" class="small" text-anchor="start">+</text>
+<text x="1427" y="329" class="label" text-anchor="start">C2 OUTPUT</text>
+<text x="1427" y="356" class="" text-anchor="start">470 µF, 10 V</text>
+<path class="wire" d="M1680 290 v15"/>
+<rect class="symbol" x="1671" y="305" width="18" height="70"/>
+<path class="wire" d="M1680 375 v15"/>
+<path class="wire" d="M1680 200 V290 M1680 390 V540"/>
+<text x="1710" y="319" class="small" text-anchor="start">RLOAD</text>
+<text x="1710" y="345" class="small" text-anchor="start">10 Ω</text>
+<text x="1710" y="371" class="small" text-anchor="start">5 W</text>
+<circle cx="1400" cy="200" r="4" fill="#18232d"/>
+<circle cx="1400" cy="540" r="4" fill="#18232d"/>
+<circle cx="1680" cy="200" r="4" fill="#18232d"/>
+<circle cx="1680" cy="540" r="4" fill="#18232d"/>
+<text x="1720" y="570" class="" text-anchor="end">GNDSEC — isolated return</text>
+<path class="wire" d="M1720 200 V610 H1270 V655 M1590 610 V655"/>
+<circle cx="1720" cy="200" r="4" fill="#18232d"/>
+<circle cx="1590" cy="610" r="4" fill="#18232d"/>
+<path class="wire" d="M1270 655 v15"/>
+<rect class="symbol" x="1261" y="670" width="18" height="50"/>
+<path class="wire" d="M1270 720 v15"/>
+<text x="1300" y="683" class="label" text-anchor="start">RLED</text>
+<text x="1300" y="709" class="" text-anchor="start">1 kΩ</text>
+<path class="wire" d="M1590 655 v15"/>
+<rect class="symbol" x="1581" y="670" width="18" height="50"/>
+<path class="wire" d="M1590 720 v15"/>
+<text x="1620" y="683" class="label" text-anchor="start">RTOP</text>
+<text x="1620" y="709" class="" text-anchor="start">10 kΩ, 1%</text>
+<path class="wire" d="M1590 810 v15"/>
+<rect class="symbol" x="1581" y="825" width="18" height="50"/>
+<path class="wire" d="M1590 875 v15"/>
+<text x="1620" y="837" class="label" text-anchor="start">RBOT</text>
+<text x="1620" y="863" class="" text-anchor="start">2.49 kΩ, 1%</text>
+<path class="wire" d="M1590 735 V810 M1590 890 V1030 H1270 M1720 540 V1030 H1590"/>
+<circle cx="1720" cy="540" r="4" fill="#18232d"/>
+<circle cx="1590" cy="1030" r="4" fill="#18232d"/>
+<rect class="symbol" x="1000" y="770" width="355" height="205"/>
+<text x="1177" y="949" class="label" text-anchor="middle">U3  LTV-817</text>
+<text x="1177" y="969" class="small" text-anchor="middle">OPTOCOUPLER</text>
+<path class="wire" d="M1090 784 V927"/>
+<path class="wire" d="M1270 735 V795"/>
+<g transform="translate(1270 835) rotate(90)">
+<path class="wire" d="M-40 0 H-15 M15 0 H40"/>
+<path class="symbol" d="M-15 -14 L15 0 L-15 14 Z"/>
+<path class="wire" d="M15 -16 V16"/>
+</g>
+<path class="wire" d="M1270 875 V905 H1430"/>
+<text x="1290" y="760" class="small" text-anchor="start">LEDA</text>
+<text x="1365" y="891" class="small" text-anchor="start">FBSEC</text>
+<path class="wire" d="M1055 829 V885 M1055 840 L1030 817 V802 H985 V897 H960 M1055 874 L1030 898 V930 H985 V1005 H650 V880"/>
+<path class="symbol" d="M1030 898 l3 -13 l9 7 Z"/>
+<text x="979" y="924" class="small" text-anchor="end">FBCTRL</text>
+<path class="wire" d="M1220 821 l-55 20 m0 0 l10 -10 m-10 10 l14 1 M1220 847 l-55 20 m0 0 l10 -10 m-10 10 l14 1"/>
+<rect class="symbol" x="1390" y="920" width="120" height="90"/>
+<text x="1450" y="954" class="label" text-anchor="middle">U2</text>
+<text x="1450" y="981" class="label" text-anchor="middle">TL431A</text>
+<text x="1438" y="935" class="small" text-anchor="start">K</text>
+<text x="1498" y="1001" class="small" text-anchor="start">A</text>
+<text x="1398" y="1001" class="small" text-anchor="start">REF</text>
+<path class="wire" d="M1430 905 V920 M1490 1010 V1030 M1590 775 H1370 V997 H1390"/>
+<circle cx="1590" cy="775" r="4" fill="#18232d"/>
+<circle cx="1490" cy="1030" r="4" fill="#18232d"/>
+<text x="1450" y="1063" class="small" text-anchor="middle">SHUNT REGULATOR</text>
+<text x="1410" y="799" class="small" text-anchor="start">VREF</text>
+<text x="55" y="1144" class="small" text-anchor="start">Signal path: AC bridge → bulk DC → primary switch &amp; transformer → Schottky rectifier → output load</text>
+<text x="55" y="1173" class="small" text-anchor="start">Regulation: output divider → TL431A → optocoupler LED  •  isolated phototransistor → UC3843 FB</text>
+</svg>

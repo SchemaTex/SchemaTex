@@ -1,0 +1,18 @@
+%% Retail bank accounts, specialized account policies, and ledger entries.
+classDiagram
+class Account { <<abstract>> #number : String -balance : Money +credit(amount : Money) : void }
+class CheckingAccount { +overdraftLimit : Money }
+class SavingsAccount { +interestRate : Percent }
+class BusinessAccount { +companyName : String }
+class Customer { +name : String }
+class LedgerEntry { +postedAt : Instant +amount : Money }
+class Statement { +period : DateRange }
+class InterestPolicy { <<interface>> +accrue(account : SavingsAccount) : Money }
+CheckingAccount --|> Account
+SavingsAccount --|> Account
+BusinessAccount --|> Account
+Customer "1" -- "0..*" Account : owns
+Account *-- "0..*" LedgerEntry : entries
+Account *-- "0..*" Statement : statements
+SavingsAccount --> InterestPolicy : uses
+InterestPolicy ..> SavingsAccount : calculates for

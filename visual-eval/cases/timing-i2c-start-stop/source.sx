@@ -1,0 +1,6 @@
+# Scenario: I2c Start Stop digital timing relationship.
+timing "I2c Start Stop" [hscale: 2]
+CLK: pppppppp
+ENABLE: 10000001
+DATA: x=======x data: ["0", "1", "0", "1", "1", "0", "1", "0"]
+

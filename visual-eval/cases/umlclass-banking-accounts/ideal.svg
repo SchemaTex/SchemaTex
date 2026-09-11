@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920">
+<title>Retail bank accounts and account-owned financial records</title>
+<defs>
+ <marker id="generalization" markerWidth="22" markerHeight="18" refX="21" refY="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L21 9 L1 17 Z" fill="white" stroke="#263340" stroke-width="2"/></marker>
+ <marker id="composition" markerWidth="26" markerHeight="16" refX="1" refY="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 8 L13 1 L25 8 L13 15 Z" fill="#263340" stroke="#263340"/></marker>
+ <marker id="directed" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L12 7 L1 13" fill="none" stroke="#263340" stroke-width="2"/></marker>
+ <style>
+ .box{fill:white;stroke:#263340;stroke-width:2} .line{fill:none;stroke:#263340;stroke-width:2;stroke-linejoin:round} text{font-family:Verdana, sans-serif;fill:#17232f;font-size:18px} .name{font-size:21px;font-weight:bold;text-anchor:middle} .stereo{font-size:16px;text-anchor:middle} .label{font-size:17px} .rule{stroke:#263340;stroke-width:1.5}
+ </style>
+</defs>
+<rect width="1400" height="920" fill="white"/>
+<!-- Association and compositions -->
+<path class="line" d="M310 164 H520"/>
+<text x="330" y="152">1</text><text x="466" y="152">0..*</text><text class="label" x="393" y="190">owns</text>
+<path class="line" d="M850 130 H1050" marker-start="url(#composition)"/>
+<text class="label" x="914" y="116">entries</text><text x="996" y="153">0..*</text>
+<path class="line" d="M850 224 H947 V310 H1050" marker-start="url(#composition)"/>
+<text class="label" x="868" y="211">statements</text><text x="996" y="300">0..*</text>
+<!-- Three separate generalizations, triangles point into Account -->
+<path class="line" d="M235 490 V378 H577 V280" marker-end="url(#generalization)"/>
+<path class="line" d="M685 490 V280" marker-end="url(#generalization)"/>
+<path class="line" d="M1135 490 V402 H794 V280" marker-end="url(#generalization)"/>
+<!-- Policy association and dependency use separate orthogonal lanes -->
+<path class="line" d="M612 616 V750" marker-end="url(#directed)"/>
+<text class="label" x="625" y="688">uses</text>
+<path class="line" d="M794 750 V616" stroke-dasharray="7 6" marker-end="url(#directed)"/>
+<text class="label" x="810" y="688">calculates for</text>
+<!-- Customer -->
+<rect class="box" x="60" y="115" width="250" height="115"/>
+<text class="name" x="185" y="148">Customer</text><path class="rule" d="M60 162 H310"/>
+<text x="77" y="193">+ name : String</text><path class="rule" d="M60 207 H310"/>
+<!-- Abstract Account -->
+<rect class="box" x="520" y="60" width="330" height="220"/>
+<text class="stereo" x="685" y="86">«abstract»</text><text class="name" x="685" y="116" font-style="italic">Account</text>
+<path class="rule" d="M520 132 H850"/><text x="538" y="162"># number : String</text><text x="538" y="192">- balance : Money</text>
+<path class="rule" d="M520 210 H850"/><text x="538" y="244">+ credit(amount : Money) : void</text>
+<!-- Account-owned records -->
+<rect class="box" x="1050" y="65" width="290" height="142"/>
+<text class="name" x="1195" y="99">LedgerEntry</text><path class="rule" d="M1050 114 H1340"/>
+<text x="1068" y="145">+ postedAt : Instant</text><text x="1068" y="176">+ amount : Money</text><path class="rule" d="M1050 190 H1340"/>
+<rect class="box" x="1050" y="260" width="290" height="110"/>
+<text class="name" x="1195" y="294">Statement</text><path class="rule" d="M1050 309 H1340"/>
+<text x="1068" y="340">+ period : DateRange</text><path class="rule" d="M1050 354 H1340"/>
+<!-- Specialized accounts -->
+<rect class="box" x="60" y="490" width="350" height="126"/>
+<text class="name" x="235" y="526">CheckingAccount</text><path class="rule" d="M60 544 H410"/>
+<text x="78" y="577">+ overdraftLimit : Money</text><path class="rule" d="M60 593 H410"/>
+<rect class="box" x="510" y="490" width="350" height="126"/>
+<text class="name" x="685" y="526">SavingsAccount</text><path class="rule" d="M510 544 H860"/>
+<text x="528" y="577">+ interestRate : Percent</text><path class="rule" d="M510 593 H860"/>
+<rect class="box" x="960" y="490" width="350" height="126"/>
+<text class="name" x="1135" y="526">BusinessAccount</text><path class="rule" d="M960 544 H1310"/>
+<text x="978" y="577">+ companyName : String</text><path class="rule" d="M960 593 H1310"/>
+<!-- Interest policy -->
+<rect class="box" x="450" y="750" width="470" height="140"/>
+<text class="stereo" x="685" y="779">«interface»</text><text class="name" x="685" y="810">InterestPolicy</text>
+<path class="rule" d="M450 825 H920 M450 839 H920"/>
+<text x="468" y="869">+ accrue(account : SavingsAccount) : Money</text>
+</svg>

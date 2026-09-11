@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <title>Machine Condition — Markov chain</title>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#263746"/></marker>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; }
+      .edge { fill:none; stroke:#263746; stroke-width:2.5; stroke-linejoin:round; marker-end:url(#arrow); }
+      .state { fill:white; stroke:#263746; stroke-width:3; }
+      .prob { font-size:24px; font-weight:500; text-anchor:middle; }
+      .name { font-size:27px; font-weight:600; text-anchor:middle; }
+    </style>
+  </defs>
+  <rect width="1200" height="760" fill="white"/>
+  <text x="600" y="60" text-anchor="middle" font-size="34" font-weight="650">Machine Condition</text>
+  <text x="600" y="95" text-anchor="middle" font-size="19">Markov chain · Analysis: stationary, classify</text>
+
+  <!-- Normal self-transition, left of the state. -->
+  <path class="edge" d="M215 328 H115 V422 H215"/>
+  <text class="prob" x="111" y="308">0.80</text>
+
+  <!-- Separate, opposing horizontal transition lanes. -->
+  <path class="edge" d="M391 345 H509"/>
+  <text class="prob" x="450" y="328">0.15</text>
+  <path class="edge" d="M509 405 H391"/>
+  <text class="prob" x="450" y="439">0.30</text>
+
+  <!-- Degraded self-transition, below its state. -->
+  <path class="edge" d="M565 463 V555 H635 V463"/>
+  <text class="prob" x="600" y="588">0.45</text>
+
+  <!-- Failure transitions: upper bypass and direct lane. -->
+  <path class="edge" d="M300 280 V185 H900 V275"/>
+  <text class="prob" x="600" y="170">0.05</text>
+  <path class="edge" d="M695 375 H800"/>
+  <text class="prob" x="747" y="355">0.25</text>
+
+  <!-- Absorbing self-transition, right of Failed. -->
+  <path class="edge" d="M989 329 H1090 V421 H989"/>
+  <text class="prob" x="1090" y="309">1.0</text>
+
+  <circle class="state" cx="300" cy="375" r="95"/>
+  <text class="name" x="300" y="385">Normal</text>
+  <circle class="state" cx="600" cy="375" r="95"/>
+  <text class="name" x="600" y="385">Degraded</text>
+  <circle class="state" cx="900" cy="375" r="100"/>
+  <circle class="state" cx="900" cy="375" r="91"/>
+  <text class="name" x="900" y="371">Failed</text>
+  <text x="900" y="402" text-anchor="middle" font-size="18">absorbing</text>
+
+  <line x1="190" y1="635" x2="1010" y2="635" stroke="#d5dce1" stroke-width="1"/>
+  <text x="600" y="673" text-anchor="middle" font-size="20">Classification: Normal, Degraded — transient; Failed — absorbing</text>
+  <text x="600" y="711" text-anchor="middle" font-size="20">Stationary distribution (Normal, Degraded, Failed): π = (0, 0, 1)</text>
+</svg>

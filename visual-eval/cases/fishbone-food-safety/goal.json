@@ -1,0 +1,40 @@
+{
+  "id": "fishbone-food-safety",
+  "type": "fishbone",
+  "title": "Listeria swab investigation",
+  "goal": "A food-safety team can investigate a positive environmental swab using 6M categories.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A horizontal fishbone spine, forked into a tail at the left, runs into the positive-swab effect drawn as one emphasised head that is clearly not another category."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "All 6 category bones (Man, Machine, Material, Method, Measurement, Mother Nature) angle off the spine and carry their category name at the bone tip."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Every category bone carries at least 3 causes (20 in total, up to 4 on one bone), each drawn as its own branch meeting that bone."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "All 7 sub-causes hang off the cause they explain rather than off the bone: \"HVAC drain blocked\" sits under \"Condensation above packing line\", not on the Mother Nature bone."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "At this density nothing collides: no label overlaps a bone, the spine, another label, or the canvas edge, and causes stay visually subordinate to their category."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "A line-art fish. A forked tail at the far left starts a horizontal spine that runs right and ends in an arrowhead entering the head — one closed outline with a curved back tapering to a blunt nose, stroked dark slate over a near-white fill, with a single hairline gill that meets the outline at both ends and no eye or mouth. The head carries the effect \"Positive Listeria swab in ready-to-eat packing area\" under a small letterspaced EFFECT label, and is the one element that is not a category. 6 category bones leave the spine at exactly 60 degrees in 3 mirrored pairs that share 3 V junctions — Man, Machine, Material above, Method, Measurement, Mother Nature below — and every bone runs to the same length, so the name pills sit on two clean lines however unevenly the causes are spread. Each category owns one hue, and colour is allowed on exactly two things: that category's lines (bone, cause rules, sub-cause twigs) and the solid pill carrying its name in white. Everything else is neutral slate — the fish outline, cause text, sub-cause text, the effect statement, title and deck — so the labels stay calm instead of turning into confetti. 20 causes are horizontal rules that underline their own label and end in an arrowhead touching the bone; 7 sub-causes hang off the cause they explain (not off the bone) as 32px twigs at the same 60 degrees as the bone, pointing back toward the spine, with the label at the free end. The second level is the first level shrunk one step, introducing no new kind of mark. Row pitch, junction spacing and canvas size are solved from browser-measured text widths, and every label box was tested against every other label, every line and the canvas edge: zero overlaps."
+  }
+}

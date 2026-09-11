@@ -1,0 +1,26 @@
+# Concept one-line for a Tier-style data hall: utility sources are normally separated; ATS feeds critical UPS load, generator is standby.
+sld "Data Centre · Dual Feed Critical Power" [standard: ansi]
+U1 = utility [voltage: "11kV", rating: "500 MVA", label: "Utility Feed A"]
+U2 = utility [voltage: "11kV", rating: "500 MVA", label: "Utility Feed B"]
+G1 = generator [voltage: "400V", rating: "1500 kVA", label: "Generator G1"]
+TX1 = transformer [rating: "1600 kVA, 11kV/400V", label: "Transformer A"]
+TX2 = transformer [rating: "1600 kVA, 11kV/400V", label: "Transformer B"]
+CB1 = breaker [rating: "2500 A, 50 kA", label: "Incomer A"]
+CB2 = breaker [rating: "2500 A, 50 kA", label: "Incomer B"]
+ATS1 = ats [rating: "1600 A, 4-pole", label: "ATS Critical A"]
+UPS1 = ups [rating: "500 kVA", label: "UPS A"]
+PDU1 = panel [rating: "800 A, 400/230V", label: "PDU A"]
+PDU2 = panel [rating: "800 A, 400/230V", label: "PDU B"]
+IT1 = load [rating: "400 kW", label: "Data Hall IT Load A"]
+IT2 = load [rating: "400 kW", label: "Data Hall IT Load B"]
+U1 -> TX1
+TX1 -> CB1
+CB1 -> ATS1
+G1 -> ATS1
+ATS1 -> UPS1
+UPS1 -> PDU1
+PDU1 -> IT1
+CB2 -> PDU2
+PDU2 -> IT2
+U2 -> TX2
+TX2 -> CB2

@@ -1,0 +1,15 @@
+%% E-commerce order lifecycle with payment, fulfillment, and terminal outcomes.
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Submitted : submit [cartValid]
+  Submitted --> PaymentPending : reserveInventory [stockAvailable]
+  Submitted --> Cancelled : cancel [customerRequest]
+  PaymentPending --> Paid : paymentApproved
+  PaymentPending --> PaymentFailed : paymentDeclined
+  PaymentFailed --> PaymentPending : retry [retries < 3]
+  PaymentFailed --> Cancelled : cancel [retries >= 3]
+  Paid --> Fulfillment : releaseToWarehouse
+  Fulfillment --> Shipped : carrierCollected
+  Shipped --> Delivered : deliveryConfirmed
+  Delivered --> [*]
+  Cancelled --> [*]

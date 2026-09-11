@@ -1,0 +1,33 @@
+# Assumptions: three stores connect securely to a central retail service hub over managed WAN links.
+# Point-of-sale, guest Wi-Fi, and management functions remain visibly separated by VLAN.
+network "Retail store chain network"
+  layout: tiered
+  direction: tb
+  internet wan "Managed SD-WAN"
+  firewall hqfw "HQ security gateway" tier: edge
+  router hub "Retail service hub" tier: core
+  router north "North store router" tier: edge
+  router south "South store router" tier: edge
+  router west "West store router" tier: edge
+  switch pos "North POS switch" tier: access
+  ap guest "North guest Wi-Fi" tier: access
+  pc till "North POS terminal" ip: 10.50.10.11
+  laptop manager "North manager laptop" ip: 10.50.20.11
+  vlan payments "VLAN 10 Payment" {
+    till
+  }
+  vlan management "VLAN 20 Management" {
+    manager
+  }
+  vlan guests "VLAN 30 Guest Wi-Fi" {
+    guest
+  }
+  wan -- hqfw : wan "MPLS"
+  hqfw -- hub : fiber 10G
+  wan -- north : wan "SD-WAN"
+  wan -- south : wan "SD-WAN"
+  wan -- west : wan "SD-WAN"
+  north -- pos : trunk vlan: 10,20,30 1G
+  pos -- till : access vlan: 10 1G
+  pos -- manager : access vlan: 20 1G
+  pos -- guest : poe access vlan: 30 1G

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Two Dining Philosophers" width="817" height="258" viewBox="0 0 817 258" data-diagram-type="petri"><title>Petri net — Two Dining Philosophers</title>
+<desc>6 places, 4 transitions, 16 arcs. Marking {Think1:1, Think2:1, Fork1:1, Fork2:1}. Enabled: Start1, Start2.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="408.5" y="22" class="sx-petri-title" text-anchor="middle">Two Dining Philosophers</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="Think1" data-to="Start1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 58.6 111 L 128.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Fork1" data-to="Start1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 408.6 129 C 408.6 204 132.6 204 132.6 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Fork2" data-to="Start1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 776.6 174 C 776.6 204 132.6 204 132.6 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Start1" data-to="Eat1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 136.6 111 L 206.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Eat1" data-to="Finish1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 242.6 111 L 312.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish1" data-to="Think1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 316.6 133 C 316.6 204 40.6 204 40.6 129" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish1" data-to="Fork1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320.6 111 L 390.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish1" data-to="Fork2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320.6 111.3913043478261 L 758.6855161879665 154.24749614882282" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Think2" data-to="Start2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 776.6 84 C 776.6 204 500.6 204 500.6 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Fork1" data-to="Start2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 426.6 111 L 496.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Fork2" data-to="Start2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 776.6 174 C 776.6 204 500.6 204 500.6 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Start2" data-to="Eat2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 504.6 111 L 574.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Eat2" data-to="Finish2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 610.6 111 L 680.6 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish2" data-to="Think2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 688.6 109.04347826086956 L 760.4306228988421 73.90893445165334" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish2" data-to="Fork1" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 684.6 133 C 684.6 204 408.6 204 408.6 129" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Finish2" data-to="Fork2" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 688.6 112.95652173913044 L 760.4306228988421 148.09106554834665" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="Think1" data-tokens="1"><circle class="sx-petri-place" cx="40.6" cy="111" r="18"/>
+<circle class="sx-petri-token" cx="40.6" cy="111" r="3.5"/>
+<text class="sx-petri-label" x="40.6" y="87" text-anchor="middle">Think1</text></g>
+<g class="sx-petri-place-g" data-id="Think2" data-tokens="1"><circle class="sx-petri-place" cx="776.6" cy="66" r="18"/>
+<circle class="sx-petri-token" cx="776.6" cy="66" r="3.5"/>
+<text class="sx-petri-label" x="776.6" y="42" text-anchor="middle">Think2</text></g>
+<g class="sx-petri-place-g" data-id="Fork1" data-tokens="1"><circle class="sx-petri-place" cx="408.6" cy="111" r="18"/>
+<circle class="sx-petri-token" cx="408.6" cy="111" r="3.5"/>
+<text class="sx-petri-label" x="408.6" y="87" text-anchor="middle">Fork1</text></g>
+<g class="sx-petri-place-g" data-id="Fork2" data-tokens="1"><circle class="sx-petri-place" cx="776.6" cy="156" r="18"/>
+<circle class="sx-petri-token" cx="776.6" cy="156" r="3.5"/>
+<text class="sx-petri-label" x="776.6" y="132" text-anchor="middle">Fork2</text></g>
+<g class="sx-petri-place-g" data-id="Eat1" data-tokens="0"><circle class="sx-petri-place" cx="224.6" cy="111" r="18"/>
+
+<text class="sx-petri-label" x="224.6" y="87" text-anchor="middle">Eat1</text></g>
+<g class="sx-petri-place-g" data-id="Eat2" data-tokens="0"><circle class="sx-petri-place" cx="592.6" cy="111" r="18"/>
+
+<text class="sx-petri-label" x="592.6" y="87" text-anchor="middle">Eat2</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g" data-id="Start1" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="124.6" y="85" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="128.6" y="89" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="132.6" y="83" text-anchor="middle">Start1</text>
+<text class="sx-petri-sublabel" x="132.6" y="70" text-anchor="middle">P1 takes forks</text></g>
+<g class="sx-petri-trans-g" data-id="Finish1" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="312.6" y="89" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="316.6" y="83" text-anchor="middle">Finish1</text>
+<text class="sx-petri-sublabel" x="316.6" y="70" text-anchor="middle">P1 releases forks</text></g>
+<g class="sx-petri-trans-g" data-id="Start2" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="492.6" y="85" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="496.6" y="89" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="500.6" y="83" text-anchor="middle">Start2</text>
+<text class="sx-petri-sublabel" x="500.6" y="70" text-anchor="middle">P2 takes forks</text></g>
+<g class="sx-petri-trans-g" data-id="Finish2" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="680.6" y="89" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="684.6" y="83" text-anchor="middle">Finish2</text>
+<text class="sx-petri-sublabel" x="684.6" y="70" text-anchor="middle">P2 releases forks</text></g></g></g></svg>

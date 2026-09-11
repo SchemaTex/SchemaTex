@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="780" viewBox="0 0 1536 780">
+  <title>Alarm Annunciation — IEC 61131-3 Function Block Diagram</title>
+  <rect width="1536" height="780" fill="white"/>
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; fill: #111; font-size: 23px; }
+    .title { font-size: 44px; font-weight: 700; }
+    .heading { font-size: 24px; font-weight: 700; }
+    .block-title { font-size: 28px; font-weight: 700; }
+    .port { font-size: 21px; }
+    .tag { font-size: 23px; font-weight: 700; }
+    .wire { fill: none; stroke: #111; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
+    .box { fill: white; stroke: #111; stroke-width: 2; }
+  </style>
+  <text class="title" x="768" y="53" text-anchor="middle">ALARM ANNUNCIATION</text>
+
+  <rect class="box" x="36" y="82" width="1464" height="430"/>
+  <text class="heading" x="48" y="113">Network 0 – Permissive latch</text>
+
+  <!-- Start directly sets the OR result. -->
+  <text x="252" y="191" text-anchor="end">Start</text>
+  <path class="wire" d="M270 183 H1010"/>
+
+  <!-- Latch feedback is enabled only while Stop and Inhibit are false. -->
+  <text x="252" y="290" text-anchor="end">Latch</text>
+  <path class="wire" d="M270 282 H670"/>
+  <text x="252" y="369" text-anchor="end">Stop</text>
+  <path class="wire" d="M270 361 H390"/>
+  <rect class="box" x="390" y="326" width="140" height="70"/>
+  <text class="block-title" x="460" y="352" text-anchor="middle">NOT</text>
+  <text class="port" x="400" y="378">IN</text>
+  <text class="port" x="520" y="378" text-anchor="end">Q</text>
+  <path class="wire" d="M530 361 H610 V342 H670"/>
+
+  <text x="252" y="461" text-anchor="end">Inhibit</text>
+  <path class="wire" d="M270 453 H390"/>
+  <rect class="box" x="390" y="418" width="140" height="70"/>
+  <text class="block-title" x="460" y="444" text-anchor="middle">NOT</text>
+  <text class="port" x="400" y="470">IN</text>
+  <text class="port" x="520" y="470" text-anchor="end">Q</text>
+  <path class="wire" d="M530 453 H630 V402 H670"/>
+
+  <rect class="box" x="670" y="235" width="160" height="195"/>
+  <text class="block-title" x="750" y="265" text-anchor="middle">&amp;</text>
+  <text class="port" x="680" y="290">IN1</text>
+  <text class="port" x="680" y="350">IN2</text>
+  <text class="port" x="680" y="410">IN3</text>
+  <text class="port" x="820" y="350" text-anchor="end">Q</text>
+  <path class="wire" d="M830 342 H920 V253 H1010"/>
+
+  <rect class="box" x="1010" y="138" width="160" height="150"/>
+  <text class="block-title" x="1090" y="169" text-anchor="middle">≥1</text>
+  <text class="port" x="1020" y="191">IN1</text>
+  <text class="port" x="1020" y="261">IN2</text>
+  <text class="port" x="1160" y="226" text-anchor="end">Q</text>
+  <path class="wire" d="M1170 218 H1300"/>
+  <path class="box" d="M1300 200 H1400 L1418 218 L1400 236 H1300 Z"/>
+  <text class="tag" x="1354" y="226" text-anchor="middle">Latch</text>
+
+  <rect class="box" x="36" y="538" width="1464" height="205"/>
+  <text class="heading" x="48" y="569">Network 1 – Output command</text>
+  <path class="box" d="M240 638 H336 L354 656 L336 674 H240 Z"/>
+  <text class="tag" x="293" y="664" text-anchor="middle">Latch</text>
+  <path class="wire" d="M354 656 H670"/>
+  <rect class="box" x="670" y="605" width="160" height="105"/>
+  <text class="block-title" x="750" y="637" text-anchor="middle">MOVE</text>
+  <text class="port" x="680" y="664">IN</text>
+  <text class="port" x="820" y="664" text-anchor="end">OUT</text>
+  <path class="wire" d="M830 656 H1300"/>
+  <path class="box" d="M1300 638 H1420 L1438 656 L1420 674 H1300 Z"/>
+  <text class="tag" x="1363" y="664" text-anchor="middle">Output</text>
+</svg>

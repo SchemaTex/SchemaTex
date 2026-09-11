@@ -1,0 +1,16 @@
+circuit "NPN Common-Emitter Audio Amplifier" netlist
+# DC bias assuming beta=100 and VBE=0.70 V:
+# VTH=2.105 V, RTH=8.246 kOhm, IC=1.286 mA.
+# VB=1.999 V, VE=1.299 V, VC=5.954 V, VCE=4.655 V (active region).
+V1 VCC GND value="12 V" label="V1"
+VIN IN GND type=acsource value="5 mV, 1 kHz" label="Input"
+CIN IN BASE value="1 µF" label="CIN"
+R1 VCC BASE value="47 kΩ" label="R1"
+R2 BASE GND value="10 kΩ" label="R2"
+Q1 COLLECTOR BASE EMITTER type=npn value="2N3904" label="Q1"
+RC VCC COLLECTOR value="4.7 kΩ" label="RC"
+RE EMITTER GND value="1 kΩ" label="RE"
+CE EMITTER GND type=ecap value="100 µF" label="CE"
+COUT COLLECTOR OUT value="10 µF" label="COUT"
+RL OUT GND value="47 kΩ" label="RL"
+CS VCC GND value="100 nF" label="CS"

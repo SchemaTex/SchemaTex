@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Loan Default Risk" width="1260" height="738" viewBox="0 0 1260 738"><title>Loan Default Risk</title>
+<desc>Decision tree (ml mode) with 9 nodes and 8 edges</desc>
+<style>.lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
+.lt-dtree-title { font: 700 16px sans-serif; fill: #0f172a; }
+.lt-dtree-edge { fill: none; stroke: #334155; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #059669; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #334155; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font: 500 11px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font: italic 400 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #f1f5f9; stroke: #334155; stroke-width: 1.4; }
+.lt-dtree-node-label { font: 500 12px sans-serif; fill: #0f172a; }
+.lt-dtree-ev { font: 500 10px "SF Mono", monospace; fill: #475569; }
+.lt-dtree-ev-optimal { font: 600 10px "SF Mono", monospace; fill: #059669; }
+.lt-dtree-payoff { font: 600 12px "SF Mono", monospace; fill: #0f172a; }
+.lt-dtree-payoff-neg { font: 600 12px "SF Mono", monospace; fill: #dc2626; }
+.lt-dtree-ml-rect { stroke: #334155; stroke-width: 1; }
+.lt-dtree-ml-line-1 { font: 500 12px sans-serif; fill: #0f172a; }
+.lt-dtree-ml-line-muted { font: 400 10px sans-serif; fill: #475569; }
+.lt-dtree-ml-mono { font: 400 10px "SF Mono", monospace; fill: #475569; }
+.lt-dtree-ml-class { font: 600 11px sans-serif; }
+.lt-dtree-taxon { fill: #eef2ff; stroke: #4f46e5; stroke-width: 1.4; }
+.lt-dtree-taxon-leaf { fill: #ecfdf5; stroke: #059669; stroke-width: 1.4; }
+.lt-dtree-taxon-label { font: 500 12px sans-serif; fill: #0f172a; text-anchor: middle; }</style>
+<text x="630" y="24" class="lt-dtree-title" text-anchor="middle">Loan Default Risk</text>
+<g transform="translate(0, 36)" data-mode="ml"><path d="M 650 140 L 650 180 L 320 180 L 320 220" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6"/>
+<path d="M 650 140 L 650 180 L 980 180 L 980 220" class="lt-dtree-edge" data-edge="n1-&gt;n7" stroke-width="1.6"/>
+<path d="M 320 320 L 320 360 L 140 360 L 140 400" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6"/>
+<path d="M 320 320 L 320 360 L 500 360 L 500 400" class="lt-dtree-edge" data-edge="n2-&gt;n4" stroke-width="1.6"/>
+<path d="M 500 500 L 500 540 L 380 540 L 380 580" class="lt-dtree-edge" data-edge="n4-&gt;n5" stroke-width="1.6"/>
+<path d="M 500 500 L 500 540 L 620 540 L 620 580" class="lt-dtree-edge" data-edge="n4-&gt;n6" stroke-width="1.6"/>
+<path d="M 980 320 L 980 360 L 860 360 L 860 400" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6"/>
+<path d="M 980 320 L 980 360 L 1100 360 L 1100 400" class="lt-dtree-edge" data-edge="n7-&gt;n9" stroke-width="1.6"/>
+<rect x="467.6" y="173" width="34.8" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="485" y="180" class="lt-dtree-edge-label">True</text>
+<rect x="794.5" y="173" width="41" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="815" y="180" class="lt-dtree-edge-label">False</text>
+<rect x="212.6" y="353" width="34.8" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="230" y="360" class="lt-dtree-edge-label">True</text>
+<rect x="389.5" y="353" width="41" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="410" y="360" class="lt-dtree-edge-label">False</text>
+<rect x="422.6" y="533" width="34.8" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="440" y="540" class="lt-dtree-edge-label">True</text>
+<rect x="539.5" y="533" width="41" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="560" y="540" class="lt-dtree-edge-label">False</text>
+<rect x="902.6" y="353" width="34.8" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="920" y="360" class="lt-dtree-edge-label">True</text>
+<rect x="1019.5" y="353" width="41" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1040" y="360" class="lt-dtree-edge-label">False</text>
+<g data-node-id="n1" data-node-kind="split" data-samples="1000" data-class=""><rect x="550" y="40" width="200" height="100" rx="6" ry="6" fill="#0ea5e92d" class="lt-dtree-ml-rect"/>
+<text x="650" y="56" class="lt-dtree-ml-line-1" text-anchor="middle">income_k  45</text>
+<text x="650" y="70" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.66</text>
+<text x="650" y="84" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 1000</text>
+<text x="650" y="98" class="lt-dtree-ml-mono" text-anchor="middle">value = [380, 360, 260]</text>
+<rect x="560" y="130" width="68.4" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="628.4" y="130" width="64.8" height="5" fill="#10b981" stroke="none"/>
+<rect x="693.1999999999999" y="130" width="46.800000000000004" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n2" data-node-kind="split" data-samples="410" data-class=""><rect x="220" y="220" width="200" height="100" rx="6" ry="6" fill="#f59e0b4e" class="lt-dtree-ml-rect"/>
+<text x="320" y="236" class="lt-dtree-ml-line-1" text-anchor="middle">credit_score  620</text>
+<text x="320" y="250" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.61</text>
+<text x="320" y="264" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 410</text>
+<text x="320" y="278" class="lt-dtree-ml-mono" text-anchor="middle">value = [60, 150, 200]</text>
+<rect x="230" y="310" width="26.341463414634145" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="256.3414634146341" y="310" width="65.85365853658537" height="5" fill="#10b981" stroke="none"/>
+<rect x="322.1951219512195" y="310" width="87.80487804878048" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n3" data-node-kind="leaf" data-samples="180" data-class="high-risk"><rect x="40" y="400" width="200" height="100" rx="6" ry="6" fill="#f59e0b96" class="lt-dtree-ml-rect"/>
+<text x="140" y="416" class="lt-dtree-ml-line-1" text-anchor="middle">High risk</text>
+<text x="140" y="430" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.43</text>
+<text x="140" y="444" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 180</text>
+<text x="140" y="458" class="lt-dtree-ml-mono" text-anchor="middle">value = [10, 40, 130]</text>
+<text x="140" y="472" class="lt-dtree-ml-class" text-anchor="middle" fill="#f59e0b">class = high-risk</text>
+<rect x="50" y="490" width="10" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="60" y="490" width="40" height="5" fill="#10b981" stroke="none"/>
+<rect x="100" y="490" width="130" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n4" data-node-kind="split" data-samples="230" data-class=""><rect x="400" y="400" width="200" height="100" rx="6" ry="6" fill="#10b9814b" class="lt-dtree-ml-rect"/>
+<text x="500" y="416" class="lt-dtree-ml-line-1" text-anchor="middle">employment_years  2</text>
+<text x="500" y="430" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.63</text>
+<text x="500" y="444" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 230</text>
+<text x="500" y="458" class="lt-dtree-ml-mono" text-anchor="middle">value = [50, 110, 70]</text>
+<rect x="410" y="490" width="39.130434782608695" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="449.1304347826087" y="490" width="86.08695652173914" height="5" fill="#10b981" stroke="none"/>
+<rect x="535.2173913043479" y="490" width="54.78260869565218" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n5" data-node-kind="leaf" data-samples="100" data-class="elevated-risk"><rect x="280" y="580" width="200" height="82" rx="6" ry="6" fill="#10b98142" class="lt-dtree-ml-rect"/>
+<text x="380" y="596" class="lt-dtree-ml-line-1" text-anchor="middle">Elevated risk</text>
+<text x="380" y="610" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.59</text>
+<text x="380" y="624" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 100</text>
+<text x="380" y="638" class="lt-dtree-ml-mono" text-anchor="middle">value = [10, 45, 45]</text>
+<text x="380" y="652" class="lt-dtree-ml-class" text-anchor="middle" fill="#10b981">class = elevated-risk</text>
+<rect x="290" y="652" width="18" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="308" y="652" width="81" height="5" fill="#10b981" stroke="none"/>
+<rect x="389" y="652" width="81" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n6" data-node-kind="leaf" data-samples="130" data-class="elevated-risk"><rect x="520" y="580" width="200" height="82" rx="6" ry="6" fill="#10b98152" class="lt-dtree-ml-rect"/>
+<text x="620" y="596" class="lt-dtree-ml-line-1" text-anchor="middle">Elevated risk</text>
+<text x="620" y="610" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.62</text>
+<text x="620" y="624" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 130</text>
+<text x="620" y="638" class="lt-dtree-ml-mono" text-anchor="middle">value = [40, 65, 25]</text>
+<text x="620" y="652" class="lt-dtree-ml-class" text-anchor="middle" fill="#10b981">class = elevated-risk</text>
+<rect x="530" y="652" width="55.38461538461539" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="585.3846153846154" y="652" width="90" height="5" fill="#10b981" stroke="none"/>
+<rect x="675.3846153846154" y="652" width="34.61538461538462" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n7" data-node-kind="split" data-samples="590" data-class=""><rect x="880" y="220" width="200" height="100" rx="6" ry="6" fill="#0ea5e95f" class="lt-dtree-ml-rect"/>
+<text x="980" y="236" class="lt-dtree-ml-line-1" text-anchor="middle">credit_score  700</text>
+<text x="980" y="250" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.56</text>
+<text x="980" y="264" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 590</text>
+<text x="980" y="278" class="lt-dtree-ml-mono" text-anchor="middle">value = [320, 210, 60]</text>
+<rect x="890" y="310" width="97.62711864406779" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="987.6271186440678" y="310" width="64.0677966101695" height="5" fill="#10b981" stroke="none"/>
+<rect x="1051.6949152542372" y="310" width="18.305084745762713" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n8" data-node-kind="leaf" data-samples="260" data-class="elevated-risk"><rect x="760" y="400" width="200" height="100" rx="6" ry="6" fill="#10b98152" class="lt-dtree-ml-rect"/>
+<text x="860" y="416" class="lt-dtree-ml-line-1" text-anchor="middle">Elevated risk</text>
+<text x="860" y="430" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.60</text>
+<text x="860" y="444" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 260</text>
+<text x="860" y="458" class="lt-dtree-ml-mono" text-anchor="middle">value = [100, 130, 30]</text>
+<text x="860" y="472" class="lt-dtree-ml-class" text-anchor="middle" fill="#10b981">class = elevated-risk</text>
+<rect x="770" y="490" width="69.23076923076924" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="839.2307692307693" y="490" width="90" height="5" fill="#10b981" stroke="none"/>
+<rect x="929.2307692307693" y="490" width="20.76923076923077" height="5" fill="#f59e0b" stroke="none"/></g>
+<g data-node-id="n9" data-node-kind="leaf" data-samples="330" data-class="low-risk"><rect x="1000" y="400" width="200" height="100" rx="6" ry="6" fill="#0ea5e985" class="lt-dtree-ml-rect"/>
+<text x="1100" y="416" class="lt-dtree-ml-line-1" text-anchor="middle">Low risk</text>
+<text x="1100" y="430" class="lt-dtree-ml-line-muted" text-anchor="middle">gini = 0.49</text>
+<text x="1100" y="444" class="lt-dtree-ml-line-muted" text-anchor="middle">samples = 330</text>
+<text x="1100" y="458" class="lt-dtree-ml-mono" text-anchor="middle">value = [220, 80, 30]</text>
+<text x="1100" y="472" class="lt-dtree-ml-class" text-anchor="middle" fill="#0ea5e9">class = low-risk</text>
+<rect x="1010" y="490" width="120" height="5" fill="#0ea5e9" stroke="none"/>
+<rect x="1130" y="490" width="43.63636363636364" height="5" fill="#10b981" stroke="none"/>
+<rect x="1173.6363636363637" y="490" width="16.363636363636363" height="5" fill="#f59e0b" stroke="none"/></g></g></svg>

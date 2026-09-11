@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1070" width="1100" height="1070">
+<title>Classroom for 28 Students — 12 m × 11 m floor plan</title>
+<defs>
+  <g id="seat" fill="white" stroke="#26353d" stroke-width="1.8">
+    <rect x="-21" y="-26.25" width="42" height="29" rx="1.5"/>
+    <path d="M-13 8 V23 Q0 28 13 23 V8"/>
+    <rect x="-13" y="7" width="26" height="15" rx="3" fill="#e7ecef"/>
+    <path d="M-13 24 Q0 29 13 24"/>
+  </g>
+  <style>
+    text {font-family: 'Helvetica Neue', Helvetica, sans-serif; fill:#26353d}
+    .dim {stroke:#63717a;stroke-width:1;fill:none}
+    .label {font-size:16px;text-anchor:middle}
+  </style>
+</defs>
+<rect width="1100" height="1070" fill="white"/>
+<text x="130" y="48" font-size="28" font-weight="600">Classroom for 28 Students</text>
+<text x="130" y="77" font-size="15" fill="#63717a">4 rows · 7 seats per row · dimensions in metres</text>
+<!-- North arrow -->
+<path d="M1008 132 V82 M1008 76 L1000 94 L1008 90 L1016 94 Z" stroke="#26353d" stroke-width="1.5" fill="#26353d"/>
+<text x="1008" y="65" class="label" font-weight="600">N</text>
+<!-- Exterior dimensions -->
+<g class="dim">
+<path d="M130 155 V111 M970 155 V111 M130 123 H970 M125 128 L135 118 M965 128 L975 118"/>
+<path d="M115 170 H75 M115 940 H75 M87 170 V940 M82 175 L92 165 M82 945 L92 935"/>
+</g>
+<rect x="515" y="111" width="70" height="24" fill="white"/>
+<text x="550" y="130" class="label">12 m</text>
+<text x="70" y="555" class="label" transform="rotate(-90 70 555)">11 m</text>
+<!-- Room perimeter: 0.24 m exterior walls; opening south -->
+<path d="M130 940 V170 H970 V940 H558.4 M474.4 940 H130" fill="none" stroke="#26353d" stroke-width="16.8" stroke-linejoin="miter"/>
+<!-- Four glazed window openings in east and west walls -->
+<g fill="white" stroke="#26353d" stroke-width="1.5">
+<rect x="121.6" y="369.5" width="16.8" height="140"/>
+<rect x="121.6" y="639" width="16.8" height="140"/>
+<rect x="961.6" y="369.5" width="16.8" height="140"/>
+<rect x="961.6" y="639" width="16.8" height="140"/>
+</g>
+<g stroke="#63899a" stroke-width="1.5">
+<path d="M127 369.5 V509.5 M133 369.5 V509.5 M127 639 V779 M133 639 V779 M967 369.5 V509.5 M973 369.5 V509.5 M967 639 V779 M973 639 V779"/>
+</g>
+<!-- Front teaching area -->
+<rect x="340" y="180.5" width="420" height="8.4" fill="#e7ecef" stroke="#26353d" stroke-width="1.5"/>
+<text x="550" y="214" class="label">Whiteboard</text>
+<rect x="228" y="275" width="98" height="49" rx="2" fill="#f1f3f4" stroke="#26353d" stroke-width="1.8"/>
+<text x="277" y="305" class="label">Teacher</text>
+<g stroke="#26353d" stroke-width="1.8" fill="#e7ecef">
+<rect x="259.5" y="219" width="35" height="35" rx="4"/>
+<path d="M262 222 H292 M259.5 247 H294.5" fill="none"/>
+</g>
+<rect x="795" y="184" width="140" height="35" fill="#f1f3f4" stroke="#26353d" stroke-width="1.8"/>
+<path d="M830 184 V219 M865 184 V219 M900 184 V219" stroke="#26353d" stroke-width="1"/>
+<text x="865" y="243" class="label">Storage</text>
+<text x="550" y="308" font-size="20" text-anchor="middle" font-weight="500">Classroom</text>
+<!-- Keep-clear aisle: 1.6 m wide; unobstructed and open to each row -->
+<path d="M459 380 V926 M571 380 V926" stroke="#a5b7bf" stroke-width="1" stroke-dasharray="6 6" fill="none"/>
+<text x="515" y="627" class="label" transform="rotate(-90 515 627)" fill="#607b89">Central aisle 1.6 m</text>
+<!-- Exactly 28 student units. Desk at north of each chair; all face board. -->
+<g>
+<use href="#seat" x="242" y="436"/><use href="#seat" x="340" y="436"/><use href="#seat" x="438" y="436"/>
+<use href="#seat" x="592" y="436"/><use href="#seat" x="690" y="436"/><use href="#seat" x="788" y="436"/><use href="#seat" x="886" y="436"/>
+<use href="#seat" x="242" y="562"/><use href="#seat" x="340" y="562"/><use href="#seat" x="438" y="562"/>
+<use href="#seat" x="592" y="562"/><use href="#seat" x="690" y="562"/><use href="#seat" x="788" y="562"/><use href="#seat" x="886" y="562"/>
+<use href="#seat" x="242" y="688"/><use href="#seat" x="340" y="688"/><use href="#seat" x="438" y="688"/>
+<use href="#seat" x="592" y="688"/><use href="#seat" x="690" y="688"/><use href="#seat" x="788" y="688"/><use href="#seat" x="886" y="688"/>
+<use href="#seat" x="242" y="814"/><use href="#seat" x="340" y="814"/><use href="#seat" x="438" y="814"/>
+<use href="#seat" x="592" y="814"/><use href="#seat" x="690" y="814"/><use href="#seat" x="788" y="814"/><use href="#seat" x="886" y="814"/>
+</g>
+<!-- Right hinge, inward 90 degree swing; swept quarter-circle clear -->
+<path d="M558.4 940 V856" stroke="#26353d" stroke-width="3" fill="none"/>
+<path d="M474.4 940 A84 84 0 0 1 558.4 856" stroke="#63717a" stroke-width="1.3" fill="none"/>
+<path d="M474.4 931.6 V948.4 M558.4 931.6 V948.4" stroke="#26353d" stroke-width="2"/>
+<text x="516.4" y="980" class="label">Entrance · 1.2 m</text>
+<text x="130" y="1030" font-size="14" fill="#63717a">PLAN   /   NORTH UP</text>
+<text x="970" y="1030" font-size="14" text-anchor="end" fill="#63717a">Exterior walls 0.24 m</text>
+</svg>

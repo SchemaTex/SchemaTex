@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1600 820">
+  <title>Fire in process area — event tree</title>
+  <rect width="1600" height="820" fill="white"/>
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; fill: #17232d; }
+    .heading { font-size: 23px; font-weight: 700; }
+    .label { font-size: 20px; }
+    .branch { font-size: 19px; }
+    .small { font-size: 17px; fill: #52616b; }
+    .line { fill: none; stroke: #263746; stroke-width: 2.5; stroke-linejoin: miter; }
+    .guide { stroke: #dbe1e5; stroke-width: 1; }
+  </style>
+  <text x="55" y="55" font-size="32" font-weight="700">Fire in process area</text>
+  <text x="55" y="88" class="small">Event tree · Branch probabilities are conditional on the preceding path</text>
+
+  <path d="M40 179 H1555" class="guide"/>
+  <text x="55" y="137" class="heading">Initiating event</text>
+  <text x="385" y="132" text-anchor="middle" class="heading">Fire detection</text>
+  <text x="385" y="160" text-anchor="middle" class="heading">and alarm</text>
+  <text x="655" y="132" text-anchor="middle" class="heading">Automatic fire</text>
+  <text x="655" y="160" text-anchor="middle" class="heading">suppression</text>
+  <text x="925" y="132" text-anchor="middle" class="heading">Personnel</text>
+  <text x="925" y="160" text-anchor="middle" class="heading">evacuation</text>
+  <text x="1175" y="146" class="heading">Outcome</text>
+
+  <!-- Initiating event -->
+  <rect x="55" y="555" width="245" height="100" rx="0" fill="#f3f6f8" stroke="#263746" stroke-width="2"/>
+  <text x="177.5" y="585" text-anchor="middle" class="label" font-weight="700">Fire in process area</text>
+  <text x="177.5" y="619" text-anchor="middle" class="label">Frequency: 0.01</text>
+  <path d="M300 605 H385 M385 425 V720 M385 425 H655 M385 720 H1150" class="line"/>
+  <text x="410" y="411" class="branch">Success · 0.96</text>
+  <text x="410" y="704" class="branch">Failure · 0.04</text>
+
+  <!-- Suppression: reached only after detection succeeds -->
+  <path d="M655 285 V565 M655 285 H925 M655 565 H925" class="line"/>
+  <text x="680" y="269" class="branch">Success · 0.88</text>
+  <text x="680" y="549" class="branch">Failure · 0.12</text>
+
+  <!-- Evacuation after controlled fire -->
+  <path d="M925 225 V355 M925 225 H1150 M925 355 H1150" class="line"/>
+  <text x="947" y="212" class="branch">Success · 0.97</text>
+  <text x="947" y="341" class="branch">Failure · 0.03</text>
+  <!-- Evacuation after escalated fire -->
+  <path d="M925 490 V620 M925 490 H1150 M925 620 H1150" class="line"/>
+  <text x="947" y="476" class="branch">Success · 0.97</text>
+  <text x="947" y="606" class="branch">Failure · 0.03</text>
+
+  <!-- Terminal outcomes -->
+  <g stroke-width="2">
+    <rect x="1150" y="195" width="405" height="66" fill="#f0f6f3" stroke="#537563"/>
+    <rect x="1150" y="325" width="405" height="66" fill="#f0f6f3" stroke="#537563"/>
+    <rect x="1150" y="460" width="405" height="66" fill="#fbf5eb" stroke="#9a7745"/>
+    <rect x="1150" y="590" width="405" height="66" fill="#fbf5eb" stroke="#9a7745"/>
+    <rect x="1150" y="690" width="405" height="66" fill="#fbefed" stroke="#a35e54"/>
+  </g>
+  <g class="label">
+    <text x="1170" y="222"><tspan font-weight="700">Controlled fire;</tspan><tspan x="1170" dy="25">personnel safe</tspan></text>
+    <text x="1170" y="352"><tspan font-weight="700">Controlled fire;</tspan><tspan x="1170" dy="25">personnel injury</tspan></text>
+    <text x="1170" y="487"><tspan font-weight="700">Escalated fire;</tspan><tspan x="1170" dy="25">personnel safe</tspan></text>
+    <text x="1170" y="617"><tspan font-weight="700">Escalated fire;</tspan><tspan x="1170" dy="25">personnel injury</tspan></text>
+    <text x="1170" y="717"><tspan font-weight="700">Late-detected fire;</tspan><tspan x="1170" dy="25">major damage</tspan></text>
+  </g>
+  <text x="55" y="790" class="small">At each split: upper branch = success; lower branch = failure. Detection failure ends the sequence.</text>
+</svg>

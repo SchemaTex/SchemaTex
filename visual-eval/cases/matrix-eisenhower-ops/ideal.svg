@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <title>Hospital operations priorities — Eisenhower matrix</title>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0 0 L10 5 L0 10 Z" fill="#243746"/></marker>
+  </defs>
+  <rect width="1200" height="900" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, sans-serif" fill="#243746">
+    <text x="140" y="49" font-size="28" font-weight="700">Hospital operations · This week</text>
+    <text x="140" y="80" font-size="17">Agreed priorities</text>
+
+    <rect x="140" y="120" width="470" height="320" fill="#f0f6fa"/>
+    <rect x="610" y="120" width="470" height="320" fill="#fff2ef"/>
+    <rect x="140" y="440" width="470" height="320" fill="#f5f6f7"/>
+    <rect x="610" y="440" width="470" height="320" fill="#fdf7e8"/>
+    <rect x="140" y="120" width="940" height="640" fill="none" stroke="#88939c" stroke-width="1.5"/>
+    <path d="M610 120 V760 M140 440 H1080" fill="none" stroke="#88939c" stroke-width="1.5"/>
+
+    <g font-size="21" font-weight="700">
+      <text x="162" y="151">SCHEDULE</text>
+      <text x="632" y="151">DO NOW</text>
+      <text x="162" y="473">ELIMINATE</text>
+      <text x="632" y="473">DELEGATE</text>
+    </g>
+    <g font-size="15" fill="#53616c">
+      <text x="162" y="177">Important · Less urgent</text>
+      <text x="632" y="177">Important · Urgent</text>
+      <text x="162" y="499">Less important · Less urgent</text>
+      <text x="632" y="499">Less important · Urgent</text>
+    </g>
+
+    <g stroke="#243746" stroke-width="2" fill="none" marker-end="url(#arrow)">
+      <path d="M140 800 H1105"/>
+      <path d="M96 760 V102"/>
+    </g>
+    <text x="610" y="842" font-size="22" font-weight="700" text-anchor="middle">URGENCY</text>
+    <text x="140" y="832" font-size="16">Low</text>
+    <text x="1080" y="832" font-size="16" text-anchor="end">High</text>
+    <text x="43" y="440" font-size="22" font-weight="700" text-anchor="middle" transform="rotate(-90 43 440)">IMPORTANCE</text>
+    <text x="83" y="759" font-size="16" text-anchor="end">Low</text>
+    <text x="83" y="125" font-size="16" text-anchor="end">High</text>
+
+    <!-- Point positions map x = 140 + urgency * 940; y = 760 - importance * 640. -->
+    <g>
+      <circle cx="967.2" cy="184" r="6" fill="#b54132"/>
+      <text x="1057" y="215" font-size="20" font-weight="600" text-anchor="end">Restore medication scanner</text>
+      <text x="1057" y="238" font-size="15" text-anchor="end" fill="#53616c">safety</text>
+
+      <circle cx="845" cy="273.6" r="6" fill="#b54132"/>
+      <text x="845" y="307" font-size="20" font-weight="600" text-anchor="middle">Approve staffing roster</text>
+      <text x="845" y="330" font-size="15" text-anchor="middle" fill="#53616c">operations</text>
+
+      <circle cx="403.2" cy="254.4" r="6" fill="#326782"/>
+      <text x="403.2" y="289" font-size="20" font-weight="600" text-anchor="middle">Review infection dashboard</text>
+      <text x="403.2" y="312" font-size="15" text-anchor="middle" fill="#53616c">quality</text>
+
+      <circle cx="816.8" cy="593.6" r="6" fill="#8a691d"/>
+      <text x="816.8" y="628" font-size="20" font-weight="600" text-anchor="middle">Reply to vendor survey</text>
+      <text x="816.8" y="651" font-size="15" text-anchor="middle" fill="#53616c">admin</text>
+
+      <circle cx="328" cy="644.8" r="6" fill="#64717b"/>
+      <text x="328" y="679" font-size="20" font-weight="600" text-anchor="middle">Reformat old slides</text>
+      <text x="328" y="702" font-size="15" text-anchor="middle" fill="#53616c">admin</text>
+    </g>
+  </g>
+</svg>

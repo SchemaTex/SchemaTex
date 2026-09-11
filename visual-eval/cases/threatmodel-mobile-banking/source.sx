@@ -1,0 +1,17 @@
+# STRIDE DFD: mobile banking client crosses public, application, and core-banking trust zones.
+threatmodel "Mobile Banking STRIDE"
+external Customer: Mobile Customer
+external SMS: SMS Gateway
+process App: Mobile App Backend
+process Auth: Identity Service
+datastore Accounts: Core Accounts Store
+datastore Audit: Transaction Audit Log
+Customer -> App : TLS API request
+App -> Auth : login token
+Auth -> Accounts : identity lookup
+App -> Accounts : transfer instruction
+App -> Audit : transaction event
+App -> SMS : OTP request
+boundary "Mobile Network" { Customer, SMS }
+boundary "Bank Edge" { App, Auth }
+boundary "Core Banking" { Accounts, Audit }

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="850" viewBox="0 0 720 850" lang="ar">
+  <title>غرفة نوم صغيرة — مخطط غرفة بأبعاد 3 × 4 متر</title>
+  <defs>
+    <style>
+      text { font-family: 'Arial', 'Noto Sans Arabic', 'Tahoma', sans-serif; fill: #20282d; }
+      .arabic { direction: rtl; unicode-bidi: embed; text-anchor: middle; font-size: 25px; }
+      .wall { fill: #30383c; }
+      .furniture { fill: #fafafa; stroke: #45545c; stroke-width: 2; }
+      .dimension { fill: none; stroke: #68777d; stroke-width: 1.2; }
+    </style>
+  </defs>
+  <rect width="720" height="850" fill="white"/>
+  <!-- Scale: 150 SVG units per metre. Interior: x=130..580, y=140..740.
+       Plan coordinates originate at the northwest corner, x east and y south. -->
+  <text x="355" y="58" class="arabic" style="font-size:30px">غرفة نوم صغيرة</text>
+  <!-- Exterior dimension lines and diagonal architectural ticks. -->
+  <g class="dimension">
+    <path d="M130 122V88 M580 122V88 M130 100H580 M125 105L135 95 M575 105L585 95"/>
+    <path d="M112 140H72 M112 740H72 M85 140V740 M80 145L90 135 M80 745L90 735"/>
+  </g>
+  <rect x="319" y="85" width="72" height="29" fill="white"/>
+  <text x="355" y="108" font-size="22" text-anchor="middle">3 m</text>
+  <rect x="57" y="419" width="56" height="38" fill="white"/>
+  <text x="85" y="446" font-size="22" text-anchor="middle">4 m</text>
+  <!-- Wall thickness 12; north window centered at 65% of the wall length.
+       Window spans x=332.5..512.5 (1.2 m). South door spans x=160..295 (0.9 m). -->
+  <g class="wall">
+    <rect x="118" y="128" width="214.5" height="12"/>
+    <rect x="512.5" y="128" width="79.5" height="12"/>
+    <rect x="118" y="140" width="12" height="600"/>
+    <rect x="580" y="140" width="12" height="600"/>
+    <rect x="118" y="740" width="42" height="12"/>
+    <rect x="295" y="740" width="297" height="12"/>
+  </g>
+  <!-- Recessed double glazing in its own wall opening. -->
+  <g stroke="#45545c" fill="none" stroke-width="1.6">
+    <path d="M332.5 128V140 M512.5 128V140 M332.5 131H512.5 M332.5 137H512.5"/>
+  </g>
+  <!-- Single bed: 1 x 2 m at (0.2,0.2). -->
+  <g>
+    <rect class="furniture" x="160" y="170" width="150" height="300" rx="2"/>
+    <rect x="177" y="186" width="116" height="52" rx="8" fill="white" stroke="#7b878d" stroke-width="1.5"/>
+    <path d="M160 252H310 M170 252V460H300V252" fill="none" stroke="#7b878d" stroke-width="1.5"/>
+    <text class="arabic" x="235" y="355">سرير</text>
+  </g>
+  <!-- Wardrobe: 1.1 x 0.6 m at (1.7,0.2). -->
+  <g>
+    <rect class="furniture" x="385" y="170" width="165" height="90"/>
+    <path d="M391 178H544 M391 252H544" fill="none" stroke="#7b878d" stroke-width="1.3"/>
+    <text class="arabic" x="467.5" y="224">خزانة</text>
+  </g>
+  <!-- Room label placed in open floor space. -->
+  <text class="arabic" x="436" y="425" style="font-size:29px">غرفة نوم</text>
+  <!-- Side table: 0.7 x 0.7 m at (2.0,2.6). -->
+  <rect class="furniture" x="430" y="530" width="105" height="105" rx="2"/>
+  <text class="arabic" x="482.5" y="592">طاولة</text>
+  <!-- Left-hinged door swings inward; radius and leaf are 0.9 m. -->
+  <g fill="none" stroke="#45545c">
+    <path d="M160 740V605" stroke-width="3"/>
+    <path d="M160 605 A135 135 0 0 1 295 740" stroke-width="1.5"/>
+    <path d="M160 740V752 M295 740V752" stroke-width="2"/>
+  </g>
+</svg>

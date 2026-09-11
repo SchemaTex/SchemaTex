@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-burnout",
+  "type": "causalloop",
+  "title": "Nurse burnout dynamics",
+  "goal": "A clinical leader can see reinforcing staffing pressure and balancing recovery feedback.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "All causal links visibly show polarity markers."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The staffing-pressure loop is visibly marked reinforcing (R)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The recovery-response loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Curved arrows visibly close both feedback loops."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Variable labels are readable without overlap."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-causalloop-target.mjs`, which draws all five cases from one kit so the set is one drawing repeated. A causal-loop diagram of Nurse burnout dynamics. 5 variables are joined by 6 causal links, each carrying its polarity beside the arrowhead. The engine's job here is to find the feedback loops and classify them by Sterman's even/odd rule, and this drawing shows that answer: R1 runs Workload → Overtime → Burnout → Absenteeism → Workload with 0 negative links, so it reinforces; R2 runs Burnout → Recovery time → Burnout with 2 negative links, so it reinforces. Each loop glyph is a circular arrow curling in the loop's own direction, labelled with the computed letter and the loop's name. Notation is Sterman's, per `docs/reference/41-CAUSAL-LOOP-STANDARD.md`: variables are plain text, causal links are curved arrows, each link carries its polarity beside the arrowhead, a slow link wears two hash marks, and every feedback loop gets a circular arrow curling in the loop's own direction. The R/B letter is computed by Sterman's even/odd rule — count the negative links round the loop, even (zero included) reinforces, odd balances — never copied from the source, and the footer shows the count so the verdict can be checked. Reinforcing loops are terracotta and balancing loops teal. Every label was checked against every other label and the canvas edge: 0 overlaps."
+  }
+}

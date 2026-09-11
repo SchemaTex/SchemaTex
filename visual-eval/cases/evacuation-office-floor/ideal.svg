@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="1120" viewBox="0 0 1584 1120">
+<title>Office Escape Plan — primary and alternative escape routes</title>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M1 1 L6 4 L1 7 Z" fill="#00834a"/></marker>
+ <g id="exit"><rect width="76" height="52" rx="2" fill="#00834a"/><path d="M12 8h16v35H12z" fill="white"/><circle cx="42" cy="12" r="5" fill="white"/><path d="M39 19l-8 9 9 6-7 12m7-12 11 11m-12-24 11 8h12" fill="none" stroke="white" stroke-width="5" stroke-linejoin="round"/></g>
+ <g id="fire"><rect width="40" height="48" rx="2" fill="#d62f35"/><path d="M15 15h12v24H15z M17 11h8v5h-8z" fill="white"/><path d="M24 11h6v13m-12-14 7-3" fill="none" stroke="white" stroke-width="3"/></g>
+ <g id="assembly"><rect width="64" height="64" fill="#00834a"/><g fill="white"><circle cx="26" cy="27" r="4"/><circle cx="38" cy="27" r="4"/><path d="M21 34h10v15H21zm12 0h10v15H33zM7 7l14 5-5 5-4 4zm50 0-5 14-5-5-4-4zM7 57l5-14 5 5 4 4zm50 0-14-5 5-5 4-4z"/></g></g>
+</defs>
+<rect width="1584" height="1120" fill="white"/>
+<g font-family="'Helvetica Neue', Helvetica, sans-serif" fill="#17252a">
+<rect x="48" y="42" width="1488" height="110" fill="#00834a"/>
+<text x="80" y="111" fill="white" font-size="45" font-weight="700">OFFICE ESCAPE PLAN</text>
+<text x="1504" y="106" text-anchor="end" fill="white" font-size="20">ESCAPE &amp; EVACUATION</text>
+<!-- Proportional geometry: 90 SVG units per metre; west stair, corridor, east stair. -->
+<!-- Office 7 × 5 m, corridor 7 × 2 m, stair enclosures 3 × 2 m. -->
+<g fill="none" stroke="#243138" stroke-width="7" stroke-linecap="square">
+ <path d="M477 687V237H1107V687"/>
+ <path d="M477 687H738 M846 687H1107"/>
+ <path d="M207 732V687H477 M1107 687H1377V732"/>
+ <path d="M207 822V867H1377V822"/>
+ <path d="M477 687V727.5 M477 826.5V867 M1107 687V727.5 M1107 826.5V867"/>
+</g>
+<!-- Door leaves and swing arcs, placed clear of the route. -->
+<g fill="none" stroke="#788389" stroke-width="2">
+ <path d="M477 727.5H378 M378 727.5A99 99 0 0 0 477 826.5"/>
+ <path d="M1107 727.5H1206 M1206 727.5A99 99 0 0 1 1107 826.5"/>
+</g>
+<text x="792" y="293" text-anchor="middle" font-size="30" font-weight="600">Open Office</text>
+<text x="792" y="324" text-anchor="middle" font-size="18" fill="#627078">7 × 5 m</text>
+<text x="792" y="847" text-anchor="middle" font-size="25" font-weight="600">Corridor</text>
+<text x="342" y="658" text-anchor="middle" font-size="25" font-weight="600">West Stair</text>
+<text x="1242" y="658" text-anchor="middle" font-size="25" font-weight="600">East Stair</text>
+<!-- Conventional stair treads, away from escape paths. -->
+<g stroke="#788389" stroke-width="2" fill="none">
+ <path d="M253 693v56h100v-56m-100 12h100m-100 11h100m-100 11h100m-100 11h100 M1230 693v56h100v-56m-100 12h100m-100 11h100m-100 11h100m-100 11h100"/>
+</g>
+<!-- Both routes start at the same location and pass through the central opening. -->
+<path d="M802 479V777H1349" fill="none" stroke="#00834a" stroke-width="8" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M782 479V798H235" fill="none" stroke="#00834a" stroke-width="7" stroke-dasharray="17 11" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M802 591v39 M978 777h48" fill="none" stroke="#00834a" stroke-width="6" marker-end="url(#arrow)"/>
+<path d="M782 637v32 M650 798h-45" fill="none" stroke="#00834a" stroke-width="5" marker-end="url(#arrow)"/>
+<text x="871" y="751" font-size="19" fill="#00834a" font-weight="700">PRIMARY</text>
+<text x="577" y="774" font-size="18" fill="#00834a" font-weight="700">ALTERNATIVE</text>
+<!-- The location marker is above the path origins. -->
+<circle cx="792" cy="462" r="19" fill="white" stroke="#176ca6" stroke-width="4"/>
+<circle cx="792" cy="462" r="10" fill="#176ca6"/>
+<text x="792" y="420" font-size="27" font-weight="700" text-anchor="middle" fill="#176ca6">YOU ARE HERE</text>
+<!-- Final exit signs aligned with the external wall openings. -->
+<use href="#exit" x="108" y="751" transform="translate(292 0) scale(-1 1)"/>
+<text x="146" y="832" text-anchor="middle" font-size="22" font-weight="700" fill="#00834a">EXIT</text>
+<use href="#exit" x="1400" y="751"/>
+<text x="1438" y="832" text-anchor="middle" font-size="22" font-weight="700" fill="#00834a">EXIT</text>
+<!-- Extinguisher at corridor local (0.5, 1). -->
+<use href="#fire" x="502" y="737"/>
+<text x="522" y="725" text-anchor="middle" font-size="17" font-weight="600">ABC</text>
+<!-- Assembly point outside at plan coordinate (9,8). -->
+<use href="#assembly" x="1255" y="925"/>
+<text x="1287" y="1018" text-anchor="middle" font-size="21" font-weight="700" fill="#00834a">ASSEMBLY POINT</text>
+<!-- Automatically derived legend. -->
+<path d="M80 923H1127" stroke="#b7c3c6" stroke-width="2"/>
+<text x="80" y="958" font-size="23" font-weight="700">LEGEND</text>
+<circle cx="94" cy="993" r="11" fill="#176ca6"/>
+<text x="119" y="1000" font-size="18">You are here</text>
+<path d="M313 993h65" stroke="#00834a" stroke-width="6" marker-end="url(#arrow)"/>
+<text x="397" y="1000" font-size="18">Primary route</text>
+<path d="M590 993h65" stroke="#00834a" stroke-width="5" stroke-dasharray="12 7" marker-end="url(#arrow)"/>
+<text x="674" y="1000" font-size="18">Alternative route</text>
+<use href="#exit" transform="translate(80 1023) scale(.55)"/>
+<text x="135" y="1045" font-size="18">Final exit</text>
+<use href="#fire" transform="translate(313 1021) scale(.65)"/>
+<text x="352" y="1045" font-size="18">ABC fire extinguisher</text>
+<use href="#assembly" transform="translate(590 1021) scale(.5)"/>
+<text x="639" y="1045" font-size="18">Assembly point</text>
+</g>
+</svg>

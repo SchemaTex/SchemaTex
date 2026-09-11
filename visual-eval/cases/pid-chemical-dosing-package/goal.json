@@ -1,0 +1,45 @@
+{
+  "id": "pid-chemical-dosing-package",
+  "type": "pid",
+  "title": "Chemical dosing package",
+  "goal": "A process engineer can trace prepared chemical through a metering pump and calibration column to a pH-controlled injection point.",
+  "rubric": [
+    {
+      "id": "dosing-path",
+      "severity": "blocker",
+      "must": "TK-701, AG-701, P-701, C-701, FV-701, NRV-701, and V-702 form a visible dosing path."
+    },
+    {
+      "id": "ph-control",
+      "severity": "blocker",
+      "must": "AT-701 and AIC-701 visibly connect to FV-701 with electric measurement and pneumatic command lines."
+    },
+    {
+      "id": "calibration-column",
+      "severity": "major",
+      "must": "The vertical C-701 calibration column is visibly between P-701 and XV-701."
+    },
+    {
+      "id": "flow-verification",
+      "severity": "major",
+      "must": "FT-701 and FI-701 are visibly associated with C-701 and connected by an electric signal line."
+    },
+    {
+      "id": "injection-check",
+      "severity": "major",
+      "must": "NRV-701 is visibly downstream of FV-701 before the process mixing header."
+    },
+    {
+      "id": "fail-closed",
+      "severity": "minor",
+      "must": "FV-701 visibly shows a diaphragm actuator and FC fail position."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all six rules, while Image 2 changes the equipment identities, dosing topology, and control scheme."
+  }
+}

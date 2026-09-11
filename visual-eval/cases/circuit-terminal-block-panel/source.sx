@@ -1,0 +1,12 @@
+circuit "Terminal Block Control Panel" netlist
+V1 L24 COM value="24 V DC" label="PS1 24 VDC"
+F1 L24 FUSED type=fuse value="1 A" label="F1"
+S1 FUSED SELECT type=selector_switch value="HAND-OFF-AUTO" label="S1 SELECTOR"
+K1 SELECT COM type=relay_coil value="24 VDC" label="K1 CONTROL RELAY"
+H1 SELECT COM type=pilot_light value="Green 24 VDC" label="H1 RUN"
+T1 FIELD_L FIELD_N SELECT COM OUT_L OUT_N type=terminal_block pins="1,2,3,4,5,6" value="6-way, 600 V" label="TB1 FIELD IN"
+T2 OUT_L OUT_N SELECT COM type=terminal_block pins="7,8,9,10" value="4-way, 600 V" label="TB2 FIELD OUT"
+W1 FIELD_L FUSED label="Field wire 1"
+W2 FIELD_N COM label="Field wire 2"
+W3 SELECT OUT_L label="Switched field output"
+W4 COM OUT_N label="Field return"

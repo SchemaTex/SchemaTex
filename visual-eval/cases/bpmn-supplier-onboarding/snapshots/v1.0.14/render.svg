@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="436" height="660" viewBox="0 0 436 660" class="schematex-bpmn"><title>Supplier Onboarding</title>
+<desc>BPMN LR — 2 pool(s), 8 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#94a3b8"/></marker></defs>
+<g class="schematex-bpmn-pool blackbox"><rect x="16" y="16" width="404" height="60" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="60" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="46" transform="rotate(-90 29 46)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Supplier</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="112" width="404" height="532" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="112" width="26" height="532" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="378" transform="rotate(-90 29 378)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Company</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="112" width="356" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="112" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="222" transform="rotate(-90 53 222)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Procurement</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="332" width="356" height="312" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="332" width="22" height="312" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="488" transform="rotate(-90 53 488)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Compliance</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 218 46 L 218 111 L 167 111 L 167 176" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="192.5" y="105" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Application</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 176 L 207.7 176 L 207.7 176 L 230.4 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 268 L 220.9 268 L 220.9 396 L 252.8 396" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,268 189,263 194,268 189,273" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="220.89999999999998" y="326" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 189 268 L 216.1 268 L 216.1 268 L 243.2 268" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 185 272 L 193 264" stroke="#334155" stroke-width="1.5"/>
+<text x="216.1" y="262" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 317 268 L 317 157 L 218 157 L 218 46" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="267.5" y="151" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Remediation request</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 167 488 L 167 267 L 218 267 L 218 46" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="192.5" y="261" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Approval notice</text></g>
+<g class="schematex-bpmn-event kind-start trigger-message"><circle cx="167" cy="176" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<g class="trigger-message"><rect x="162.05" y="172.535" width="9.9" height="6.93" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<path d="M 162.05 172.535 L 167 176.3465 L 171.95000000000002 172.535" stroke="#334155" stroke-width="1" fill="none"/></g>
+<text x="167" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Application received</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="230.39999999999998" y="146" width="173.20000000000005" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Review supplier profile</tspan></text>
+<g class="marker-user"><circle cx="243.39999999999998" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 238.39999999999998 165 Q 243.39999999999998 160 248.39999999999998 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,246 189,268 167,290 145,268" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 258.76 L 176.24 277.24 M 176.24 258.76 L 157.76 277.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="240" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Compliant?</text></g>
+<g class="schematex-bpmn-task marker-send"><rect x="243.2" y="238" width="147.60000000000002" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="268" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Request remediation</tspan></text>
+<g class="marker-send"><rect x="251.2" y="248" width="10" height="7" fill="#334155"/>
+<path d="M 251.2 248 L 256.2 252 L 261.2 248" stroke="#ffffff" stroke-width="1" fill="none"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="102.79999999999998" y="366" width="128.40000000000003" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="167" y="396" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="167" dy="0">Screen sanctions</tspan></text>
+<g class="marker-user"><circle cx="115.79999999999998" cy="378" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 110.79999999999998 385 Q 115.79999999999998 380 120.79999999999998 385" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="252.79999999999998" y="366" width="128.40000000000003" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="396" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Approve supplier</tspan></text>
+<g class="marker-user"><circle cx="265.79999999999995" cy="378" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 260.79999999999995 385 Q 265.79999999999995 380 270.79999999999995 385" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="167" cy="488" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="167" y="520" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Approved</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="167" cy="580" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="167" y="612" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Rejected</text></g></svg>

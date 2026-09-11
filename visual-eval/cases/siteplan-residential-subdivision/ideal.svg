@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1020" viewBox="0 0 1200 1020">
+  <title>Willow Grove Subdivision — early-planning site plan in feet</title>
+  <defs>
+    <pattern id="utility" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M-2 2L2-2M0 8L8 0M6 10L10 6" stroke="#B78832" stroke-width="1"/></pattern>
+    <style>
+      text{font-family:Helvetica,Arial,sans-serif;fill:#273735} .lot{fill:#E8F5E9;stroke:#506C59;stroke-width:2} .label{font-size:24px;font-weight:600;letter-spacing:1px} .small{font-size:16px} .dim{stroke:#425451;stroke-width:1.4;fill:none} .setback{stroke:#657961;stroke-width:2;stroke-dasharray:10 6;fill:none}
+    </style>
+  </defs>
+  <rect width="1200" height="1020" fill="white"/>
+  <text x="100" y="55" font-size="30" font-weight="600" letter-spacing="2">WILLOW GROVE SUBDIVISION</text>
+  <text x="100" y="84" font-size="16" fill="#65716C">EARLY-PLANNING SITE PLAN · DIMENSIONS IN FEET</text>
+
+  <!-- Plan mapping: x = 150 + 2.8x; y = 790 - 2.8y. -->
+  <rect x="150" y="174" width="840" height="616" fill="#F7F5EF"/>
+  <!-- Roads extend beyond the tract. Their edge lines break at the intersection. -->
+  <path d="M94 448.4H539.2V118H600.8V448.4H1046V515.6H600.8V846H539.2V515.6H94Z" fill="#E6E8E7"/>
+  <path d="M94 448.4H539.2V118M600.8 118V448.4H1046M1046 515.6H600.8V846M539.2 846V515.6H94" stroke="#7F8C88" stroke-width="2" fill="none"/>
+  <path d="M94 482H520M620 482H1046M570 118V434M570 530V846" stroke="white" stroke-width="2" stroke-dasharray="14 10"/>
+
+  <rect class="lot" x="150" y="521.2" width="392" height="268.8"/>
+  <rect class="lot" x="598" y="521.2" width="392" height="268.8"/>
+  <rect class="lot" x="150" y="174" width="392" height="268.8"/>
+  <rect class="lot" x="598" y="174" width="392" height="268.8"/>
+  <rect x="150" y="174" width="840" height="616" fill="none" stroke="#273735" stroke-width="3"/>
+
+  <!-- A continuous 10 ft wide utility corridor centered on x = 145 ft. -->
+  <rect x="542" y="174" width="28" height="616" fill="#F3D79A" fill-opacity="0.55"/>
+  <rect x="542" y="174" width="28" height="616" fill="url(#utility)"/>
+  <path d="M542 174V790M570 174V790" stroke="#A37220" stroke-width="1.6" stroke-dasharray="7 4"/>
+  <path d="M556 174V790" stroke="#9A691A" stroke-width="1.5" stroke-dasharray="12 4 2 4"/>
+
+  <text class="label" x="346" y="312" text-anchor="middle">LOT 3</text>
+  <text class="label" x="794" y="312" text-anchor="middle">LOT 4</text>
+  <text class="label" x="346" y="666" text-anchor="middle">LOT 1</text>
+  <text class="label" x="794" y="666" text-anchor="middle">LOT 2</text>
+
+  <!-- Lot 1 setback positions follow the supplied coordinates. -->
+  <path class="setback" d="M150 720H542M150 577.2H542"/>
+  <text x="346" y="744" text-anchor="middle" font-size="18">25 ft front setback</text>
+  <text x="346" y="565" text-anchor="middle" font-size="18">20 ft rear setback</text>
+
+  <rect x="197" y="467" width="286" height="30" fill="#E6E8E7"/>
+  <text x="340" y="489" text-anchor="middle" font-size="20">Willow Grove Drive</text>
+  <text x="792" y="488" text-anchor="middle" class="small">24 ft road width</text>
+  <g transform="translate(591 311) rotate(-90)"><rect x="-70" y="-16" width="140" height="24" fill="#E6E8E7"/><text text-anchor="middle" font-size="18">Cedar Lane</text></g>
+  <g transform="translate(591 660) rotate(-90)"><rect x="-72" y="-14" width="144" height="21" fill="#E6E8E7"/><text text-anchor="middle" font-size="15">22 ft road width</text></g>
+
+  <!-- Overall dimension at y = -14 ft. -->
+  <path class="dim" d="M150 801V843M990 801V843M150 829.2H990M144 835.2L156 823.2M984 835.2L996 823.2"/>
+  <rect x="490" y="816" width="160" height="26" fill="white"/>
+  <text x="570" y="835" text-anchor="middle" font-size="18">300 ft overall</text>
+
+  <text x="570" y="113" text-anchor="middle" font-size="17" font-weight="600" fill="#956A22">10 ft utility easement</text>
+  <path d="M556 123V166" fill="none" stroke="#9A691A" stroke-width="1.5"/>
+  <circle cx="556" cy="170" r="3" fill="#9A691A"/>
+
+  <g transform="translate(1100 181)">
+    <text x="0" y="-28" text-anchor="middle" font-size="24" font-weight="600">N</text>
+    <path d="M0-12L-13 30L0 22Z" fill="#273735"/>
+    <path d="M0-12L13 30L0 22Z" fill="white" stroke="#273735" stroke-width="1.5"/>
+    <path d="M0 22V65" stroke="#273735" stroke-width="2"/>
+  </g>
+
+  <g transform="translate(150 901)">
+    <text y="-17" font-size="16" font-weight="600">SCALE · FEET</text>
+    <rect width="70" height="11" fill="#273735"/>
+    <rect x="70" width="70" height="11" fill="white" stroke="#273735"/>
+    <path d="M0-3V16M70-3V16M140-3V16" stroke="#273735"/>
+    <text y="36" text-anchor="middle" class="small">0</text><text x="70" y="36" text-anchor="middle" class="small">25</text><text x="140" y="36" text-anchor="middle" class="small">50 ft</text>
+  </g>
+  <g transform="translate(398 888)">
+    <text font-size="16" font-weight="600">LEGEND</text>
+    <rect x="0" y="18" width="30" height="17" class="lot"/><text x="42" y="32" class="small">Lot boundary</text>
+    <path d="M193 27H233" class="setback"/><text x="245" y="32" class="small">Setback</text>
+    <rect x="370" y="18" width="30" height="17" fill="#F3D79A" stroke="#A37220"/><rect x="370" y="18" width="30" height="17" fill="url(#utility)"/><text x="412" y="32" class="small">Utility easement</text>
+  </g>
+  <text x="150" y="981" font-size="14" fill="#65716C">Willow Grove tract · Lot and setback dimensions are illustrative, not survey or permit data.</text>
+</svg>

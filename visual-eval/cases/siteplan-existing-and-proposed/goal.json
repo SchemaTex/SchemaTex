@@ -1,0 +1,49 @@
+{
+  "id": "siteplan-existing-and-proposed",
+  "type": "siteplan",
+  "title": "Existing and proposed site plan",
+  "goal": "A planning reviewer can distinguish retained, proposed and demolished work while understanding the revised vehicle access and site dimensions.",
+  "rubric": [
+    {
+      "id": "parcel-and-road-clear",
+      "severity": "blocker",
+      "must": "The parcel boundary and Industrial Avenue frontage are clearly visible as distinct site features."
+    },
+    {
+      "id": "existing-proposed-demolished-distinct",
+      "severity": "blocker",
+      "must": "The retained warehouse, proposed extension and demolished outbuilding use visibly different line or fill treatments."
+    },
+    {
+      "id": "revised-access-readable",
+      "severity": "major",
+      "must": "The removed existing access and the proposed vehicle access are visibly distinguishable and labelled."
+    },
+    {
+      "id": "proposed-extension-attached",
+      "severity": "major",
+      "must": "The proposed extension visibly adjoins the retained warehouse without obscuring either footprint."
+    },
+    {
+      "id": "dimensions-legible",
+      "severity": "major",
+      "must": "The frontage, parcel-depth and extension dimensions are readable and associated with their measured edges."
+    },
+    {
+      "id": "north-and-scale-present",
+      "severity": "minor",
+      "must": "A north arrow and scale bar are visible on the plan."
+    },
+    {
+      "id": "annotations-do-not-obscure",
+      "severity": "minor",
+      "must": "Callouts, setbacks and labels remain legible without covering the building footprints or access routes."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 clearly depicts the required industrial parcel and uses distinct building treatments, labelled access changes and relevant dimensions, whereas Image 2 depicts a residential site and omits Industrial Avenue and the extension dimension."
+  }
+}

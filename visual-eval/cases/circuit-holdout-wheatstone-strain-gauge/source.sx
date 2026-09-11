@@ -1,0 +1,13 @@
+circuit "Wheatstone Strain Gauge Bridge" netlist
+# 5 V excitation; two active gauges in opposite arms provide differential bridge output.
+V1 EXCP EXCM value="5 V DC" label="VEXC"
+R1 EXCP VL value="350 Ω, active" label="SG1 ACTIVE"
+R2 VL EXCM value="350 Ω, 0.1%" label="R2 FIXED"
+R3 EXCP VR value="350 Ω, 0.1%" label="R3 FIXED"
+R4 VR EXCM value="350 Ω, active" label="SG2 ACTIVE"
+VP VPOS GND value="5 V" label="VAMP+"
+VN VNEG GND value="-5 V" label="VAMP-"
+U1 VL VR VOUT type=opamp value="INA333" label="U1 INSTRUMENTATION AMP"
+R5 VOUT GND value="10 kΩ" label="RLOAD"
+W1 VPOS U1.supply+ type=wire value="+5 V rail" label="U1 V+"
+W2 VNEG U1.supply- type=wire value="-5 V rail" label="U1 V-"

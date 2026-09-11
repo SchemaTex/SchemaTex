@@ -1,0 +1,49 @@
+{
+  "id": "circuit-dual-adjustable-supply",
+  "type": "circuit",
+  "title": "Dual adjustable bench supply",
+  "goal": "A reader must be able to identify the centre-tapped AC input, rectifier, and independent adjustable positive and negative output rails.",
+  "rubric": [
+    {
+      "id": "centre-tapped-transformer",
+      "severity": "blocker",
+      "must": "A transformer labelled 230 V to 2 × 18 V AC shows a centre-tap connection to 0 V."
+    },
+    {
+      "id": "bridge-rectifier-visible",
+      "severity": "blocker",
+      "must": "A labelled bridge rectifier is visibly placed between the transformer secondary and the DC supply branches."
+    },
+    {
+      "id": "positive-negative-rails",
+      "severity": "blocker",
+      "must": "The output rails are visibly labelled VPOS and VNEG and are not presented as the same polarity."
+    },
+    {
+      "id": "matched-regulators",
+      "severity": "major",
+      "must": "An LM317 serves the positive branch and an LM337 serves the negative branch."
+    },
+    {
+      "id": "adjustment-dividers",
+      "severity": "major",
+      "must": "Each regulator branch includes a labelled 240 Ω resistor and a labelled 5 kΩ adjustment potentiometer."
+    },
+    {
+      "id": "input-output-capacitors",
+      "severity": "major",
+      "must": "Both branches visibly include labelled input reservoir capacitors and output capacitors."
+    },
+    {
+      "id": "protection-diodes",
+      "severity": "minor",
+      "must": "Four labelled 1N4007 protection diodes are visible around the regulator branches."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Centre-tapped secondary with the tap as 0 V, four rectifier diodes drawn flat as two legs (RAW_N to SEC to RAW_P) so both rails are genuinely rectified, LM317 and LM337 each with its 240 ohm resistor and 5k adjust pot, and the four protection diodes across each regulator."
+  }
+}

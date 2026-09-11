@@ -1,0 +1,40 @@
+{
+  "id": "logic-4to1-multiplexer",
+  "type": "logic",
+  "title": "4-to-1 multiplexer",
+  "goal": "Show a gate-level selector that routes one of four data inputs to one output.",
+  "rubric": [
+    {
+      "id": "four-data-products",
+      "severity": "blocker",
+      "must": "Four visible product terms each combine one of D0 through D3 with a unique S1,S0 selection combination."
+    },
+    {
+      "id": "single-output-or",
+      "severity": "blocker",
+      "must": "The four selected data terms visibly converge through OR logic to Y."
+    },
+    {
+      "id": "select-inversion",
+      "severity": "major",
+      "must": "S1 and S0 each visibly have a complemented branch from an inverter."
+    },
+    {
+      "id": "selection-order",
+      "severity": "major",
+      "must": "The visible terms map D0,D1,D2,D3 to select values 00,01,10,11 respectively."
+    },
+    {
+      "id": "labelled-io",
+      "severity": "minor",
+      "must": "All four data inputs, both selects, and Y are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Gate-level 4-to-1 multiplexer in ANSI/IEEE Std 91 distinctive-shape symbols. Data inputs D0 to D3 enter on the left and each drives the top pin of its own three-input AND gate. Select inputs S1 and S0 enter below and drive two inverters; the four select literals S1, nS1, S0 and nS0 then run as vertical rails, each tapped by the two product terms it qualifies, so exactly one of p0 to p3 can be high. The four product terms are combined by two OR gates, o01 and o23, whose outputs feed a final OR to give Y. All wires are orthogonal; filled dots mark junctions and plain crossings mark wires that pass without connecting. Drawn in the idiom of the logic exemplar: ANSI/IEEE Std 91 distinctive shapes on one body box so the columns line up, ink-only palette with paper-filled gate bodies so a wire passing behind a gate is visibly interrupted, the gate type carried by the outline rather than printed under it, and the label slot spent on net names instead. Row pitch, channel x and canvas size are solved from browser-measured text widths, and the drawing was checked label-against-label, label-against-wire, label-against-canvas-edge and wire-against-every-unattached-gate before it was written: 0 collisions, and no wire crosses a gate body."
+  }
+}

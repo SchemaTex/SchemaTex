@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="470.65000000000003" height="424" viewBox="0 0 470.65000000000003 424"><title>Reversing Motor Starter</title>
+<desc>PLC ladder logic diagram with 2 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="235.32500000000002" y="20" class="lt-ladder-title" text-anchor="middle">Reversing Motor Starter</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="394" class="lt-ladder-rail"/>
+<line x1="440.65000000000003" y1="0" x2="440.65000000000003" y2="394" class="lt-ladder-rail"/>
+<text x="54" y="152" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Forward start and hold —</text>
+<text x="54" y="299" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="227" class="lt-ladder-comment">— Reverse start and hold —</text>
+<path d="M 60 149 L 79 149" class="lt-ladder-wire"/>
+<path d="M 111 149 L 141.4 149" class="lt-ladder-wire"/>
+<path d="M 173.4 149 L 200.8 149" class="lt-ladder-wire"/>
+<path d="M 200.8 101 L 200.8 197" class="lt-ladder-wire"/>
+<path d="M 287.6 101 L 287.6 197" class="lt-ladder-wire"/>
+<path d="M 200.8 124 L 228.20000000000002 124" class="lt-ladder-wire"/>
+<path d="M 260.20000000000005 124 L 287.6 124" class="lt-ladder-wire"/>
+<path d="M 200.8 179 L 228.20000000000002 179" class="lt-ladder-wire"/>
+<path d="M 260.20000000000005 179 L 287.6 179" class="lt-ladder-wire"/>
+<path d="M 287.6 149 L 311.95000000000005 149" class="lt-ladder-wire"/>
+<path d="M 343.95000000000005 149 L 376.65000000000003 149" class="lt-ladder-wire"/>
+<path d="M 60 296 L 79 296" class="lt-ladder-wire"/>
+<path d="M 111 296 L 141.4 296" class="lt-ladder-wire"/>
+<path d="M 173.4 296 L 200.8 296" class="lt-ladder-wire"/>
+<path d="M 200.8 248 L 200.8 344" class="lt-ladder-wire"/>
+<path d="M 287.6 248 L 287.6 344" class="lt-ladder-wire"/>
+<path d="M 200.8 271 L 228.20000000000002 271" class="lt-ladder-wire"/>
+<path d="M 260.20000000000005 271 L 287.6 271" class="lt-ladder-wire"/>
+<path d="M 200.8 326 L 228.20000000000002 326" class="lt-ladder-wire"/>
+<path d="M 260.20000000000005 326 L 287.6 326" class="lt-ladder-wire"/>
+<path d="M 287.6 296 L 311.95000000000005 296" class="lt-ladder-wire"/>
+<path d="M 343.95000000000005 296 L 376.65000000000003 296" class="lt-ladder-wire"/>
+<path d="M 408.65000000000003 149 L 440.65000000000003 149" class="lt-ladder-wire"/>
+<path d="M 408.65000000000003 296 L 440.65000000000003 296" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="Stop"><line x1="79" y1="149" x2="83" y2="149" class="lt-ladder-wire"/>
+<line x1="107" y1="149" x2="111" y2="149" class="lt-ladder-wire"/>
+<line x1="83" y1="137" x2="83" y2="161" class="lt-ladder-element"/>
+<line x1="107" y1="137" x2="107" y2="161" class="lt-ladder-element"/>
+<line x1="85" y1="159" x2="105" y2="139" class="lt-ladder-element"/>
+<text x="95" y="133" class="lt-ladder-tag">Stop</text></g>
+<g data-element="contact" data-tag="Overload"><line x1="141.4" y1="149" x2="145.4" y2="149" class="lt-ladder-wire"/>
+<line x1="169.4" y1="149" x2="173.4" y2="149" class="lt-ladder-wire"/>
+<line x1="145.4" y1="137" x2="145.4" y2="161" class="lt-ladder-element"/>
+<line x1="169.4" y1="137" x2="169.4" y2="161" class="lt-ladder-element"/>
+<line x1="147.4" y1="159" x2="167.4" y2="139" class="lt-ladder-element"/>
+<text x="157.4" y="133" class="lt-ladder-tag">Overload</text></g>
+<g data-element="contact" data-tag="FwdStart"><line x1="228.20000000000002" y1="124" x2="232.20000000000002" y2="124" class="lt-ladder-wire"/>
+<line x1="256.20000000000005" y1="124" x2="260.20000000000005" y2="124" class="lt-ladder-wire"/>
+<line x1="232.20000000000002" y1="112" x2="232.20000000000002" y2="136" class="lt-ladder-element"/>
+<line x1="256.20000000000005" y1="112" x2="256.20000000000005" y2="136" class="lt-ladder-element"/>
+<text x="244.20000000000002" y="108" class="lt-ladder-tag">FwdStart</text></g>
+<g data-element="contact" data-tag="Forward"><line x1="228.20000000000002" y1="179" x2="232.20000000000002" y2="179" class="lt-ladder-wire"/>
+<line x1="256.20000000000005" y1="179" x2="260.20000000000005" y2="179" class="lt-ladder-wire"/>
+<line x1="232.20000000000002" y1="167" x2="232.20000000000002" y2="191" class="lt-ladder-element"/>
+<line x1="256.20000000000005" y1="167" x2="256.20000000000005" y2="191" class="lt-ladder-element"/>
+<text x="244.20000000000002" y="163" class="lt-ladder-tag">Forward</text></g>
+<g data-element="contact" data-tag="Reverse"><line x1="311.95000000000005" y1="149" x2="315.95000000000005" y2="149" class="lt-ladder-wire"/>
+<line x1="339.95000000000005" y1="149" x2="343.95000000000005" y2="149" class="lt-ladder-wire"/>
+<line x1="315.95000000000005" y1="137" x2="315.95000000000005" y2="161" class="lt-ladder-element"/>
+<line x1="339.95000000000005" y1="137" x2="339.95000000000005" y2="161" class="lt-ladder-element"/>
+<line x1="317.95000000000005" y1="159" x2="337.95000000000005" y2="139" class="lt-ladder-element"/>
+<text x="327.95000000000005" y="133" class="lt-ladder-tag">Reverse</text></g>
+<g data-element="coil" data-tag="Forward"><path d="M 382.65000000000003 137 A 10 12 0 0 0 382.65000000000003 161" class="lt-ladder-coil"/>
+<path d="M 402.65000000000003 137 A 10 12 0 0 1 402.65000000000003 161" class="lt-ladder-coil"/>
+<line x1="376.65000000000003" y1="149" x2="382.65000000000003" y2="149" class="lt-ladder-wire"/>
+<line x1="402.65000000000003" y1="149" x2="408.65000000000003" y2="149" class="lt-ladder-wire"/>
+<text x="392.65000000000003" y="133" class="lt-ladder-tag">Forward</text></g>
+<g data-element="contact" data-tag="Stop"><line x1="79" y1="296" x2="83" y2="296" class="lt-ladder-wire"/>
+<line x1="107" y1="296" x2="111" y2="296" class="lt-ladder-wire"/>
+<line x1="83" y1="284" x2="83" y2="308" class="lt-ladder-element"/>
+<line x1="107" y1="284" x2="107" y2="308" class="lt-ladder-element"/>
+<line x1="85" y1="306" x2="105" y2="286" class="lt-ladder-element"/>
+<text x="95" y="280" class="lt-ladder-tag">Stop</text></g>
+<g data-element="contact" data-tag="Overload"><line x1="141.4" y1="296" x2="145.4" y2="296" class="lt-ladder-wire"/>
+<line x1="169.4" y1="296" x2="173.4" y2="296" class="lt-ladder-wire"/>
+<line x1="145.4" y1="284" x2="145.4" y2="308" class="lt-ladder-element"/>
+<line x1="169.4" y1="284" x2="169.4" y2="308" class="lt-ladder-element"/>
+<line x1="147.4" y1="306" x2="167.4" y2="286" class="lt-ladder-element"/>
+<text x="157.4" y="280" class="lt-ladder-tag">Overload</text></g>
+<g data-element="contact" data-tag="RevStart"><line x1="228.20000000000002" y1="271" x2="232.20000000000002" y2="271" class="lt-ladder-wire"/>
+<line x1="256.20000000000005" y1="271" x2="260.20000000000005" y2="271" class="lt-ladder-wire"/>
+<line x1="232.20000000000002" y1="259" x2="232.20000000000002" y2="283" class="lt-ladder-element"/>
+<line x1="256.20000000000005" y1="259" x2="256.20000000000005" y2="283" class="lt-ladder-element"/>
+<text x="244.20000000000002" y="255" class="lt-ladder-tag">RevStart</text></g>
+<g data-element="contact" data-tag="Reverse"><line x1="228.20000000000002" y1="326" x2="232.20000000000002" y2="326" class="lt-ladder-wire"/>
+<line x1="256.20000000000005" y1="326" x2="260.20000000000005" y2="326" class="lt-ladder-wire"/>
+<line x1="232.20000000000002" y1="314" x2="232.20000000000002" y2="338" class="lt-ladder-element"/>
+<line x1="256.20000000000005" y1="314" x2="256.20000000000005" y2="338" class="lt-ladder-element"/>
+<text x="244.20000000000002" y="310" class="lt-ladder-tag">Reverse</text></g>
+<g data-element="contact" data-tag="Forward"><line x1="311.95000000000005" y1="296" x2="315.95000000000005" y2="296" class="lt-ladder-wire"/>
+<line x1="339.95000000000005" y1="296" x2="343.95000000000005" y2="296" class="lt-ladder-wire"/>
+<line x1="315.95000000000005" y1="284" x2="315.95000000000005" y2="308" class="lt-ladder-element"/>
+<line x1="339.95000000000005" y1="284" x2="339.95000000000005" y2="308" class="lt-ladder-element"/>
+<line x1="317.95000000000005" y1="306" x2="337.95000000000005" y2="286" class="lt-ladder-element"/>
+<text x="327.95000000000005" y="280" class="lt-ladder-tag">Forward</text></g>
+<g data-element="coil" data-tag="Reverse"><path d="M 382.65000000000003 284 A 10 12 0 0 0 382.65000000000003 308" class="lt-ladder-coil"/>
+<path d="M 402.65000000000003 284 A 10 12 0 0 1 402.65000000000003 308" class="lt-ladder-coil"/>
+<line x1="376.65000000000003" y1="296" x2="382.65000000000003" y2="296" class="lt-ladder-wire"/>
+<line x1="402.65000000000003" y1="296" x2="408.65000000000003" y2="296" class="lt-ladder-wire"/>
+<text x="392.65000000000003" y="280" class="lt-ladder-tag">Reverse</text></g></g></svg>

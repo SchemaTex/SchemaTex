@@ -1,0 +1,16 @@
+# Scenario: emergency-department chest-pain pathway, from arrival to the admit-or-discharge decision.
+idef0 "Clinical Pathway"
+  node A0
+  function A1 "Triage patient"
+  function A2 "Assess and test"
+  function A3 "Decide disposition"
+  input A1.I "Arriving patient"
+  control A1.C "Triage protocol"
+  mechanism A1.M "Triage nurse"
+  A1 -> A2 : "Triage category"
+  control A2.C "Chest-pain guideline"
+  mechanism A2.M "ECG and troponin lab"
+  A2 -> A3 : "Test results"
+  control A3.C "Risk score thresholds"
+  mechanism A3.M "Emergency physician"
+  output A3.O "Admission or discharge"

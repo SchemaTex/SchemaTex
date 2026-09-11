@@ -1,0 +1,39 @@
+{
+  "id": "sld-commercial-solar",
+  "type": "sld",
+  "title": "Commercial solar single-line diagram",
+  "goal": "An electrician can follow the one-line from array to utility and read every device rating on the way.",
+  "rubric": [
+    {
+      "id": "single-vertical-spine",
+      "severity": "blocker",
+      "must": "The main run reads as one continuous line from source to utility. It may only be broken by a switching device, and that device's symbol must visibly touch its own two terminals."
+    },
+    {
+      "id": "no-line-through-body",
+      "severity": "blocker",
+      "must": "No line passes through the inside of a device symbol."
+    },
+    {
+      "id": "ratings-attached",
+      "severity": "major",
+      "must": "Each device's rating text sits beside its own symbol and cannot be mistaken for a neighbour's."
+    },
+    {
+      "id": "bus-taps-square",
+      "severity": "major",
+      "must": "Branches leave the bus at right angles, with a junction dot at the tap."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap, and no text is crossed by a line."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. Three PV arrays land on a 600 V DC combiner, then run through the DC isolator into the 200 kW grid-tie inverter. On the AC side the inverter feeds the 400 A breaker and the production meter onto the 400 V main switchboard, which the utility also supplies; the building loads hang below the switchboard. The dashed rule marks where the DC section ends and the AC section begins. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

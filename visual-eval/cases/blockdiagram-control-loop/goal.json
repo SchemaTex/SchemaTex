@@ -1,0 +1,40 @@
+{
+  "id": "blockdiagram-control-loop",
+  "type": "blockdiagram",
+  "title": "Heat exchanger control loop",
+  "goal": "Show a closed negative-feedback temperature control loop.",
+  "rubric": [
+    {
+      "id": "summing-junction",
+      "severity": "blocker",
+      "must": "Setpoint and measured sensor paths visibly meet at a summing junction with positive and negative inputs."
+    },
+    {
+      "id": "closed-feedback",
+      "severity": "blocker",
+      "must": "The plant output visibly passes through a sensor and returns to the summing junction."
+    },
+    {
+      "id": "forward-path",
+      "severity": "major",
+      "must": "Controller, actuator, and heat-exchanger plant form a readable forward control path."
+    },
+    {
+      "id": "signal-labels",
+      "severity": "major",
+      "must": "Setpoint, temperature error, valve command, and negative-feedback labels are visible."
+    },
+    {
+      "id": "operator-output",
+      "severity": "minor",
+      "must": "A separate operator display visibly receives the controlled outlet temperature."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-blockdiagram-target.mjs`, which draws all eight cases from one kit so the set is one drawing repeated. A functional block diagram of Heat Exchanger Temperature Control Loop. 5 blocks carry the forward signal path. A summing junction takes the reference on its left input and the measurement on its bottom input, with the signs set just outside the circle. The feedback path — Outlet Temperature Sensor — returns in its own band below the forward chain and is the only terracotta on the page. Every wire is orthogonal, every arrowhead lands on a block edge, signal names are set in italic beside the wire they name, and a legend at the foot states the line codes. Drawn in the idiom of the block-diagram exemplar (`visual-eval/exemplars/blockdiagram/ideal.svg`): ink outlines, block labels at 13 over at most two lines, signal names in italic slate beside the wire they name, a 34 px summing junction with its signs set just outside the circle, a filled dot at every pickoff, orthogonal wires only, and terracotta spent on nothing but the measured/feedback path. A long chain is folded into bands joined by a labelled channel, the exemplar's own solution to a chain too long for one row. One extension of the exemplar: each block body carries a pale fill keyed to the `role:` the DSL declares for it — input, control, actuator, plant, sensor, output — with a swatch legend at the foot. The exemplar leaves every body white, which discards information the author supplied on every single block; the fills are kept pale and the outlines ink so terracotta remains the loudest thing on the page and still means only one thing. Routing picks whichever corner misses every other block, and the checker tests each label against every other label, every block body, every wire segment and the canvas edge, plus every wire against every block body: 0 overlaps and no wire runs through a block."
+  }
+}

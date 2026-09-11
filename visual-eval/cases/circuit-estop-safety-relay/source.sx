@@ -1,0 +1,12 @@
+circuit "Dual Channel E Stop Safety Relay" netlist
+V1 L24 COM type=voltage_source value="24 VDC, 5 A" label="PS1 SAFETY SUPPLY"
+F1 L24 SAFE24 type=fuse value="1 A, 250 VDC" label="F1 SAFETY FUSE"
+S1 SAFE24 CH1 type=emergency_stop value="24 VDC, 1 A, NC" label="S1 E-STOP CH A"
+S2 SAFE24 CH2 type=emergency_stop value="24 VDC, 1 A, NC" label="S2 E-STOP CH B"
+S3 SAFE24 RESET type=push_no value="24 VDC, 1 A" label="S3 MANUAL RESET"
+U1 SAFE24 COM CH1 CH2 RESET FB1 FB2 K1OUT K2OUT type=generic_ic pins="A1,A2,S11-S12,S21-S22,Y1-Y2,EDM1,EDM2,13-14,23-24" value="24 VDC, SIL3/PLe" label="SR1 SAFETY RELAY"
+K1 K1OUT COM type=relay_coil value="24 VDC, 9 A AC-3" label="KM1 SAFETY CONTACTOR"
+K2 K2OUT COM type=relay_coil value="24 VDC, 9 A AC-3" label="KM2 SAFETY CONTACTOR"
+K1M SAFE24 FB1 type=relay_nc value="24 VDC, 1 A, 21-22 NC" label="KM1 MIRROR NC"
+K2M FB1 FB2 type=relay_nc value="24 VDC, 1 A, 21-22 NC" label="KM2 MIRROR NC"
+W1 FB2 COM value="0.75 mm2, 24 VDC" label="W1 EDM RETURN"

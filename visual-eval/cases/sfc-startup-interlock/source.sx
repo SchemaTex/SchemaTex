@@ -1,0 +1,19 @@
+# Scenario: Startup Interlock IEC 61131-3 sequential control chart.
+sfc "Startup Interlock"
+var Start: bool
+var Ready: bool
+var Complete: bool
+var Reset: bool
+step S0 [initial]
+  N Idle
+step S1 [label: "Prepare"]
+  N PrepareOutput
+step S2 [label: "Operate"]
+  D RunOutput T#10s
+step S3 [label: "Complete"]
+  N CompleteOutput
+transition from: S0 to: S1: Start
+transition from: S1 to: S2: Ready
+transition from: S2 to: S3: Complete
+transition from: S3 to: S0: Reset
+

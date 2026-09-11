@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" width="1200" height="1000">
+<title>Cedar Point Retail · Access and Parking</title>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8Z" fill="#344650"/></marker>
+ <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="#7395af" stroke-width="1"/></pattern>
+ <g id="accessSymbol" fill="none" stroke="#205b91" stroke-width="2.5"><circle cx="0" cy="-8" r="2.5" fill="#205b91" stroke="none"/><path d="M0-3v9h8l5 7M0 1h7M-4 3a8 8 0 1 0 8 12"/></g>
+</defs>
+<rect width="1200" height="1000" fill="white"/>
+<g font-family="Verdana, sans-serif" fill="#243740">
+ <text x="70" y="52" font-size="28" font-weight="bold">Cedar Point Retail · Access and Parking</text>
+ <text x="70" y="81" font-size="14" letter-spacing="1.4">CONCEPT SITE PLAN  /  DIMENSIONS IN FEET</text>
+ <!-- Parcel coordinates: x = 130 + 2x, y = 810 - 2y -->
+ <rect x="130" y="190" width="880" height="620" fill="#F7F5EF" stroke="#58665c" stroke-width="2"/>
+ <text x="150" y="786" font-size="16">Retail Parcel</text>
+ <!-- Frontage -->
+ <g stroke="#344650" stroke-width="1.4" fill="none"><path d="M130 179V128M1010 179V128M130 148H1010M124 154l12-12M1004 154l12-12"/></g>
+ <rect x="481" y="133" width="178" height="28" fill="white"/>
+ <text x="570" y="153" text-anchor="middle" font-size="18">440 ft frontage</text>
+ <!-- Avenue -->
+ <path d="M90 240H1050" stroke="#a1a7a7" stroke-width="62"/>
+ <path d="M90 240H1050" stroke="#e3e5e4" stroke-width="58"/>
+ <path d="M90 240H1050" fill="none" stroke="white" stroke-width="2" stroke-dasharray="20 12"/>
+ <rect x="431" y="222" width="270" height="36" fill="#e3e5e4"/>
+ <text x="566" y="247" text-anchor="middle" font-size="21" font-weight="bold">Cedar Avenue</text>
+ <!-- North parking -->
+ <rect x="240" y="360" width="670" height="140" fill="#E3F2FD" stroke="#678da7" stroke-width="2"/>
+ <!-- Primary U-shaped aisle and separate service connection -->
+ <path d="M220 266V360H910V266" fill="none" stroke="#919c9e" stroke-width="50" stroke-linejoin="miter"/>
+ <path d="M220 265V360H910V265" fill="none" stroke="#edf0ee" stroke-width="46" stroke-linejoin="miter"/>
+ <path d="M840 265V520" fill="none" stroke="#919c9e" stroke-width="38"/>
+ <path d="M840 265V520" fill="none" stroke="#edf0ee" stroke-width="34"/>
+ <!-- parking stalls, conventional open-ended marks -->
+ <g stroke="#87a7be" stroke-width="1.3" fill="none">
+  <path d="M244 386H820M244 386v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32m21-32v32"/>
+  <path d="M244 498H354M244 466v32m22-32v32m22-32v32m22-32v32m22-32v32M468 498H820M468 466v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32m22-32v32"/>
+ </g>
+ <text x="543" y="450" text-anchor="middle" font-size="22" font-weight="bold">North Parking · 54 bays</text>
+ <text x="524" y="366" text-anchor="middle" font-size="17">Primary entry aisle · 24 ft</text>
+ <text x="849" y="393" transform="rotate(-90 849 393)" text-anchor="middle" font-size="14">Service access · 18 ft</text>
+ <!-- accessible four-bay zone -->
+ <rect x="360" y="460" width="100" height="50" fill="#BBDEFB" stroke="#205b91" stroke-width="2"/>
+ <path d="M385 460v50M410 460v50M435 460v50" stroke="#205b91" stroke-width="1.5"/>
+ <g transform="translate(370 483) scale(.65)"><use href="#accessSymbol"/></g>
+ <g transform="translate(395 483) scale(.65)"><use href="#accessSymbol"/></g>
+ <g transform="translate(420 483) scale(.65)"><use href="#accessSymbol"/></g>
+ <g transform="translate(445 483) scale(.65)"><use href="#accessSymbol"/></g>
+ <!-- retail footprint -->
+ <rect x="360" y="520" width="430" height="200" fill="#e5e2d9" stroke="#344650" stroke-width="2.5"/>
+ <rect x="366" y="526" width="418" height="188" fill="none" stroke="#a4aaa5" stroke-width="1"/>
+ <text x="575" y="615" text-anchor="middle" font-size="26" font-weight="bold">Retail Building</text>
+ <text x="575" y="649" text-anchor="middle" font-size="22">24,000 sf</text>
+ <!-- Continuous orthogonal accessible route to entrance -->
+ <path d="M410 500V520H570" fill="none" stroke="#276b62" stroke-width="12" stroke-linejoin="miter"/>
+ <path d="M410 500V520H570" fill="none" stroke="#f6fffa" stroke-width="7" stroke-linejoin="miter"/>
+ <path d="M410 500V520H570" fill="none" stroke="#276b62" stroke-width="1.4" stroke-dasharray="4 3"/>
+ <!-- front entrance -->
+ <path d="M556 520H584" stroke="#fafbf8" stroke-width="5"/>
+ <path d="M556 520v-14M584 520v-14M556 506h28" fill="none" stroke="#344650" stroke-width="2"/>
+ <path d="M562 538l8-10 8 10" fill="none" stroke="#344650" stroke-width="2"/>
+ <text x="575" y="562" text-anchor="middle" font-size="16">Customer entrance</text>
+ <!-- Labels and leader lines kept clear of plan geometry -->
+ <text x="160" y="556" font-size="16" font-weight="bold">Accessible bays · 4</text>
+ <path d="M328 546H344V487H358" stroke="#205b91" fill="none" stroke-width="1.5"/>
+ <text x="160" y="607" font-size="16">Accessible route</text>
+ <text x="160" y="630" font-size="13">5 ft wide · to entrance</text>
+ <path d="M328 600H350V520H404" fill="none" stroke="#276b62" stroke-width="1.5"/>
+ <text x="914" y="590" text-anchor="middle" font-size="16">Loading access</text>
+ <path d="M914 575H880V550L843 523" fill="none" stroke="#344650" stroke-width="1.5" marker-end="url(#arrow)"/>
+ <!-- North arrow -->
+ <g transform="translate(1091 339)"><text x="0" y="-62" text-anchor="middle" font-size="21" font-weight="bold">N</text><path d="M0-48L-12-8 0-16 12-8Z" fill="#344650"/><path d="M0-16V31" stroke="#344650" stroke-width="2"/></g>
+ <!-- legend and scale -->
+ <path d="M70 845H1130" stroke="#c8cdca"/>
+ <text x="70" y="881" font-size="15" font-weight="bold" letter-spacing="1">LEGEND</text>
+ <rect x="70" y="902" width="25" height="17" fill="#e5e2d9" stroke="#344650"/><text x="106" y="916" font-size="14">Retail building</text>
+ <rect x="257" y="902" width="25" height="17" fill="#E3F2FD" stroke="#678da7"/><text x="293" y="916" font-size="14">Parking</text>
+ <rect x="410" y="902" width="25" height="17" fill="#BBDEFB" stroke="#205b91"/><text x="446" y="916" font-size="14">Accessible bays</text>
+ <path d="M611 910h28" stroke="#276b62" stroke-width="7"/><path d="M611 910h28" stroke="#f6fffa" stroke-width="3"/><text x="650" y="916" font-size="14">Accessible route</text>
+ <text x="880" y="881" font-size="14" font-weight="bold">SCALE · FEET</text>
+ <path d="M880 898h50v12h-50z" fill="#344650"/><path d="M930 898h50v12h-50z" fill="white" stroke="#344650"/>
+ <text x="880" y="930" font-size="13" text-anchor="middle">0</text><text x="930" y="930" font-size="13" text-anchor="middle">25</text><text x="980" y="930" font-size="13" text-anchor="middle">50</text>
+ <text x="70" y="970" font-size="13" fill="#637078">Concept layout. Bay counts indicate design intent and are not a code-compliance certification.</text>
+</g>
+</svg>

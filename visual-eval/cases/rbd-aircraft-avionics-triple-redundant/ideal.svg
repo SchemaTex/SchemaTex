@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720">
+  <title>Triple-redundant aircraft avionics reliability block diagram</title>
+  <rect width="1400" height="720" fill="white"/>
+  <g font-family="Helvetica, Arial, sans-serif" fill="#182631">
+    <text x="700" y="60" text-anchor="middle" font-size="30" font-weight="700">Triple-redundant aircraft avionics</text>
+    <text x="700" y="95" text-anchor="middle" font-size="19">Reliability block diagram · Success path from input to output</text>
+    <rect x="460" y="142" width="480" height="424" rx="6" fill="#f5f8fa" stroke="#526777" stroke-width="2" stroke-dasharray="8 5"/>
+    <text x="700" y="177" text-anchor="middle" font-size="25" font-weight="700">2/3 · Majority required</text>
+    <text x="700" y="206" text-anchor="middle" font-size="17">At least two of three flight computers succeed</text>
+    <g fill="none" stroke="#263d4b" stroke-width="3" stroke-linejoin="miter">
+      <path d="M78 382H145 M395 382H490 M490 267V497 M490 267H540 M490 382H540 M490 497H540"/>
+      <path d="M860 267H910 M860 382H910 M860 497H910 M910 267V497 M910 382H995 M1245 382H1322"/>
+    </g>
+    <g fill="#263d4b">
+      <circle cx="490" cy="382" r="5"/><circle cx="910" cy="382" r="5"/>
+      <path d="M1289 376L1301 382L1289 388Z"/>
+    </g>
+    <g fill="white" stroke="#263d4b" stroke-width="3">
+      <circle cx="70" cy="382" r="8"/>
+      <circle cx="1330" cy="382" r="8"/>
+      <rect x="145" y="327" width="250" height="110"/>
+      <rect x="540" y="227" width="320" height="80"/>
+      <rect x="540" y="342" width="320" height="80"/>
+      <rect x="540" y="457" width="320" height="80"/>
+      <rect x="995" y="327" width="250" height="110"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="70" y="422" font-size="19">Input</text>
+      <text x="1330" y="422" font-size="19">Output</text>
+      <text x="270" y="355" font-size="21" font-weight="700">Avionics power</text>
+      <text x="270" y="381" font-size="21" font-weight="700">distribution</text>
+      <text x="270" y="414" font-size="20">PDU · R = 0.9995</text>
+      <text x="700" y="258" font-size="22" font-weight="700">Flight control computer A</text>
+      <text x="700" y="287" font-size="20">FCC_A · R = 0.998</text>
+      <text x="700" y="373" font-size="22" font-weight="700">Flight control computer B</text>
+      <text x="700" y="402" font-size="20">FCC_B · R = 0.998</text>
+      <text x="700" y="488" font-size="22" font-weight="700">Flight control computer C</text>
+      <text x="700" y="517" font-size="20">FCC_C · R = 0.998</text>
+      <text x="1120" y="370" font-size="22" font-weight="700">Actuator interface</text>
+      <text x="1120" y="407" font-size="20">AIO · R = 0.999</text>
+      <text x="270" y="471" font-size="17" fill="#526777">Common series element</text>
+      <text x="1120" y="471" font-size="17" fill="#526777">Common series element</text>
+    </g>
+    <path d="M145 595H1245" stroke="#bcc7ce" stroke-width="1"/>
+    <text x="700" y="631" text-anchor="middle" font-size="23" font-weight="700">System reliability = 0.998488534 ≈ 99.8488534%</text>
+    <text x="700" y="662" text-anchor="middle" font-size="19">R = 0.9995 × [3(0.998)² − 2(0.998)³] × 0.999</text>
+    <text x="700" y="694" text-anchor="middle" font-size="17" fill="#526777">Assumption: computer channel failures are independent over one flight.</text>
+  </g>
+</svg>

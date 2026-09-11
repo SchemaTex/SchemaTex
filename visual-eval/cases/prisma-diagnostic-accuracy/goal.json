@@ -1,0 +1,35 @@
+{
+  "id": "prisma-diagnostic-accuracy",
+  "type": "prisma",
+  "variant": "single",
+  "title": "Troponin diagnostic-accuracy review",
+  "goal": "A clinical researcher can trace diagnostic-accuracy evidence from 1,260 records to 38 studies.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The standard PRISMA four-row flow is visibly present."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The 1,260 identified, 260 removed, and 1,000 screened counts visibly reconcile."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Exclusion side boxes visibly total 790 and 172 at their stages."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The final box visibly reports 38 studies and 41 reports."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Flow connectors are directional and clear."
+    }
+  ],
+  "split": "holdout"
+}

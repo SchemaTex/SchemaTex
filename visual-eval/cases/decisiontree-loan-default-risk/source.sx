@@ -1,0 +1,16 @@
+# Context: Illustrative ML classification tree for consumer-loan default risk.
+decisiontree:ml "Loan Default Risk"
+
+classes: low-risk, elevated-risk, high-risk
+impurity: gini
+branchLabels: relation
+
+split "Income <= 45k" feature=income_k op="<=" threshold=45 samples=1000 value=[380,360,260] gini=0.66
+  true split "Credit score <= 620" feature=credit_score op="<=" threshold=620 samples=410 value=[60,150,200] gini=0.61
+    true leaf "High risk" samples=180 value=[10,40,130] gini=0.43 class=high-risk
+    false split "Employment <= 2 years" feature=employment_years op="<=" threshold=2 samples=230 value=[50,110,70] gini=0.63
+      true leaf "Elevated risk" samples=100 value=[10,45,45] gini=0.59 class=elevated-risk
+      false leaf "Elevated risk" samples=130 value=[40,65,25] gini=0.62 class=elevated-risk
+  false split "Credit score <= 700" feature=credit_score op="<=" threshold=700 samples=590 value=[320,210,60] gini=0.56
+    true leaf "Elevated risk" samples=260 value=[100,130,30] gini=0.60 class=elevated-risk
+    false leaf "Low risk" samples=330 value=[220,80,30] gini=0.49 class=low-risk

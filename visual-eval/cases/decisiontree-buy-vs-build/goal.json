@@ -1,0 +1,40 @@
+{
+  "id": "decisiontree-buy-vs-build",
+  "type": "decisiontree",
+  "title": "Buy vs build decision",
+  "goal": "Show an engineering decision tree that balances capability, security, cost, and delivery time.",
+  "rubric": [
+    {
+      "id": "capability-root",
+      "severity": "blocker",
+      "must": "The root visibly asks whether a product meets critical requirements and separates buy-oriented from build-oriented paths."
+    },
+    {
+      "id": "buy-conditions",
+      "severity": "blocker",
+      "must": "The buy path visibly checks both vendor security/compliance and approved-budget cost before Buy and integrate."
+    },
+    {
+      "id": "build-conditions",
+      "severity": "major",
+      "must": "The no-product path visibly checks MVP delivery deadline and long-term ownership capacity before Build in-house."
+    },
+    {
+      "id": "alternatives",
+      "severity": "major",
+      "must": "The visible leaves include negotiation, compliant-platform, reduced-scope, and deferred-custom-feature outcomes."
+    },
+    {
+      "id": "binary-decisions",
+      "severity": "minor",
+      "must": "The tree shows readable Yes and No branches at each decision."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture changes required decisions and omits key build-path checks and outcomes."
+  }
+}

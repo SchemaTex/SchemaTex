@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500">
+  <title>Complete DFA for binary values divisible by three</title>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#17212b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="500" fill="white"/>
+  <g fill="none" stroke="#17212b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)">
+    <!-- Initial transition. -->
+    <path d="M 63 250 H 170"/>
+    <!-- R0 loops on zero. -->
+    <path d="M 190 210 V 80 H 100 V 200 H 180 V 220"/>
+    <!-- R0 to R1 on one; R1 to R0 on one. -->
+    <path d="M 250 210 V 155 H 450 V 210"/>
+    <path d="M 450 290 V 350 H 250 V 290"/>
+    <!-- R1 to R2 on zero; R2 to R1 on zero. -->
+    <path d="M 510 210 V 155 H 710 V 210"/>
+    <path d="M 710 290 V 350 H 510 V 290"/>
+    <!-- R2 loops on one. -->
+    <path d="M 770 210 V 80 H 850 V 250 H 790"/>
+  </g>
+  <circle cx="56" cy="250" r="7" fill="#17212b"/>
+  <g fill="white" stroke="#17212b" stroke-width="2.5">
+    <circle cx="220" cy="250" r="50"/>
+    <circle cx="220" cy="250" r="43"/>
+    <circle cx="480" cy="250" r="50"/>
+    <circle cx="740" cy="250" r="50"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#17212b" text-anchor="middle" dominant-baseline="middle">
+    <text x="220" y="251">R0</text>
+    <text x="480" y="251">R1</text>
+    <text x="740" y="251">R2</text>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" font-size="26" fill="#17212b" text-anchor="middle">
+    <text x="145" y="63">0</text>
+    <text x="350" y="139">1</text>
+    <text x="350" y="384">1</text>
+    <text x="610" y="139">0</text>
+    <text x="610" y="384">0</text>
+    <text x="810" y="63">1</text>
+  </g>
+</svg>

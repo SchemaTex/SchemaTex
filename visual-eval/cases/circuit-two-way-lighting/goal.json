@@ -1,0 +1,44 @@
+{
+  "id": "circuit-two-way-lighting",
+  "type": "circuit",
+  "title": "Three position lighting control",
+  "goal": "Make the live, traveler, switched-live, neutral, and protective-earth paths legible for a lamp controlled from three locations.",
+  "rubric": [
+    {
+      "id": "three-switch-positions",
+      "severity": "blocker",
+      "must": "Three separately labelled switches S1, S2, and S3 are visible."
+    },
+    {
+      "id": "intermediate-switch",
+      "severity": "blocker",
+      "must": "S2 is visibly labelled INTERMEDIATE SWITCH and drawn as a ganged double-pole changeover switch."
+    },
+    {
+      "id": "two-way-end-switches",
+      "severity": "major",
+      "must": "S1 and S3 are each visibly labelled TWO-WAY SWITCH."
+    },
+    {
+      "id": "traveler-conductors",
+      "severity": "major",
+      "must": "Two traveler paths are visibly routed between the end switching positions through S2."
+    },
+    {
+      "id": "switched-live-labelled",
+      "severity": "major",
+      "must": "A conductor labelled SWITCHED LIVE (SL) is visible between the switching circuit and the lamp."
+    },
+    {
+      "id": "neutral-and-earth-labelled",
+      "severity": "major",
+      "must": "Separate conductors labelled NEUTRAL (N) and EARTH (PE) are visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Conductors are colour-coded brown live, blue neutral, green/yellow earth; the intermediate switch is drawn as a ganged double-pole changeover with its crossover, with a legend for the mechanical gang link and the crossing hop."
+  }
+}

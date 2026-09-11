@@ -1,0 +1,22 @@
+# Assumptions: ratings apply to a passenger-car hydraulic braking system with current production controls.
+# Detection uses 1 as near-certain detection and 10 as no detection.
+fmea "Automotive braking system DFMEA"
+  type: design
+  rank: rpn
+  flag: rpn > 100
+  number: DFMEA-BRAKE-024
+  item "Hydraulic braking system" fn "Provide controlled vehicle deceleration"
+    mode "Reduced hydraulic pressure"
+      effect "Extended stopping distance" sev: 9
+      cause "Master-cylinder seal wear" occ: 3
+        controls prevention: "EPDM seal specification", detection: "End-of-line pressure test" det: 4
+      cause "Brake-fluid leak" occ: 4
+        controls prevention: "Protected line routing", detection: "Leak test and fluid-level sensor" det: 3
+    mode "Uneven brake force"
+      effect "Vehicle instability under braking" sev: 8
+      cause "Caliper seizure" occ: 3
+        controls prevention: "Corrosion-resistant caliper coating", detection: "Roller brake test" det: 5
+    mode "Brake assist unavailable"
+      effect "High pedal effort" sev: 7
+      cause "Vacuum booster diaphragm tear" occ: 2
+        controls prevention: "Durability validation", detection: "Functional end-of-line test" det: 4

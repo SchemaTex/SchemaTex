@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<title>Dual Battery Alternator Charging</title>
+<rect width="1600" height="900" fill="white"/>
+<style>
+.wire{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}.symbol{fill:white;stroke:#17212b;stroke-width:3}.dot{fill:#17212b}.label{font-family:Arial,Helvetica,sans-serif;font-size:21px;font-weight:700;fill:#17212b}.value{font-family:Arial,Helvetica,sans-serif;font-size:20px;fill:#17212b}.note{font-family:Arial,Helvetica,sans-serif;font-size:17px;fill:#52606d}.heading{font-family:Arial,Helvetica,sans-serif;font-size:32px;font-weight:700;fill:#17212b}
+</style>
+<text x="70" y="65" class="heading">DUAL BATTERY ALTERNATOR CHARGING</text>
+<text x="70" y="100" class="note">12 V vehicle system · Common chassis return</text>
+<!-- Main positive circuit, left to right -->
+<path class="wire" d="M160 427V270H280 M350 270H610 M750 270H875 M975 270H1190 M1260 270H1440V427"/>
+<!-- Alternator: DC voltage source -->
+<circle cx="160" cy="475" r="48" class="symbol"/>
+<path class="wire" d="M150 451H170 M160 441V461 M150 497H170 M160 523V710"/>
+<text x="70" y="570" class="label">A1 ALTERNATOR</text>
+<text x="70" y="602" class="value">14.4 VDC, 120 A</text>
+<!-- Starter fuse -->
+<rect x="280" y="255" width="70" height="30" class="symbol"/>
+<path class="wire" d="M287 270H343"/>
+<text x="315" y="184" text-anchor="middle" class="label">F1 STARTER FUSE</text>
+<text x="315" y="215" text-anchor="middle" class="value">150 A MEGA</text>
+<!-- Starter battery branch: repeated long positive and short negative plates -->
+<path class="wire" d="M460 270V440 M423 440H497 M439 458H481 M423 478H497 M439 496H481 M460 496V710"/>
+<circle cx="460" cy="270" r="6" class="dot"/>
+<text x="407" y="430" class="value">+</text>
+<text x="411" y="516" class="value">−</text>
+<text x="460" y="565" text-anchor="middle" class="label">B1 STARTER BATTERY</text>
+<text x="460" y="598" text-anchor="middle" class="value">12 V</text>
+<!-- VSR normally-open relay, enclosing its switching contact -->
+<rect x="610" y="230" width="140" height="80" rx="0" class="symbol"/>
+<path class="wire" d="M610 270H632 M728 270H750 M636 267L710 244"/>
+<circle cx="632" cy="270" r="4" class="symbol"/>
+<circle cx="728" cy="270" r="4" class="symbol"/>
+<text x="680" y="146" text-anchor="middle" class="label">K1 VSR SPLIT-CHARGE RELAY</text>
+<text x="680" y="177" text-anchor="middle" class="value">140 A, 12 VDC</text>
+<text x="680" y="207" text-anchor="middle" class="note">Voltage-sensitive · Normally open</text>
+<!-- Auxiliary isolator switch -->
+<path class="wire" d="M880 268L958 232"/>
+<circle cx="875" cy="270" r="5" class="symbol"/>
+<circle cx="975" cy="270" r="5" class="symbol"/>
+<text x="925" y="345" text-anchor="middle" class="label">S1 AUX BATTERY ISOLATOR</text>
+<text x="925" y="376" text-anchor="middle" class="value">200 A, 12 VDC</text>
+<!-- Auxiliary battery connected after isolator and before load fuse -->
+<path class="wire" d="M1080 270V440 M1043 440H1117 M1059 458H1101 M1043 478H1117 M1059 496H1101 M1080 496V710"/>
+<circle cx="1080" cy="270" r="6" class="dot"/>
+<text x="1027" y="430" class="value">+</text>
+<text x="1031" y="516" class="value">−</text>
+<text x="1080" y="565" text-anchor="middle" class="label">B2 AUXILIARY BATTERY</text>
+<text x="1080" y="598" text-anchor="middle" class="value">12 V</text>
+<!-- Auxiliary load fuse -->
+<rect x="1190" y="255" width="70" height="30" class="symbol"/>
+<path class="wire" d="M1197 270H1253"/>
+<text x="1225" y="184" text-anchor="middle" class="label">F2 AUX LOAD FUSE</text>
+<text x="1225" y="215" text-anchor="middle" class="value">80 A MIDI</text>
+<!-- Auxiliary lamp/load -->
+<circle cx="1440" cy="475" r="48" class="symbol"/>
+<path class="wire" d="M1406 441L1474 509 M1406 509L1474 441 M1440 523V710"/>
+<text x="1430" y="565" text-anchor="middle" class="label">L1 AUXILIARY LOADS</text>
+<text x="1430" y="598" text-anchor="middle" class="value">12 VDC, 60 W</text>
+<!-- Common chassis conductor -->
+<path class="wire" d="M160 710H1440 M800 710V770 M755 770H845 M767 770L750 795 M800 770L783 795 M833 770L816 795"/>
+<circle cx="460" cy="710" r="6" class="dot"/>
+<circle cx="800" cy="710" r="6" class="dot"/>
+<circle cx="1080" cy="710" r="6" class="dot"/>
+<text x="190" y="690" class="note">CHASSIS — COMMON NEGATIVE RETURN</text>
+<text x="870" y="779" class="label">G1 CHASSIS EARTH</text>
+<text x="870" y="811" class="value">vehicle chassis</text>
+</svg>

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1060" viewBox="0 0 1560 1060"><title>Logistics shipment entity relationship diagram</title><rect width="1560" height="1060" fill="white"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#162331} .entity{fill:#fff;stroke:#263747;stroke-width:2} .head{fill:#eaf0f5} .name{font-size:21px;font-weight:700;text-anchor:middle} .field{font-size:18px} .rel{font-size:18px;text-anchor:middle} .wire{fill:none;stroke:#263747;stroke-width:2;stroke-linejoin:round} .key{font-size:16px;font-weight:700;fill:#41576c}</style>
+<rect class="entity" x="55" y="50" width="350" height="128" rx="2"/><path class="head" d="M56 51h348v47h-348z"/><path class="wire" d="M55 98h350"/><text class="name" x="230.0" y="81">CUSTOMER</text>
+<text class="field" x="69" y="124">int</text><text class="field" x="163" y="124">customer_id</text><text class="key" x="370" y="124">PK</text>
+<text class="field" x="69" y="158">string</text><text class="field" x="163" y="158">name</text><text class="key" x="370" y="158"></text>
+<rect class="entity" x="570" y="50" width="380" height="196" rx="2"/><path class="head" d="M571 51h378v47h-378z"/><path class="wire" d="M570 98h380"/><text class="name" x="760.0" y="81">SALES_ORDER</text>
+<text class="field" x="584" y="124">int</text><text class="field" x="678" y="124">order_id</text><text class="key" x="915" y="124">PK</text>
+<text class="field" x="584" y="158">int</text><text class="field" x="678" y="158">customer_id</text><text class="key" x="915" y="158">FK</text>
+<text class="field" x="584" y="192">int</text><text class="field" x="678" y="192">address_id</text><text class="key" x="915" y="192">FK</text>
+<text class="field" x="584" y="226">date</text><text class="field" x="678" y="226">ordered_at</text><text class="key" x="915" y="226"></text>
+<rect class="entity" x="1100" y="50" width="350" height="162" rx="2"/><path class="head" d="M1101 51h348v47h-348z"/><path class="wire" d="M1100 98h350"/><text class="name" x="1275.0" y="81">ADDRESS</text>
+<text class="field" x="1114" y="124">int</text><text class="field" x="1208" y="124">address_id</text><text class="key" x="1415" y="124">PK</text>
+<text class="field" x="1114" y="158">string</text><text class="field" x="1208" y="158">city</text><text class="key" x="1415" y="158"></text>
+<text class="field" x="1114" y="192">string</text><text class="field" x="1208" y="192">country</text><text class="key" x="1415" y="192"></text>
+<rect class="entity" x="55" y="390" width="350" height="128" rx="2"/><path class="head" d="M56 391h348v47h-348z"/><path class="wire" d="M55 438h350"/><text class="name" x="230.0" y="421">WAREHOUSE</text>
+<text class="field" x="69" y="464">int</text><text class="field" x="163" y="464">warehouse_id</text><text class="key" x="370" y="464">PK</text>
+<text class="field" x="69" y="498">string</text><text class="field" x="163" y="498">code</text><text class="key" x="370" y="498"></text>
+<rect class="entity" x="570" y="390" width="380" height="196" rx="2"/><path class="head" d="M571 391h378v47h-378z"/><path class="wire" d="M570 438h380"/><text class="name" x="760.0" y="421">SHIPMENT</text>
+<text class="field" x="584" y="464">int</text><text class="field" x="678" y="464">shipment_id</text><text class="key" x="915" y="464">PK</text>
+<text class="field" x="584" y="498">int</text><text class="field" x="678" y="498">order_id</text><text class="key" x="915" y="498">FK</text>
+<text class="field" x="584" y="532">int</text><text class="field" x="678" y="532">warehouse_id</text><text class="key" x="915" y="532">FK</text>
+<text class="field" x="584" y="566">string</text><text class="field" x="678" y="566">tracking_no</text><text class="key" x="915" y="566"></text>
+<rect class="entity" x="1100" y="390" width="400" height="162" rx="2"/><path class="head" d="M1101 391h398v47h-398z"/><path class="wire" d="M1100 438h400"/><text class="name" x="1300.0" y="421">DELIVERY_PROOF</text>
+<text class="field" x="1114" y="464">int</text><text class="field" x="1208" y="464">proof_id</text><text class="key" x="1465" y="464">PK</text>
+<text class="field" x="1114" y="498">int</text><text class="field" x="1208" y="498">shipment_id</text><text class="key" x="1465" y="498">FK</text>
+<text class="field" x="1114" y="532">datetime</text><text class="field" x="1208" y="532">signed_at</text><text class="key" x="1465" y="532"></text>
+<rect class="entity" x="55" y="805" width="350" height="162" rx="2"/><path class="head" d="M56 806h348v47h-348z"/><path class="wire" d="M55 853h350"/><text class="name" x="230.0" y="836">PACKAGE</text>
+<text class="field" x="69" y="879">int</text><text class="field" x="163" y="879">package_id</text><text class="key" x="370" y="879">PK</text>
+<text class="field" x="69" y="913">int</text><text class="field" x="163" y="913">shipment_id</text><text class="key" x="370" y="913">FK</text>
+<text class="field" x="69" y="947">decimal</text><text class="field" x="163" y="947">weight_kg</text><text class="key" x="370" y="947"></text>
+<rect class="entity" x="570" y="805" width="380" height="196" rx="2"/><path class="head" d="M571 806h378v47h-378z"/><path class="wire" d="M570 853h380"/><text class="name" x="760.0" y="836">SHIPMENT_LEG</text>
+<text class="field" x="584" y="879">int</text><text class="field" x="678" y="879">leg_id</text><text class="key" x="915" y="879">PK</text>
+<text class="field" x="584" y="913">int</text><text class="field" x="678" y="913">shipment_id</text><text class="key" x="915" y="913">FK</text>
+<text class="field" x="584" y="947">int</text><text class="field" x="678" y="947">carrier_id</text><text class="key" x="915" y="947">FK</text>
+<text class="field" x="584" y="981">string</text><text class="field" x="678" y="981">mode</text><text class="key" x="915" y="981"></text>
+<rect class="entity" x="1100" y="805" width="350" height="128" rx="2"/><path class="head" d="M1101 806h348v47h-348z"/><path class="wire" d="M1100 853h350"/><text class="name" x="1275.0" y="836">CARRIER</text>
+<text class="field" x="1114" y="879">int</text><text class="field" x="1208" y="879">carrier_id</text><text class="key" x="1415" y="879">PK</text>
+<text class="field" x="1114" y="913">string</text><text class="field" x="1208" y="913">name</text><text class="key" x="1415" y="913"></text>
+<polyline class="wire" points="405,115 570,115"/>
+<g transform="translate(405 115) rotate(0)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(570 115) rotate(180)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<circle cx="29" cy="0" r="6" fill="white"/>
+</g>
+<rect x="448.0" y="82" width="78" height="26" fill="white"/><text class="rel" x="487" y="101">places</text>
+<polyline class="wire" points="1100,150 950,150"/>
+<g transform="translate(1100 150) rotate(180)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(950 150) rotate(0)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<circle cx="29" cy="0" r="6" fill="white"/>
+</g>
+<rect x="961.0" y="114" width="128" height="26" fill="white"/><text class="rel" x="1025" y="133">delivers_to</text>
+<polyline class="wire" points="760,246 760,390"/>
+<g transform="translate(760 246) rotate(90)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(760 390) rotate(-90)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<path d="M26 -9v18"/>
+</g>
+<rect x="760.0" y="307" width="88" height="26" fill="white"/><text class="rel" x="804" y="326">fulfils</text>
+<polyline class="wire" points="405,470 570,470"/>
+<g transform="translate(405 470) rotate(0)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(570 470) rotate(180)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<circle cx="29" cy="0" r="6" fill="white"/>
+</g>
+<rect x="429.0" y="433" width="118" height="26" fill="white"/><text class="rel" x="488" y="452">dispatches</text>
+<polyline class="wire" points="950,475 1100,475"/>
+<g transform="translate(950 475) rotate(0)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(1100 475) rotate(180)" class="wire">
+<path d="M8 -9v18"/>
+<circle cx="29" cy="0" r="6" fill="white"/>
+</g>
+<rect x="976.0" y="437" width="98" height="26" fill="white"/><text class="rel" x="1025" y="456">confirms</text>
+<polyline class="wire" points="665,586 665,684 230,684 230,805"/>
+<g transform="translate(665 586) rotate(90)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(230 805) rotate(-90)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<path d="M26 -9v18"/>
+</g>
+<rect x="375.0" y="651" width="98" height="26" fill="white"/><text class="rel" x="424" y="670">contains</text>
+<polyline class="wire" points="810,586 810,805"/>
+<g transform="translate(810 586) rotate(90)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(810 805) rotate(-90)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<path d="M26 -9v18"/>
+</g>
+<rect x="817.0" y="690" width="98" height="26" fill="white"/><text class="rel" x="866" y="709">moves_by</text>
+<polyline class="wire" points="1100,884 950,884"/>
+<g transform="translate(1100 884) rotate(180)" class="wire">
+<path d="M8 -9v18 M16 -9v18"/>
+</g>
+<g transform="translate(950 884) rotate(0)" class="wire">
+<path d="M0 -10L20 0L0 10"/>
+<circle cx="29" cy="0" r="6" fill="white"/>
+</g>
+<rect x="976.0" y="847" width="98" height="26" fill="white"/><text class="rel" x="1025" y="866">operates</text>
+</svg>

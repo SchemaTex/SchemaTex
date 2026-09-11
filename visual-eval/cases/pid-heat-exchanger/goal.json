@@ -1,0 +1,49 @@
+{
+  "id": "pid-heat-exchanger",
+  "type": "pid",
+  "title": "Shell-and-tube heat exchanger",
+  "goal": "A process engineer can trace the separate hot and cold circuits through E-101 and read the outlet temperature-control loop and maintenance connections.",
+  "rubric": [
+    {
+      "id": "exchanger-central-and-labelled",
+      "severity": "blocker",
+      "must": "A shell-and-tube exchanger labelled E-101 is the visible centre of the drawing."
+    },
+    {
+      "id": "two-independent-circuits",
+      "severity": "blocker",
+      "must": "Hot glycol and cooling-water process paths are visibly separate circuits through different exchanger connections."
+    },
+    {
+      "id": "hot-outlet-control-loop",
+      "severity": "major",
+      "must": "TT-101, TIC-101 and TV-101 form a readable temperature-control loop associated with the hot outlet."
+    },
+    {
+      "id": "isolation-valves-visible",
+      "severity": "major",
+      "must": "Both circuits show labelled inlet and outlet isolation valves."
+    },
+    {
+      "id": "vent-and-drain-visible",
+      "severity": "major",
+      "must": "A high-point vent and low-point drain are visibly connected to the exchanger."
+    },
+    {
+      "id": "signals-distinct-from-pipe",
+      "severity": "minor",
+      "must": "The temperature-control signal lines are visually distinct from process piping."
+    },
+    {
+      "id": "no-ambiguous-crossing",
+      "severity": "minor",
+      "must": "Where the hot and cold circuits cross or approach, the picture does not imply they are connected."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies both blockers and clearly shows the specified hot-outlet temperature-control loop, while the picture senses the tube-side outlet and controls the hot inlet using a differently tagged valve."
+  }
+}

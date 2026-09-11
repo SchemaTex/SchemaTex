@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960" role="img" aria-labelledby="title">
+<title id="title">Vessel Level Control and Shutdown</title>
+<defs>
+ <marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1 L9 5 L0 9 Z" fill="#172b3a"/></marker>
+ <style>
+ text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a} .pipe{fill:none;stroke:#172b3a;stroke-width:3;stroke-linejoin:round} .symbol{fill:white;stroke:#172b3a;stroke-width:2.5} .electric{fill:none;stroke:#172b3a;stroke-width:2.3;stroke-dasharray:12 7;stroke-linejoin:round} .capillary{fill:none;stroke:#172b3a;stroke-width:2.6;stroke-dasharray:1 7;stroke-linecap:round} .pneumatic{fill:none;stroke:#172b3a;stroke-width:2.2} .tag{font-size:23px;font-weight:700;text-anchor:middle} .desc{font-size:18px;text-anchor:middle} .small{font-size:17px} .bubbletext{font-size:21px;font-weight:700;text-anchor:middle}
+ </style>
+</defs>
+<rect width="1500" height="960" fill="white"/>
+<text x="65" y="58" font-size="32" font-weight="700">Vessel Level Control and Shutdown</text>
+<text x="65" y="89" font-size="18">PIPING &amp; INSTRUMENTATION DIAGRAM</text>
+<path d="M65 111H1435" stroke="#a9b3ba"/>
+<!-- Process train: feed tank bottom to inlet valve to vessel top -->
+<path class="pipe" d="M170 470V530H320V315H428"/>
+<path class="pipe" d="M492 315H720V365"/>
+<path class="pipe" d="M720 605V720H1008"/>
+<path class="pipe" d="M1072 720H1185V595H1310V615"/>
+<!-- Process flow arrows on straight piping -->
+<path class="pipe" d="M350 315H400" marker-end="url(#flow)"/>
+<path class="pipe" d="M570 315H625" marker-end="url(#flow)"/>
+<path class="pipe" d="M805 720H875" marker-end="url(#flow)"/>
+<path class="pipe" d="M1095 720H1160" marker-end="url(#flow)"/>
+<!-- Open atmospheric feed tank -->
+<path class="symbol" d="M90 350V470H250V350"/>
+<path d="M102 421H238" fill="none" stroke="#9ba8b0" stroke-width="1.5"/>
+<text class="tag" x="170" y="299">TK-100</text>
+<text class="desc" x="170" y="326">Feed Tank</text>
+<!-- Vertical vessel, elliptical heads -->
+<path class="symbol" d="M640 390C640 357 800 357 800 390V580C800 613 640 613 640 580Z"/>
+<path d="M640 390C640 423 800 423 800 390" fill="none" stroke="#172b3a" stroke-width="1.5"/>
+<path d="M650 529H790" fill="none" stroke="#a9b3ba" stroke-width="1.5"/>
+<text class="tag" x="720" y="465">V-101</text>
+<text class="desc" x="720" y="494">Level Vessel</text>
+<!-- Product atmospheric tank; top inlet visibly continues into open tank -->
+<path class="symbol" d="M1230 615V800H1390V615"/>
+<path class="pipe" d="M1310 615V650" marker-end="url(#flow)"/>
+<path d="M1242 752H1378" stroke="#9ba8b0" stroke-width="1.5"/>
+<text class="tag" x="1310" y="550">TK-102</text>
+<text class="desc" x="1310" y="578">Product Tank</text>
+<!-- Inlet shutoff control valve and solenoid actuator -->
+<path class="symbol" d="M428 297L492 333V297L428 333Z"/>
+<path class="pipe" d="M460 315V262"/>
+<rect class="symbol" x="440" y="226" width="40" height="36"/>
+<path d="M445 256L475 232" stroke="#172b3a" stroke-width="2"/>
+<text x="494" y="245" font-size="22" font-weight="700">FC</text>
+<text x="494" y="268" class="small">solenoid</text>
+<text class="tag" x="460" y="369">XV-202</text>
+<text class="desc" x="460" y="397">High-level Shutoff</text>
+<!-- Outlet control valve and diaphragm actuator -->
+<path class="symbol" d="M1008 702L1072 738V702L1008 738Z"/>
+<path class="pipe" d="M1040 720V662"/>
+<path class="symbol" d="M1004 662A36 29 0 0 1 1076 662Z"/>
+<text x="1090" y="650" font-size="22" font-weight="700">FO</text>
+<text x="1090" y="674" class="small">diaphragm</text>
+<text class="tag" x="1040" y="778">LV-101</text>
+<text class="desc" x="1040" y="806">Level Outlet Valve</text>
+<!-- Independent high-high shutdown sensing and electric signal -->
+<path class="capillary" d="M640 455H585V470H532"/>
+<path class="electric" d="M490 428V170H460V226"/>
+<text x="525" y="161" class="small">202 · independent high-level shutdown</text>
+<circle class="symbol" cx="490" cy="470" r="42"/>
+<text class="bubbletext" x="490" y="466">LSHH</text>
+<text class="bubbletext" x="490" y="491">202</text>
+<!-- Level regulation: capillary vessel tap, field transmitter, electric measurement -->
+<path class="capillary" d="M800 490H862"/>
+<circle class="symbol" cx="904" cy="490" r="42"/>
+<text class="bubbletext" x="904" y="486">LT</text>
+<text class="bubbletext" x="904" y="511">101</text>
+<path class="electric" d="M904 448V275H998"/>
+<text x="917" y="371" class="small">electrical</text>
+<!-- Shared control-room controller: square enclosure and horizontal location mark -->
+<rect class="symbol" x="993" y="228" width="94" height="94"/>
+<circle class="symbol" cx="1040" cy="275" r="42"/>
+<path d="M998 275H1082" stroke="#172b3a" stroke-width="2"/>
+<text class="bubbletext" x="1040" y="267">LIC</text>
+<text class="bubbletext" x="1040" y="301">101</text>
+<text class="desc" x="1040" y="206">101 · level regulation</text>
+<!-- Pneumatic output from controller to diaphragm, paired diagonal stroke notation -->
+<path class="pneumatic" d="M1040 322V633"/>
+<g stroke="#172b3a" stroke-width="2.2">
+ <path d="M1032 385L1048 373M1032 395L1048 383"/>
+ <path d="M1032 475L1048 463M1032 485L1048 473"/>
+ <path d="M1032 565L1048 553M1032 575L1048 563"/>
+</g>
+<text x="1065" y="439" class="small">pneumatic</text>
+<!-- Signal and symbol legend -->
+<path d="M65 851H1435" stroke="#a9b3ba"/>
+<text x="65" y="881" font-size="16" font-weight="700">LINE TYPES</text>
+<path class="pipe" d="M65 911H135"/><text x="150" y="917" class="small">Process</text>
+<path class="electric" d="M280 911H350"/><text x="365" y="917" class="small">Electrical</text>
+<path class="pneumatic" d="M515 911H585"/><path d="M543 919L553 903M553 919L563 903" stroke="#172b3a" stroke-width="2"/><text x="600" y="917" class="small">Pneumatic</text>
+<path class="capillary" d="M770 911H840"/><text x="855" y="917" class="small">Capillary sensing</text>
+<text x="1120" y="884" class="small">FC = fail closed</text>
+<text x="1120" y="912" class="small">FO = fail open</text>
+</svg>

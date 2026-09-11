@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-cafe",
+  "type": "floorplan",
+  "title": "Coffee shop plan",
+  "goal": "Let a customer find the entrance, queue, counter, seating, toilet, and back-of-house area at a glance.",
+  "rubric": [
+    {
+      "id": "service-counter-readable",
+      "severity": "blocker",
+      "must": "A labeled espresso and pastry service counter is clearly visible near the customer queue."
+    },
+    {
+      "id": "queue-clear-of-seating",
+      "severity": "blocker",
+      "must": "The marked order queue is visibly separate from all customer tables and chairs."
+    },
+    {
+      "id": "mixed-seating",
+      "severity": "major",
+      "must": "The seating area visibly includes several small two-person tables and one longer communal table."
+    },
+    {
+      "id": "back-of-house-separated",
+      "severity": "major",
+      "must": "The prep and wash area is a separate enclosed room connected to the coffee shop by a door."
+    },
+    {
+      "id": "customer-toilet-visible",
+      "severity": "major",
+      "must": "A distinct customer WC with toilet and sink symbols is visible."
+    },
+    {
+      "id": "clear-circulation",
+      "severity": "major",
+      "must": "A person can visually walk from the entrance to the counter, seating, toilet, and prep-room door without crossing furniture."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG clearly satisfies all six rules, while the picture lacks the required seating mix and explicit espresso-and-pastry counter labeling."
+  }
+}

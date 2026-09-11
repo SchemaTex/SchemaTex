@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="850" viewBox="0 0 1800 850">
+  <title>Automotive braking system DFMEA — risk-ranked hydraulic braking system worksheet</title>
+  <rect width="1800" height="850" fill="white"/>
+  <style>
+    text {font-family: Helvetica, Arial, sans-serif; fill:#172b3a}
+    .title {font-size:30px;font-weight:700}
+    .meta {font-size:17px}
+    .head {font-size:16px;font-weight:700}
+    .body {font-size:17px}
+    .score {font-size:23px;font-weight:700;text-anchor:middle}
+    .small {font-size:15px}
+    .grid {fill:none;stroke:#8796a1;stroke-width:1}
+  </style>
+  <text x="44" y="60" class="title">Automotive braking system DFMEA</text>
+  <text x="44" y="94" class="meta">DESIGN FAILURE MODE AND EFFECTS ANALYSIS</text>
+  <text x="1756" y="60" class="head" text-anchor="end">DFMEA-BRAKE-024</text>
+  <text x="1756" y="94" class="meta" text-anchor="end">Rank: RPN descending • Flag: RPN &gt; 100</text>
+  <rect x="44" y="119" width="1712" height="79" fill="#f0f4f6" stroke="#8796a1"/>
+  <text x="62" y="149" class="meta"><tspan font-weight="700">Item:</tspan> Hydraulic braking system</text>
+  <text x="62" y="178" class="meta"><tspan font-weight="700">Function:</tspan> Provide controlled vehicle deceleration</text>
+  <text x="44" y="231" class="small">Assumption: Ratings apply to a passenger-car hydraulic braking system with current production controls.</text>
+  <!-- Worksheet: descriptive columns separated from narrow score columns. -->
+  <rect x="44" y="257" width="1712" height="460" fill="#ffffff"/>
+  <rect x="44" y="257" width="1712" height="76" fill="#e5ecf0"/>
+  <rect x="44" y="333" width="1712" height="288" fill="#fff5e7"/>
+  <rect x="44" y="621" width="1712" height="96" fill="#f8fafb"/>
+  <rect x="44" y="333" width="7" height="288" fill="#b55a18"/>
+  <g fill="#dde6ec" opacity="0.42">
+    <rect x="530" y="333" width="58" height="384"/>
+    <rect x="841" y="333" width="58" height="384"/>
+    <rect x="1497" y="333" width="58" height="384"/>
+    <rect x="1555" y="333" width="83" height="384"/>
+  </g>
+  <g class="grid">
+    <rect x="44" y="257" width="1712" height="460" stroke="#435b6c" stroke-width="1.5"/>
+    <path d="M104 257V717 M317 257V717 M530 257V717 M588 257V717 M841 257V717 M899 257V717 M1198 257V717 M1497 257V717 M1555 257V717 M1638 257V717"/>
+    <path d="M44 333H1756 M44 429H1756 M44 525H1756 M44 621H1756"/>
+  </g>
+  <g class="head">
+    <text x="74" y="301" text-anchor="middle">Rank</text>
+    <text x="120" y="291">Failure mode</text>
+    <text x="333" y="291">Failure effect</text>
+    <text x="559" y="301" text-anchor="middle">S</text>
+    <text x="604" y="291">Potential cause</text>
+    <text x="870" y="301" text-anchor="middle">O</text>
+    <text x="915" y="286">Current controls</text>
+    <text x="915" y="312">Prevention</text>
+    <text x="1214" y="286">Current controls</text>
+    <text x="1214" y="312">Detection</text>
+    <text x="1526" y="301" text-anchor="middle">D</text>
+    <text x="1596" y="301" text-anchor="middle">RPN</text>
+    <text x="1697" y="301" text-anchor="middle">Flag</text>
+  </g>
+  <!-- RPN 120 -->
+  <g class="body">
+    <text x="74" y="388" text-anchor="middle">1</text>
+    <text x="120" y="388">Uneven brake force</text>
+    <text x="333" y="376"><tspan x="333">Vehicle instability</tspan><tspan x="333" dy="25">under braking</tspan></text>
+    <text x="604" y="388">Caliper seizure</text>
+    <text x="915" y="376"><tspan x="915">Corrosion-resistant</tspan><tspan x="915" dy="25">caliper coating</tspan></text>
+    <text x="1214" y="388">Roller brake test</text>
+  </g>
+  <g class="score"><text x="559" y="388">8</text><text x="870" y="388">3</text><text x="1526" y="388">5</text><text x="1596" y="388">120</text></g>
+  <!-- RPN 108, tied rank 2 -->
+  <g class="body">
+    <text x="74" y="484" text-anchor="middle">2</text>
+    <text x="120" y="472"><tspan x="120">Reduced hydraulic</tspan><tspan x="120" dy="25">pressure</tspan></text>
+    <text x="333" y="472"><tspan x="333">Extended stopping</tspan><tspan x="333" dy="25">distance</tspan></text>
+    <text x="604" y="472"><tspan x="604">Master-cylinder</tspan><tspan x="604" dy="25">seal wear</tspan></text>
+    <text x="915" y="484">EPDM seal specification</text>
+    <text x="1214" y="484">End-of-line pressure test</text>
+  </g>
+  <g class="score"><text x="559" y="484">9</text><text x="870" y="484">3</text><text x="1526" y="484">4</text><text x="1596" y="484">108</text></g>
+  <g class="body">
+    <text x="74" y="580" text-anchor="middle">2</text>
+    <text x="120" y="568"><tspan x="120">Reduced hydraulic</tspan><tspan x="120" dy="25">pressure</tspan></text>
+    <text x="333" y="568"><tspan x="333">Extended stopping</tspan><tspan x="333" dy="25">distance</tspan></text>
+    <text x="604" y="580">Brake-fluid leak</text>
+    <text x="915" y="580">Protected line routing</text>
+    <text x="1214" y="568"><tspan x="1214">Leak test and</tspan><tspan x="1214" dy="25">fluid-level sensor</tspan></text>
+  </g>
+  <g class="score"><text x="559" y="580">9</text><text x="870" y="580">4</text><text x="1526" y="580">3</text><text x="1596" y="580">108</text></g>
+  <!-- RPN 56 -->
+  <g class="body">
+    <text x="74" y="676" text-anchor="middle">4</text>
+    <text x="120" y="664"><tspan x="120">Brake assist</tspan><tspan x="120" dy="25">unavailable</tspan></text>
+    <text x="333" y="676">High pedal effort</text>
+    <text x="604" y="664"><tspan x="604">Vacuum booster</tspan><tspan x="604" dy="25">diaphragm tear</tspan></text>
+    <text x="915" y="676">Durability validation</text>
+    <text x="1214" y="664"><tspan x="1214">Functional</tspan><tspan x="1214" dy="25">end-of-line test</tspan></text>
+    <text x="1697" y="676" text-anchor="middle">—</text>
+  </g>
+  <g class="score"><text x="559" y="676">7</text><text x="870" y="676">2</text><text x="1526" y="676">4</text><text x="1596" y="676">56</text></g>
+  <g fill="#a14a0d">
+    <path d="M1658 370V396 M1658 370H1676L1671 378L1676 386H1658" stroke="#a14a0d" stroke-width="2"/>
+    <path d="M1658 466V492 M1658 466H1676L1671 474L1676 482H1658" stroke="#a14a0d" stroke-width="2"/>
+    <path d="M1658 562V588 M1658 562H1676L1671 570L1676 578H1658" stroke="#a14a0d" stroke-width="2"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#a14a0d">
+    <text x="1685" y="388" fill="#a14a0d">&gt; 100</text><text x="1685" y="484" fill="#a14a0d">&gt; 100</text><text x="1685" y="580" fill="#a14a0d">&gt; 100</text>
+  </g>
+  <text x="44" y="754" class="small"><tspan font-weight="700">S</tspan> = Severity   •   <tspan font-weight="700">O</tspan> = Occurrence   •   <tspan font-weight="700">D</tspan> = Detection   •   <tspan font-weight="700">RPN</tspan> = S × O × D</text>
+  <text x="44" y="783" class="small">Detection scale: 1 = near-certain detection; 10 = no detection.</text>
+  <text x="1756" y="754" class="small" text-anchor="end">Amber rows and flags indicate RPN &gt; 100.</text>
+  <text x="1756" y="783" class="small" text-anchor="end">Equal RPN values share the same rank.</text>
+</svg>

@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-emergency-lighting-changeover",
+  "type": "circuit",
+  "title": "Emergency-lighting changeover unit",
+  "split": "holdout",
+  "goal": "A reader must be able to see how mains charges a battery and holds a relay that changes the emergency lamp supply on mains failure.",
+  "rubric": [
+    {
+      "id": "charger-battery",
+      "severity": "blocker",
+      "must": "The 230 V MAINS INPUT feeds a labelled battery charger whose battery terminals connect to a 12 V, 7 Ah sealed battery."
+    },
+    {
+      "id": "mains-held-coil",
+      "severity": "blocker",
+      "must": "The K1 MAINS-SENSE COIL is visibly connected across LINE and NEUT."
+    },
+    {
+      "id": "changeover-paths",
+      "severity": "blocker",
+      "must": "The K1 CHANGEOVER RELAY visibly has LINE on its NO side, BATT on its NC side, and LAMP on its common output."
+    },
+    {
+      "id": "lamp-output",
+      "severity": "major",
+      "must": "The emergency lamp is connected from the relay’s LAMP output to the return."
+    },
+    {
+      "id": "test-switch",
+      "severity": "major",
+      "must": "A normally open S1 LAMP TEST switch visibly connects the battery to a separate test indicator lamp."
+    },
+    {
+      "id": "ratings",
+      "severity": "minor",
+      "must": "The charger, battery, relay, and lamp have legible voltage or power ratings."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed."
+  }
+}

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1130" viewBox="0 0 1500 1130">
+  <title>E-commerce order lifecycle with payment, fulfillment, and terminal outcomes</title>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#334155" stroke-width="1.8"/></marker>
+    <style>
+      .state{fill:#f8fafc;stroke:#334155;stroke-width:2}
+      .edge{fill:none;stroke:#334155;stroke-width:2;marker-end:url(#arrow);stroke-linejoin:round}
+      .name{font-family:Helvetica,Arial,sans-serif;font-size:24px;fill:#172b43;text-anchor:middle;dominant-baseline:middle}
+      .label{font-family:Helvetica,Arial,sans-serif;font-size:20px;fill:#334155}
+      .guard{font-family:Helvetica,Arial,sans-serif;font-size:19px;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1500" height="1130" fill="white"/>
+
+  <!-- Initial state and guarded submission -->
+  <circle cx="475" cy="42" r="12" fill="#172b43"/>
+  <path class="edge" d="M475 54 V90"/>
+  <rect class="state" x="370" y="90" width="210" height="60" rx="12"/>
+  <text class="name" x="475" y="120">Draft</text>
+  <path class="edge" d="M475 150 V230"/>
+  <text class="label" x="490" y="184">submit [cartValid]</text>
+  <rect class="state" x="370" y="230" width="210" height="60" rx="12"/>
+  <text class="name" x="475" y="260">Submitted</text>
+
+  <!-- Reservation and direct customer cancellation -->
+  <path class="edge" d="M475 290 V390"/>
+  <text class="label" x="490" y="326">reserveInventory</text>
+  <text class="guard" x="490" y="353">[stockAvailable]</text>
+  <path class="edge" d="M580 260 H1310 V870 H1230"/>
+  <text class="label" x="865" y="243" text-anchor="middle">cancel [customerRequest]</text>
+  <rect class="state" x="355" y="390" width="240" height="70" rx="12"/>
+  <text class="name" x="475" y="425">Payment Pending</text>
+
+  <!-- Payment approval, decline, and bounded retry loop -->
+  <path class="edge" d="M475 460 V555"/>
+  <text class="label" x="490" y="512">paymentApproved</text>
+  <path class="edge" d="M595 425 H930"/>
+  <text class="label" x="762" y="409" text-anchor="middle">paymentDeclined</text>
+  <rect class="state" x="930" y="390" width="240" height="70" rx="12"/>
+  <text class="name" x="1050" y="425">Payment Failed</text>
+  <path class="edge" d="M1050 390 V335 H755 V365 H550 V390"/>
+  <text class="label" x="1040" y="318" text-anchor="end">retry [retries &lt; 3]</text>
+  <path class="edge" d="M1050 460 V840"/>
+  <text class="label" x="1068" y="627">cancel</text>
+  <text class="guard" x="1068" y="655">[retries &gt;= 3]</text>
+
+  <!-- Successful fulfillment chain -->
+  <rect class="state" x="370" y="555" width="210" height="60" rx="12"/>
+  <text class="name" x="475" y="585">Paid</text>
+  <path class="edge" d="M475 615 V690"/>
+  <text class="label" x="490" y="656">releaseToWarehouse</text>
+  <rect class="state" x="370" y="690" width="210" height="60" rx="12"/>
+  <text class="name" x="475" y="720">Fulfillment</text>
+  <path class="edge" d="M475 750 V825"/>
+  <text class="label" x="490" y="791">carrierCollected</text>
+  <rect class="state" x="370" y="825" width="210" height="60" rx="12"/>
+  <text class="name" x="475" y="855">Shipped</text>
+  <path class="edge" d="M475 885 V960"/>
+  <text class="label" x="490" y="926">deliveryConfirmed</text>
+  <rect x="370" y="960" width="210" height="60" rx="12" fill="#e7f4ec" stroke="#28754b" stroke-width="2.5"/>
+  <text class="name" x="475" y="990">Delivered</text>
+  <path class="edge" d="M475 1020 V1070"/>
+  <circle cx="475" cy="1086" r="16" fill="white" stroke="#28754b" stroke-width="2.5"/>
+  <circle cx="475" cy="1086" r="10" fill="#28754b"/>
+
+  <!-- Cancellation terminal -->
+  <rect x="990" y="840" width="240" height="60" rx="12" fill="#fcebea" stroke="#a74440" stroke-width="2.5"/>
+  <text class="name" x="1110" y="870">Cancelled</text>
+  <path class="edge" d="M1110 900 V950"/>
+  <circle cx="1110" cy="966" r="16" fill="white" stroke="#a74440" stroke-width="2.5"/>
+  <circle cx="1110" cy="966" r="10" fill="#a74440"/>
+</svg>

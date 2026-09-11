@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-studio",
+  "type": "floorplan",
+  "title": "Studio apartment",
+  "goal": "A reader must be able to see sleeping, cooking, and living functions in one compact room with a separate bathroom.",
+  "rubric": [
+    {
+      "id": "single-main-room",
+      "severity": "blocker",
+      "must": "One large labeled studio room contains the bed, living furniture, and kitchen equipment."
+    },
+    {
+      "id": "separate-bathroom",
+      "severity": "blocker",
+      "must": "A separate enclosed bathroom with a door, toilet, sink, and shower is visible."
+    },
+    {
+      "id": "under-thirty-square-metres",
+      "severity": "major",
+      "must": "The displayed room areas add up to less than 30 square metres."
+    },
+    {
+      "id": "open-studio-layout",
+      "severity": "major",
+      "must": "The main studio space has no interior partitions dividing its sleeping, living, and cooking areas."
+    },
+    {
+      "id": "clear-entry-path",
+      "severity": "major",
+      "must": "The entry door opens into clear floor space without striking furniture."
+    },
+    {
+      "id": "daylight-visible",
+      "severity": "minor",
+      "must": "Windows are visible on the outside walls of both the studio and bathroom."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg (imagegen-guided)",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: The picture better satisfies the blockers with recognizable studio furnishings and an enclosed bathroom containing a door, toilet, sink, and shower, although it lacks area figures and a bathroom window."
+  }
+}

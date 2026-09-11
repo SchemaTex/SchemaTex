@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="DC1 Spine-Leaf Fabric" width="487.65" height="439" viewBox="0 0 487.65 439" data-diagram-type="network"><title>Network diagram — DC1 Spine-Leaf Fabric</title>
+<desc>12 devices, 19 links, 0 boundaries. Topology: spine-leaf. Links: 19 copper.</desc>
+<style>.sx-net { font-family: system-ui, -apple-system, sans-serif; }
+.sx-net-body { fill: #1d6fb8; stroke: #0f3a5f; stroke-width: 2; }
+.sx-net-detail { fill: none; stroke: #0f3a5f; stroke-width: 1; }
+.sx-net-glyph { fill: #bfe0f7; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px sans-serif; }
+.sx-net-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<text x="243.83" y="21" class="sx-net-title" text-anchor="middle">DC1 Spine-Leaf Fabric</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="lf1" data-to="srv1" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="99.15,218 99.15,310"/>
+<text class="sx-net-linklabel" x="99.15" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf2" data-to="srv2" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="207.15,218 207.15,310"/>
+<text class="sx-net-linklabel" x="207.15" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf3" data-to="srv3" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="315.15,218 315.15,310"/>
+<text class="sx-net-linklabel" x="315.15" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf4" data-to="srv4" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="423.15,218 423.15,310"/>
+<text class="sx-net-linklabel" x="423.15" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="mgmt" data-to="oob" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="229.15,334 131.15,334"/>
+<text class="sx-net-linklabel" x="180.15" y="331" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="sp1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="108.41,310 197.89,78"/>
+<text class="sx-net-linklabel" x="153.15" y="191" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="sp2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="117.66,310 296.64,78"/>
+<text class="sx-net-linklabel" x="246.52" y="139.96" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="99.15,310 99.15,218"/>
+<text class="sx-net-linklabel" x="99.15" y="281.24" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="117.66,310 188.64,218"/>
+<text class="sx-net-linklabel" x="153.15" y="261" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="131.15,313.26 283.15,214.74"/>
+<text class="sx-net-linklabel" x="261.87" y="225.53" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="131.15,320.17 391.15,207.83"/>
+<text class="sx-net-linklabel" x="203.95" y="285.72" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="188.64,78 117.66,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="207.15,78 207.15,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="225.66,78 296.64,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="239.15,74.74 391.15,173.26"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="283.15,74.74 131.15,173.26"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="296.64,78 225.66,170"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="315.15,78 315.15,170"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="333.66,78 404.64,170"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="sp1" data-kind="switch"><g><rect class="sx-net-body" x="179.63" y="42" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="190.64" y1="49.68" x2="223.66" y2="49.68"/><polygon class="sx-net-glyph" points="223.66,49.68 220.15,51.6 220.15,47.76"/>
+<line class="sx-net-glyph-line" x1="223.66" y1="58.32" x2="190.64" y2="58.32"/><polygon class="sx-net-glyph" points="190.64,58.32 194.15,56.4 194.15,60.24"/></g>
+<text class="sx-net-label" x="207.15" y="95" text-anchor="middle">Spine 1</text></g>
+<g class="sx-net-device" data-id="sp2" data-kind="switch"><g><rect class="sx-net-body" x="287.63" y="42" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="298.64" y1="49.68" x2="331.66" y2="49.68"/><polygon class="sx-net-glyph" points="331.66,49.68 328.15,51.6 328.15,47.76"/>
+<line class="sx-net-glyph-line" x1="331.66" y1="58.32" x2="298.64" y2="58.32"/><polygon class="sx-net-glyph" points="298.64,58.32 302.15,56.4 302.15,60.24"/></g>
+<text class="sx-net-label" x="315.15" y="95" text-anchor="middle">Spine 2</text></g>
+<g class="sx-net-device" data-id="lf1" data-kind="switch"><g><rect class="sx-net-body" x="71.63" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="82.64" y1="189.68" x2="115.66" y2="189.68"/><polygon class="sx-net-glyph" points="115.66,189.68 112.15,191.6 112.15,187.76"/>
+<line class="sx-net-glyph-line" x1="115.66" y1="198.32" x2="82.64" y2="198.32"/><polygon class="sx-net-glyph" points="82.64,198.32 86.15,196.4 86.15,200.24"/></g>
+<text class="sx-net-label" x="99.15" y="235" text-anchor="middle">Leaf 1</text></g>
+<g class="sx-net-device" data-id="lf2" data-kind="switch"><g><rect class="sx-net-body" x="179.63" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="190.64" y1="189.68" x2="223.66" y2="189.68"/><polygon class="sx-net-glyph" points="223.66,189.68 220.15,191.6 220.15,187.76"/>
+<line class="sx-net-glyph-line" x1="223.66" y1="198.32" x2="190.64" y2="198.32"/><polygon class="sx-net-glyph" points="190.64,198.32 194.15,196.4 194.15,200.24"/></g>
+<text class="sx-net-label" x="207.15" y="235" text-anchor="middle">Leaf 2</text></g>
+<g class="sx-net-device" data-id="lf3" data-kind="switch"><g><rect class="sx-net-body" x="287.63" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="298.64" y1="189.68" x2="331.66" y2="189.68"/><polygon class="sx-net-glyph" points="331.66,189.68 328.15,191.6 328.15,187.76"/>
+<line class="sx-net-glyph-line" x1="331.66" y1="198.32" x2="298.64" y2="198.32"/><polygon class="sx-net-glyph" points="298.64,198.32 302.15,196.4 302.15,200.24"/></g>
+<text class="sx-net-label" x="315.15" y="235" text-anchor="middle">Leaf 3</text></g>
+<g class="sx-net-device" data-id="lf4" data-kind="switch"><g><rect class="sx-net-body" x="395.63" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="406.64" y1="189.68" x2="439.66" y2="189.68"/><polygon class="sx-net-glyph" points="439.66,189.68 436.15,191.6 436.15,187.76"/>
+<line class="sx-net-glyph-line" x1="439.66" y1="198.32" x2="406.64" y2="198.32"/><polygon class="sx-net-glyph" points="406.64,198.32 410.15,196.4 410.15,200.24"/></g>
+<text class="sx-net-label" x="423.15" y="235" text-anchor="middle">Leaf 4</text></g>
+<g class="sx-net-device" data-id="srv1" data-kind="server"><g><rect class="sx-net-body" x="84.43" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="88.43" y1="324.16" x2="109.87" y2="324.16"/>
+<line class="sx-net-detail" x1="88.43" y1="334" x2="109.87" y2="334"/>
+<line class="sx-net-detail" x1="88.43" y1="343.84" x2="109.87" y2="343.84"/>
+<circle class="sx-net-glyph" cx="106.87" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="99.15" y="375" text-anchor="middle">Compute 01</text></g>
+<g class="sx-net-device" data-id="srv2" data-kind="server"><g><rect class="sx-net-body" x="192.43" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="196.43" y1="324.16" x2="217.87" y2="324.16"/>
+<line class="sx-net-detail" x1="196.43" y1="334" x2="217.87" y2="334"/>
+<line class="sx-net-detail" x1="196.43" y1="343.84" x2="217.87" y2="343.84"/>
+<circle class="sx-net-glyph" cx="214.87" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="207.15" y="375" text-anchor="middle">Compute 02</text></g>
+<g class="sx-net-device" data-id="srv3" data-kind="server"><g><rect class="sx-net-body" x="300.43" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="304.43" y1="324.16" x2="325.87" y2="324.16"/>
+<line class="sx-net-detail" x1="304.43" y1="334" x2="325.87" y2="334"/>
+<line class="sx-net-detail" x1="304.43" y1="343.84" x2="325.87" y2="343.84"/>
+<circle class="sx-net-glyph" cx="322.87" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="315.15" y="375" text-anchor="middle">Compute 03</text></g>
+<g class="sx-net-device" data-id="srv4" data-kind="server"><g><rect class="sx-net-body" x="408.43" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="412.43" y1="324.16" x2="433.87" y2="324.16"/>
+<line class="sx-net-detail" x1="412.43" y1="334" x2="433.87" y2="334"/>
+<line class="sx-net-detail" x1="412.43" y1="343.84" x2="433.87" y2="343.84"/>
+<circle class="sx-net-glyph" cx="430.87" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="423.15" y="375" text-anchor="middle">Storage 01</text></g>
+<g class="sx-net-device" data-id="oob" data-kind="switch"><g><rect class="sx-net-body" x="71.63" y="322" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="82.64" y1="329.68" x2="115.66" y2="329.68"/><polygon class="sx-net-glyph" points="115.66,329.68 112.15,331.6 112.15,327.76"/>
+<line class="sx-net-glyph-line" x1="115.66" y1="338.32" x2="82.64" y2="338.32"/><polygon class="sx-net-glyph" points="82.64,338.32 86.15,336.4 86.15,340.24"/></g>
+<text class="sx-net-label" x="99.15" y="375" text-anchor="middle">OOB Management Switch</text></g>
+<g class="sx-net-device" data-id="mgmt" data-kind="router"><g><rect class="sx-net-body" x="236.19" y="319.12" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="259.15" y1="328.64" x2="281.11" y2="328.64"/><polygon class="sx-net-glyph" points="281.11,328.64 277.6,330.56 277.6,326.73"/>
+<line class="sx-net-glyph-line" x1="263.15" y1="339.36" x2="241.19" y2="339.36"/><polygon class="sx-net-glyph" points="241.19,339.36 244.7,337.44 244.7,341.27"/>
+<line class="sx-net-glyph-line" x1="270.14" y1="336" x2="270.14" y2="344.88"/><polygon class="sx-net-glyph" points="270.14,344.88 268.22,341.37 272.05,341.37"/>
+<line class="sx-net-glyph-line" x1="252.16" y1="332" x2="252.16" y2="323.12"/><polygon class="sx-net-glyph" points="252.16,323.12 254.08,326.63 250.25,326.63"/></g>
+<text class="sx-net-label" x="261.15" y="375" text-anchor="middle">Management Gateway</text></g></g></g></svg>

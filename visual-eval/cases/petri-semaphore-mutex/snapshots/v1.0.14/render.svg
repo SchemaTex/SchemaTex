@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Semaphore Mutual Exclusion" width="459" height="266" viewBox="0 0 459 266" data-diagram-type="petri"><title>Petri net — Semaphore Mutual Exclusion</title>
+<desc>5 places, 4 transitions, 12 arcs. Marking {ReadyA:1, CriticalB:1}. Enabled: ExitB.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="229.5" y="22" class="sx-petri-title" text-anchor="middle">Semaphore Mutual Exclusion</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="ReadyA" data-to="EnterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 417.9 88 C 417.9 212 141.9 212 141.9 92" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Semaphore" data-to="EnterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 66.06937710115795 107.09106554834666 L 137.9 71.95652173913044" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="EnterA" data-to="CriticalA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 145.9 70 L 215.9 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="CriticalA" data-to="ExitA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 251.9 70 L 321.9 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ExitA" data-to="ReadyA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 329.9 70 L 399.9 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ExitA" data-to="Semaphore" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 325.9 92 C 325.9 212 49.900000000000006 212 49.900000000000006 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ReadyB" data-to="EnterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 417.9 178 C 417.9 212 141.9 212 141.9 182" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Semaphore" data-to="EnterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 66.06937710115795 122.90893445165334 L 137.9 158.04347826086956" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="EnterB" data-to="CriticalB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 145.9 160 L 215.9 160" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="CriticalB" data-to="ExitB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 251.9 160 L 321.9 160" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ExitB" data-to="ReadyB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 329.9 160 L 399.9 160" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ExitB" data-to="Semaphore" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 325.9 182 C 325.9 212 49.900000000000006 212 49.900000000000006 133" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="Semaphore" data-tokens="0"><circle class="sx-petri-place" cx="49.900000000000006" cy="115" r="18"/>
+
+<text class="sx-petri-label" x="49.900000000000006" y="91" text-anchor="middle">Semaphore</text></g>
+<g class="sx-petri-place-g" data-id="ReadyA" data-tokens="1"><circle class="sx-petri-place" cx="417.9" cy="70" r="18"/>
+<circle class="sx-petri-token" cx="417.9" cy="70" r="3.5"/>
+<text class="sx-petri-label" x="417.9" y="46" text-anchor="middle">ReadyA</text></g>
+<g class="sx-petri-place-g" data-id="ReadyB" data-tokens="0"><circle class="sx-petri-place" cx="417.9" cy="160" r="18"/>
+
+<text class="sx-petri-label" x="417.9" y="136" text-anchor="middle">ReadyB</text></g>
+<g class="sx-petri-place-g" data-id="CriticalA" data-tokens="0"><circle class="sx-petri-place" cx="233.9" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="233.9" y="46" text-anchor="middle">CriticalA</text></g>
+<g class="sx-petri-place-g" data-id="CriticalB" data-tokens="1"><circle class="sx-petri-place" cx="233.9" cy="160" r="18"/>
+<circle class="sx-petri-token" cx="233.9" cy="160" r="3.5"/>
+<text class="sx-petri-label" x="233.9" y="136" text-anchor="middle">CriticalB</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g" data-id="EnterA" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="137.9" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="141.9" y="42" text-anchor="middle">EnterA</text></g>
+<g class="sx-petri-trans-g" data-id="ExitA" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="321.9" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="325.9" y="42" text-anchor="middle">ExitA</text></g>
+<g class="sx-petri-trans-g" data-id="EnterB" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="137.9" y="138" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="141.9" y="132" text-anchor="middle">EnterB</text></g>
+<g class="sx-petri-trans-g" data-id="ExitB" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="317.9" y="134" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="321.9" y="138" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="325.9" y="132" text-anchor="middle">ExitB</text></g></g></g></svg>

@@ -1,0 +1,12 @@
+# Assumptions: channel failures are independent over one flight and a majority of three flight computers is required.
+# Power distribution and actuator interface are series elements common to all channels.
+rbd "Triple-redundant aircraft avionics"
+  series {
+    block PDU "Avionics power distribution" R=0.9995
+    kofn 2/3 {
+      block FCC_A "Flight control computer A" R=0.998
+      block FCC_B "Flight control computer B" R=0.998
+      block FCC_C "Flight control computer C" R=0.998
+    }
+    block AIO "Actuator interface" R=0.999
+  }

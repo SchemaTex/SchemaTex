@@ -1,0 +1,40 @@
+{
+  "id": "sld-marine-vessel-power",
+  "type": "sld",
+  "title": "Marine vessel main power",
+  "goal": "Show generator, shore, main-switchboard, and independent emergency power arrangements.",
+  "rubric": [
+    {
+      "id": "main",
+      "severity": "blocker",
+      "must": "Diesel Generators 1 and 2 visibly connect through separate generator breakers to the main switchboard."
+    },
+    {
+      "id": "shore",
+      "severity": "blocker",
+      "must": "The shore connection visibly reaches the main switchboard through its labelled interlocked shore breaker."
+    },
+    {
+      "id": "loads",
+      "severity": "major",
+      "must": "Propulsion drive and hotel services visibly leave the main switchboard on separate branches."
+    },
+    {
+      "id": "emergency",
+      "severity": "blocker",
+      "must": "The emergency generator visibly feeds an independent emergency switchboard and emergency load."
+    },
+    {
+      "id": "labels",
+      "severity": "minor",
+      "must": "Equipment names and ratings remain readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. Two 1000 kW diesel generators and an interlocked shore connection each feed the 440 V main switchboard through their own breaker; the switchboard serves the 750 kW propulsion drive and the hotel services board. To the right, and deliberately not tied to it, the 250 kW emergency generator feeds its own emergency switchboard and the emergency lighting and navigation load. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

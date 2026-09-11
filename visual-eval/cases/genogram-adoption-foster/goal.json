@@ -1,0 +1,40 @@
+{
+  "id": "genogram-adoption-foster",
+  "type": "genogram",
+  "title": "Hughes permanency plan",
+  "goal": "Show biological parentage alongside adoption and foster placement.",
+  "rubric": [
+    {
+      "id": "biological",
+      "severity": "blocker",
+      "must": "Theo and Ivy visibly descend from Ben and Lara's ended relationship."
+    },
+    {
+      "id": "adoption",
+      "severity": "blocker",
+      "must": "Theo has a visibly dashed or bracketed adopted-child link to Adam and Maya."
+    },
+    {
+      "id": "foster",
+      "severity": "blocker",
+      "must": "Ivy has a visibly dotted foster-child link to Noel and Rae."
+    },
+    {
+      "id": "separation",
+      "severity": "major",
+      "must": "Ben and Lara's ended cohabitation relationship is visibly distinct from marriage lines."
+    },
+    {
+      "id": "placement",
+      "severity": "minor",
+      "must": "Finn visibly appears as Noel and Rae's child without being confused with the placements."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Theo and Ivy have solid biological descent from Ben and Lara's ended cohabitation, alongside a dashed adoption drop from Adam and Maya to Theo and a dotted foster drop from Noel and Rae to Ivy. Finn descends on a solid vertical from the same sibship line as Ivy's foster drop."
+  }
+}

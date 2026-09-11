@@ -1,0 +1,45 @@
+{
+  "id": "erd-logistics-shipments",
+  "type": "erd",
+  "title": "Logistics shipments",
+  "goal": "Show shipment fulfilment, packages, carrier legs, and delivery proof in a logistics domain.",
+  "rubric": [
+    {
+      "id": "order-shipment",
+      "severity": "blocker",
+      "must": "Sales Order visibly has a one-to-many fulfilment relationship to Shipment."
+    },
+    {
+      "id": "shipment-contents-and-legs",
+      "severity": "blocker",
+      "must": "Shipment visibly contains Packages and has one or more Shipment Legs."
+    },
+    {
+      "id": "carrier-leg",
+      "severity": "major",
+      "must": "Carrier visibly operates many Shipment Legs."
+    },
+    {
+      "id": "dispatch-and-destination",
+      "severity": "major",
+      "must": "Shipment visibly relates to a dispatching Warehouse and Sales Order visibly relates to an Address."
+    },
+    {
+      "id": "delivery-proof",
+      "severity": "major",
+      "must": "Shipment visibly has an optional Delivery Proof relationship."
+    },
+    {
+      "id": "key-fields",
+      "severity": "minor",
+      "must": "Primary and foreign key markings are visible in the entity fields."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies the required entities and relationships, while Image 2 omits Sales Order, Warehouse, and Address and changes required relationship endpoints and cardinalities."
+  }
+}

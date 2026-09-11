@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1243 940" width="1243" height="940" role="img">
+<title>Payment Processing STRIDE</title>
+<desc>A STRIDE threat model of Payment Processing STRIDE, drawn as a data-flow diagram over 3 trust zones: Public Internet, Merchant, PCI Zone. 2 external entities are drawn as rectangles, 2 processes as circles, and 2 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 6 data flows, 4 cross a trust boundary — Online Shopper to Merchant Checkout, Merchant Checkout to Payment Gateway, Payment Gateway to Card Acquirer, Merchant Checkout to Payment Audit Log — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite.</desc>
+<rect x="0" y="0" width="1243" height="940" fill="#ffffff"/>
+<text x="46" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">Payment Processing STRIDE</text>
+<text x="46" y="65" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="1.3">STRIDE THREAT MODEL · DATA-FLOW DIAGRAM</text>
+<line x1="46" y1="78" x2="1197" y2="78" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="152" width="220" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="494" y="152" width="201.85" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="909.85" y="152" width="220" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M 254 302 L 510 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 669.85 302 L 939.92 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1019.85 371.93 L 1019.85 788 L 170 788 L 170 542" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1019.85 371.93 L 1019.85 462" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1089.78 302 L 1113.85 302 L 1113.85 694 L 1113.85 694" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 669.85 302 L 794.85 302 L 794.85 694 L 925.85 694" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 935.85 472 L 1103.85 472" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 935.85 524 L 1103.85 524" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 935.85 668 L 1103.85 668" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 935.85 720 L 1103.85 720" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<rect x="339.31" y="281.76" width="95.38" height="13.2" fill="#ffffff"/>
+<path d="M 520 302 L 510 305.6 L 510 298.4 Z" fill="#b02a37"/>
+<rect x="750.18" y="281.76" width="119.41" height="13.2" fill="#ffffff"/>
+<path d="M 949.92 302 L 939.92 305.6 L 939.92 298.4 Z" fill="#b02a37"/>
+<path d="M 170 532 L 173.6 542 L 166.4 542 Z" fill="#b02a37"/>
+<rect x="545.72" y="772.76" width="98.41" height="13.2" fill="#ffffff"/>
+<path d="M 1019.85 472 L 1016.25 462 L 1023.45 462 Z" fill="#1e293b"/>
+<rect x="1096.78" y="411.73" width="73.99" height="13.2" fill="#ffffff"/>
+<path d="M 1103.85 694 L 1113.85 690.4 L 1113.85 697.6 Z" fill="#1e293b"/>
+<rect x="1118.85" y="375.16" width="82.75" height="13.2" fill="#ffffff"/>
+<rect x="761.94" y="492.76" width="65.82" height="13.2" fill="#ffffff"/>
+<path d="M 935.85 694 L 925.85 697.6 L 925.85 690.4 Z" fill="#b02a37"/>
+<rect x="86" y="268" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="237" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="86" y="464" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="433" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="594.92" cy="302" r="74.92" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="552.62" y="196.08" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="1019.85" cy="302" r="69.93" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="977.55" y="201.07" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="935.85" y="472" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="987.79" y="441" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="935.85" y="668" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="987.79" y="637" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="170" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">PUBLIC INTERNET</text>
+<text x="594.92" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">MERCHANT</text>
+<text x="1019.85" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">PCI ZONE</text>
+<text x="387" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">checkout request</text>
+<text x="809.88" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">payment authorization</text>
+<text x="594.92" y="782" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">card authorization</text>
+<text x="1101.78" y="420.97" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">token lookup</text>
+<text x="1123.85" y="384.4" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">payment event</text>
+<text x="794.85" y="502" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">order event</text>
+<text x="170" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Online Shopper</text>
+<text x="170" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="170" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Card Acquirer</text>
+<text x="170" y="445.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="594.92" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Merchant Checkout</text>
+<text x="594.92" y="208.58" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="1019.85" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Payment Gateway</text>
+<text x="1019.85" y="213.57" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="1019.85" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Payment Token Store</text>
+<text x="1019.85" y="453.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="1019.85" y="698.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Payment Audit Log</text>
+<text x="1019.85" y="649.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="46" y="834" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#b02a37">4 of 6 flows cross a trust boundary</text>
+<text x="46" y="852" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#475569">Online Shopper → Merchant Checkout   ·   Merchant Checkout → Payment Gateway   ·   Payment Gateway → Card Acquirer   ·   Merchant Checkout → Payment Audit Log</text>
+<text x="46" y="876" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Rectangle = external entity (S·R)  —  Circle = process (S·T·R·I·D·E)  —  Parallel lines = data store (T·R?·I·D)  —  Every data flow carries T·I·D</text>
+<text x="46" y="894" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Trust boundaries are drawn neutral; red is reserved for the flows that cross one, which is where spoofing, tampering and disclosure bite.</text>
+</svg>

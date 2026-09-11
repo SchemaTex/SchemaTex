@@ -1,0 +1,34 @@
+{
+  "id": "phylo-sars-cov2",
+  "type": "phylo",
+  "title": "SARS-CoV-2 Variant Tree",
+  "goal": "A practitioner can visually assess the SARS-CoV-2 Variant Tree scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "tree-topology",
+      "severity": "blocker",
+      "must": "A rooted branching tree visibly shows the stated sister taxa and their clade relationships."
+    },
+    {
+      "id": "branch-lengths",
+      "severity": "blocker",
+      "must": "Horizontal branch lengths visibly vary to encode the supplied evolutionary distances."
+    },
+    {
+      "id": "tip-labels",
+      "severity": "major",
+      "must": "The named taxa are legible at the tree tips."
+    },
+    {
+      "id": "highlighted-clade",
+      "severity": "major",
+      "must": "The named clade is visibly highlighted distinctly from the rest of the tree."
+    },
+    {
+      "id": "scale",
+      "severity": "minor",
+      "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
+    }
+  ],
+  "split": "train"
+}

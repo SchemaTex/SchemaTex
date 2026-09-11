@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <title>Orion Systems · Matrix Delivery</title>
+  <defs>
+    <marker id="project-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#376b89" stroke-width="1.8"/></marker>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; }
+      .box { fill: #fff; stroke: #334a59; stroke-width: 2; }
+      .functional { fill: none; stroke: #334a59; stroke-width: 2.5; stroke-linejoin: round; }
+      .project { fill: none; stroke: #376b89; stroke-width: 2.5; stroke-dasharray: 10 7; stroke-linejoin: round; marker-end: url(#project-arrow); }
+      .name { font-size: 24px; font-weight: 600; text-anchor: middle; }
+      .role { font-size: 19px; text-anchor: middle; }
+      .department { font-size: 15px; letter-spacing: 1.2px; text-anchor: middle; fill: #536e80; }
+      .label { font-size: 19px; fill: #376b89; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="white"/>
+  <text x="70" y="61" font-size="32" font-weight="600">Orion Systems · Matrix Delivery</text>
+
+  <!-- Functional ownership: COO, department heads, and direct reports. -->
+  <path class="functional" d="M800 225 V270 M350 270 H1250 M350 270 V315 M800 270 V315 M1250 270 V315"/>
+  <path class="functional" d="M350 425 V485 M200 485 H500 M200 485 V550 M500 485 V550"/>
+  <path class="functional" d="M800 425 V550"/>
+  <path class="functional" d="M1250 425 V485 M1100 485 H1400 M1100 485 V550 M1400 485 V550"/>
+
+  <rect class="box" x="635" y="105" width="330" height="120" rx="3"/>
+  <text class="name" x="800" y="139">Alex Morgan</text>
+  <text class="role" x="800" y="168">Chief Operating Officer</text>
+  <text class="department" x="800" y="198">EXECUTIVE · ROLE: OPS</text>
+
+  <rect class="box" x="205" y="315" width="290" height="110" rx="3"/>
+  <text class="name" x="350" y="349">Jamie Wu</text>
+  <text class="role" x="350" y="378">Engineering Manager</text>
+  <text class="department" x="350" y="406">ENGINEERING</text>
+
+  <rect class="box" x="655" y="315" width="290" height="110" rx="3"/>
+  <text class="name" x="800" y="349">Casey Brown</text>
+  <text class="role" x="800" y="378">Design Manager</text>
+  <text class="department" x="800" y="406">DESIGN</text>
+
+  <rect class="box" x="1105" y="315" width="290" height="110" rx="3"/>
+  <text class="name" x="1250" y="349">Jordan Fox</text>
+  <text class="role" x="1250" y="378">PMO Director</text>
+  <text class="department" x="1250" y="406">DELIVERY</text>
+
+  <rect class="box" x="65" y="550" width="270" height="120" rx="3"/>
+  <text class="name" x="200" y="586">Morgan Lee</text>
+  <text class="role" x="200" y="618">Software Engineer</text>
+  <text class="department" x="200" y="649">ENGINEERING</text>
+
+  <rect class="box" x="365" y="550" width="270" height="120" rx="3"/>
+  <text class="name" x="500" y="586">Riley Scott</text>
+  <text class="role" x="500" y="618">Test Engineer</text>
+  <text class="department" x="500" y="649">ENGINEERING</text>
+
+  <rect class="box" x="665" y="550" width="270" height="120" rx="3"/>
+  <text class="name" x="800" y="586">Taylor King</text>
+  <text class="role" x="800" y="618">Product Designer</text>
+  <text class="department" x="800" y="649">DESIGN</text>
+
+  <rect class="box" x="965" y="550" width="270" height="120" rx="3"/>
+  <text class="name" x="1100" y="586">Ari Bennett</text>
+  <text class="role" x="1100" y="618">Project Manager, Atlas</text>
+  <text class="department" x="1100" y="649">DELIVERY</text>
+
+  <rect class="box" x="1265" y="550" width="270" height="120" rx="3"/>
+  <text class="name" x="1400" y="586">Skyler Diaz</text>
+  <text class="role" x="1400" y="618">Project Manager, Beacon</text>
+  <text class="department" x="1400" y="649">DELIVERY</text>
+
+  <!-- Independent dashed routes; white bridge gaps distinguish crossings. -->
+  <path class="project" d="M1065 670 V750 H800 V670"/>
+  <text class="label" x="860" y="735">Atlas project</text>
+  <path class="project" d="M1135 670 V830 H200 V670"/>
+  <text class="label" x="280" y="815">Atlas project</text>
+  <path d="M500 845 V815" stroke="white" stroke-width="10" fill="none"/>
+  <path class="project" d="M1400 670 V915 H500 V670"/>
+  <text class="label" x="930" y="900">Beacon project</text>
+</svg>

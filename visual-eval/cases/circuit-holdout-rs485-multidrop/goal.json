@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-rs485-multidrop",
+  "type": "circuit",
+  "title": "RS-485 multidrop bus",
+  "split": "holdout",
+  "goal": "A reader must be able to identify three transceiver taps on one A/B pair, end-only termination, and the single-node fail-safe bias network.",
+  "rubric": [
+    {
+      "id": "shared-two-wire-bus",
+      "severity": "blocker",
+      "must": "All three MAX3485 nodes visibly tap the same two nets labelled A and B."
+    },
+    {
+      "id": "two-end-terminations",
+      "severity": "blocker",
+      "must": "Exactly two 120 Ω termination resistors bridge A to B, labelled at the left and right physical ends."
+    },
+    {
+      "id": "no-midpoint-termination",
+      "severity": "blocker",
+      "must": "The middle transceiver node has no 120 Ω resistor drawn across its A and B connection."
+    },
+    {
+      "id": "bias-network",
+      "severity": "major",
+      "must": "A 680 Ω pull-up from VCC to A and a 680 Ω pull-down from B to common are visible at one node."
+    },
+    {
+      "id": "shared-common",
+      "severity": "major",
+      "must": "All three transceiver blocks visibly share the common return marked COM."
+    },
+    {
+      "id": "device-labels",
+      "severity": "minor",
+      "must": "Each of the three transceiver blocks is labelled MAX3485 and NODE 1, 2, or 3."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. A and B run as two horizontal bus rails with all three transceivers tapping them, RT1 at the far left and RT2 at the far right, fail-safe bias at node 1 only, COM along the bottom. The 'termination at both ends' rule is expressed by placement, which is the only way a netlist can express it."
+  }
+}

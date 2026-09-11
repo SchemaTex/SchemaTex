@@ -1,0 +1,8 @@
+gitgraph
+  commit id: "initial"
+  branch feature-search
+  checkout feature-search
+  commit id: "search-ui"
+  commit id: "search-api"
+  checkout main
+  merge feature-search id: "merge-search" tag: "v1.1"

@@ -1,0 +1,49 @@
+{
+  "id": "circuit-common-emitter",
+  "type": "circuit",
+  "title": "Common-emitter audio amplifier",
+  "goal": "A reader must be able to trace the input, bias, collector output, and bypass paths of a single-supply NPN common-emitter amplifier without confusing its transistor terminals or junctions.",
+  "rubric": [
+    {
+      "id": "transistor-terminal-connections",
+      "severity": "blocker",
+      "must": "Q1 is an NPN symbol whose base connects to CIN and the R1/R2 junction, collector connects to RC and COUT, and emitter connects to RE and CE."
+    },
+    {
+      "id": "bias-divider",
+      "severity": "blocker",
+      "must": "R1 connects the 12 V supply to the base and R2 connects the base to ground, with neither resistor bypassed by a wire."
+    },
+    {
+      "id": "emitter-bypass",
+      "severity": "blocker",
+      "must": "CE and RE form separate parallel branches from the emitter to ground, with CE's positive terminal at the emitter and no direct wire joining the emitter to the base."
+    },
+    {
+      "id": "coupled-signal-path",
+      "severity": "major",
+      "must": "The input reaches the base through CIN, and the collector reaches the grounded RL load through COUT, with neither coupling capacitor shorted by a wire."
+    },
+    {
+      "id": "unambiguous-junctions",
+      "severity": "blocker",
+      "must": "Joined wire branches have visible junction dots, and crossings between separate nets do not look like joined branches."
+    },
+    {
+      "id": "component-values",
+      "severity": "major",
+      "must": "Labels beside their respective symbols clearly show Q1 as 2N3904, V1 as 12 V, R1 as 47 kΩ, R2 as 10 kΩ, RC as 4.7 kΩ, RE as 1 kΩ, CE as 100 µF, CIN as 1 µF, COUT as 10 µF, RL as 47 kΩ, and CS as 100 nF."
+    },
+    {
+      "id": "readable-conventions",
+      "severity": "major",
+      "must": "The supply is above the ground return, all labels are legible without overlaps, and wires avoid component bodies except at their terminals."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Supply rail across the top, return along the bottom, bias divider on the left, collector branch in the middle, coupling capacitor and load on the right; the transistor's base, collector and emitter are lettered and the bypass capacitor's positive plate faces the emitter."
+  }
+}

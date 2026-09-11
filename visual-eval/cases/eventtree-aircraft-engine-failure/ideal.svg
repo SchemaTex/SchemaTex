@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800">
+  <title>Aircraft engine failure in cruise — event tree</title>
+  <rect width="1600" height="800" fill="white"/>
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; }
+    .title { font-size: 30px; font-weight: 700; }
+    .head { font-size: 20px; font-weight: 700; }
+    .body { font-size: 19px; }
+    .small { font-size: 16px; }
+    .branch { fill: none; stroke: #263b49; stroke-width: 2.5; stroke-linejoin: miter; }
+    .guide { stroke: #dce3e7; stroke-width: 1; }
+    .prob { font-size: 18px; font-weight: 600; }
+    .safe { fill: #18624d; }
+    .risk { fill: #953b31; }
+  </style>
+  <text x="48" y="54" class="title">Aircraft engine failure in cruise</text>
+  <text x="48" y="86" class="small">Single-engine failure in cruise · Safety functions are conditionally independent</text>
+  <path d="M48 111H1552" class="guide"/>
+
+  <text x="48" y="148" class="head">Initiating event</text>
+  <text x="365" y="148" class="head">DET · Crew management</text>
+  <text x="365" y="177" class="small">Crew identifies and</text>
+  <text x="365" y="200" class="small">manages failure</text>
+  <text x="665" y="148" class="head">SYS · Standby systems</text>
+  <text x="665" y="177" class="small">Standby systems</text>
+  <text x="665" y="200" class="small">support flight</text>
+  <text x="965" y="148" class="head">DIV · Diversion</text>
+  <text x="965" y="177" class="small">Diversion and</text>
+  <text x="965" y="200" class="small">landing succeeds</text>
+  <text x="1225" y="148" class="head">Terminal outcome</text>
+  <path d="M48 220H1552" class="guide"/>
+
+  <!-- Every upper arm is success; every lower arm is failure. -->
+  <rect x="48" y="452" width="257" height="108" rx="0" fill="#f5f7f8" stroke="#263b49" stroke-width="2"/>
+  <text x="66" y="480" class="head">ENG</text>
+  <text x="66" y="507" class="body">Single engine fails in cruise</text>
+  <text x="66" y="537" class="prob">Frequency: 0.004</text>
+
+  <path d="M305 506H360 M360 385V665 M360 385H660 M360 665H1200" class="branch"/>
+  <text x="382" y="373" class="prob">Success · 0.98</text>
+  <text x="382" y="653" class="prob">Failure · 0.02</text>
+
+  <path d="M660 295V475 M660 295H960 M660 475H960" class="branch"/>
+  <text x="682" y="283" class="prob">Success · 0.99</text>
+  <text x="682" y="463" class="prob">Failure · 0.01</text>
+
+  <path d="M960 250V340 M960 250H1200 M960 340H1200 M960 430V520 M960 430H1200 M960 520H1200" class="branch"/>
+  <text x="978" y="239" class="prob">Success · 0.995</text>
+  <text x="978" y="328" class="prob">Failure · 0.005</text>
+  <text x="978" y="418" class="prob">Success · 0.995</text>
+  <text x="978" y="508" class="prob">Failure · 0.005</text>
+
+  <g fill="#263b49">
+    <circle cx="360" cy="506" r="4"/>
+    <circle cx="660" cy="385" r="4"/>
+    <circle cx="960" cy="295" r="4"/>
+    <circle cx="960" cy="475" r="4"/>
+  </g>
+  <g stroke-width="3">
+    <path d="M1200 240V260 M1200 420V440" stroke="#18624d"/>
+    <path d="M1200 330V350 M1200 510V530 M1200 655V675" stroke="#953b31"/>
+  </g>
+  <text x="1225" y="256" class="body safe">Safe diversion and landing</text>
+  <text x="1225" y="346" class="body risk">Diversion landing accident</text>
+  <text x="1225" y="425" class="body safe">Reduced capability;</text>
+  <text x="1225" y="450" class="body safe">safe landing</text>
+  <text x="1225" y="526" class="body risk">Loss of control risk</text>
+  <text x="1225" y="660" class="body risk">Unmanaged engine failure;</text>
+  <text x="1225" y="685" class="body risk">emergency outcome</text>
+  <text x="695" y="692" class="small">* · Subsequent functions not evaluated</text>
+
+  <path d="M48 725H1552" class="guide"/>
+  <text x="48" y="753" class="small">Branch probabilities are conditional: success = 1 − p; failure = p. Upper arm: success. Lower arm: failure.</text>
+  <text x="48" y="780" class="small">DSL note: the stated diversion precondition conflicts with the s f s / s f f outcomes; both explicit branches are retained.</text>
+</svg>

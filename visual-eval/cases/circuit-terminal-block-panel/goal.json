@@ -1,0 +1,44 @@
+{
+  "id": "circuit-terminal-block-panel",
+  "type": "circuit",
+  "title": "Terminal block control panel",
+  "goal": "A reader must be able to identify where field wiring enters, how it is fused and selected, and where the switched output leaves.",
+  "rubric": [
+    {
+      "id": "numbered-terminal-strips",
+      "severity": "blocker",
+      "must": "Two terminal blocks with visibly numbered terminals are shown at the drawing edge."
+    },
+    {
+      "id": "field-entry-wires",
+      "severity": "major",
+      "must": "Field wiring visibly enters the first terminal block and leaves through the second."
+    },
+    {
+      "id": "fused-supply",
+      "severity": "blocker",
+      "must": "A 24 VDC supply passes through a clearly labelled 1 A fuse."
+    },
+    {
+      "id": "selector-control",
+      "severity": "major",
+      "must": "A labelled HAND-OFF-AUTO selector switch is visible upstream of the relay coil."
+    },
+    {
+      "id": "relay-and-lamp",
+      "severity": "major",
+      "must": "A 24 VDC control relay and a green RUN pilot light are both visible."
+    },
+    {
+      "id": "readable-labels",
+      "severity": "minor",
+      "must": "Reference designators and ratings remain legible without overlapping symbols."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Both terminal blocks sit at the drawing's edges with their terminals in numbered order, field wiring arriving from outside and internal wiring from inside — the convention the engine currently ignores."
+  }
+}

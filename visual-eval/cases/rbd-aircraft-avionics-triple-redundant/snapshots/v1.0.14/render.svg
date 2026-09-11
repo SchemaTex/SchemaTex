@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1098" height="353" viewBox="0 0 1098 353" role="img" aria-label="Reliability block diagram" data-diagram-type="rbd"><title>Reliability block diagram</title>
+<desc>Reliability block diagram: 6 blocks. System reliability n/a — missing R on rbd.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1098" height="353" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="529" y="18" class="sx-rbd-rsys" text-anchor="middle">System reliability: n/a — missing R on rbd</text>
+<path d="M 549.5 149 L 549.5 77 L 576 77" class="sx-rbd-wire"/>
+<path d="M 776 77 L 802.5 77 L 802.5 149" class="sx-rbd-wire"/>
+<path d="M 549.5 149 L 549.5 149 L 576 149" class="sx-rbd-wire"/>
+<path d="M 776 149 L 802.5 149 L 802.5 149" class="sx-rbd-wire"/>
+<path d="M 549.5 149 L 549.5 221 L 576 221" class="sx-rbd-wire"/>
+<path d="M 776 221 L 802.5 221 L 802.5 149" class="sx-rbd-wire"/>
+<path d="M 502 149 L 549.5 149" class="sx-rbd-wire"/>
+<path d="M 802.5 149 L 846.5 149" class="sx-rbd-wire"/>
+<path d="M 258 149 L 302 149" class="sx-rbd-wire"/>
+<path d="M 28 149 L 58 149" class="sx-rbd-wire"/>
+<path d="M 999.5 149 L 1029.5 149" class="sx-rbd-wire"/>
+<circle cx="549.5" cy="149" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="802.5" cy="149" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="149" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1029.5" cy="149" r="6" class="sx-rbd-term" data-node="out"/>
+<text x="808.5" y="48" class="sx-rbd-mark">2/3</text>
+<g class="sx-rbd-block-g" data-id="rbd"><rect x="58" y="126" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="158" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="158" dy="-6.5">Triple-redundant</tspan><tspan x="158" dy="13">aircraft avionics</tspan></text></g>
+<g class="sx-rbd-block-g" data-id="PDU" data-r="0.9995"><rect x="302" y="126" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="402" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="402" dy="-6.5">Avionics power</tspan><tspan x="402" dy="13">distribution</tspan></text>
+<text x="402" y="187" class="sx-rbd-r" text-anchor="middle">R=0.9995</text></g>
+<g class="sx-rbd-block-g" data-id="FCC_A" data-r="0.998"><rect x="576" y="54" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="676" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="676" dy="-6.5">Flight control</tspan><tspan x="676" dy="13">computer A</tspan></text>
+<text x="676" y="115" class="sx-rbd-r" text-anchor="middle">R=0.998</text></g>
+<g class="sx-rbd-block-g" data-id="FCC_B" data-r="0.998"><rect x="576" y="126" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="676" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="676" dy="-6.5">Flight control</tspan><tspan x="676" dy="13">computer B</tspan></text>
+<text x="676" y="187" class="sx-rbd-r" text-anchor="middle">R=0.998</text></g>
+<g class="sx-rbd-block-g" data-id="FCC_C" data-r="0.998"><rect x="576" y="198" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="676" y="221" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="676" dy="-6.5">Flight control</tspan><tspan x="676" dy="13">computer C</tspan></text>
+<text x="676" y="259" class="sx-rbd-r" text-anchor="middle">R=0.998</text></g>
+<g class="sx-rbd-block-g" data-id="AIO" data-r="0.999"><rect x="846.5" y="126" width="153" height="46" rx="5" class="sx-rbd-block"/>
+<text x="923" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="923" dy="0">Actuator interface</tspan></text>
+<text x="923" y="187" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g></g></svg>

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 543.4 590" class="schematex-diagram schematex-genogram" width="543.4" height="590"><title>Genogram</title>
+<desc>Genogram diagram with 8 individuals across 3 generations</desc>
+<defs><clipPath id="schematex-genogram-clip-half-left-rect" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-left-circle" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-rect" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-circle" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="arthur" data-to="joan"><path d="M 163.6 60 L 243.6 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="joan"><path d="M 203.6 60 L 203.6 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="joan"><path d="M 83.6 141 L 323.6 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+joan" data-to="peter"><path d="M 83.6 141 L 83.6 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+joan" data-to="linda"><path d="M 323.6 141 L 323.6 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="peter" data-to="susan"><path d="M 103.6 226 L 183.6 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter" data-to="susan"><path d="M 143.6 226 L 143.6 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter" data-to="susan"><path d="M 83.6 307 L 203.6 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter+susan" data-to="caleb"><path d="M 83.6 307 L 83.6 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter+susan" data-to="emily"><path d="M 203.6 307 L 203.6 372" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="caleb" data-to="susan" data-relationship-type="close"><path d="M 83.6 392 Q 253.6 309 203.6 226" fill="none" stroke="#4caf50" stroke-width="3"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-conflict" data-from="peter" data-to="susan" data-relationship-type="conflict"><path d="M 83.6 246 Q 143.6 276 203.6 246" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 8,3,2,3;"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="arthur" transform="translate(143.6, 60)"><title>Arthur Morris (1945-2015)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" clip-path="url(#schematex-genogram-clip-half-left-rect)" fill="#FFB300" class="schematex-genogram-condition-fill schematex-genogram-condition-alcohol-use"/>
+<rect x="-20" y="-20" width="40" height="40" clip-path="url(#schematex-genogram-clip-half-right-rect)" fill="#5C6BC0" class="schematex-genogram-condition-fill schematex-genogram-condition-depression"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">70</text></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="joan" transform="translate(263.6, 60)"><title>Joan Morris (1947)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="caleb -cutoff- peter" transform="translate(423.6, 60)"><title>No contact since 2023</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="peter" transform="translate(83.6, 226)"><title>Peter Morris (1970)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" fill="#FFB300" class="schematex-genogram-condition-fill schematex-genogram-condition-alcohol-use"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="susan" transform="translate(203.6, 226)"><title>Susan Morris (1972)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="linda" transform="translate(323.6, 226)"><title>Linda Morris (1973)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-index-person" data-individual-id="caleb" transform="translate(83.6, 392)"><title>Caleb Morris (1996)</title>
+<rect x="-24" y="-24" width="48" height="48" class="schematex-genogram-index-border"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" fill="#F4511E" class="schematex-genogram-condition-fill schematex-genogram-condition-opioid-use"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="emily" transform="translate(203.6, 392)"><title>Emily Morris (1999)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="143.6" y="98" class="schematex-genogram-label" data-individual-id="arthur">Arthur Morris (1945–2015)</text>
+<text x="263.6" y="98" class="schematex-genogram-label" data-individual-id="joan">Joan Morris (b. 1947)</text>
+<text x="423.6" y="98" class="schematex-genogram-label" data-individual-id="caleb -cutoff- peter">No contact since 2023</text>
+<text x="83.6" y="264" class="schematex-genogram-label" data-individual-id="peter">Peter Morris (b. 1970)</text>
+<text x="203.6" y="264" class="schematex-genogram-label" data-individual-id="susan">Susan Morris (b. 1972)</text>
+<text x="323.6" y="264" class="schematex-genogram-label" data-individual-id="linda">Linda Morris (b. 1973)</text>
+<text x="83.6" y="430" class="schematex-genogram-label" data-individual-id="caleb">Caleb Morris (b. 1996)</text>
+<text x="203.6" y="430" class="schematex-genogram-label" data-individual-id="emily">Emily Morris (b. 1999)</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="514.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.unknown" data-legend-section="symbols"><polygon points="140.45,506 145.45,511 140.45,516 135.45,511" fill="#f5f5f5" stroke="#334155"/>
+<text x="159.45" y="514.5" class="schematex-legend-label">Unknown</text></g>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="231.45" y1="507" x2="239.45" y2="515" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="239.45" y1="507" x2="231.45" y2="515" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="254.45" y="514.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="532.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><line x1="130.45" y1="529" x2="150.45" y2="529" stroke="#4caf50" stroke-width="3" stroke-linecap="round"/>
+<text x="159.45" y="532.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="conflict" data-legend-section="relationships"><line x1="211.45" y1="529" x2="231.45" y2="529" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,3,2,3"/>
+<text x="240.45" y="532.5" class="schematex-legend-label">Conflict</text></g>
+<text x="16" y="550.5" class="schematex-legend-section">CONDITIONS</text>
+<g class="schematex-legend-row" data-legend-key="alcohol-use" data-legend-section="conditions"><rect x="130.45" y="542" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="130.45" y="542" width="10" height="10" fill="#FFB300"/>
+<text x="159.45" y="550.5" class="schematex-legend-label">Alcohol Use</text></g>
+<g class="schematex-legend-row" data-legend-key="depression" data-legend-section="conditions"><rect x="251.45" y="542" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="261.45" y="542" width="10" height="10" fill="#5C6BC0"/>
+<text x="280.45" y="550.5" class="schematex-legend-label">Depression</text></g>
+<g class="schematex-legend-row" data-legend-key="opioid-use" data-legend-section="conditions"><rect x="365.45" y="542" width="20" height="10" fill="#F4511E" stroke="#334155"/>
+<text x="394.45" y="550.5" class="schematex-legend-label">Opioid Use</text></g>
+<text x="16" y="568.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="562" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="130.45" y="560" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="568.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

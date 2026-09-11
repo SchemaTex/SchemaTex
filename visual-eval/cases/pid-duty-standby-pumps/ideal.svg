@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+<title>Duty and Standby Pump Set — Piping and Instrumentation Diagram</title>
+<rect width="1500" height="900" fill="white"/>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#18262f"/></marker>
+ <g id="gate"><path d="M-19-13L19 13V-13L-19 13Z" fill="white" stroke="#18262f" stroke-width="2.5"/><path d="M0 0V-27M-10-27H10" fill="none" stroke="#18262f" stroke-width="2"/></g>
+ <g id="check"><path d="M-18-13L14 0L-18 13Z" fill="white" stroke="#18262f" stroke-width="2.5"/><path d="M17-15V15" stroke="#18262f" stroke-width="3"/></g>
+ <g id="pump"><circle r="31" fill="white" stroke="#18262f" stroke-width="3"/><path d="M-15-21L22 0L-15 21Z" fill="white" stroke="#18262f" stroke-width="2.5"/><path d="M-19 26L-27 41H27L19 26" fill="none" stroke="#18262f" stroke-width="2.5"/></g>
+</defs>
+<style>
+ text{font-family:Helvetica,Arial,sans-serif;fill:#18262f} .pipe{fill:none;stroke:#18262f;stroke-width:3;stroke-linejoin:round}.minor{fill:none;stroke:#18262f;stroke-width:1.8;stroke-linejoin:round}.tag{font-size:21px;font-weight:700;text-anchor:middle}.label{font-size:18px;text-anchor:middle}.note{font-size:17px;fill:#52616b}.flow{stroke:#18262f;stroke-width:2;marker-end:url(#arrow)}
+</style>
+<text x="60" y="58" font-size="30" font-weight="700">Duty and Standby Pump Set</text>
+<text x="60" y="89" class="note">PIPING &amp; INSTRUMENTATION DIAGRAM · METRIC · FLOW LEFT TO RIGHT</text>
+<path d="M60 110H1440" stroke="#b5bec4"/>
+<!-- Separate source nozzles feed duty and standby. -->
+<path class="pipe" d="M240 370H505M567 370H1190M170 450V650H505M567 650H1110V310H1265V330"/>
+<!-- Small-bore return is routed above all process paths, without crossings. -->
+<path class="minor" d="M1000 370V180H170V330"/>
+<circle cx="1000" cy="370" r="5" fill="#18262f"/>
+<use href="#gate" transform="translate(715 180)"/>
+<text x="715" y="137" class="tag">XV-301</text>
+<text x="715" y="220" class="label">Minimum-flow Bypass</text>
+<text x="405" y="164" class="label">DN25 · MINIMUM FLOW RETURN</text>
+<path class="flow" d="M570 180H530"/>
+<path class="flow" d="M170 270V300"/>
+<!-- Atmospheric source tank: open top, visible liquid level. -->
+<path d="M100 330V450H240V330" fill="white" stroke="#18262f" stroke-width="3"/>
+<path d="M109 398H231M115 405H225" stroke="#82919a" stroke-width="1.5"/>
+<text x="170" y="487" class="tag">TK-101</text>
+<text x="170" y="514" class="label">Suction Source</text>
+<!-- Atmospheric destination: independent left and top inlet nozzles. -->
+<path d="M1190 330V450H1340V330" fill="white" stroke="#18262f" stroke-width="3"/>
+<path d="M1199 398H1331M1205 405H1325" stroke="#82919a" stroke-width="1.5"/>
+<text x="1265" y="487" class="tag">TK-102</text>
+<text x="1265" y="514" class="label">Discharge Header</text>
+<text x="1265" y="539" class="label">Destination</text>
+<!-- Duty path -->
+<use href="#gate" transform="translate(355 370)"/>
+<use href="#pump" transform="translate(536 370)"/>
+<use href="#gate" transform="translate(730 370)"/>
+<use href="#check" transform="translate(900 370)"/>
+<text x="355" y="313" class="tag">XV-101</text><text x="355" y="435" class="label">Suction isolation</text>
+<text x="536" y="309" class="tag">P-101</text><text x="536" y="445" class="tag">Duty Pump</text><text x="536" y="472" class="label">45 m³/h</text>
+<text x="730" y="313" class="tag">XV-102</text><text x="730" y="435" class="label">Discharge isolation</text>
+<text x="900" y="313" class="tag">NRV-101</text><text x="900" y="435" class="label">Non-return valve</text>
+<text x="437" y="351" class="label">DN100</text><text x="633" y="351" class="label">DN80</text>
+<path class="flow" d="M270 370H303M607 370H653M1030 370H1065"/>
+<!-- Standby path, same symbol order -->
+<use href="#gate" transform="translate(355 650)"/>
+<use href="#pump" transform="translate(536 650)"/>
+<use href="#gate" transform="translate(730 650)"/>
+<use href="#check" transform="translate(900 650)"/>
+<text x="355" y="593" class="tag">XV-201</text><text x="355" y="715" class="label">Suction isolation</text>
+<text x="536" y="589" class="tag">P-102</text><text x="536" y="725" class="tag">Standby Pump</text><text x="536" y="752" class="label">45 m³/h</text>
+<text x="730" y="593" class="tag">XV-202</text><text x="730" y="715" class="label">Discharge isolation</text>
+<text x="900" y="593" class="tag">NRV-201</text><text x="900" y="715" class="label">Non-return valve</text>
+<text x="437" y="631" class="label">DN100</text><text x="633" y="631" class="label">DN80</text>
+<text x="1010" y="686" class="label">DN80</text>
+<path class="flow" d="M270 650H303M607 650H653M1005 650H1050M1110 520V480M1170 310H1205"/>
+<!-- No connection where the standby riser crosses the duty pipe: white knockout and bridge. -->
+<path d="M1110 354V386" stroke="white" stroke-width="11"/>
+<path class="pipe" d="M1110 386V382C1130 382 1130 358 1110 358V354"/>
+<!-- Pressure instrument on the duty discharge header, separate capillary route below. -->
+<circle cx="1160" cy="370" r="4.5" fill="#18262f"/>
+<path d="M1160 370V576H1259" fill="none" stroke="#18262f" stroke-width="1.6" stroke-dasharray="7 5"/>
+<circle cx="1295" cy="576" r="36" fill="white" stroke="#18262f" stroke-width="2"/>
+<text x="1295" y="570" class="label" font-weight="700">PI</text><text x="1295" y="594" class="label" font-weight="700">101</text>
+<text x="1295" y="640" class="note" text-anchor="middle">PI-101 · Field mounted</text>
+<path d="M60 804H1440" stroke="#b5bec4"/>
+<path d="M70 842H125" class="pipe"/><text x="140" y="848" class="note">Process line</text>
+<path d="M330 842H385" class="minor"/><text x="400" y="848" class="note">Small-bore bypass</text>
+<path d="M640 842H695" stroke="#18262f" stroke-width="1.6" stroke-dasharray="7 5"/><text x="710" y="848" class="note">Capillary</text>
+<text x="970" y="848" class="note">● Connected branch · Bridge = no connection</text>
+</svg>

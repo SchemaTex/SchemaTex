@@ -1,0 +1,44 @@
+{
+  "id": "circuit-hvac-thermostat",
+  "type": "circuit",
+  "title": "HVAC thermostat control",
+  "goal": "Show a rated 24 V HVAC control circuit from transformer through thermostat terminals to furnace and condenser control devices.",
+  "rubric": [
+    {
+      "id": "control-transformer",
+      "severity": "blocker",
+      "must": "T1 CONTROL TRANSFORMER is visible with a 120 V : 24 V AC, 40 VA rating."
+    },
+    {
+      "id": "thermostat-terminals",
+      "severity": "blocker",
+      "must": "U1 THERMOSTAT visibly shows terminals R, W, Y, G, and C."
+    },
+    {
+      "id": "heat-relay",
+      "severity": "major",
+      "must": "A K1 FURNACE HEAT RELAY rated 24 V AC, 0.2 A is visible."
+    },
+    {
+      "id": "fan-relay",
+      "severity": "major",
+      "must": "A K2 FURNACE FAN RELAY rated 24 V AC, 0.2 A is visible."
+    },
+    {
+      "id": "compressor-contactor",
+      "severity": "major",
+      "must": "A K3 COMPRESSOR CONTACTOR with 24 V AC coil and 30 A contacts is visible."
+    },
+    {
+      "id": "condenser-unit",
+      "severity": "major",
+      "must": "U2 CONDENSER UNIT is visible with a 3 ton rating."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The control transformer steps 120 V to 24 V, the thermostat's R, W, Y, G and C terminals each go where the trade puts them — heat relay, fan relay, compressor contactor — and every load returns on the 24 V common, with hop marks on the crossings."
+  }
+}

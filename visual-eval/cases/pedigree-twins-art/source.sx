@@ -1,0 +1,13 @@
+pedigree "Twins and Assisted Reproduction Family"
+  I-1 [male, deceased]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, unaffected]
+
+  II-2 [female, unaffected]
+  II-1 -- II-2
+    III-1 [female, unaffected, twin-mz]
+    III-2 [female, unaffected, twin-mz]
+    III-3 [male, unaffected, twin-dz]
+    III-4 [female, unaffected, twin-dz]
+    III-5 [unknown, unaffected, donor-sperm, proband, label: "IVF donor-sperm child"]

@@ -1,0 +1,29 @@
+# Policyholder claim lodgement, assessment, and fraud investigation.
+usecase
+title: "Insurance Claims"
+system: "Claims Management Platform"
+actor: Policyholder as PH
+actor: Adjuster as AD (business)
+actor: "Fraud Analyst" as FA (business)
+actor: "Policy Administration" as PA (external)
+usecase: "Lodge Claim" as Lodge { 
+  extension point: suspected fraud
+}
+usecase: "Validate Policy" as Policy
+usecase: "Assess Damage" as Assess
+usecase: "Calculate Settlement" as Settle
+usecase: "Approve Claim" as Approve
+usecase: "Request Documents" as Docs
+usecase: "Investigate Fraud" as Fraud
+FA --|> AD
+PH -- Lodge
+PH -- Docs
+AD -- Assess
+AD -- Approve
+Lodge ..> Policy : «include»
+Lodge ..> Docs : «include»
+Assess ..> Settle : «include»
+Approve ..> Settle : «include»
+Policy -- PA
+Fraud <.. Lodge : «extend» [fraud indicators] (extension point: suspected fraud)
+FA -- Fraud

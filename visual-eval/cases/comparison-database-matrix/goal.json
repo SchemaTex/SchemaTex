@@ -1,0 +1,35 @@
+{
+  "id": "comparison-database-matrix",
+  "type": "comparison",
+  "variant": "matrix",
+  "title": "Database engine comparison",
+  "goal": "An architecture team can compare database engines for a multi-tenant SaaS.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "PostgreSQL, MongoDB, and DynamoDB are visibly compared in columns."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Transaction, schema, joins, and serverless criteria are visible as rows."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Yes, no, and partial capabilities are visually distinguishable."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The matrix grid enables row-by-row comparison."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "All labels are readable."
+    }
+  ],
+  "split": "train"
+}

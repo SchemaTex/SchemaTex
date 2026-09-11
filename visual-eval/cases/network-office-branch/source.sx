@@ -1,0 +1,44 @@
+# Branch office network with segmented staff, guest, and infrastructure access.
+network "North Harbor Branch Office"
+  layout: tiered
+  direction: tb
+  internet inet "Internet"
+  router r1 "ISP Router" tier: edge
+  firewall fw1 "NGFW" tier: edge
+  l3switch core "Core Switch" tier: core
+  switch sw1 "Access Switch 1" tier: access
+  switch sw2 "Access Switch 2" tier: access
+  ap ap1 "Reception Wi-Fi AP" tier: access
+  ap ap2 "Office Wi-Fi AP" tier: access
+  printer pr1 "Finance MFP" ip: 10.20.30.50
+  pc pc1 "Reception PC" ip: 10.20.10.21
+  pc pc2 "Finance PC" ip: 10.20.10.22
+  laptop lt1 "Sales Laptop" ip: 10.20.20.31
+  ipphone ph1 "Reception Phone" ip: 10.20.40.21
+  vlan staff "VLAN 10 Staff" {
+    pc1
+    pc2
+    lt1
+  }
+  vlan guest "VLAN 20 Guest Wi-Fi" {
+    ap1
+    ap2
+  }
+  vlan services "VLAN 30 Services" {
+    pr1
+  }
+  vlan voice "VLAN 40 Voice" {
+    ph1
+  }
+  inet -- r1 : wan "ISP 500M"
+  r1 -- fw1 : copper 1G
+  fw1 -- core : fiber 10G
+  core -- sw1 : trunk vlan: 10,20,30,40 1G
+  core -- sw2 : trunk vlan: 10,20,30,40 1G
+  sw1 -- ap1 : poe access vlan: 20 1G
+  sw2 -- ap2 : poe access vlan: 20 1G
+  sw1 -- pc1 : access vlan: 10 1G
+  sw1 -- pc2 : access vlan: 10 1G
+  sw2 -- lt1 : wireless
+  sw2 -- pr1 : access vlan: 30 1G
+  sw1 -- ph1 : poe access vlan: 40 1G

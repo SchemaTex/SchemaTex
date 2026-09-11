@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-current-mirror-bias",
+  "type": "circuit",
+  "title": "Current-mirror differential-pair bias",
+  "split": "holdout",
+  "goal": "A reader must be able to trace the diode-connected NPN current mirror into the common tail of a loaded differential pair.",
+  "rubric": [
+    {
+      "id": "mirror-base-node",
+      "severity": "blocker",
+      "must": "Q1 and Q2 are both labelled 2N3904 and visibly share one base node labelled BBASE."
+    },
+    {
+      "id": "diode-connected-reference",
+      "severity": "blocker",
+      "must": "Q1 has its collector visibly tied to its base, with RREF leading from VCC into that node."
+    },
+    {
+      "id": "tail-current",
+      "severity": "blocker",
+      "must": "Q2’s collector connects to the single TAIL node shared by the emitters of Q3 and Q4."
+    },
+    {
+      "id": "differential-inputs",
+      "severity": "major",
+      "must": "VIN+ and VIN− feed separate bases of the two differential-pair transistors."
+    },
+    {
+      "id": "collector-loads",
+      "severity": "major",
+      "must": "Each differential-pair collector has its own 2.2 kΩ load resistor to VCC."
+    },
+    {
+      "id": "supply-and-reference",
+      "severity": "minor",
+      "must": "The diagram visibly labels a 5 V VCC supply and a 4.3 kΩ, 1% reference resistor."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture reverses the transistor numbering and omits required node labels, device types, and component values."
+  }
+}

@@ -1,0 +1,38 @@
+# Assumptions: a campus uses a collapsed WAN edge and separate core, distribution, and access tiers.
+# VLANs separate student, staff, and wireless traffic while trunks carry the assigned VLANs.
+network "University campus three-tier network"
+  layout: tiered
+  direction: tb
+  internet inet "Research and Internet WAN"
+  router edge "Campus edge router" tier: edge
+  firewall fw "Perimeter firewall" tier: edge
+  l3switch core "Core switch pair" tier: core
+  l3switch dista "Science distribution" tier: distribution
+  l3switch distb "Library distribution" tier: distribution
+  switch acca "Science access switch" tier: access
+  switch accb "Library access switch" tier: access
+  ap campusap "Campus Wi-Fi AP" tier: access
+  pc lab "Science lab workstation" ip: 10.10.10.21
+  pc staffpc "Library staff workstation" ip: 10.10.20.21
+  laptop student "Student laptop" ip: 10.10.30.21
+  vlan science "VLAN 10 Science" {
+    lab
+  }
+  vlan staff "VLAN 20 Staff" {
+    staffpc
+  }
+  vlan wireless "VLAN 30 Wireless" {
+    campusap
+    student
+  }
+  inet -- edge : wan "10G"
+  edge -- fw : fiber 10G
+  fw -- core : fiber 10G
+  core -- dista : trunk vlan: 10,20,30 10G
+  core -- distb : trunk vlan: 10,20,30 10G
+  dista -- acca : trunk vlan: 10,30 1G
+  distb -- accb : trunk vlan: 20,30 1G
+  acca -- lab : access vlan: 10 1G
+  accb -- staffpc : access vlan: 20 1G
+  acca -- campusap : poe access vlan: 30 1G
+  campusap -- student : wireless

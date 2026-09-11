@@ -1,0 +1,39 @@
+{
+  "id": "rbd-redundant-network-path",
+  "type": "rbd",
+  "title": "Redundant network service path",
+  "goal": "Show two complete WAN paths behind shared network single points of failure.",
+  "rubric": [
+    {
+      "id": "shared-spofs",
+      "severity": "blocker",
+      "must": "Core switch and perimeter firewall are visibly in series ahead of the redundant WAN paths and marked as single points of failure."
+    },
+    {
+      "id": "dual-paths",
+      "severity": "blocker",
+      "must": "Two parallel, complete paths are visible, each containing a router and carrier circuit."
+    },
+    {
+      "id": "series-endpoint",
+      "severity": "major",
+      "must": "A network service endpoint visibly follows the rejoined WAN paths."
+    },
+    {
+      "id": "reliability-labels",
+      "severity": "major",
+      "must": "Every network block visibly shows its reliability."
+    },
+    {
+      "id": "input-output",
+      "severity": "major",
+      "must": "The diagram visibly has input and output terminals around the service path."
+    },
+    {
+      "id": "parallel-rails",
+      "severity": "minor",
+      "must": "The two WAN alternatives are visually separated on parallel rails and rejoin cleanly."
+    }
+  ],
+  "split": "train"
+}

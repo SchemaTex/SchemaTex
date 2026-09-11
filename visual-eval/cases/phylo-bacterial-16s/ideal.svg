@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+  <title>Bacterial 16S rRNA Tree</title>
+  <rect width="1200" height="650" fill="#ffffff"/>
+  <style>
+    text { font-family: Georgia, 'Times New Roman', serif; fill: #20262d; }
+    .branch { fill: none; stroke: #303840; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    .proteo { stroke: #1565C0; }
+    .taxon { font-size: 25px; font-style: italic; }
+  </style>
+  <text x="60" y="65" font-size="34">Bacterial 16S rRNA Tree</text>
+
+  <!-- Branch lengths: 1 substitution/site = 1400 drawing units.
+       Root stem 0.18; sister-clade stems 0.12 and 0.11. -->
+  <g class="branch">
+    <path d="M60 321.25 H312"/>
+    <path d="M312 172.5 V470"/>
+    <path d="M312 342.5 H466"/>
+    <path d="M466 300 V385"/>
+    <path d="M466 300 H648"/>
+    <path d="M466 385 H662"/>
+    <path d="M312 470 H662"/>
+  </g>
+  <g class="branch proteo">
+    <path d="M312 172.5 H480"/>
+    <path d="M480 130 V215"/>
+    <path d="M480 130 H592"/>
+    <path d="M480 215 H606"/>
+  </g>
+
+  <text x="498" y="100" font-size="23" style="fill:#1565C0">Proteobacteria</text>
+  <text class="taxon" x="610" y="138">Escherichia coli</text>
+  <text class="taxon" x="624" y="223">Pseudomonas aeruginosa</text>
+  <text class="taxon" x="666" y="308">Bacillus subtilis</text>
+  <text class="taxon" x="680" y="393">Staphylococcus aureus</text>
+  <text class="taxon" x="680" y="478">Mycobacterium tuberculosis</text>
+
+  <g class="branch" stroke-width="2">
+    <path d="M60 558 H200 M60 551 V565 M200 551 V565"/>
+  </g>
+  <text x="130" y="595" text-anchor="middle" font-size="21">0.10</text>
+  <text x="223" y="565" font-size="22">substitutions/site</text>
+</svg>

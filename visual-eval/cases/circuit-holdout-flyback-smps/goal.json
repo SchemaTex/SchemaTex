@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-flyback-smps",
+  "type": "circuit",
+  "title": "Isolated flyback SMPS",
+  "split": "holdout",
+  "goal": "A reader must be able to trace mains rectification, primary switching, isolated secondary rectification, and optocoupler feedback regulation.",
+  "rubric": [
+    {
+      "id": "bridge-and-bulk",
+      "severity": "blocker",
+      "must": "Four diode symbols marked 1N4007 form a bridge from AC MAINS to a 47 µF, 400 V bulk capacitor."
+    },
+    {
+      "id": "primary-switch-path",
+      "severity": "blocker",
+      "must": "The transformer primary connects from the high-voltage rail to the STP7NK80Z N-channel MOSFET and its 0.33 Ω current-sense return."
+    },
+    {
+      "id": "isolated-secondary",
+      "severity": "blocker",
+      "must": "A transformer symbol separates the primary nets from VSEC/GNDSEC, followed by an SS34 Schottky rectifier and 470 µF output capacitor."
+    },
+    {
+      "id": "regulated-output",
+      "severity": "major",
+      "must": "The output is visibly labelled by the 10 Ω, 5 W load and the secondary return is distinct from the grounded primary return."
+    },
+    {
+      "id": "feedback-crossing",
+      "severity": "blocker",
+      "must": "The TL431A divider feeds an LTV-817 optocoupler symbol whose transistor side returns to the UC3843 feedback connection."
+    },
+    {
+      "id": "controller-label",
+      "severity": "major",
+      "must": "The PWM controller block is visibly labelled UC3843 with GATE, CS, and FB connections."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG is the closer target because it includes nearly all required components, values, and controller labels, although its wiring contains serious errors that must be corrected."
+  }
+}

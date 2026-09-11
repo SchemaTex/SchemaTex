@@ -1,0 +1,22 @@
+%% Architecture decision map for a service platform.
+# Software Architecture Decisions
+## System Boundaries
+- Modular monolith
+  - Extract only proven hotspots
+- Public API
+  - Versioned contracts
+## Data and Integration
+- PostgreSQL
+  - Transactional source of truth
+- Event bus
+  - Asynchronous domain events
+## Reliability
+- Observability
+  - Traces, metrics, and logs
+- Resilience
+  - Timeouts and retries
+## Security
+- Identity
+  - OAuth 2.0 and OIDC
+- Secrets
+  - Managed vault

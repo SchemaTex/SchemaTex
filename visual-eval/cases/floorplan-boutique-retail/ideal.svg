@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1050" width="1080" height="1050">
+<title>Boutique Retail Shop — floor plan</title>
+<defs>
+<style>
+text{font-family: 'Helvetica Neue',Helvetica,sans-serif;fill:#23333c} .wall{fill:none;stroke:#26343b;stroke-width:18;stroke-linejoin:miter}.partition{stroke:#26343b;stroke-width:9;fill:none}.fixture{fill:#edf1f2;stroke:#526570;stroke-width:1.8}.detail{fill:none;stroke:#6e808a;stroke-width:1.3}.door{fill:none;stroke:#344d5b;stroke-width:1.8}.label{font-size:14px;text-anchor:middle}.room{font-size:20px;font-weight:600;letter-spacing:1px;text-anchor:middle}.dim{font-size:13px;fill:#687981;text-anchor:middle}
+</style>
+<g id="rack"><rect class="fixture" width="75" height="75" rx="2"/><path class="detail" d="M10 16H65 M10 59H65 M18 11V24 M28 11V24 M38 11V24 M48 11V24 M58 11V24 M18 52V64 M28 52V64 M38 52V64 M48 52V64 M58 52V64"/><text class="label" x="37.5" y="37" style="font-size:12px">Feature</text><text class="label" x="37.5" y="51" style="font-size:12px">Rack</text></g>
+<g id="cubicle"><path class="fixture" d="M0 138V0H75V138Z"/><path d="M8 138H67" stroke="white" stroke-width="4"/><path class="detail" d="M8 138q5 -9 10 0t10 0t10 0t10 0t10 0t9 0"/><rect x="8" y="9" width="59" height="15" class="fixture"/><path class="detail" d="M69 36V99"/></g>
+</defs>
+<rect width="1080" height="1050" fill="white"/>
+<text x="110" y="54" font-size="28" font-weight="600">Boutique Retail Shop</text>
+<text x="110" y="80" font-size="14" fill="#687981">FLOOR PLAN · METRES</text>
+<!-- north -->
+<path d="M974 103V51M974 43l-8 18 8-4 8 4Z" fill="#26343b" stroke="#26343b" stroke-width="1.5"/>
+<text x="974" y="30" font-size="17" text-anchor="middle">N</text>
+<!-- overall dimension -->
+<path d="M110 116H950 M110 107V125 M950 107V125" class="detail"/>
+<text x="530" y="108" class="dim">14.00 m</text>
+<!-- plan: 60 pixels per metre; origin NW 110,150 -->
+<path class="wall" d="M110 949.8V150H950V949.8H110"/>
+<path class="partition" d="M740 150V949.8 M740 570H950"/>
+<!-- sales / fitting doorway at 45% of 7m -->
+<path d="M740 312V366" stroke="white" stroke-width="12"/>
+<path class="door" d="M740 312H686 M686 312A54 54 0 0 0 740 366"/>
+<!-- sales / stock doorway at 55% of 6.33m -->
+<path d="M740 751.9V805.9" stroke="white" stroke-width="12"/>
+<path class="door" d="M740 805.9H686 M686 805.9A54 54 0 0 1 740 751.9"/>
+<!-- south shopfront windows and entry -->
+<path d="M152 949.8H308 M389 949.8H461 M503 949.8H659" stroke="white" stroke-width="21"/>
+<g fill="#e6f3f7" stroke="#467a91" stroke-width="1.7">
+<rect x="152" y="943.8" width="156" height="12"/><rect x="503" y="943.8" width="156" height="12"/>
+</g>
+<path d="M152 949.8H308 M503 949.8H659" stroke="#467a91" stroke-width="1.3"/>
+<path class="door" d="M461 949.8V1021.8 M389 949.8A72 72 0 0 0 461 1021.8"/>
+<text x="230" y="981" class="label">Shopfront A · 2.60 m</text>
+<text x="581" y="981" class="label">Shopfront B · 2.60 m</text>
+<text x="425" y="1040" class="label">ENTRY · 1.20 m</text>
+<!-- sales fixtures -->
+<rect x="584" y="210" width="108" height="45" class="fixture"/>
+<path class="detail" d="M592 220H684"/>
+<text x="638" y="243" class="label">Checkout</text>
+<rect x="506" y="273" width="162" height="60" fill="#fafcfb" stroke="#6d8980" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="587" y="298" class="label">Checkout Queue</text>
+<text x="587" y="318" class="label" style="font-size:11px;letter-spacing:1px">KEEP CLEAR</text>
+<rect x="131" y="177" width="33" height="498" class="fixture"/>
+<path class="detail" d="M142 177V675 M131 232H164 M131 287H164 M131 342H164 M131 397H164 M131 452H164 M131 507H164 M131 562H164 M131 617H164"/>
+<text x="185" y="426" class="label" transform="rotate(-90 185 426)">Perimeter Display</text>
+<rect x="185" y="858" width="402" height="33" class="fixture"/>
+<path class="detail" d="M185 869H587 M242 858V891 M299 858V891 M356 858V891 M413 858V891 M470 858V891 M527 858V891"/>
+<text x="386" y="843" class="label">Wall Display</text>
+<use href="#rack" x="236" y="336"/><use href="#rack" x="383" y="336"/>
+<use href="#rack" x="236" y="531"/><use href="#rack" x="383" y="531"/>
+<text x="420" y="720" class="room">SALES FLOOR</text>
+<text x="420" y="744" class="dim">10.50 × 13.33 m</text>
+<!-- enclosed fitting-room block, three individual booths -->
+<use href="#cubicle" x="761" y="183"/><use href="#cubicle" x="854" y="183"/><use href="#cubicle" x="761" y="372"/>
+<text x="798.5" y="257" class="label">Try On 1</text>
+<text x="891.5" y="257" class="label">Try On 2</text>
+<text x="798.5" y="446" class="label">Try On 3</text>
+<text x="845" y="539" class="room" style="font-size:17px">FITTING ROOMS</text>
+<text x="845" y="557" class="dim">3.50 × 7.00 m</text>
+<!-- stock shelves -->
+<rect x="761" y="597" width="42" height="288" class="fixture"/><rect x="833" y="597" width="42" height="288" class="fixture"/>
+<path class="detail" d="M761 645H803 M761 693H803 M761 741H803 M761 789H803 M761 837H803 M833 645H875 M833 693H875 M833 741H875 M833 789H875 M833 837H875"/>
+<text x="784" y="705" class="label" transform="rotate(-90 784 705)" style="font-size:12px">Stock Shelves</text>
+<text x="856" y="741" class="label" transform="rotate(-90 856 741)" style="font-size:12px">Stock Shelves</text>
+<text x="845" y="912" class="room" style="font-size:18px">STOCKROOM</text>
+<text x="845" y="934" class="dim">3.50 × 6.33 m</text>
+<!-- vertical extent -->
+<path d="M72 150V949.8 M63 150H81 M63 949.8H81" class="detail"/>
+<text x="59" y="550" class="dim" transform="rotate(-90 59 550)">13.33 m</text>
+</svg>

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920">
+<title>NPN Common-Emitter Audio Amplifier</title>
+<rect width="1400" height="920" fill="white"/>
+<style>
+.w{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.dot{fill:#17212b}.t{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:23px}.name{font-weight:600}.small{font-size:19px}.head{font-size:30px;font-weight:600}
+</style>
+<text class="t head" x="70" y="60">NPN Common-Emitter Audio Amplifier</text>
+<!-- Supply and ground buses -->
+<path class="w" d="M120 140H1250 M120 780H1250"/>
+<text class="t name" x="630" y="121">VCC · +12 V</text>
+<path class="w" d="M650 780V805 M627 805H673 M635 814H665 M644 823H656"/>
+<text class="t small" x="683" y="820">GND</text>
+<!-- V1 DC source -->
+<path class="w" d="M120 140V421 M120 499V780"/>
+<circle class="w" cx="120" cy="460" r="39"/>
+<path class="w" d="M110 443H130 M120 433V453 M110 478H130"/>
+<text class="t name" x="60" y="548">V1</text>
+<text class="t" x="60" y="578">12 V</text>
+<!-- Supply decoupling -->
+<path class="w" d="M1250 140V436 M1224 436H1276 M1224 452H1276 M1250 452V780"/>
+<text class="t name" x="1125" y="495">CS</text>
+<text class="t" x="1125" y="525">100 nF</text>
+<!-- Input source and coupling capacitor -->
+<circle class="w" cx="280" cy="640" r="35"/>
+<path class="w" d="M259 640C266 614 273 614 280 640S294 666 301 640 M280 605V460H357 M357 434V486 M373 434V486 M373 460H620 M280 675V780"/>
+<text class="t name" x="188" y="708">Input</text>
+<text class="t small" x="188" y="738">5 mV, 1 kHz</text>
+<text class="t name" x="330" y="390">CIN</text>
+<text class="t" x="330" y="420">1 µF</text>
+<text class="t small" x="287" y="495">IN</text>
+<!-- Base bias divider, each resistor interrupts its branch -->
+<path class="w" d="M490 140V240 L480 250 500 268 480 286 500 304 480 322 500 340 490 350 V460 M490 460V590 L480 600 500 618 480 636 500 654 480 672 500 690 490 700 V780"/>
+<text class="t name" x="520" y="280">R1</text>
+<text class="t" x="520" y="311">47 kΩ</text>
+<text class="t name" x="520" y="630">R2</text>
+<text class="t" x="520" y="661">10 kΩ</text>
+<!-- Q1 NPN: base left, collector upper right, emitter lower right -->
+<circle class="w" cx="675" cy="460" r="65"/>
+<path class="w" d="M620 460H648 M648 424V496 M648 443L710 402V360 M648 477L710 521V560"/>
+<!-- Outward emitter arrow -->
+<path class="dot" d="M698 513L675 508L686 493Z"/>
+<text class="t name" x="773" y="445">Q1</text>
+<text class="t" x="773" y="476">2N3904</text>
+<text class="t small" x="614" y="418">B</text>
+<text class="t small" x="726" y="396">C</text>
+<text class="t small" x="724" y="545">E</text>
+<!-- Collector resistor -->
+<path class="w" d="M710 140V200 L700 210 720 228 700 246 720 264 700 282 720 300 710 310 V360"/>
+<text class="t name" x="752" y="245">RC</text>
+<text class="t" x="752" y="276">4.7 kΩ</text>
+<!-- Output coupling, with no bypass wire -->
+<path class="w" d="M710 360H902 M902 334V386 M918 334V386 M918 360H1050V565 L1040 575 1060 593 1040 611 1060 629 1040 647 1060 665 1050 675 V780"/>
+<text class="t name" x="871" y="293">COUT</text>
+<text class="t" x="878" y="324">10 µF</text>
+<text class="t small" x="993" y="342">OUT</text>
+<text class="t name" x="1080" y="605">RL</text>
+<text class="t" x="1080" y="636">47 kΩ</text>
+<!-- Emitter resistor and separate polarized bypass capacitor branch -->
+<path class="w" d="M710 560V590 L700 600 720 618 700 636 720 654 700 672 720 690 710 700 V780 M710 560H870V629 M845 629H895 M845 649Q870 637 895 649 M870 644V780"/>
+<text class="t name" x="621" y="635">RE</text>
+<text class="t" x="621" y="666">1 kΩ</text>
+<text class="t" x="832" y="615">+</text>
+<text class="t name" x="909" y="641">CE</text>
+<text class="t" x="909" y="672">100 µF</text>
+<!-- Explicit junction dots at every branch attachment -->
+<g class="dot">
+<circle cx="490" cy="140" r="5"/><circle cx="710" cy="140" r="5"/>
+<circle cx="490" cy="460" r="5"/><circle cx="710" cy="360" r="5"/>
+<circle cx="710" cy="560" r="5"/>
+<circle cx="280" cy="780" r="5"/><circle cx="490" cy="780" r="5"/>
+<circle cx="650" cy="780" r="5"/><circle cx="710" cy="780" r="5"/>
+<circle cx="870" cy="780" r="5"/><circle cx="1050" cy="780" r="5"/>
+</g>
+<text class="t small" x="70" y="879">Single-supply amplifier · Ground symbols and bottom rail represent the same GND net</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1080" viewBox="0 0 1000 1080">
+  <title>Claims — Event-driven process chain</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#111"/></marker>
+  </defs>
+  <rect width="1000" height="1080" fill="#fff"/>
+  <g fill="#111" font-family="Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="500" y="76" font-size="52">Claims</text>
+    <text x="500" y="120" font-size="27">Event-driven process chain</text>
+  </g>
+  <g fill="none" stroke="#111" stroke-width="2.4" marker-end="url(#arrow)">
+    <path d="M500 264 V324"/>
+    <path d="M500 414 V470"/>
+    <path d="M470 500 H270 V584"/>
+    <path d="M530 500 H730 V584"/>
+    <path d="M270 674 V744"/>
+    <path d="M730 674 V744"/>
+    <path d="M270 834 V904"/>
+    <path d="M730 834 V904"/>
+  </g>
+  <g fill="#fff" stroke="#111" stroke-width="2.4">
+    <path d="M415 174 H585 L615 219 L585 264 H415 L385 219 Z"/>
+    <rect x="400" y="324" width="200" height="90" rx="13"/>
+    <circle cx="500" cy="500" r="30"/>
+    <path d="M479 479 L521 521 M479 521 L521 479" fill="none"/>
+    <path d="M185 584 H355 L385 629 L355 674 H185 L155 629 Z"/>
+    <path d="M645 584 H815 L845 629 L815 674 H645 L615 629 Z"/>
+    <rect x="170" y="744" width="200" height="90" rx="13"/>
+    <rect x="630" y="744" width="200" height="90" rx="13"/>
+    <path d="M185 904 H355 L385 949 L355 994 H185 L155 949 Z"/>
+    <path d="M645 904 H815 L845 949 L815 994 H645 L615 949 Z"/>
+  </g>
+  <g fill="#111" font-family="Helvetica, Arial, sans-serif" font-size="25" text-anchor="middle">
+    <text x="500" y="212"><tspan x="500">Request</tspan><tspan x="500" dy="30">received</tspan></text>
+    <text x="500" y="362"><tspan x="500">Assess</tspan><tspan x="500" dy="30">request</tspan></text>
+    <text x="270" y="622"><tspan x="270">Request</tspan><tspan x="270" dy="30">approved</tspan></text>
+    <text x="730" y="622"><tspan x="730">Request</tspan><tspan x="730" dy="30">rejected</tspan></text>
+    <text x="270" y="782"><tspan x="270">Perform</tspan><tspan x="270" dy="30">service</tspan></text>
+    <text x="730" y="782"><tspan x="730">Notify</tspan><tspan x="730" dy="30">requester</tspan></text>
+    <text x="270" y="942"><tspan x="270">Service</tspan><tspan x="270" dy="30">completed</tspan></text>
+    <text x="730" y="942"><tspan x="730">Request</tspan><tspan x="730" dy="30">closed</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1166" height="281" viewBox="0 0 1166 281" role="img" aria-label="Reliability block diagram" data-diagram-type="rbd"><title>Reliability block diagram</title>
+<desc>Reliability block diagram: 7 blocks. System reliability n/a — missing R on rbd.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1166" height="281" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="563" y="18" class="sx-rbd-rsys" text-anchor="middle">System reliability: n/a — missing R on rbd</text>
+<path d="M 633 77 L 677 77" class="sx-rbd-wire"/>
+<path d="M 488.5 113 L 488.5 77 L 515 77" class="sx-rbd-wire"/>
+<path d="M 837 77 L 863.5 77 L 863.5 113" class="sx-rbd-wire"/>
+<path d="M 633 149 L 677 149" class="sx-rbd-wire"/>
+<path d="M 488.5 113 L 488.5 149 L 515 149" class="sx-rbd-wire"/>
+<path d="M 837 149 L 863.5 149 L 863.5 113" class="sx-rbd-wire"/>
+<path d="M 441 113 L 488.5 113" class="sx-rbd-wire"/>
+<path d="M 863.5 113 L 907.5 113" class="sx-rbd-wire"/>
+<path d="M 231 113 L 275 113" class="sx-rbd-wire"/>
+<path d="M 28 113 L 58 113" class="sx-rbd-wire"/>
+<path d="M 1067.5 113 L 1097.5 113" class="sx-rbd-wire"/>
+<circle cx="488.5" cy="113" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="863.5" cy="113" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="113" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1097.5" cy="113" r="6" class="sx-rbd-term" data-node="out"/>
+<g class="sx-rbd-block-g" data-id="rbd"><rect x="58" y="90" width="173" height="46" rx="5" class="sx-rbd-block"/>
+<text x="144.5" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="144.5" dy="-6.5">Subsea control</tspan><tspan x="144.5" dy="13">system</tspan></text></g>
+<g class="sx-rbd-block-g" data-id="HPU" data-r="0.985"><rect x="275" y="90" width="166" height="46" rx="5" class="sx-rbd-block"/>
+<text x="358" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="358" dy="-6.5">Hydraulic power</tspan><tspan x="358" dy="13">unit</tspan></text>
+<text x="358" y="151" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="POD_A" data-r="0.96"><rect x="515" y="54" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="574" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="574" dy="0">Control pod A</tspan></text>
+<text x="574" y="115" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g>
+<g class="sx-rbd-block-g" data-id="UMB_A" data-r="0.985"><rect x="677" y="54" width="160" height="46" rx="5" class="sx-rbd-block"/>
+<text x="757" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="757" dy="-6.5">Umbilical channel</tspan><tspan x="757" dy="13">A</tspan></text>
+<text x="757" y="115" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="POD_B" data-r="0.96"><rect x="515" y="126" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="574" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="574" dy="0">Control pod B</tspan></text>
+<text x="574" y="187" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g>
+<g class="sx-rbd-block-g" data-id="UMB_B" data-r="0.985"><rect x="677" y="126" width="160" height="46" rx="5" class="sx-rbd-block"/>
+<text x="757" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="757" dy="-6.5">Umbilical channel</tspan><tspan x="757" dy="13">B</tspan></text>
+<text x="757" y="187" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="TREE" data-r="0.975"><rect x="907.5" y="90" width="160" height="46" rx="5" class="sx-rbd-block"/>
+<text x="987.5" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="987.5" dy="-6.5">Tree valve</tspan><tspan x="987.5" dy="13">actuator</tspan></text>
+<text x="987.5" y="151" class="sx-rbd-r" text-anchor="middle">R=0.975</text></g></g></svg>

@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="471.54999999999995" height="824" viewBox="0 0 471.54999999999995 824"><title>Conveyor Start Stop and Jog</title>
+<desc>PLC ladder logic diagram with 6 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="235.77499999999998" y="20" class="lt-ladder-title" text-anchor="middle">Conveyor Start Stop and Jog</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="794" class="lt-ladder-rail"/>
+<line x1="441.54999999999995" y1="0" x2="441.54999999999995" y2="794" class="lt-ladder-rail"/>
+<text x="54" y="152" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Start-stop seal-in run command —</text>
+<text x="54" y="263" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="227" class="lt-ladder-comment">— Jog command bypasses seal-in —</text>
+<text x="54" y="399" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="327" class="lt-ladder-comment">— Motor contactor from run or jog —</text>
+<text x="54" y="510" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="474" class="lt-ladder-comment">— Run lamp follows motor contactor —</text>
+<text x="54" y="610" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="574" class="lt-ladder-comment">— Fault lamp on overload —</text>
+<text x="54" y="710" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="674" class="lt-ladder-comment">— Stop clears held run command —</text>
+<path d="M 60 149 L 81.3 149" class="lt-ladder-wire"/>
+<path d="M 113.3 149 L 158.2 149" class="lt-ladder-wire"/>
+<path d="M 190.2 149 L 229.79999999999998 149" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 101 L 229.79999999999998 197" class="lt-ladder-wire"/>
+<path d="M 334.9 101 L 334.9 197" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 124 L 266.35 124" class="lt-ladder-wire"/>
+<path d="M 298.35 124 L 334.9 124" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 179 L 266.34999999999997 179" class="lt-ladder-wire"/>
+<path d="M 298.34999999999997 179 L 334.9 179" class="lt-ladder-wire"/>
+<path d="M 334.9 149 L 371.45 149" class="lt-ladder-wire"/>
+<path d="M 60 260 L 81.3 260" class="lt-ladder-wire"/>
+<path d="M 113.3 260 L 158.2 260" class="lt-ladder-wire"/>
+<path d="M 190.2 260 L 232.79999999999998 260" class="lt-ladder-wire"/>
+<path d="M 264.79999999999995 260 L 304.34999999999997 260" class="lt-ladder-wire"/>
+<path d="M 60 396 L 81.3 396" class="lt-ladder-wire"/>
+<path d="M 113.3 396 L 158.2 396" class="lt-ladder-wire"/>
+<path d="M 190.2 396 L 229.79999999999998 396" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 348 L 229.79999999999998 444" class="lt-ladder-wire"/>
+<path d="M 334.9 348 L 334.9 444" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 371 L 266.34999999999997 371" class="lt-ladder-wire"/>
+<path d="M 298.34999999999997 371 L 334.9 371" class="lt-ladder-wire"/>
+<path d="M 229.79999999999998 426 L 266.34999999999997 426" class="lt-ladder-wire"/>
+<path d="M 298.34999999999997 426 L 334.9 426" class="lt-ladder-wire"/>
+<path d="M 334.9 396 L 377.54999999999995 396" class="lt-ladder-wire"/>
+<path d="M 60 507 L 102.65 507" class="lt-ladder-wire"/>
+<path d="M 134.65 507 L 185.65 507" class="lt-ladder-wire"/>
+<path d="M 60 607 L 99.6 607" class="lt-ladder-wire"/>
+<path d="M 131.6 607 L 194.79999999999998 607" class="lt-ladder-wire"/>
+<path d="M 60 707 L 81.3 707" class="lt-ladder-wire"/>
+<path d="M 113.3 707 L 155.14999999999998 707" class="lt-ladder-wire"/>
+<path d="M 403.45 149 L 441.54999999999995 149" class="lt-ladder-wire"/>
+<path d="M 336.34999999999997 260 L 441.54999999999995 260" class="lt-ladder-wire"/>
+<path d="M 409.54999999999995 396 L 441.54999999999995 396" class="lt-ladder-wire"/>
+<path d="M 217.65 507 L 441.54999999999995 507" class="lt-ladder-wire"/>
+<path d="M 226.79999999999998 607 L 441.54999999999995 607" class="lt-ladder-wire"/>
+<path d="M 187.14999999999998 707 L 441.54999999999995 707" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="StopPB"><line x1="81.3" y1="149" x2="85.3" y2="149" class="lt-ladder-wire"/>
+<line x1="109.3" y1="149" x2="113.3" y2="149" class="lt-ladder-wire"/>
+<line x1="85.3" y1="137" x2="85.3" y2="161" class="lt-ladder-element"/>
+<line x1="109.3" y1="137" x2="109.3" y2="161" class="lt-ladder-element"/>
+<line x1="87.3" y1="159" x2="107.3" y2="139" class="lt-ladder-element"/>
+<text x="97.3" y="133" class="lt-ladder-tag">StopPB</text></g>
+<g data-element="contact" data-tag="OverloadTrip"><line x1="158.2" y1="149" x2="162.2" y2="149" class="lt-ladder-wire"/>
+<line x1="186.2" y1="149" x2="190.2" y2="149" class="lt-ladder-wire"/>
+<line x1="162.2" y1="137" x2="162.2" y2="161" class="lt-ladder-element"/>
+<line x1="186.2" y1="137" x2="186.2" y2="161" class="lt-ladder-element"/>
+<line x1="164.2" y1="159" x2="184.2" y2="139" class="lt-ladder-element"/>
+<text x="174.2" y="133" class="lt-ladder-tag">OverloadTrip</text></g>
+<g data-element="contact" data-tag="StartPB"><line x1="266.35" y1="124" x2="270.35" y2="124" class="lt-ladder-wire"/>
+<line x1="294.35" y1="124" x2="298.35" y2="124" class="lt-ladder-wire"/>
+<line x1="270.35" y1="112" x2="270.35" y2="136" class="lt-ladder-element"/>
+<line x1="294.35" y1="112" x2="294.35" y2="136" class="lt-ladder-element"/>
+<text x="282.35" y="108" class="lt-ladder-tag">StartPB</text></g>
+<g data-element="contact" data-tag="ConveyorRun"><line x1="266.34999999999997" y1="179" x2="270.34999999999997" y2="179" class="lt-ladder-wire"/>
+<line x1="294.34999999999997" y1="179" x2="298.34999999999997" y2="179" class="lt-ladder-wire"/>
+<line x1="270.34999999999997" y1="167" x2="270.34999999999997" y2="191" class="lt-ladder-element"/>
+<line x1="294.34999999999997" y1="167" x2="294.34999999999997" y2="191" class="lt-ladder-element"/>
+<text x="282.34999999999997" y="163" class="lt-ladder-tag">ConveyorRun</text></g>
+<g data-element="coil" data-tag="ConveyorRun"><path d="M 377.45 137 A 10 12 0 0 0 377.45 161" class="lt-ladder-coil"/>
+<path d="M 397.45 137 A 10 12 0 0 1 397.45 161" class="lt-ladder-coil"/>
+<line x1="371.45" y1="149" x2="377.45" y2="149" class="lt-ladder-wire"/>
+<line x1="397.45" y1="149" x2="403.45" y2="149" class="lt-ladder-wire"/>
+<text x="387.45" y="133" class="lt-ladder-tag">ConveyorRun</text></g>
+<g data-element="contact" data-tag="StopPB"><line x1="81.3" y1="260" x2="85.3" y2="260" class="lt-ladder-wire"/>
+<line x1="109.3" y1="260" x2="113.3" y2="260" class="lt-ladder-wire"/>
+<line x1="85.3" y1="248" x2="85.3" y2="272" class="lt-ladder-element"/>
+<line x1="109.3" y1="248" x2="109.3" y2="272" class="lt-ladder-element"/>
+<line x1="87.3" y1="270" x2="107.3" y2="250" class="lt-ladder-element"/>
+<text x="97.3" y="244" class="lt-ladder-tag">StopPB</text></g>
+<g data-element="contact" data-tag="OverloadTrip"><line x1="158.2" y1="260" x2="162.2" y2="260" class="lt-ladder-wire"/>
+<line x1="186.2" y1="260" x2="190.2" y2="260" class="lt-ladder-wire"/>
+<line x1="162.2" y1="248" x2="162.2" y2="272" class="lt-ladder-element"/>
+<line x1="186.2" y1="248" x2="186.2" y2="272" class="lt-ladder-element"/>
+<line x1="164.2" y1="270" x2="184.2" y2="250" class="lt-ladder-element"/>
+<text x="174.2" y="244" class="lt-ladder-tag">OverloadTrip</text></g>
+<g data-element="contact" data-tag="JogPB"><line x1="232.79999999999998" y1="260" x2="236.79999999999998" y2="260" class="lt-ladder-wire"/>
+<line x1="260.79999999999995" y1="260" x2="264.79999999999995" y2="260" class="lt-ladder-wire"/>
+<line x1="236.79999999999998" y1="248" x2="236.79999999999998" y2="272" class="lt-ladder-element"/>
+<line x1="260.79999999999995" y1="248" x2="260.79999999999995" y2="272" class="lt-ladder-element"/>
+<text x="248.79999999999998" y="244" class="lt-ladder-tag">JogPB</text></g>
+<g data-element="coil" data-tag="ConveyorJog"><path d="M 310.34999999999997 248 A 10 12 0 0 0 310.34999999999997 272" class="lt-ladder-coil"/>
+<path d="M 330.34999999999997 248 A 10 12 0 0 1 330.34999999999997 272" class="lt-ladder-coil"/>
+<line x1="304.34999999999997" y1="260" x2="310.34999999999997" y2="260" class="lt-ladder-wire"/>
+<line x1="330.34999999999997" y1="260" x2="336.34999999999997" y2="260" class="lt-ladder-wire"/>
+<text x="320.34999999999997" y="244" class="lt-ladder-tag">ConveyorJog</text></g>
+<g data-element="contact" data-tag="StopPB"><line x1="81.3" y1="396" x2="85.3" y2="396" class="lt-ladder-wire"/>
+<line x1="109.3" y1="396" x2="113.3" y2="396" class="lt-ladder-wire"/>
+<line x1="85.3" y1="384" x2="85.3" y2="408" class="lt-ladder-element"/>
+<line x1="109.3" y1="384" x2="109.3" y2="408" class="lt-ladder-element"/>
+<line x1="87.3" y1="406" x2="107.3" y2="386" class="lt-ladder-element"/>
+<text x="97.3" y="380" class="lt-ladder-tag">StopPB</text></g>
+<g data-element="contact" data-tag="OverloadTrip"><line x1="158.2" y1="396" x2="162.2" y2="396" class="lt-ladder-wire"/>
+<line x1="186.2" y1="396" x2="190.2" y2="396" class="lt-ladder-wire"/>
+<line x1="162.2" y1="384" x2="162.2" y2="408" class="lt-ladder-element"/>
+<line x1="186.2" y1="384" x2="186.2" y2="408" class="lt-ladder-element"/>
+<line x1="164.2" y1="406" x2="184.2" y2="386" class="lt-ladder-element"/>
+<text x="174.2" y="380" class="lt-ladder-tag">OverloadTrip</text></g>
+<g data-element="contact" data-tag="ConveyorRun"><line x1="266.34999999999997" y1="371" x2="270.34999999999997" y2="371" class="lt-ladder-wire"/>
+<line x1="294.34999999999997" y1="371" x2="298.34999999999997" y2="371" class="lt-ladder-wire"/>
+<line x1="270.34999999999997" y1="359" x2="270.34999999999997" y2="383" class="lt-ladder-element"/>
+<line x1="294.34999999999997" y1="359" x2="294.34999999999997" y2="383" class="lt-ladder-element"/>
+<text x="282.34999999999997" y="355" class="lt-ladder-tag">ConveyorRun</text></g>
+<g data-element="contact" data-tag="ConveyorJog"><line x1="266.34999999999997" y1="426" x2="270.34999999999997" y2="426" class="lt-ladder-wire"/>
+<line x1="294.34999999999997" y1="426" x2="298.34999999999997" y2="426" class="lt-ladder-wire"/>
+<line x1="270.34999999999997" y1="414" x2="270.34999999999997" y2="438" class="lt-ladder-element"/>
+<line x1="294.34999999999997" y1="414" x2="294.34999999999997" y2="438" class="lt-ladder-element"/>
+<text x="282.34999999999997" y="410" class="lt-ladder-tag">ConveyorJog</text></g>
+<g data-element="coil" data-tag="ConveyorMotor"><path d="M 383.54999999999995 384 A 10 12 0 0 0 383.54999999999995 408" class="lt-ladder-coil"/>
+<path d="M 403.54999999999995 384 A 10 12 0 0 1 403.54999999999995 408" class="lt-ladder-coil"/>
+<line x1="377.54999999999995" y1="396" x2="383.54999999999995" y2="396" class="lt-ladder-wire"/>
+<line x1="403.54999999999995" y1="396" x2="409.54999999999995" y2="396" class="lt-ladder-wire"/>
+<text x="393.54999999999995" y="380" class="lt-ladder-tag">ConveyorMotor</text></g>
+<g data-element="contact" data-tag="ConveyorMotor"><line x1="102.65" y1="507" x2="106.65" y2="507" class="lt-ladder-wire"/>
+<line x1="130.65" y1="507" x2="134.65" y2="507" class="lt-ladder-wire"/>
+<line x1="106.65" y1="495" x2="106.65" y2="519" class="lt-ladder-element"/>
+<line x1="130.65" y1="495" x2="130.65" y2="519" class="lt-ladder-element"/>
+<text x="118.65" y="491" class="lt-ladder-tag">ConveyorMotor</text></g>
+<g data-element="coil" data-tag="RunLamp"><path d="M 191.65 495 A 10 12 0 0 0 191.65 519" class="lt-ladder-coil"/>
+<path d="M 211.65 495 A 10 12 0 0 1 211.65 519" class="lt-ladder-coil"/>
+<line x1="185.65" y1="507" x2="191.65" y2="507" class="lt-ladder-wire"/>
+<line x1="211.65" y1="507" x2="217.65" y2="507" class="lt-ladder-wire"/>
+<text x="201.65" y="491" class="lt-ladder-tag">RunLamp</text></g>
+<g data-element="contact" data-tag="OverloadTrip"><line x1="99.6" y1="607" x2="103.6" y2="607" class="lt-ladder-wire"/>
+<line x1="127.6" y1="607" x2="131.6" y2="607" class="lt-ladder-wire"/>
+<line x1="103.6" y1="595" x2="103.6" y2="619" class="lt-ladder-element"/>
+<line x1="127.6" y1="595" x2="127.6" y2="619" class="lt-ladder-element"/>
+<text x="115.6" y="591" class="lt-ladder-tag">OverloadTrip</text></g>
+<g data-element="coil" data-tag="OverloadLamp"><path d="M 200.79999999999998 595 A 10 12 0 0 0 200.79999999999998 619" class="lt-ladder-coil"/>
+<path d="M 220.79999999999998 595 A 10 12 0 0 1 220.79999999999998 619" class="lt-ladder-coil"/>
+<line x1="194.79999999999998" y1="607" x2="200.79999999999998" y2="607" class="lt-ladder-wire"/>
+<line x1="220.79999999999998" y1="607" x2="226.79999999999998" y2="607" class="lt-ladder-wire"/>
+<text x="210.79999999999998" y="591" class="lt-ladder-tag">OverloadLamp</text></g>
+<g data-element="contact" data-tag="StopPB"><line x1="81.3" y1="707" x2="85.3" y2="707" class="lt-ladder-wire"/>
+<line x1="109.3" y1="707" x2="113.3" y2="707" class="lt-ladder-wire"/>
+<line x1="85.3" y1="695" x2="85.3" y2="719" class="lt-ladder-element"/>
+<line x1="109.3" y1="695" x2="109.3" y2="719" class="lt-ladder-element"/>
+<text x="97.3" y="691" class="lt-ladder-tag">StopPB</text></g>
+<g data-element="coil" data-tag="ConveyorRun"><path d="M 161.14999999999998 695 A 10 12 0 0 0 161.14999999999998 719" class="lt-ladder-coil"/>
+<path d="M 181.14999999999998 695 A 10 12 0 0 1 181.14999999999998 719" class="lt-ladder-coil"/>
+<line x1="155.14999999999998" y1="707" x2="161.14999999999998" y2="707" class="lt-ladder-wire"/>
+<line x1="181.14999999999998" y1="707" x2="187.14999999999998" y2="707" class="lt-ladder-wire"/>
+<text x="171.14999999999998" y="710" class="lt-ladder-symbol-label">R</text>
+<text x="171.14999999999998" y="691" class="lt-ladder-tag">ConveyorRun</text></g></g></svg>

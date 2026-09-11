@@ -1,0 +1,40 @@
+{
+  "id": "state-order-lifecycle",
+  "type": "state",
+  "title": "Order lifecycle",
+  "goal": "Show guarded e-commerce order progression from draft through delivery or cancellation.",
+  "rubric": [
+    {
+      "id": "start-and-terminal",
+      "severity": "blocker",
+      "must": "An initial marker enters Draft and Delivered and Cancelled visibly terminate at final markers."
+    },
+    {
+      "id": "payment-branches",
+      "severity": "blocker",
+      "must": "Payment Pending visibly branches to Paid and Payment Failed, with retry or cancellation paths."
+    },
+    {
+      "id": "guarded-transitions",
+      "severity": "major",
+      "must": "Cart-valid, stock-available, retry-count, and customer-request guards are visible on transitions."
+    },
+    {
+      "id": "fulfillment-path",
+      "severity": "major",
+      "must": "Paid visibly progresses through Fulfillment and Shipped to Delivered."
+    },
+    {
+      "id": "readable-outcomes",
+      "severity": "minor",
+      "must": "Cancellation and delivery outcomes are visually distinct."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture omits required payment branches, guards, and Fulfillment."
+  }
+}

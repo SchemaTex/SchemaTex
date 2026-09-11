@@ -1,0 +1,46 @@
+{
+  "id": "pert-film-production",
+  "type": "pert",
+  "variant": "network",
+  "title": "Feature film production",
+  "goal": "Show a film schedule from greenlight through festival delivery with coordinated production and post-production dependencies.",
+  "rubric": [
+    {
+      "id": "photography-gate",
+      "severity": "blocker",
+      "must": "Principal photography visibly waits for both cast leads and built sets."
+    },
+    {
+      "id": "post-finish-gate",
+      "severity": "blocker",
+      "must": "Final colour grade visibly waits for both sound mix and visual effects before festival delivery."
+    },
+    {
+      "id": "development-to-production",
+      "severity": "major",
+      "must": "A visible chain runs from Greenlight through screenplay, casting or locations, and principal photography."
+    },
+    {
+      "id": "parallel-post",
+      "severity": "major",
+      "must": "Sound design and visual effects visibly branch in parallel after picture edit."
+    },
+    {
+      "id": "milestones",
+      "severity": "major",
+      "must": "Greenlight and Festival Delivery are visibly distinguished as milestones."
+    },
+    {
+      "id": "critical-path",
+      "severity": "minor",
+      "must": "The longest dependency chain is visibly highlighted as the critical path."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture fails both blockers and omits critical-path highlighting."
+  }
+}

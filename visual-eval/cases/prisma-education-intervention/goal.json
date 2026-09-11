@@ -1,0 +1,35 @@
+{
+  "id": "prisma-education-intervention",
+  "type": "prisma",
+  "variant": "single",
+  "title": "Mathematics tutoring review",
+  "goal": "An education researcher can trace screening from 980 records to 34 included studies.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The PRISMA diagram visibly contains the standard four flow rows."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The identification, duplicate-removal, and screened counts visibly reconcile."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Screening and eligibility exclusion side boxes visibly show totals and reasons."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The final box visibly reports 34 studies and 39 reports."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Connectors show a single unbroken review path."
+    }
+  ],
+  "split": "train"
+}

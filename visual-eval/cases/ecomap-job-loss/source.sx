@@ -1,0 +1,15 @@
+# Social-work ecomap: family after job loss, showing financial strain alongside family, benefits, and employment support.
+ecomap "Garcia Family After Job Loss"
+  center: family [label: "Garcia Family"]
+  extended [label: "Extended Family", category: family, importance: major]
+  unemployment [label: "Unemployment Benefits", category: government]
+  workforce [label: "Workforce Center", category: work]
+  landlord [label: "Landlord", category: financial]
+  foodbank [label: "Food Bank", category: community]
+  school [label: "Children's School", category: education]
+  family === extended
+  unemployment --> family
+  family == workforce
+  family ~~~ landlord
+  family == foodbank
+  family == school

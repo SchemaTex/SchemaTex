@@ -1,0 +1,50 @@
+{
+  "id": "circuit-holdout-instrumentation-amp",
+  "type": "circuit",
+  "title": "Three-op-amp instrumentation amplifier",
+  "split": "holdout",
+  "goal": "A reader must be able to trace a differential input through two gain-setting buffers and a matched-resistor difference stage to one output.",
+  "rubric": [
+    {
+      "id": "dual-input-buffers",
+      "severity": "blocker",
+      "must": "Two op-amp triangles are visible, each receiving one of VIN+ and VIN-."
+    },
+    {
+      "id": "gain-bridge",
+      "severity": "blocker",
+      "must": "The resistor labelled RG bridges the two inverting-input nodes of the input op-amp triangles."
+    },
+    {
+      "id": "input-feedback",
+      "severity": "major",
+      "must": "Each input op-amp has a 10 kΩ feedback resistor from its output to its inverting node."
+    },
+    {
+      "id": "difference-stage",
+      "severity": "blocker",
+      "must": "The two buffer outputs feed a third op-amp triangle through a four-resistor difference network, with one clearly marked OUT terminal."
+    },
+    {
+      "id": "matched-values",
+      "severity": "major",
+      "must": "The four difference-stage resistors are visibly labelled 10 kΩ, 0.1%."
+    },
+    {
+      "id": "split-rails",
+      "severity": "major",
+      "must": "Both +15 V and −15 V supply wires are visibly attached to every op-amp triangle."
+    },
+    {
+      "id": "readable-inputs",
+      "severity": "minor",
+      "must": "VIN+ and VIN- are separately labelled and can be traced without ambiguity."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. RG bridges the two buffer inverting nodes with R1/R2 as their feedback, the difference stage carries the matched R3-R6 network, and the supplies sit in their own labelled block."
+  }
+}

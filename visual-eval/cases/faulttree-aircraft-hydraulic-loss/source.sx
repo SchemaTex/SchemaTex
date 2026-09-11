@@ -1,0 +1,20 @@
+# Assumptions: three hydraulic systems are physically independent; voting-channel failures are independent.
+# Total loss of commanded hydraulic actuation requires loss of all supplies and loss of two control channels.
+faulttree "Total aircraft hydraulic failure"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Total hydraulic actuation unavailable" = AND(ALL_HYDRAULIC_SYSTEMS_LOST, CONTROL_VOTE_LOST)
+  gate ALL_HYDRAULIC_SYSTEMS_LOST "All independent hydraulic systems lost" = AND(SYSTEM_A_LOST, SYSTEM_B_LOST, SYSTEM_C_LOST)
+  gate SYSTEM_A_LOST "Hydraulic system A lost" = OR(ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_A_LEAK)
+  gate SYSTEM_B_LOST "Hydraulic system B lost" = OR(ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_B_LEAK)
+  gate SYSTEM_C_LOST "Hydraulic system C lost" = OR(ELECTRIC_PUMP_C_FAIL, RESERVOIR_C_LEAK)
+  gate CONTROL_VOTE_LOST "Two of three actuator-control channels fail" = VOTING(2/3; CONTROL_A_FAIL, CONTROL_B_FAIL, CONTROL_C_FAIL)
+  basic ENG_DRIVEN_PUMP_A_FAIL "Engine-driven pump A fails" p: 0.003
+  basic RESERVOIR_A_LEAK "System A reservoir leak" p: 0.001
+  basic ENG_DRIVEN_PUMP_B_FAIL "Engine-driven pump B fails" p: 0.003
+  basic RESERVOIR_B_LEAK "System B reservoir leak" p: 0.001
+  basic ELECTRIC_PUMP_C_FAIL "Electric pump C fails" p: 0.004
+  basic RESERVOIR_C_LEAK "System C reservoir leak" p: 0.001
+  basic CONTROL_A_FAIL "Control channel A fails" p: 0.002
+  basic CONTROL_B_FAIL "Control channel B fails" p: 0.002
+  basic CONTROL_C_FAIL "Control channel C fails" p: 0.002

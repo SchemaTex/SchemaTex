@@ -1,0 +1,45 @@
+{
+  "id": "pedigree-autosomal-recessive-carrier-couple",
+  "type": "pedigree",
+  "title": "Autosomal recessive carrier couple",
+  "goal": "Show an affected child of two unaffected autosomal-recessive carriers.",
+  "rubric": [
+    {
+      "id": "founder",
+      "severity": "blocker",
+      "must": "The pedigree visibly shows the two carrier parents."
+    },
+    {
+      "id": "inheritance",
+      "severity": "blocker",
+      "must": "The drawing visibly shows a carrier male and carrier female joined as parents."
+    },
+    {
+      "id": "proband",
+      "severity": "blocker",
+      "must": "The drawing visibly marks an affected proband child."
+    },
+    {
+      "id": "generations",
+      "severity": "major",
+      "must": "Roman generation labels and individual identifiers are visibly ordered across generations."
+    },
+    {
+      "id": "symbols",
+      "severity": "major",
+      "must": "Standard pedigree sex and affected/carrier symbol fills are visibly distinguishable."
+    },
+    {
+      "id": "relationships",
+      "severity": "minor",
+      "must": "Partnership and parent-child lines make biological relationships unambiguous."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Both parents drawn as left-half-filled autosomal carriers above one sibship line carrying unaffected II-1, the solid-filled proband II-2, and unaffected II-3."
+  }
+}

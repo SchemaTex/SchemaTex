@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 789.1999999999999 572" class="schematex-diagram schematex-genogram" width="789.1999999999999" height="572"><title>Genogram</title>
+<desc>Genogram diagram with 9 individuals across 3 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="minh" data-to="lan"><path d="M 279.8 60 L 359.8 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="minh" data-to="lan"><path d="M 319.8 60 L 319.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="minh" data-to="lan"><path d="M 199.8 141 L 439.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="minh+lan" data-to="anh"><path d="M 199.8 141 L 199.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="minh+lan" data-to="bao"><path d="M 319.8 141 L 319.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="minh+lan" data-to="chi"><path d="M 439.8 141 L 439.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="david" data-to="anh"><path d="M 99.8 226 L 179.8 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="anh"><path d="M 139.8 226 L 139.8 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="anh+david" data-to="oliver"><path d="M 139.8 226 L 139.8 372" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-conflict" data-from="bao" data-to="minh" data-relationship-type="conflict"><path d="M 319.8 226 Q 369.8 143 259.8 60" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 8,3,2,3;"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-distant" data-from="chi" data-to="bao" data-relationship-type="distant"><path d="M 439.8 246 Q 379.8 276 319.8 246" fill="none" stroke="#9e9e9e" stroke-width="2" style="stroke-dasharray: 6,4;"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="anh" data-to="oliver" data-relationship-type="close"><path d="M 199.8 226 Q 249.8 309 139.8 392" fill="none" stroke="#4caf50" stroke-width="3"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="minh" transform="translate(259.8, 60)"><title>Minh Nguyen (1950)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="lan" transform="translate(379.8, 60)"><title>Lan Nguyen (1953)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="minh -cutoff- anh" transform="translate(539.8, 60)"><title>Estranged</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="lan -fused- chi" transform="translate(699.8, 60)"><title>Over-involved</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="david" transform="translate(79.8, 226)"><title>David Stone (1977)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="anh" transform="translate(199.8, 226)"><title>Anh Nguyen (1978)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="bao" transform="translate(319.8, 226)"><title>Bao Nguyen (1981)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female schematex-genogram-index-person" data-individual-id="chi" transform="translate(439.8, 226)"><title>Chi Nguyen (1985)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="oliver" transform="translate(139.8, 392)"><title>Oliver Stone (2008)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="259.8" y="98" class="schematex-genogram-label" data-individual-id="minh">Minh Nguyen (b. 1950)</text>
+<text x="379.8" y="98" class="schematex-genogram-label" data-individual-id="lan">Lan Nguyen (b. 1953)</text>
+<text x="539.8" y="98" class="schematex-genogram-label" data-individual-id="minh -cutoff- anh">Estranged</text>
+<text x="699.8" y="98" class="schematex-genogram-label" data-individual-id="lan -fused- chi">Over-involved</text>
+<text x="79.8" y="264" class="schematex-genogram-label" data-individual-id="david">David Stone (b. 1977)</text>
+<text x="199.8" y="264" class="schematex-genogram-label" data-individual-id="anh">Anh Nguyen (b. 1978)</text>
+<text x="319.8" y="264" class="schematex-genogram-label" data-individual-id="bao">Bao Nguyen (b. 1981)</text>
+<text x="439.8" y="264" class="schematex-genogram-label" data-individual-id="chi">Chi Nguyen (b. 1985)</text>
+<text x="139.8" y="430" class="schematex-genogram-label" data-individual-id="oliver">Oliver Stone (b. 2008)</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="514.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.unknown" data-legend-section="symbols"><polygon points="140.45,506 145.45,511 140.45,516 135.45,511" fill="#f5f5f5" stroke="#334155"/>
+<text x="159.45" y="514.5" class="schematex-legend-label">Unknown</text></g>
+<text x="16" y="532.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><line x1="130.45" y1="529" x2="150.45" y2="529" stroke="#4caf50" stroke-width="3" stroke-linecap="round"/>
+<text x="159.45" y="532.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="conflict" data-legend-section="relationships"><line x1="211.45" y1="529" x2="231.45" y2="529" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,3,2,3"/>
+<text x="240.45" y="532.5" class="schematex-legend-label">Conflict</text></g>
+<g class="schematex-legend-row" data-legend-key="distant" data-legend-section="relationships"><line x1="312.45" y1="529" x2="332.45" y2="529" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="341.45" y="532.5" class="schematex-legend-label">Distant</text></g>
+<text x="16" y="550.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="544" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="130.45" y="542" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="550.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

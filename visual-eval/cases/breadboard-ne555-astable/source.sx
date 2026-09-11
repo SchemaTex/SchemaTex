@@ -1,0 +1,19 @@
+# NE555 astable oscillator: timing resistor/capacitor network and LED load are assembled on a breadboard.
+breadboard
+board: half
+title: "NE555 Astable LED Flasher"
+parts
+  ic1: dip pins=8 @12e
+  r1: resistor 1k @20a..24a
+  r2: resistor 100k @25a..29a
+  c1: cap-elec 10uF @30a
+  led1: led red @32e..32f
+  r3: resistor 330 @34e..38e
+wires
+  @+t1 --red-- ic1:8
+  @-t1 --black-- ic1:1
+  ic1:3 --yellow-- @34e
+  @38e --yellow-- @32e
+  @32f --black-- @-t32
+  ic1:6 --green-- c1:+
+  c1:- --black-- @-t30

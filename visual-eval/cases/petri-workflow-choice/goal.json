@@ -1,0 +1,34 @@
+{
+  "id": "petri-workflow-choice",
+  "type": "petri",
+  "title": "Review Workflow Choice and Merge",
+  "goal": "A practitioner can visually assess the Review Workflow Choice and Merge scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "bipartite-net",
+      "severity": "blocker",
+      "must": "Places are circles and transitions are bars or rectangles, with arrows only between the two node kinds."
+    },
+    {
+      "id": "initial-marking",
+      "severity": "blocker",
+      "must": "Initial tokens are visibly shown in the resource or state places needed to start the process."
+    },
+    {
+      "id": "enabled-sequence",
+      "severity": "major",
+      "must": "The picture visibly supports the stated process progression through its marked places and transitions."
+    },
+    {
+      "id": "domain-control",
+      "severity": "major",
+      "must": "The net visibly expresses the scenario's buffer, shared resource, semaphore, cycle, or workflow choice control."
+    },
+    {
+      "id": "marking-legibility",
+      "severity": "minor",
+      "must": "Tokens, labels, and arrows remain readable as a one-page Petri net."
+    }
+  ],
+  "split": "holdout"
+}

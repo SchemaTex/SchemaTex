@@ -1,0 +1,12 @@
+# Scenario: programme office explains overlapping eligibility criteria for a youth innovation grant.
+venn "Youth innovation grant eligibility"
+set resident "City resident"
+set youth "Age 18–30"
+set proposal "Eligible project proposal"
+resident only: "Resident outside age range"
+youth only: "Age-qualified non-resident"
+proposal only: "Proposal from outside area"
+resident & youth: "Eligible person; proposal needed"
+resident & proposal: "Resident project lead; age needed"
+youth & proposal: "Young proposer; residency needed"
+resident & youth & proposal: "Eligible to apply"

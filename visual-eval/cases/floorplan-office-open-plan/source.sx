@@ -1,0 +1,26 @@
+floorplan "Open Plan Studio Office" unit m
+north
+wall exterior thickness 0.3
+wall interior thickness 0.15
+room studio "Open Plan Workspace" at 0,0 size 11x12.5
+room reception "Reception" right-of studio size 5x3.5
+room meeting-large "Large Meeting" below reception size 5x4.0
+room meeting-small "Small Meeting" below meeting-large size 5x2.8
+room support "Kitchenette / Phone Booth" below meeting-small size 5x2.2
+
+door reception north at 48% width 1.1 id entry hinge right swing out
+door between studio reception at 50% width 0.95 hinge left
+door between studio meeting-large at 45% width 0.95 hinge right
+door between studio meeting-small at 50% width 0.9 hinge left
+door between studio support at 48% width 0.9 hinge right
+window studio west at 50% width 2.4
+window reception north at 18% width 1.2
+
+furniture counter "Reception Desk" in reception at 0.55,1.35 size 2.5x0.65
+furniture sofa in reception at 3.35,1.6 size 1.05x0.7 rotate 90
+grid desk in studio rows 3 cols 4 count 12 centers 2.0,2.0 8.7,9.1 itemsize 1.2x0.7
+furniture conference-table "Project Table" in meeting-large at 0.85,1.15 size 3.1x1.15
+furniture conference-table "Team Table" in meeting-small at 0.9,0.85 size 2.5x0.85
+furniture counter "Kitchenette" in support at 0.3,0.35 size 2.0x0.6
+furniture fridge in support at 2.65,0.3 size 0.65x0.65
+furniture desk "Phone Booth" in support at 3.7,0.4 size 0.85x0.6

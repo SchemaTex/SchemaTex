@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<title>Transformer Bridge Rectifier and 5 V Linear Supply</title>
+<rect width="1600" height="900" fill="white"/>
+<style>
+.w{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.s{fill:white;stroke:#17212b;stroke-width:3;stroke-linejoin:round}.t{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:21px}.ref{font-weight:bold}.small{font-size:18px}.dot{fill:#17212b}
+</style>
+<text class="t" x="70" y="65" font-size="30" font-weight="bold">Transformer Bridge Rectifier and 5 V Linear Supply</text>
+<text class="t small" x="70" y="99">230 V AC → isolated 9 V AC → full-wave rectifier → regulated 5 V DC</text>
+<!-- Mains source and isolated transformer -->
+<path class="w" d="M125 400V280H275V325 M125 490V570H275V495"/>
+<circle class="s" cx="125" cy="445" r="45"/>
+<path class="w" d="M95 445C105 415 115 415 125 445S145 475 155 445"/>
+<text class="t ref" x="65" y="620">V1</text><text class="t" x="65" y="649">230 V AC, 50 Hz</text>
+<!-- Primary and secondary have no conductive connection -->
+<path class="w" d="M275 325c-30 0-30 34 0 34c-30 0-30 34 0 34c-30 0-30 34 0 34c-30 0-30 34 0 34c-30 0-30 34 0 34"/>
+<path class="w" d="M320 325c30 0 30 34 0 34c30 0 30 34 0 34c30 0 30 34 0 34c30 0 30 34 0 34c30 0 30 34 0 34"/>
+<path class="w" d="M294 317V503 M303 317V503"/>
+<text class="t ref" x="260" y="210">T1</text><text class="t" x="245" y="241">230:9 V AC</text>
+<!-- Bridge AC nodes at top and bottom, positive at right, negative at left -->
+<path class="w" d="M320 325V280H570V320 M320 495V610H350 M380 610H570V580"/>
+<text class="t small" x="512" y="303">AC1</text><text class="t small" x="514" y="635">AC2</text>
+<!-- Diamond branches, symbols drawn along each branch using local coordinates -->
+<!-- D1: top AC to right positive -->
+<g transform="translate(570 320) rotate(45)"><path class="w" d="M0 0H65 M119 0H183.848"/><path class="s" d="M65-17L99 0L65 17Z"/><path class="w" d="M101-21V21 M101 0H119"/></g>
+<!-- D2: bottom AC to right positive -->
+<g transform="translate(570 580) rotate(-45)"><path class="w" d="M0 0H65 M119 0H183.848"/><path class="s" d="M65-17L99 0L65 17Z"/><path class="w" d="M101-21V21 M101 0H119"/></g>
+<!-- D3: left negative to top AC -->
+<g transform="translate(440 450) rotate(-45)"><path class="w" d="M0 0H65 M119 0H183.848"/><path class="s" d="M65-17L99 0L65 17Z"/><path class="w" d="M101-21V21 M101 0H119"/></g>
+<!-- D4: left negative to bottom AC -->
+<g transform="translate(440 450) rotate(45)"><path class="w" d="M0 0H65 M119 0H183.848"/><path class="s" d="M65-17L99 0L65 17Z"/><path class="w" d="M101-21V21 M101 0H119"/></g>
+<text class="t ref" x="640" y="333">D1</text><text class="t small" x="640" y="358">1N4007</text>
+<text class="t ref" x="648" y="558">D2</text><text class="t small" x="648" y="583">1N4007</text>
+<text class="t ref" x="408" y="333">D3</text><text class="t small" x="393" y="358">1N4007</text>
+<text class="t ref" x="404" y="558">D4</text><text class="t small" x="388" y="583">1N4007</text>
+<text class="t" x="708" y="437">+</text><text class="t" x="414" y="440">−</text>
+<!-- Negative bridge lead crosses AC2 lead with a clear wire-jump, no junction -->
+<path class="w" d="M440 450H370V598 C354 598 354 622 370 622 V740H1470"/>
+<!-- Positive rail and regulator -->
+<path class="w" d="M700 450H990 M1170 450H1470"/>
+<text class="t small" x="754" y="424">RAW DC</text>
+<rect class="s" x="990" y="405" width="180" height="100" rx="2"/>
+<text class="t ref" x="1080" y="350" text-anchor="middle">U1</text>
+<text class="t" x="1080" y="380" text-anchor="middle">7805, 5 V</text>
+<text class="t small" x="1003" y="445">IN</text><text class="t small" x="1121" y="445">OUT</text><text class="t small" x="1080" y="489" text-anchor="middle">GND</text>
+<path class="w" d="M1080 505V740"/>
+<text class="t ref" x="1330" y="413">VOUT · +5 V</text>
+<!-- C1 polarized reservoir -->
+<path class="w" d="M780 450V555 M754 555H806 M754 571Q780 558 806 571 M780 564.5V740"/>
+<text class="t" x="745" y="539">+</text>
+<text class="t ref" x="765" y="655">C1</text><text class="t small" x="730" y="683">2200 uF, 25 V</text>
+<!-- C2 input bypass -->
+<path class="w" d="M935 450V555 M914 555H956 M914 571H956 M935 571V740"/>
+<text class="t ref" x="962" y="562">C2</text><text class="t small" x="962" y="591">330 nF</text>
+<!-- C3 output bypass -->
+<path class="w" d="M1230 450V555 M1209 555H1251 M1209 571H1251 M1230 571V740"/>
+<text class="t ref" x="1260" y="562">C3</text><text class="t small" x="1260" y="591">100 nF</text>
+<!-- Series resistor and red LED -->
+<path class="w" d="M1470 450V490 M1470 554V603 M1470 641V740"/>
+<rect class="s" x="1458" y="490" width="24" height="64"/>
+<text class="t ref" x="1360" y="510">R1</text><text class="t" x="1360" y="539">1 kOhm</text>
+<path d="M1453 603H1487L1470 635Z" fill="#c93535" stroke="#17212b" stroke-width="3"/>
+<path class="w" d="M1450 639H1490 M1470 639V641"/>
+<!-- Light-emission arrows -->
+<path class="w" d="M1491 610L1514 588 M1505 589L1514 588L1513 597 M1500 627L1523 605 M1514 606L1523 605L1522 614"/>
+<text class="t ref" x="1350" y="624">D5</text><text class="t" x="1350" y="653">Red LED</text>
+<!-- Explicit connected junctions -->
+<g class="dot"><circle cx="570" cy="320" r="5"/><circle cx="570" cy="580" r="5"/><circle cx="440" cy="450" r="5"/><circle cx="700" cy="450" r="5"/><circle cx="780" cy="450" r="5"/><circle cx="935" cy="450" r="5"/><circle cx="1230" cy="450" r="5"/><circle cx="780" cy="740" r="5"/><circle cx="935" cy="740" r="5"/><circle cx="1080" cy="740" r="5"/><circle cx="1230" cy="740" r="5"/></g>
+<!-- Sole DC ground reference -->
+<path class="w" d="M1080 740V784 M1058 784H1102 M1065 793H1095 M1073 802H1087"/>
+<text class="t small" x="1115" y="795">DC return · 0 V</text>
+</svg>

@@ -1,0 +1,40 @@
+{
+  "id": "orgchart-matrix-project",
+  "type": "orgchart",
+  "title": "Matrix project organisation",
+  "goal": "Show functional ownership and shared project assignments.",
+  "rubric": [
+    {
+      "id": "functional-root",
+      "severity": "blocker",
+      "must": "Engineering, Design, and PMO Delivery visibly report to the COO."
+    },
+    {
+      "id": "functional-staff",
+      "severity": "blocker",
+      "must": "Engineers and designer visibly have functional-manager reporting lines."
+    },
+    {
+      "id": "atlas",
+      "severity": "blocker",
+      "must": "Atlas project manager has visibly dashed Atlas project links to an engineer and designer."
+    },
+    {
+      "id": "beacon",
+      "severity": "major",
+      "must": "Beacon project manager has a visibly dashed Beacon project link to the test engineer."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Solid and dashed relationships can be distinguished without label overlap."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all required reporting and project relationships, while Image 2 substitutes different roles and projects and leaves project assignments ambiguous."
+  }
+}

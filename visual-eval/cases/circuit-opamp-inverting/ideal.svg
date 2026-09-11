@@ -1,0 +1,92 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <ns0:title>Inverting Amplifier, Gain -10, Split 12 V Supply</ns0:title>
+  <ns0:rect width="1400" height="900" fill="white" />
+  <ns0:style>
+    .wire,.symbol {fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .dot {fill:#17212b}
+    text {fill:#17212b;font-family:Helvetica,Arial,sans-serif;font-size:22px}
+    .heading {font-size:30px;font-weight:600}
+    .small {font-size:19px}
+    .net {font-size:20px;font-weight:600}
+  </ns0:style>
+  <ns0:text class="heading" x="60" y="60">Inverting Amplifier</ns0:text>
+  <ns0:text x="60" y="98">Gain = −R2/R1 = −100 kOhm / 10 kOhm = −10 V/V</ns0:text>
+  <ns0:text x="990" y="98">Split ±12 V supply</ns0:text>
+
+  
+  <ns0:path class="wire" d="M150 480V360H270 M350 360H530 M150 560V650" />
+  <ns0:circle class="symbol" cx="150" cy="520" r="40" />
+  <ns0:path class="symbol" d="M123 520C132 490 141 490 150 520S168 550 177 520" />
+  <ns0:text x="60" y="502">V3</ns0:text>
+  <ns0:text x="205" y="518">100 mV</ns0:text>
+  <ns0:text x="205" y="547">1 kHz</ns0:text>
+  <ns0:text class="net" x="175" y="340">VIN</ns0:text>
+  <ns0:path class="symbol" d="M270 360L275 348L285 372L295 348L305 372L315 348L325 372L335 348L345 372L350 360" />
+  <ns0:text x="282" y="296">R1</ns0:text>
+  <ns0:text x="270" y="325">10 kOhm</ns0:text>
+
+  
+  <ns0:path class="symbol" d="M530 320L530 540L750 430Z" />
+  <ns0:text x="548" y="368">−</ns0:text>
+  <ns0:text x="548" y="505">+</ns0:text>
+  <ns0:text x="581" y="423">U1</ns0:text>
+  <ns0:text x="581" y="454">TL071</ns0:text>
+  <ns0:path class="wire" d="M530 500H465V650 M750 430H880" />
+  <ns0:circle class="dot" cx="820" cy="430" r="5" />
+  <ns0:text class="net" x="820" y="471">VOUT</ns0:text>
+  <ns0:circle class="symbol" cx="886" cy="430" r="6" />
+
+  
+  <ns0:path class="wire" d="M405 360V200H575 M675 200H820V430" />
+  <ns0:circle class="dot" cx="405" cy="360" r="5" />
+  <ns0:path class="symbol" d="M575 200H585L591 188L603 212L615 188L627 212L639 188L651 212L663 188L669 200H675" />
+  <ns0:text x="603" y="143">R2</ns0:text>
+  <ns0:text x="581" y="173">100 kOhm</ns0:text>
+  <ns0:text class="small" x="420" y="390">INV</ns0:text>
+
+  
+  <ns0:path class="wire" d="M620 365V280 M620 495V585" />
+  <ns0:text class="net" x="584" y="260">VPOS</ns0:text>
+  <ns0:text class="small" x="645" y="304">+12 V</ns0:text>
+  <ns0:text class="small" x="645" y="560">−12 V</ns0:text>
+  <ns0:text class="net" x="582" y="615">VNEG</ns0:text>
+
+  
+  <ns0:path class="wire" d="M150 650H465 M310 650V680" />
+  <ns0:circle class="dot" cx="310" cy="650" r="5" />
+  <ns0:path class="symbol" d="M290 680H330 M297 689H323 M304 698H316" />
+  <ns0:text class="small" x="286" y="730">GND</ns0:text>
+
+  
+  <ns0:path class="wire" d="M1030 240V310 M1030 390V490 M1030 570V640 M1030 240H1270V340 M1030 430H1270 M1030 640H1270V540" />
+  <ns0:circle class="symbol" cx="1030" cy="350" r="40" />
+  <ns0:path class="symbol" d="M1020 335H1040 M1030 325V345 M1020 369H1040" />
+  <ns0:text x="935" y="342">V1</ns0:text>
+  <ns0:text x="925" y="372">12 V</ns0:text>
+  <ns0:circle class="symbol" cx="1030" cy="530" r="40" />
+  <ns0:path class="symbol" d="M1020 515H1040 M1030 505V525 M1020 549H1040" />
+  <ns0:text x="935" y="522">V2</ns0:text>
+  <ns0:text x="925" y="552">12 V</ns0:text>
+  <ns0:text class="net" x="995" y="199">VPOS</ns0:text>
+  <ns0:text x="995" y="228">+12 V</ns0:text>
+  <ns0:text class="net" x="994" y="677">VNEG</ns0:text>
+  <ns0:text x="995" y="706">−12 V</ns0:text>
+
+  
+  <ns0:path class="symbol" d="M1248 340H1292 M1248 356H1292" />
+  <ns0:path class="wire" d="M1270 356V430" />
+  <ns0:text x="1150" y="330">C1</ns0:text>
+  <ns0:text x="1150" y="360">100 nF</ns0:text>
+  
+  <ns0:path class="wire" d="M1270 430V524" />
+  <ns0:path class="symbol" d="M1248 524H1292 M1248 540H1292" />
+  <ns0:text x="1150" y="514">C2</ns0:text>
+  <ns0:text x="1150" y="544">100 nF</ns0:text>
+  <ns0:circle class="dot" cx="1030" cy="430" r="5" />
+  <ns0:circle class="dot" cx="1270" cy="430" r="5" />
+  <ns0:path class="wire" d="M1270 430H1340V465" />
+  <ns0:path class="symbol" d="M1320 465H1360 M1327 474H1353 M1334 483H1346" />
+  <ns0:text class="small" x="1317" y="514">GND</ns0:text>
+  <ns0:text class="small" x="60" y="818">VPOS and VNEG labels join the supply rails to the corresponding U1 supply pins.</ns0:text>
+  <ns0:text class="small" x="60" y="849">All GND symbols denote the same electrical reference.</ns0:text>
+</ns0:svg>

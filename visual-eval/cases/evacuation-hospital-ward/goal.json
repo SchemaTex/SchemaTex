@@ -1,0 +1,40 @@
+{
+  "id": "evacuation-hospital-ward",
+  "type": "evacuation",
+  "title": "Hospital Ward",
+  "goal": "A practitioner can read the hospital ward artefact at a glance.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible YOU ARE HERE marker, legend, and two marked exits are present."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "Primary and secondary routes visibly lead from the marker to separate exits."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG visibly connects the YOU ARE HERE marker to separate exits with differentiated primary and secondary routes, while the picture provides only disconnected corridor arrows."
+  }
+}

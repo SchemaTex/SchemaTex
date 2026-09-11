@@ -1,0 +1,14 @@
+# Arduino Uno blink: LED anode is fed through a series resistor; cathode returns to ground.
+breadboard
+board: half
+title: "Arduino Uno LED Blink"
+parts
+  uno: mcu uno @beside-left
+  r1: resistor 220 @5e..9e
+  led1: led red @10e..10f
+wires
+  uno:13 --yellow-- @5a
+  @5a --yellow-- @5e
+  @9e --yellow-- @10e
+  uno:GND --black-- @10j
+  @10j --black-- @10f

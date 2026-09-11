@@ -1,0 +1,40 @@
+{
+  "id": "breadboard-hcsr04",
+  "type": "breadboard",
+  "title": "HC-SR04 Ultrasonic Sensor",
+  "goal": "A practitioner can visually assess the HC-SR04 Ultrasonic Sensor scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "physical-board",
+      "severity": "blocker",
+      "must": "A solderless breadboard with labelled physical components and colored jumper wires is visible."
+    },
+    {
+      "id": "power-ground",
+      "severity": "blocker",
+      "must": "Red positive-supply wiring and black ground-return wiring are visibly distinct."
+    },
+    {
+      "id": "signal-path",
+      "severity": "major",
+      "must": "The visible signal path connects the controller or IC to the named load or module."
+    },
+    {
+      "id": "series-correctness",
+      "severity": "major",
+      "must": "The picture visibly places the current-limiting or timing component in the intended circuit path rather than as an unconnected part."
+    },
+    {
+      "id": "buildable-layout",
+      "severity": "minor",
+      "must": "Parts and wire endpoints visibly land on breadboard tie points without ambiguous floating connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-breadboard-target.mjs`, which draws all eight cases from one kit so the set is one drawing repeated. A breadboard wiring view of HC-SR04 Ultrasonic Sensor, on a half-size board of 30 columns with rows a–e above the central trough and f–j below it, and continuous power rails top and bottom. 2 parts are placed at their own tie points: uno (mcu uno), sonar (sensor hcsr04). 4 jumper wires run as smooth arcs in their net colours, each landing exactly on a hole. Off-board modules are drawn as labelled blocks with the pins they actually use on the edge facing the board. Follows `docs/reference/26-BREADBOARD-STANDARD.md`: a board of numbered columns and rows a–e above the central trough and f–j below it, continuous red/blue power rails top and bottom, 0.1 inch hole pitch, stylised Fritzing-recognisable bodies (resistor beige with colour bands, LED as a coloured dome, DIP black with a notch, pushbutton blue, electrolytic capacitor silver with its stripe), and jumper wires as smooth Bézier arcs in solid net colours landing exactly on a hole. Deliberate stylisation, per the doc's own §3.2: an off-board module is drawn as a labelled block with the pins it actually uses on the edge facing the board — a physically exact Uno would put 5V and GND on the far side and force every power wire to loop round, buying accuracy the reader cannot use at the cost of the legibility this view exists for."
+  }
+}

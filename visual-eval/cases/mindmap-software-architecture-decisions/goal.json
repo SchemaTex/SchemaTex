@@ -1,0 +1,45 @@
+{
+  "id": "mindmap-software-architecture-decisions",
+  "type": "mindmap",
+  "title": "Software architecture decisions",
+  "goal": "Show architecture decisions grouped by boundaries, data, reliability, and security.",
+  "rubric": [
+    {
+      "id": "central-root",
+      "severity": "blocker",
+      "must": "Software Architecture Decisions is visibly the central root topic."
+    },
+    {
+      "id": "four-branches",
+      "severity": "blocker",
+      "must": "System Boundaries, Data and Integration, Reliability, and Security visibly branch from the root."
+    },
+    {
+      "id": "data-decisions",
+      "severity": "major",
+      "must": "Data and Integration visibly expands to PostgreSQL and Event Bus with their rationale leaves."
+    },
+    {
+      "id": "reliability-decisions",
+      "severity": "major",
+      "must": "Reliability visibly expands to Observability and Resilience with concrete practices."
+    },
+    {
+      "id": "security-decisions",
+      "severity": "major",
+      "must": "Security visibly expands to Identity and Secrets with their implementation choices."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "At least three visual levels are distinguishable from root to detailed leaves."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 preserves the required root, all four branches, and their detailed expansions, while Image 2 substitutes categories and omits required implementation details."
+  }
+}

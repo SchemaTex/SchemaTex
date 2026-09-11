@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760">
+  <title>I2c Start Stop — digital timing relationship</title>
+  <rect width="1600" height="760" fill="white"/>
+  <rect x="26" y="55" width="1548" height="650" fill="none" stroke="black" stroke-width="3"/>
+  <g fill="black" font-family="Helvetica, Arial, sans-serif">
+    <text x="800" y="122" text-anchor="middle" font-size="48" font-weight="700">I2c Start Stop</text>
+    <text x="65" y="253" font-size="34">CLK</text>
+    <text x="65" y="397" font-size="34">ENABLE</text>
+    <text x="65" y="542" font-size="34">DATA</text>
+  </g>
+  <!-- Eight positive clock pulses, each aligned with its data interval. -->
+  <g fill="none" stroke="black" stroke-width="3.5" stroke-linejoin="miter" stroke-linecap="butt">
+    <path d="M250 275 V210 H330 V275 H410 V210 H490 V275 H570 V210 H650 V275 H730 V210 H810 V275 H890 V210 H970 V275 H1050 V210 H1130 V275 H1210 V210 H1290 V275 H1370 V210 H1450 V275 H1530"/>
+    <!-- ENABLE: 10000001 -->
+    <path d="M250 355 H410 V420 H1370 V355 H1530"/>
+  </g>
+  <!-- DATA: x=======x. Unknown end intervals surround eight labeled values. -->
+  <defs>
+    <pattern id="unknown" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M-2 2 L2 -2 M0 10 L10 0 M8 12 L12 8" stroke="#999" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <g stroke="black" stroke-width="3" stroke-linejoin="miter">
+    <path d="M250 490 H260 L270 525 L260 560 H250 Z" fill="url(#unknown)"/>
+    <path d="M270 525 L280 490 H400 L410 525 L400 560 H280 Z" fill="white"/>
+    <path d="M410 525 L420 490 H560 L570 525 L560 560 H420 Z" fill="white"/>
+    <path d="M570 525 L580 490 H720 L730 525 L720 560 H580 Z" fill="white"/>
+    <path d="M730 525 L740 490 H880 L890 525 L880 560 H740 Z" fill="white"/>
+    <path d="M890 525 L900 490 H1040 L1050 525 L1040 560 H900 Z" fill="white"/>
+    <path d="M1050 525 L1060 490 H1200 L1210 525 L1200 560 H1060 Z" fill="white"/>
+    <path d="M1210 525 L1220 490 H1360 L1370 525 L1360 560 H1220 Z" fill="white"/>
+    <path d="M1370 525 L1380 490 H1500 L1510 525 L1500 560 H1380 Z" fill="white"/>
+    <path d="M1510 525 L1520 490 H1530 V560 H1520 Z" fill="url(#unknown)"/>
+  </g>
+  <g fill="black" font-family="Helvetica, Arial, sans-serif" font-size="34" text-anchor="middle">
+    <text x="340" y="537">0</text><text x="490" y="537">1</text>
+    <text x="650" y="537">0</text><text x="810" y="537">1</text>
+    <text x="970" y="537">1</text><text x="1130" y="537">0</text>
+    <text x="1290" y="537">1</text><text x="1440" y="537">0</text>
+  </g>
+  <path d="M65 635 H1520" fill="none" stroke="black" stroke-width="3"/>
+  <path d="M1535 635 L1516 625 L1520 635 L1516 645 Z" fill="black"/>
+  <text x="800" y="678" text-anchor="middle" fill="black" font-family="Helvetica, Arial, sans-serif" font-size="32">Time</text>
+</svg>

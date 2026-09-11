@@ -1,0 +1,49 @@
+{
+  "id": "circuit-star-delta-starter",
+  "type": "circuit",
+  "title": "Star-delta motor starter",
+  "goal": "A reader must be able to see the three-phase star-delta power circuit and the timed, interlocked control sequence that transfers the motor from star to delta.",
+  "rubric": [
+    {
+      "id": "three-phase-protected-power",
+      "severity": "blocker",
+      "must": "Three 400 VAC supply phases pass through a labelled 25 A three-pole breaker."
+    },
+    {
+      "id": "main-star-delta-contactors",
+      "severity": "blocker",
+      "must": "Main KM1, star KM2, and delta KM3 contactors are visibly identified."
+    },
+    {
+      "id": "motor-six-terminals",
+      "severity": "major",
+      "must": "A rated 7.5 kW three-phase motor with six U, V, and W terminals is visible."
+    },
+    {
+      "id": "thermal-overload",
+      "severity": "major",
+      "must": "A three-leg 9-13 A thermal overload and its 95-96 normally closed auxiliary contact are visible."
+    },
+    {
+      "id": "start-stop-control",
+      "severity": "major",
+      "must": "Separate START NO and STOP NC pushbuttons are visible in the control circuit."
+    },
+    {
+      "id": "on-delay-changeover",
+      "severity": "blocker",
+      "must": "An on-delay star-delta timer has visibly labelled NC star and NO delta changeover contacts."
+    },
+    {
+      "id": "electrical-interlocks",
+      "severity": "major",
+      "must": "Normally closed KM2 and KM3 electrical interlock contacts are visible between the star and delta coils."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Split into power and control halves, with the motor's six winding ends labelled, the delta contactor's cross-connections correct, the star contactor shorting the star point, and both coils interlocked by the opposite contactor's break contact."
+  }
+}

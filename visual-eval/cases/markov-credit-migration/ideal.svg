@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <title>Credit Migration — Markov chain</title>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L11 5 L0 10 Z" fill="black"/></marker>
+  </defs>
+  <rect width="1536" height="1024" fill="white"/>
+  <g fill="black" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <text x="768" y="78" font-size="70" font-weight="bold">Credit Migration</text>
+  </g>
+  <g fill="none" stroke="black" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)">
+    <!-- Orthogonal transition routes, with separate lanes for opposite directions. -->
+    <path d="M290 289 V155 H1248 V288"/>
+    <path d="M338 380 H658"/>
+    <path d="M878 380 H1198"/>
+    <path d="M704 470 V525 H280 V479"/>
+    <path d="M182 280 V220 H272 V280"/>
+    <path d="M723 280 V220 H813 V280"/>
+    <path d="M1263 280 V220 H1353 V280"/>
+  </g>
+  <g fill="white" stroke="black" stroke-width="3.2">
+    <circle cx="228" cy="380" r="110"/>
+    <circle cx="768" cy="380" r="110"/>
+    <circle cx="1308" cy="380" r="110"/>
+    <circle cx="1308" cy="380" r="101" stroke-width="2"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="black" text-anchor="middle">
+    <g font-size="37">
+      <text x="768" y="138">0.05</text>
+      <text x="228" y="205">0.80</text>
+      <text x="768" y="205">0.45</text>
+      <text x="1308" y="205">1.00</text>
+      <text x="498" y="361">0.15</text>
+      <text x="1038" y="361">0.25</text>
+      <text x="493" y="567">0.30</text>
+    </g>
+    <g font-size="37" font-weight="bold">
+      <text x="228" y="390">Normal</text>
+      <text x="768" y="390">Degraded</text>
+      <text x="1308" y="369">Failed</text>
+    </g>
+    <text x="1308" y="412" font-size="28">Absorbing</text>
+    <text x="768" y="630" font-size="42" font-weight="bold">Transition matrix</text>
+    <g font-size="30" font-weight="bold">
+      <text x="660" y="682">Normal</text>
+      <text x="850" y="682">Degraded</text>
+      <text x="1040" y="682">Failed</text>
+    </g>
+    <g font-size="31" text-anchor="end" font-weight="bold">
+      <text x="526" y="735">Normal</text>
+      <text x="526" y="788">Degraded</text>
+      <text x="526" y="841">Failed</text>
+    </g>
+    <g font-size="36">
+      <text x="660" y="735">0.80</text><text x="850" y="735">0.15</text><text x="1040" y="735">0.05</text>
+      <text x="660" y="788">0.30</text><text x="850" y="788">0.45</text><text x="1040" y="788">0.25</text>
+      <text x="660" y="841">0.00</text><text x="850" y="841">0.00</text><text x="1040" y="841">1.00</text>
+    </g>
+    <text x="768" y="897" font-size="27">Rows: current state. Columns: next state. Each row sums to 1.</text>
+    <text x="768" y="945" font-size="28">Stationary distribution (Normal, Degraded, Failed): (0, 0, 1)</text>
+    <text x="768" y="988" font-size="27">Normal and Degraded: transient • Failed: absorbing, recurrent</text>
+  </g>
+  <g fill="none" stroke="black" stroke-width="3.5">
+    <path d="M584 700 H568 V854 H584"/>
+    <path d="M1116 700 H1132 V854 H1116"/>
+  </g>
+</svg>

@@ -1,0 +1,44 @@
+{
+  "id": "sld-generator-transfer",
+  "type": "sld",
+  "title": "Generator transfer distribution",
+  "goal": "A reader can trace either protected source through the transfer device to the normal and essential buses without mistaking the sources for a parallel connection.",
+  "rubric": [
+    {
+      "id": "separate-source-paths",
+      "severity": "blocker",
+      "must": "Utility Supply and Standby Generator have separate paths through their respective breakers to the transfer device, with no junction or crossing that depicts a connection between the sources upstream of the transfer device."
+    },
+    {
+      "id": "transfer-terminals",
+      "severity": "blocker",
+      "must": "Both incoming feeders and the outgoing distribution connect visibly to the transfer device terminals, without unexplained gaps."
+    },
+    {
+      "id": "transfer-identification",
+      "severity": "major",
+      "must": "The transfer device is visibly labelled Open-transition Transfer and is identifiable as a switching device."
+    },
+    {
+      "id": "distinct-load-buses",
+      "severity": "blocker",
+      "must": "Two distinct downstream busbars are labelled Normal-load Bus and Essential-load Bus, and each can be traced back to the transfer device."
+    },
+    {
+      "id": "source-protection-ratings",
+      "severity": "major",
+      "must": "The Utility Breaker carries readable 400 A and 35 kA ratings, and the Generator Breaker carries readable 300 A and 25 kA ratings, each beside the correct breaker."
+    },
+    {
+      "id": "equipment-rating-association",
+      "severity": "major",
+      "must": "The 250 kVA generator rating and 400 A / 480 V transfer rating are readable and cannot be mistaken for ratings of adjacent equipment."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. A 480 V open-transition transfer scheme. The utility supply and the 250 kVA standby generator each run through their own breaker into the two sides of a 400 A automatic transfer switch: the arm is drawn closed on the normal source, with the emergency side dashed. Below the switch the load splits onto the normal-load bus and the essential-load bus. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

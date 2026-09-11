@@ -1,0 +1,46 @@
+floorplan "Three-Bedroom Family Flat" unit m
+north
+wall exterior thickness 0.32
+wall interior thickness 0.12
+room living "Living Room" at 0,0 size 5x4
+room dining "Dining Room" below living size 5x3
+room bath1 "Family Bathroom" below dining size 5x1.5
+room bath2 "Shower Room" below bath1 size 5x1.5
+room hall "Central Hall" at 5,0 size 2x10
+room kitchen "Kitchen" right-of hall size 5x3
+room bed1 "Bedroom 1" below kitchen size 5x2.5
+room bed2 "Bedroom 2" below bed1 size 5x2.25
+room bed3 "Bedroom 3" below bed2 size 5x2.25
+
+door hall south from start 0.5 width 0.95 id entry hinge left swing in
+door between hall living at 45% width 0.9 hinge left swing in
+door between hall dining at 55% width 0.9 hinge right swing in
+door between hall kitchen at 40% width 0.9 hinge left swing in
+door between hall bath1 at 45% width 0.8 hinge right swing in
+door between hall bath2 at 55% width 0.8 hinge left swing in
+door between hall bed1 at 40% width 0.85 hinge right swing in
+door between hall bed2 at 45% width 0.85 hinge left swing in
+door between hall bed3 at 60% width 0.85 hinge right swing in
+
+window living west at 35% width 1.6
+window dining west at 55% width 1.6
+window kitchen north at 45% width 1.4
+window bed1 east at 45% width 1.2
+window bed2 east at 50% width 1.2
+window bed3 south at 45% width 1.2
+
+furniture sofa in living at 0.5,1.3 size 2.2x0.9
+furniture coffee-table in living at 1.2,2.6 size 1.0x0.6
+furniture tv-stand in living at 3.45,1.4 size 0.35x1.2
+furniture dining-table in dining at 0.8,1.6 size 2.2x1.0
+furniture counter in kitchen at 0.15,0.2 size 2.6x0.6
+furniture kitchen-sink in kitchen at 0.5,0.22 size 0.8x0.5
+furniture stove in kitchen at 1.8,0.2 size 0.7x0.6
+furniture fridge in kitchen at 0.15,2.1 size 0.8x0.8
+furniture bed-queen in bed1 at 2.7,0.25 size 1.6x2.0
+furniture bed-single in bed2 at 3.3,0.15 size 1.0x2.0
+furniture bed-single in bed3 at 3.3,0.15 size 1.0x2.0
+furniture toilet in bath1 at 2.0,0.15
+furniture sink in bath1 at 0.3,0.15
+furniture toilet in bath2 at 2.0,0.15
+furniture sink in bath2 at 0.3,0.15

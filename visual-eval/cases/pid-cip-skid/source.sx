@@ -1,0 +1,37 @@
+# CIP supply is 70 C and 1.5 m/s return velocity; conductivity verifies chemical concentration.
+# Supply and return diverters route the selected circuit; both actuators fail closed.
+pid "Clean-in-Place Skid" [direction: LR, units: metric]
+
+equip TK-501 : tank_atm [tag: "TK-501 Caustic Tank"]
+equip TK-502 : tank_atm [tag: "TK-502 Rinse Water Tank"]
+equip TK-503 : vessel_h [tag: "TK-503 CIP Return Tank"]
+equip P-501 : pump_centrifugal [tag: "P-501 CIP Supply Pump"]
+equip P-502 : pump_centrifugal [tag: "P-502 CIP Return Pump"]
+equip DV-501 : valve_control [tag: "DV-501 Supply Diverter", actuator: "solenoid", fail: "FC"]
+equip DV-502 : valve_control [tag: "DV-502 Return Diverter", actuator: "solenoid", fail: "FC"]
+equip XV-501 : valve_gate [tag: "XV-501 Caustic Isolation"]
+equip XV-502 : valve_gate [tag: "XV-502 Rinse Isolation"]
+
+line causticSuction from TK-501.bottom to XV-501.in [type: process, size: "DN50", service: "caustic"]
+line causticToPump from XV-501.out to P-501.in [type: process, size: "DN50", service: "caustic"]
+line rinseSuction from TK-502.bottom to XV-502.in [type: process, size: "DN50", service: "rinse water"]
+line rinseToPump from XV-502.out to P-501.in [type: process, size: "DN50", service: "rinse water"]
+line supplyDischarge from P-501.out to DV-501.in [type: process, size: "DN50", service: "cip supply"]
+line supplyToCircuit from DV-501.out to ProcessCircuit [type: process, size: "DN50", service: "cip supply"]
+line returnFromCircuit from ProcessReturn to DV-502.in [type: process, size: "DN50", service: "cip return"]
+line returnToPump from DV-502.out to P-502.in [type: process, size: "DN50", service: "cip return"]
+line returnToTank from P-502.out to TK-503.in [type: process, size: "DN50", service: "cip return"]
+
+inst AT-501 : field_discrete
+  measures P-501
+inst AIC-501 : cr_shared
+  controls DV-501
+inst TT-501 : field_discrete
+  measures P-501
+inst TIC-501 : cr_shared
+  controls DV-501
+
+line conductivitySignal from AT-501 to AIC-501 [type: electric]
+line temperatureSignal from TT-501 to TIC-501 [type: electric]
+line supplyDiverterCommand from AIC-501 to DV-501.signal [type: electric]
+line returnDiverterCommand from TIC-501 to DV-502.signal [type: electric]

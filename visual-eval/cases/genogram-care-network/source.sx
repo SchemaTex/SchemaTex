@@ -1,0 +1,17 @@
+genogram "Care Network" [asOf: 2026]
+  grandfather [male, 1948, label: "偉明"]
+  grandmother [female, 1950, label: "美玲"]
+  father [male, 1975, label: "建國"]
+  counsellor [other, label: "學校輔導員 陳老師", external: true]
+  caseworker [other, label: "個案社工 王女士", external: true]
+  neighbour [other, label: "鄰居 張阿姨", external: true]
+
+  grandfather -- grandmother
+    mother [female, 1977, label: "麗華"]
+
+  father -- mother
+    child [female, 2008, label: "小安", index]
+
+  child -close- counsellor [label: "學校支持"]
+  mother -friendship- caseworker [label: "個案支持"]
+  child -close- neighbour [label: "鄰里照顧"]

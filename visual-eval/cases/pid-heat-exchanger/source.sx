@@ -1,0 +1,26 @@
+pid "Shell and Tube Heat Exchanger" [direction: LR, units: metric]
+
+equip XV-101 : valve_gate [tag: "Hot Inlet Isolation"]
+equip E-101 : hx_shell_tube [tag: "E-101 Shell-and-Tube Exchanger"]
+equip XV-102 : valve_gate [tag: "Hot Outlet Isolation"]
+equip TV-101 : valve_control [tag: "Hot Outlet Temperature Valve", actuator: "diaphragm", fail: "FO"]
+equip XV-201 : valve_gate [tag: "Cold Inlet Isolation"]
+equip XV-202 : valve_gate [tag: "Cold Outlet Isolation"]
+equip XV-301 : valve_gate [tag: "High-point Vent"]
+equip XV-302 : valve_gate [tag: "Low-point Drain"]
+
+line hotIn from XV-101.out to E-101.shell_in [type: process, size: "DN80", service: "hot glycol supply"]
+line hotOut from E-101.shell_out to XV-102.in [type: process, size: "DN80", service: "hot glycol return"]
+line hotControl from XV-102.out to TV-101.in [type: process, size: "DN80", service: "hot glycol return"]
+line coldIn from XV-201.out to E-101.tube_in [type: process, size: "DN65", service: "cooling water supply"]
+line coldOut from E-101.tube_out to XV-202.in [type: process, size: "DN65", service: "cooling water return"]
+line vent from E-101.tube_out to XV-301.in [type: process_minor, size: "DN15", service: "vent"]
+line drain from E-101.tube_in to XV-302.in [type: process_minor, size: "DN15", service: "drain"]
+
+inst TT-101 : field_discrete
+  measures E-101
+inst TIC-101 : cr_shared
+  controls TV-101
+line temperatureTap from E-101.shell_out to TT-101 [type: capillary]
+line temperatureSignal from TT-101 to TIC-101 [type: electric]
+line valveCommand from TIC-101 to TV-101.signal [type: pneumatic]

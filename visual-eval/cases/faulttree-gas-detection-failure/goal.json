@@ -1,0 +1,39 @@
+{
+  "id": "faulttree-gas-detection-failure",
+  "type": "faulttree",
+  "title": "Failure to detect gas release",
+  "goal": "Show detector, logic-solver, and maintenance-inhibit paths that can prevent a gas alarm.",
+  "rubric": [
+    {
+      "id": "demand-and-failure",
+      "severity": "blocker",
+      "must": "The top event visibly joins a gas-release demand with a detection-function failure at an AND gate."
+    },
+    {
+      "id": "detector-redundancy",
+      "severity": "blocker",
+      "must": "Both detector-channel failures visibly combine at an AND gate."
+    },
+    {
+      "id": "logic-and-inhibit",
+      "severity": "blocker",
+      "must": "Logic-solver failure and an inhibit-conditioned alarm path are visible as alternatives in the detection-failure branch."
+    },
+    {
+      "id": "inhibit-symbol",
+      "severity": "major",
+      "must": "The maintenance-inhibit condition is visibly attached to an inhibit gate."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "The release, detector, solver, and alarm-path basic events visibly show probabilities."
+    },
+    {
+      "id": "readable-hierarchy",
+      "severity": "minor",
+      "must": "The major detection paths are visually separated and readable from top event to basic events."
+    }
+  ],
+  "split": "holdout"
+}

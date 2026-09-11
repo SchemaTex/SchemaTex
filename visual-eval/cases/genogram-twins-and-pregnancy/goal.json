@@ -1,0 +1,55 @@
+{
+  "id": "genogram-twins-and-pregnancy",
+  "type": "genogram",
+  "title": "Twins, pregnancy and pregnancy losses",
+  "goal": "A reader can distinguish identical from fraternal twins, identify a current pregnancy and two different pregnancy losses, and trace every child or pregnancy outcome to Morgan and Riley without reading a loss as a living child.",
+  "split": "holdout",
+  "rubric": [
+    {
+      "id": "shared-parentage",
+      "severity": "blocker",
+      "must": "Morgan and Riley form one parental union above a single child generation containing Nina, Nora, Owen, Iris, the 2023 miscarriage, the 2024 stillbirth and the expected baby; each outcome connects to that union and appears once."
+    },
+    {
+      "id": "identical-twin-branch",
+      "severity": "blocker",
+      "must": "Nina and Nora have two diagonal child lines meeting at a single branch point, with a horizontal line joining the twin branches to mark identical twins, rather than independent vertical sibling drops."
+    },
+    {
+      "id": "fraternal-twin-branch",
+      "severity": "blocker",
+      "must": "Owen and Iris have two diagonal child lines meeting at their own single branch point, without the horizontal joining line used for identical twins; their connection is visibly distinguishable from Nina and Nora's."
+    },
+    {
+      "id": "current-pregnancy-symbol",
+      "severity": "blocker",
+      "must": "Expected baby is represented by a small unfilled triangle with a clearly dashed outline, approximately half the width and height of an ordinary person symbol, rather than a full-size square, circle or diamond."
+    },
+    {
+      "id": "distinct-loss-symbols",
+      "severity": "blocker",
+      "must": "Loss at 10 weeks (2023) is a small solid-outline triangle about three tenths of an ordinary symbol's width and height; Stillbirth (2024) is a half-size square with a readable SB marking. Neither loss looks like an ordinary living child, and both are distinguishable from the dashed pregnancy triangle."
+    },
+    {
+      "id": "birth-order",
+      "severity": "major",
+      "must": "The 2018 twin pair appears to the left of the 2021 twin pair, followed by the 2023 miscarriage, the 2024 stillbirth and the current pregnancy, with members of each twin pair adjacent."
+    },
+    {
+      "id": "symbol-legend",
+      "severity": "major",
+      "must": "Readable legend entries identify identical twins, fraternal twins, miscarriage, stillbirth and pregnancy, with swatches that distinguish their respective encodings."
+    },
+    {
+      "id": "unobstructed-labels-and-lines",
+      "severity": "major",
+      "must": "All names and the years 2018, 2021, 2023 and 2024 are readable beside their correct symbols; twin connectors, the pregnancy outline and the SB marking are not obscured by labels or other lines."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Nina and Nora share an identical-twin fork with a crossbar; Owen and Iris share a plain fraternal-twin fork. Their single sibship line also carries the solid miscarriage triangle, half-size stillbirth square marked SB and dashed-outline current-pregnancy triangle, with distinct legend swatches."
+  }
+}

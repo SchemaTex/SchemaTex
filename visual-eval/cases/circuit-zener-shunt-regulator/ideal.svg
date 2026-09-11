@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <title>Zener Shunt Regulator — reverse-protected 15 V input, 5.1 V output</title>
+  <rect width="1200" height="760" fill="white"/>
+  <style>
+    .wire,.symbol{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .node{fill:#17212b}
+    text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:22px}
+    .heading{font-size:34px;font-weight:700}
+    .name{font-size:21px;font-weight:700}
+    .value{font-size:21px}
+    .net{font-size:18px;fill:#475569}
+  </style>
+  <text x="60" y="66" class="heading">Zener Shunt Regulator</text>
+  <text x="60" y="102" class="net">Reverse protection · Series current limiting · Zener shunt regulation</text>
+
+  <!-- VIN source and input rail -->
+  <path class="wire" d="M150 330V240H305 M150 430V600H1050"/>
+  <circle class="symbol" cx="150" cy="380" r="50"/>
+  <path class="symbol" d="M139 357H161 M150 346V368 M139 403H161"/>
+  <text x="62" y="475" class="name">V1 INPUT</text>
+  <text x="62" y="505" class="value">15 V unregulated</text>
+  <text x="181" y="225" class="net">VIN</text>
+
+  <!-- D1: Schottky diode, anode left and cathode right -->
+  <path class="symbol" d="M305 218L345 240L305 262Z M345 218V262 M345 218H355V228 M345 262H335V252"/>
+  <path class="wire" d="M345 240H470"/>
+  <text x="330" y="162" text-anchor="middle" class="name">D1 REVERSE PROTECT</text>
+  <text x="330" y="192" text-anchor="middle" class="value">SS14, 1 A</text>
+  <text x="405" y="281" text-anchor="middle" class="net">PROTECTED</text>
+
+  <!-- R1: series current-limiting resistor -->
+  <path class="symbol" d="M470 240L480 224L495 256L510 224L525 256L540 224L555 256L570 240"/>
+  <path class="wire" d="M570 240H1050"/>
+  <text x="520" y="162" text-anchor="middle" class="name">R1 SERIES</text>
+  <text x="520" y="192" text-anchor="middle" class="value">330 Ω, 1 W</text>
+  <text x="846" y="196" text-anchor="middle" class="name">VOUT ≈ 5.1 V</text>
+
+  <!-- D2: zener cathode at VOUT, anode at ground -->
+  <path class="wire" d="M680 240V365 M680 409V600"/>
+  <path class="symbol" d="M657 409L680 365L703 409Z M657 365H703 M657 365L651 377 M703 365L709 353"/>
+  <text x="620" y="466" class="name">D2 ZENER</text>
+  <text x="620" y="496" class="value">5.1 V, 1 W</text>
+
+  <!-- R2: grounded output load -->
+  <path class="wire" d="M865 240V335 M865 435V600"/>
+  <path class="symbol" d="M865 335L849 345L881 360L849 375L881 390L849 405L881 420L865 435"/>
+  <text x="807" y="466" class="name">R2 LOAD</text>
+  <text x="794" y="496" class="value">1 kΩ, 0.25 W</text>
+
+  <!-- C1: polarized electrolytic output capacitor, positive at VOUT -->
+  <path class="wire" d="M1050 240V370 M1050 403V600"/>
+  <path class="symbol" d="M1020 370H1080 M1020 408Q1050 393 1080 408 M1010 345H1026 M1018 337V353"/>
+  <text x="1050" y="466" text-anchor="middle" class="name">C1 OUTPUT</text>
+  <text x="1050" y="496" text-anchor="middle" class="value">47 µF, 16 V</text>
+
+  <!-- Explicit junction dots and shared ground -->
+  <g class="node">
+    <circle cx="680" cy="240" r="5"/><circle cx="865" cy="240" r="5"/><circle cx="1050" cy="240" r="5"/>
+    <circle cx="680" cy="600" r="5"/><circle cx="865" cy="600" r="5"/><circle cx="1050" cy="600" r="5"/>
+  </g>
+  <path class="wire" d="M680 600V636 M656 636H704 M664 647H696 M672 658H688"/>
+  <text x="680" y="694" text-anchor="middle" class="net">GND · common return</text>
+</svg>

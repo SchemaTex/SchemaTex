@@ -1,0 +1,18 @@
+%% Extensible analytics platform with abstract plugins and host dependencies.
+classDiagram
+class Plugin { <<abstract>> #name : String +initialize() : void +execute() : Result }
+class ExportPlugin { +execute() : Result }
+class ValidationPlugin { +execute() : Result }
+class PluginContext { +tenantId : UUID }
+class PluginRegistry { +register(plugin : Plugin) : void }
+class AnalyticsHost { +run(plugin : Plugin) : Result }
+class Result { +success : boolean }
+class Configurable { <<interface>> +configure(context : PluginContext) : void }
+ExportPlugin --|> Plugin
+ValidationPlugin --|> Plugin
+ExportPlugin ..|> Configurable
+ValidationPlugin ..|> Configurable
+PluginRegistry o-- "0..*" Plugin : registered plugins
+AnalyticsHost --> PluginRegistry : resolves
+Plugin ..> PluginContext : executes in
+Plugin --> Result : produces

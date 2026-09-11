@@ -1,0 +1,42 @@
+# Tower cold-water supply is controlled to 30 C; basin makeup opens at low level.
+# Conductivity controller opens blowdown to limit dissolved solids.
+pid "Cooling Tower Circulating Water Loop" [direction: LR, units: metric]
+
+equip CT-601 : cooling_tower [tag: "CT-601 Cooling Tower"]
+equip B-601 : vessel_h [tag: "B-601 Tower Basin"]
+equip P-601A : pump_centrifugal [tag: "P-601A Circulating Pump"]
+equip P-601B : pump_centrifugal [tag: "P-601B Standby Circulating Pump"]
+equip E-601 : hx_shell_tube [tag: "E-601 Process Cooler"]
+equip LV-601 : valve_control [tag: "LV-601 Makeup Water Valve", actuator: "diaphragm", fail: "FC"]
+equip AV-601 : valve_control [tag: "AV-601 Blowdown Valve", actuator: "diaphragm", fail: "FC"]
+equip TV-601 : valve_control [tag: "TV-601 Fan Bypass Valve", actuator: "diaphragm", fail: "FO"]
+
+line basinToPumpA from B-601.bottom to P-601A.in [type: process, size: "DN200", service: "cooling water"]
+line basinToPumpB from B-601.bottom to P-601B.in [type: process, size: "DN200", service: "cooling water"]
+line pumpAToCooler from P-601A.out to E-601.tube_in [type: process, size: "DN150", service: "cooling water"]
+line pumpBToCooler from P-601B.out to E-601.tube_in [type: process, size: "DN150", service: "cooling water"]
+line warmReturn from E-601.tube_out to CT-601.in [type: process, size: "DN150", service: "warm cooling water"]
+line towerToBasin from CT-601.out to B-601.in [type: process, size: "DN200", service: "cold cooling water"]
+line makeup from MakeupWater to LV-601.in [type: process_minor, size: "DN40", service: "makeup water"]
+line makeupToBasin from LV-601.out to B-601.top [type: process_minor, size: "DN40", service: "makeup water"]
+line blowdown from B-601.out to AV-601.in [type: process_minor, size: "DN25", service: "blowdown"]
+
+inst LT-601 : field_discrete
+  measures B-601
+inst LIC-601 : cr_shared
+  controls LV-601
+inst AT-601 : field_discrete
+  measures B-601
+inst AIC-601 : cr_shared
+  controls AV-601
+inst TT-601 : field_discrete
+  measures E-601
+inst TIC-601 : cr_shared
+  controls TV-601
+
+line levelSignal from LT-601 to LIC-601 [type: electric]
+line makeupCommand from LIC-601 to LV-601.signal [type: pneumatic]
+line conductivitySignal from AT-601 to AIC-601 [type: electric]
+line blowdownCommand from AIC-601 to AV-601.signal [type: pneumatic]
+line temperatureSignal from TT-601 to TIC-601 [type: electric]
+line temperatureCommand from TIC-601 to TV-601.signal [type: pneumatic]

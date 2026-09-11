@@ -1,0 +1,41 @@
+{
+  "id": "bpmn-employee-onboarding",
+  "type": "bpmn",
+  "variant": "collaboration",
+  "title": "Employee onboarding",
+  "goal": "Show HR and IT parallel onboarding work.",
+  "rubric": [
+    {
+      "id": "pools",
+      "severity": "blocker",
+      "must": "Employee and Company are separate pools with message flows crossing between them."
+    },
+    {
+      "id": "parallel",
+      "severity": "blocker",
+      "must": "Parallel gateways visibly split account creation and equipment issue then join before Onboarded."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Company visibly has HR and IT lanes."
+    },
+    {
+      "id": "events",
+      "severity": "major",
+      "must": "Offer accepted is a start event and Onboarded is an end event."
+    },
+    {
+      "id": "messages",
+      "severity": "minor",
+      "must": "Welcome is a dashed message flow to Employee."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all five rules, while image 2 omits the Employee pool and message flows and places account creation and equipment preparation sequentially rather than in parallel."
+  }
+}

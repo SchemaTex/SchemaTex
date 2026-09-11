@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-induced-demand",
+  "type": "causalloop",
+  "title": "Urban traffic induced demand",
+  "goal": "A transport planner can see the balancing induced-demand feedback of road expansion.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A named induced-demand loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The closed loop visibly links capacity, travel time, attractiveness, trips, and congestion."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Arrowheads make causal direction readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The loop label is placed in a readable open loop area."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-causalloop-target.mjs`, which draws all five cases from one kit so the set is one drawing repeated. A causal-loop diagram of Urban traffic induced demand. 5 variables are joined by 5 causal links, each carrying its polarity beside the arrowhead. The engine's job here is to find the feedback loops and classify them by Sterman's even/odd rule, and this drawing shows that answer: B1 runs Travel time → Driving attractiveness → Vehicle trips → Congestion → Travel time with 1 negative link, so it balances. Each loop glyph is a circular arrow curling in the loop's own direction, labelled with the computed letter and the loop's name. Notation is Sterman's, per `docs/reference/41-CAUSAL-LOOP-STANDARD.md`: variables are plain text, causal links are curved arrows, each link carries its polarity beside the arrowhead, a slow link wears two hash marks, and every feedback loop gets a circular arrow curling in the loop's own direction. The R/B letter is computed by Sterman's even/odd rule — count the negative links round the loop, even (zero included) reinforces, odd balances — never copied from the source, and the footer shows the count so the verdict can be checked. Reinforcing loops are terracotta and balancing loops teal. Every label was checked against every other label and the canvas edge: 0 overlaps."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-fire-alarm-loop",
+  "type": "circuit",
+  "title": "Addressable fire-alarm Class A loop",
+  "split": "holdout",
+  "goal": "A reader must be able to trace the panel’s outgoing and returning Class A loop through addressable devices and distinguish the supervised sounder circuit.",
+  "rubric": [
+    {
+      "id": "class-a-return",
+      "severity": "blocker",
+      "must": "The FACP LOOP OUT connection passes through all listed field devices and visibly returns to the distinct FACP LOOP IN connection."
+    },
+    {
+      "id": "ordered-devices",
+      "severity": "blocker",
+      "must": "A smoke detector, heat detector, manual call point, and second smoke detector are visible in sequence on the loop."
+    },
+    {
+      "id": "eol-arrangement",
+      "severity": "blocker",
+      "must": "A 6.8 kΩ EOL MONITOR is shown at the remote end near the loop-return connection."
+    },
+    {
+      "id": "panel-identification",
+      "severity": "major",
+      "must": "The panel block is labelled FACP PANEL and Notifier NFS-320."
+    },
+    {
+      "id": "sounder-branch",
+      "severity": "major",
+      "must": "A separate panel sounder output passes through a 1 A fuse and feeds two 24 VDC sounders in parallel."
+    },
+    {
+      "id": "common-return",
+      "severity": "minor",
+      "must": "The loop supervision and sounder circuits show a readable shared COM return."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The loop leaves the panel, passes through four addressable devices in series and returns to LOOP IN, with the end-of-line monitor at the far end and the sounders on their own fused branch off a shared COM."
+  }
+}

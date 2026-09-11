@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="660" viewBox="0 0 1900 660">
+<title>Feature Film Production — dependency schedule in days</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  <marker id="critical-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#bc432d"/></marker>
+  <style>
+    text{font-family:Helvetica,Arial,sans-serif;fill:#243347}
+    .task{fill:#fff;stroke:#64748b;stroke-width:2}
+    .critical{fill:#fff8f4;stroke:#bc432d;stroke-width:2.5}
+    .edge{fill:none;stroke:#64748b;stroke-width:2;marker-end:url(#arrow);stroke-linejoin:round}
+    .cp{fill:none;stroke:#bc432d;stroke-width:3;marker-end:url(#critical-arrow);stroke-linejoin:round}
+    .name{font-size:18px;font-weight:600;text-anchor:middle}
+    .duration{font-size:16px;fill:#617083;text-anchor:middle}
+    .id{font-size:12px;font-weight:700;letter-spacing:1px;fill:#617083}
+  </style>
+</defs>
+<rect width="1900" height="660" fill="white"/>
+<text x="48" y="57" font-size="32" font-weight="700">Feature Film Production</text>
+<text x="48" y="89" font-size="17" fill="#617083">Dependency network · Durations in days · Left to right</text>
+<path d="M1370 57H1425" stroke="#bc432d" stroke-width="3"/>
+<text x="1438" y="63" font-size="17">Critical path · 109 days</text>
+<!-- All connections terminate at the dependent activity. -->
+<g>
+  <path class="cp" d="M162 300H212"/>
+  <path class="edge" d="M382 300H410V203H448"/>
+  <path class="cp" d="M382 300H410V385H448"/>
+  <path class="cp" d="M618 385H657"/>
+  <path class="edge" d="M618 203H855V280H888"/>
+  <path class="cp" d="M827 385H855V320H888"/>
+  <path class="cp" d="M1108 300H1150"/>
+  <path class="edge" d="M998 344V515H1150"/>
+  <path class="edge" d="M1320 300H1344V203H1370"/>
+  <path class="cp" d="M1320 300H1344V385H1370"/>
+  <path class="edge" d="M1560 203H1583V280H1608"/>
+  <path class="cp" d="M1560 385H1583V320H1608"/>
+  <path class="cp" d="M1778 300H1804"/>
+</g>
+<!-- Milestone A -->
+<path class="critical" d="M124 262L162 300L124 338L86 300Z"/>
+<text x="124" y="306" text-anchor="middle" font-size="19" font-weight="700">A</text>
+<text class="name" x="124" y="367">Greenlight</text>
+<text class="duration" x="124" y="392">Milestone · day 0</text>
+<!-- Development -->
+<rect class="critical" x="212" y="256" width="170" height="88" rx="3"/>
+<text class="id" x="224" y="274">B</text>
+<text class="name" x="297" y="299">Lock screenplay</text>
+<text class="duration" x="297" y="325">10 days</text>
+<!-- Production branches -->
+<rect class="task" x="448" y="159" width="170" height="88" rx="3"/>
+<text class="id" x="460" y="177">C</text>
+<text class="name" x="533" y="202">Cast leads</text>
+<text class="duration" x="533" y="228">12 days</text>
+<rect class="critical" x="448" y="341" width="170" height="88" rx="3"/>
+<text class="id" x="460" y="359">D</text>
+<text class="name" x="533" y="384">Scout locations</text>
+<text class="duration" x="533" y="410">10 days</text>
+<rect class="critical" x="657" y="341" width="170" height="88" rx="3"/>
+<text class="id" x="669" y="359">E</text>
+<text class="name" x="742" y="384">Build sets</text>
+<text class="duration" x="742" y="410">15 days</text>
+<rect class="critical" x="888" y="256" width="220" height="88" rx="3"/>
+<text class="id" x="900" y="274">F</text>
+<text class="name" x="998" y="299">Principal photography</text>
+<text class="duration" x="998" y="325">30 days</text>
+<!-- Post-production and marketing -->
+<rect class="critical" x="1150" y="256" width="170" height="88" rx="3"/>
+<text class="id" x="1162" y="274">G</text>
+<text class="name" x="1235" y="299">Edit picture</text>
+<text class="duration" x="1235" y="325">20 days</text>
+<rect class="task" x="1150" y="471" width="180" height="88" rx="3"/>
+<text class="id" x="1162" y="489">L</text>
+<text class="name" x="1240" y="514">Marketing trailer</text>
+<text class="duration" x="1240" y="540">8 days</text>
+<rect class="task" x="1370" y="149" width="190" height="108" rx="3"/>
+<text class="id" x="1382" y="167">H</text>
+<text class="name" x="1465" y="191">Sound design</text>
+<text class="name" x="1465" y="214">and mix</text>
+<text class="duration" x="1465" y="241">12 days</text>
+<rect class="critical" x="1370" y="341" width="190" height="88" rx="3"/>
+<text class="id" x="1382" y="359">I</text>
+<text class="name" x="1465" y="384">Visual effects</text>
+<text class="duration" x="1465" y="410">18 days</text>
+<rect class="critical" x="1608" y="256" width="170" height="88" rx="3"/>
+<text class="id" x="1620" y="274">J</text>
+<text class="name" x="1693" y="299">Final colour grade</text>
+<text class="duration" x="1693" y="325">6 days</text>
+<!-- Milestone K -->
+<path class="critical" d="M1842 262L1880 300L1842 338L1804 300Z"/>
+<text x="1842" y="306" text-anchor="middle" font-size="19" font-weight="700">K</text>
+<text x="1880" y="367" text-anchor="end" font-size="18" font-weight="600">Festival delivery</text>
+<text x="1880" y="392" text-anchor="end" font-size="16" fill="#617083">Milestone · day 109</text>
+<line x1="48" y1="604" x2="1852" y2="604" stroke="#e2e8f0"/>
+<text x="48" y="634" font-size="15" fill="#617083">Arrows show prerequisites. Each activity starts only after all incoming activities finish.</text>
+</svg>

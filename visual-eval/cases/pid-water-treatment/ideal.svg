@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<title>Water Treatment Symbol Coverage</title>
+<defs>
+ <marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#20272b"/></marker>
+ <style>
+ .equip{fill:white;stroke:#20272b;stroke-width:2.5} .detail{fill:none;stroke:#20272b;stroke-width:2}
+ .pipe{fill:none;stroke:#20272b;stroke-width:3;stroke-linejoin:miter;marker-end:url(#flow)}
+ .minor{fill:none;stroke:#20272b;stroke-width:1.8;marker-end:url(#flow)}
+ .signal{fill:none;stroke:#20272b;stroke-width:1.6;stroke-dasharray:9 6;marker-end:url(#flow)}
+ text{font-family:Helvetica,Arial,sans-serif;fill:#20272b;text-anchor:middle;font-size:20px}
+ .id{font-weight:700;font-size:21px}.service{font-size:16px;fill:#505b61}.title{font-size:28px;font-weight:600}
+ </style>
+</defs>
+<rect width="1600" height="1000" fill="white"/>
+<text class="title" x="800" y="48">Water Treatment Symbol Coverage</text>
+
+<!-- Main process: boundary-to-boundary, with flow arrows at every destination. -->
+<path class="pipe" d="M160 410 V470 H350"/>
+<path class="pipe" d="M430 470 H710"/>
+<path class="pipe" d="M850 470 H1060"/>
+<path class="pipe" d="M1120 470 H1410 V386"/>
+<text class="service" x="255" y="455">raw water</text>
+<text class="service" x="568" y="454">filter feed</text>
+<text class="service" x="952" y="454">filtered water</text>
+<text class="service" x="1260" y="454">clear water</text>
+
+<!-- Minor process: separate top, backwash and drain ports. -->
+<path class="minor" d="M400 260 V310 H510"/>
+<path class="minor" d="M590 310 H780 V402"/>
+<text class="service" x="679" y="294">chemical dosing</text>
+<path class="minor" d="M280 770 H680 V500 H710"/>
+<text class="service" x="472" y="751">backwash</text>
+<path class="minor" d="M820 530 V660 H1110 V745"/>
+<text class="service" x="958" y="645">filter drain</text>
+
+<!-- Atmospheric tanks: arched roof, straight shell. -->
+<path class="equip" d="M80 280 C80 248 240 248 240 280 V410 H80 Z"/>
+<path class="detail" d="M80 280 H240"/>
+<text class="id" x="160" y="330">TK-101</text>
+<text x="160" y="359">Raw Water</text>
+
+<path class="equip" d="M1330 410 C1330 378 1490 378 1490 410 V560 H1330 Z"/>
+<path class="detail" d="M1330 410 H1490"/>
+<text class="id" x="1410" y="480">TK-102</text>
+<text x="1410" y="509">Clear Water</text>
+
+<path class="equip" d="M300 130 C300 98 500 98 500 130 V260 H300 Z"/>
+<path class="detail" d="M300 130 H500"/>
+<text class="id" x="400" y="180">TK-201</text>
+<text x="400" y="211">Chemical Day Tank</text>
+
+<path class="equip" d="M80 700 C80 668 280 668 280 700 V840 H80 Z"/>
+<path class="detail" d="M80 700 H280"/>
+<text class="id" x="180" y="755">TK-301</text>
+<text x="180" y="787">Backwash Water</text>
+
+<path class="equip" d="M1020 772 C1020 736 1200 736 1200 772 V902 H1020 Z"/>
+<path class="detail" d="M1020 772 H1200"/>
+<text class="id" x="1110" y="826">TK-401</text>
+<text x="1110" y="857">Drain Sump</text>
+
+<!-- General pump. -->
+<circle class="equip" cx="390" cy="470" r="40"/>
+<path class="detail" d="M373 447 L410 470 L373 493 Z"/>
+<text class="id" x="390" y="547">P-101</text>
+<text x="390" y="576">Transfer Pump</text>
+
+<!-- Diaphragm pump. -->
+<circle class="equip" cx="550" cy="310" r="40"/>
+<path class="detail" d="M535 285 V335 M535 285 Q574 310 535 335"/>
+<text class="id" x="550" y="384">P-201</text>
+<text x="550" y="413">Dosing Pump</text>
+
+<!-- Filter: distinct feed, product, dosing, backwash and drain terminations. -->
+<rect class="equip" x="710" y="410" width="140" height="120"/>
+<path class="detail" d="M726 428 L834 462 M726 478 L834 512"/>
+<text class="id" x="743" y="578">F-101</text>
+<text x="743" y="607">Media Filter</text>
+
+<!-- Motor-operated control valve and fail-locked indication. -->
+<path class="equip" d="M1060 450 L1120 490 V450 L1060 490 Z"/>
+<path class="detail" d="M1090 470 V408"/>
+<circle class="equip" cx="1090" cy="385" r="23"/>
+<text x="1090" y="392">M</text>
+<text x="1140" y="393">FL</text>
+<text class="id" x="1090" y="547">XV-101</text>
+<text x="1090" y="576">Outlet MOV</text>
+
+<!-- Shared control-room instrument: circle in square with horizontal location line. -->
+<path class="signal" d="M1090 250 V362"/>
+<rect class="equip" x="1040" y="150" width="100" height="100"/>
+<circle class="equip" cx="1090" cy="200" r="50"/>
+<path class="detail" d="M1040 200 H1140"/>
+<text class="id" x="1090" y="186">FIC</text>
+<text class="id" x="1090" y="228">101</text>
+<text class="service" x="1160" y="299" text-anchor="start" style="text-anchor:start">electric</text>
+</svg>

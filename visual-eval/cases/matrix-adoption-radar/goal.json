@@ -1,0 +1,40 @@
+{
+  "id": "matrix-adoption-radar",
+  "type": "matrix",
+  "title": "Learning-technology adoption radar",
+  "goal": "A school district can distinguish mature high-value tools from emerging experiments.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Named technologies are visibly positioned by maturity and instructional value."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The mature high-value learning-management system is visibly distinct from emerging tools."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Bubble sizes visibly encode relative scale."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Both axes are labelled and directional."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Technology labels are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture uses equal-sized markers that do not encode relative scale."
+  }
+}

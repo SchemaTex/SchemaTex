@@ -1,0 +1,49 @@
+{
+  "id": "pedigree-x-linked-carriers",
+  "type": "pedigree",
+  "title": "X-linked recessive carriers",
+  "goal": "A reader can trace three generations of X-linked recessive inheritance, distinguish affected males and carrier females from unaffected relatives, and identify the proband and each child's parents.",
+  "rubric": [
+    {
+      "id": "generation-and-individual-labels",
+      "severity": "major",
+      "must": "Three distinct generation rows have readable Roman-numeral labels I, II, and III, and every individual has a readable generation-and-number identifier beside the correct symbol."
+    },
+    {
+      "id": "distinct-genetic-status",
+      "severity": "blocker",
+      "must": "II-1 and III-3 are fully filled squares; I-2, II-4, and III-2 are circles with distinct central carrier dots; all other individuals have empty symbols, with every symbol outline recognizable."
+    },
+    {
+      "id": "carrier-mothers",
+      "severity": "blocker",
+      "must": "The descent lines show affected II-1 as a child of I-1 and carrier I-2, and affected III-3 as a child of II-3 and carrier II-4."
+    },
+    {
+      "id": "affected-father-offspring",
+      "severity": "blocker",
+      "must": "Affected father II-1 and unaffected mother II-2 visibly have an unaffected son III-1 and a carrier daughter III-2, with no affected son connected to their union."
+    },
+    {
+      "id": "unaffected-family-line",
+      "severity": "major",
+      "must": "Unaffected II-5 is visibly a child of the generation-I couple and forms a separate union with unaffected II-6, from which unaffected III-5 descends."
+    },
+    {
+      "id": "unambiguous-proband",
+      "severity": "blocker",
+      "must": "Exactly one family member has a proband arrow labeled P, and its tip identifies III-3 without touching another person's symbol or a descent line."
+    },
+    {
+      "id": "unobstructed-parentage",
+      "severity": "major",
+      "must": "Each generation-III descent line can be followed to exactly one parental union without passing through an unrelated person's symbol, identifier, carrier dot, or proband marker."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Carrier females carry a central dot and affected males are solid squares across three generations; affected father II-1 has an unaffected son and a carrier daughter, and proband III-3 descends from carrier mother II-4."
+  }
+}

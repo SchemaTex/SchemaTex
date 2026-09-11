@@ -1,0 +1,45 @@
+{
+  "id": "mindmap-exam-revision-biology",
+  "type": "mindmap",
+  "title": "Biology revision",
+  "goal": "Show a structured biology revision map spanning core topic areas and study sub-topics.",
+  "rubric": [
+    {
+      "id": "central-theme",
+      "severity": "blocker",
+      "must": "Biology Revision is visibly the central root of the map."
+    },
+    {
+      "id": "core-topics",
+      "severity": "blocker",
+      "must": "Cell Biology, Genetics, Human Physiology, and Ecology visibly branch from the central topic."
+    },
+    {
+      "id": "cell-genetics",
+      "severity": "major",
+      "must": "Cell Biology and Genetics visibly expand to organelles or transport and DNA or inheritance sub-topics."
+    },
+    {
+      "id": "physiology-ecology",
+      "severity": "major",
+      "must": "Human Physiology and Ecology visibly expand to their named system and ecosystem sub-topics."
+    },
+    {
+      "id": "detailed-leaves",
+      "severity": "major",
+      "must": "Specific revision leaves such as diffusion and osmosis, Punnett squares, vaccination, and natural selection are visible."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "The diagram visibly distinguishes root, subject areas, sub-topics, and detailed study leaves."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 preserves the required four branches, specific revision leaves, and visible hierarchy, while Image 2 replaces required subjects and omits key details."
+  }
+}

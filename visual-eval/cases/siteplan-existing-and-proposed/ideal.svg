@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1120" viewBox="0 0 1200 1120">
+<title>Existing and Proposed Site Plan</title>
+<defs>
+ <pattern id="new" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M-2 2L2-2M0 9L9 0M7 11L11 7" stroke="#427588" stroke-width="1"/></pattern>
+ <pattern id="demo" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 0L10 10M10 0L0 10" stroke="#bc7169" stroke-width=".7"/></pattern>
+ <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#27343b"/></marker>
+ <style>
+ text{font-family:Helvetica,Arial,sans-serif;fill:#26343b;font-size:16px} .small{font-size:14px}.label{font-size:17px;font-weight:600}.boundary{fill:none;stroke:#24333a;stroke-width:3}.fence{fill:none;stroke:#647079;stroke-width:1;stroke-dasharray:9 4 2 4}.dim{fill:none;stroke:#58636a;stroke-width:1}.tick{stroke:#58636a;stroke-width:1.5}.leader{fill:none;stroke:#26343b;stroke-width:1.3;marker-end:url(#arrow)}.setback{fill:none;stroke:#8d8162;stroke-width:1.5;stroke-dasharray:10 5 2 5}.demo{stroke:#a84e46;stroke-width:2;stroke-dasharray:7 5}
+ </style>
+</defs>
+<rect width="1200" height="1120" fill="white"/>
+<text x="60" y="52" font-size="29" font-weight="700">Existing and Proposed Site Plan</text>
+<text x="60" y="80" fill="#647079">Development Parcel · Dimensions in metres</text>
+<!-- Geometry: x = 260 + 9x; y = 270 + 9y. North is up. -->
+<!-- Road and independent frontage -->
+<rect x="152" y="117" width="864" height="90" fill="#f0f2f3" stroke="#7e8990" stroke-width="1.5"/>
+<path d="M152 162H1016" stroke="#adb5b9" stroke-width="1.3" stroke-dasharray="20 12"/>
+<rect x="467" y="142" width="241" height="36" fill="#f0f2f3"/>
+<text x="588" y="166" text-anchor="middle" class="label">INDUSTRIAL AVENUE</text>
+<text x="1001" y="195" text-anchor="end" class="small">10 m road width</text>
+<!-- Frontage dimension -->
+<path d="M260 216V265M908 216V265M260 230H908" class="dim"/>
+<path d="M255 236L265 224M903 236L913 224" class="tick"/>
+<rect x="480" y="217" width="209" height="24" fill="white"/>
+<text x="584" y="234" text-anchor="middle">72 m parcel frontage</text>
+<!-- Site perimeter -->
+<path d="M260 270H908V792L332 846L224 522Z" fill="#fbfbf8" stroke="#24333a" stroke-width="3"/>
+<path d="M265 276H902V787L337 839L230 521Z" class="fence"/>
+<path d="M260 270H908" stroke="#427588" stroke-width="5"/>
+<text x="584" y="260" text-anchor="middle" class="small">72 m road frontage</text>
+<!-- Depth dimension -->
+<path d="M224 270H112M332 846H112M127 270V846" class="dim"/>
+<path d="M121 275L133 265M121 851L133 841" class="tick"/>
+<text x="105" y="558" text-anchor="middle" transform="rotate(-90 105 558)" class="label">64 m maximum parcel depth</text>
+<!-- Setbacks, broken only for labels placed clear of footprints -->
+<path d="M332 342H845M854 342V738" class="setback"/>
+<text x="626" y="327" text-anchor="middle" class="small">Front setback 8 m</text>
+<text x="881" y="645" text-anchor="middle" transform="rotate(-90 881 645)" class="small">East setback 6 m</text>
+<!-- Pedestrian and vehicle routes -->
+<path d="M485 270L422 432" fill="none" stroke="#aaa79b" stroke-width="18"/>
+<path d="M485 270L422 432" fill="none" stroke="#fff" stroke-width="14"/>
+<path d="M485 270L422 432" fill="none" stroke="#817d6c" stroke-width="1.2" stroke-dasharray="3 4"/>
+<path d="M453.5 270V432H516.5V270" fill="#dce8ec" stroke="#427588" stroke-width="2"/>
+<path d="M485 405V298" stroke="#427588" stroke-width="2" marker-end="url(#arrow)"/>
+<!-- Removed access -->
+<path d="M759.5 270V342H804.5V270" fill="#f8eeec" class="demo"/>
+<path d="M768 284L796 327M796 284L768 327" stroke="#a84e46" stroke-width="1.5"/>
+<!-- Visitor parking -->
+<rect x="323" y="324" width="135" height="72" fill="#eef0ed" stroke="#697971" stroke-width="1.6"/>
+<path d="M350 324V378M377 324V378M404 324V378M431 324V378" stroke="#697971" stroke-width="1"/>
+<!-- Building footprints -->
+<rect x="386" y="432" width="288" height="225" fill="#e2e5e6" stroke="#39474f" stroke-width="2.5"/>
+<rect x="674" y="486" width="153" height="171" fill="#eaf3f6" stroke="#285f74" stroke-width="3"/>
+<rect x="674" y="486" width="153" height="171" fill="url(#new)"/>
+<rect x="728" y="342" width="117" height="90" fill="#fff3f0" class="demo"/>
+<rect x="728" y="342" width="117" height="90" fill="url(#demo)"/>
+<!-- Entry -->
+<path d="M478.25 421L485 432L491.75 421Z" fill="#285f74" stroke="#285f74"/>
+<!-- Exterior annotation, orthogonal leader lines -->
+<text x="167" y="304" class="small">Revised visitor parking</text>
+<path d="M309 307H337V324" class="leader"/>
+<text x="160" y="435" class="small">Pedestrian route</text>
+<path d="M293 430H409V408" class="leader"/>
+<text x="540" y="361" class="label">Proposed vehicle</text>
+<text x="540" y="382" class="label">access</text>
+<text x="610" y="382" class="small">7 m wide</text>
+<path d="M535 378H506" class="leader"/>
+<text x="934" y="290" class="small">Existing access</text>
+<text x="934" y="310" class="small" fill="#a84e46">removed · 5 m wide</text>
+<path d="M927 299H810" class="leader"/>
+<text x="934" y="374" class="label">Demolish outbuilding</text>
+<path d="M929 378H881V378H847" class="leader"/>
+<text x="540" y="414" class="small">New entry</text>
+<path d="M532 416H499V426H492" class="leader"/>
+<text x="159" y="530" class="label">Retained existing</text>
+<text x="159" y="551" class="label">building</text>
+<text x="159" y="573" class="small">Existing warehouse</text>
+<path d="M307 549H383" class="leader"/>
+<text x="942" y="598" class="label">Proposed extension</text>
+<path d="M936 612H872V576H830" class="leader"/>
+<!-- Extension width -->
+<path d="M674 664V709M827 664V709M674 693H827" class="dim"/>
+<path d="M669 699L679 687M822 699L832 687" class="tick"/>
+<text x="750" y="730" text-anchor="middle">17 m proposed extension</text>
+<!-- Retained tree, 5 m crown -->
+<path d="M310 705Q306 693 318 691Q324 681 335 689Q349 685 353 699Q363 707 353 718Q353 732 339 733Q329 742 318 731Q302 730 307 716Q299 708 310 705Z" fill="#e4ecdF" stroke="#64795e" stroke-width="1.7"/>
+<path d="M327 720L337 710M327 710L337 720" stroke="#64795e" stroke-width="1.3"/>
+<text x="379" y="723">Retained oak</text>
+<path d="M372 717H357" class="leader"/>
+<text x="574" y="790" text-anchor="middle" class="label">DEVELOPMENT PARCEL</text>
+<text x="931" y="777" class="small">Existing boundary fence</text>
+<path d="M949 785V816H889V788" class="leader"/>
+<!-- North arrow -->
+<g transform="translate(1074 90)"><text x="0" y="-12" text-anchor="middle" font-size="21" font-weight="700">N</text><path d="M0 0L-13 44L0 35L13 44Z" fill="#26343b"/><path d="M0 35V66" stroke="#26343b" stroke-width="2"/></g>
+<!-- Legend -->
+<path d="M60 900H1140" stroke="#b8bfc2"/>
+<text x="60" y="935" class="label">LEGEND</text>
+<rect x="60" y="957" width="37" height="23" fill="#e2e5e6" stroke="#39474f" stroke-width="2"/><text x="109" y="975">Retained building</text>
+<rect x="310" y="957" width="37" height="23" fill="url(#new)" stroke="#285f74" stroke-width="2"/><text x="359" y="975">Proposed work</text>
+<rect x="552" y="957" width="37" height="23" fill="url(#demo)" class="demo"/><text x="602" y="975">Demolished / removed</text>
+<path d="M60 1010H98" class="boundary"/><text x="109" y="1015">Parcel boundary</text>
+<path d="M310 1010H348" class="fence"/><text x="359" y="1015">Existing fence</text>
+<path d="M552 1010H590" class="setback"/><text x="602" y="1015">Setback</text>
+<!-- 10 m scale at drawing scale -->
+<g transform="translate(946 951)"><text x="45" y="-16" text-anchor="middle" class="small">SCALE · METRES</text><rect width="45" height="12" fill="#26343b"/><rect x="45" width="45" height="12" fill="white" stroke="#26343b"/><path d="M0 0V18M45 0V18M90 0V18" stroke="#26343b"/><text x="0" y="37" text-anchor="middle" class="small">0</text><text x="45" y="37" text-anchor="middle" class="small">5</text><text x="90" y="37" text-anchor="middle" class="small">10 m</text></g>
+<text x="60" y="1080" class="small">EXISTING &amp; PROPOSED SITE PLAN</text>
+<text x="1140" y="1080" text-anchor="end" class="small">All dimensions in m</text>
+</svg>

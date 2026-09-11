@@ -1,0 +1,44 @@
+{
+  "id": "circuit-contactor-interlock",
+  "type": "circuit",
+  "title": "Three-contactor interlocked control",
+  "goal": "A reader must be able to trace the stop and overload chain, identify each contactor coil, and see the seal-in and interlock contacts associated with it.",
+  "rubric": [
+    {
+      "id": "three-labelled-coils",
+      "severity": "blocker",
+      "must": "Three distinct contactor coils labelled KM1 FORWARD, KM2 REVERSE, and KM3 STAR are visible."
+    },
+    {
+      "id": "stop-overload-chain",
+      "severity": "blocker",
+      "must": "A normally closed STOP contact and labelled overload contact are visibly upstream of the start controls."
+    },
+    {
+      "id": "forward-reverse-buttons",
+      "severity": "major",
+      "must": "Separate labelled START FORWARD and START REVERSE pushbuttons are visible."
+    },
+    {
+      "id": "seal-in-contacts",
+      "severity": "major",
+      "must": "Normally open auxiliary contacts labelled KM1, KM2, and KM3 seal-in are visible with their matching coil names."
+    },
+    {
+      "id": "cross-interlocks",
+      "severity": "major",
+      "must": "Normally closed interlock contacts labelled KM1 and KM2 are visible in the opposing control paths."
+    },
+    {
+      "id": "status-lamps",
+      "severity": "minor",
+      "must": "Three labelled pilot lamps identify FORWARD, REVERSE, and STAR states."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed and corrected: the second and third coil headings sat on the lamp captions of the rungs above, so each is now folded into the caption under its own coil. Stop and overload sit in series at the head of the ladder, and each rung carries its start button, its seal-in in parallel, and the break contact of the contactor it must not run with."
+  }
+}

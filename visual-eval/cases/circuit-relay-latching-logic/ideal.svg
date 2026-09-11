@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="880" viewBox="0 0 1300 880">
+  <title>Latching Relay Start Stop Logic — 24 VDC</title>
+  <rect width="1300" height="880" fill="white"/>
+  <style>
+    .wire{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}
+    .symbol{fill:white;stroke:#17212b;stroke-width:3}
+    .link{fill:none;stroke:#65717d;stroke-width:2;stroke-dasharray:8 7}
+    text{font-family:Arial,Helvetica,sans-serif;fill:#17212b;font-size:20px}
+    .label{font-weight:bold;font-size:23px}
+    .small{font-size:18px;fill:#495765}
+    .heading{font-size:32px;font-weight:bold}
+    .node{fill:#17212b}
+  </style>
+  <text x="60" y="57" class="heading">Latching Relay Start Stop Logic</text>
+  <text x="60" y="89" class="small">24 VDC • Three-wire control with seal-in and switched indication</text>
+
+  <!-- Positive and return rails, fed by PS1. -->
+  <path class="wire" d="M170 170H1180 M170 750H1180 M170 170V420 M170 500V750"/>
+  <circle class="symbol" cx="170" cy="460" r="40"/>
+  <path class="wire" d="M160 442H180 M170 432V452 M160 477H180"/>
+  <text x="55" y="355" class="label">PS1 24 VDC</text>
+  <text x="55" y="384">V1 · 24 V DC</text>
+  <text x="185" y="154" class="label">L24 · +24 VDC</text>
+  <text x="185" y="789" class="label">COM · 0 V</text>
+
+  <!-- STOP, a separate normally closed pushbutton. -->
+  <path class="wire" d="M410 170V242 M410 276V330"/>
+  <path class="wire" d="M385 242H435 M385 276H435 M391 283L429 235 M360 259H379 M360 247V271"/>
+  <text x="455" y="250" class="label">S0 STOP</text>
+  <text x="455" y="280">STOP NC</text>
+
+  <!-- START and K1 auxiliary contact share both nodes. -->
+  <path class="wire" d="M410 330H700 M410 330V406 M410 444V540 M410 540H700 M700 330V406 M700 444V540"/>
+  <circle class="node" cx="410" cy="330" r="5"/>
+  <circle class="node" cx="410" cy="540" r="5"/>
+  <path class="wire" d="M385 406H435 M385 444H435 M360 425H379 M360 413V437"/>
+  <text x="225" y="418" class="label">S1 START</text>
+  <text x="225" y="448">START NO</text>
+  <path class="wire" d="M675 406H725 M675 444H725"/>
+  <text x="744" y="410" class="label">K1 NO SEAL-IN</text>
+  <text x="744" y="440">K1A · normally open</text>
+  <text x="432" y="318" class="small">STOP</text>
+  <text x="432" y="570" class="small">START</text>
+
+  <!-- Relay coil. -->
+  <path class="wire" d="M410 540V617 M410 683V750"/>
+  <rect class="symbol" x="366" y="617" width="88" height="66"/>
+  <text x="410" y="658" text-anchor="middle" class="label">K1</text>
+  <text x="490" y="642" class="label">K1 LATCH COIL</text>
+  <text x="490" y="674">24 VDC</text>
+
+  <!-- K1B changeover: common L24, rest throw COM, operated throw LOAD.
+       Coil terminals are the same START/COM pair as K1. -->
+  <path class="wire" d="M1110 170V272"/>
+  <circle class="symbol" cx="1110" cy="277" r="5"/>
+  <path class="wire" d="M1108 282L1060 332"/>
+  <circle class="symbol" cx="1055" cy="337" r="5"/>
+  <circle class="symbol" cx="1165" cy="337" r="5"/>
+  <path class="wire" d="M1055 342V365H1000V750 M1165 342V485 M1060 485H1230 M1060 485V559 M1230 485V559"/>
+  <text x="906" y="222" class="label">K1 CO CONTACT</text>
+  <text x="906" y="251">K1B · changeover</text>
+  <text x="1020" y="310" class="small">NC</text>
+  <text x="1190" y="338" class="small">NO</text>
+  <text x="1125" y="292" class="small">C</text>
+  <text x="1181" y="470" class="small">LOAD</text>
+  <circle class="node" cx="1165" cy="485" r="5"/>
+
+  <!-- Green pilot and load lamp in parallel. -->
+  <circle cx="1060" cy="595" r="36" fill="#d5f4dd" stroke="#17212b" stroke-width="3"/>
+  <path class="wire" d="M1035 570L1085 620 M1085 570L1035 620 M1060 631V750"/>
+  <circle class="symbol" cx="1230" cy="595" r="36"/>
+  <path class="wire" d="M1205 570L1255 620 M1255 570L1205 620 M1230 631V750H1180"/>
+  <text x="1060" y="525" text-anchor="middle" class="label">H1 LATCHED</text>
+  <text x="1060" y="551" text-anchor="middle" class="small">Green · 24 VDC</text>
+  <text x="1210" y="674" text-anchor="middle" class="label">L1 LOAD</text>
+  <text x="1210" y="704" text-anchor="middle" class="small">24 VDC, 2 W</text>
+  <circle class="node" cx="410" cy="170" r="5"/>
+  <circle class="node" cx="1110" cy="170" r="5"/>
+  <circle class="node" cx="410" cy="750" r="5"/>
+  <circle class="node" cx="1000" cy="750" r="5"/>
+  <circle class="node" cx="1060" cy="750" r="5"/>
+  <text x="60" y="839" class="small">Contacts shown with K1 de-energized. K1 coil operates both K1A and K1B.</text>
+</svg>

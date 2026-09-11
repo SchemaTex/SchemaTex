@@ -1,0 +1,44 @@
+{
+  "id": "fmea-battery-management-system",
+  "type": "fmea",
+  "title": "Battery management system DFMEA",
+  "goal": "Present safety-relevant BMS failure modes, controls, and computed risk priorities.",
+  "rubric": [
+    {
+      "id": "bms-item",
+      "severity": "blocker",
+      "must": "The worksheet visibly identifies the battery management system and its safe-limit monitoring function."
+    },
+    {
+      "id": "thermal-runaway-chain",
+      "severity": "blocker",
+      "must": "Overcharge protection failure visibly links to thermal runaway or pack fire with severity 10."
+    },
+    {
+      "id": "risk-scores",
+      "severity": "blocker",
+      "must": "Each visible failure row has severity, occurrence, detection, and computed RPN or action-priority fields."
+    },
+    {
+      "id": "high-priority-safety",
+      "severity": "major",
+      "must": "The safety-critical overcharge rows are visibly highlighted as high priority."
+    },
+    {
+      "id": "other-modes",
+      "severity": "major",
+      "must": "Delayed overtemperature detection and incorrect state-of-charge estimation are visibly included as separate modes."
+    },
+    {
+      "id": "controls",
+      "severity": "major",
+      "must": "Redundant sensing, software assurance, diagnostics, or validation controls are visibly listed."
+    },
+    {
+      "id": "worksheet-readability",
+      "severity": "minor",
+      "must": "The worksheet uses readable aligned columns and distinguishes risk cells visually."
+    }
+  ],
+  "split": "holdout"
+}

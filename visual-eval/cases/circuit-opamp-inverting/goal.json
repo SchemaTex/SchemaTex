@@ -1,0 +1,49 @@
+{
+  "id": "circuit-opamp-inverting",
+  "type": "circuit",
+  "title": "Split-supply inverting amplifier",
+  "goal": "A reader can trace the input and negative feedback paths, determine the gain of -10 from the resistor values, and identify the grounded reference and both decoupled supply rails.",
+  "rubric": [
+    {
+      "id": "opamp-pin-sides",
+      "severity": "blocker",
+      "must": "U1 has a triangular op-amp symbol with distinct plus and minus inputs on the left, its output on the right, and positive and negative supply connections above and below."
+    },
+    {
+      "id": "inverting-gain",
+      "severity": "blocker",
+      "must": "The input signal passes through R1, marked 10 kOhm, to the minus input, and R2, marked 100 kOhm, connects the output back to that same input."
+    },
+    {
+      "id": "grounded-reference",
+      "severity": "major",
+      "must": "The plus input connects to the same ground reference as the input source return and the midpoint of the two supply sources."
+    },
+    {
+      "id": "split-supply-decoupling",
+      "severity": "major",
+      "must": "Two 12 V sources form positive and negative rails about ground, each rail connects to its corresponding op-amp supply pin, and each has a 100 nF capacitor to ground."
+    },
+    {
+      "id": "no-wire-through-body",
+      "severity": "blocker",
+      "must": "No wire passes through the inside of a component symbol."
+    },
+    {
+      "id": "labels-attached",
+      "severity": "major",
+      "must": "Every reference designator and value sits beside its own symbol."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "minor",
+      "must": "No two text labels overlap, and no wire crosses a text label."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Input resistor to the inverting pin, feedback resistor around the amplifier, non-inverting pin to the reference, and the split supply drawn as its own block with decoupling on both rails. The supply pins are reached by rail labels, which is what the DSL can express today — see docs/issues/08."
+  }
+}

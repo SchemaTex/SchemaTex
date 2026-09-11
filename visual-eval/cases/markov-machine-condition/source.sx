@@ -1,0 +1,14 @@
+# Scenario: Machine Condition Markov chain; every state's outgoing probabilities total one.
+markov "Machine Condition"
+  analysis: stationary, classify
+  state Normal
+  state Degraded
+  state Failed absorbing
+  Normal -> Normal : 0.80
+  Normal -> Degraded : 0.15
+  Normal -> Failed : 0.05
+  Degraded -> Normal : 0.30
+  Degraded -> Degraded : 0.45
+  Degraded -> Failed : 0.25
+  Failed -> Failed : 1.0
+

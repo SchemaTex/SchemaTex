@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <title>Motor Start Stop — IEC 61131-3 function block diagram with emergency stop</title>
+  <rect width="1536" height="1024" fill="white"/>
+  <style>
+    text { font-family: Helvetica, sans-serif; fill: #000; }
+    .wire { fill: none; stroke: #000; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    .block { fill: white; stroke: #000; stroke-width: 3; }
+    .label { font-size: 29px; }
+    .pin { font-size: 24px; }
+    .gate { font-size: 38px; font-weight: 700; }
+    .note { font-size: 25px; }
+  </style>
+  <text x="768" y="109" text-anchor="middle" font-size="62" font-weight="700">MOTOR START STOP</text>
+  <text x="768" y="158" text-anchor="middle" class="note">IEC 61131-3 FBD · with emergency stop</text>
+
+  <text x="90" y="241" font-size="30">Network 0 — Start latch</text>
+
+  <!-- Feedback is a separate orthogonal branch, connected only at the marked junction. -->
+  <path class="wire" d="M1230 364 V288 H415 V450 H520"/>
+  <text x="790" y="276" text-anchor="middle" class="pin">Latch feedback</text>
+
+  <text x="90" y="375" class="label">Start</text>
+  <path class="wire" d="M225 364 H885"/>
+
+  <text x="90" y="526" class="label">Stop</text>
+  <path class="wire" d="M225 516 H500"/>
+  <text x="90" y="594" class="label">EmergencyStop</text>
+  <path class="wire" d="M330 584 H500"/>
+
+  <rect x="520" y="414" width="230" height="208" class="block"/>
+  <text x="635" y="396" text-anchor="middle" class="label">AND</text>
+  <text x="635" y="536" text-anchor="middle" class="gate">&amp;</text>
+  <!-- Input inversion bubbles represent ~Stop and ~EmergencyStop. -->
+  <circle cx="510" cy="516" r="10" class="block"/>
+  <circle cx="510" cy="584" r="10" class="block"/>
+  <path class="wire" d="M750 516 H815 V476 H885"/>
+
+  <rect x="885" y="328" width="225" height="190" class="block"/>
+  <text x="997.5" y="313" text-anchor="middle" class="label">OR</text>
+  <text x="997.5" y="438" text-anchor="middle" class="gate">≥1</text>
+  <path class="wire" d="M1110 364 H1320"/>
+  <circle cx="1230" cy="364" r="6" fill="black"/>
+  <text x="1340" y="375" class="label">Latch</text>
+
+  <text x="768" y="681" text-anchor="middle" class="note">Inverted inputs: ~Stop and ~EmergencyStop</text>
+
+  <text x="90" y="763" font-size="30">Network 1 — Drive output</text>
+  <text x="330" y="850" text-anchor="end" class="label">Latch</text>
+  <path class="wire" d="M350 840 H580"/>
+  <rect x="580" y="790" width="370" height="100" class="block"/>
+  <text x="600" y="848" class="pin">IN</text>
+  <text x="765" y="852" text-anchor="middle" font-size="35" font-weight="700">MOVE</text>
+  <text x="930" y="848" text-anchor="end" class="pin">OUT</text>
+  <path class="wire" d="M950 840 H1185"/>
+  <text x="1205" y="850" class="label">MotorOut</text>
+  <text x="768" y="971" text-anchor="middle" class="note">All variables are BOOL. Open input circles indicate logical NOT.</text>
+</svg>

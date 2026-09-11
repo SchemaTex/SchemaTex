@@ -1,0 +1,44 @@
+{
+  "id": "circuit-alarm-indicator-panel",
+  "type": "circuit",
+  "title": "Alarm indicator panel",
+  "goal": "A reader must be able to trace the supervised normally closed alarm loop and distinguish healthy and alarm indications.",
+  "rubric": [
+    {
+      "id": "series-nc-sensors",
+      "severity": "blocker",
+      "must": "Three normally closed sensor switches labelled DOOR, WINDOW, and SMOKE are visibly in series."
+    },
+    {
+      "id": "fused-loop-supply",
+      "severity": "major",
+      "must": "A 24 VDC supply feeds the loop through a clearly labelled 500 mA fuse."
+    },
+    {
+      "id": "healthy-indicator",
+      "severity": "major",
+      "must": "A green pilot light labelled HEALTHY is visible on the intact loop."
+    },
+    {
+      "id": "alarm-relay",
+      "severity": "blocker",
+      "must": "A 24 VDC relay coil labelled K1 ALARM RELAY is visible."
+    },
+    {
+      "id": "alarm-output",
+      "severity": "major",
+      "must": "A buzzer and red ALARM pilot light are visibly in the alarm output branch."
+    },
+    {
+      "id": "reset-button",
+      "severity": "minor",
+      "must": "A separate RESET NO pushbutton is visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The normally-closed sensors sit in series in the supervised loop with the healthy lamp and relay coil at its end; the relay's break contact powers the buzzer and alarm lamp when the loop opens. The operating sequence is written out under the drawing."
+  }
+}

@@ -1,0 +1,16 @@
+pedigree "Consanguineous Recessive Family"
+  I-1 [male, carrier, deceased]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+    II-4 [female, carrier]
+  II-2 [female, unaffected]
+  II-3 [male, unaffected]
+  II-1 -- II-2
+    III-1 [male, carrier]
+  II-3 -- II-4
+    III-2 [female, carrier]
+  III-1 == III-2
+    IV-1 [female, affected, proband]
+    IV-2 [male, unaffected]
+    IV-3 [unknown, sab]

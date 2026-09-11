@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 2706 180" width="2706" height="180" role="img" data-diagram-type="blockdiagram"><title>Audio Signal Chain</title>
+<desc>Block diagram with 8 blocks, 0 summing junctions, 7 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #334155; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #0f172a; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #64748b; }
+.schematex-bd-sum { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #334155; }
+.schematex-bd-signal { stroke: #334155; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #334155; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #334155; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #0f172a; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: #0f172a; }
+.schematex-bd-branch { fill: #334155; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#334155"/></marker></defs>
+<text x="1353" y="18" text-anchor="middle" class="schematex-bd-title">Audio Signal Chain</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 160 59 L 450 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="input" data-to="preamp"/>
+<rect x="250.6" y="43" width="108.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="305" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="305" dy="0">balanced analogue</tspan></text>
+<path d="M 606 59 L 778 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="preamp" data-to="hpf"/>
+<rect x="660" y="43" width="64" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="692" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="692" dy="0">line level</tspan></text>
+<path d="M 924 59 L 1150 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="hpf" data-to="eq"/>
+<rect x="992.2" y="43" width="89.60000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1037" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1037" dy="0">filtered audio</tspan></text>
+<path d="M 1280 59 L 1456 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="eq" data-to="dsp"/>
+<rect x="1339.2" y="43" width="57.6" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1368" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1368" dy="0">EQ signal</tspan></text>
+<path d="M 1582 59 L 1810 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="dsp" data-to="dac"/>
+<rect x="1651.2" y="43" width="89.60000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1696" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1696" dy="0">24-bit digital</tspan></text>
+<path d="M 1936 59 L 2160 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="dac" data-to="amp"/>
+<rect x="2006.4" y="43" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2048" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2048" dy="0">analogue line</tspan></text>
+<path d="M 2300 59 L 2530 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="amp" data-to="speaker"/>
+<rect x="2373.4" y="43" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2415" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2415" dy="0">speaker level</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(34, 32)" data-block-id="input" data-block-role="input"><rect width="126" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Audio Input</tspan></text></g>
+<g transform="translate(450, 32)" data-block-id="preamp" data-block-role="generic"><rect width="156" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="78" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="78" dy="0">Mic / Line Preamp</tspan></text></g>
+<g transform="translate(778, 32)" data-block-id="hpf" data-block-role="generic"><rect width="146" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="73" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="73" dy="0">High-Pass Filter</tspan></text></g>
+<g transform="translate(1150, 32)" data-block-id="eq" data-block-role="generic"><rect width="130" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="65" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="65" dy="0">Parametric EQ</tspan></text></g>
+<g transform="translate(1456, 32)" data-block-id="dsp" data-block-role="controller"><rect width="126" height="54" fill="#dbeafe" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">DSP / Limiter</tspan></text></g>
+<g transform="translate(1810, 32)" data-block-id="dac" data-block-role="generic"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">DAC</tspan></text></g>
+<g transform="translate(2160, 32)" data-block-id="amp" data-block-role="actuator"><rect width="140" height="54" fill="#dcfce7" class="schematex-bd-block" rx="2"/>
+<text x="70" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="70" dy="0">Power Amplifier</tspan></text></g>
+<g transform="translate(2530, 32)" data-block-id="speaker" data-block-role="output"><rect width="142" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="71" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="71" dy="0">Monitor Speaker</tspan></text></g></g>
+<g class="schematex-bd-branches"></g></g></svg>

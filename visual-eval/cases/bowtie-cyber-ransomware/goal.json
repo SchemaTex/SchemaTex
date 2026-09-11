@@ -1,0 +1,39 @@
+{
+  "id": "bowtie-cyber-ransomware",
+  "type": "bowtie",
+  "title": "Cyber ransomware incident",
+  "goal": "Show preventative and recovery barriers around ransomware execution on a production endpoint.",
+  "rubric": [
+    {
+      "id": "hazard-event",
+      "severity": "blocker",
+      "must": "A named hazard and the central top event Ransomware executes on production endpoint are visible."
+    },
+    {
+      "id": "preventative",
+      "severity": "blocker",
+      "must": "Multiple labelled threats through preventative barriers visibly lead from the left to the top event."
+    },
+    {
+      "id": "mitigative",
+      "severity": "blocker",
+      "must": "Multiple labelled consequences through mitigative barriers visibly lead from the top event to the right."
+    },
+    {
+      "id": "escalation",
+      "severity": "major",
+      "must": "An escalation factor and its barrier are visibly attached beneath a named preventive barrier."
+    },
+    {
+      "id": "geometry",
+      "severity": "major",
+      "must": "The picture has a clear left-threat, central-event, right-consequence bowtie geometry."
+    },
+    {
+      "id": "barrier-labels",
+      "severity": "minor",
+      "must": "Individual barrier labels are readable and distinguish prevention from mitigation."
+    }
+  ],
+  "split": "train"
+}

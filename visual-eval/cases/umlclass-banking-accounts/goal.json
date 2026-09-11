@@ -1,0 +1,40 @@
+{
+  "id": "umlclass-banking-accounts",
+  "type": "umlclass",
+  "title": "Banking account hierarchy",
+  "goal": "Represent specialized accounts and account-owned financial records.",
+  "rubric": [
+    {
+      "id": "account-inheritance",
+      "severity": "blocker",
+      "must": "CheckingAccount, SavingsAccount, and BusinessAccount have hollow-triangle generalization arrows pointing to abstract Account."
+    },
+    {
+      "id": "record-ownership",
+      "severity": "blocker",
+      "must": "Account has filled composition diamonds to LedgerEntry and Statement."
+    },
+    {
+      "id": "customer-ownership",
+      "severity": "major",
+      "must": "Customer is associated with Account using visible 1 and 0..* multiplicities."
+    },
+    {
+      "id": "policy-interface",
+      "severity": "major",
+      "must": "InterestPolicy is visibly an interface and SavingsAccount has a directed association to it."
+    },
+    {
+      "id": "visibility",
+      "severity": "minor",
+      "must": "Account visibly shows protected # number, private - balance, and public + credit operation."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all five rules, while Image 2 fails both blockers and omits required associations and Account members."
+  }
+}

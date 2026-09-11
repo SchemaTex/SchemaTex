@@ -1,0 +1,49 @@
+{
+  "id": "pid-duty-standby-pumps",
+  "type": "pid",
+  "title": "Duty and standby pumps",
+  "goal": "An operator can identify the two parallel pump paths, their isolations and check valves, and the common minimum-flow bypass.",
+  "rubric": [
+    {
+      "id": "two-parallel-pump-paths",
+      "severity": "blocker",
+      "must": "Two clearly separate pump paths run from the common suction source to the common discharge destination."
+    },
+    {
+      "id": "isolation-on-each-pump",
+      "severity": "major",
+      "must": "Each pump path visibly has a suction isolation valve and a discharge isolation valve."
+    },
+    {
+      "id": "check-valve-per-discharge",
+      "severity": "major",
+      "must": "Each pump discharge contains its own identifiable non-return valve downstream of the isolation valve."
+    },
+    {
+      "id": "duty-and-standby-labelled",
+      "severity": "major",
+      "must": "The two pumps are labelled Duty Pump and Standby Pump with distinct tags."
+    },
+    {
+      "id": "bypass-distinguishable",
+      "severity": "major",
+      "must": "A smaller common bypass line with its own valve can be followed back to the suction source."
+    },
+    {
+      "id": "pressure-indicator-visible",
+      "severity": "minor",
+      "must": "A readable PI-101 instrument bubble is visibly associated with the discharge header."
+    },
+    {
+      "id": "crossings-unambiguous",
+      "severity": "minor",
+      "must": "Any crossing lines do not appear to form an unintended process connection."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required valve order, pump labels, valved smaller bypass, discharge pressure instrument, and unambiguous crossings, while the picture misses several of these requirements."
+  }
+}

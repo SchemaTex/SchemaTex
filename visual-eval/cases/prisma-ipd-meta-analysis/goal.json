@@ -1,0 +1,35 @@
+{
+  "id": "prisma-ipd-meta-analysis",
+  "type": "prisma",
+  "variant": "single",
+  "title": "Stroke rehabilitation IPD meta-analysis",
+  "goal": "A meta-analysis reader can trace IPD-eligible studies and participant totals.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The standard PRISMA four-row layout is visibly present."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The 1,620 identified, 320 removed, and 1,300 screened counts visibly reconcile."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Exclusion boxes visibly account for 1,040 and 214 exclusions."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The final box visibly reports 46 studies, 52 reports, and 12,840 participants."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Connectors clearly trace the selection flow."
+    }
+  ],
+  "split": "train"
+}

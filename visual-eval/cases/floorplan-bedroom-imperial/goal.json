@@ -1,0 +1,39 @@
+{
+  "id": "floorplan-bedroom-imperial",
+  "type": "floorplan",
+  "title": "Imperial bedroom",
+  "goal": "A reader must be able to verify a tightly planned bedroom measuring exactly seven by nine feet.",
+  "rubric": [
+    {
+      "id": "imperial-overall-dimensions",
+      "severity": "blocker",
+      "must": "The exterior dimension strings visibly read 7'0\" and 9'0\"."
+    },
+    {
+      "id": "bedroom-furniture",
+      "severity": "blocker",
+      "must": "A bed and wardrobe are both visible inside the labeled bedroom."
+    },
+    {
+      "id": "door-clearance",
+      "severity": "major",
+      "must": "The inward door swing is clear of the bed and wardrobe."
+    },
+    {
+      "id": "window-visible",
+      "severity": "major",
+      "must": "A window is visibly centered on the wall opposite the entry door."
+    },
+    {
+      "id": "tight-but-usable",
+      "severity": "major",
+      "must": "Visible clear floor space permits access from the door to the bed and wardrobe."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG meets both blockers and shows unobstructed access, a clear inward door swing, and a centered window opposite the entry."
+  }
+}

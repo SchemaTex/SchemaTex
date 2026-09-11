@@ -1,0 +1,44 @@
+{
+  "id": "pedigree-autosomal-dominant",
+  "type": "pedigree",
+  "title": "Autosomal dominant family",
+  "goal": "A reader can trace an affected lineage through four generations and identify the proband and unaffected relatives.",
+  "rubric": [
+    {
+      "id": "level-generation-rows",
+      "severity": "major",
+      "must": "The drawing has four generation rows labeled I, II, III, and IV, with all individual symbol centers in each row on the same horizontal level."
+    },
+    {
+      "id": "individual-numbering",
+      "severity": "major",
+      "must": "Every individual has a legible generation-number label below the symbol, with numbering starting at 1 and increasing consecutively from left to right within each generation."
+    },
+    {
+      "id": "dominant-transmission",
+      "severity": "blocker",
+      "must": "An affected individual appears in each of the four generations, and every affected individual below generation I has a visible parent-child connection to at least one affected parent."
+    },
+    {
+      "id": "affected-status-distinction",
+      "severity": "major",
+      "must": "Affected individuals have fully dark symbols, unaffected individuals have empty symbols, and an affected father is visibly connected to an affected son."
+    },
+    {
+      "id": "unambiguous-proband",
+      "severity": "blocker",
+      "must": "Exactly one family member has a proband arrow labeled P, and its tip clearly points to the affected female IV-1 without touching another individual."
+    },
+    {
+      "id": "traceable-parentage",
+      "severity": "major",
+      "must": "Every child is connected to the correct pair of parents by an unbroken descent line from their union, without any line crossing an unrelated individual symbol."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Four generation rows I-IV with a solid-filled affected individual in every generation, father-to-son transmission down the left edge, and a P arrow on affected female IV-1."
+  }
+}

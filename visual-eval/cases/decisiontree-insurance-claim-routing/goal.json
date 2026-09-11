@@ -1,0 +1,45 @@
+{
+  "id": "decisiontree-insurance-claim-routing",
+  "type": "decisiontree",
+  "title": "Insurance claim routing",
+  "goal": "Show first-notice-of-loss routing by claim value, type, fraud indicators, and repair needs.",
+  "rubric": [
+    {
+      "id": "value-root",
+      "severity": "blocker",
+      "must": "The root visibly splits claims by the fast-track value threshold."
+    },
+    {
+      "id": "complex-routing",
+      "severity": "blocker",
+      "must": "High-value injury-or-liability claims visibly route to a complex casualty adjuster."
+    },
+    {
+      "id": "fraud-routing",
+      "severity": "major",
+      "must": "High-value non-injury claims with fraud indicators visibly route to special investigations."
+    },
+    {
+      "id": "fast-track",
+      "severity": "major",
+      "must": "Low-value claims covered by automated rules visibly route to fast-track settlement."
+    },
+    {
+      "id": "repair-network",
+      "severity": "major",
+      "must": "The non-automated low-value path visibly distinguishes repair-network coordination from standard handling."
+    },
+    {
+      "id": "clear-leaves",
+      "severity": "minor",
+      "must": "Each terminal handling path is visibly labelled with a distinct operational destination."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all six routing requirements, while image 2 fails both blockers and omits the required low-value automation split."
+  }
+}

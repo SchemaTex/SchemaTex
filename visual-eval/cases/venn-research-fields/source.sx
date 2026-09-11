@@ -1,0 +1,12 @@
+# Scenario: research office illustrates an interdisciplinary grant opportunity.
+venn "Interdisciplinary climate-health research"
+set climate "Climate science"
+set health "Public health"
+set data "Data science"
+climate only: "Climate models"
+health only: "Community health"
+data only: "Machine learning"
+climate & health: "Heat exposure"
+climate & data: "Downscaling"
+health & data: "Surveillance"
+climate & health & data: "Early-warning systems"

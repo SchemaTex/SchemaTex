@@ -1,0 +1,41 @@
+%% Context: Multi-tenant SaaS billing and entitlement schema in Mermaid ERD notation.
+erDiagram
+  TENANT ||--|{ USER : contains
+  ROLE ||--o{ USER : assigns
+  TENANT ||--o{ SUBSCRIPTION : holds
+  SUBSCRIPTION ||--o{ INVOICE : produces
+  TENANT ||--o{ FEATURE_FLAG : configures
+  TENANT {
+    int tenant_id PK
+    string name
+    string plan
+  }
+  USER {
+    int user_id PK
+    int tenant_id FK
+    int role_id FK
+    string email
+  }
+  ROLE {
+    int role_id PK
+    string name
+    string permissions
+  }
+  SUBSCRIPTION {
+    int subscription_id PK
+    int tenant_id FK
+    string status
+    date renewal_date
+  }
+  INVOICE {
+    int invoice_id PK
+    int subscription_id FK
+    decimal amount_due
+    date due_date
+  }
+  FEATURE_FLAG {
+    int feature_flag_id PK
+    int tenant_id FK
+    string key
+    boolean enabled
+  }

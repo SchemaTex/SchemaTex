@@ -1,0 +1,40 @@
+{
+  "id": "venn-program-eligibility",
+  "type": "venn",
+  "title": "Youth innovation grant eligibility",
+  "goal": "A programme office can explain how three eligibility conditions combine.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Three labelled eligibility sets visibly overlap."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The triple intersection visibly states Eligible to apply."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Each pairwise intersection visibly explains the remaining requirement."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Each individual set has a visible exclusive explanation."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "All labels are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture omits required intersection and exclusive-region explanations."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "siteplan-setbacks-access",
+  "type": "siteplan",
+  "title": "Parcel setbacks and access",
+  "goal": "A reader must be able to identify the parcel dimensions, distinguish all four setback lines from the property boundaries, and trace vehicle and pedestrian access from the street to the building.",
+  "rubric": [
+    {
+      "id": "distinct-property-boundary",
+      "severity": "blocker",
+      "must": "The parcel is a closed rectangle with a heavier continuous boundary visibly distinct from the four dashed setback lines inside it."
+    },
+    {
+      "id": "four-labelled-setbacks",
+      "severity": "major",
+      "must": "Four visible setback lines are individually labelled Rear setback 6 m, Front setback 8 m, West setback 5 m, and East setback 5 m beside the corresponding sides."
+    },
+    {
+      "id": "building-within-setbacks",
+      "severity": "blocker",
+      "must": "The closed building footprint lies entirely inside all four setback lines, with visible clearance from each line and each property boundary."
+    },
+    {
+      "id": "parcel-dimension-attachment",
+      "severity": "major",
+      "must": "The 30 m parcel-width dimension spans the two ends of the horizontal property boundary, and the 40 m parcel-depth dimension spans the two ends of the vertical property boundary, without terminating on a setback or building edge."
+    },
+    {
+      "id": "vehicle-access-visible",
+      "severity": "blocker",
+      "must": "A continuous wide driveway connects the street to the building, with its route visible through the frontage and setback crossing and unobscured by annotations."
+    },
+    {
+      "id": "pedestrian-entrance-access",
+      "severity": "major",
+      "must": "A narrower pedestrian path visibly connects the street to the marked building entrance, remains distinct from the driveway, and is not hidden by labels or callouts."
+    },
+    {
+      "id": "orientation-and-labels",
+      "severity": "major",
+      "must": "A legible north arrow points toward the rear of the parcel, a scale bar is visible, and the street, building, setback, and dimension labels can all be read without overlapping one another."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG matches the required metric dimensions and setbacks and preserves clear access routes, while the picture uses incorrect dimensions and places annotations inside the driveway."
+  }
+}

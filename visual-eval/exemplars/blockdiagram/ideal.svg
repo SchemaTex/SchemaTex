@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1364 638" width="1364" height="638" role="img">
+  <title>BLDC Joint Servo — Closed-Loop Speed Control</title>
+  <desc>Functional block diagram of a robot-joint servo drive. A motion command enters a summing junction where the measured joint speed is subtracted; the resulting error runs left to right through the digital control subsystem (PID speed controller, current limiter, PWM modulator), folds down into the power stage (gate driver and three-phase MOSFET inverter), then drives the BLDC motor, the gearbox and joint load, and finally the joint-speed output. A pickoff on the output feeds the lower return path — quadrature encoder into a speed estimator and low-pass filter — which returns to the negative input of the summing junction. Forward signals are drawn in black; the feedback path is drawn in a single accent colour. Two dashed frames mark the control-electronics and power-stage subsystems.</desc>
+  <defs>
+    <marker id="ah" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202B"/></marker>
+    <marker id="ahf" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#B4462A"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1364" height="638" fill="#FFFFFF"/>
+  <text x="58" y="48" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#16202B">BLDC Joint Servo — Closed-Loop Speed Control</text>
+  <text x="58" y="68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#63707F">Functional block diagram · 20 kHz current loop, 2 kHz speed loop · negative-feedback speed regulation</text>
+  <line x1="58" y1="84" x2="1306" y2="84" stroke="#C9D2DC" stroke-width="1"/>
+  <rect x="372" y="97" width="578" height="108" rx="10" fill="#FAFBFC" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
+  <text x="386" y="115" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.6" fill="#63707F">DIGITAL CONTROL — MCU</text>
+  <rect x="331" y="277" width="364" height="108" rx="10" fill="#FAFBFC" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
+  <text x="345" y="295" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.6" fill="#63707F">POWER STAGE — 48 V DC BUS</text>
+  <path d="M192 158 L272 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="221.43725" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">ref</tspan></text>
+  <path d="M306 158 L386 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="323.8625" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">error e</text>
+  <path d="M508 158 L588 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="541.675" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">T*</text>
+  <path d="M729 158 L809 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="762.675" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">i*</text>
+  <path d="M936 158 L966 158 L966 248 L315 248 L315 338 L345 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="621.525" y="238" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">duty d</text>
+  <path d="M467 338 L547 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="497.5125" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">PWM</text>
+  <path d="M681 338 L761 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="710.43725" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">v<tspan font-size="9.0" dy="2.6">abc</tspan></text>
+  <path d="M883 338 L963 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="917.37075" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">T<tspan font-size="9.0" dy="2.6">m</tspan></text>
+  <path d="M1104 338 L1184 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
+  <text x="1133.43725" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">out</tspan></text>
+  <path d="M1144 338 L1144 500 L994 500" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
+  <text x="1063.37075" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">θ<tspan font-size="9.0" dy="2.6">m</tspan></text>
+  <path d="M872 500 L507 500" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
+  <text x="680.0125" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">A/B</text>
+  <path d="M351 500 L289 500 L289 175" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
+  <text x="311.904" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">fb</tspan></text>
+  <circle cx="1144" cy="338" r="3.5" fill="#16202B"/>
+  <rect x="58" y="127" width="134" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="125" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Motion Command</text>
+  <text x="125" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Speed Setpoint</text>
+  <rect x="386" y="127" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="447" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">PID Speed</text>
+  <text x="447" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Controller</text>
+  <rect x="588" y="127" width="141" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="658.5" y="162.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Current Limiter</text>
+  <rect x="809" y="127" width="127" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="872.5" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">PWM Modulator</text>
+  <text x="872.5" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">20 kHz</text>
+  <rect x="345" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="406" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Gate Driver</text>
+  <rect x="547" y="307" width="134" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="614" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">3-Phase MOSFET</text>
+  <text x="614" y="352" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Inverter</text>
+  <rect x="761" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="822" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">BLDC Motor</text>
+  <rect x="963" y="307" width="141" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="1033.5" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Gearbox + Joint</text>
+  <text x="1033.5" y="352" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Load</text>
+  <rect x="1184" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="1245" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Joint Speed</text>
+  <rect x="872" y="469" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#B4462A" stroke-width="1.5"/>
+  <text x="933" y="497" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Quadrature</text>
+  <text x="933" y="514" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Encoder</text>
+  <rect x="351" y="469" width="156" height="62" rx="4" fill="#FFFFFF" stroke="#B4462A" stroke-width="1.5"/>
+  <text x="429" y="497" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Speed Estimator</text>
+  <text x="429" y="514" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">+ Low-Pass Filter</text>
+  <circle cx="289" cy="158" r="17" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
+  <text x="263" y="150" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#16202B" text-anchor="middle">+</text>
+  <text x="275" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#B4462A" text-anchor="middle">−</text>
+  <path d="M58 570 L88 570" fill="none" stroke="#16202B" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="98" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Forward signal path</text>
+  <path d="M258.95 570 L288.95 570" fill="none" stroke="#B4462A" stroke-width="1.5" marker-end="url(#ahf)"/>
+  <text x="298.95" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Feedback / measured path</text>
+  <circle cx="505.15" cy="570" r="3.5" fill="#16202B"/>
+  <text x="530.15" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Pickoff (branch) point</text>
+  <rect x="709.25" y="561" width="30" height="18" rx="5" fill="none" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
+  <text x="749.25" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Subsystem boundary</text>
+</svg>

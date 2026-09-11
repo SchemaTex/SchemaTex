@@ -1,0 +1,44 @@
+{
+  "id": "circuit-dol-motor-starter",
+  "type": "circuit",
+  "title": "Direct-on-line motor starter",
+  "goal": "A reader must be able to trace the three-phase power path to the motor and the separate start-stop contactor control circuit.",
+  "rubric": [
+    {
+      "id": "three-phase-power-path",
+      "severity": "blocker",
+      "must": "A three-phase supply, three-pole breaker, main contactor, overload, and motor are visibly chained."
+    },
+    {
+      "id": "motor-rating",
+      "severity": "major",
+      "must": "The motor label visibly states 400 V and 5.5 kW."
+    },
+    {
+      "id": "start-stop-control",
+      "severity": "blocker",
+      "must": "STOP NC and START NO buttons are visible in the control circuit."
+    },
+    {
+      "id": "contactor-coil",
+      "severity": "major",
+      "must": "A KM1 230 VAC coil is visible separately from the main contactor."
+    },
+    {
+      "id": "seal-in-auxiliary",
+      "severity": "major",
+      "must": "A KM1 auxiliary normally open seal-in contact is visible."
+    },
+    {
+      "id": "pilot-lamps",
+      "severity": "minor",
+      "must": "Green RUNNING and red TRIPPED pilot lamps are visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed and corrected: the source ran only two phases to the motor and drove the tripped lamp from the healthy rail. All three phases now reach the machine and the lamp sits on the overload's trip contact. The motor is modelled as a three-terminal part because the engine has no three-phase machine symbol — see docs/issues/10."
+  }
+}

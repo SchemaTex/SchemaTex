@@ -1,0 +1,44 @@
+{
+  "id": "fmea-pump-assembly",
+  "type": "fmea",
+  "title": "Centrifugal pump assembly DFMEA",
+  "goal": "Present failure modes, effects, causes, controls, and computed risk priorities for a centrifugal pump.",
+  "rubric": [
+    {
+      "id": "pump-item",
+      "severity": "blocker",
+      "must": "The worksheet visibly identifies the centrifugal pump assembly and its flow-and-pressure function."
+    },
+    {
+      "id": "failure-chains",
+      "severity": "blocker",
+      "must": "Mechanical seal leakage, insufficient flow, and bearing seizure visibly have linked effects and causes."
+    },
+    {
+      "id": "risk-scores",
+      "severity": "blocker",
+      "must": "Each visible failure row has severity, occurrence, detection, and computed RPN or action-priority risk fields."
+    },
+    {
+      "id": "controls",
+      "severity": "major",
+      "must": "Prevention and detection controls are visibly shown for the listed causes."
+    },
+    {
+      "id": "multiple-causes",
+      "severity": "major",
+      "must": "Seal leakage and insufficient flow visibly have more than one cause row."
+    },
+    {
+      "id": "risk-highlighting",
+      "severity": "major",
+      "must": "High-priority risk rows are visually distinguished from lower-priority rows."
+    },
+    {
+      "id": "worksheet-readability",
+      "severity": "minor",
+      "must": "The table has readable headers and aligned score columns."
+    }
+  ],
+  "split": "train"
+}

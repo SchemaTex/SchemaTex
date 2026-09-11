@@ -1,0 +1,49 @@
+{
+  "id": "ladder-timed-start-fault-reset",
+  "type": "ladder",
+  "title": "Timed motor start and fault reset",
+  "goal": "A controls technician can see that a start request waits five seconds before motor energisation and that an overload fault latches until reset.",
+  "rubric": [
+    {
+      "id": "timer-block-readable",
+      "severity": "blocker",
+      "must": "A TON function block clearly identifies StartDelay and a five-second preset."
+    },
+    {
+      "id": "timer-contact-drives-motor",
+      "severity": "blocker",
+      "must": "A contact labelled StartDelay.Q appears on the rung that energises the MotorRun coil."
+    },
+    {
+      "id": "start-request-latched",
+      "severity": "major",
+      "must": "The start pushbutton and StartRequest holding contact form a visible parallel latch path to a StartRequest set coil."
+    },
+    {
+      "id": "fault-latched-from-overload",
+      "severity": "major",
+      "must": "An OverloadTrip contact visibly drives a FaultLatch set coil on its own rung."
+    },
+    {
+      "id": "fault-inhibits-running",
+      "severity": "major",
+      "must": "Normally closed FaultLatch contacts are visible in the timed-start or motor-run logic."
+    },
+    {
+      "id": "reset-clears-fault",
+      "severity": "major",
+      "must": "A ResetPB contact visibly operates a FaultLatch reset coil."
+    },
+    {
+      "id": "cross-rung-tags-legible",
+      "severity": "minor",
+      "must": "Repeated tags for StartRequest, StartDelay and FaultLatch are readable and consistent across their separate rungs."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all seven criteria, while the picture fails both required timer and motor tag checks and substitutes holding circuits for the specified set/reset coils."
+  }
+}

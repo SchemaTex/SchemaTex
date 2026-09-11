@@ -1,0 +1,40 @@
+{
+  "id": "logic-sr-latch-nor",
+  "type": "logic",
+  "title": "Cross-coupled NOR SR latch",
+  "goal": "Show an active-high SR storage latch using a cross-coupled pair of NOR gates.",
+  "rubric": [
+    {
+      "id": "cross-coupled-nors",
+      "severity": "blocker",
+      "must": "Two visible NOR gates feed one another in a closed feedback loop."
+    },
+    {
+      "id": "set-reset-pins",
+      "severity": "blocker",
+      "must": "S visibly enters the NOR producing Qbar and R visibly enters the NOR producing Q."
+    },
+    {
+      "id": "complementary-outputs",
+      "severity": "major",
+      "must": "The two latch outputs are visibly labelled Q and Qbar."
+    },
+    {
+      "id": "feedback-routed",
+      "severity": "major",
+      "must": "Both feedback wires are visible and do not appear to terminate at labels alone."
+    },
+    {
+      "id": "signal-flow-clear",
+      "severity": "minor",
+      "must": "Input buffers and output monitoring buffers do not obscure the central latch pair."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Gate-level active-high SR latch built from two cross-coupled NOR gates, drawn with ANSI/IEEE Std 91 distinctive-shape symbols. Inputs S and R enter on the left through buffers sbuf and rbuf. The upper NOR takes rbuf and the fed-back Qbar and produces Q; the lower NOR takes sbuf and the fed-back Q and produces Qbar, so each output is wired back to the other gate's second input — the cross-coupling that gives the latch its memory. Q and Qbar also drive buffer chains qbuf to qmonitor and qb1 to qb2 before leaving on the right. All wires are orthogonal; filled dots mark junctions and plain crossings mark wires that pass without connecting. Drawn in the idiom of the logic exemplar: ANSI/IEEE Std 91 distinctive shapes on one body box so the columns line up, ink-only palette with paper-filled gate bodies so a wire passing behind a gate is visibly interrupted, the gate type carried by the outline rather than printed under it, and the label slot spent on net names instead. Row pitch, channel x and canvas size are solved from browser-measured text widths, and the drawing was checked label-against-label, label-against-wire, label-against-canvas-edge and wire-against-every-unattached-gate before it was written: 0 collisions, and no wire crosses a gate body."
+  }
+}

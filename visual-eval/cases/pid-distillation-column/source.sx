@@ -1,0 +1,37 @@
+# Feed enters at 25 C; overhead pressure is controlled at 1.2 barg and reflux drum level at 55%.
+# Bottom temperature is held by steam to the reboiler; reflux valve fails closed.
+pid "Distillation Column with Reflux Control" [direction: LR, units: metric]
+
+equip T-201 : column_tray [tag: "T-201 Distillation Column"]
+equip E-201 : condenser [tag: "E-201 Overhead Condenser"]
+equip D-201 : vessel_h [tag: "D-201 Reflux Drum"]
+equip P-201 : pump_centrifugal [tag: "P-201 Reflux Pump"]
+equip LV-201 : valve_control [tag: "LV-201 Reflux Drum Level Valve", actuator: "diaphragm", fail: "FC"]
+equip TV-202 : valve_control [tag: "TV-202 Reboiler Steam Valve", actuator: "diaphragm", fail: "FC"]
+equip E-202 : reboiler [tag: "E-202 Kettle Reboiler"]
+equip PSV-201 : valve_psv [tag: "PSV-201 Overhead Relief", set_pressure: "1.5 barg"]
+
+line feed from Feed to T-201.feed [type: process, size: "DN150", service: "column feed"]
+line overhead from T-201.top to E-201.shell_in [type: process, size: "DN200", service: "overhead vapor"]
+line condensate from E-201.shell_out to D-201.in [type: process, size: "DN200", service: "condensate"]
+line refluxSuction from D-201.bottom to P-201.in [type: process, size: "DN80", service: "reflux"]
+line refluxPump from P-201.out to LV-201.in [type: process, size: "DN80", service: "reflux"]
+line refluxReturn from LV-201.out to T-201.reflux [type: process, size: "DN80", service: "reflux"]
+line bottomsToReboiler from T-201.bottom to E-202.in [type: process, size: "DN150", service: "bottoms"]
+line boilupReturn from E-202.out to T-201.bottom_return [type: process, size: "DN150", service: "boilup"]
+line steam from SteamHeader to TV-202.in [type: process_minor, size: "DN40", service: "steam"]
+line steamToReboiler from TV-202.out to E-202.in [type: process_minor, size: "DN40", service: "steam"]
+line relief from T-201.top to PSV-201.in [type: process_minor, size: "DN50", service: "relief"]
+
+inst LT-201 : field_discrete
+  measures D-201
+inst LIC-201 : cr_shared
+  controls LV-201
+inst TT-202 : field_discrete
+  measures E-202
+inst TIC-202 : cr_shared
+  controls TV-202
+line levelSignal from LT-201 to LIC-201 [type: electric]
+line refluxCommand from LIC-201 to LV-201.signal [type: pneumatic]
+line temperatureSignal from TT-202 to TIC-202 [type: electric]
+line steamCommand from TIC-202 to TV-202.signal [type: pneumatic]

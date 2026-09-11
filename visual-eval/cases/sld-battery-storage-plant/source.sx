@@ -1,0 +1,21 @@
+# BESS concept one-line: DC battery strings feed inverter power conversion systems, with AC collection and grid interconnection protection.
+sld "Battery Energy Storage Plant" [standard: ansi]
+GRID = utility [voltage: "33kV", rating: "500 MVA", label: "33 kV Grid Point of Connection"]
+POC = breaker [rating: "1250 A, 25 kA", label: "POC Breaker 52-G"]
+MV = bus [voltage: "33kV", label: "33 kV Collector Bus"]
+TX = transformer [rating: "10 MVA, 33kV/690V", label: "Step-up Transformer"]
+ACB = breaker [rating: "2500 A, 50 kA", label: "PCS AC Breaker"]
+PCS = load [rating: "5 MW / 10 MWh", label: "Bidirectional PCS Inverter"]
+BAT1 = load [rating: "1000 V DC, 5 MWh", label: "Battery String A"]
+BAT2 = load [rating: "1000 V DC, 5 MWh", label: "Battery String B"]
+DC1 = breaker [rating: "1600 A DC", label: "DC Isolator A"]
+DC2 = breaker [rating: "1600 A DC", label: "DC Isolator B"]
+GRID -> POC
+POC -> MV
+MV -> TX
+TX -> ACB
+ACB -> PCS
+BAT1 -> DC1
+DC1 -> PCS
+BAT2 -> DC2
+DC2 -> PCS

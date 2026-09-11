@@ -1,0 +1,16 @@
+# Child welfare genogram: biological parentage remains primary; dashed/dotted secondary links show adoption and foster placement.
+genogram "Hughes Family · Permanency Plan" [asOf: 2026]
+ben [male, 1985, label: "Ben Hughes"]
+lara [female, 1987, label: "Lara Hughes"]
+ben ~/~ lara [label: "Relationship ended 2018"]
+  theo [male, 2014, label: "Theo Hughes"]
+  ivy [female, 2017, label: "Ivy Hughes"]
+adam [male, 1979, label: "Adam Cole"]
+maya [female, 1981, label: "Maya Cole"]
+adam -- maya
+  theo [adopted]
+noel [male, 1976, label: "Noel Grant"]
+rae [female, 1978, label: "Rae Grant"]
+noel -- rae
+  ivy [foster]
+  finn [male, 2011, label: "Finn Grant"]

@@ -1,0 +1,17 @@
+# Q3 operating structure; solid lines are direct reports and the dashed line is product matrix accountability.
+orgchart "Northstar SaaS · Operating Structure"
+CEO : "Maya Ortiz" | Chief Executive Officer | Executive [role: CEO]
+  CTO : "Evan Chen" | VP Engineering | Engineering [role: CTO]
+    Platform : "Noah Patel" | Director, Platform | Engineering
+      Backend : "Iris Wong" | Backend Lead | Platform
+      SRE : "Leo Martin" | SRE Lead | Platform
+    ProductEng : "Ava Brooks" | Director, Product Engineering | Engineering
+      Web : "Sam Reed" | Web Team Lead | Product Engineering
+      Mobile : "Nina Shah" | Mobile Team Lead | Product Engineering
+  CPO : "Clara James" | VP Product | Product [role: Product]
+    PM : "Owen Price" | Group Product Manager | Product
+    UX : "Zoe Kim" | Head of Design | Product
+  CRO : "Daniel Ross" | VP Revenue | Revenue [role: Sales]
+    Sales : "Priya Desai" | Sales Director | Revenue
+    Success : "Marcus Bell" | Customer Success Director | Revenue
+CPO -.-> PM [label: "Product leadership"]

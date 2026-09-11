@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="860" viewBox="0 0 1320 860">
+  <title>E-commerce order domain class diagram</title>
+  <desc>Order owns one or more LineItems through composition. Customers place orders and aggregate addresses. LineItems reference products. Orders reference their status and depend on TaxPolicy.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#263442" stroke-width="1.8"/></marker>
+  </defs>
+  <rect width="1320" height="860" fill="white"/>
+  <g fill="none" stroke="#263442" stroke-width="2" stroke-linejoin="miter">
+    <!-- Customer places orders. -->
+    <path d="M320 210 H540"/>
+    <!-- Composition: the filled diamond belongs to Order. -->
+    <path d="M790 210 L804 202 L818 210 L804 218 Z" fill="#263442"/>
+    <path d="M818 210 H1000"/>
+    <!-- Aggregation: the hollow diamond belongs to Customer. -->
+    <path d="M190 265 L182 279 L190 293 L198 279 Z" fill="white"/>
+    <path d="M190 293 V590"/>
+    <!-- LineItem references one Product. -->
+    <path d="M1125 320 V590" marker-end="url(#arrow)"/>
+    <!-- Order references its status. -->
+    <path d="M605 345 V440 H490 V590" marker-end="url(#arrow)"/>
+    <!-- Pricing collaborator dependency. -->
+    <path d="M735 345 V490 H805 V590" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#263442">
+    <text x="340" y="198">1</text>
+    <text x="489" y="198">0..*</text>
+    <text x="424" y="245" text-anchor="middle">places</text>
+    <text x="826" y="198">1</text>
+    <text x="949" y="198">1..*</text>
+    <text x="901" y="245" text-anchor="middle">contains</text>
+    <text x="204" y="566">0..*</text>
+    <text x="206" y="433">saves</text>
+    <text x="1140" y="350">*</text>
+    <text x="1140" y="576">1</text>
+    <text x="1143" y="466">product</text>
+    <text x="435" y="524">status</text>
+    <text x="823" y="529">calculates tax with</text>
+  </g>
+  <g stroke="#263442" stroke-width="2" fill="white">
+    <rect x="60" y="150" width="260" height="115"/>
+    <path d="M60 195 H320 M60 240 H320"/>
+    <rect x="540" y="150" width="250" height="195"/>
+    <path d="M540 195 H790 M540 247 H790"/>
+    <rect x="1000" y="150" width="250" height="170"/>
+    <path d="M1000 195 H1250 M1000 250 H1250"/>
+    <rect x="60" y="590" width="260" height="125"/>
+    <path d="M60 635 H320 M60 687 H320"/>
+    <rect x="375" y="590" width="230" height="195"/>
+    <path d="M375 635 H605"/>
+    <rect x="680" y="590" width="250" height="125"/>
+    <path d="M680 635 H930 M680 662 H930"/>
+    <rect x="1000" y="590" width="250" height="155"/>
+    <path d="M1000 635 H1250 M1000 718 H1250"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" fill="#17232e">
+    <g font-size="22" font-weight="bold" text-anchor="middle">
+      <text x="190" y="180">Customer</text>
+      <text x="665" y="180">Order</text>
+      <text x="1125" y="180">LineItem</text>
+      <text x="190" y="620">Address</text>
+      <text x="490" y="620">OrderStatus</text>
+      <text x="805" y="620">TaxPolicy</text>
+      <text x="1125" y="620">Product</text>
+    </g>
+    <g font-size="19">
+      <text x="78" y="225">+email : String</text>
+      <text x="558" y="228">-id : UUID</text>
+      <text x="558" y="279">+place() : void</text>
+      <text x="558" y="315">+total() : Money</text>
+      <text x="1018" y="229">-quantity : int</text>
+      <text x="1018" y="289">+subtotal() : Money</text>
+      <text x="78" y="668">+city : String</text>
+      <text x="393" y="671">PENDING</text>
+      <text x="393" y="712">PAID</text>
+      <text x="393" y="753">SHIPPED</text>
+      <text x="698" y="696">+calculate() : Money</text>
+      <text x="1018" y="666">+sku : String</text>
+      <text x="1018" y="702">+price : Money</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,49 @@
+{
+  "id": "pedigree-consanguineous-recessive",
+  "type": "pedigree",
+  "title": "Consanguineous recessive family",
+  "goal": "A reader can trace the shared ancestry of two carrier parents and identify their affected proband, a deceased relative, and a pregnancy loss.",
+  "rubric": [
+    {
+      "id": "level-generation-rows",
+      "severity": "major",
+      "must": "All individual symbol centers within each generation share a horizontal level, and the four rows have legible Roman-numeral labels I through IV."
+    },
+    {
+      "id": "double-consanguineous-union",
+      "severity": "blocker",
+      "must": "The union between III-1 and III-2 consists of two visibly separate parallel lines, while all other unions use single lines."
+    },
+    {
+      "id": "shared-ancestry",
+      "severity": "major",
+      "must": "The parent-child lines visibly show that III-1 and III-2 descend through two different children of the same generation-I couple."
+    },
+    {
+      "id": "recessive-transmission",
+      "severity": "blocker",
+      "must": "Both parents in the double-line union have half-filled carrier symbols and are visibly connected to a fully filled affected child and an empty unaffected child."
+    },
+    {
+      "id": "unambiguous-proband",
+      "severity": "blocker",
+      "must": "Exactly one family member has a proband arrow labeled P, and its tip clearly identifies the fully filled female IV-1 without touching a sibling or descent line."
+    },
+    {
+      "id": "deceased-symbol",
+      "severity": "major",
+      "must": "I-1 has a single diagonal deceased slash through his square, with the half-filled carrier status still distinguishable."
+    },
+    {
+      "id": "pregnancy-loss-symbol",
+      "severity": "major",
+      "must": "IV-3 appears as a small pregnancy-loss triangle connected as a sibling of IV-1 and IV-2, with its label legible and separate from the proband marker."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Deceased half-filled carrier I-1 heads two branches whose first cousins III-1 and III-2 marry on a double consanguinity line, producing affected proband IV-1, unaffected IV-2, and an open spontaneous-abortion triangle IV-3."
+  }
+}

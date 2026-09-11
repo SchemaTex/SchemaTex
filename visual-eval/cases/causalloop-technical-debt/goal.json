@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-technical-debt",
+  "type": "causalloop",
+  "title": "Technical-debt spiral",
+  "goal": "A product team can see how delivery pressure reinforces technical debt.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The debt-spiral loop is visibly marked reinforcing (R)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The closed loop visibly connects pressure, shortcutting, debt, effort, and pressure."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The defect-rate branch is visibly connected to development effort."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Loop arrows and variable labels are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-causalloop-target.mjs`, which draws all five cases from one kit so the set is one drawing repeated. A causal-loop diagram of Technical-debt spiral. 5 variables are joined by 6 causal links, each carrying its polarity beside the arrowhead. The engine's job here is to find the feedback loops and classify them by Sterman's even/odd rule, and this drawing shows that answer: R1 runs Delivery pressure → Shortcutting → Technical debt → Defect rate → Development effort → Delivery pressure with 0 negative links, so it reinforces; R2 runs Delivery pressure → Shortcutting → Technical debt → Development effort → Delivery pressure with 0 negative links, so it reinforces. Each loop glyph is a circular arrow curling in the loop's own direction, labelled with the computed letter and the loop's name. Notation is Sterman's, per `docs/reference/41-CAUSAL-LOOP-STANDARD.md`: variables are plain text, causal links are curved arrows, each link carries its polarity beside the arrowhead, a slow link wears two hash marks, and every feedback loop gets a circular arrow curling in the loop's own direction. The R/B letter is computed by Sterman's even/odd rule — count the negative links round the loop, even (zero included) reinforces, odd balances — never copied from the source, and the footer shows the count so the verdict can be checked. Reinforcing loops are terracotta and balancing loops teal. Every label was checked against every other label and the canvas edge: 0 overlaps."
+  }
+}

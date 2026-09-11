@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1180" width="1100" height="1180">
+<title>Neighbourhood Coffee Shop — floor plan</title>
+<defs>
+ <style>
+ text{font-family:'Helvetica Neue',Helvetica,sans-serif;fill:#27363a} .label{font-size:17px;text-anchor:middle} .small{font-size:14px;text-anchor:middle} .room{font-size:23px;font-weight:600;text-anchor:middle;letter-spacing:1px} .furn{fill:#f1e8d9;stroke:#655849;stroke-width:2} .fixture{fill:white;stroke:#4c676b;stroke-width:2} .door{fill:none;stroke:#526b70;stroke-width:2} .chair{fill:#fff;stroke:#655849;stroke-width:2}
+ </style>
+ <g id="two-table">
+ <rect class="furn" x="-36" y="-31.5" width="72" height="63" rx="2"/>
+ <path class="chair" d="M-21-44v-25h42v25z M-21 44v25h42V44z"/>
+ <path d="M-17-64H17M-17 64H17" stroke="#655849" stroke-width="2"/>
+ </g>
+</defs>
+<rect width="1100" height="1180" fill="white"/>
+<text x="85" y="54" font-size="29" font-weight="600">Neighbourhood Coffee Shop</text>
+<text x="85" y="83" font-size="15" letter-spacing="2">FLOOR PLAN · METRES</text>
+<!-- North is up; 90 drawing units = 1 metre. -->
+<g transform="translate(1018 74)"><path d="M0 35V-20m0 0-9 21 9-5 9 5z" fill="#27363a" stroke="#27363a" stroke-width="2"/><text x="0" y="-32" text-anchor="middle" font-size="19" font-weight="600">N</text></g>
+<!-- Interior room surfaces: cafe 8 × 10, prep 2 × 6, WC 2 × 4 -->
+<rect x="90" y="150" width="720" height="900" fill="#fff"/>
+<rect x="810" y="150" width="180" height="540" fill="#f3f6f5"/>
+<rect x="810" y="690" width="180" height="360" fill="#f3f6f5"/>
+<!-- Wall thicknesses: exterior 0.30 m; interior 0.15 m -->
+<path d="M90 1050V150H990V1050H90" fill="none" stroke="#303b3d" stroke-width="27" stroke-linejoin="miter"/>
+<path d="M810 150V1050M810 690H990" fill="none" stroke="#303b3d" stroke-width="13.5"/>
+<!-- Two south-facing windows, 1.8 m wide, separated by 0.6 m -->
+<g fill="white" stroke="#486b76" stroke-width="2">
+<rect x="153" y="1036.5" width="162" height="27"/><path d="M153 1045H315M153 1055H315"/>
+<rect x="369" y="1036.5" width="162" height="27"/><path d="M369 1045H531M369 1055H531"/>
+</g>
+<!-- Entry at 72 percent of cafe south wall; left hinge; outward swing -->
+<path d="M563.4 1050H653.4" stroke="white" stroke-width="29"/>
+<path class="door" d="M563.4 1050V1140M653.4 1050A90 90 0 0 1 563.4 1140"/>
+<text x="671" y="1102" font-size="17" font-weight="600">ENTRANCE</text>
+<text x="671" y="1124" font-size="14">1.00 m · opens out</text>
+<!-- Prep door, 0.90 m, positioned at 28 percent of the shared wall -->
+<path d="M810 260.7V341.7" stroke="#fff" stroke-width="16"/>
+<path class="door" d="M810 341.7H729M810 260.7A81 81 0 0 0 729 341.7"/>
+<!-- WC door, 0.85 m, at 15 percent of shared wall -->
+<path d="M810 705.75V782.25" stroke="white" stroke-width="16"/>
+<path class="door" d="M810 705.75H733.5M810 782.25A76.5 76.5 0 0 1 733.5 705.75"/>
+<!-- Service counters -->
+<rect class="furn" x="130.5" y="190.5" width="432" height="63"/>
+<text class="label" x="346.5" y="228" font-weight="600">Espresso &amp; Pastry Counter</text>
+<rect class="furn" x="598.5" y="190.5" width="139.5" height="63"/>
+<text class="label" x="668.25" y="217">Order</text><text class="label" x="668.25" y="239">Pickup</text>
+<!-- Dedicated queue is clear of all seating -->
+<rect x="180" y="280.5" width="414" height="90" fill="#f2f7f6" stroke="#668b86" stroke-width="2" stroke-dasharray="8 5"/>
+<text class="label" x="387" y="320" font-weight="600" letter-spacing="1">ORDER QUEUE</text>
+<text class="small" x="387" y="344">Keep clear</text>
+<text class="room" x="450" y="426">COFFEE SHOP</text>
+<text class="small" x="450" y="451">8.0 × 10.0 m</text>
+<!-- Four 0.8 × 0.7 m two-person tables, centers at x 1.35/3.70 and y 4.00/6.50 -->
+<use href="#two-table" x="211.5" y="510"/><use href="#two-table" x="423" y="510"/>
+<use href="#two-table" x="211.5" y="735"/><use href="#two-table" x="423" y="735"/>
+<!-- Communal table and chairs; condiment counter sits at its north-east edge -->
+<path class="furn" d="M522 892.5H681V936H747V964.5H522Z"/>
+<text class="label" x="634.5" y="946">Communal Table</text>
+<g class="chair"><path d="M537 880v-30h40v30zM604 880v-30h40v30zM537 977v30h40v-30zM604 977v30h40v-30zM671 977v30h40v-30z"/></g>
+<rect x="684" y="892.5" width="81" height="40.5" fill="#dfd2ba" stroke="#655849" stroke-width="2"/>
+<text x="724.5" y="911" text-anchor="middle" font-size="12">Condiments</text>
+<text x="724.5" y="926" text-anchor="middle" font-size="10">0.9 × 0.45 m</text>
+<!-- Separate prep / wash room -->
+<rect class="furn" x="837" y="195" width="126" height="67.5"/>
+<text class="label" x="900" y="233">Pastry Prep</text>
+<rect class="fixture" x="837" y="330" width="126" height="63"/>
+<rect class="fixture" x="846" y="340" width="47" height="43" rx="6"/><rect class="fixture" x="900" y="340" width="47" height="43" rx="6"/>
+<path d="M897 332v-10q0-8 8-8h6" fill="none" stroke="#4c676b" stroke-width="3"/>
+<text class="small" x="900" y="417">Commercial sink</text>
+<rect class="furn" x="837" y="442.5" width="126" height="49.5"/>
+<text class="label" x="900" y="473">Storage</text>
+<text class="room" x="900" y="561" style="font-size:19px">PREP / WASH</text>
+<text class="small" x="900" y="589">2.0 × 6.0 m</text>
+<text class="small" x="900" y="614">Back of house</text>
+<!-- Customer WC basin and toilet, oriented 90 degrees -->
+<rect class="fixture" x="832.5" y="712.5" width="48" height="43" rx="5"/>
+<ellipse class="fixture" cx="856.5" cy="735" rx="16" ry="12"/><path d="M856.5 713v9" stroke="#4c676b" stroke-width="3"/>
+<g transform="translate(913.5 825)">
+<rect class="fixture" x="19" y="-24" width="18" height="48" rx="3"/>
+<path class="fixture" d="M19-19H-8C-43-19-43 19-8 19H19Z"/><ellipse class="fixture" cx="-9" cy="0" rx="19" ry="12"/>
+</g>
+<text class="room" x="900" y="926" style="font-size:18px">CUSTOMER WC</text>
+<text class="small" x="900" y="953">2.0 × 4.0 m</text>
+<!-- Scale -->
+<g transform="translate(90 1121)"><path d="M0-6V6M0 0H180M90-6V6M180-6V6" stroke="#27363a" stroke-width="2"/><text x="0" y="27" font-size="13">0</text><text x="90" y="27" text-anchor="middle" font-size="13">1</text><text x="180" y="27" text-anchor="middle" font-size="13">2 m</text></g>
+</svg>

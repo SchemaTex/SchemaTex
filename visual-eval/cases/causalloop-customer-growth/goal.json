@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-customer-growth",
+  "type": "causalloop",
+  "title": "Customer growth and capacity",
+  "goal": "A subscription team can see referral growth constrained by support capacity.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "All causal links visibly carry plus or minus polarity markers."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A named reinforcing referral-growth loop is visibly marked R."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "A named balancing capacity-constraint loop is visibly marked B."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Variables and curved directional arrows make both loops readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The capacity loop visibly includes the response-time and satisfaction chain."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-causalloop-target.mjs`, which draws all five cases from one kit so the set is one drawing repeated. A causal-loop diagram of Customer growth and capacity. 6 variables are joined by 7 causal links, each carrying its polarity beside the arrowhead. The engine's job here is to find the feedback loops and classify them by Sterman's even/odd rule, and this drawing shows that answer: B1 runs Active customers → Support workload → Response time → Customer satisfaction → Customer referrals → New customers → Active customers with 1 negative link, so it balances; R2 runs Active customers → Customer referrals → New customers → Active customers with 0 negative links, so it reinforces. Each loop glyph is a circular arrow curling in the loop's own direction, labelled with the computed letter and the loop's name. Notation is Sterman's, per `docs/reference/41-CAUSAL-LOOP-STANDARD.md`: variables are plain text, causal links are curved arrows, each link carries its polarity beside the arrowhead, a slow link wears two hash marks, and every feedback loop gets a circular arrow curling in the loop's own direction. The R/B letter is computed by Sterman's even/odd rule — count the negative links round the loop, even (zero included) reinforces, odd balances — never copied from the source, and the footer shows the count so the verdict can be checked. Reinforcing loops are terracotta and balancing loops teal. Every label was checked against every other label and the canvas edge: 0 overlaps."
+  }
+}

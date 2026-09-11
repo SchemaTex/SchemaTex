@@ -1,0 +1,12 @@
+# Servo control: a separate breadboard supply rail powers the servo; Arduino and supply share ground.
+breadboard
+board: half
+title: "Servo with External Supply"
+parts
+  uno: mcu uno @beside-left
+  servo1: actuator servo-sg90 @beside-right
+wires
+  @+t1 --red-- servo1:VCC
+  @-t1 --black-- servo1:GND
+  @-t1 --black-- uno:GND
+  uno:9 --orange-- servo1:SIG

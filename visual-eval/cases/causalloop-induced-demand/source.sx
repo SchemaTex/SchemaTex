@@ -1,0 +1,8 @@
+# Scenario: urban highway expansion creates a classic induced-demand balancing loop.
+causalloop "Urban traffic induced demand"
+"Road capacity" -> "Travel time" : -
+"Travel time" -> "Driving attractiveness" : -
+"Driving attractiveness" -> "Vehicle trips" : +
+"Vehicle trips" -> "Congestion" : +
+"Congestion" -> "Travel time" : +
+loop B1 "Induced demand"

@@ -1,0 +1,15 @@
+# Clinical directorate reporting structure; consultants retain clinical accountability for registrar supervision.
+orgchart "Riverside Hospital · Medicine Directorate"
+Chief : "Dr Helen Ward" | Chief of Medicine | Clinical Directorate
+  Acute : "Dr Amir Khan" | Consultant, Acute Medicine | Medicine
+    RegAcute : "Dr Sofia Green" | Senior Registrar | Acute Medicine
+    RegAMU : "Dr James Cole" | Registrar | Acute Medicine
+  Cardio : "Dr Mei Lin" | Consultant Cardiologist | Cardiology
+    RegCardio : "Dr Tara Singh" | Cardiology Registrar | Cardiology
+  Nursing : "Grace Miller" | Director of Nursing | Nursing
+    WardLead : "Elena Cruz" | Ward Nursing Lead | Acute Medicine
+    CathLead : "Ruth Hall" | Cath Lab Nursing Lead | Cardiology
+  Allied : "Ben Foster" | Allied Health Lead | Allied Health
+    Physio : "Kara Young" | Physiotherapy Lead | Allied Health
+    Pharm : "Omar Ali" | Clinical Pharmacy Lead | Allied Health
+Acute -.-> WardLead [label: "Clinical coordination"]

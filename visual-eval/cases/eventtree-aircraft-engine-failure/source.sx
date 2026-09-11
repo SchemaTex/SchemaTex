@@ -1,0 +1,12 @@
+# Assumptions: a single-engine failure occurs in cruise and all safety functions are conditionally independent.
+# Diversion success is evaluated only after the crew identifies the failure and the standby system is available.
+eventtree "Aircraft engine failure in cruise"
+  initiating ENG "Single engine fails in cruise" freq: 0.004
+  function DET "Crew identifies and manages failure" p: 0.02
+  function SYS "Standby systems support flight" p: 0.01
+  function DIV "Diversion and landing succeeds" p: 0.005
+  outcome s s s -> "Safe diversion and landing"
+  outcome s s f -> "Diversion landing accident"
+  outcome s f s -> "Reduced capability; safe landing"
+  outcome s f f -> "Loss of control risk"
+  outcome f * * -> "Unmanaged engine failure; emergency outcome"

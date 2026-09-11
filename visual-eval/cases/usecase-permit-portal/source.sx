@@ -1,0 +1,30 @@
+# Government building-permit submission, review, payment, and appeal.
+usecase
+title: "Building Permit Portal"
+system: "Municipal Permit Portal"
+actor: Applicant as A
+actor: "Licensed Architect" as LA
+actor: PlanReviewer as PR (business)
+actor: "Payment Service" as PS (external)
+actor: "Property Registry" as REG (external)
+usecase: "Submit Permit Application" as Submit { 
+  extension point: incomplete plans
+}
+usecase: "Validate Property" as Property
+usecase: "Pay Application Fee" as Pay
+usecase: "Review Plans" as Review
+usecase: "Issue Permit" as Issue
+usecase: "Request Plan Revision" as Revise
+usecase: "Track Application" as Track
+LA --|> A
+A -- Submit
+A -- Track
+PR -- Review
+Submit ..> Property : «include»
+Submit ..> Pay : «include»
+Submit ..> Review : «include»
+Review ..> Issue : «include»
+Property -- REG
+Pay -- PS
+Revise <.. Submit : «extend» [documents incomplete] (extension point: incomplete plans)
+A -- Revise

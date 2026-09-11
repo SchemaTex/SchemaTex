@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-boutique-retail",
+  "type": "floorplan",
+  "title": "Boutique retail plan",
+  "goal": "Let a shopper understand the shopfront, merchandise displays, fitting rooms, checkout queue, and stock access before entering.",
+  "rubric": [
+    {
+      "id": "shopfront-visible",
+      "severity": "blocker",
+      "must": "The entrance and two large shopfront windows are visibly arranged along the customer-facing wall."
+    },
+    {
+      "id": "display-variety",
+      "severity": "blocker",
+      "must": "Perimeter shelving and multiple freestanding island clothing racks are both clearly visible."
+    },
+    {
+      "id": "fitting-block-visible",
+      "severity": "major",
+      "must": "An enclosed fitting-room block visibly contains three separate fitting-room symbols."
+    },
+    {
+      "id": "checkout-queue-clear",
+      "severity": "major",
+      "must": "The checkout counter has a labeled clear queue area that does not overlap any display fixture."
+    },
+    {
+      "id": "stockroom-access",
+      "severity": "major",
+      "must": "A labeled stockroom with shelving is visibly connected to the sales floor by a door."
+    },
+    {
+      "id": "shopper-aisles",
+      "severity": "major",
+      "must": "Visible aisles remain around the display islands and provide a clear route from entrance to fitting rooms and checkout."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules more explicitly, with three fitting-room symbols, unmistakable island clothing racks, and a labeled keep-clear queue area."
+  }
+}

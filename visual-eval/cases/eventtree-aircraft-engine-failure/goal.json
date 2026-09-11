@@ -1,0 +1,45 @@
+{
+  "id": "eventtree-aircraft-engine-failure",
+  "type": "eventtree",
+  "title": "Aircraft engine failure in cruise",
+  "goal": "Show single-engine-failure outcomes through crew response, standby systems, and diversion.",
+  "rubric": [
+    {
+      "id": "initiator",
+      "severity": "blocker",
+      "must": "The initiating event Single engine fails in cruise and its frequency are visible at the left."
+    },
+    {
+      "id": "functions",
+      "severity": "blocker",
+      "must": "Ordered function columns visibly show crew management, standby systems, and diversion."
+    },
+    {
+      "id": "outcomes",
+      "severity": "blocker",
+      "must": "Terminal branches visibly distinguish safe-diversion and emergency outcomes."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Each safety-function column visibly shows complementary success and failure branch probabilities."
+    },
+    {
+      "id": "branching",
+      "severity": "major",
+      "must": "Success and failure paths are visibly traceable from the initiator to terminal outcomes."
+    },
+    {
+      "id": "layout",
+      "severity": "minor",
+      "must": "The left-to-right event-tree sequence remains legible without ambiguous crossings."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG is the better target because it includes the initiating frequency and complementary branch probabilities while clearly tracing paths to safe and emergency outcomes."
+  }
+}

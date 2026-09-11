@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="461" height="868" viewBox="0 0 461 868" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"><g class="lt-state lt-composite" data-id="Selecting"><rect x="287.25" y="180" width="148" height="544" rx="10" ry="10" class="lt-composite-body"/>
+<path d="M 288.25 202 L 434.25 202" class="lt-state-div"/>
+<text x="299.25" y="196" class="lt-composite-title">Selecting</text></g></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="88" cy="108" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="AcceptingCoins"><rect x="168" y="86" width="128" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="232" y="112" text-anchor="middle" class="lt-state-name"><tspan x="232" dy="0">AcceptingCoins</tspan></text></g>
+<g class="lt-state lt-pseudo" data-id="__initial_2" data-kind="initial"><circle cx="361.25" cy="264" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="CheckStock"><rect x="311.25" y="380" width="100" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="361.25" y="406" text-anchor="middle" class="lt-state-name"><tspan x="361.25" dy="0">CheckStock</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Refunding"><rect x="177.25" y="500" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="224.25" y="526" text-anchor="middle" class="lt-state-name"><tspan x="224.25" dy="0">Refunding</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Dispensing"><rect x="311.25" y="500" width="100" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="361.25" y="526" text-anchor="middle" class="lt-state-name"><tspan x="361.25" dy="0">Dispensing</tspan></text></g>
+<g class="lt-state lt-pseudo" data-id="__final_3" data-kind="final"><circle cx="361.25" cy="660" r="11" class="lt-ps-final-outer"/>
+<circle cx="361.25" cy="660" r="6" class="lt-ps-final-inner"/></g>
+<g class="lt-state lt-simple" data-id="Idle"><rect x="188.25" y="776" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="224.25" y="802" text-anchor="middle" class="lt-state-name"><tspan x="224.25" dy="0">Idle</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="Idle"><path d="M 88 116 L 88 186 L 88 186 L 88 264 L 88 342 L 88 342 L 88 402 L 88 462 L 88 462 L 88 522 L 88 582 L 88 582 L 88 660 L 88 738 L 224.25 738 L 224.25 776" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="Idle"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="Idle" data-to="AcceptingCoins"><path d="M 232 130 L 232 186 L 129 186 L 129 264 L 129 342 L 129 342 L 129 402 L 129 462 L 129 462 L 129 522 L 129 582 L 129 582 L 129 660 L 129 738 L 224.25 738 L 224.25 776" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Idle" data-to="AcceptingCoins"/>
+<rect x="148.5" y="170" width="64" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="180.5" y="181" text-anchor="middle" class="lt-transition-label"><tspan x="180.5" dy="0">insert coin</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="AcceptingCoins" data-to="Selecting"><path d="M 232 130 L 232 186 L 361.25 186 L 361.25 256" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="AcceptingCoins" data-to="Selecting"/>
+<rect x="220.125" y="170" width="153" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="296.625" y="181" text-anchor="middle" class="lt-transition-label"><tspan x="296.625" dy="0">select item [credit &gt;= price]</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="AcceptingCoins" data-to="Refunding"><path d="M 232 130 L 232 186 L 224.25 186 L 224.25 264 L 224.25 342 L 224.25 342 L 224.25 402 L 224.25 462 L 224.25 462 L 224.25 500" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="AcceptingCoins" data-to="Refunding"/>
+<rect x="207.125" y="170" width="42" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="228.125" y="181" text-anchor="middle" class="lt-transition-label"><tspan x="228.125" dy="0">cancel</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="__initial_2" data-to="CheckStock"><path d="M 361.25 272 L 361.25 342 L 361.25 342 L 361.25 380" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_2" data-to="CheckStock"/></g>
+<g class="lt-edge" data-edge-id="t7" data-from="CheckStock" data-to="Dispensing"><path d="M 361.25 424 L 361.25 462 L 361.25 462 L 361.25 500" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CheckStock" data-to="Dispensing"/>
+<rect x="367.25" y="454" width="78" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="367.25" y="465" text-anchor="start" class="lt-transition-label"><tspan x="367.25" dy="0">item available</tspan></text></g>
+<g class="lt-edge" data-edge-id="t8" data-from="CheckStock" data-to="Refunding"><path d="M 361.25 424 L 361.25 462 L 224.25 462 L 224.25 500" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CheckStock" data-to="Refunding"/>
+<rect x="247.75" y="446" width="90" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="292.75" y="457" text-anchor="middle" class="lt-transition-label"><tspan x="292.75" dy="0">item unavailable</tspan></text></g>
+<g class="lt-edge" data-edge-id="t9" data-from="Dispensing" data-to="__final_3"><path d="M 361.25 544 L 361.25 582 L 361.25 582 L 361.25 649" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Dispensing" data-to="__final_3"/>
+<rect x="367.25" y="574" width="69" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="367.25" y="585" text-anchor="start" class="lt-transition-label"><tspan x="367.25" dy="0">deliver item</tspan></text></g>
+<g class="lt-edge" data-edge-id="t10" data-from="Selecting" data-to="Idle"><path d="M 361.25 671 L 361.25 738 L 224.25 738 L 224.25 776" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Selecting" data-to="Idle"/>
+<rect x="235.75" y="722" width="114" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="292.75" y="733" text-anchor="middle" class="lt-transition-label"><tspan x="292.75" dy="0">transaction complete</tspan></text></g>
+<g class="lt-edge" data-edge-id="t11" data-from="Refunding" data-to="Idle"><path d="M 224.25 544 L 224.25 582 L 224.25 582 L 224.25 660 L 224.25 738 L 224.25 738 L 224.25 776" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Refunding" data-to="Idle"/>
+<rect x="230.25" y="574" width="76" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="230.25" y="585" text-anchor="start" class="lt-transition-label"><tspan x="230.25" dy="0">return credit</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="AcceptingCoins" data-to="AcceptingCoins"><path d="M 296 101.4 C 324 89.4, 279.2 58, 251.2 86" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="AcceptingCoins" data-to="AcceptingCoins"/>
+<rect x="324" y="75.4" width="129" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="324" y="86.4" text-anchor="start" class="lt-transition-label"><tspan x="324" dy="0">insert coin / add credit</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

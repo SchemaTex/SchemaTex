@@ -1,0 +1,34 @@
+# Scenario: hospital improvement team investigates 30-day heart-failure readmissions.
+fishbone "Heart-failure readmission causes"
+
+effect "30-day readmissions above target"
+
+category people "People"
+category process "Process"
+category policy "Policy"
+category place "Place"
+
+people: "Discharge teaching inconsistent"
+  - "Caregiver absent at teaching"
+people: "Teach-back not used to confirm understanding"
+people: "No heart-failure nurse at weekends"
+people: "Home-health handoff left on voicemail"
+
+process: "Follow-up not booked before discharge"
+  - "Weekend scheduling gap"
+process: "Daily weight plan not documented"
+process: "No 48-hour post-discharge phone call"
+process: "Risk score not used to target follow-up"
+process: "Diuretic titration plan left to the clinic"
+
+policy: "Medication reconciliation incomplete"
+  - "Home medication list unverified"
+policy: "Formulary swap not explained to the patient"
+policy: "Observation status limits home-care benefit"
+policy: "Palliative referral criteria unclear"
+
+place: "Limited transport to clinic"
+  - "Rural patients travel far"
+place: "Food access limits the low-sodium diet"
+place: "No home scale in the household"
+place: "Unstable housing after discharge"

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1100" viewBox="0 0 1200 1100">
+<title>Password reset token flow with expiry handling</title>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4 L0 8 Z" fill="#243449"/></marker>
+</defs>
+<rect width="1200" height="1100" fill="white"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#182737" stroke="#243449" stroke-width="1.7">
+  <!-- Participants -->
+  <g fill="none"><circle cx="110" cy="39" r="12"/><path d="M110 51 V80 M88 63 H132 M110 80 L92 98 M110 80 L128 98"/></g>
+  <text x="110" y="123" text-anchor="middle" stroke="none">User</text>
+  <rect x="284" y="48" width="132" height="52" rx="3" fill="#f4f6f8"/>
+  <rect x="534" y="48" width="132" height="52" rx="3" fill="#f4f6f8"/>
+  <rect x="779" y="48" width="142" height="52" rx="3" fill="#f4f6f8"/>
+  <rect x="1014" y="48" width="132" height="52" rx="3" fill="#f4f6f8"/>
+  <g text-anchor="middle" stroke="none"><text x="350" y="81">Web</text><text x="600" y="81">Account</text><text x="850" y="81">TokenStore</text><text x="1080" y="81">Email</text></g>
+  <!-- Lifelines -->
+  <g stroke="#89939f" stroke-dasharray="7 6"><path d="M110 139 V1060"/><path d="M350 100 V1060"/><path d="M600 100 V1060"/><path d="M850 100 V1060"/><path d="M1080 100 V1060"/></g>
+  <!-- Account activation bars -->
+  <rect x="592" y="222" width="16" height="224" fill="#e7edf3"/>
+  <rect x="592" y="557" width="16" height="403" fill="#e7edf3"/>
+  <!-- Initial reset request and email -->
+  <g marker-end="url(#arrow)" fill="none"><path d="M110 172 H350"/><path d="M350 222 H592"/><path d="M608 278 H850"/><path d="M608 382 H1080"/></g>
+  <g marker-end="url(#arrow)" fill="none" stroke-dasharray="7 5"><path d="M850 328 H608"/><path d="M1080 433 H110"/></g>
+  <g stroke="none" text-anchor="middle"><text x="230" y="160">Request reset</text><text x="471" y="210">Find account</text><text x="729" y="266">Create token</text><text x="729" y="316">Token</text><text x="844" y="370">Send reset link</text><text x="470" y="421">Reset email</text></g>
+  <!-- Password submission occurs after reset email -->
+  <path d="M110 505 H350" fill="none" marker-end="url(#arrow)"/>
+  <text x="123" y="487" stroke="none">Submit new password and token</text>
+  <path d="M350 557 H592" fill="none" marker-end="url(#arrow)"/>
+  <text x="471" y="545" stroke="none" text-anchor="middle">Reset password</text>
+  <path d="M608 610 H850" fill="none" marker-end="url(#arrow)"/>
+  <text x="729" y="598" stroke="none" text-anchor="middle">Validate token</text>
+  <!-- Alternative outcomes -->
+  <rect x="275" y="637" width="680" height="306" fill="none"/>
+  <path d="M275 667 H319 L334 652 V637" fill="none"/>
+  <text x="287" y="659" font-size="16" font-weight="bold" stroke="none">alt</text>
+  <text x="351" y="663" font-weight="bold" stroke="none">[valid]</text>
+  <path d="M850 699 H608" fill="none" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="729" y="687" text-anchor="middle" stroke="none">Valid</text>
+  <path d="M608 733 H677 V765 H608" fill="none" marker-end="url(#arrow)"/>
+  <text x="694" y="751" stroke="none" font-size="17">Hash and save password</text>
+  <path d="M592 800 H350" fill="none" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="471" y="789" text-anchor="middle" stroke="none">Reset complete</text>
+  <path d="M275 821 H955" stroke-dasharray="8 5"/>
+  <text x="351" y="846" font-weight="bold" stroke="none">[expired]</text>
+  <path d="M850 877 H608" fill="none" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="729" y="866" text-anchor="middle" stroke="none">Expired</text>
+  <path d="M592 927 H350" fill="none" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="471" y="915" text-anchor="middle" stroke="none">Request new link</text>
+  <!-- Result and note -->
+  <path d="M350 989 H110" fill="none" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="230" y="977" text-anchor="middle" stroke="none">Result</text>
+  <path d="M545 994 H885 L903 1012 V1045 H545 Z" fill="#fff9de"/>
+  <path d="M885 994 V1012 H903" fill="none"/>
+  <text x="724" y="1026" text-anchor="middle" stroke="none">Tokens are single use</text>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+# Social-work ecomap: caregiver supporting a disabled adult, with respite care and a stressful service-navigation load.
+ecomap "Caregiver Support Map"
+  center: caregiver [female, age: 52, label: "Elena, caregiver"]
+  son [label: "Adult Son", category: family, importance: major]
+  respite [label: "Respite Provider", category: government]
+  disability [label: "Disability Services", category: government]
+  support [label: "Caregiver Group", category: community]
+  employer [label: "Part-time Employer", category: work]
+  physician [label: "Primary Care Team", category: health]
+  caregiver === son
+  respite --> caregiver
+  caregiver ~~~ disability
+  caregiver == support
+  caregiver --- employer
+  physician <-> caregiver

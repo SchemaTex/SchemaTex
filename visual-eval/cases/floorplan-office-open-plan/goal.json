@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-office-open-plan",
+  "type": "floorplan",
+  "title": "Open-plan office plan",
+  "goal": "Let a visitor identify the entrance, reception, workstations, meeting rooms, phone booth, kitchenette, and routes through the office.",
+  "rubric": [
+    {
+      "id": "reception-at-entrance",
+      "severity": "blocker",
+      "must": "The entrance door leads directly into a labeled reception area with a reception desk."
+    },
+    {
+      "id": "desk-banks-visible",
+      "severity": "blocker",
+      "must": "The open workspace visibly contains multiple orderly banks of office desks."
+    },
+    {
+      "id": "circulation-reaches-desks",
+      "severity": "blocker",
+      "must": "Clear floor space visibly reaches every bank of desks without passing through a desk."
+    },
+    {
+      "id": "different-meeting-rooms",
+      "severity": "major",
+      "must": "Two enclosed meeting rooms of visibly different sizes are labeled and contain meeting tables."
+    },
+    {
+      "id": "support-amenities",
+      "severity": "major",
+      "must": "A kitchenette and a separately labeled phone booth are both visible in the support area."
+    },
+    {
+      "id": "doors-clear",
+      "severity": "major",
+      "must": "Every door leaf and swing arc is clear of furniture and opens into usable floor space."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Both satisfy the blockers, but the SVG clearly provides differently sized meeting rooms while the picture’s two meeting rooms are essentially equal in size."
+  }
+}

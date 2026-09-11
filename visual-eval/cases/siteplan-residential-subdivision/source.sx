@@ -1,0 +1,16 @@
+# Early-planning subdivision diagram in feet; lot and setback dimensions are illustrative, not survey or permit data.
+siteplan "Willow Grove Subdivision" unit ft
+parcel tract "Willow Grove" points 0,0 300,0 300,220 0,220 fill #F7F5EF
+road willow "Willow Grove Drive" from -20,110 to 320,110 width 24
+road cedar "Cedar Lane" from 150,-20 to 150,240 width 22
+parcel lot1 "Lot 1" points 0,0 140,0 140,96 0,96 fill #E8F5E9
+parcel lot2 "Lot 2" points 160,0 300,0 300,96 160,96 fill #E8F5E9
+parcel lot3 "Lot 3" points 0,124 140,124 140,220 0,220 fill #E8F5E9
+parcel lot4 "Lot 4" points 160,124 300,124 300,220 160,220 fill #E8F5E9
+setback front "25 ft front setback" from 0,25 to 140,25
+setback rear "20 ft rear setback" from 0,76 to 140,76
+easement utility "10 ft utility easement" from 145,0 to 145,220
+dim "300 ft overall" from 0,-14 to 300,-14
+north
+scale 50
+legend on

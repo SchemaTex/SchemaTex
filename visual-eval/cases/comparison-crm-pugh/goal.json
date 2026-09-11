@@ -1,0 +1,35 @@
+{
+  "id": "comparison-crm-pugh",
+  "type": "comparison",
+  "variant": "decision",
+  "title": "CRM vendor Pugh selection",
+  "goal": "Sales operations can select a CRM using a weighted Pugh matrix and incumbent datum.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A weighted decision matrix visibly includes HubSpot as the datum/baseline."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A computed weighted-total row visibly identifies Salesforce as winner."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Visible criteria weights and numeric scores support the comparison."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "All three CRM options are visible."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The selected winner is visually emphasized."
+    }
+  ],
+  "split": "holdout"
+}

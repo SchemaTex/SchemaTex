@@ -1,0 +1,25 @@
+# Mutual exclusion: one semaphore token allows exactly one of two critical-section entries at a time.
+petri "Semaphore Mutual Exclusion"
+  layout: lr
+  place Semaphore *1
+  place ReadyA *1
+  place ReadyB *1
+  place CriticalA
+  place CriticalB
+  transition EnterA
+  transition ExitA
+  transition EnterB
+  transition ExitB
+  ReadyA -> EnterA
+  Semaphore -> EnterA
+  EnterA -> CriticalA
+  CriticalA -> ExitA
+  ExitA -> ReadyA
+  ExitA -> Semaphore
+  ReadyB -> EnterB
+  Semaphore -> EnterB
+  EnterB -> CriticalB
+  CriticalB -> ExitB
+  ExitB -> ReadyB
+  ExitB -> Semaphore
+  fire: EnterA, ExitA, EnterB

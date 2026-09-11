@@ -1,0 +1,24 @@
+# Assumptions: scores represent the current centrifugal-pump design and its existing production controls.
+# Detection ratings use the AIAG-VDA convention: 1 is near-certain detection and 10 is no detection.
+fmea "Centrifugal pump assembly DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  number: DFMEA-PUMP-017
+  item "Centrifugal pump assembly" fn "Deliver process fluid at required flow and pressure"
+    mode "Mechanical seal leakage"
+      effect "Loss of containment and reduced process flow" sev: 8
+      cause "Seal-face wear from dry running" occ: 4
+        controls prevention: "Minimum-flow recycle specification", detection: "Pressure and leakage test" det: 4
+      cause "Incorrect seal installation" occ: 3
+        controls prevention: "Assembly work instruction", detection: "End-of-line leak test" det: 3
+    mode "Insufficient discharge flow"
+      effect "Process cooling demand not met" sev: 7
+      cause "Impeller erosion" occ: 4
+        controls prevention: "Erosion-resistant impeller material", detection: "Hydraulic performance test" det: 5
+      cause "Suction strainer blockage" occ: 5
+        controls prevention: "Strainer differential-pressure monitoring", detection: "Flow acceptance test" det: 3
+    mode "Bearing seizure"
+      effect "Pump trip and loss of process circulation" sev: 8
+      cause "Lubricant contamination" occ: 3
+        controls prevention: "Sealed bearing specification", detection: "Vibration acceptance test" det: 5

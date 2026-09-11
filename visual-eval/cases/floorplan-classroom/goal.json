@@ -1,0 +1,49 @@
+{
+  "id": "floorplan-classroom",
+  "type": "floorplan",
+  "title": "Classroom seating plan",
+  "goal": "A reader can locate all 28 student desks, the teaching wall and storage, and trace a clear route from the entrance to every seat.",
+  "rubric": [
+    {
+      "id": "student-seating",
+      "severity": "blocker",
+      "must": "Exactly 28 student desk-and-chair units are arranged in four rows facing the whiteboard wall."
+    },
+    {
+      "id": "teaching-area",
+      "severity": "major",
+      "must": "A labeled whiteboard and a separate teacher desk with a chair occupy the front teaching area."
+    },
+    {
+      "id": "storage-access",
+      "severity": "major",
+      "must": "Labeled storage has open floor space directly in front of it."
+    },
+    {
+      "id": "reachable-desks",
+      "severity": "blocker",
+      "must": "An unobstructed central aisle connects the entrance to every row, with visible walking gaps between rows and access to every desk."
+    },
+    {
+      "id": "clear-door-swing",
+      "severity": "blocker",
+      "must": "The entrance shows a door leaf and swing arc with no furniture in the swept area."
+    },
+    {
+      "id": "furniture-clearance",
+      "severity": "blocker",
+      "must": "Every desk and chair lies inside the room, with visible gaps separating it from walls and other furniture."
+    },
+    {
+      "id": "architectural-context",
+      "severity": "minor",
+      "must": "The room has visible windows, exterior dimensions of 12 m by 11 m, and a labeled 1.6 m central aisle."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Both drawings satisfy the blocker and major requirements, but the SVG also includes visible windows, 12 m by 11 m dimensions, and a labeled 1.6 m central aisle."
+  }
+}

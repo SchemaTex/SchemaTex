@@ -1,0 +1,15 @@
+# Plant organisation for a continuous three-shift operation; EHS has direct access to the plant manager.
+orgchart "Apex Components · Plant Organisation"
+PlantMgr : "Renee Ford" | Plant Manager | Operations [role: Ops]
+  Production : "Carlos Vega" | Production Manager | Production
+    ShiftA : "Jamal Reed" | Shift A Supervisor | Production
+    ShiftB : "Lena Moore" | Shift B Supervisor | Production
+    ShiftC : "Victor Tran" | Shift C Supervisor | Production
+  Quality : "Anika Bose" | Quality Manager | Quality
+    QA : "Derek Shaw" | QA Supervisor | Quality
+  Maintenance : "Paul Grant" | Maintenance Manager | Engineering
+    Mech : "Tessa Ray" | Mechanical Supervisor | Maintenance
+    Electrical : "Ming Zhao" | Electrical Supervisor | Maintenance
+  EHS : "Fiona Lowe" | EHS Manager | EHS
+    Safety : "Hector Ruiz" | Safety Coordinator | EHS
+Quality -.-> ShiftA [label: "Quality release"]

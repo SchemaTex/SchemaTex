@@ -1,0 +1,17 @@
+# STRIDE DFD: public web user crosses into a DMZ application and internal customer/audit stores.
+threatmodel "Web Application STRIDE"
+external User: Customer Browser
+external API: Shipping API
+process Web: Web Application
+process Auth: Authentication Service
+datastore Users: Customer Database
+datastore Audit: Audit Log
+User -> Web : HTTPS request
+Web -> Auth : credentials
+Auth -> Users : account lookup
+Web -> Users : order data
+Web -> Audit : audit event
+Web -> API : shipment request
+boundary "Internet" { User, API }
+boundary "DMZ" { Web, Auth }
+boundary "Internal" { Users, Audit }

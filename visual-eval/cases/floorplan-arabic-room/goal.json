@@ -1,0 +1,44 @@
+{
+  "id": "floorplan-arabic-room",
+  "type": "floorplan",
+  "title": "Arabic bedroom labels",
+  "goal": "A reader must be able to read the Arabic room and furniture labels naturally and identify the door, window, and dimensions of a small bedroom.",
+  "rubric": [
+    {
+      "id": "arabic-reading-order",
+      "severity": "blocker",
+      "must": "The Arabic room name and furniture labels read naturally from right to left, with the room name's words in the correct order and no reversed letters or mirrored glyphs."
+    },
+    {
+      "id": "arabic-letter-joining",
+      "severity": "blocker",
+      "must": "Arabic letters use their normal contextual joined forms wherever Arabic spelling permits joining, with no words rendered as a sequence of isolated letters."
+    },
+    {
+      "id": "arabic-label-fit",
+      "severity": "major",
+      "must": "The Arabic room name fits inside the room, and all three Arabic furniture labels fit within their respective furniture outlines without clipping or overlapping symbol strokes."
+    },
+    {
+      "id": "arabic-label-identity",
+      "severity": "major",
+      "must": "The room has an Arabic bedroom name, and the bed, wardrobe, and table each carry the appropriate ordinary Arabic name for that object."
+    },
+    {
+      "id": "small-room-and-furniture",
+      "severity": "major",
+      "must": "The drawing shows one rectangular room dimensioned 3 by 4 metres with exactly three furniture pieces, all inside its walls and clear of the door swing."
+    },
+    {
+      "id": "door-and-window",
+      "severity": "major",
+      "must": "One door has a visible leaf and inward swing arc at a wall opening, and one window has visible glazing lines in a separate wall opening."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the Arabic typography, labeling, furniture-count, and opening requirements more closely than the picture."
+  }
+}

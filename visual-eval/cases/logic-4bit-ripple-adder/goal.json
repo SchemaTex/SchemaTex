@@ -1,0 +1,40 @@
+{
+  "id": "logic-4bit-ripple-adder",
+  "type": "logic",
+  "title": "4-bit ripple-carry adder",
+  "goal": "Show a gate-level four-bit adder with a visible carry chain.",
+  "rubric": [
+    {
+      "id": "four-sum-stages",
+      "severity": "blocker",
+      "must": "Four visible XOR sum stages produce outputs S0, S1, S2, and S3."
+    },
+    {
+      "id": "ripple-chain",
+      "severity": "blocker",
+      "must": "The carry output of each lower-order stage visibly connects to the carry input of the next stage, from Cin through Cout."
+    },
+    {
+      "id": "full-adder-carry",
+      "severity": "major",
+      "must": "Each bit stage visibly combines two AND terms with an OR gate for its carry."
+    },
+    {
+      "id": "bit-inputs",
+      "severity": "major",
+      "must": "Inputs A0 through A3 and B0 through B3 are visibly labelled at the four stages."
+    },
+    {
+      "id": "terminal-carry",
+      "severity": "minor",
+      "must": "Cin enters the least-significant stage and Cout leaves the most-significant stage."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Gate-level 4-bit ripple-carry adder in ANSI/IEEE Std 91 distinctive-shape symbols, drawn as four identical full-adder stages stacked one above the other, bit 0 at the top. In each stage the two addend bits Ak and Bk enter on the left, drive an exclusive-OR whose output xk is the half sum and an AND whose output ak is the carry generate; a second exclusive-OR adds the incoming carry to xk to give the sum bit Sk, a second AND combines xk with the incoming carry to give the carry propagate bk, and an OR gate sums ak and bk into that stage's carry out. Cin enters the top stage from the left; every other stage takes its carry from the stage above along a lane that runs back across the sheet, which is the ripple the name refers to. The four sum bits and Cout leave on the right margin. All wires are orthogonal; filled dots mark junctions and plain crossings mark wires that pass without connecting. Drawn in the idiom of the logic exemplar: ANSI/IEEE Std 91 distinctive shapes on one body box so the columns line up, ink-only palette with paper-filled gate bodies so a wire passing behind a gate is visibly interrupted, the gate type carried by the outline rather than printed under it, and the label slot spent on net names instead. Row pitch, channel x and canvas size are solved from browser-measured text widths, and the drawing was checked label-against-label, label-against-wire, label-against-canvas-edge and wire-against-every-unattached-gate before it was written: 0 collisions, and no wire crosses a gate body."
+  }
+}

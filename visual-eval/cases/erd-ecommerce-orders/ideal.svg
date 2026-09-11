@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="950" viewBox="0 0 1440 950">
+<title>E-commerce ordering domain — crow’s-foot entity relationship diagram</title>
+<rect width="1440" height="950" fill="white"/>
+<defs>
+<style>
+.entity{fill:#fff;stroke:#263747;stroke-width:2}.head{fill:#edf2f6}.rule{stroke:#263747;stroke-width:1.5}.name{font:700 22px 'Helvetica Neue',Helvetica,sans-serif;fill:#172b3a;text-anchor:middle}.field{font:18px 'Courier New',monospace;fill:#213547}.key{font:700 17px 'Helvetica Neue',Helvetica,sans-serif;fill:#213547}.edge{fill:none;stroke:#263747;stroke-width:2}.label{font:18px 'Helvetica Neue',Helvetica,sans-serif;fill:#263747;text-anchor:middle}.labelbg{fill:white}
+</style>
+<!-- Cardinality symbols: start is at the entity boundary; positive x points away. -->
+<g id="one"><path class="edge" d="M10,-9 V9 M18,-9 V9"/></g>
+<g id="many"><path class="edge" d="M0,-10 L18,0 L0,10"/><circle cx="28" cy="0" r="5" fill="white" stroke="#263747" stroke-width="2"/></g>
+<g id="required-many"><path class="edge" d="M0,-10 L18,0 L0,10 M26,-9 V9"/></g>
+</defs>
+<!-- Relationships are routed through clear corridors between entity tables. -->
+<g class="edge">
+<path d="M380 180 H525"/>
+<path d="M220 292 V580"/>
+<path d="M935 180 H1080"/>
+<path d="M1230 580 V292"/>
+<path d="M730 324 V580"/>
+<path d="M380 674 H465 V266 H525"/>
+</g>
+<!-- CUSTOMER exactly one; ORDER zero or more -->
+<use href="#one" transform="translate(380 180)"/><use href="#many" transform="translate(525 180) rotate(180)"/>
+<rect class="labelbg" x="409" y="144" width="86" height="25"/><text class="label" x="452" y="163">places</text>
+<!-- CUSTOMER exactly one; ADDRESS zero or more -->
+<use href="#one" transform="translate(220 292) rotate(90)"/><use href="#many" transform="translate(220 580) rotate(-90)"/>
+<rect class="labelbg" x="181" y="421" width="78" height="28"/><text class="label" x="220" y="442">saves</text>
+<!-- ORDER exactly one; LINE_ITEM one or more -->
+<use href="#one" transform="translate(935 180)"/><use href="#required-many" transform="translate(1080 180) rotate(180)"/>
+<rect class="labelbg" x="961" y="143" width="96" height="28"/><text class="label" x="1008" y="163">contains</text>
+<!-- PRODUCT exactly one; LINE_ITEM zero or more -->
+<use href="#one" transform="translate(1230 580) rotate(-90)"/><use href="#many" transform="translate(1230 292) rotate(90)"/>
+<rect class="labelbg" x="1168" y="421" width="124" height="28"/><text class="label" x="1230" y="442">appears_in</text>
+<!-- ORDER exactly one; PAYMENT zero or more -->
+<use href="#one" transform="translate(730 324) rotate(90)"/><use href="#many" transform="translate(730 580) rotate(-90)"/>
+<rect class="labelbg" x="702" y="421" width="56" height="28"/><text class="label" x="730" y="442">has</text>
+<!-- ADDRESS exactly one; ORDER zero or more -->
+<use href="#one" transform="translate(380 674)"/><use href="#many" transform="translate(525 266) rotate(180)"/>
+<rect class="labelbg" x="420" y="477" width="90" height="28"/><text class="label" x="465" y="498">ships_to</text>
+<!-- CUSTOMER -->
+<g transform="translate(60 100)">
+<rect class="entity" width="320" height="192"/><rect class="head" x="1" y="1" width="318" height="47"/><path class="rule" d="M0 48 H320"/>
+<text class="name" x="160" y="32">CUSTOMER</text>
+<text class="field" x="16" y="82">int customer_id</text><text class="key" x="276" y="82">PK</text>
+<text class="field" x="16" y="126">string email</text>
+<text class="field" x="16" y="170">string full_name</text>
+</g>
+<!-- ORDER -->
+<g transform="translate(525 44)">
+<rect class="entity" width="410" height="280"/><rect class="head" x="1" y="1" width="408" height="47"/><path class="rule" d="M0 48 H410"/>
+<text class="name" x="205" y="32">ORDER</text>
+<text class="field" x="16" y="82">int order_id</text><text class="key" x="366" y="82">PK</text>
+<text class="field" x="16" y="126">int customer_id</text><text class="key" x="366" y="126">FK</text>
+<text class="field" x="16" y="170">int shipping_address_id</text><text class="key" x="366" y="170">FK</text>
+<text class="field" x="16" y="214">date ordered_at</text>
+<text class="field" x="16" y="258">string status</text>
+</g>
+<!-- LINE_ITEM -->
+<g transform="translate(1080 56)">
+<rect class="entity" width="320" height="236"/><rect class="head" x="1" y="1" width="318" height="47"/><path class="rule" d="M0 48 H320"/>
+<text class="name" x="160" y="32">LINE_ITEM</text>
+<text class="field" x="16" y="82">int line_item_id</text><text class="key" x="276" y="82">PK</text>
+<text class="field" x="16" y="126">int order_id</text><text class="key" x="276" y="126">FK</text>
+<text class="field" x="16" y="170">int product_id</text><text class="key" x="276" y="170">FK</text>
+<text class="field" x="16" y="214">int quantity</text>
+</g>
+<!-- ADDRESS -->
+<g transform="translate(60 580)">
+<rect class="entity" width="320" height="236"/><rect class="head" x="1" y="1" width="318" height="47"/><path class="rule" d="M0 48 H320"/>
+<text class="name" x="160" y="32">ADDRESS</text>
+<text class="field" x="16" y="82">int address_id</text><text class="key" x="276" y="82">PK</text>
+<text class="field" x="16" y="126">int customer_id</text><text class="key" x="276" y="126">FK</text>
+<text class="field" x="16" y="170">string postal_code</text>
+<text class="field" x="16" y="214">string country</text>
+</g>
+<!-- PAYMENT -->
+<g transform="translate(570 580)">
+<rect class="entity" width="320" height="236"/><rect class="head" x="1" y="1" width="318" height="47"/><path class="rule" d="M0 48 H320"/>
+<text class="name" x="160" y="32">PAYMENT</text>
+<text class="field" x="16" y="82">int payment_id</text><text class="key" x="276" y="82">PK</text>
+<text class="field" x="16" y="126">int order_id</text><text class="key" x="276" y="126">FK</text>
+<text class="field" x="16" y="170">decimal amount</text>
+<text class="field" x="16" y="214">string status</text>
+</g>
+<!-- PRODUCT -->
+<g transform="translate(1080 580)">
+<rect class="entity" width="320" height="236"/><rect class="head" x="1" y="1" width="318" height="47"/><path class="rule" d="M0 48 H320"/>
+<text class="name" x="160" y="32">PRODUCT</text>
+<text class="field" x="16" y="82">int product_id</text><text class="key" x="276" y="82">PK</text>
+<text class="field" x="16" y="126">string sku</text>
+<text class="field" x="16" y="170">string name</text>
+<text class="field" x="16" y="214">decimal unit_price</text>
+</g>
+</svg>

@@ -1,0 +1,13 @@
+circuit "Addressable Fire Alarm Class A Loop" netlist
+# 24 VDC Class A addressable loop leaves LOOP OUT, passes all field devices, and returns on LOOP IN.
+V1 P24 COM value="24 V DC" label="PANEL 24 VDC"
+U1 P24 COM LOOP_OUT LOOP_IN SNDPLUS type=ic pins="24V,COM,LOOP_OUT,LOOP_IN,SOUNDER+" value="Notifier NFS-320" label="FACP PANEL"
+U2 LOOP_OUT N1 type=ic pins="LOOP_IN,LOOP_OUT" value="FSP-851" label="D1 SMOKE DETECTOR"
+U3 N1 N2 type=ic pins="LOOP_IN,LOOP_OUT" value="FST-851" label="D2 HEAT DETECTOR"
+U4 N2 N3 type=ic pins="LOOP_IN,LOOP_OUT" value="MCP5A" label="MCP1 MANUAL CALL POINT"
+U5 N3 N4 type=ic pins="LOOP_IN,LOOP_OUT" value="FSP-851" label="D3 SMOKE DETECTOR"
+R1 N4 COM value="6.8 kΩ" label="EOL MONITOR"
+W1 N4 LOOP_IN type=wire value="Class A return" label="LOOP RETURN"
+F1 SNDPLUS SND_FUSED value="1 A" label="F1 SOUNDER FUSE"
+U6 SND_FUSED COM type=ic pins="+,−" value="24 VDC" label="S1 SOUNDER"
+U7 SND_FUSED COM type=ic pins="+,−" value="24 VDC" label="S2 SOUNDER"

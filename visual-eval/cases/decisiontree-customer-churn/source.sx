@@ -1,0 +1,13 @@
+# Customer-success churn triage based on engagement, value, and renewal risk.
+decisiontree "Customer Churn Triage"
+q "Is the renewal within 90 days?"
+  yes: q "Has product usage declined for four weeks?"
+    yes: q "Is an executive sponsor engaged?"
+      yes: a "Run sponsor recovery plan"
+      no: a "Escalate executive outreach"
+    no: a "Confirm value and renewal plan"
+  no: q "Is customer health score below 60?"
+    yes: q "Is there an unresolved critical issue?"
+      yes: a "Assign incident and success leadership"
+      no: a "Schedule proactive success review"
+    no: a "Continue standard success cadence"

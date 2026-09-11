@@ -1,0 +1,12 @@
+circuit "Current-Mirror Differential-Pair Bias" netlist
+# NPN mirror sinks the differential pair tail current; reference branch targets about 1 mA.
+V1 VCC GND value="5 V" label="VCC"
+R1 VCC BBASE value="4.3 kΩ, 1%" label="RREF"
+Q1 BBASE BBASE GND npn value="2N3904" label="Q1 DIODE-CONNECTED"
+Q2 TAIL BBASE GND npn value="2N3904" label="Q2 MIRROR OUTPUT"
+Q3 COL1 INP TAIL npn value="2N3904" label="Q3 DIFFERENTIAL PAIR A"
+Q4 COL2 INN TAIL npn value="2N3904" label="Q4 DIFFERENTIAL PAIR B"
+R2 VCC COL1 value="2.2 kΩ" label="RC1"
+R3 VCC COL2 value="2.2 kΩ" label="RC2"
+V2 INP GND type=acsource value="10 mV" label="VIN+"
+V3 INN GND type=acsource value="10 mV" label="VIN-"

@@ -1,0 +1,35 @@
+sld "Motor Control Centre Section" [standard: ansi]
+
+UTIL = utility [voltage: "480 V", rating: "50 kA", label: "480 V Plant Supply"]
+CBM = breaker [rating: "800 A, 50 kA", label: "MCC-1 Main Breaker"]
+MCCBUS = bus [voltage: "480 V", label: "MCC-1 480 V Bus"]
+
+CB101 = breaker [rating: "125 A, 25 kA", label: "52-M101 Feeder Breaker"]
+K101 = contactor [rating: "90 A, AC-3", label: "K101 Contactor"]
+OL101 = relay [rating: "38-50 A", device: "49", label: "OL101 Overload Relay"]
+M101 = motor [rating: "30 kW, 480 V, 3ph", label: "M-101 Process Pump"]
+
+CB102 = breaker [rating: "63 A, 25 kA", label: "52-M102 Feeder Breaker"]
+K102 = contactor [rating: "50 A, AC-3", label: "K102 Contactor"]
+OL102 = relay [rating: "21-28 A", device: "49", label: "OL102 Overload Relay"]
+M102 = motor [rating: "15 kW, 480 V, 3ph", label: "M-102 Cooling Fan"]
+
+CB103 = breaker [rating: "250 A, 25 kA", label: "52-M103 Feeder Breaker"]
+K103 = contactor [rating: "180 A, AC-3", label: "K103 Contactor"]
+OL103 = relay [rating: "75-100 A", device: "49", label: "OL103 Overload Relay"]
+M103 = motor [rating: "55 kW, 480 V, 3ph", label: "M-103 Conveyor Drive"]
+
+UTIL -> CBM
+CBM -> MCCBUS
+MCCBUS -> CB101
+CB101 -> K101
+K101 -> OL101
+OL101 -> M101 [cable: "3C 35 mm2 Cu"]
+MCCBUS -> CB102
+CB102 -> K102
+K102 -> OL102
+OL102 -> M102 [cable: "3C 16 mm2 Cu"]
+MCCBUS -> CB103
+CB103 -> K103
+K103 -> OL103
+OL103 -> M103 [cable: "3C 70 mm2 Cu"]

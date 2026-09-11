@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="680" viewBox="0 0 1400 680">
+  <title>Five-Element LC Low-Pass Ladder</title>
+  <rect width="1400" height="680" fill="white"/>
+  <style>
+    .wire,.symbol{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    text{fill:#17212b;font-family:Helvetica,Arial,sans-serif;font-size:22px}
+    .name{font-weight:700;font-size:23px}
+    .value{font-size:21px}
+    .node{fill:#17212b}
+  </style>
+  <text x="700" y="65" text-anchor="middle" font-size="32" font-weight="700">Five-Element LC Low-Pass Ladder</text>
+  <text x="700" y="104" text-anchor="middle" font-size="20">50 Ω source and load · Nominal 1 MHz low-pass</text>
+
+  <!-- Source, series source resistor, and first inductor -->
+  <path class="wire" d="M130 337 V250 H200 M300 250 H350 M446 250 H530 M530 250 H620 M716 250 H800 M800 250 H890 M986 250 H1170 V345"/>
+  <path class="symbol" d="M200 250 l8 -13 16 26 16 -26 16 26 16 -26 16 26 12 -13"/>
+  <text class="name" x="250" y="180" text-anchor="middle">RSOURCE</text>
+  <text class="value" x="250" y="212" text-anchor="middle">50 Ω</text>
+  <path class="symbol" d="M350 250 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0"/>
+  <text class="name" x="398" y="180" text-anchor="middle">L1</text>
+  <text class="value" x="398" y="212" text-anchor="middle">3.3 µH</text>
+
+  <!-- Second and third series inductors -->
+  <path class="symbol" d="M620 250 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0"/>
+  <text class="name" x="668" y="180" text-anchor="middle">L2</text>
+  <text class="value" x="668" y="212" text-anchor="middle">4.7 µH</text>
+  <path class="symbol" d="M890 250 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0 a12 16 0 0 1 24 0"/>
+  <text class="name" x="938" y="180" text-anchor="middle">L3</text>
+  <text class="value" x="938" y="212" text-anchor="middle">3.3 µH</text>
+
+  <!-- AC voltage source -->
+  <circle class="symbol" cx="130" cy="380" r="43"/>
+  <path class="symbol" d="M104 380 C111 356 119 356 130 380 C141 404 149 404 156 380"/>
+  <path class="wire" d="M130 423 V520 H1170 V445"/>
+  <text class="name" x="200" y="365">SOURCE</text>
+  <text class="value" x="200" y="399">1 V AC, 1 MHz</text>
+  <text x="75" y="326" text-anchor="middle">+</text>
+
+  <!-- C1 shunt to ground -->
+  <circle class="node" cx="530" cy="250" r="5"/>
+  <path class="wire" d="M530 250 V365 M530 389 V520"/>
+  <path class="symbol" d="M503 365 H557 M503 389 H557"/>
+  <text class="name" x="568" y="369">C1</text>
+  <text class="value" x="568" y="402">1 nF, C0G</text>
+  <circle class="node" cx="530" cy="520" r="5"/>
+
+  <!-- C2 shunt to ground -->
+  <circle class="node" cx="800" cy="250" r="5"/>
+  <path class="wire" d="M800 250 V365 M800 389 V520"/>
+  <path class="symbol" d="M773 365 H827 M773 389 H827"/>
+  <text class="name" x="838" y="369">C2</text>
+  <text class="value" x="838" y="402">1 nF, C0G</text>
+  <circle class="node" cx="800" cy="520" r="5"/>
+
+  <!-- Output and load resistor -->
+  <circle class="node" cx="1170" cy="250" r="5"/>
+  <text class="name" x="1170" y="215" text-anchor="middle">VOUT</text>
+  <path class="symbol" d="M1170 345 l-13 8 26 16 -26 16 26 16 -26 16 26 16 -13 12"/>
+  <text class="name" x="1202" y="384">RLOAD</text>
+  <text class="value" x="1202" y="417">50 Ω</text>
+
+  <!-- Common ground rail -->
+  <circle class="node" cx="680" cy="520" r="5"/>
+  <path class="wire" d="M680 520 V558"/>
+  <path class="symbol" d="M654 558 H706 M663 568 H697 M672 578 H688"/>
+  <text x="680" y="615" text-anchor="middle">GND</text>
+</svg>

@@ -1,0 +1,50 @@
+{
+  "id": "logic-full-adder",
+  "type": "logic",
+  "title": "1-bit full adder",
+  "goal": "A reader can trace every signal from input to output without guessing where a line goes.",
+  "rubric": [
+    {
+      "id": "no-wire-through-body",
+      "severity": "blocker",
+      "must": "No connecting line passes through the inside of a gate symbol. Lines may touch a gate only at its pins."
+    },
+    {
+      "id": "all-nets-drawn",
+      "severity": "blocker",
+      "must": "Every input and output label is joined to a gate by a visible unbroken line. No signal is connected only by sharing a name."
+    },
+    {
+      "id": "junction-dots",
+      "severity": "major",
+      "must": "A filled dot appears exactly where one line branches into two, and nowhere else."
+    },
+    {
+      "id": "crossings-unambiguous",
+      "severity": "major",
+      "must": "Where two unrelated lines cross, it is visually clear they are not connected (a hop, a gap, or no dot)."
+    },
+    {
+      "id": "output-alignment",
+      "severity": "minor",
+      "must": "Each output label sits on the same horizontal line as the gate pin that drives it."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap, and no text is crossed by a line."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Gate-level 1-bit full adder in ANSI/IEEE Std 91 distinctive-shape symbols. Inputs A, B and Cin enter as labelled stubs on the left. A and B drive an exclusive-OR whose output is the half-sum net s1, and an AND whose output is the carry-generate net c1. A second exclusive-OR adds Cin to s1 to give Sum; a second AND combines s1 with Cin to give the carry-propagate net c2; an OR gate sums c1 and c2 into Cout. All wires are orthogonal, filled dots mark fan-out junctions, and the two outputs leave on the right margin. Drawn in the idiom of the logic exemplar: ANSI/IEEE Std 91 distinctive shapes on one body box so the columns line up, ink-only palette with paper-filled gate bodies so a wire passing behind a gate is visibly interrupted, the gate type carried by the outline rather than printed under it, and the label slot spent on net names instead. Row pitch, channel x and canvas size are solved from browser-measured text widths, and the drawing was checked label-against-label, label-against-wire, label-against-canvas-edge and wire-against-every-unattached-gate before it was written: 0 collisions, and no wire crosses a gate body."
+  },
+  "audit": {
+    "reviewedBy": "a digital design engineer checking a gate-level schematic",
+    "at": "2026-09-07T19:05:09.611Z",
+    "verdict": "sound",
+    "findings": []
+  }
+}

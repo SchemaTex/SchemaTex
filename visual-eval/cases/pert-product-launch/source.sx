@@ -1,0 +1,19 @@
+%% Context: Product launch plan with coordinated engineering and marketing tracks.
+pert
+title: "Product Launch"
+unit: days
+direction: LR
+layout: network
+
+task A "Launch kickoff" milestone
+task B "Define release scope" duration: 4 after: A tags: engineering
+task C "Build release candidate" duration: 10 after: B tags: engineering
+task D "Security review" duration: 4 after: C tags: engineering
+task E "User acceptance testing" duration: 5 after: C tags: engineering
+task F "Approve release" milestone after: D, E tags: engineering
+task G "Positioning and messaging" duration: 5 after: A tags: marketing
+task H "Create campaign assets" duration: 7 after: G tags: marketing
+task I "Prepare launch communications" duration: 3 after: H tags: marketing
+task J "Train support team" duration: 3 after: B tags: enablement
+task K "Go/no-go review" milestone after: F, I, J
+task L "Public launch" milestone after: K

@@ -1,0 +1,28 @@
+%% Checkout inventory reservation and payment confirmation.
+sequenceDiagram
+actor Buyer
+participant Store
+participant Checkout
+participant Inventory
+participant Payment
+participant Order
+Buyer->>Store: Checkout
+Store->>Checkout: Submit cart
+activate Checkout
+Checkout->>Inventory: Reserve items
+activate Inventory
+alt [available]
+Inventory-->>Checkout: Reservation
+Checkout->>Payment: Authorize
+Payment-->>Checkout: Approved
+Checkout->>Order: Create order
+Order-->>Checkout: Order ID
+Checkout-->>Store: Confirmation
+else [unavailable]
+Inventory-->>Checkout: Out of stock
+Checkout-->>Store: Update cart
+end
+deactivate Inventory
+Store-->>Buyer: Result
+deactivate Checkout
+Note over Checkout,Inventory: Reservation precedes charge

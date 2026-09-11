@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="580" viewBox="0 0 1100 580">
+  <title>Combined Contour And Finish — Stiffener joint, AWS welding symbol</title>
+  <desc>Both-side fillet weld: arrow side size 8 with convex contour and grinding finish G; other side size 6 with flush contour and grinding finish G. Tail: GMAW; WPS-31.</desc>
+  <rect width="1100" height="580" fill="white"/>
+  <g fill="#111" font-family="Arial, Helvetica, sans-serif">
+    <text x="60" y="66" font-size="28">Combined Contour And Finish</text>
+    <text x="60" y="103" font-size="18">Stiffener joint · AWS</text>
+  </g>
+  <g stroke="#111" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Continuous AWS reference line and joint-directed arrow. -->
+    <path d="M 160,440 L 300,300 H 760"/>
+    <!-- Open tail containing the process and procedure reference. -->
+    <path d="M 805,270 L 760,300 L 805,330"/>
+    <!-- Other-side fillet above the reference line. -->
+    <path d="M 430,300 V 230 L 500,300"/>
+    <!-- Flush contour parallel to the fillet face. -->
+    <path d="M 444,212 L 518,286"/>
+    <!-- Arrow-side fillet below the reference line. -->
+    <path d="M 430,300 V 370 L 500,300"/>
+    <!-- Convex contour bows outward from the fillet face. -->
+    <path d="M 444,389 Q 504,375 519,315"/>
+  </g>
+  <path d="M 160,440 L 168,415 L 185,432 Z" fill="#111"/>
+  <g fill="#111" font-family="Arial, Helvetica, sans-serif" font-size="32">
+    <text x="393" y="271" text-anchor="end">6</text>
+    <text x="393" y="353" text-anchor="end">8</text>
+    <text x="503" y="227">G</text>
+    <text x="521" y="395">G</text>
+    <text x="824" y="309" font-size="25">GMAW; WPS-31</text>
+    <text x="107" y="481" font-size="22">Stiffener joint</text>
+  </g>
+</svg>

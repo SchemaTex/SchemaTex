@@ -1,0 +1,45 @@
+{
+  "id": "rbd-aircraft-avionics-triple-redundant",
+  "type": "rbd",
+  "title": "Triple-redundant aircraft avionics",
+  "goal": "Show majority-voted triple-redundant flight computers in a series avionics path.",
+  "rubric": [
+    {
+      "id": "path",
+      "severity": "blocker",
+      "must": "A left-to-right reliability path visibly represents aircraft avionics success path."
+    },
+    {
+      "id": "redundancy",
+      "severity": "blocker",
+      "must": "The drawing visibly shows three flight-control computers in a visibly labelled 2/3 group."
+    },
+    {
+      "id": "series",
+      "severity": "blocker",
+      "must": "The drawing visibly shows power distribution and actuator interface as series blocks."
+    },
+    {
+      "id": "reliabilities",
+      "severity": "major",
+      "must": "Every component block visibly displays its reliability value."
+    },
+    {
+      "id": "terminals",
+      "severity": "major",
+      "must": "Input and output terminals visibly bracket the success path."
+    },
+    {
+      "id": "summary",
+      "severity": "minor",
+      "must": "A computed system-reliability summary is visible on the drawing."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: 图1满足全部六条规则，图2缺少规定的串联组件、各组件可靠性数值及系统可靠性汇总。"
+  }
+}

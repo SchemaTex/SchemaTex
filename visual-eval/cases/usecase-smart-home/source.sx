@@ -1,0 +1,30 @@
+# Residential smart-home control, automation, and security alerting.
+usecase
+title: "Smart Home"
+system: "Smart Home Hub"
+actor: Resident as R
+actor: "Home Owner" as HO
+actor: Installer as I (business)
+actor: "Weather Service" as WS (external)
+actor: "Monitoring Centre" as MC (external)
+usecase: "Control Devices" as Control
+usecase: "Create Automation" as Automation
+usecase: "Authenticate Resident" as Auth
+usecase: "Read Weather" as Weather
+usecase: "Arm Security" as Arm { 
+  extension point: alarm triggered
+}
+usecase: "Notify Monitoring Centre" as Notify
+usecase: "Configure Devices" as Configure
+HO --|> R
+R -- Control
+R -- Automation
+R -- Arm
+I -- Configure
+Control ..> Auth : «include»
+Automation ..> Auth : «include»
+Automation ..> Weather : «include»
+Weather -- WS
+Notify <.. Arm : «extend» [intrusion detected] (extension point: alarm triggered)
+Notify -- MC
+Configure ..> Auth : «include»
