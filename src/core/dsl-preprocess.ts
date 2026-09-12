@@ -263,11 +263,9 @@ export type CommentMarker = "%%" | "//" | "#";
 export const DEFAULT_COMMENT_MARKERS: readonly CommentMarker[] = ["%%", "//", "#"];
 
 /**
- * `%%` is the one marker that never begins valid content in ANY schematex
- * grammar (it is Mermaid's comment style). It is stripped for every diagram in
- * the shared preprocess pass, giving one universal, learnable comment syntax
- * regardless of a diagram's own lexer. Per-diagram native markers (`#` shell,
- * `*` SPICE, …) are still honored by each parser on top of this.
+ * `%%` comments are stripped across diagrams. Parser-owned directive lines
+ * (declared by DiagramPlugin.isDirective) are retained by the core API before
+ * this lexical comment stripper is called.
  */
 export const UNIVERSAL_COMMENT_MARKERS: readonly CommentMarker[] = ["%%"];
 

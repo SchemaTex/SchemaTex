@@ -242,7 +242,7 @@ function normalizeHeader(input: MappedText, type: string): MappedText {
   const lines = textLines(input.text);
   for (const line of lines) {
     const trimmed = line.text.trim();
-    if (!trimmed) continue;
+    if (!trimmed || trimmed.startsWith("%%")) continue;
     const m = trimmed.match(/^([A-Za-z][A-Za-z0-9_-]*)/);
     if (!m) return input;
     const tok = m[1]!;
@@ -302,9 +302,12 @@ function recoverHeader(
   return prepared;
 }
 
-function blankUniversalComments(input: MappedText): MappedText {
+// Before detection retain directives owned by any plugin; once selected, keep
+// only that parser's directives. Blanking keeps diagnostic offsets unchanged.
+function blankUniversalComments(input: MappedText, owners = plugins): MappedText {
   let result = input;
   for (const line of textLines(input.text)) {
+    if (owners.some(plugin => plugin.isDirective?.(line.text))) continue;
     const kept = stripLineComment(line.text, UNIVERSAL_COMMENT_MARKERS);
     if (kept.length < line.text.length) {
       result = blankMapped(result, line.start + kept.length, line.contentEnd);
@@ -321,7 +324,7 @@ function appendFrontmatterTitle(
   const safeTitle = titleValue.replace(/"/g, '\\"');
   for (const line of textLines(input.text)) {
     const trimmed = line.text.trim();
-    if (trimmed === "") continue;
+    if (trimmed === "" || trimmed.startsWith("%%")) continue;
     if (findFirstQuotedRange(trimmed)) {
       return { mapped: input, inserted: false };
     }
@@ -366,7 +369,7 @@ function prepareForPlugin(
   forced: boolean,
   type: DiagramType = plugin.type
 ): PreparedInput {
-  const normalized = normalizeHeader(input, type);
+  const normalized = normalizeHeader(blankUniversalComments(input, [plugin]), type);
   const recovered = recoverHeader(plugin, normalized, forced, type);
   return { ...input, text: recovered.text, boundaries: recovered.boundaries };
 }

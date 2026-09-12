@@ -833,6 +833,8 @@ export interface DiagramPlugin {
    * Example: evacuation is a first-class type but reuses the floorplan plugin.
    */
   altTypes?: readonly DiagramType[];
+  /** Recognizes parser-owned %% directives that must survive comment stripping. */
+  isDirective?: (line: string) => boolean;
   detect: (text: string) => boolean;
   render: (text: string, config?: RenderConfig) => string;
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */

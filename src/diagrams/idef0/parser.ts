@@ -176,6 +176,15 @@ function parseRoleArrow(ast: Idef0Ast, role: IcomRole, rest: string, lineNo: num
   const boxId = idMatch.value;
   let tail = rest.slice(idMatch.end).trim();
 
+  const suffix = /^\.([a-z]+)\b/i.exec(tail);
+  if (suffix) {
+    const stated = suffix[1]?.toLowerCase();
+    if (stated !== role && stated !== role[0]) {
+      throw new Idef0ParseError(`ICOM role .${suffix[1]} does not match ${role}`, lineNo);
+    }
+    tail = tail.slice(suffix[0].length).trim();
+  }
+
   let label = "";
   const q = matchQuoted(tail);
   if (q) {
@@ -238,6 +247,7 @@ function parseFlowArrow(ast: Idef0Ast, t: string, lineNo: number): void {
   }
 
   rhs = afterId.slice(roleMatch?.[0].length ?? 0).trim();
+  if (rhs.startsWith(":")) rhs = rhs.slice(1).trim();
   let label = "";
   const q = matchQuoted(rhs);
   if (q) {

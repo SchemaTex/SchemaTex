@@ -14,6 +14,7 @@
  * unambiguous (it stops at the next keyword / brace).
  */
 
+import { isBlankOrComment } from "../../core/dsl-preprocess";
 import type { RbdAst, RbdBlock, RbdDist, RbdGroup, RbdStructure } from "./types";
 
 /** Fold CJK / curly quote pairs to straight quotes so the tokenizer is simple. */
@@ -47,7 +48,7 @@ export function parseRbd(text: string): RbdAst {
   // ── Header line: keyword + optional quoted title ──
   let headerIdx = -1;
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i]!.trim() === "") continue;
+    if (isBlankOrComment(lines[i]!)) continue;
     if (!HEADER_RE.test(lines[i]!)) {
       throw new RbdParseError(
         "RBD must start with 'rbd' (or 'reliability'). Example: rbd \"My System\""
