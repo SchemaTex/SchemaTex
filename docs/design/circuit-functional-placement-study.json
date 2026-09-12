@@ -1,0 +1,1068 @@
+{
+  "baseline": "b392e90b",
+  "cases": [
+    {
+      "id": "circuit-4-20ma-loop",
+      "title": "4-20 mA pressure loop",
+      "goal": "Show one unbroken two-wire 4-20 mA series loop from supply through transmitter, sense resistor, PLC input, and return.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "现场与采集模块分开了，但整个回路被拉得过宽；Target 的紧凑环形阅读路径仍更好。",
+      "unchanged": false,
+      "semanticSource": "circuit \"4-20 mA Pressure Transmitter Loop\" netlist\nV1 LOOP_POS LOOP_NEG type=voltage_source value=\"24 VDC, 100 mA\" label=\"V1 LOOP SUPPLY\"\nT1 LOOP_POS TX_POS type=terminal_block pins=\"1,2\" value=\"600 V, 10 A\" label=\"TB1 FIELD OUT\"\nX1 TX_POS TX_NEG type=generic_ic pins=\"+:input,-:output\" value=\"4-20 mA, 10-30 VDC\" label=\"PT1 PRESSURE TRANSMITTER\"\nT2 TX_NEG SENSE_POS type=terminal_block pins=\"3,4\" value=\"600 V, 10 A\" label=\"TB2 FIELD RETURN\"\nR1 SENSE_POS AI_POS 250ohm type=resistor label=\"R1 250 OHM SENSE\"\nU1 AI_POS LOOP_NEG type=generic_ic pins=\"AI+:input,AI-:return\" value=\"4-20 mA input, 24 VDC\" label=\"PLC1 ANALOGUE INPUT\"\nTP1 SENSE_POS METER_POS type=test_point value=\"30 VDC, 1 A\" label=\"TP1 METER +\"\nTP2 AI_POS METER_NEG type=test_point value=\"30 VDC, 1 A\" label=\"TP2 METER -\"\nM1 METER_POS METER_NEG type=voltmeter value=\"1-5 V across sense\" label=\"M1 HAND-HELD METER\"\nGND1 LOOP_NEG type=ground label=\"Loop return reference\"\n\n# These terminal pairs are bridged; separate terminal numbers do not imply continuity.\nW_FIELD_OUT T1.1 T1.2\nW_FIELD_RETURN T2.3 T2.4\n\ngroup field \"Field transmitter\": T1 X1 T2\ngroup measurement \"Loop measurement\": R1 U1 TP1 TP2 M1\nflow field -> measurement\n",
+      "original": {
+        "id": "circuit-4-20ma-loop",
+        "ok": true,
+        "identical": false,
+        "sha": "0124857a2a5a88f37f1d918355647c01291e0857a20526b6b1e31b8db3fb74ee",
+        "sourceHash": "61367d961f44aac00669a2fea186210452983f556eecb2e5dcbb059e17363188",
+        "ms": 217,
+        "viewBox": "0 0 1513 741"
+      },
+      "semantic": {
+        "id": "circuit-4-20ma-loop",
+        "ok": true,
+        "identical": false,
+        "sha": "41578011acc2f4e8efaa380f532fcf6a9c78b7cba57e42604c61b4a97418317b",
+        "sourceHash": "e1951813b0c623f6e6faa6c6da8b78b5b8c0c408f3be4ce7354058563ea25c0f",
+        "ms": 180,
+        "viewBox": "0 0 1855 417"
+      },
+      "beforeHash": "07de4f39222238b976e2785cecf259b8cba2d259372a6b7f4080eb7ec606102e",
+      "sourceHash": "61367d961f44aac00669a2fea186210452983f556eecb2e5dcbb059e17363188"
+    },
+    {
+      "id": "circuit-555-astable",
+      "title": "555 astable LED flasher",
+      "goal": "Reads like a textbook schematic: IC pins on the correct sides, power at the top, ground at the bottom, no line crossing a component body.",
+      "verdict": "unnecessary",
+      "verdictLabel": "简单电路不必加组",
+      "note": "原始 DSL 已能得到清楚的 555 排布。额外分组拉开 LED，收益有限，不建议为了画图强加分组。",
+      "unchanged": true,
+      "semanticSource": "circuit \"555 Astable LED Flasher\" netlist\nV1 VCC GND value=\"9 V\" label=\"BAT1\"\nU1 GND TIMING OUT VCC CTRL TIMING DISCH VCC type=555_timer label=\"U1\"\nR1 VCC DISCH value=\"10 kΩ\" label=\"R1\"\nR2 DISCH TIMING value=\"100 kΩ\" label=\"R2\"\nC1 TIMING GND value=\"10 µF\" label=\"C1\"\nC2 CTRL GND value=\"10 nF\" label=\"C2\"\nR3 OUT LED_A value=\"470 Ω\" label=\"R3\"\nD1 LED_A GND type=led label=\"LED1\"\n\ngroup oscillator \"Oscillator and timing\": U1 R1 R2 C1 C2\ngroup indicator \"LED indicator\": R3 D1\nflow oscillator -> indicator\n",
+      "original": {
+        "id": "circuit-555-astable",
+        "ok": true,
+        "identical": true,
+        "sha": "05ea86d6dd037d03ef0c88a344721dff4a58f6199290ade4dde3fdaa9a820e7c",
+        "sourceHash": "5b49a9b2f8084e2107ad284691a5f22c37a3b3d2a36190b5ae1942197484b47b",
+        "ms": 418,
+        "viewBox": "0 0 662 530"
+      },
+      "semantic": {
+        "id": "circuit-555-astable",
+        "ok": true,
+        "identical": false,
+        "sha": "d1c036ac9fd162b154779455ccb87c225611df65bbd7f28b019eb9922c35c1fb",
+        "sourceHash": "a1bbcc3198407aa2803e9b95287f2b8cdc191ef73ab3b3ab3a55d1ce8c307a62",
+        "ms": 156,
+        "viewBox": "0 0 794 519"
+      },
+      "beforeHash": "05ea86d6dd037d03ef0c88a344721dff4a58f6199290ade4dde3fdaa9a820e7c",
+      "sourceHash": "5b49a9b2f8084e2107ad284691a5f22c37a3b3d2a36190b5ae1942197484b47b"
+    },
+    {
+      "id": "circuit-alarm-indicator-panel",
+      "title": "Alarm indicator panel",
+      "goal": "A reader must be able to trace the supervised normally closed alarm loop and distinguish healthy and alarm indications.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "监控回路和告警输出分区更容易辨认；横向比例偏宽，仍没有 Target 的紧凑层次。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Supervised Alarm Indicator Panel\" netlist\nV1 L24 COM value=\"24 V DC\" label=\"PS1 24 VDC\"\nF1 L24 SAFE type=fuse value=\"500 mA\" label=\"F1\"\nS1 SAFE ZONE2 type=switch_nc value=\"Door NC\" label=\"S1 DOOR\"\nS2 ZONE2 ZONE3 type=switch_nc value=\"Window NC\" label=\"S2 WINDOW\"\nS3 ZONE3 LOOP type=switch_nc value=\"Smoke NC\" label=\"S3 SMOKE\"\nH1 LOOP COM type=pilot_light value=\"Green 24 VDC\" label=\"H1 HEALTHY\"\nK1 LOOP COM type=relay_coil value=\"24 VDC\" label=\"K1 ALARM RELAY\"\nK1A L24 ALARM type=relay_nc value=\"K1 alarm contact\" label=\"K1 NC\"\nB1 ALARM COM type=buzzer value=\"24 VDC, 85 dB\" label=\"B1 BUZZER\"\nH2 ALARM COM type=pilot_light value=\"Red 24 VDC\" label=\"H2 ALARM\"\nS4 ALARM COM type=push_no value=\"RESET NO\" label=\"S4 RESET\"\n\ngroup supervision \"Supervised loop\": F1 S1 S2 S3 H1 K1\ngroup alarm \"Alarm indication\": K1A B1 H2 S4\nflow supervision -> alarm\n",
+      "original": {
+        "id": "circuit-alarm-indicator-panel",
+        "ok": true,
+        "identical": true,
+        "sha": "a323d70ad43d056fab594124f9eeaaffb9b63632a6c968c2f1284d960d7423cd",
+        "sourceHash": "713f0ca488ea8b83f337dd79b69850e34ae7e9a8d230b3b4aa055b95b9b91c2e",
+        "ms": 75,
+        "viewBox": "0 0 1028 575"
+      },
+      "semantic": {
+        "id": "circuit-alarm-indicator-panel",
+        "ok": true,
+        "identical": false,
+        "sha": "13177f92660e65862f7c79a868da3ebf2817469e1ecec7cd5c528a16801c37cc",
+        "sourceHash": "d3e3809c3a07148dc40c9bee480b84807a738cad4eb2304021349853fb91d361",
+        "ms": 43,
+        "viewBox": "0 0 1430 455"
+      },
+      "beforeHash": "a323d70ad43d056fab594124f9eeaaffb9b63632a6c968c2f1284d960d7423cd",
+      "sourceHash": "713f0ca488ea8b83f337dd79b69850e34ae7e9a8d230b3b4aa055b95b9b91c2e"
+    },
+    {
+      "id": "circuit-alternator-charging",
+      "title": "Dual battery charging system",
+      "goal": "Show alternator charging of a starter battery and an isolated auxiliary battery supply.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮保留原有串联充电路径。元件、标题与留白比例仍不如 Target。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-alternator-charging",
+        "ok": true,
+        "identical": true,
+        "sha": "73e13c8a204a7e9f2e4b9713f79cfe159d7e01e27d8629935d01aa97d10086ee",
+        "sourceHash": "6e014a1247700e48c5314e63f4e7076654b7db3ab8273d772eb84be37ae26120",
+        "ms": 32,
+        "viewBox": "0 0 1166 514"
+      },
+      "semantic": null,
+      "beforeHash": "73e13c8a204a7e9f2e4b9713f79cfe159d7e01e27d8629935d01aa97d10086ee",
+      "sourceHash": "6e014a1247700e48c5314e63f4e7076654b7db3ab8273d772eb84be37ae26120"
+    },
+    {
+      "id": "circuit-automotive-fusebox",
+      "title": "Vehicle accessory fuse box",
+      "goal": "Show a protected 12 V accessory system with switched relay loads and clearly visible chassis returns.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "原始分支结构保留；保险丝与各负载未形成 Target 那样整齐的支路列。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-automotive-fusebox",
+        "ok": true,
+        "identical": true,
+        "sha": "23fcda88ebe8b22b9c6a8fd6bbccfcb3f6ca7d3e0bf0f7bc3698e25f995a6b0e",
+        "sourceHash": "6b86dfd46f0ad81c0860cf581c3e42198aa8fd04f016823938f97fb7e5b5a8f9",
+        "ms": 519,
+        "viewBox": "0 0 1385 741"
+      },
+      "semantic": null,
+      "beforeHash": "23fcda88ebe8b22b9c6a8fd6bbccfcb3f6ca7d3e0bf0f7bc3698e25f995a6b0e",
+      "sourceHash": "6b86dfd46f0ad81c0860cf581c3e42198aa8fd04f016823938f97fb7e5b5a8f9"
+    },
+    {
+      "id": "circuit-bridge-psu",
+      "title": "Transformer-fed regulated DC supply",
+      "goal": "A reader can follow power from the mains through the isolated transformer and four-diode bridge to the filtered 5 V regulator output and its LED indicator using one clear DC ground reference.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "整流、稳压、指示器分区能读懂，但分组没有自动恢复菱形整流桥；输出绕线仍多。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Transformer Bridge Rectifier and 5 V Linear Supply\" netlist\nV1 LINE NEUTRAL type=ac_source value=\"230 V AC, 50 Hz\" label=\"V1\"\nT1 LINE NEUTRAL AC1 AC2 type=transformer value=\"230:9 V AC\" label=\"T1\"\nD1 AC1 RAW value=\"1N4007\" label=\"D1\"\nD2 AC2 RAW value=\"1N4007\" label=\"D2\"\nD3 GND AC1 value=\"1N4007\" label=\"D3\"\nD4 GND AC2 value=\"1N4007\" label=\"D4\"\nC1 RAW GND type=ecap value=\"2200 uF, 25 V\" label=\"C1\"\nC2 RAW GND value=\"330 nF\" label=\"C2\"\nU1 RAW GND VOUT type=voltage_regulator value=\"7805, 5 V\" label=\"U1\"\nC3 VOUT GND value=\"100 nF\" label=\"C3\"\nR1 VOUT LED_A value=\"1 kOhm\" label=\"R1\"\nD5 LED_A GND type=led value=\"Red LED\" label=\"D5\"\n\ngroup rectifier \"Isolation and rectification\": V1 T1 D1 D2 D3 D4 C1\ngroup regulation \"5 V regulator\": C2 U1 C3\ngroup indicator \"Output indicator\": R1 D5\nflow rectifier -> regulation -> indicator\n",
+      "original": {
+        "id": "circuit-bridge-psu",
+        "ok": true,
+        "identical": true,
+        "sha": "83d8e91b0867504b1b741a9787d19959f1ac0e8d57b4664d0aa86cb96534530c",
+        "sourceHash": "58d4e8ddbc3c90366fa4afe482af5740f9c86e9da71a40a1bcb4a95b30d54ae0",
+        "ms": 166,
+        "viewBox": "0 0 981 535"
+      },
+      "semantic": {
+        "id": "circuit-bridge-psu",
+        "ok": true,
+        "identical": false,
+        "sha": "659483328841f186324c311381bafc61171b2dc5152884f80dd85a2c1d873a78",
+        "sourceHash": "8e74ac19f7229b56608524b6633cd97ae034238ce92ac18e7b714f1d398a2485",
+        "ms": 125,
+        "viewBox": "0 0 1154 501"
+      },
+      "beforeHash": "83d8e91b0867504b1b741a9787d19959f1ac0e8d57b4664d0aa86cb96534530c",
+      "sourceHash": "58d4e8ddbc3c90366fa4afe482af5740f9c86e9da71a40a1bcb4a95b30d54ae0"
+    },
+    {
+      "id": "circuit-common-emitter",
+      "title": "Common-emitter audio amplifier",
+      "goal": "A reader must be able to trace the input, bias, collector output, and bypass paths of a single-supply NPN common-emitter amplifier without confusing its transistor terminals or junctions.",
+      "verdict": "unnecessary",
+      "verdictLabel": "简单电路不必加组",
+      "note": "输入、放大、输出虽有标题，器件被拉开，反而损失简单放大器的紧凑感。",
+      "unchanged": true,
+      "semanticSource": "circuit \"NPN Common-Emitter Audio Amplifier\" netlist\n# DC bias assuming beta=100 and VBE=0.70 V:\n# VTH=2.105 V, RTH=8.246 kOhm, IC=1.286 mA.\n# VB=1.999 V, VE=1.299 V, VC=5.954 V, VCE=4.655 V (active region).\nV1 VCC GND value=\"12 V\" label=\"V1\"\nVIN IN GND type=acsource value=\"5 mV, 1 kHz\" label=\"Input\"\nCIN IN BASE value=\"1 µF\" label=\"CIN\"\nR1 VCC BASE value=\"47 kΩ\" label=\"R1\"\nR2 BASE GND value=\"10 kΩ\" label=\"R2\"\nQ1 COLLECTOR BASE EMITTER type=npn value=\"2N3904\" label=\"Q1\"\nRC VCC COLLECTOR value=\"4.7 kΩ\" label=\"RC\"\nRE EMITTER GND value=\"1 kΩ\" label=\"RE\"\nCE EMITTER GND type=ecap value=\"100 µF\" label=\"CE\"\nCOUT COLLECTOR OUT value=\"10 µF\" label=\"COUT\"\nRL OUT GND value=\"47 kΩ\" label=\"RL\"\nCS VCC GND value=\"100 nF\" label=\"CS\"\n\ngroup input \"Input and bias\": VIN CIN R1 R2\ngroup amplifier \"Gain stage\": Q1 RC RE CE\ngroup output \"Output coupling\": COUT RL\nflow input -> amplifier -> output\n",
+      "original": {
+        "id": "circuit-common-emitter",
+        "ok": true,
+        "identical": true,
+        "sha": "5e6dcd08f0e04b2b65316c0765e5613f52f895c2939cf22c4711da37cb0d5925",
+        "sourceHash": "e8c503448b82382ff6c2003b9c2d3a6e9a3d0705b105b21f88163204a91d20b7",
+        "ms": 57,
+        "viewBox": "0 0 897 502"
+      },
+      "semantic": {
+        "id": "circuit-common-emitter",
+        "ok": true,
+        "identical": false,
+        "sha": "ae7b59d798ff3a326d05dd4ad0e99e0a59b2fc3b51e4c54cba952fbe769bc5f3",
+        "sourceHash": "e0707c0f4d665f184596822d6b7de24a92009b51cc71730fe32c04a7e3e2f6dd",
+        "ms": 57,
+        "viewBox": "0 0 1216 481"
+      },
+      "beforeHash": "5e6dcd08f0e04b2b65316c0765e5613f52f895c2939cf22c4711da37cb0d5925",
+      "sourceHash": "e8c503448b82382ff6c2003b9c2d3a6e9a3d0705b105b21f88163204a91d20b7"
+    },
+    {
+      "id": "circuit-consumer-unit",
+      "title": "Domestic consumer unit",
+      "goal": "Show a domestic distribution board with protected outgoing final circuits and clearly identifiable neutral and earth bars.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "通用设备框缩短了，但配电支路、端子与保护器之间的整体组织仍差。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-consumer-unit",
+        "ok": true,
+        "identical": false,
+        "sha": "5e6aea0b124f5f43f9536ce16e4797aafbe63f7334bcc06f6ca571d26e9b64d3",
+        "sourceHash": "3ddf4b6da72b08ec5423ba945fea7f4d5ce18ca8299f1736e7676b3bf16858c0",
+        "ms": 466,
+        "viewBox": "0 0 1537 896"
+      },
+      "semantic": null,
+      "beforeHash": "942fc9af687615a5590c4ccdc2a84f6110a7397ec2bcb51bebf482a6723f43f9",
+      "sourceHash": "3ddf4b6da72b08ec5423ba945fea7f4d5ce18ca8299f1736e7676b3bf16858c0"
+    },
+    {
+      "id": "circuit-contactor-interlock",
+      "title": "Three-contactor interlocked control",
+      "goal": "A reader must be able to trace the stop and overload chain, identify each contactor coil, and see the seal-in and interlock contacts associated with it.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮未改变该图；继电器互锁仍是绕线网络，没有 Target 的清晰控制支路。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-contactor-interlock",
+        "ok": true,
+        "identical": true,
+        "sha": "6edbafb07ad51dabd749d6ba10cf3b33f068937304cfe09184e2fc46beb2b567",
+        "sourceHash": "4eb39e3ce181440cacab12cd56ab68e75f4a148990a28d821f3fa932cd6da4a3",
+        "ms": 348,
+        "viewBox": "0 0 935 684"
+      },
+      "semantic": null,
+      "beforeHash": "6edbafb07ad51dabd749d6ba10cf3b33f068937304cfe09184e2fc46beb2b567",
+      "sourceHash": "4eb39e3ce181440cacab12cd56ab68e75f4a148990a28d821f3fa932cd6da4a3"
+    },
+    {
+      "id": "circuit-dol-motor-starter",
+      "title": "Direct-on-line motor starter",
+      "goal": "A reader must be able to trace the three-phase power path to the motor and the separate start-stop contactor control circuit.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "通用设备框缩短；动力与控制部分仍混排，结构问题未解决。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-dol-motor-starter",
+        "ok": true,
+        "identical": false,
+        "sha": "9c97d57b05cd2ba7fd320c1cb826b835b4148190297d4cac898834bbba88b224",
+        "sourceHash": "9592a55ea45b912c99599713ac7505e1b7b77addf414e20efc622c524d0e0905",
+        "ms": 431,
+        "viewBox": "0 0 1397 799"
+      },
+      "semantic": null,
+      "beforeHash": "090a11deb9847d9699c620463156c2c30280503b4e5a780d95e9a4e5c150dd68",
+      "sourceHash": "9592a55ea45b912c99599713ac7505e1b7b77addf414e20efc622c524d0e0905"
+    },
+    {
+      "id": "circuit-dual-adjustable-supply",
+      "title": "Dual adjustable bench supply",
+      "goal": "A reader must be able to identify the centre-tapped AC input, rectifier, and independent adjustable positive and negative output rails.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "正负稳压区分开了，但纵向跨度大、回授绕线多；未达到 Target 的对称构图。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Dual Adjustable Bench Supply\" netlist\nV1 LINE NEUTRAL type=ac_source value=\"230 V AC, 50 Hz\" label=\"V1\"\nT1 LINE NEUTRAL SEC_P CT SEC_N type=transformer value=\"230 V : 2 × 18 V AC\" label=\"T1\"\nW1 CT GND label=\"Centre Tap 0 V\"\nD1 SEC_P RAW_P value=\"1N5408\" label=\"D1 BR1\"\nD2 SEC_N RAW_P value=\"1N5408\" label=\"D2 BR1\"\nD3 RAW_N SEC_P value=\"1N5408\" label=\"D3 BR1\"\nD4 RAW_N SEC_N value=\"1N5408\" label=\"D4 BR1\"\nC1 RAW_P GND type=ecap value=\"2200 µF, 35 V\" label=\"C1\"\nC2 GND RAW_N type=ecap value=\"2200 µF, 35 V\" label=\"C2\"\nU1 RAW_P ADJ_P VPOS type=voltage_regulator value=\"LM317\" label=\"U1\"\nU2 RAW_N ADJ_N VNEG type=voltage_regulator value=\"LM337\" label=\"U2\"\nR1 VPOS ADJ_P value=\"240 Ω\" label=\"R1\"\nP1 ADJ_P GND VPOS type=potentiometer value=\"5 kΩ\" label=\"P1 +V ADJUST\"\nR2 ADJ_N VNEG value=\"240 Ω\" label=\"R2\"\nP2 GND ADJ_N VNEG type=potentiometer value=\"5 kΩ\" label=\"P2 −V ADJUST\"\nC3 VPOS GND type=ecap value=\"10 µF, 35 V\" label=\"C3\"\nC4 GND VNEG type=ecap value=\"10 µF, 35 V\" label=\"C4\"\nD5 ADJ_P VPOS value=\"1N4007\" label=\"D5\"\nD6 VPOS RAW_P value=\"1N4007\" label=\"D6\"\nD7 VNEG ADJ_N value=\"1N4007\" label=\"D7\"\nD8 RAW_N VNEG value=\"1N4007\" label=\"D8\"\n\ngroup rectifier \"Rectifier\": V1 T1 D1 D2 D3 D4 C1 C2\ngroup positive \"Positive regulator\": U1 R1 P1 C3 D5 D6\ngroup negative \"Negative regulator\": U2 R2 P2 C4 D7 D8\nflow rectifier -> positive\nflow rectifier -> negative\n",
+      "original": {
+        "id": "circuit-dual-adjustable-supply",
+        "ok": true,
+        "identical": true,
+        "sha": "a9914697316f4c6752aabf669265bfca7eb3b82d73f19e25dc42dd2536bab558",
+        "sourceHash": "867c4ff008fecbc743ecda3f08421c90b515b256fa66277f0e10b06f7dfcfa44",
+        "ms": 1837,
+        "viewBox": "0 0 928 865"
+      },
+      "semantic": {
+        "id": "circuit-dual-adjustable-supply",
+        "ok": true,
+        "identical": false,
+        "sha": "fb821645172d8534d0e2471950cc5298197a51c98071cb9da1234c9503e1db64",
+        "sourceHash": "9454af487f9fb240aeac10ee7d39f5f1bd1be1ae58851b4207f93a7e854d6e69",
+        "ms": 1686,
+        "viewBox": "0 0 997 1125"
+      },
+      "beforeHash": "a9914697316f4c6752aabf669265bfca7eb3b82d73f19e25dc42dd2536bab558",
+      "sourceHash": "867c4ff008fecbc743ecda3f08421c90b515b256fa66277f0e10b06f7dfcfa44"
+    },
+    {
+      "id": "circuit-esp8266-relay",
+      "title": "ESP8266 dual relay controller",
+      "goal": "A reader must be able to trace each ESP8266 output through its transistor to a distinct protected 5 V relay channel.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "MCU 的空白框缩小；继电器、晶体管与连线仍拥挤，不能算整体视觉通过。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-esp8266-relay",
+        "ok": true,
+        "identical": true,
+        "sha": "544c57991e45e4b0f7931b5a370cd2bb3355ab053ccca204f820261e5325788f",
+        "sourceHash": "b192423ad816f795742a22f1768fb9313eb0583d52f7a5a91dc79adf9b50c6e5",
+        "ms": 245,
+        "viewBox": "0 0 1116 923"
+      },
+      "semantic": null,
+      "beforeHash": "544c57991e45e4b0f7931b5a370cd2bb3355ab053ccca204f820261e5325788f",
+      "sourceHash": "b192423ad816f795742a22f1768fb9313eb0583d52f7a5a91dc79adf9b50c6e5"
+    },
+    {
+      "id": "circuit-estop-safety-relay",
+      "title": "Dual-channel E-stop safety relay",
+      "goal": "A reader must be able to trace two independent emergency-stop channels through a safety relay and its monitored contactor feedback loop.",
+      "verdict": "improved",
+      "verdictLabel": "结构改善",
+      "note": "输入按钮、继电器、输出接触器形成阅读顺序；相比原来的细长图明显改善。局部回授和供电引线仍需整理。",
+      "unchanged": false,
+      "semanticSource": "circuit \"Dual Channel E Stop Safety Relay\" netlist\nV1 L24 COM type=voltage_source value=\"24 VDC, 5 A\" label=\"PS1 SAFETY SUPPLY\"\nF1 L24 SAFE24 type=fuse value=\"1 A, 250 VDC\" label=\"F1 SAFETY FUSE\"\nS1 SAFE24 CH1 type=emergency_stop value=\"24 VDC, 1 A, NC\" label=\"S1 E-STOP CH A\"\nS2 SAFE24 CH2 type=emergency_stop value=\"24 VDC, 1 A, NC\" label=\"S2 E-STOP CH B\"\nS3 SAFE24 RESET type=push_no value=\"24 VDC, 1 A\" label=\"S3 MANUAL RESET\"\nU1 SAFE24 COM CH1 CH2 RESET FB1 FB2 K1OUT K2OUT type=generic_ic pins=\"A1:power,A2:return,S11-S12:input,S21-S22:input,Y1-Y2:input,EDM1:input,EDM2:input,13-14:output,23-24:output\" value=\"24 VDC, SIL3/PLe\" label=\"SR1 SAFETY RELAY\"\nK1 K1OUT COM type=relay_coil value=\"24 VDC, 9 A AC-3\" label=\"KM1 SAFETY CONTACTOR\"\nK2 K2OUT COM type=relay_coil value=\"24 VDC, 9 A AC-3\" label=\"KM2 SAFETY CONTACTOR\"\nK1M SAFE24 FB1 type=relay_nc value=\"24 VDC, 1 A, 21-22 NC\" label=\"KM1 MIRROR NC\"\nK2M FB1 FB2 type=relay_nc value=\"24 VDC, 1 A, 21-22 NC\" label=\"KM2 MIRROR NC\"\nW1 FB2 COM value=\"0.75 mm2, 24 VDC\" label=\"W1 EDM RETURN\"\n\ngroup inputs \"Safety inputs\": S1 S2 S3 K1M K2M\ngroup relay \"Safety relay\": U1\ngroup outputs \"Contactors\": K1 K2\nflow inputs -> relay -> outputs\n",
+      "original": {
+        "id": "circuit-estop-safety-relay",
+        "ok": true,
+        "identical": false,
+        "sha": "c14af172b4dac809c02a3477ccfe63a0af38c1a5d2caa4b0fdb7c622add27710",
+        "sourceHash": "7b72b5e518acb826b253578c826a5e03fe75599fcbf80b6637996f71e4866fed",
+        "ms": 40,
+        "viewBox": "0 0 1838 422"
+      },
+      "semantic": {
+        "id": "circuit-estop-safety-relay",
+        "ok": true,
+        "identical": false,
+        "sha": "2b9b9497c7e0d936a9fe725d934c984f991ff8412b03f03c3b1a15eb186d1392",
+        "sourceHash": "6a880e481cf7c9a5a5435821bef7d14938af996d48ba8a24a98b2c3de19e1763",
+        "ms": 63,
+        "viewBox": "0 0 1670 626"
+      },
+      "beforeHash": "8ea4f342584ab293bf58992a44091cb0466bbfce2fb5caf9d92680eec5ea129d",
+      "sourceHash": "7b72b5e518acb826b253578c826a5e03fe75599fcbf80b6637996f71e4866fed"
+    },
+    {
+      "id": "circuit-ev-charger-supply",
+      "title": "EV charge point supply",
+      "goal": "Show the dedicated protected supply, load-management sensing, isolation, and protective-earth connection for an EV charge point.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "设备框更紧凑，但充电、保护、负载管理的路径仍不够清楚。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-ev-charger-supply",
+        "ok": true,
+        "identical": false,
+        "sha": "661dbd8ee0bda138bb86f4f3cf75a2864947f1f6a0345bd951d31df9d0c1d382",
+        "sourceHash": "712e87fb5e432b5c2e247b01f88a8121cc496d378467fbf2b1ffec34eb59bca2",
+        "ms": 38,
+        "viewBox": "0 0 1084 568"
+      },
+      "semantic": null,
+      "beforeHash": "ea5b31e01cde50c68ebbe9a7f82ac459a5adeefbfe76703ff9dc1862b69dc18d",
+      "sourceHash": "712e87fb5e432b5c2e247b01f88a8121cc496d378467fbf2b1ffec34eb59bca2"
+    },
+    {
+      "id": "circuit-holdout-current-mirror-bias",
+      "title": "Current-mirror differential-pair bias",
+      "goal": "A reader must be able to trace the diode-connected NPN current mirror into the common tail of a loaded differential pair.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮不改变该图。差分对与电流镜缺少对称组织，仍是尚未解决的 placement 问题。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-holdout-current-mirror-bias",
+        "ok": true,
+        "identical": true,
+        "sha": "293d1220b1ea685c36c203f47b470300e8f020e8b5bfdad79e3f80ef3c56e61d",
+        "sourceHash": "c81c5272d65fad49e8c69ace763b1afa557bf0b1f30a8415211fcc25b4793b65",
+        "ms": 53,
+        "viewBox": "0 0 1023 585"
+      },
+      "semantic": null,
+      "beforeHash": "293d1220b1ea685c36c203f47b470300e8f020e8b5bfdad79e3f80ef3c56e61d",
+      "sourceHash": "c81c5272d65fad49e8c69ace763b1afa557bf0b1f30a8415211fcc25b4793b65"
+    },
+    {
+      "id": "circuit-holdout-emergency-lighting-changeover",
+      "title": "Emergency-lighting changeover unit",
+      "goal": "A reader must be able to see how mains charges a battery and holds a relay that changes the emergency lamp supply on mains failure.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "充电与切换功能可区分，但多条供电轨和垂直回线仍压过设备层次。",
+      "unchanged": false,
+      "semanticSource": "circuit \"Emergency Lighting Changeover Unit\" netlist\n# Mains energises K1 and selects the charger-fed lamp path; loss of mains releases K1 to battery operation.\nV1 LINE NEUT type=acsource value=\"230 V AC\" label=\"MAINS INPUT\"\nU1 LINE NEUT BATT GND type=ic pins=\"AC_L:input,AC_N:input,BAT+:output,BAT-:return\" value=\"Mascot 2241\" label=\"U1 BATTERY CHARGER\"\nB1 BATT GND value=\"12 V, 7 Ah SLA\" label=\"B1 SEALED BATTERY\"\nK1 LINE NEUT value=\"230 VAC\" label=\"K1 MAINS-SENSE COIL\"\nU2 LAMP BATT LINE LINE NEUT type=ic pins=\"COM:output,NC:input,NO:input,COIL_A:input,COIL_B:input\" value=\"SPDT, 10 A\" label=\"K1 CHANGEOVER RELAY\"\nL1 LAMP GND type=lamp value=\"12/230 V, 10 W LED\" label=\"L1 EMERGENCY LAMP\"\nS1 BATT TEST type=switch_spst value=\"momentary NO\" label=\"S1 LAMP TEST\"\nL2 TEST GND type=lamp value=\"12 V, 1 W\" label=\"TEST INDICATOR\"\n\ngroup charge \"Charging\": V1 U1 B1\ngroup transfer \"Automatic changeover\": K1 U2 L1\ngroup test \"Lamp test\": S1 L2\nflow charge -> transfer\nflow charge -> test\n",
+      "original": {
+        "id": "circuit-holdout-emergency-lighting-changeover",
+        "ok": true,
+        "identical": false,
+        "sha": "61c402bc2398073df23569e95fc371dd70cbccc8c254964c055985ce03d99bbe",
+        "sourceHash": "7ee6552b23a67b7bbcb5de6e6fe6a64eff994454e3d3dd357fe367bf744b0fa0",
+        "ms": 38,
+        "viewBox": "0 0 1364 619"
+      },
+      "semantic": {
+        "id": "circuit-holdout-emergency-lighting-changeover",
+        "ok": true,
+        "identical": false,
+        "sha": "55e009b21bc6f8e83b7c96d69b570b913f11b5cd94cb37f30ddbbbc622f41839",
+        "sourceHash": "5fb4aa27d9d2b912e999588daf7911c40e9a75647f5f51dd2a6593841e21eea6",
+        "ms": 62,
+        "viewBox": "0 0 1230 793"
+      },
+      "beforeHash": "4fbb88386ba02eb6f8ef87f929b1b7c41a6dd0be18b4fc84ffb888e47115edb5",
+      "sourceHash": "7ee6552b23a67b7bbcb5de6e6fe6a64eff994454e3d3dd357fe367bf744b0fa0"
+    },
+    {
+      "id": "circuit-holdout-fire-alarm-loop",
+      "title": "Addressable fire-alarm Class A loop",
+      "goal": "A reader must be able to trace the panel’s outgoing and returning Class A loop through addressable devices and distinguish the supervised sounder circuit.",
+      "verdict": "improved",
+      "verdictLabel": "结构改善",
+      "note": "探测器沿同一行串联，声音告警独立成区，回路更容易追踪；整体仍偏宽，通用盒形图标不如 Target。",
+      "unchanged": false,
+      "semanticSource": "circuit \"Addressable Fire Alarm Class A Loop\" netlist\n# 24 VDC Class A addressable loop leaves LOOP OUT, passes all field devices, and returns on LOOP IN.\nV1 P24 COM value=\"24 V DC\" label=\"PANEL 24 VDC\"\nU1 P24 COM LOOP_OUT LOOP_IN SNDPLUS type=ic pins=\"24V:power,COM:return,LOOP_OUT:output,LOOP_IN:input,SOUNDER+:output\" value=\"Notifier NFS-320\" label=\"FACP PANEL\"\nU2 LOOP_OUT N1 type=ic pins=\"LOOP_IN:input,LOOP_OUT:output\" value=\"FSP-851\" label=\"D1 SMOKE DETECTOR\"\nU3 N1 N2 type=ic pins=\"LOOP_IN:input,LOOP_OUT:output\" value=\"FST-851\" label=\"D2 HEAT DETECTOR\"\nU4 N2 N3 type=ic pins=\"LOOP_IN:input,LOOP_OUT:output\" value=\"MCP5A\" label=\"MCP1 MANUAL CALL POINT\"\nU5 N3 N4 type=ic pins=\"LOOP_IN:input,LOOP_OUT:output\" value=\"FSP-851\" label=\"D3 SMOKE DETECTOR\"\nR1 N4 COM value=\"6.8 kΩ\" label=\"EOL MONITOR\"\nW1 N4 LOOP_IN type=wire value=\"Class A return\" label=\"LOOP RETURN\"\nF1 SNDPLUS SND_FUSED value=\"1 A\" label=\"F1 SOUNDER FUSE\"\nU6 SND_FUSED COM type=ic pins=\"+:input,−:return\" value=\"24 VDC\" label=\"S1 SOUNDER\"\nU7 SND_FUSED COM type=ic pins=\"+:input,−:return\" value=\"24 VDC\" label=\"S2 SOUNDER\"\n\ngroup panel \"Control panel\": U1\ngroup detection \"Addressable loop\": U2 U3 U4 U5 R1\ngroup notification \"Sounder circuit\": F1 U6 U7\nflow panel -> detection\nflow panel -> notification\n",
+      "original": {
+        "id": "circuit-holdout-fire-alarm-loop",
+        "ok": true,
+        "identical": false,
+        "sha": "9a2539a817ad920628269a070a8703494997c0e6b3c3aab02487d2330ea58ebc",
+        "sourceHash": "6e1286356f38879a9328fbd659a04959ea37d039abec4d8a0c530bf80e2e76d4",
+        "ms": 119,
+        "viewBox": "0 0 1183 640"
+      },
+      "semantic": {
+        "id": "circuit-holdout-fire-alarm-loop",
+        "ok": true,
+        "identical": false,
+        "sha": "87428ed2b315b366f1524ef0b2c8433566ab15f4a6fc44ad9cb2149fc871c557",
+        "sourceHash": "13affe699cd08144feebf1160781d0a1b8ca0dd2501447be7968374952221820",
+        "ms": 209,
+        "viewBox": "0 0 1933 640"
+      },
+      "beforeHash": "c69106697dd7fd5f43f19aaa3f909512d03aa598c680554365677e97b566f111",
+      "sourceHash": "6e1286356f38879a9328fbd659a04959ea37d039abec4d8a0c530bf80e2e76d4"
+    },
+    {
+      "id": "circuit-holdout-flyback-smps",
+      "title": "Isolated flyback SMPS",
+      "goal": "A reader must be able to trace mains rectification, primary switching, isolated secondary rectification, and optocoupler feedback regulation.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "主副边和控制链有了功能区，画幅更均衡；整流、反馈与跨区连接仍复杂，尚未通过整体美观验收。",
+      "unchanged": false,
+      "semanticSource": "circuit \"Isolated Flyback SMPS\" netlist\n# Offline flyback: rectified 230 VAC input, isolated 5 V output, optocoupler/TL431 regulation.\nV1 ACL ACN type=acsource value=\"230 V AC, 50 Hz\" label=\"AC MAINS\"\nD1 ACL HVPLUS type=diode value=\"1N4007\" label=\"D1\"\nD2 ACN HVPLUS type=diode value=\"1N4007\" label=\"D2\"\nD3 HVMINUS ACL type=diode value=\"1N4007\" label=\"D3\"\nD4 HVMINUS ACN type=diode value=\"1N4007\" label=\"D4\"\nC1 HVPLUS HVMINUS type=ecap value=\"47 µF, 400 V\" label=\"C1 BULK\"\nU1 HVPLUS HVMINUS GATE CS FBCTRL type=generic_ic pins=\"HV+:power,HV-:return,GATE:output,CS:input,FB:input\" value=\"UC3843\" label=\"U1 PWM CONTROLLER\"\nT1 HVPLUS SW VSEC GNDSEC type=transformer value=\"EE16 flyback\" label=\"T1 ISOLATION TRANSFORMER\"\nM1 SW GATE CS type=nmos value=\"STP7NK80Z\" label=\"Q1 PRIMARY SWITCH\"\nR1 CS HVMINUS value=\"0.33 Ω\" label=\"RSENSE\"\nD5 VSEC VOUT type=schottky value=\"SS34\" label=\"D5 SECONDARY RECTIFIER\"\nC2 VOUT GNDSEC type=ecap value=\"470 µF, 10 V\" label=\"C2 OUTPUT\"\nR2 VOUT GNDSEC value=\"10 Ω, 5 W\" label=\"RLOAD\"\nR3 VOUT LEDA value=\"1 kΩ\" label=\"RLED\"\nU3 FBSEC VREF GNDSEC type=generic_ic pins=\"K:output,REF:input,A:return\" value=\"TL431A\" label=\"U2 SHUNT REGULATOR\"\nR4 VOUT VREF value=\"10 kΩ, 1%\" label=\"RTOP\"\nR5 VREF GNDSEC value=\"2.49 kΩ, 1%\" label=\"RBOT\"\nU4 LEDA FBSEC FBCTRL HVMINUS type=optocoupler value=\"LTV-817\" label=\"U3 OPTOCOUPLER\"\nW1 HVMINUS GND type=wire value=\"primary return bond\" label=\"PRIMARY GROUND\"\n\ngroup rectifier \"Rectifier\": V1 D1 D2 D3 D4 C1\ngroup primary \"Primary control\": U1 M1 R1\ngroup isolation \"Isolated transfer\": T1 U4\ngroup secondary \"Output and regulation\": D5 C2 R2 R3 U3 R4 R5\nflow rectifier -> primary -> isolation -> secondary\n",
+      "original": {
+        "id": "circuit-holdout-flyback-smps",
+        "ok": true,
+        "identical": false,
+        "sha": "cecc81b9e3b9e61abb7836e4ebc016fa70ff8a7413943548729c169e9c9872c4",
+        "sourceHash": "42052fe2d6d61308a8c7550d70d77e948d3c36081ff2d37fbcebcb8cc4fd679d",
+        "ms": 1091,
+        "viewBox": "0 0 1379 823"
+      },
+      "semantic": {
+        "id": "circuit-holdout-flyback-smps",
+        "ok": true,
+        "identical": false,
+        "sha": "9b2e5bbebd7617dd8e1623e45b4eb11dc4db94c0f471b02c2f25dc0f8aa6f7af",
+        "sourceHash": "9f528f059b97e36663693c9c278a46b8fd53dbcd45632795a3dd85d423d627e6",
+        "ms": 462,
+        "viewBox": "0 0 1601 938"
+      },
+      "beforeHash": "16ccc50fec992e61ba5f7c2b5dc5359122b1f79e7273681c71bbf90f7fbab345",
+      "sourceHash": "42052fe2d6d61308a8c7550d70d77e948d3c36081ff2d37fbcebcb8cc4fd679d"
+    },
+    {
+      "id": "circuit-holdout-h-bridge-drive",
+      "title": "N-channel MOSFET H-bridge drive",
+      "goal": "A reader must be able to trace the 24 V H-bridge, its motor terminals, gate-drive blocks, bootstrap capacitors, and return current shunt.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "半桥分组可以辨认，但没有形成围绕电机的对称桥式构图；不应将分组视为解决了桥式布局。",
+      "unchanged": false,
+      "semanticSource": "circuit \"N-Channel MOSFET H-Bridge Drive\" netlist\n# 24 V motor bridge; each half-bridge has a dedicated high/low-side driver and bootstrap capacitor.\nV1 VBUS GND value=\"24 V DC\" label=\"V1 MOTOR SUPPLY\"\nC1 VBUS GND value=\"470 µF, 35 V\" label=\"C1 BULK\"\nM1 VBUS GH1 OUTA nmos value=\"IRLZ44N\" label=\"Q1 HIGH LEFT\"\nM2 OUTA GL1 SENSE nmos value=\"IRLZ44N\" label=\"Q2 LOW LEFT\"\nM3 VBUS GH2 OUTB nmos value=\"IRLZ44N\" label=\"Q3 HIGH RIGHT\"\nM4 OUTB GL2 SENSE nmos value=\"IRLZ44N\" label=\"Q4 LOW RIGHT\"\nL1 OUTA OUTB type=dc_motor value=\"24 V, 5 A\" label=\"M1 DC MOTOR\"\nR1 SENSE GND value=\"10 mΩ, 3 W\" label=\"RSHUNT\"\nU1 VBUS GND BOOT1 OUTA GH1 GL1 type=ic pins=\"VDD:power,COM:return,BOOT:power,SW:input,HO:output,LO:output\" value=\"IR2104\" label=\"U1 LEFT GATE DRIVER\"\nC2 BOOT1 OUTA value=\"100 nF, 50 V\" label=\"CBOOT1\"\nU2 VBUS GND BOOT2 OUTB GH2 GL2 type=ic pins=\"VDD:power,COM:return,BOOT:power,SW:input,HO:output,LO:output\" value=\"IR2104\" label=\"U2 RIGHT GATE DRIVER\"\nC3 BOOT2 OUTB value=\"100 nF, 50 V\" label=\"CBOOT2\"\n\ngroup drive_a \"Half bridge A\": U1 C2 M1 M2\ngroup drive_b \"Half bridge B\": U2 C3 M3 M4\ngroup motor \"Motor and current sense\": L1 R1\nflow drive_a -> motor\nflow drive_b -> motor\n",
+      "original": {
+        "id": "circuit-holdout-h-bridge-drive",
+        "ok": true,
+        "identical": false,
+        "sha": "849fd4ad7eabe15ba3bbbabc09a8f0a55bb619c1b0156c467f1ef7fe0cc781c1",
+        "sourceHash": "d93fe5b918d2631a496ec5ccb236a1a87362cd7d8b615f0fb30441b2daadd999",
+        "ms": 253,
+        "viewBox": "0 0 782 850"
+      },
+      "semantic": {
+        "id": "circuit-holdout-h-bridge-drive",
+        "ok": true,
+        "identical": false,
+        "sha": "01edbc45e2fff04d2014b4da93bde211e10444471876c6c0cb675e4b89aa571c",
+        "sourceHash": "75b8164d5daec40ee0592a756ef42816693fda9b551c9aeb7041cbe21de95bf0",
+        "ms": 337,
+        "viewBox": "0 0 1169 991"
+      },
+      "beforeHash": "c1a9ba2ff6ba103334e64bfbd1cde74b6dfb387b4b41b3189abd4aef499426b9",
+      "sourceHash": "d93fe5b918d2631a496ec5ccb236a1a87362cd7d8b615f0fb30441b2daadd999"
+    },
+    {
+      "id": "circuit-holdout-instrumentation-amp",
+      "title": "Three-op-amp instrumentation amplifier",
+      "goal": "A reader must be able to trace a differential input through two gain-setting buffers and a matched-resistor difference stage to one output.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "差分输入与输出放大分开了，信号方向更明确；供电轨与回授仍产生长线和空白。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Three-Op-Amp Instrumentation Amplifier\" netlist\n# ±15 V rails; gain is set by RG between the two input-stage inverting nodes.\nVP VPOS GND value=\"15 V\" label=\"V+ SUPPLY\"\nVN VNEG GND value=\"-15 V\" label=\"V- SUPPLY\"\nV1 INP GND type=acsource value=\"10 mV differential input\" label=\"VIN+\"\nV2 INN GND type=acsource value=\"10 mV differential input\" label=\"VIN-\"\nU1 INP N1 OA1OUT type=opamp value=\"OPA197\" label=\"U1 INPUT BUFFER A\"\nU2 INN N2 OA2OUT type=opamp value=\"OPA197\" label=\"U2 INPUT BUFFER B\"\nRG N1 N2 value=\"1 kΩ\" label=\"RG GAIN SET\"\nR1 OA1OUT N1 value=\"10 kΩ\" label=\"R1\"\nR2 OA2OUT N2 value=\"10 kΩ\" label=\"R2\"\nU3 PDIFF NDIFF OUT type=opamp value=\"OPA197\" label=\"U3 DIFFERENCE AMP\"\nR3 OA1OUT NDIFF value=\"10 kΩ, 0.1%\" label=\"R3\"\nR4 OUT NDIFF value=\"10 kΩ, 0.1%\" label=\"R4\"\nR5 OA2OUT PDIFF value=\"10 kΩ, 0.1%\" label=\"R5\"\nR6 PDIFF GND value=\"10 kΩ, 0.1%\" label=\"R6\"\nW1 VPOS U1.supply+ type=wire value=\"+15 V rail\" label=\"U1 V+\"\nW2 VNEG U1.supply- type=wire value=\"-15 V rail\" label=\"U1 V-\"\nW3 VPOS U2.supply+ type=wire value=\"+15 V rail\" label=\"U2 V+\"\nW4 VNEG U2.supply- type=wire value=\"-15 V rail\" label=\"U2 V-\"\nW5 VPOS U3.supply+ type=wire value=\"+15 V rail\" label=\"U3 V+\"\nW6 VNEG U3.supply- type=wire value=\"-15 V rail\" label=\"U3 V-\"\n\ngroup input \"Differential input\": V1 V2 U1 U2 R1 R2 RG\ngroup difference \"Difference amplifier\": U3 R3 R4 R5 R6\nflow input -> difference\n",
+      "original": {
+        "id": "circuit-holdout-instrumentation-amp",
+        "ok": true,
+        "identical": true,
+        "sha": "ee61a3923a5461adca784f767e16f61bafa6d6d6dea838ef3d20b1f70418335f",
+        "sourceHash": "4e44f6df4ac98d5c05ec48ceb5db39279ce7edfd83e263dcd5253c85c780008d",
+        "ms": 452,
+        "viewBox": "0 0 1380 803"
+      },
+      "semantic": {
+        "id": "circuit-holdout-instrumentation-amp",
+        "ok": true,
+        "identical": false,
+        "sha": "bc187633dc44f903ed376f52dfc94c31d9c60d98ac54faeefa9d195d486f11fe",
+        "sourceHash": "90e52d9fc165f64b1311a5ea530bee6215877a04b85d467254949c9b61cd497e",
+        "ms": 507,
+        "viewBox": "0 0 1366 694"
+      },
+      "beforeHash": "ee61a3923a5461adca784f767e16f61bafa6d6d6dea838ef3d20b1f70418335f",
+      "sourceHash": "4e44f6df4ac98d5c05ec48ceb5db39279ce7edfd83e263dcd5253c85c780008d"
+    },
+    {
+      "id": "circuit-holdout-lc-lowpass-ladder",
+      "title": "Five-element LC low-pass ladder",
+      "goal": "A reader must be able to trace a 50 Ω source through a five-element LC ladder to a 50 Ω load.",
+      "verdict": "unnecessary",
+      "verdictLabel": "简单电路不必加组",
+      "note": "原始梯形滤波链已经清楚。额外分组增加标题和负载折点，视觉收益不稳定。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Five-Element LC Low-Pass Ladder\" netlist\n# 50 Ω source and load; nominal 1 MHz low-pass ladder with three series inductors and two shunt capacitors.\nV1 VSRC GND type=acsource value=\"1 V AC, 1 MHz\" label=\"SOURCE\"\nR1 VSRC N1 value=\"50 Ω\" label=\"RSOURCE\"\nL1 N1 N2 value=\"3.3 µH\" label=\"L1\"\nC1 N2 GND value=\"1 nF, C0G\" label=\"C1\"\nL2 N2 N3 value=\"4.7 µH\" label=\"L2\"\nC2 N3 GND value=\"1 nF, C0G\" label=\"C2\"\nL3 N3 VOUT value=\"3.3 µH\" label=\"L3\"\nR2 VOUT GND value=\"50 Ω\" label=\"RLOAD\"\n\ngroup source \"Source impedance\": V1 R1\ngroup filter \"LC filter\": L1 C1 L2 C2 L3\ngroup load \"Termination\": R2\nflow source -> filter -> load\n",
+      "original": {
+        "id": "circuit-holdout-lc-lowpass-ladder",
+        "ok": true,
+        "identical": true,
+        "sha": "b1b0fa915f70ee59d92b08e25b160a0f0c59eeb7a86f7f0ba95d44ee374152dd",
+        "sourceHash": "3fe7804cd18bb8f6a0548a207cf49719a25452a39167ca5dce3e3194fef24146",
+        "ms": 38,
+        "viewBox": "0 0 779 428"
+      },
+      "semantic": {
+        "id": "circuit-holdout-lc-lowpass-ladder",
+        "ok": true,
+        "identical": false,
+        "sha": "54caed02a27930508cc00cf6fc8547f151abe1063c97b8f807283f34e75a9105",
+        "sourceHash": "ca807eb669e4125b93eb1e49feb4fdff9ed795adcbd16819a082736e34c9355d",
+        "ms": 23,
+        "viewBox": "0 0 950 351"
+      },
+      "beforeHash": "b1b0fa915f70ee59d92b08e25b160a0f0c59eeb7a86f7f0ba95d44ee374152dd",
+      "sourceHash": "3fe7804cd18bb8f6a0548a207cf49719a25452a39167ca5dce3e3194fef24146"
+    },
+    {
+      "id": "circuit-holdout-rs485-multidrop",
+      "title": "RS-485 multidrop bus",
+      "goal": "A reader must be able to identify three transceiver taps on one A/B pair, end-only termination, and the single-node fail-safe bias network.",
+      "verdict": "improved",
+      "verdictLabel": "结构改善",
+      "note": "总线主干、三个节点顺序和两端终端电阻现在能直接辨认。偏置支路仍有长引线，Target 更紧凑。",
+      "unchanged": false,
+      "semanticSource": "circuit \"RS-485 Multidrop Bus\" netlist\n# Half-duplex 3.3 V bus; 120 Ω termination is fitted at the two physical ends only.\nV1 VCC COM value=\"3.3 V\" label=\"V1 LOGIC SUPPLY\"\nU1 VCC COM A B type=ic pins=\"VCC:power,GND:return,A:bidirectional,B:bidirectional\" value=\"MAX3485\" label=\"U1 NODE 1 LEFT END\"\nU2 VCC COM A B type=ic pins=\"VCC:power,GND:return,A:bidirectional,B:bidirectional\" value=\"MAX3485\" label=\"U2 NODE 2\"\nU3 VCC COM A B type=ic pins=\"VCC:power,GND:return,A:bidirectional,B:bidirectional\" value=\"MAX3485\" label=\"U3 NODE 3 RIGHT END\"\nR1 A B value=\"120 Ω\" label=\"RT1 LEFT TERMINATION\"\nR2 A B value=\"120 Ω\" label=\"RT2 RIGHT TERMINATION\"\nR3 VCC A value=\"680 Ω\" label=\"RPU FAIL-SAFE\"\nR4 B COM value=\"680 Ω\" label=\"RPD FAIL-SAFE\"\n\ngroup field \"Differential field bus\": U1 U2 U3 R1 R2 R3 R4\nbus A,B: R1 -> U1 -> U2 -> U3 -> R2\n",
+      "original": {
+        "id": "circuit-holdout-rs485-multidrop",
+        "ok": true,
+        "identical": false,
+        "sha": "720b821adbb59ae7898a830553cbf994d767da659bdbde53c80811be26712d24",
+        "sourceHash": "aa137fb38ac18f29a1f47470c6bb2305dbe31ad1643b5c824a02209493ddb5d1",
+        "ms": 105,
+        "viewBox": "0 0 924 609"
+      },
+      "semantic": {
+        "id": "circuit-holdout-rs485-multidrop",
+        "ok": true,
+        "identical": false,
+        "sha": "e57c0b366201c363a5bfa5f9319cfceba826fcef1fe449c6298e12057104d776",
+        "sourceHash": "d12d6a945ac32d9537cb172cab89ffdf48fd882c06de51ee80f8ab9242040638",
+        "ms": 45,
+        "viewBox": "0 0 1582 825"
+      },
+      "beforeHash": "aa2cd312722582e1ea640154a7b09273b42aa3ee1303dc6fd1ab47b43427e716",
+      "sourceHash": "aa137fb38ac18f29a1f47470c6bb2305dbe31ad1643b5c824a02209493ddb5d1"
+    },
+    {
+      "id": "circuit-holdout-three-phase-distribution-board",
+      "title": "Three-phase distribution board",
+      "goal": "A reader must be able to trace a three-pole incomer to four phase-balanced RCBO final circuits and identify neutral and earth bars.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "设备框缩小，但整个配电板依然过高，多个支路没有得到良好横向组织。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-holdout-three-phase-distribution-board",
+        "ok": true,
+        "identical": false,
+        "sha": "e913791fe53d519ff4d22cc23ccb4a3a559438f6259df624d0bc9609b1a852f7",
+        "sourceHash": "98f1262e74e2ca5aa73966310c042fbb0de0c64a83227a6b48173c93774567c2",
+        "ms": 113,
+        "viewBox": "0 0 1270 1411"
+      },
+      "semantic": null,
+      "beforeHash": "8190dd62dc806a448425f8e486528630ba3a698f6fcb962e20f325ddba76f984",
+      "sourceHash": "98f1262e74e2ca5aa73966310c042fbb0de0c64a83227a6b48173c93774567c2"
+    },
+    {
+      "id": "circuit-holdout-wheatstone-strain-gauge",
+      "title": "Wheatstone strain-gauge bridge",
+      "goal": "A reader must be able to identify the excited four-arm bridge, its two active gauges, and the differential amplifier pickup.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "桥与测量电路分开了，但桥臂仍缺少对称；Target 的测量关系明显更直观。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Wheatstone Strain Gauge Bridge\" netlist\n# 5 V excitation; two active gauges in opposite arms provide differential bridge output.\nV1 EXCP EXCM value=\"5 V DC\" label=\"VEXC\"\nR1 EXCP VL value=\"350 Ω, active\" label=\"SG1 ACTIVE\"\nR2 VL EXCM value=\"350 Ω, 0.1%\" label=\"R2 FIXED\"\nR3 EXCP VR value=\"350 Ω, 0.1%\" label=\"R3 FIXED\"\nR4 VR EXCM value=\"350 Ω, active\" label=\"SG2 ACTIVE\"\nVP VPOS GND value=\"5 V\" label=\"VAMP+\"\nVN VNEG GND value=\"-5 V\" label=\"VAMP-\"\nU1 VL VR VOUT type=opamp value=\"INA333\" label=\"U1 INSTRUMENTATION AMP\"\nR5 VOUT GND value=\"10 kΩ\" label=\"RLOAD\"\nW1 VPOS U1.supply+ type=wire value=\"+5 V rail\" label=\"U1 V+\"\nW2 VNEG U1.supply- type=wire value=\"-5 V rail\" label=\"U1 V-\"\n\ngroup bridge \"Strain bridge\": V1 R1 R2 R3 R4\ngroup measurement \"Differential measurement\": U1 R5\nflow bridge -> measurement\n",
+      "original": {
+        "id": "circuit-holdout-wheatstone-strain-gauge",
+        "ok": true,
+        "identical": true,
+        "sha": "a41338f8c83b3ad554310c090bc13005a50e394675a9e4e9ffab5876526daecd",
+        "sourceHash": "8eebab60f54d2ce676c8791fcccd6674ced316b3534b961a4b96cc1f817a4bf7",
+        "ms": 41,
+        "viewBox": "0 0 1016 653"
+      },
+      "semantic": {
+        "id": "circuit-holdout-wheatstone-strain-gauge",
+        "ok": true,
+        "identical": false,
+        "sha": "5e9cc84d7e06e184f82262471b1a402f0a4db082cd812e346a68669f3c765ca5",
+        "sourceHash": "7e113312d7b1050442309b877c2d8a4ee3469cfd077f982e285788a65479878a",
+        "ms": 67,
+        "viewBox": "0 0 956 652"
+      },
+      "beforeHash": "a41338f8c83b3ad554310c090bc13005a50e394675a9e4e9ffab5876526daecd",
+      "sourceHash": "8eebab60f54d2ce676c8791fcccd6674ced316b3534b961a4b96cc1f817a4bf7"
+    },
+    {
+      "id": "circuit-hvac-thermostat",
+      "title": "HVAC thermostat control",
+      "goal": "Show a rated 24 V HVAC control circuit from transformer through thermostat terminals to furnace and condenser control devices.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "设备框变小，整体功能排布没有显著进步；控制支路与设备的留白仍大。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-hvac-thermostat",
+        "ok": true,
+        "identical": false,
+        "sha": "fbd7c6ad15322b04d0fc6be128fb2e1ddade36bd3ca58dbfecf406e87be0ad0f",
+        "sourceHash": "ac4846e37400b8874eb3506327d65f80a5b37e93c29de5f6c9cfe8f29130b00c",
+        "ms": 168,
+        "viewBox": "0 0 1523 788"
+      },
+      "semantic": null,
+      "beforeHash": "a160f37c4540b250c592b87c06defc41e521ad7025c87ccc7ea2cc4a061fdbd6",
+      "sourceHash": "ac4846e37400b8874eb3506327d65f80a5b37e93c29de5f6c9cfe8f29130b00c"
+    },
+    {
+      "id": "circuit-large-io-panel",
+      "title": "Large I O relay panel",
+      "goal": "A reader must be able to map sixteen numbered terminals through eight inputs to eight relay outputs and their status lamps.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "保留已有重复 I/O 通道排布；这轮功能分组没有介入，长图阅读问题仍在。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-large-io-panel",
+        "ok": true,
+        "identical": true,
+        "sha": "d0ae5d3571a7158b9a6c049338828485913b4935d025b0ea3310655e6b012d1c",
+        "sourceHash": "4ad2f4d96f0e3212b3dbc281b62c384ef18cded1ebc7e6e19ad805cd870d6bb3",
+        "ms": 298,
+        "viewBox": "0 0 1170 1643"
+      },
+      "semantic": null,
+      "beforeHash": "d0ae5d3571a7158b9a6c049338828485913b4935d025b0ea3310655e6b012d1c",
+      "sourceHash": "4ad2f4d96f0e3212b3dbc281b62c384ef18cded1ebc7e6e19ad805cd870d6bb3"
+    },
+    {
+      "id": "circuit-load-bank",
+      "title": "Load bank pilot circuit",
+      "goal": "Reads like a control schematic: contacts and coils in recognisable positions, no wire crossing a symbol.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "左右输出分组明确，但并行分组纵向堆叠，整体比原始版本更高，未获得稳定美观收益。",
+      "unchanged": true,
+      "semanticSource": "circuit \"12 V Automotive Indicator with Pilot\" netlist\nB1 bat 0 12V type=battery label=\"12 V Battery\"\nF1 bat p1 15A label=\"Main Fuse\"\nS1 p1 p2 type=switch_spst label=\"Activation\"\nK1 p2 fl_out pilot type=automotive_flasher_3pin label=\"Flasher B/L/P\"\nS2 fl_out left right type=switch_spdt_center_off label=\"Left / OFF / Right\"\nL1 left 0 type=lamp label=\"Left Front\"\nL2 left 0 type=lamp label=\"Left Rear\"\nD1 left l1 type=led label=\"Left LED 1\"\nR1 l1 0 500\nD2 left l2 type=led label=\"Left LED 2\"\nR2 l2 0 500\nD3 pilot p3 type=led label=\"Pilot LED\"\nR3 p3 0 1k\nL3 right 0 type=lamp label=\"Right Front\"\nL4 right 0 type=lamp label=\"Right Rear\"\nD4 right r1 type=led label=\"Right LED 1\"\nR4 r1 0 500\nD5 right r2 type=led label=\"Right LED 2\"\nR5 r2 0 500\n\ngroup switching \"Flasher and selection\": B1 F1 S1 K1 S2\ngroup left \"Left indicators\": L1 L2 D1 R1 D2 R2\ngroup right \"Right indicators\": L3 L4 D4 R4 D5 R5\ngroup pilot \"Pilot\": D3 R3\nflow switching -> left\nflow switching -> right\nflow switching -> pilot\n",
+      "original": {
+        "id": "circuit-load-bank",
+        "ok": true,
+        "identical": true,
+        "sha": "52234ad9f8850c2fdc6d5895223c19676c25f82d4e4ab30de8f70b3d782513dc",
+        "sourceHash": "deeaf7f1721e50d5839bade60f2165bdf1a05bfe7aebab1cd6d0c0ef18c7643f",
+        "ms": 560,
+        "viewBox": "0 0 1327 697"
+      },
+      "semantic": {
+        "id": "circuit-load-bank",
+        "ok": true,
+        "identical": false,
+        "sha": "779e5443f7affb803ad1484773a247724b7c10ef348c80de2b61e50fa062ac25",
+        "sourceHash": "6ea76757cada82ae7f2e6e9adc86082d91f44580d617f91c8541c8a2e3ec1472",
+        "ms": 519,
+        "viewBox": "0 0 1345 894"
+      },
+      "beforeHash": "52234ad9f8850c2fdc6d5895223c19676c25f82d4e4ab30de8f70b3d782513dc",
+      "sourceHash": "deeaf7f1721e50d5839bade60f2165bdf1a05bfe7aebab1cd6d0c0ef18c7643f"
+    },
+    {
+      "id": "circuit-mosfet-low-side-drive",
+      "title": "MOSFET low-side relay drive",
+      "goal": "A reader must be able to trace a microcontroller GPIO signal through a MOSFET that switches a protected relay coil to ground.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "MCU 框缩短；主要驱动路径保持清楚，但下拉电阻标签仍靠近底部，改善有限。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-mosfet-low-side-drive",
+        "ok": true,
+        "identical": false,
+        "sha": "1e80e4bd5d7149a16d1343fe88801635746bf9d1cf5c523aace9fd5e3ccaf845",
+        "sourceHash": "79ff692f218dd747ed7a268af97b08fc4732a61c804694de2b295c0783d9059d",
+        "ms": 53,
+        "viewBox": "0 0 906 520"
+      },
+      "semantic": null,
+      "beforeHash": "3288c13d0ae63d758e990edaf28c872bb92f0ce69f727dfe4ab17c0d4d24914e",
+      "sourceHash": "79ff692f218dd747ed7a268af97b08fc4732a61c804694de2b295c0783d9059d"
+    },
+    {
+      "id": "circuit-opamp-inverting",
+      "title": "Split-supply inverting amplifier",
+      "goal": "A reader can trace the input and negative feedback paths, determine the gain of -10 from the resistor values, and identify the grounded reference and both decoupled supply rails.",
+      "verdict": "unnecessary",
+      "verdictLabel": "简单电路不必加组",
+      "note": "分组改变了输入与回授的位置，但简单运放电路无需多一层功能区，不能视为必然提升。",
+      "unchanged": true,
+      "semanticSource": "circuit \"Inverting Amplifier, Gain -10, Split 12 V Supply\" netlist\n# Closed-loop gain: -R2/R1 = -100 kOhm / 10 kOhm = -10 V/V.\nV1 VPOS GND value=\"12 V\" label=\"V1\"\nV2 GND VNEG value=\"12 V\" label=\"V2\"\nV3 VIN GND type=ac_source value=\"100 mV, 1 kHz\" label=\"V3\"\nR1 VIN INV value=\"10 kOhm\" label=\"R1\"\nU1 GND INV VOUT type=opamp value=\"TL071\" label=\"U1\"\nR2 VOUT INV value=\"100 kOhm\" label=\"R2\"\nW1 VPOS U1.supply+\nW2 VNEG U1.supply-\nC1 VPOS GND value=\"100 nF\" label=\"C1\"\nC2 VNEG GND value=\"100 nF\" label=\"C2\"\n\ngroup input \"Signal input\": V3 R1\ngroup amplifier \"Inverting amplifier\": U1 R2 C1 C2\nflow input -> amplifier\n",
+      "original": {
+        "id": "circuit-opamp-inverting",
+        "ok": true,
+        "identical": true,
+        "sha": "7fff5c4a500d1721621c0ae92d1263479ae82320ed1c6e75a584d3a175aaec28",
+        "sourceHash": "ac3bd5bf78245d3185b52545703eda981f49027659c83609d7027ad7c9d341dc",
+        "ms": 58,
+        "viewBox": "0 0 893 469"
+      },
+      "semantic": {
+        "id": "circuit-opamp-inverting",
+        "ok": true,
+        "identical": false,
+        "sha": "78936c1deb2ee209205830b71664cdb5111e0a6b7dce2d9931a69d636823114e",
+        "sourceHash": "3db55daf2d4405285ccbe0954bcf310ccb96039ac38f646ba5dedfaa9ad9ff20",
+        "ms": 41,
+        "viewBox": "0 0 1162 420"
+      },
+      "beforeHash": "7fff5c4a500d1721621c0ae92d1263479ae82320ed1c6e75a584d3a175aaec28",
+      "sourceHash": "ac3bd5bf78245d3185b52545703eda981f49027659c83609d7027ad7c9d341dc"
+    },
+    {
+      "id": "circuit-plc-io-wiring",
+      "title": "PLC digital I/O wiring",
+      "goal": "A reader must be able to trace four field inputs and four outputs between numbered terminals, the PLC, and the 24 VDC supply.",
+      "verdict": "improved",
+      "verdictLabel": "结构改善",
+      "note": "现场输入、控制器与输出方向更清楚；单个端子排仍造成跨越和长线，与 Target 的双侧端子呈现有差距。",
+      "unchanged": false,
+      "semanticSource": "circuit \"PLC Digital I O Field Wiring\" netlist\nV1 L24 COM type=voltage_source value=\"24 VDC, 10 A\" label=\"PS1 24 VDC SUPPLY\"\nF1 L24 L24F type=fuse value=\"2 A, 250 VDC\" label=\"F1 PLC I/O FUSE\"\nT1 PB1 PB2 PB3 PE1 INCOM OUT1 OUT2 OUT3 OUT4 OUTCOM type=terminal_block pins=\"11,12,13,14,15,21,22,23,24,25\" value=\"10-way, 600 V\" label=\"TB1 FIELD I/O\"\nU1 L24F COM PB1 PB2 PB3 PE1 INCOM OUT1 OUT2 OUT3 OUT4 OUTCOM type=generic_ic pins=\"L+:power,M:return,I0.0:input,I0.1:input,I0.2:input,I0.3:input,DI-COM:return,Q0.0:output,Q0.1:output,Q0.2:output,Q0.3:output,DO-COM:power\" value=\"24 VDC, 8-point DI/DO\" label=\"PLC1 DIGITAL I/O\"\nS1 L24F PB1 type=push_no value=\"24 VDC, 1 A\" label=\"S1 START PB\"\nS2 L24F PB2 type=push_nc value=\"24 VDC, 1 A\" label=\"S2 STOP PB NC\"\nS3 L24F PB3 type=push_no value=\"24 VDC, 1 A\" label=\"S3 RESET PB\"\nB1 L24F PE1 type=proximity_sensor value=\"24 VDC, PNP, 100 mA\" label=\"B1 PROX SENSOR\"\nW1 INCOM COM value=\"0.75 mm2, 24 VDC\" label=\"W1 DI COMMON RETURN\"\nK1 OUT1 COM type=relay_coil value=\"24 VDC, 2 A contacts\" label=\"K1 CONTROL RELAY\"\nK2 OUT2 COM type=relay_coil value=\"24 VDC, 2 A contacts\" label=\"K2 ALARM RELAY\"\nY1 OUT3 COM type=solenoid_valve value=\"24 VDC, 6 W\" label=\"Y1 SOLENOID VALVE\"\nH1 OUT4 COM type=pilot_light value=\"24 VDC, 20 mA\" label=\"H1 OUTPUT PILOT\"\nW2 OUTCOM L24F value=\"0.75 mm2, 24 VDC\" label=\"W2 DO COMMON +24V\"\n\ngroup input \"Field inputs\": S1 S2 S3 B1\ngroup controller \"PLC and terminal interface\": U1 T1\ngroup output \"Field outputs\": K1 K2 Y1 H1\nflow input -> controller -> output\n",
+      "original": {
+        "id": "circuit-plc-io-wiring",
+        "ok": true,
+        "identical": false,
+        "sha": "b14a1c10c70d8f87b3ee7a1dacfe951fcab1c890a62f2c746bd00322a2aa2806",
+        "sourceHash": "521c1f55f184a32f6bb1390b07e87b2b185696694c711c109418544dd3456121",
+        "ms": 291,
+        "viewBox": "0 0 1251 790"
+      },
+      "semantic": {
+        "id": "circuit-plc-io-wiring",
+        "ok": true,
+        "identical": false,
+        "sha": "dc9a8ce2e6843f9646c48546ad06afeaf8bd5c8fedfe8f0a35e64ed229ce86b4",
+        "sourceHash": "3dc7bba3537d069eb548c10da6afc280723b86f970e3e13e2a60dbcfe11b6172",
+        "ms": 483,
+        "viewBox": "0 0 2038 793"
+      },
+      "beforeHash": "f24e52b00d55d00adf2f9de803f7c03df4b895bc3b234404dcfce85df3484620",
+      "sourceHash": "521c1f55f184a32f6bb1390b07e87b2b185696694c711c109418544dd3456121"
+    },
+    {
+      "id": "circuit-potentiometer-dimmer",
+      "title": "Potentiometer LED dimmer",
+      "goal": "A reader must be able to follow the potentiometer wiper into a transistor driver that varies current through an LED string.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮未改变该图；电源到 LED 与晶体管的路径仍绕，Target 更容易理解。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-potentiometer-dimmer",
+        "ok": true,
+        "identical": true,
+        "sha": "3874d2ad8c17f48b2ac5774785e33401844ed4a31732c177a782b3c4dd2fb085",
+        "sourceHash": "81ba86f5473ef4fbc121cb6a012f203ce58021c2cfc20d687c20738912abf43a",
+        "ms": 49,
+        "viewBox": "0 0 739 407"
+      },
+      "semantic": null,
+      "beforeHash": "3874d2ad8c17f48b2ac5774785e33401844ed4a31732c177a782b3c4dd2fb085",
+      "sourceHash": "81ba86f5473ef4fbc121cb6a012f203ce58021c2cfc20d687c20738912abf43a"
+    },
+    {
+      "id": "circuit-relay-latching-logic",
+      "title": "Latching relay logic",
+      "goal": "A reader must be able to follow the start-stop seal-in path and see the same relay switch a load and indicator.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "撤回全局间距实验后保留原图，避免把标签挤到回线之外；原有继电器连线密度仍高。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-relay-latching-logic",
+        "ok": true,
+        "identical": true,
+        "sha": "d206fb91fc7ea51dac89d95627c5dc21885b0fc7eb333ad57995b71f7c4592ec",
+        "sourceHash": "4729e76bfe696fbf7c6a96a1f1cbd077f77c176ed6cc118bafc769623392e027",
+        "ms": 111,
+        "viewBox": "0 0 753 457"
+      },
+      "semantic": null,
+      "beforeHash": "d206fb91fc7ea51dac89d95627c5dc21885b0fc7eb333ad57995b71f7c4592ec",
+      "sourceHash": "4729e76bfe696fbf7c6a96a1f1cbd077f77c176ed6cc118bafc769623392e027"
+    },
+    {
+      "id": "circuit-solar-charge-controller",
+      "title": "Off grid solar DC system",
+      "goal": "Show a safe small off-grid solar system from series PV input through storage and protected DC and AC loads.",
+      "verdict": "mixed",
+      "verdictLabel": "有收益，也有退步",
+      "note": "发电、储能和负载区能分辨，摆脱原来的细长图；供电轨和多个分支之间仍有较多空白。",
+      "unchanged": false,
+      "semanticSource": "circuit \"Off Grid Solar DC System\" netlist\nP1 PV_POS1 PV_NEG1 type=solar_cell value=\"200 W, 24 V\" label=\"P1 PV PANEL\"\nP2 PV_NEG1 PV_NEG2 type=solar_cell value=\"200 W, 24 V\" label=\"P2 PV PANEL\"\nS1 PV_POS1 PV_POS_CTRL type=switch_spst value=\"32 VDC, 20 A\" label=\"S1 PV ISOLATOR\"\nU1 PV_POS_CTRL PV_NEG2 BAT_POS CHASSIS type=generic_ic pins=\"PV+:input,PV-:input,BAT+:output,BAT-:return\" value=\"40 A, 12/24 V\" label=\"U1 MPPT CONTROLLER\"\nB1 BAT_POS CHASSIS 12V type=battery label=\"B1 BATTERY BANK A\"\nB2 BAT_POS CHASSIS 12V type=battery label=\"B2 BATTERY BANK B\"\nF1 BAT_POS DC_BUS type=fuse value=\"60 A MIDI\" label=\"F1 DC DISTRIBUTION\"\nF2 DC_BUS LOAD_12V type=fuse value=\"15 A ATO\" label=\"F2 12 V LOAD FUSE\"\nL1 LOAD_12V CHASSIS type=lamp value=\"12 VDC, 30 W\" label=\"L1 DC LOADS\"\nF3 DC_BUS INV_POS type=fuse value=\"125 A CLASS T\" label=\"F3 INVERTER FUSE\"\nU2 INV_POS CHASSIS AC_L AC_N type=dc_dc_converter value=\"1200 W, 12 VDC to 230 VAC\" label=\"U2 INVERTER\"\nX1 AC_L AC_N type=mains_socket value=\"230 VAC, 13 A\" label=\"X1 AC SOCKET\"\nG1 CHASSIS 0 type=gnd_chassis value=\"DC negative bond\" label=\"G1 DC EARTH\"\n\ngroup generation \"Solar generation\": P1 P2 S1\ngroup storage \"Charge and storage\": U1 B1 B2\ngroup dc \"DC loads\": F1 F2 L1\ngroup ac \"AC conversion\": F3 U2 X1\nflow generation -> storage -> dc\nflow storage -> ac\n",
+      "original": {
+        "id": "circuit-solar-charge-controller",
+        "ok": true,
+        "identical": false,
+        "sha": "b5a294eb50ec55e90d2b164b9c21fb0375f22e0a582d627e5020d9edca3b2565",
+        "sourceHash": "c18f8a5dc3e94f9af49f2b133ca1d3724772fb14376820aae0ae83b75ca91a8b",
+        "ms": 73,
+        "viewBox": "0 0 1634 514"
+      },
+      "semantic": {
+        "id": "circuit-solar-charge-controller",
+        "ok": true,
+        "identical": false,
+        "sha": "ae8395166fb81a7b0066ad3068a30b5c498ede6186937a9a95013bd7435f3248",
+        "sourceHash": "92379c75d519d0f9a25a2bb8f8f34fee1f08be974012b0b1e63ff1d36b6ea264",
+        "ms": 61,
+        "viewBox": "0 0 1640 715"
+      },
+      "beforeHash": "4eb86662b368a806ff2181f1c56066d69af6e2812a66132ce1cf8036e6e9e215",
+      "sourceHash": "c18f8a5dc3e94f9af49f2b133ca1d3724772fb14376820aae0ae83b75ca91a8b"
+    },
+    {
+      "id": "circuit-star-delta-starter",
+      "title": "Star-delta motor starter",
+      "goal": "A reader must be able to see the three-phase star-delta power circuit and the timed, interlocked control sequence that transfers the motor from star to delta.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "设备框变化没有解决动力与控制混排；仍是高而密的图，Target 的分区更好。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-star-delta-starter",
+        "ok": true,
+        "identical": false,
+        "sha": "f95f9f733cd09eea9441cc9bcf7503b483091abcf03b7b740a444150145304c7",
+        "sourceHash": "cdae421cdadc34984afc925d08c50b0d3015dcf71811dba62df60f72177ff9aa",
+        "ms": 1408,
+        "viewBox": "0 0 1608 1521"
+      },
+      "semantic": null,
+      "beforeHash": "b18cb5dd838a9f816ec061af6b95d9a78d75fe2a5ea8395690ae24e744629f9f",
+      "sourceHash": "cdae421cdadc34984afc925d08c50b0d3015dcf71811dba62df60f72177ff9aa"
+    },
+    {
+      "id": "circuit-terminal-block-panel",
+      "title": "Terminal block control panel",
+      "goal": "A reader must be able to identify where field wiring enters, how it is fused and selected, and where the switched output leaves.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "保留现有双端子排结构；标签可读，但开关和继电器路径仍有多余绕行。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-terminal-block-panel",
+        "ok": true,
+        "identical": false,
+        "sha": "6f3c05b2dbe9c6075dcd50ca8b13df2ffae46765335d5155bca6b13927fe63c8",
+        "sourceHash": "0d0b9bfd85563375496ea5a8cd998827f64c5c1965f4e83f255238b07379d660",
+        "ms": 33,
+        "viewBox": "0 0 941 526"
+      },
+      "semantic": null,
+      "beforeHash": "5f561d36eac4534205108d85d238a231fa160f476e8cd58d0e3340937a333a3a",
+      "sourceHash": "0d0b9bfd85563375496ea5a8cd998827f64c5c1965f4e83f255238b07379d660"
+    },
+    {
+      "id": "circuit-triac-motor-speed",
+      "title": "TRIAC motor speed controller",
+      "goal": "A reader must be able to follow the fused live path through the TRIAC to the motor and understand the DIAC RC firing network.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮未改变该图；电机和调速反馈的层次仍不如 Target。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-triac-motor-speed",
+        "ok": true,
+        "identical": true,
+        "sha": "b815012eecdebac3ea6e38c32c8a809d9d0d15dc2d7e714d31cda3a399fb0bba",
+        "sourceHash": "e97ea28fe905cf2de27383852d884227d4476cffa081efe8a4923a4433e5ac8a",
+        "ms": 175,
+        "viewBox": "0 0 930 481"
+      },
+      "semantic": null,
+      "beforeHash": "b815012eecdebac3ea6e38c32c8a809d9d0d15dc2d7e714d31cda3a399fb0bba",
+      "sourceHash": "e97ea28fe905cf2de27383852d884227d4476cffa081efe8a4923a4433e5ac8a"
+    },
+    {
+      "id": "circuit-two-way-lighting",
+      "title": "Three position lighting control",
+      "goal": "Make the live, traveler, switched-live, neutral, and protective-earth paths legible for a lamp controlled from three locations.",
+      "verdict": "limited",
+      "verdictLabel": "仍有明显差距",
+      "note": "端子通道间距调整了部分排布；开关并未自然形成 Target 的连续顺序。",
+      "unchanged": false,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-two-way-lighting",
+        "ok": true,
+        "identical": false,
+        "sha": "099ad118da1a2365c917bbdbfb58a125aeafeb2c47c26b92d6b62a33199a4ad8",
+        "sourceHash": "a1e2ff91b31249c6f0a77a5ecf448ef14d51b748bd8ffa4730e93fa8b37b5476",
+        "ms": 54,
+        "viewBox": "0 0 1428 691"
+      },
+      "semantic": null,
+      "beforeHash": "606ec10d76c01431fd7a07e7e0db7eca3c31088e31a5209a8a4a32d1a1a3171d",
+      "sourceHash": "a1e2ff91b31249c6f0a77a5ecf448ef14d51b748bd8ffa4730e93fa8b37b5476"
+    },
+    {
+      "id": "circuit-vfd-motor-wiring",
+      "title": "VFD motor wiring",
+      "goal": "A reader must be able to follow three-phase power through protection and a line reactor into a drive, then identify its motor, braking, and control connections.",
+      "verdict": "improved",
+      "verdictLabel": "结构改善",
+      "note": "供电、控制、驱动与电机的功能顺序更清楚；三相线和控制线尚未像 Target 那样紧凑分离。",
+      "unchanged": false,
+      "semanticSource": "circuit \"VFD Motor Power and Control Wiring\" netlist\nV1 L1 PE type=ac_source value=\"400 VAC, 50 Hz\" label=\"V1 L1 SUPPLY\"\nV2 L2 PE type=ac_source value=\"400 VAC, 50 Hz\" label=\"V2 L2 SUPPLY\"\nV3 L3 PE type=ac_source value=\"400 VAC, 50 Hz\" label=\"V3 L3 SUPPLY\"\nQ1 L1 QL1 type=disconnect_switch value=\"16 A, 3-pole, 400 VAC\" label=\"QF1 BREAKER L1\"\nQ2 L2 QL2 type=disconnect_switch value=\"16 A, 3-pole, 400 VAC\" label=\"QF1 BREAKER L2\"\nQ3 L3 QL3 type=disconnect_switch value=\"16 A, 3-pole, 400 VAC\" label=\"QF1 BREAKER L3\"\nL1 QL1 R1 type=inductor_iron value=\"16 A, 3%, 400 VAC\" label=\"LR1 LINE REACTOR L1\"\nL2 QL2 R2 type=inductor_iron value=\"16 A, 3%, 400 VAC\" label=\"LR1 LINE REACTOR L2\"\nL3 QL3 R3 type=inductor_iron value=\"16 A, 3%, 400 VAC\" label=\"LR1 LINE REACTOR L3\"\nU1 R1 R2 R3 U V W BRP BRN RUN FWD AI COM FAULT type=generic_ic pins=\"R/L1:input,S/L2:input,T/L3:input,U/T1:output,V/T2:output,W/T3:output,P+:bidirectional,PB:bidirectional,DI1:input,DI2:input,AI1:input,AC:return,RA:output\" value=\"400 VAC, 4 kW\" label=\"VFD1 VARIABLE FREQUENCY DRIVE\"\nM1 U V W type=generic_ic pins=\"U1:input,V1:input,W1:input\" value=\"400 VAC, 4 kW, 8.5 A\" label=\"M1 3-PH MOTOR\"\nR4 BRP BRN type=resistor value=\"100 ohm, 300 W\" label=\"RB1 BRAKING RESISTOR\"\nS1 RUN COM type=push_no value=\"24 VDC, 1 A\" label=\"S1 RUN COMMAND\"\nS2 FWD COM type=selector_switch value=\"24 VDC, 1 A\" label=\"S2 FORWARD REVERSE\"\nP1 VREF10 AI COM type=potentiometer value=\"10 kohm, 0.25 W\" label=\"P1 SPEED POT\"\nK1 FAULT COM type=relay_no value=\"250 VAC, 2 A\" label=\"K1 VFD FAULT RELAY\"\n\ngroup feed \"Protected three-phase feed\": V1 V2 V3 Q1 Q2 Q3 L1 L2 L3\ngroup control \"Operator controls\": S1 S2 P1\ngroup drive \"Drive and braking\": U1 R4 K1\ngroup motor \"Motor\": M1\nflow feed -> drive -> motor\nflow control -> drive\n",
+      "original": {
+        "id": "circuit-vfd-motor-wiring",
+        "ok": true,
+        "identical": false,
+        "sha": "5193f2eafe9372876c7c499e2081c9d15f2c72ade06dccecfee7adadfe7c84bd",
+        "sourceHash": "1ca7f624f5f7b82f33151d9587cf987bf9735e89a21c2bc84ea14aafa3d523ea",
+        "ms": 191,
+        "viewBox": "0 0 1544 732"
+      },
+      "semantic": {
+        "id": "circuit-vfd-motor-wiring",
+        "ok": true,
+        "identical": false,
+        "sha": "0f2ea05259eae5d365422d5756e12147a16ae1f5647142f9d9eb665dc384837e",
+        "sourceHash": "e1953c45b9ccb1087971a98e7de35d760b06a1d073a2fb1608d59a0c2eef421d",
+        "ms": 90,
+        "viewBox": "0 0 1592 775"
+      },
+      "beforeHash": "70d1464eee51ab6508379679247649e7b9615ea84b00668798a016d66b8abc84",
+      "sourceHash": "1ca7f624f5f7b82f33151d9587cf987bf9735e89a21c2bc84ea14aafa3d523ea"
+    },
+    {
+      "id": "circuit-zener-shunt-regulator",
+      "title": "Zener shunt regulator",
+      "goal": "A reader must be able to identify reverse protection, series current limiting, and the zener shunt regulating a grounded load.",
+      "verdict": "unchanged",
+      "verdictLabel": "保留原图",
+      "note": "本轮未改变该图。简单稳压路径能追踪，比例和符号方向仍有改进空间。",
+      "unchanged": true,
+      "semanticSource": null,
+      "original": {
+        "id": "circuit-zener-shunt-regulator",
+        "ok": true,
+        "identical": true,
+        "sha": "329d3dc7b696be43be8bc51c902397ff505d08693ed7da4823cb35904f56c487",
+        "sourceHash": "99d2190bb96d2a5e4f6532092ea221583984b57e6af5238a56ef27fe600084c1",
+        "ms": 26,
+        "viewBox": "0 0 912 490"
+      },
+      "semantic": null,
+      "beforeHash": "329d3dc7b696be43be8bc51c902397ff505d08693ed7da4823cb35904f56c487",
+      "sourceHash": "99d2190bb96d2a5e4f6532092ea221583984b57e6af5238a56ef27fe600084c1"
+    }
+  ],
+  "probes": [
+    {
+      "id": "cascade-2",
+      "title": "cascade-2",
+      "source": "circuit \"Cascaded interfaces\" netlist\nV1 VP GND 12V\nU1 VP GND N0 N1 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 1\"\nR1 N1 GND 20k\ngroup stage1: U1 R1\nU2 VP GND N1 N2 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 2\"\nR2 N2 GND 20k\ngroup stage2: U2 R2\nflow stage1 -> stage2\n",
+      "note": "两级功能链清楚，外部输入 N0 未连接，因此 API 如实报告 floating-net warning。",
+      "sha": "d3e62dc65af9dab5d7b65abc693811eb3d33411fc8b133085d3387ceeaf4e49c"
+    },
+    {
+      "id": "cascade-5",
+      "title": "cascade-5",
+      "source": "circuit \"Cascaded interfaces\" netlist\nV1 VP GND 12V\nU1 VP GND N0 N1 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 1\"\nR1 N1 GND 20k\ngroup stage1: U1 R1\nU2 VP GND N1 N2 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 2\"\nR2 N2 GND 20k\ngroup stage2: U2 R2\nU3 VP GND N2 N3 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 3\"\nR3 N3 GND 20k\ngroup stage3: U3 R3\nU4 VP GND N3 N4 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 4\"\nR4 N4 GND 20k\ngroup stage4: U4 R4\nU5 VP GND N4 N5 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\" label=\"Interface 5\"\nR5 N5 GND 20k\ngroup stage5: U5 R5\nflow stage1 -> stage2 -> stage3 -> stage4 -> stage5\n",
+      "note": "完整功能块能够折行，但跨行供电与反馈仍有长线和空白。属于未解决的整体构图问题。",
+      "sha": "ee49e3df4f09575c80b895be39f4a6c9e176d11e6b1e4d3d05128a7841de53d2"
+    },
+    {
+      "id": "field-bus-2",
+      "title": "field-bus-2",
+      "source": "circuit \"Shared differential field bus\" netlist\nV1 VP GND 5V\nR1 A B 120\nR2 A B 120\nU1 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 1\"\nU2 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 2\"\nbus A,B: R1 -> U1 -> U2 -> R2\n",
+      "note": "双节点主干与两端终端电阻清楚。这组样本已用于调整 bus 算法，不是独立 holdout。",
+      "sha": "1bd6194780011b82dd03ade1a64382d7d94199cf53a21620ccb7d505ec7a305a"
+    },
+    {
+      "id": "field-bus-5",
+      "title": "field-bus-5",
+      "source": "circuit \"Shared differential field bus\" netlist\nV1 VP GND 5V\nR1 A B 120\nR2 A B 120\nU1 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 1\"\nU2 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 2\"\nU3 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 3\"\nU4 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 4\"\nU5 VP GND A B type=ic pins=\"P:power,RET:return,A:bidirectional,B:bidirectional\" label=\"Station 5\"\nbus A,B: R1 -> U1 -> U2 -> U3 -> U4 -> U5 -> R2\n",
+      "note": "增加到五个节点仍保持主干和节点顺序。这组样本已用于调整 bus 算法，不是独立 holdout。",
+      "sha": "0cb1bb42117d5412ec087d9a7372fd33c79c3617c73167d552de584f383e573e"
+    },
+    {
+      "id": "branch-feedback",
+      "title": "branch-feedback",
+      "source": "circuit \"Two-branch feedback controller\" netlist\nV1 VP GND 12V\nU1 VP GND REF FB DRIVE type=ic pins=\"P:power,RET:return,REF:input,FB:input,DRV:output\"\nU2 VP GND DRIVE OUT1 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\"\nU3 VP GND DRIVE OUT2 type=ic pins=\"P:power,RET:return,IN:input,OUT:output\"\nR1 OUT1 FB 10k\nR2 FB GND 10k\nR3 OUT2 GND 20k\ngroup control: U1\ngroup branch_a: U2 R1 R2\ngroup branch_b: U3 R3\nflow control -> branch_a\nflow control -> branch_b\n",
+      "note": "分支与反馈保留，但并行输出纵向堆叠过高。未把这种结果算作美观通过。",
+      "sha": "7eadece1d9adb47ddf3137c9273039308cf7ad117268ab49f6409b273a403c4a"
+    },
+    {
+      "id": "isolated-interfaces",
+      "title": "isolated-interfaces",
+      "source": "circuit \"Isolated measurement link\" netlist\nV1 VP GND 5V\nV2 VS RTN_SEC 3.3V\nU1 VP GND IN TX type=ic pins=\"P:power,RET:return,IN:input,TX:output\"\nU2 TX GND RX RTN_SEC type=optocoupler\nU3 VS RTN_SEC RX OUT type=ic pins=\"P:power,RET:return,RX:input,OUT:output\"\nR1 IN GND 10k\nR2 OUT RTN_SEC 1k\ngroup sample: V1 U1 R1\ngroup isolation: U2\ngroup receive: V2 U3 R2\nflow sample -> isolation -> receive\n",
+      "note": "主副边接口分开，两个 return net 保持独立，未因 return 角色合并电气连接。",
+      "sha": "5f6590cee105cd1377f8d9eda1c79483b05132ceb98175e34eb9d9f32df1fbb5"
+    }
+  ],
+  "method": "作者逐图视觉复核；非独立盲评，不生成数值分数。39 个既有案例均曾参与开发；6 个新样本先冻结，bus 样本随后参与修复，不能称为独立 holdout。"
+}

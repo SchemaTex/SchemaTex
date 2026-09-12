@@ -493,7 +493,7 @@ After the pin nets, the parser interprets extras in this order:
 
 ### 4.5.5 Auto-layout
 
-Netlist mode uses one schematic placement and routing pipeline through
+Netlist mode separates topology classification, placement and routing through
 [autolayout.ts](../../src/diagrams/circuit/autolayout.ts) and
 [schematic-layout.ts](../../src/diagrams/circuit/schematic-layout.ts). It derives
 source/return nets, signal layers, shunt branches and pin orientations from
@@ -510,7 +510,58 @@ per-wire coordinates, curve selection or caption offsets are required from the D
 
 For exact publication drawings, positional DSL is still available, but generated ordinary schematics should prefer netlist mode.
 
-### 4.5.6 Common AI-generation pitfalls
+### 4.5.6 Functional structure (optional)
+
+A netlist says what is connected. Add functional information when a circuit has
+several stages or a physical cable bus. Simple circuits do not need groups.
+
+```text
+circuit "Sensor interface" netlist
+V1 VP GND 5V
+U1 VP GND IN MID type=ic pins="VCC:power,GND:return,IN:input,OUT:output" label="Sensor"
+U2 VP GND MID OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output" label="Processor"
+R1 IN GND 10k
+R2 OUT GND 1k
+group sense "Sensing": U1 R1
+group compute "Processing": U2 R2
+flow sense -> compute
+```
+
+- `group id "Caption": componentIds` keeps the named components together. The caption
+  is optional. Every component belongs to at most one group; ungrouped components
+  remain in a separate unit. Include a stage's supporting parts in its group.
+- `flow sense -> compute -> output` states the reading order of groups. Branching
+  flows can use several lines. Flow must be acyclic; electrical feedback remains
+  in the netlist and does not require a reverse flow statement. Without `flow`,
+  groups follow declaration order. The engine can fold complete groups onto another row.
+- Generic IC pins can declare `input`, `output`, `bidirectional`, `power` or `return`.
+  When using roles, annotate every pin. Pin order still binds to the positional nets;
+  roles never change connectivity. The engine derives pin sides and symbol size.
+  `return` means a supply reference, not any pin with a minus sign: a differential
+  input's negative terminal is still `input`.
+
+A physical bus additionally declares the component order along its main run:
+
+```text
+circuit "Field bus" netlist
+U1 A B type=ic pins="A:bidirectional,B:bidirectional" label="Controller"
+U2 A B type=ic pins="A:bidirectional,B:bidirectional" label="Remote node"
+R1 A B 120
+R2 A B 120
+bus A,B: R1 -> U1 -> U2 -> R2
+```
+
+Each listed component must connect to every listed net. Components and nets cannot
+belong to multiple physical bus declarations. A bus must fit within one group, or
+have all its members ungrouped. The engine reserves the main run and connects its
+interfaces with the same obstacle-avoiding router used for ordinary nets.
+
+For LLM-generated diagrams, describe function and connectivity. Do not add
+coordinates, bend points, spacing values or pin-side settings to repair a drawing.
+The engine owns those decisions. A group is not a promise of textbook composition:
+bridge symmetry, dense feedback and folded supply distribution still need visual review.
+
+### 4.5.7 Common AI-generation pitfalls
 
 - **`W1`/`W2` for wires** — supported (see prefix table). Real SPICE has no `W` device; this is a textbook/AI convention that schematex accepts as a quality-of-life feature.
 - **Household lamps** — write `L1 switched neutral type=lamp label="Lamp"`; bare `L1` is an inductor by SPICE convention.
