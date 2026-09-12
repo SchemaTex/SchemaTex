@@ -154,6 +154,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       '  scale "substitutions/site"',
     ],
     prefer: [
+      "Default layout is slanted; use layout: rectangular for elbows. Layout does not change distance semantics: phylogram measures horizontal displacement, cladogram aligns tips and conveys topology only. Dendrogram keeps rectangular merge-height connectors.",
       "Use `newick: \"…\"` for first-shot generation — a Newick string with branch lengths (`Name:length`); NHX annotations `[&&NHX:B=98]` carry bootstrap values.",
       "Add `clade ID = (leaf1, leaf2, …) [color: \"#hex\", label: \"…\"]` after the newick line to highlight named clades.",
       "Use `[mode: chronogram, mrsd: \"YYYY\"]` for time-calibrated trees and `[mode: cladogram]` when branch lengths are absent.",

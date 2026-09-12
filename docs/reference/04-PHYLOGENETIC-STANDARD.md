@@ -130,7 +130,7 @@ phylo "Gene expression clusters" [mode: dendrogram]
 
 ## 4. Layout Types
 
-### 4.1 Rectangular Layout（默认）
+### 4.1 Rectangular Layout
 
 最标准的布局：branches 走 L 形路径（先水平再垂直转弯）。
 
@@ -154,7 +154,7 @@ Root ─┬── Taxon_A
 - 垂直连接线：`<line>` from 最上子节点到最下子节点
 - 分支为 step path：`M x1,y H x2 V y2`（先水平走 branch length，再垂直连到子节点）
 
-### 4.2 Slanted (Diagonal) Layout
+### 4.2 Slanted (Diagonal) Layout — default
 
 与 rectangular 相同拓扑，但用斜线代替 L 形：
 
@@ -171,7 +171,9 @@ Root ──── Taxon_A
 - 分支是直线（从 parent 斜向 child）
 - `<line>` or `<path d="M x1,y1 L x2,y2">`
 - 视觉更紧凑
-- 用 `[layout: slanted]` 激活
+- 默认使用 `slanted`；`[layout: rectangular]` 显式选择直角分支。
+- Layout 与 mode 独立：phylogram 的**水平位移**表示距离，不是斜线的欧氏长度；`mode: cladogram` 才忽略距离、对齐 tips。
+- Dendrogram 始终用直角连接，以保留 merge height 的读法。
 
 ### 4.3 Circular (Fan) Layout
 

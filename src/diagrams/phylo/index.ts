@@ -8,7 +8,8 @@ export const phylo: DiagramPlugin = {
   type: "phylo",
 
   detect(text: string): boolean {
-    const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const firstLine = text.split("\n").map(line => line.trim())
+      .find(line => line && !line.startsWith("#"))?.toLowerCase() ?? "";
     return firstLine === "phylo" || firstLine.startsWith("phylo ");
   },
 
