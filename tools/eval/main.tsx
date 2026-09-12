@@ -188,7 +188,7 @@ const Glyph = ({ verdict }: { verdict: Verdict | "none" }) => {
 const Pct = ({ score }: { score: Score | null }) =>
   score === null
     ? <span className="muted">not graded</span>
-    : <span className={`pct${score.blockers ? " blocked" : ""}`}>{score.pct}%</span>;
+    : <span className={`pct pct-${score.pct >= 90 ? "green" : score.pct >= 80 ? "yellow" : score.pct >= 60 ? "orange" : "red"}`}>{score.pct}%</span>;
 
 const Dot = ({ on, label }: { on: boolean; label: string }) => (
   <svg className={on ? "dot dot-on" : "dot"} viewBox="0 0 10 10" role="img" aria-label={label}><title>{label}</title><circle cx="5" cy="5" r="4" /></svg>

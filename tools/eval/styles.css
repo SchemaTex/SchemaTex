@@ -2,6 +2,7 @@
   --bg: #ffffff; --text: #0f172a; --text-muted: #475569; --rule: #e2e8f0;
   --fill-muted: #f1f5f9; --accent: #2563eb; --positive: #059669;
   --negative: #dc2626; --warn: #d97706; --neutral: #94a3b8;
+  --score-yellow: #a18200;
   --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --r: 6px;
@@ -57,7 +58,10 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--neutral); }
 .pct { font-family: var(--mono); font-size: 15px; }
-.pct.blocked { color: var(--negative); }
+.pct-green { color: var(--positive); }
+.pct-yellow { color: var(--score-yellow); }
+.pct-orange { color: var(--warn); }
+.pct-red { color: var(--negative); }
 .delta { font-family: var(--mono); }
 .delta.up { color: var(--positive); } .delta.down { color: var(--negative); } .delta.flat { color: var(--neutral); }
 
