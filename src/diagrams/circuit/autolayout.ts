@@ -23,6 +23,7 @@ export interface RoutedWire {
 export const RAIL_LABEL = { x: 22, y: -10, fontSize: 11 };
 
 export interface SupplyFlagMark {
+  purpose?: "group";
   kind: "ground" | "vcc" | "label";
   /** Where the glyph's connection point sits, in world coordinates. */
   at: PinAnchor;

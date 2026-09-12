@@ -378,7 +378,7 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
           {
             x: x + RAIL_LABEL.x,
             y: y + RAIL_LABEL.y,
-            class: "schematex-circuit-net-label",
+            class: f.purpose === "group" ? "schematex-circuit-label" : "schematex-circuit-net-label",
             "text-anchor": "start",
           },
           f.label

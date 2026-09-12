@@ -36,7 +36,7 @@
  */
 import { placeLabel, labelOverlap, type LabelBox } from "../../core/label-placement";
 import type { CircuitAST, CircuitComponent } from "../../core/types";
-import { effectiveSymbolDef, type PinAnchor } from "./symbols";
+import { effectiveSymbolDef, normalizePinName, type PinAnchor } from "./symbols";
 import { componentCaption, type LaidOutComponent } from "./layout";
 import type {
   AutoLayoutResult,
@@ -612,21 +612,28 @@ function finalize(
   };
 }
 
-/**
- * Lay a netlist out along schematic conventions. Returns null when the netlist
- * carries no pin map, which is the one case where there is nothing to reason
- * about; the public entry reports missing connectivity.
- */
-function layoutCandidate(
-  ast: CircuitAST,
-  opts?: SchematicLayoutOptions,
-  columns?: number,
-  traversal: "breadth" | "depth" = "breadth"
-): (AutoLayoutResult & { stats?: SchematicLayoutStats }) | null {
-  const pinMap = ast.pinMap ?? {};
-  if (!ast.components.length) return finalize([], [], [], ast.title ? 24 : 0);
-  if (Object.keys(pinMap).length === 0) return null;
+// Reserve the painted body, measured caption and terminal leads together.
+const spacing = (comp: CircuitComponent, dir: "right" | "down" = "down") => {
+  const body = boxOf(placeAt({ ...comp }, 0, 0, dir), 0), label = labelBox(comp, { x: 0, y: 0 });
+  return { width: Math.ceil(body.maxX - body.minX + label.maxX - label.minX + BRANCH_GAP + TERMINAL_LEAD),
+    height: Math.ceil(body.maxY - body.minY + label.maxY - label.minY + BRANCH_GAP + TERMINAL_LEAD) };
+};
 
+const placeUpright = (ast: CircuitAST, comp: CircuitComponent, topPin: string, x: number, y: number) => {
+  const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
+  const top = sym.anchors[topPin]!;
+  const other = pinEntriesOf(ast, comp).find(([pin]) => pin !== topPin);
+  const bottom = other ? sym.anchors[other[0]] : undefined;
+  const dir = bottom && top.x > bottom.x ? "up" : "down";
+  const laid = placeAt(comp, x, y, dir);
+  const shift = { x: x - laid.anchors[topPin]!.x, y: y - laid.anchors[topPin]!.y };
+  laid.x += shift.x; laid.y += shift.y;
+  for (const anchor of Object.values(laid.anchors)) { anchor.x += shift.x; anchor.y += shift.y; }
+  return laid;
+};
+
+function classifyCircuit(ast: CircuitAST, supplies?: { powerNets: Set<string>; groundNets: Set<string> }) {
+  const pinMap = ast.pinMap ?? {};
   // ── 1. Classify nets ──────────────────────────────────────────
   // Source glyphs identify drivers; connectivity decides which drivers are
   // supplies. A separate source entering a two-pin input branch is excitation,
@@ -672,14 +679,14 @@ function layoutCandidate(
     connected.forEach(driver => transferSources.add(driver));
     transferRoots.add(source);
   }
-  const supplySources = drivers.filter((comp) => !transferSources.has(comp) && (
+  let supplySources = drivers.filter((comp) => !transferSources.has(comp) && (
     (drivers.length === 1 && (comp.componentType !== "ac_source" ||
       pinEntriesOf(ast, comp).every(([, net]) => !groundNets.has(net)))) ||
     pinEntriesOf(ast, comp).some(([, net]) => !groundNets.has(net) &&
       new Set(allPins.filter((p) => p.net === net && p.compId !== comp.id).map((p) => p.compId)).size > 1)));
-  const excitations = drivers.filter((comp) => transferRoots.has(comp) ||
+  let excitations = drivers.filter((comp) => transferRoots.has(comp) ||
     (!transferSources.has(comp) && !supplySources.includes(comp)));
-  const excitationNets = new Set(excitations.flatMap((comp) =>
+  let excitationNets = new Set(excitations.flatMap((comp) =>
     pinEntriesOf(ast, comp).map(([, net]) => net).filter((net) => !groundNets.has(net))));
   for (const comp of supplySources) {
     for (const [, net] of pinEntriesOf(ast, comp)) {
@@ -704,8 +711,24 @@ function layoutCandidate(
       }
     }
   }
+  for (const comp of ast.components) for (const [pin, role] of Object.entries(comp.pinRoles ?? {})) {
+    const net = pinMap[comp.id]?.[pin];
+    if (!net) continue;
+    if (role === "power") powerNets.add(net);
+    if (role === "return") groundNets.add(net);
+  }
   for (const net of groundNets) powerNets.delete(net);
 
+  // A functional block inherits the sheet's supply identities. A source is
+  // not required inside every block, and an isolated return is never merged.
+  if (supplies) {
+    powerNets.clear(); groundNets.clear();
+    for (const net of supplies.powerNets) powerNets.add(net);
+    for (const net of supplies.groundNets) groundNets.add(net);
+    supplySources = drivers.filter(comp => pinEntriesOf(ast, comp).every(([, net]) => powerNets.has(net) || groundNets.has(net)));
+    excitations = drivers.filter(comp => !supplySources.includes(comp));
+    excitationNets = new Set(excitations.flatMap(comp => pinEntriesOf(ast, comp).map(([, net]) => net).filter(net => !groundNets.has(net))));
+  }
   const isSupplyNet = (net: string) => groundNets.has(net) || powerNets.has(net);
 
   // Supply classification keeps rails out of signal adjacency. Drawing a bus
@@ -779,12 +802,17 @@ function layoutCandidate(
   if (signalComps.length === 0) {
     signalComps = nonSource.filter((c) => !isGroundShunt(c));
     shuntComps = nonSource.filter(isGroundShunt);
-    if (signalComps.length === 0) {
-      signalComps = nonSource;
-      shuntComps = [];
-    }
   }
 
+  return { isBlock: !!supplies, ast, pinMap, groundNets, powerNets, allPins, supplySources, excitations, excitationNets, terminalBlocks, isSupplyNet, busNets, powerBuses, explicitGrounds, railOnly, nonSource, shuntComps, signalComps };
+}
+
+type CircuitTopology = ReturnType<typeof classifyCircuit>;
+
+function placeConnected(topology: CircuitTopology, columns?: number, traversal: "breadth" | "depth" = "breadth") {
+  const { ast, allPins, supplySources, excitations, excitationNets, terminalBlocks,
+    isSupplyNet, powerNets, groundNets, busNets, railOnly, nonSource } = topology;
+  let { shuntComps, signalComps } = topology;
   // ── 2. Signal graph ───────────────────────────────────────────
   const netToComps = new Map<string, string[]>();
   for (const p of allPins) {
@@ -969,11 +997,6 @@ function layoutCandidate(
   {
     const clearance = BRANCH_GAP;
     // One footprint rule reserves the painted body, measured label and terminal leads.
-    const spacing = (comp: CircuitComponent, dir: "right" | "down" = "down") => {
-      const body = boxOf(placeAt({ ...comp }, 0, 0, dir), 0), label = labelBox(comp, { x: 0, y: 0 });
-      return { width: Math.ceil(body.maxX - body.minX + label.maxX - label.minX + clearance + TERMINAL_LEAD),
-        height: Math.ceil(body.maxY - body.minY + label.maxY - label.minY + clearance + TERMINAL_LEAD) };
-    };
     const colWidth: number[] = [];
     const slotHeight: number[] = [];
     for (let li = 0; li < layers.length; li++) {
@@ -1051,18 +1074,7 @@ function layoutCandidate(
 
     // Place by the actual terminal net, never by declaration order. This keeps
     // reversed sources and polarised shunts connected to their authored pins.
-    const upright = (comp: CircuitComponent, topPin: string, x: number, y: number) => {
-      const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
-      const top = sym.anchors[topPin]!;
-      const other = pinEntriesOf(ast, comp).find(([pin]) => pin !== topPin);
-      const bottom = other ? sym.anchors[other[0]] : undefined;
-      const dir = bottom && top.x > bottom.x ? "up" : "down";
-      const laid = placeAt(comp, x, y, dir);
-      const shift = { x: x - laid.anchors[topPin]!.x, y: y - laid.anchors[topPin]!.y };
-      laid.x += shift.x; laid.y += shift.y;
-      for (const anchor of Object.values(laid.anchors)) { anchor.x += shift.x; anchor.y += shift.y; }
-      return laid;
-    };
+    const upright = (comp: CircuitComponent, topPin: string, x: number, y: number) => placeUpright(ast, comp, topPin, x, y);
     const reserve = (laid: LaidOutComponent, direction = 1) => {
       const gap = spacing(laid.component).width;
       while (items.some((it) => boxesOverlap(boxOf(laid, clearance / 2), boxOf(it, clearance / 2)))) {
@@ -1328,9 +1340,12 @@ function layoutCandidate(
       if (channelBanks.length === 2) comp.attrs._terminal_split = String(channelBanks[0]!.length);
       const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
       const first = sym.anchors[pinEntriesOf(ast, comp)[0]![0]]!;
+      // Reserve routing-channel capacity for the terminal bank's independent
+      // nets. A fixed body gap can trap later pins behind earlier fan-out wires.
+      const terminalGap = Math.max(clearance, new Set(pinEntriesOf(ast, comp).map(([, net]) => net)).size * 2 * LABEL_GUTTER) + 2 * TERMINAL_LEAD;
       const x = channelBanks.length ? colLeft[1]! : left
-        ? Math.min(...inner.map((b) => b.minX)) - spacing(comp, "right").width - TERMINAL_LEAD
-        : Math.max(...inner.map((b) => b.maxX)) + clearance + TERMINAL_LEAD + (index ? (index - 1) * spacing(comp, "right").width : 0);
+        ? Math.min(...inner.map((b) => b.minX)) - spacing(comp, "right").width - terminalGap
+        : Math.max(...inner.map((b) => b.maxX)) + terminalGap + (index ? (index - 1) * spacing(comp, "right").width : 0);
       const item = placeAt(comp, x, TOP_MARGIN - first.y, "right");
       items.push(item); placed.set(comp.id, item);
     });
@@ -1341,281 +1356,498 @@ function layoutCandidate(
     const originSpan = Math.max(...items.map((it) => it.y)) - Math.min(...items.map((it) => it.y));
     const targetHeight = (Math.max(...bounds.map((b) => b.maxX)) - Math.min(...bounds.map((b) => b.minX))) / MAX_ASPECT;
     const scaleY = originSpan ? Math.max(1, (targetHeight - Math.max(...bounds.map((b) => b.maxY - b.minY)) - 2 * (clearance + BUS_CLEARANCE)) / originSpan) : 1;
-    if (!groupedUnits.length && !channelBanks.length && scaleY > 1) for (const item of items) {
+    if (!topology.isBlock && !groupedUnits.length && !channelBanks.length && scaleY > 1) for (const item of items) {
       const rowY = item.y - (item.rotation === 270 ? item.length : 0);
       const dy = (rowY - TOP_MARGIN) * (scaleY - 1);
       item.y += dy;
       for (const anchor of Object.values(item.anchors)) anchor.y += dy;
     }
 
-    // ── 6. Route ordinary nets ──────────────────────────────────────
-    const routes: RoutedWire[] = [];
-    // Pins on a symbol boundary may run along that boundary; inflating it
-    // sent collector routes down through the emitter on the same symbol edge.
-    const routingItems = items.filter((it) => !railOnly.includes(it.component) ||
-      pinEntriesOf(ast, it.component).some(([, net]) => !busNets.has(net)));
-    const routeSignal = routerFor(routingItems, pinMap);
-    const obstacles = routingItems.map((it) => boxOf(it, -1));
-
-    const netPins = new Map<string, Array<{ pt: PinAnchor; compId: string }>>();
-    for (const p of allPins) {
-      if (busNets.has(p.net)) continue;
-      const host = placed.get(p.compId);
-      if (!host) continue;
-      const a = host.anchors[p.pinName];
-      if (!a) continue;
-      const list = netPins.get(p.net) ?? [];
-      list.push({ pt: a, compId: p.compId });
-      netPins.set(p.net, list);
-    }
-
-    let routedNets = 0;
-    for (const [net, pins] of netPins) {
-      if (pins.length < 2) continue;
-      routedNets++;
-      const sorted = [...pins].sort((a, b) => a.pt.x - b.pt.x);
-      const throughCandidates = sorted.filter((pin) => {
-        const host = placed.get(pin.compId)!;
-        return signalComps.includes(host.component) && host.rotation % 180 === 0 &&
-          [host.anchors.start, host.anchors.end].some((anchor) => anchor &&
-            Math.abs(anchor.x - pin.pt.x) < 0.5 && Math.abs(anchor.y - pin.pt.y) < 0.5);
-      });
-      const through = throughCandidates.map((pin) => throughCandidates.filter((other) =>
-        Math.abs(other.pt.y - pin.pt.y) < 0.5)).sort((a, b) => b.length - a.length)[0] ?? [];
-      // The run follows the terminals of its series parts. Hanging branches
-      // must not pull that run below a resistor or a regulator's in/out pins.
-      const run = through.length ? {
-        minX: through[0]!.pt.x, maxX: through[through.length - 1]!.pt.x,
-        minY: through[0]!.pt.y, maxY: through[0]!.pt.y,
-      } : undefined;
-      // A pin on the far side of an IC cannot be approached through its body.
-      if (run && !obstacles.some((box) => boxesOverlap(run, box))) {
-        const y = through[0]!.pt.y;
-        const lo = Math.min(...through.map((pin) => pin.pt.x));
-        const hi = Math.max(...through.map((pin) => pin.pt.x));
-        const junctions: PinAnchor[] = [];
-        const attachments: RoutedWire[] = [];
-        for (const pin of sorted.filter((pin) => !through.includes(pin))) {
-          const x = through.length === 1 ? through[0]!.pt.x : Math.max(lo, Math.min(hi, pin.pt.x));
-          const join = [{ x, y }, ...attachments.flatMap((r) => r.points)].sort((a, b) =>
-            Math.abs(a.x - pin.pt.x) + Math.abs(a.y - pin.pt.y) - Math.abs(b.x - pin.pt.x) - Math.abs(b.y - pin.pt.y))[0]!;
-          junctions.push(join);
-          attachments.push({ netId: `${net}.${pin.compId}`, points: routeSignal(pin.pt, join, [...routes, ...attachments], net) });
-        }
-        routes.push({ netId: net, points: [{ x: lo, y }, { x: hi, y }],
-          junctions: sorted.length > 2 ? junctions : undefined });
-        // Keep two-terminal nets as a single route, including the complete
-        // source/input path which callers identify by its net name.
-        if (through.length === 1 && sorted.length === 2) {
-          routes.pop();
-          routes.push({ netId: net, points: attachments[0]!.points });
-        } else {
-          routes.push(...attachments);
-        }
-        continue;
-      }
-      if (sorted.length === 2) {
-        routes.push({ netId: net, points: routeSignal(sorted[0]!.pt, sorted[1]!.pt, routes, net) });
-        continue;
-      }
-      // Grow a connected tree from the closest pair. A compulsory horizontal
-      // spine can land beyond a shunt's opposite terminal and obscure which
-      // side is connected. Attach each remaining pin to the routed tree itself.
-      const distance = (a: PinAnchor, b: PinAnchor) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-      const foreignPins = allPins.filter(pin => pin.net !== net)
-        .flatMap(pin => placed.get(pin.compId)?.anchors[pin.pinName] ?? []);
-      const foreignSegments = routes.filter(route => routeNet(route.netId, ast.nets.map(n => n.id)) !== net)
-        .flatMap(route => route.points.slice(1).map((b, i) => ({a: route.points[i]!, b})));
-      const clearJunction = (join: PinAnchor) => foreignPins.every(p =>
-        Math.hypot(p.x - join.x, p.y - join.y) > LABEL_GUTTER) && foreignSegments.every(({a, b}) =>
-        Math.hypot(join.x - Math.max(Math.min(a.x, b.x), Math.min(Math.max(a.x, b.x), join.x)),
-          join.y - Math.max(Math.min(a.y, b.y), Math.min(Math.max(a.y, b.y), join.y))) > LABEL_GUTTER);
-      let tree: RoutedWire[] = [];
-      try {
-        const pair = sorted.flatMap((pin, i) => sorted.slice(i + 1).map(other => ({pin, other})))
-          .sort((a, b) => distance(a.pin.pt, a.other.pt) - distance(b.pin.pt, b.other.pt))[0]!;
-        tree = [{netId: net, points: routeSignal(pair.pin.pt, pair.other.pt, routes, net)}];
-        const remaining = sorted.filter(pin => pin !== pair.pin && pin !== pair.other);
-        while (remaining.length) {
-          const choices = remaining.flatMap(pin => tree.flatMap(route => route.points.slice(1).flatMap((b, i) => {
-            const a = route.points[i]!;
-            const projection = {x: Math.max(Math.min(a.x, b.x), Math.min(Math.max(a.x, b.x), pin.pt.x)),
-              y: Math.max(Math.min(a.y, b.y), Math.min(Math.max(a.y, b.y), pin.pt.y))};
-            return [projection, a, b].filter(join => routingItems.every(item => {
-              if (Object.entries(pinMap[item.component.id] ?? {}).some(([name, owner]) => owner === net &&
-                item.anchors[name]?.x === join.x && item.anchors[name]?.y === join.y)) return true;
-              const box = boxOf(item, BODY_CLEARANCE);
-              return join.x <= box.minX || join.x >= box.maxX || join.y <= box.minY || join.y >= box.maxY;
-            })).filter(clearJunction).map(join => ({pin, join}));
-          }))).sort((a, b) => distance(a.pin.pt, a.join) - distance(b.pin.pt, b.join));
-          const unique = choices.filter((c, i) => choices.findIndex(other => other.pin === c.pin &&
-            other.join.x === c.join.x && other.join.y === c.join.y) === i).slice(0, 4);
-          const best = unique.flatMap(c => {
-            try { return [{...c, points: routeSignal(c.pin.pt, c.join, [...routes, ...tree], net)}]; }
-            catch (error) {
-              if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
-              return [];
-            }
-          })
-            .map(c => ({...c, cost: measureRouting([...tree, {netId: net, points: c.points}], [net]).cost}))
-            .sort((a, b) => a.cost - b.cost)[0];
-          if (!best) throw new Error("No clear branch junction");
-          tree.push({netId: `${net}.${best.pin.compId}`, points: best.points, junctions: [best.join]});
-          remaining.splice(remaining.indexOf(best.pin), 1);
-        }
-      } catch (error) {
-        if (!(error instanceof Error) || !/^(No obstacle-free orthogonal route|No clear branch junction)/.test(error.message)) throw error;
-        tree = [];
-      }
-      // Compare the local tree with a shared straight run. Greedy pairwise
-      // attachment alone makes parallel branches descend in a staircase.
-      // Derive channels from terminals and their clear lead ends, never names.
-      let bestTree = tree;
-      let bestCost = tree.length ? measureRouting([...routes, ...tree], ast.nets.map(n => n.id)).cost : Infinity;
-      const ends = terminalLeads(routingItems, pinMap).filter(lead => lead.net === net)
-        .flatMap(lead => lead.points);
-      for (const axis of ["x", "y"] as const) {
-        const other = axis === "x" ? "y" : "x";
-        const channels = [...new Set(ends.map(p => p[axis]))].sort((a, b) =>
-          sorted.reduce((sum, pin) => sum + Math.abs(pin.pt[axis] - a) - Math.abs(pin.pt[axis] - b), 0)).slice(0, 4);
-        for (const channel of channels) {
-          const taps = sorted.map(pin => ({...pin.pt, [axis]: channel}));
-          const extremities = [...taps].sort((a, b) => a[other] - b[other]);
-          if (!taps.every(clearJunction)) continue;
-          try {
-            const trunk = routeSignal(extremities[0]!, extremities[extremities.length - 1]!, routes, net);
-            // Every projected junction must actually lie on the trunk.
-            if (trunk.some(p => p[axis] !== channel)) continue;
-            const option: RoutedWire[] = [{netId: net, points: trunk, junctions: taps}];
-            for (const [i, pin] of sorted.entries()) {
-              option.push({netId: `${net}.${pin.compId}`,
-                points: routeSignal(pin.pt, taps[i]!, [...routes, ...option], net)});
-            }
-            const cost = measureRouting([...routes, ...option], ast.nets.map(n => n.id)).cost;
-            if (cost < bestCost) { bestTree = option; bestCost = cost; }
-          } catch (error) {
-            if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
-          }
-        }
-      }
-      if (!bestTree.length) throw new Error("No clear branch junction");
-      routes.push(...bestTree);
-    }
-
-    // A bus-to-bus part owns a clear column at the block edge. Place it after
-    // routing signals so both rail legs stay outside the signal wiring, rather
-    // than sending its return through the collector and emitter branches.
-    let edgeX = Math.max(LEFT_MARGIN, ...items.filter((it) => !railOnly.includes(it.component)).map((it) => boxOf(it, 0).maxX),
-      ...routes.flatMap((route) => route.points.map((point) => point.x)));
-    for (const comp of railOnly.filter((comp) => !isSource(comp) &&
-      pinEntriesOf(ast, comp).every(([, net]) => busNets.has(net)))) {
-      const pins = pinEntriesOf(ast, comp);
-      const top = pins.find(([, net]) => powerNets.has(net)) ?? pins[0]!;
-      const item = upright(comp, top[0], edgeX + clearance + TERMINAL_LEAD, TOP_MARGIN);
-      items.push(item); placed.set(comp.id, item);
-      edgeX = item.x + spacing(comp).width;
-    }
-
-    // ── 7. Shared supply buses ───────────────────────────────────
-    const flags: SupplyFlagMark[] = [];
-    const bodies = items.map((it) => boxOf(it, 0));
-    const railLeft = Math.min(LEFT_MARGIN, ...bodies.map((b) => b.minX)) - TERMINAL_LEAD;
-    const railRight = Math.max(LEFT_MARGIN, ...bodies.map((b) => b.maxX)) + TERMINAL_LEAD;
-    const topY = Math.min(TOP_MARGIN, ...bodies.map((b) => b.minY)) - clearance - BUS_CLEARANCE;
-    const bottomY = Math.max(TOP_MARGIN, ...bodies.map((b) => b.maxY)) + clearance + BUS_CLEARANCE;
-    for (const [index, net] of [...powerBuses, ...groundNets].entries()) {
-      const ground = groundNets.has(net);
-      const railY = ground ? bottomY + [...groundNets].indexOf(net) * (BUS_CLEARANCE + clearance) : topY - (powerBuses.length - 1 - index) * (BUS_CLEARANCE + clearance);
-      const grounds = explicitGrounds.filter((g) => pinEntriesOf(ast, g).some(([, n]) => n === net));
-      grounds.forEach((g, i) => {
-        const laid = placeAt(g, railLeft + TERMINAL_LEAD + i * BRANCH_GAP, railY, "down");
-        items.push(laid); placed.set(g.id, laid);
-      });
-      // renderCircuit adds its title offset inside flag transforms as well as
-      // outside the whole drawing. Compensate here so the glyph meets the bus.
-      if (!ground || !grounds.length) flags.push({
-        kind: ground ? "ground" : "vcc", at: { x: railLeft + (ground ? TERMINAL_LEAD : 0), y: railY - (ast.title ? 24 : 0) },
-        label: ground && net === "GND" ? undefined : net,
-      });
-      const junctions: PinAnchor[] = [];
-      if (ground && !grounds.length) {
-        const at = { x: railLeft + TERMINAL_LEAD, y: railY };
-        junctions.push(at);
-      }
-      const bankX = channelBanks.map((_, bank) => ground
-        ? colLeft[bank * 2]! + colWidth[bank * 2]! - clearance
-        : colLeft[bank * 2]! - BUS_CLEARANCE);
-      for (const [bank, x] of bankX.entries()) {
-        if (!channelBanks[bank]!.flat().some((c) => pinEntriesOf(ast, c).some(([, n]) => n === net))) continue;
-        const endY = ground ? TOP_MARGIN : TOP_MARGIN + Math.max(...channelBanks.map((bank) => bank.length)) * channelHeight - clearance;
-        routes.push({ netId: `${net}.bank`, points: [{ x, y: railY }, { x, y: endY }] });
-        junctions.push({ x, y: railY });
-      }
-      const routeSupply = routerFor(items, pinMap);
-      for (const pin of allPins.filter((p) => p.net === net)) {
-        const host = placed.get(pin.compId);
-        const anchor = host?.anchors[pin.pinName];
-        if (!host || !anchor) continue;
-        const channel = channelOf.get(pin.compId);
-        const target = channel ? { x: bankX[channel.bank]!, y: anchor.y } : { x: anchor.x, y: railY };
-        if (!channel) {
-          const foreign = routes.filter(r => routeNet(r.netId, ast.nets.map(n => n.id)) !== net)
-            .flatMap(r => r.points.slice(1).map((b, i) => ({ a: r.points[i]!, b })));
-          const candidates = [...new Set([anchor.x, ...foreign.flatMap(({ a, b }) =>
-            [a.x - TERMINAL_LEAD, a.x + TERMINAL_LEAD, b.x - TERMINAL_LEAD, b.x + TERMINAL_LEAD])])]
-            .sort((a, b) => Math.abs(a - anchor.x) - Math.abs(b - anchor.x) || a - b);
-          // A new rail tap must not put a junction on an existing foreign wire.
-          target.x = candidates.find(x => foreign.every(({ a, b }) =>
-            x < Math.min(a.x, b.x) - LABEL_GUTTER || x > Math.max(a.x, b.x) + LABEL_GUTTER ||
-            railY < Math.min(a.y, b.y) - LABEL_GUTTER || railY > Math.max(a.y, b.y) + LABEL_GUTTER)) ?? anchor.x;
-        }
-        // Enter a horizontal rail vertically: the junction dot must mark the
-        // visible T connection, rather than sit beyond a run along the rail.
-        const approach = channel ? target : { x: target.x,
-          y: railY + Math.sign(anchor.y - railY) * TERMINAL_LEAD };
-        const points = compactRoute([...routeSupply(anchor, approach, routes, net), target]);
-        const end = points[points.length - 1]!;
-        if (!channel) junctions.push(end);
-        routes.push({ netId: `${net}.${pin.compId}.${pin.pinName}`, points, junctions: channel ? [end] : undefined });
-      }
-      routes.push({ netId: net, points: [
-        { x: Math.min(railLeft, ...junctions.map((p) => p.x)), y: railY },
-        { x: Math.max(railRight, ...junctions.map((p) => p.x)), y: railY },
-      ], junctions });
-    }
-
-    // Regulator outputs retain their terminal-led runs and carry their authored
-    // supply names, just as the full-width source buses do.
-    const outputNets = new Set(ast.components.filter((c) => c.componentType === "voltage_regulator")
-      .map((c) => pinMap[c.id]?.out).filter((net): net is string => !!net));
-    for (const net of outputNets) {
-      if (busNets.has(net)) continue;
-      const segments = routes.filter((r) => r.netId === net || r.netId.startsWith(`${net}.`))
-        .flatMap((r) => r.points.slice(1).map((b, i) => ({ a: r.points[i]!, b })))
-        .filter(({ a, b }) => a.y === b.y)
-        .sort((a, b) => Math.abs(b.a.x - b.b.x) - Math.abs(a.a.x - a.b.x));
-      const segment = segments[0];
-      if (segment) flags.push({ kind: "label", label: net,
-        at: { x: Math.min(segment.a.x, segment.b.x), y: segment.a.y - (ast.title ? 24 : 0) } });
-    }
-
-    // ── 8. Labels ─────────────────────────────────────────────────
-    const labels = placeLabels(items, routes, flags, ast.title ? 24 : 0);
-
-    const result = finalize(items, routes, flags, ast.title ? 24 : 0) as AutoLayoutResult & {
-      stats?: SchematicLayoutStats;
-    };
-    if (opts?.collectStats) {
-      result.stats = {
-        layers: layers.length,
-        maxSlots: Math.max(1, ...layers.map((l) => l.length)),
-        implicitFlags: flags.length,
-        routedNets,
-        labelsMoved: labels.moved,
-      };
-    }
-    return result;
+    return { items, signalComps, channelBanks, channelOf, colLeft, colWidth, channelHeight, layers };
   }
+}
+
+type CircuitPlacement = ReturnType<typeof placeConnected>;
+
+function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, opts?: SchematicLayoutOptions) {
+  const { ast, pinMap, allPins, groundNets, powerNets, busNets, powerBuses, explicitGrounds, railOnly } = topology;
+  const { items, signalComps, channelBanks, channelOf, colLeft, colWidth, channelHeight, layers } = placement;
+  const placed = new Map(items.map(item => [item.component.id, item]));
+  const clearance = BRANCH_GAP;
+  const upright = (comp: CircuitComponent, topPin: string, x: number, y: number) => placeUpright(ast, comp, topPin, x, y);
+  // ── 6. Route ordinary nets ──────────────────────────────────────
+  const routes: RoutedWire[] = [];
+  // Pins on a symbol boundary may run along that boundary; inflating it
+  // sent collector routes down through the emitter on the same symbol edge.
+  const physicalNets = new Set((ast.buses ?? []).flatMap(bus => bus.nets));
+  const routingItems = items.filter((it) => !railOnly.includes(it.component) ||
+    pinEntriesOf(ast, it.component).some(([, net]) => !busNets.has(net) || physicalNets.has(net)));
+  const routeSignal = routerFor(routingItems, pinMap);
+  const obstacles = routingItems.map((it) => boxOf(it, -1));
+
+  const netPins = new Map<string, Array<{ pt: PinAnchor; compId: string }>>();
+  for (const p of allPins) {
+    if (busNets.has(p.net) && !physicalNets.has(p.net)) continue;
+    const host = placed.get(p.compId);
+    if (!host) continue;
+    const a = host.anchors[p.pinName];
+    if (!a) continue;
+    const list = netPins.get(p.net) ?? [];
+    list.push({ pt: a, compId: p.compId });
+    netPins.set(p.net, list);
+  }
+
+  let routedNets = 0;
+  const orderedNets = [...netPins].sort(([a], [b]) => Number(physicalNets.has(b)) - Number(physicalNets.has(a)));
+  for (const [net, pins] of orderedNets) {
+    if (pins.length < 2) continue;
+    routedNets++;
+    const physicalBus = ast.buses?.find(bus => bus.nets.includes(net));
+    if (physicalBus) {
+      const participants = physicalBus.components.map(id => {
+        const item = placed.get(id);
+        if (!item) throw new Error(`Missing placed bus component "${id}"`);
+        return item;
+      });
+      const ends = participants.filter(item => pinEntriesOf(ast, item.component).length === 2 &&
+        !effectiveSymbolDef(item.component.componentType, item.component.attrs).keepUpright);
+      const termination = ends[0];
+      const terminationPin = termination && pinEntriesOf(ast, termination.component).find(([, owner]) => owner === net)?.[0];
+      const y = termination && terminationPin ? termination.anchors[terminationPin].y :
+        Math.min(...participants.map(item => boxOf(item, 0).minY)) - BUS_CLEARANCE -
+        (physicalBus.nets.length - 1 - physicalBus.nets.indexOf(net)) * (TERMINAL_LEAD + BRANCH_GAP);
+      const busPins = pins.filter(pin => physicalBus.components.includes(pin.compId));
+      const lo = Math.min(...busPins.map(pin => pin.pt.x)), hi = Math.max(...busPins.map(pin => pin.pt.x));
+      const trunk = routeSignal({ x: lo, y }, { x: hi, y }, routes, net);
+      const junctions: PinAnchor[] = [];
+      const main: RoutedWire = { netId: net, points: trunk, junctions };
+      routes.push(main);
+      for (const pin of pins) {
+        const join = { x: Math.max(lo, Math.min(hi, pin.pt.x)), y };
+        // A main run must remain straight: projecting a branch onto an
+        // obstacle detour would falsely indicate an electrical junction.
+        if (trunk.some(point => point.y !== y)) throw new Error("No obstacle-free orthogonal route for physical bus trunk");
+        if (pin.pt.x === join.x && pin.pt.y === join.y) continue;
+        routes.push({ netId: `${net}.${pin.compId}`, points: routeSignal(pin.pt, join, routes, net) });
+        if (!junctions.some(point => point.x === join.x)) junctions.push(join);
+      }
+      continue;
+    }
+    const sorted = [...pins].sort((a, b) => a.pt.x - b.pt.x);
+    const throughCandidates = sorted.filter((pin) => {
+      const host = placed.get(pin.compId)!;
+      return signalComps.includes(host.component) && host.rotation % 180 === 0 &&
+        [host.anchors.start, host.anchors.end].some((anchor) => anchor &&
+          Math.abs(anchor.x - pin.pt.x) < 0.5 && Math.abs(anchor.y - pin.pt.y) < 0.5);
+    });
+    const through = throughCandidates.map((pin) => throughCandidates.filter((other) =>
+      Math.abs(other.pt.y - pin.pt.y) < 0.5)).sort((a, b) => b.length - a.length)[0] ?? [];
+    // The run follows the terminals of its series parts. Hanging branches
+    // must not pull that run below a resistor or a regulator's in/out pins.
+    const run = through.length ? {
+      minX: through[0]!.pt.x, maxX: through[through.length - 1]!.pt.x,
+      minY: through[0]!.pt.y, maxY: through[0]!.pt.y,
+    } : undefined;
+    // A pin on the far side of an IC cannot be approached through its body.
+    if (run && !obstacles.some((box) => boxesOverlap(run, box))) {
+      const y = through[0]!.pt.y;
+      const lo = Math.min(...through.map((pin) => pin.pt.x));
+      const hi = Math.max(...through.map((pin) => pin.pt.x));
+      const junctions: PinAnchor[] = [];
+      const attachments: RoutedWire[] = [];
+      for (const pin of sorted.filter((pin) => !through.includes(pin))) {
+        const x = through.length === 1 ? through[0]!.pt.x : Math.max(lo, Math.min(hi, pin.pt.x));
+        const join = [{ x, y }, ...attachments.flatMap((r) => r.points)].sort((a, b) =>
+          Math.abs(a.x - pin.pt.x) + Math.abs(a.y - pin.pt.y) - Math.abs(b.x - pin.pt.x) - Math.abs(b.y - pin.pt.y))[0]!;
+        junctions.push(join);
+        attachments.push({ netId: `${net}.${pin.compId}`, points: routeSignal(pin.pt, join, [...routes, ...attachments], net) });
+      }
+      routes.push({ netId: net, points: [{ x: lo, y }, { x: hi, y }],
+        junctions: sorted.length > 2 ? junctions : undefined });
+      // Keep two-terminal nets as a single route, including the complete
+      // source/input path which callers identify by its net name.
+      if (through.length === 1 && sorted.length === 2) {
+        routes.pop();
+        routes.push({ netId: net, points: attachments[0]!.points });
+      } else {
+        routes.push(...attachments);
+      }
+      continue;
+    }
+    if (sorted.length === 2) {
+      routes.push({ netId: net, points: routeSignal(sorted[0]!.pt, sorted[1]!.pt, routes, net) });
+      continue;
+    }
+    // Grow a connected tree from the closest pair. A compulsory horizontal
+    // spine can land beyond a shunt's opposite terminal and obscure which
+    // side is connected. Attach each remaining pin to the routed tree itself.
+    const distance = (a: PinAnchor, b: PinAnchor) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    const foreignPins = allPins.filter(pin => pin.net !== net)
+      .flatMap(pin => placed.get(pin.compId)?.anchors[pin.pinName] ?? []);
+    const foreignSegments = routes.filter(route => routeNet(route.netId, ast.nets.map(n => n.id)) !== net)
+      .flatMap(route => route.points.slice(1).map((b, i) => ({a: route.points[i]!, b})));
+    const clearJunction = (join: PinAnchor) => foreignPins.every(p =>
+      Math.hypot(p.x - join.x, p.y - join.y) > LABEL_GUTTER) && foreignSegments.every(({a, b}) =>
+      Math.hypot(join.x - Math.max(Math.min(a.x, b.x), Math.min(Math.max(a.x, b.x), join.x)),
+        join.y - Math.max(Math.min(a.y, b.y), Math.min(Math.max(a.y, b.y), join.y))) > LABEL_GUTTER);
+    let tree: RoutedWire[] = [];
+    try {
+      const pair = sorted.flatMap((pin, i) => sorted.slice(i + 1).map(other => ({pin, other})))
+        .sort((a, b) => distance(a.pin.pt, a.other.pt) - distance(b.pin.pt, b.other.pt))[0]!;
+      tree = [{netId: net, points: routeSignal(pair.pin.pt, pair.other.pt, routes, net)}];
+      const remaining = sorted.filter(pin => pin !== pair.pin && pin !== pair.other);
+      while (remaining.length) {
+        const choices = remaining.flatMap(pin => tree.flatMap(route => route.points.slice(1).flatMap((b, i) => {
+          const a = route.points[i]!;
+          const projection = {x: Math.max(Math.min(a.x, b.x), Math.min(Math.max(a.x, b.x), pin.pt.x)),
+            y: Math.max(Math.min(a.y, b.y), Math.min(Math.max(a.y, b.y), pin.pt.y))};
+          return [projection, a, b].filter(join => routingItems.every(item => {
+            if (Object.entries(pinMap[item.component.id] ?? {}).some(([name, owner]) => owner === net &&
+              item.anchors[name]?.x === join.x && item.anchors[name]?.y === join.y)) return true;
+            const box = boxOf(item, BODY_CLEARANCE);
+            return join.x <= box.minX || join.x >= box.maxX || join.y <= box.minY || join.y >= box.maxY;
+          })).filter(clearJunction).map(join => ({pin, join}));
+        }))).sort((a, b) => distance(a.pin.pt, a.join) - distance(b.pin.pt, b.join));
+        const unique = choices.filter((c, i) => choices.findIndex(other => other.pin === c.pin &&
+          other.join.x === c.join.x && other.join.y === c.join.y) === i).slice(0, 4);
+        const best = unique.flatMap(c => {
+          try { return [{...c, points: routeSignal(c.pin.pt, c.join, [...routes, ...tree], net)}]; }
+          catch (error) {
+            if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
+            return [];
+          }
+        })
+          .map(c => ({...c, cost: measureRouting([...tree, {netId: net, points: c.points}], [net]).cost}))
+          .sort((a, b) => a.cost - b.cost)[0];
+        if (!best) throw new Error("No clear branch junction");
+        tree.push({netId: `${net}.${best.pin.compId}`, points: best.points, junctions: [best.join]});
+        remaining.splice(remaining.indexOf(best.pin), 1);
+      }
+    } catch (error) {
+      if (!(error instanceof Error) || !/^(No obstacle-free orthogonal route|No clear branch junction)/.test(error.message)) throw error;
+      tree = [];
+    }
+    // Compare the local tree with a shared straight run. Greedy pairwise
+    // attachment alone makes parallel branches descend in a staircase.
+    // Derive channels from terminals and their clear lead ends, never names.
+    let bestTree = tree;
+    let bestCost = tree.length ? measureRouting([...routes, ...tree], ast.nets.map(n => n.id)).cost : Infinity;
+    const ends = terminalLeads(routingItems, pinMap).filter(lead => lead.net === net)
+      .flatMap(lead => lead.points);
+    for (const axis of ["x", "y"] as const) {
+      const other = axis === "x" ? "y" : "x";
+      const channels = [...new Set(ends.map(p => p[axis]))].sort((a, b) =>
+        sorted.reduce((sum, pin) => sum + Math.abs(pin.pt[axis] - a) - Math.abs(pin.pt[axis] - b), 0)).slice(0, 4);
+      for (const channel of channels) {
+        const taps = sorted.map(pin => ({...pin.pt, [axis]: channel}));
+        const extremities = [...taps].sort((a, b) => a[other] - b[other]);
+        if (!taps.every(clearJunction)) continue;
+        try {
+          const trunk = routeSignal(extremities[0]!, extremities[extremities.length - 1]!, routes, net);
+          // Every projected junction must actually lie on the trunk.
+          if (trunk.some(p => p[axis] !== channel)) continue;
+          const option: RoutedWire[] = [{netId: net, points: trunk, junctions: taps}];
+          for (const [i, pin] of sorted.entries()) {
+            option.push({netId: `${net}.${pin.compId}`,
+              points: routeSignal(pin.pt, taps[i]!, [...routes, ...option], net)});
+          }
+          const cost = measureRouting([...routes, ...option], ast.nets.map(n => n.id)).cost;
+          if (cost < bestCost) { bestTree = option; bestCost = cost; }
+        } catch (error) {
+          if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
+        }
+      }
+    }
+    if (!bestTree.length) throw new Error("No clear branch junction");
+    routes.push(...bestTree);
+  }
+
+  // A bus-to-bus part owns a clear column at the block edge. Place it after
+  // routing signals so both rail legs stay outside the signal wiring, rather
+  // than sending its return through the collector and emitter branches.
+  let edgeX = Math.max(LEFT_MARGIN, ...items.filter((it) => !railOnly.includes(it.component)).map((it) => boxOf(it, 0).maxX),
+    ...routes.flatMap((route) => route.points.map((point) => point.x)));
+  for (const comp of railOnly.filter((comp) => !isSource(comp) && !placed.has(comp.id) &&
+    pinEntriesOf(ast, comp).every(([, net]) => busNets.has(net)))) {
+    const pins = pinEntriesOf(ast, comp);
+    const top = pins.find(([, net]) => powerNets.has(net)) ?? pins[0]!;
+    const item = upright(comp, top[0], edgeX + clearance + TERMINAL_LEAD, TOP_MARGIN);
+    items.push(item); placed.set(comp.id, item);
+    edgeX = item.x + spacing(comp).width;
+  }
+
+  // ── 7. Shared supply buses ───────────────────────────────────
+  const flags: SupplyFlagMark[] = (ast.groups ?? []).flatMap(group => {
+    if (!group.label) return [];
+    const members = items.filter(item => group.components.includes(item.component.id));
+    const bounds = placementBounds(members);
+    return [{ kind: "label", purpose: "group", label: group.label,
+      at: { x: bounds.minX - RAIL_LABEL.x, y: bounds.minY - BRANCH_GAP - (ast.title ? 24 : 0) } }];
+  });
+  const bodies = items.map((it) => boxOf(it, 0));
+  const railLeft = Math.min(LEFT_MARGIN, ...bodies.map((b) => b.minX)) - TERMINAL_LEAD;
+  const railRight = Math.max(LEFT_MARGIN, ...bodies.map((b) => b.maxX)) + TERMINAL_LEAD;
+  const topY = Math.min(TOP_MARGIN, ...bodies.map((b) => b.minY)) - clearance - BUS_CLEARANCE;
+  const bottomY = Math.max(TOP_MARGIN, ...bodies.map((b) => b.maxY)) + clearance + BUS_CLEARANCE;
+  for (const [index, net] of [...powerBuses, ...groundNets].entries()) {
+    if (physicalNets.has(net)) continue;
+    const ground = groundNets.has(net);
+    const connected = allPins.filter(pin => pin.net === net && !explicitGrounds.some(comp => comp.id === pin.compId))
+      .flatMap(pin => placed.get(pin.compId)?.anchors[pin.pinName] ?? []);
+    const startX = ast.groups?.length || ast.buses?.length ? Math.min(...connected.map(point => point.x), railRight) - TERMINAL_LEAD : railLeft;
+    const endX = ast.groups?.length || ast.buses?.length ? Math.max(...connected.map(point => point.x), startX) + TERMINAL_LEAD : railRight;
+    const railY = ground ? bottomY + [...groundNets].indexOf(net) * (BUS_CLEARANCE + clearance) : topY - (powerBuses.length - 1 - index) * (BUS_CLEARANCE + clearance);
+    const grounds = explicitGrounds.filter((g) => pinEntriesOf(ast, g).some(([, n]) => n === net));
+    grounds.forEach((g, i) => {
+      const laid = placeAt(g, startX + TERMINAL_LEAD + i * BRANCH_GAP, railY, "down");
+      items.push(laid); placed.set(g.id, laid);
+    });
+    // renderCircuit adds its title offset inside flag transforms as well as
+    // outside the whole drawing. Compensate here so the glyph meets the bus.
+    if (!ground || !grounds.length) flags.push({
+      kind: ground ? "ground" : "vcc", at: { x: startX + (ground ? TERMINAL_LEAD : 0), y: railY - (ast.title ? 24 : 0) },
+      label: ground && net === "GND" ? undefined : net,
+    });
+    const junctions: PinAnchor[] = [];
+    if (ground && !grounds.length) {
+      const at = { x: startX + TERMINAL_LEAD, y: railY };
+      junctions.push(at);
+    }
+    const bankX = channelBanks.map((_, bank) => ground
+      ? colLeft[bank * 2]! + colWidth[bank * 2]! - clearance
+      : colLeft[bank * 2]! - BUS_CLEARANCE);
+    for (const [bank, x] of bankX.entries()) {
+      if (!channelBanks[bank]!.flat().some((c) => pinEntriesOf(ast, c).some(([, n]) => n === net))) continue;
+      const endY = ground ? TOP_MARGIN : TOP_MARGIN + Math.max(...channelBanks.map((bank) => bank.length)) * channelHeight - clearance;
+      routes.push({ netId: `${net}.bank`, points: [{ x, y: railY }, { x, y: endY }] });
+      junctions.push({ x, y: railY });
+    }
+    const routeSupply = routerFor(items, pinMap);
+    for (const pin of allPins.filter((p) => p.net === net)) {
+      const host = placed.get(pin.compId);
+      const anchor = host?.anchors[pin.pinName];
+      if (!host || !anchor) continue;
+      const channel = channelOf.get(pin.compId);
+      const target = channel ? { x: bankX[channel.bank]!, y: anchor.y } : { x: anchor.x, y: railY };
+      if (!channel) {
+        const foreign = routes.filter(r => routeNet(r.netId, ast.nets.map(n => n.id)) !== net)
+          .flatMap(r => r.points.slice(1).map((b, i) => ({ a: r.points[i]!, b })));
+        const candidates = [...new Set([anchor.x, ...foreign.flatMap(({ a, b }) =>
+          [a.x - TERMINAL_LEAD, a.x + TERMINAL_LEAD, b.x - TERMINAL_LEAD, b.x + TERMINAL_LEAD])])]
+          .sort((a, b) => Math.abs(a - anchor.x) - Math.abs(b - anchor.x) || a - b);
+        // A new rail tap must not put a junction on an existing foreign wire.
+        target.x = candidates.find(x => foreign.every(({ a, b }) =>
+          x < Math.min(a.x, b.x) - LABEL_GUTTER || x > Math.max(a.x, b.x) + LABEL_GUTTER ||
+          railY < Math.min(a.y, b.y) - LABEL_GUTTER || railY > Math.max(a.y, b.y) + LABEL_GUTTER)) ?? anchor.x;
+      }
+      // Enter a horizontal rail vertically: the junction dot must mark the
+      // visible T connection, rather than sit beyond a run along the rail.
+      const approach = channel ? target : { x: target.x,
+        y: railY + Math.sign(anchor.y - railY) * TERMINAL_LEAD };
+      const points = compactRoute([...routeSupply(anchor, approach, routes, net), target]);
+      const end = points[points.length - 1]!;
+      if (!channel) junctions.push(end);
+      routes.push({ netId: `${net}.${pin.compId}.${pin.pinName}`, points, junctions: channel ? [end] : undefined });
+    }
+    routes.push({ netId: net, points: [
+      { x: Math.min(startX, ...junctions.map((p) => p.x)), y: railY },
+      { x: Math.max(endX, ...junctions.map((p) => p.x)), y: railY },
+    ], junctions });
+  }
+
+  // Regulator outputs retain their terminal-led runs and carry their authored
+  // supply names, just as the full-width source buses do.
+  const outputNets = new Set(ast.components.filter((c) => c.componentType === "voltage_regulator")
+    .map((c) => pinMap[c.id]?.out).filter((net): net is string => !!net));
+  for (const net of outputNets) {
+    if (busNets.has(net)) continue;
+    const segments = routes.filter((r) => r.netId === net || r.netId.startsWith(`${net}.`))
+      .flatMap((r) => r.points.slice(1).map((b, i) => ({ a: r.points[i]!, b })))
+      .filter(({ a, b }) => a.y === b.y)
+      .sort((a, b) => Math.abs(b.a.x - b.b.x) - Math.abs(a.a.x - a.b.x));
+    const segment = segments[0];
+    if (segment) flags.push({ kind: "label", label: net,
+      at: { x: Math.min(segment.a.x, segment.b.x), y: segment.a.y - (ast.title ? 24 : 0) } });
+  }
+
+  // ── 8. Labels ─────────────────────────────────────────────────
+  const labels = placeLabels(items, routes, flags, ast.title ? 24 : 0);
+
+  const result = finalize(items, routes, flags, ast.title ? 24 : 0) as AutoLayoutResult & {
+    stats?: SchematicLayoutStats;
+  };
+  if (opts?.collectStats) {
+    result.stats = {
+      layers: layers.length,
+      maxSlots: Math.max(1, ...layers.map((l) => l.length)),
+      implicitFlags: flags.length,
+      routedNets,
+      labelsMoved: labels.moved,
+    };
+  }
+  return result;
+}
+
+/** Lay out each functional block before reserving space for it on the sheet.
+ * Only the root plan is routed: a block boundary never creates or merges a net.
+ */
+function placeFunctional(topology: CircuitTopology, columns?: number, traversal: "breadth" | "depth" = "breadth"): CircuitPlacement {
+  const { ast } = topology;
+  const members = new Map((ast.groups ?? []).map(group => [group.id, [...group.components]]));
+  const assigned = new Set([...members.values()].flat());
+  const remaining = ast.components.filter(comp => !isGroundType(comp) && !assigned.has(comp.id));
+  // Physical buses form one unit. Their order is authored because a netlist
+  // alone cannot distinguish a daisy chain from arbitrary parallel taps.
+  for (const [index, bus] of (ast.buses ?? []).entries()) {
+    if (bus.components.some(id => assigned.has(id))) continue;
+    members.set(`@bus${index}`, [...bus.components]);
+    bus.components.forEach(id => assigned.add(id));
+  }
+  const unassigned = remaining.filter(comp => !assigned.has(comp.id));
+  if (unassigned.length) members.set("@remainder", unassigned.map(comp => comp.id));
+
+  const units = [...members].map(([id, ids]) => {
+    const selected = new Set(ids);
+    const components = ast.components.filter(comp => selected.has(comp.id)).sort((a, b) => a.id.localeCompare(b.id, "en", { numeric: true }));
+    const localAst: CircuitAST = { ...ast, title: undefined, groups: undefined, flow: undefined,
+      components, buses: ast.buses?.filter(bus => bus.components.every(member => selected.has(member))) };
+    const localTopology = classifyCircuit(localAst, topology);
+    const local = localAst.buses?.length ? placePhysicalBus(localTopology, columns, traversal) : placeConnected(localTopology, components.length, traversal);
+    // Supply-only passives still belong to their block, including decoupling.
+    // Reserve them before composition instead of appending them at sheet edge.
+    for (const comp of components.filter(comp => !local.items.some(item => item.component.id === comp.id))) {
+      const pin = pinEntriesOf(ast, comp).find(([, net]) => topology.powerNets.has(net)) ?? pinEntriesOf(ast, comp)[0];
+      if (!pin) continue;
+      const right = Math.max(LEFT_MARGIN, ...local.items.map(item => boxOf(item, BRANCH_GAP).maxX));
+      local.items.push(placeUpright(ast, comp, pin[0], right + TERMINAL_LEAD, TOP_MARGIN));
+    }
+    return { id, local, bounds: placementBounds(local.items) };
+  });
+
+  const rank = new Map<string, number>();
+  const pending = new Set(units.map(unit => unit.id));
+  const flow = ast.flow ?? [];
+  while (pending.size) {
+    const ready = [...pending].filter(id => !flow.some(([a, b]) => b === id && pending.has(a)));
+    if (!ready.length) throw new Error("Functional flow contains a cycle");
+    for (const id of ready) {
+      const predecessors = flow.filter(([, b]) => b === id).map(([a]) => a);
+      rank.set(id, flow.length ? Math.max(0, ...predecessors.map(a => (rank.get(a) ?? 0) + 1)) : rank.size);
+      pending.delete(id);
+    }
+  }
+  // The residual unit contains ungrouped supply/field wiring. Give it its own
+  // column, rather than stretching or overlapping the authored blocks.
+  if (rank.has("@remainder")) {
+    rank.set("@remainder", -1);
+  }
+  const items: LaidOutComponent[] = [];
+  const layers: string[][] = [];
+  const ranks = [...new Set(rank.values())].filter(depth => depth >= 0).sort((a, b) => a - b);
+  const bands = ranks.map(depth => units.filter(unit => rank.get(unit.id) === depth));
+  const bandWidth = (band: typeof units) => Math.max(0, ...band.map(unit => unit.bounds.maxX - unit.bounds.minX));
+  const bandHeight = (band: typeof units) => band.reduce((height, unit) => height + unit.bounds.maxY - unit.bounds.minY + SLOT_H, -SLOT_H);
+  const emit = (band: typeof units, x: number, top: number) => {
+    let y = top;
+    for (const unit of band) {
+      shiftItems(unit.local.items, x - unit.bounds.minX, y - unit.bounds.minY);
+      items.push(...unit.local.items);
+      y += unit.bounds.maxY - unit.bounds.minY + SLOT_H;
+      layers.push(unit.local.items.map(item => item.component.id));
+    }
+  };
+  const remainder = units.filter(unit => unit.id === "@remainder");
+  emit(remainder, LEFT_MARGIN, TOP_MARGIN);
+  const left = LEFT_MARGIN + (remainder.length ? bandWidth(remainder) + SLOT_H : 0);
+  // Fold complete functional bands, never a fragment of an authored block.
+  // Candidate search owns the number of bands per row; it is not a DSL knob.
+  const perRow = Math.max(2, columns ?? Math.ceil(Math.sqrt(bands.length * MAX_ASPECT)));
+  let y = TOP_MARGIN;
+  for (let first = 0; first < bands.length; first += perRow) {
+    const row = bands.slice(first, first + perRow);
+    let x = left;
+    for (const band of row) {
+      emit(band, x, y);
+      x += bandWidth(band) + SLOT_H;
+    }
+    y += Math.max(...row.map(bandHeight)) + SLOT_H;
+  }
+  return { items, signalComps: units.flatMap(unit => unit.local.signalComps), layers,
+    channelBanks: [], channelOf: new Map(), colLeft: [], colWidth: [], channelHeight: 0 };
+}
+
+function shiftItems(items: LaidOutComponent[], dx: number, dy: number): void {
+  for (const item of items) {
+    item.x += dx; item.y += dy;
+    for (const anchor of Object.values(item.anchors)) { anchor.x += dx; anchor.y += dy; }
+  }
+}
+
+function placementBounds(items: LaidOutComponent[]): Box {
+  const boxes = items.map(item => {
+    const body = boxOf(item, BRANCH_GAP);
+    const caption = labelBox(item.component, { x: item.x, y: body.minY - LABEL_GUTTER });
+    return { minX: Math.min(body.minX, caption.minX), maxX: Math.max(body.maxX, caption.maxX),
+      minY: Math.min(body.minY, caption.minY), maxY: body.maxY };
+  });
+  return { minX: Math.min(...boxes.map(box => box.minX), ...(boxes.length ? [] : [0])), maxX: Math.max(...boxes.map(box => box.maxX), ...(boxes.length ? [] : [0])),
+    minY: Math.min(...boxes.map(box => box.minY), ...(boxes.length ? [] : [0])), maxY: Math.max(...boxes.map(box => box.maxY), ...(boxes.length ? [] : [0])) };
+}
+
+function placePhysicalBus(topology: CircuitTopology, columns?: number, traversal: "breadth" | "depth" = "breadth"): CircuitPlacement {
+  const { ast } = topology;
+  const byId = new Map(ast.components.map(comp => [comp.id, comp]));
+  const items: LaidOutComponent[] = [];
+  let y = TOP_MARGIN;
+  for (const bus of ast.buses ?? []) {
+    let x = LEFT_MARGIN;
+    for (const id of bus.components) {
+      const comp = byId.get(id);
+      if (!comp) throw new Error(`Unknown bus component "${id}"`);
+      if (comp.componentType === "generic_ic" && comp.attrs?.pins) {
+        const sides: Record<string, string[]> = { left: [], right: [], top: [], bottom: [] };
+        for (const [index, label] of comp.attrs.pins.split(",").entries()) {
+          const pin = normalizePinName(label, `pin_${index + 1}`);
+          const net = ast.pinMap?.[id]?.[pin];
+          const side = net && bus.nets.includes(net) ? "top" : net && topology.groundNets.has(net) ? "bottom"
+            : net && topology.powerNets.has(net) ? "right"
+            : ["left", "right", "top", "bottom"].find(side => comp.attrs?.[`pins_${side}`]?.split(",").includes(label)) ?? "left";
+          sides[side].push(label);
+        }
+        comp.attrs = { ...comp.attrs, ...Object.fromEntries(Object.entries(sides).map(([side, labels]) => [`pins_${side}`, labels.join(",")])) };
+      }
+      const item = placeAt(comp, x, y, pinEntriesOf(ast, comp).length === 2 ? "down" : "right");
+      items.push(item);
+      x += spacing(comp, "right").width + BRANCH_GAP;
+    }
+    const participants = items.filter(item => bus.components.includes(item.component.id));
+    const devices = participants.filter(item => effectiveSymbolDef(item.component.componentType, item.component.attrs).keepUpright || pinEntriesOf(ast, item.component).length !== 2);
+    const railTop = Math.min(...(devices.length ? devices : participants).map(item => boxOf(item, 0).minY)) - BUS_CLEARANCE - (bus.nets.length - 1) * (TERMINAL_LEAD + BRANCH_GAP);
+    for (const item of participants.filter(item => !devices.includes(item))) {
+      const pins = pinEntriesOf(ast, item.component);
+      const first = [...pins].sort((a, b) => bus.nets.indexOf(a[1]) - bus.nets.indexOf(b[1]))[0];
+      const placed = placeUpright(ast, item.component, first[0], item.x, railTop + bus.nets.indexOf(first[1]) * (TERMINAL_LEAD + BRANCH_GAP));
+      items[items.indexOf(item)] = placed;
+    }
+    y += Math.max(SLOT_H, ...participants.map(item => spacing(item.component).height)) + SLOT_H;
+  }
+  const rest = ast.components.filter(comp => !items.some(item => item.component.id === comp.id));
+  const restPlan = placeConnected(classifyCircuit({ ...ast, components: rest, buses: undefined }, topology), columns, traversal);
+  const bounds = placementBounds(restPlan.items);
+  shiftItems(restPlan.items, LEFT_MARGIN - bounds.minX, y - bounds.minY);
+  return { ...restPlan, items: [...items, ...restPlan.items],
+    signalComps: [...items.map(item => item.component), ...restPlan.signalComps],
+    channelBanks: [], channelOf: new Map(), colLeft: [], colWidth: [], channelHeight: 0,
+    layers: (ast.buses ?? []).map(bus => bus.components) };
+}
+
+function layoutCandidate(ast: CircuitAST, opts?: SchematicLayoutOptions, columns?: number, traversal: "breadth" | "depth" = "breadth"): (AutoLayoutResult & { stats?: SchematicLayoutStats }) | null {
+  if (!ast.components.length) return finalize([], [], [], ast.title ? 24 : 0);
+  if (!Object.keys(ast.pinMap ?? {}).length) return null;
+  const topology = classifyCircuit(ast);
+  const placement = ast.groups?.length || ast.buses?.length
+    ? placeFunctional(topology, columns, traversal) : placeConnected(topology, columns, traversal);
+  return routeCircuit(topology, placement, opts);
 }
 
 /** Evaluate complete drawings, not just distances between un-routed nodes. */

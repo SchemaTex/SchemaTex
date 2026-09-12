@@ -10,9 +10,9 @@
  * an SVG rotation transform around (0,0) and the layout rotates the anchor
  * coordinates accordingly.
  */
+import { escapeXml, line as svgLine, text as svgText } from "../../core/svg";
 import { edgeLabelObstacles, placeLabel, type LabelBox } from "../../core/label-placement";
 import type { CircuitComponentType } from "../../core/types";
-import { escapeXml } from "../../core/svg";
 import { estimateTextWidth } from "../../core/text-metrics";
 
 export interface PinAnchor {
@@ -985,7 +985,7 @@ const IC_BODY_W = 80;
 function icBodyWidth(label: string, sides: IcPinSides): number {
   const left = Math.max(0, ...sides.left.map(pin => estimateTextWidth(pin, 9)));
   const right = Math.max(0, ...sides.right.map(pin => estimateTextWidth(pin, 9)));
-  return Math.max(IC_BODY_W, Math.ceil(estimateTextWidth(label, 12) + 44), Math.ceil(left + right + 16));
+  return Math.max(IC_BODY_W, Math.ceil(estimateTextWidth(label, 12) + 44), Math.ceil(left + right + 16), ...[sides.top, sides.bottom].map(pins => pins.reduce((sum, pin) => sum + estimateTextWidth(pin, 9) + IC_PIN_PITCH, IC_PIN_PITCH)));
 }
 const IC_PIN_PITCH = 16;
 const GENERIC_IC_LEFT = ["1", "2", "3", "4"];
@@ -994,6 +994,8 @@ const GENERIC_IC_RIGHT = ["8", "7", "6", "5"];
 interface IcPinSides {
   left: string[];
   right: string[];
+  top: string[];
+  bottom: string[];
 }
 
 function pinLabels(value: string | undefined, fallback: string[]): string[] {
@@ -1010,6 +1012,8 @@ function resolveIcPinSides(
   return {
     left: pinLabels(attrs?.pins_left, defaultLeft),
     right: pinLabels(attrs?.pins_right, defaultRight),
+    top: pinLabels(attrs?.pins_top, []),
+    bottom: pinLabels(attrs?.pins_bottom, []),
   };
 }
 
@@ -1021,14 +1025,25 @@ export function getGenericIcPinSides(attrs?: Record<string, string>): IcPinSides
   return resolveIcPinSides(GENERIC_IC_LEFT, GENERIC_IC_RIGHT, attrs);
 }
 
+function icBodyHeight(sides: IcPinSides): number {
+  return IC_PIN_PITCH * (Math.max(sides.left.length, sides.right.length, 2) + 1 + Number(!!sides.top.length) + Number(!!sides.bottom.length));
+}
+
+function icEdgePinX(labels: string[], index: number, bodyW: number): number {
+  const widths = labels.map(label => estimateTextWidth(label, 9) + IC_PIN_PITCH);
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  return (bodyW - total) / 2 + widths.slice(0, index).reduce((sum, width) => sum + width, 0) + widths[index] / 2;
+}
+
 function icPinAnchors(
   sides: IcPinSides,
   leftNames?: string[],
   rightNames?: string[],
-  bodyW: number = IC_BODY_W
+  bodyW: number = IC_BODY_W,
+  orderedLabels?: string[]
 ): Record<string, PinAnchor> {
-  const rowCount = Math.max(sides.left.length, sides.right.length, 2);
-  const bodyH = IC_PIN_PITCH * (rowCount + 1);
+  const pinName = (label: string, fallback: string) => normalizePinName(label, orderedLabels?.includes(label) ? `pin_${orderedLabels.indexOf(label) + 1}` : fallback);
+  const bodyH = icBodyHeight(sides);
   const topY = -bodyH / 2;
   const anchors: Record<string, PinAnchor> = {
     start: { x: 0, y: 0 },
@@ -1036,14 +1051,19 @@ function icPinAnchors(
   };
 
   for (let i = 0; i < sides.left.length; i++) {
-    const name = leftNames?.[i] ?? normalizePinName(sides.left[i], `pin_${i + 1}`);
-    anchors[name] = { x: -8, y: topY + IC_PIN_PITCH * (i + 1) };
+    const name = leftNames?.[i] ?? pinName(sides.left[i], `pin_${i + 1}`);
+    anchors[name] = { x: -8, y: topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length)) };
   }
   for (let i = 0; i < sides.right.length; i++) {
     const spicePosition = sides.left.length + sides.right.length - i;
-    const name = rightNames?.[i] ?? normalizePinName(sides.right[i], `pin_${spicePosition}`);
-    anchors[name] = { x: bodyW + 8, y: topY + IC_PIN_PITCH * (i + 1) };
+    const name = rightNames?.[i] ?? pinName(sides.right[i], `pin_${spicePosition}`);
+    anchors[name] = { x: bodyW + 8, y: topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length)) };
   }
+  for (const side of ["top", "bottom"] as const) sides[side].forEach((label, index) => {
+    anchors[pinName(label, `pin_${side}_${index + 1}`)] = {
+      x: icEdgePinX(sides[side], index, bodyW), y: side === "top" ? topY - 8 : -topY + 8,
+    };
+  });
   return anchors;
 }
 
@@ -1067,30 +1087,37 @@ function icSymbol(
       end: { x: IC_BODY_W, y: 0 },
     },
     svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
-      const { left, right } = resolveIcPinSides(defaultLeft, defaultRight, attrs);
-      const n = Math.max(left.length, right.length, 2);
-      const bodyH = IC_PIN_PITCH * (n + 1);
+      const sides = resolveIcPinSides(defaultLeft, defaultRight, attrs);
+      const { left, right } = sides;
+      const bodyH = icBodyHeight(sides);
       const topY = -bodyH / 2;
       const parts: string[] = [];
       const identity = attrs?.ic_label ?? bodyLabel ?? "";
       const labelText = identity === _label ? "" : identity;
       // Keep the identity footprint stable while giving both pin columns room.
       // Paint a body marking only when it differs from the exterior caption.
-      const bodyW = icBodyWidth(identity, { left, right });
+      const bodyW = icBodyWidth(identity, sides);
       parts.push(`<rect x="0" y="${topY}" width="${bodyW}" height="${bodyH}" fill="white" ${BODY}/>`);
       if (labelText) {
         parts.push(`<text x="${(bodyW + Math.max(0, ...left.map(pin => estimateTextWidth(pin, 9))) - Math.max(0, ...right.map(pin => estimateTextWidth(pin, 9)))) / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${escapeXml(labelText)}</text>`);
       }
       for (let i = 0; i < left.length; i++) {
-        const y = topY + IC_PIN_PITCH * (i + 1);
+        const y = topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length));
         parts.push(`<line x1="-8" y1="${y}" x2="0" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="4" y="${y + 3}" class="schematex-circuit-pol">${left[i]}</text>`);
+        parts.push(`<text x="4" y="${y + 3}" class="schematex-circuit-pol">${escapeXml(left[i])}</text>`);
       }
       for (let i = 0; i < right.length; i++) {
-        const y = topY + IC_PIN_PITCH * (i + 1);
+        const y = topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length));
         parts.push(`<line x1="${bodyW}" y1="${y}" x2="${bodyW + 8}" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="${bodyW - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
+        parts.push(`<text x="${bodyW - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${escapeXml(right[i])}</text>`);
       }
+      for (const side of ["top", "bottom"] as const) sides[side].forEach((label, index) => {
+        const x = icEdgePinX(sides[side], index, bodyW);
+        const y = side === "top" ? topY : -topY;
+        const outward = side === "top" ? -1 : 1;
+        parts.push(svgLine({ x1: x, y1: y, x2: x, y2: y + outward * 8, class: "schematex-circuit-wire" }));
+        parts.push(svgText({ x, y: y - outward * 11 + 3, "text-anchor": "middle", class: "schematex-circuit-pol" }, label));
+      });
       return parts.join("");
     },
   };
@@ -1320,7 +1347,7 @@ export function effectiveSymbolDef(type: string, attrs?: Record<string, string>)
     return {
       ...sym,
       length: w,
-      anchors: icPinAnchors(getGenericIcPinSides(attrs), undefined, undefined, w),
+      anchors: icPinAnchors(getGenericIcPinSides(attrs), undefined, undefined, w, attrs?.pins?.split(",").map(label => label.trim())),
     };
   }
   if (type === "terminal_block") {

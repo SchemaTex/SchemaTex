@@ -1161,11 +1161,27 @@ export type CircuitComponentType =
 
 export type CircuitDirection = "right" | "left" | "up" | "down";
 
+export type CircuitPinRole = "input" | "output" | "bidirectional" | "power" | "return";
+
+/** Functional membership, not a rectangle or a coordinate constraint. */
+export interface CircuitGroup {
+  id: string;
+  label?: string;
+  components: string[];
+}
+
+/** Physical sequence on a shared conductor; electrical connectivity remains in nets. */
+export interface CircuitBus {
+  nets: string[];
+  components: string[];
+}
+
 export interface CircuitComponent {
   id: string;
   /** True only when the id is explicitly authored and safe to persist in @overrides. */
   stableId?: boolean;
   componentType: CircuitComponentType;
+  pinRoles?: Record<string, CircuitPinRole>;
   direction: CircuitDirection;
   /** Reference to anchor point of previous/named element: e.g. "R1.end", "origin" */
   at?: string;
@@ -1191,6 +1207,10 @@ export interface CircuitNet {
 
 export interface CircuitAST {
   type: "circuit";
+  groups?: CircuitGroup[];
+  /** Directed functional flow between groups; feedback remains an ordinary net. */
+  flow?: Array<[string, string]>;
+  buses?: CircuitBus[];
   title?: string;
   titleSourceRange?: SourceRange;
   components: CircuitComponent[];

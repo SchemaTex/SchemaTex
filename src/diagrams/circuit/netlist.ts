@@ -27,6 +27,9 @@
  */
 import type {
   CircuitAST,
+  CircuitGroup,
+  CircuitBus,
+  CircuitPinRole,
   CircuitComponent,
   CircuitComponentType,
   CircuitNet,
@@ -155,6 +158,10 @@ export function parseNetlist(
     extraNets: string[];
   }[] = [];
   const warnings: SchematexDiagnostic[] = [];
+  const groups: CircuitGroup[] = [];
+  const flow: Array<[string, string]> = [];
+  const buses: CircuitBus[] = [];
+  const structureLines = new Map<object, number>();
 
   const ensureNet = (name: string): CircuitNet => {
     let n = netByName.get(name);
@@ -181,6 +188,30 @@ export function parseNetlist(
     // which used to hard-fail as `Invalid component id: ";"`.
     const stripped = raw.replace(/[#;].*$/, "").trim();
     if (!stripped) continue;
+
+    const group = /^group\s+(\w+)(?:\s+"([^"]*)")?\s*:\s*(.+)$/i.exec(stripped);
+    const bus = /^bus\s+([^:]+):\s*(.+)$/i.exec(stripped);
+    const path = /^flow\s+(.+)$/i.exec(stripped);
+    if (group) {
+      const entry = { id: group[1], label: group[2], components: group[3].split(/[\s,]+/).filter(Boolean) };
+      groups.push(entry); structureLines.set(entry, lineIdx + 1 + lineOffset); continue;
+    }
+    if (bus) {
+      const entry = { nets: bus[1].split(",").map(n => n.trim()), components: bus[2].split(/\s*->\s*/) };
+      buses.push(entry); structureLines.set(entry, lineIdx + 1 + lineOffset); continue;
+    }
+    if (path) {
+      const sequence = path[1].split(/\s*->\s*/);
+      if (sequence.length < 2) throw new NetlistParseError("flow needs at least two groups", lineIdx + 1 + lineOffset);
+      for (let i = 1; i < sequence.length; i++) {
+        const edge: [string, string] = [sequence[i - 1], sequence[i]];
+        flow.push(edge); structureLines.set(edge, lineIdx + 1 + lineOffset);
+      }
+      continue;
+    }
+    if (/^(group|flow|bus)\b/i.test(stripped)) {
+      throw new NetlistParseError("Expected group id: components, flow a -> b, or bus nets: components in order", lineIdx + 1 + lineOffset);
+    }
 
     const tokens = tokenize(stripped);
     if (tokens.length < 2) {
@@ -262,15 +293,41 @@ export function parseNetlist(
     // Generic ICs have per-instance pin counts and anchors. Persist the DIP
     // side labels into attrs so the symbol renderer and effectiveSymbolDef()
     // build pin legs and wire anchors from the exact same inputs.
+    let pinRoles: Record<string, CircuitPinRole> | undefined;
     if (cType === "generic_ic") {
-      kv.ic_label = kv.label ?? kv.ic_label ?? id;
+      if (kv.pins_top !== undefined || kv.pins_bottom !== undefined) {
+        throw new NetlistParseError("Declare pin roles with pins=\"name:role,...\"; the engine chooses pin sides", lineIdx + 1 + lineOffset);
+      }
+      // Exterior captions do not determine the empty interior of a device box.
+      // An explicit body marking still contributes to the symbol footprint.
+      kv.ic_label = kv.ic_label ?? "";
       let orderedLabels: string[];
       if (kv.pins !== undefined) {
         orderedLabels = kv.pins.split(",").map((label) => label.trim()).filter(Boolean);
         genericIcHasExplicitPins = true;
-        const leftCount = Math.ceil(orderedLabels.length / 2);
-        kv.pins_left = orderedLabels.slice(0, leftCount).join(",");
-        kv.pins_right = orderedLabels.slice(leftCount).reverse().join(",");
+        if (orderedLabels.some(label => label.includes(":"))) {
+          const roles: Record<string, CircuitPinRole> = {};
+          pinRoles = roles;
+          const sides: Record<string, string[]> = { left: [], right: [], top: [], bottom: [] };
+          const roleSide: Record<CircuitPinRole, string> = { input: "left", output: "right", bidirectional: "right", power: "top", return: "bottom" };
+          orderedLabels = orderedLabels.map((entry, index) => {
+            const [label, role, extra] = entry.split(":").map(value => value.trim());
+            if (!label || !role || extra !== undefined || !Object.hasOwn(roleSide, role)) {
+              throw new NetlistParseError(`Pin "${entry}" needs a role: input, output, bidirectional, power, or return`, lineIdx + 1 + lineOffset);
+            }
+            // The membership check above narrows the authored role vocabulary.
+            const pinRole = role as CircuitPinRole;
+            roles[normalizePinName(label, `pin_${index + 1}`)] = pinRole;
+            sides[roleSide[pinRole]].push(label);
+            return label;
+          });
+          kv.pins = orderedLabels.join(",");
+          for (const [side, labels] of Object.entries(sides)) kv[`pins_${side}`] = labels.join(",");
+        } else {
+          const leftCount = Math.ceil(orderedLabels.length / 2);
+          kv.pins_left = orderedLabels.slice(0, leftCount).join(",");
+          kv.pins_right = orderedLabels.slice(leftCount).reverse().join(",");
+        }
       } else if (kv.pins_left !== undefined || kv.pins_right !== undefined) {
         const sides = getGenericIcPinSides(kv);
         kv.pins_left = sides.left.join(",");
@@ -406,6 +463,7 @@ export function parseNetlist(
       id,
       stableId: true,
       componentType: cType,
+      pinRoles,
       direction: explicitDir ?? "right",
       label: kv.label ?? id,
       value: kv.value ?? valueFromTail,
@@ -515,6 +573,48 @@ export function parseNetlist(
     }
   }
 
+  const groupIds = new Set<string>();
+  const owner = new Map<string, string>();
+  for (const group of groups) {
+    if (groupIds.has(group.id)) throw new NetlistParseError(`Duplicate group "${group.id}"`, structureLines.get(group));
+    groupIds.add(group.id);
+    for (const id of group.components) {
+      if (!components.some(c => c.id === id)) throw new NetlistParseError(`Unknown component "${id}" in group "${group.id}"`, structureLines.get(group));
+      if (owner.has(id)) throw new NetlistParseError(`Component "${id}" belongs to more than one group`, structureLines.get(group));
+      owner.set(id, group.id);
+    }
+  }
+  for (const edge of flow) for (const id of edge) {
+    if (!groupIds.has(id)) throw new NetlistParseError(`Unknown group "${id}" in flow`, structureLines.get(edge));
+  }
+  const pending = new Set(groupIds);
+  while (pending.size) {
+    const ready = [...pending].filter(id => !flow.some(([a, b]) => b === id && pending.has(a)));
+    if (!ready.length) throw new NetlistParseError("Functional flow contains a cycle; declare feedback as electrical nets", structureLines.get(flow[0]));
+    ready.forEach(id => pending.delete(id));
+  }
+  const busMembers = new Set<string>();
+  const physicalNets = new Set<string>();
+  for (const bus of buses) {
+    bus.nets = bus.nets.map(net => rootNet(isGroundRef(net) ? "GND" : net));
+    if (bus.components.length < 2 || new Set(bus.components).size !== bus.components.length ||
+        new Set(bus.nets).size !== bus.nets.length) throw new NetlistParseError("A physical bus needs distinct nets and at least two distinct components", structureLines.get(bus));
+    for (const net of bus.nets) {
+      if (physicalNets.has(net)) throw new NetlistParseError(`Net "${net}" occurs on more than one physical bus`, structureLines.get(bus));
+      physicalNets.add(net);
+    }
+    for (const id of bus.components) {
+      if (!components.some(c => c.id === id)) throw new NetlistParseError(`Unknown component "${id}" on bus`, structureLines.get(bus));
+      if (busMembers.has(id)) throw new NetlistParseError(`Component "${id}" occurs on more than one physical bus`, structureLines.get(bus));
+      busMembers.add(id);
+      for (const net of bus.nets) if (!Object.values(pinMap[id] ?? {}).includes(net)) {
+        throw new NetlistParseError(`Bus component "${id}" is not connected to "${net}"`, structureLines.get(bus));
+      }
+    }
+    const owners = new Set(bus.components.map(id => owner.get(id)));
+    if (owners.size > 1) throw new NetlistParseError("A physical bus must be contained in one functional group, or left ungrouped", structureLines.get(bus));
+  }
+
   const nets: CircuitNet[] = Array.from(netByName.values());
 
   const ast: CircuitAST = {
@@ -524,6 +624,9 @@ export function parseNetlist(
     nets,
     pinMap,
     mode: "netlist",
+    groups: groups.length ? groups : undefined,
+    flow: flow.length ? flow : undefined,
+    buses: buses.length ? buses : undefined,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
   if (underspecified.length || overspecified.length) {
