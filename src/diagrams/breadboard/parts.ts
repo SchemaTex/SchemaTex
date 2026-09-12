@@ -111,18 +111,17 @@ const RESISTOR: PartSpec = {
   body: (part, w, h) => {
     const bands = resistorBands(part.args.value);
     const cy = h / 2;
-    const bodyW = w * 0.55;
-    const bodyX = (w - bodyW) / 2;
-    const lead1 = pathShape(`M 0 ${cy} L ${bodyX} ${cy}`, { class: "lt-bb-lead" });
-    const lead2 = pathShape(`M ${bodyX + bodyW} ${cy} L ${w} ${cy}`, { class: "lt-bb-lead" });
-    const body = rectShape(bodyX, cy - 4, bodyW, 8, { class: "lt-bb-resistor", rx: 3 });
-    const bandW = 2;
-    const bandStart = bodyX + bodyW * 0.18;
-    const bandGap = (bodyW * 0.64) / Math.max(1, bands.length - 1);
-    const bandEls = bands.map((color, i) =>
-      rectShape(bandStart + i * bandGap - bandW / 2, cy - 4, bandW, 8, { fill: color })
-    ).join("");
-    return lead1 + lead2 + body + bandEls;
+    // A 1/4 W package keeps its physical size; only the leads follow the hole span.
+    const bw = Math.min(2.55 * PITCH, w * 0.8), x = (w - bw) / 2;
+    const parts = [lineShape(0, cy, w, cy, { class: "lt-bb-lead" }),
+      rectShape(x, cy - 5, bw, 10, { class: "lt-bb-resistor", rx: 5 })];
+    for (const cx of [x + 5, x + bw - 5]) parts.push(el("ellipse", { cx, cy, rx: 5.5, ry: 6, class: "lt-bb-resistor" }));
+    parts.push(rectShape(x + 4, cy - 4.5, bw - 8, 9, { fill: "#DCC39A" }));
+    for (const [i, at] of [0.21, 0.37, 0.53, 0.80].entries()) {
+      parts.push(rectShape(x + bw * at - 1.5, cy - 5, 3, 10, { fill: bands[i]! }));
+    }
+    parts.push(rectShape(x + 4, cy - 3.5, bw - 8, 1.5, { fill: "white", opacity: 0.28, rx: 0.75 }));
+    return parts.join("");
   },
 };
 
@@ -130,7 +129,7 @@ const LED: PartSpec = {
   kind: "led",
   category: "grid",
   width: PITCH,
-  height: PITCH,
+  height: 2.3 * PITCH,
   pins: [
     { name: "anode", x: 0, y: 0 },
     { name: "cathode", x: PITCH, y: 0 },
@@ -141,17 +140,14 @@ const LED: PartSpec = {
       red: "#dc2626", green: "#16a34a", blue: "#2563eb",
       yellow: "#facc15", white: "#f3f4f6", orange: "#f97316",
     } as Record<string, string>)[color] ?? "#dc2626";
-    const cx = w / 2;
-    const cy = h / 2 - 4;
+    const cx = w / 2, cy = h / 2;
+    const r = 5 / 2.54 * PITCH / 2, flange = 5.8 / 2.54 * PITCH / 2;
+    const flat = r + 0.5, half = Math.sqrt(flange * flange - flat * flat);
     return [
-      // Leads: anode = long (left), cathode = short (right)
-      pathShape(`M 0 ${h / 2} L ${cx - 5} ${cy + 1}`, { class: "lt-bb-lead" }),
-      pathShape(`M ${w} ${h / 2} L ${cx + 5} ${cy + 3}`, { class: "lt-bb-lead" }),
-      circShape(cx, cy, 6, { fill, stroke: "#0f172a", "stroke-width": 1, opacity: 0.92 }),
-      // highlight
-      circShape(cx - 1.5, cy - 1.5, 1.6, { fill: "#fff", opacity: 0.6 }),
-      // cathode flat-flag (small bar near right lead)
-      lineShape(cx + 4, cy - 4, cx + 4, cy + 4, { stroke: "#0f172a", "stroke-width": 1.2 }),
+      lineShape(0, cy, w, cy, { class: "lt-bb-lead" }),
+      pathShape(`M ${cx + flat} ${cy - half} L ${cx + flat} ${cy + half} A ${flange} ${flange} 0 1 1 ${cx + flat} ${cy - half} Z`, { fill, stroke: "#1F2328", "stroke-width": 0.8 }),
+      circShape(cx, cy, r, { fill }),
+      el("ellipse", { cx: cx - r * 0.35, cy: cy - r * 0.35, rx: r * 0.35, ry: r * 0.2, fill: "white", opacity: 0.5, transform: `rotate(-35 ${cx} ${cy})` }),
     ].join("");
   },
 };
@@ -225,23 +221,39 @@ const BUTTON: PartSpec = {
   kind: "button",
   category: "grid",
   width: 2 * PITCH,
-  height: 5 * PITCH,
+  height: 3 * PITCH,
   pins: [
-    // tactile: 4 leads at ±1 col / ±2 rows. Pin1=top-left, Pin2=top-right, Pin3=bottom-left, Pin4=bottom-right
     { name: "1", x: 0, y: 0 },
     { name: "2", x: 2 * PITCH, y: 0 },
-    { name: "3", x: 0, y: 5 * PITCH },
-    { name: "4", x: 2 * PITCH, y: 5 * PITCH },
+    { name: "3", x: 0, y: 3 * PITCH },
+    { name: "4", x: 2 * PITCH, y: 3 * PITCH },
   ],
   straddlesTrough: true,
   body: (_part, w, h) => {
-    const bx = w / 2 - 9;
-    const by = h / 2 - 9;
+    const side = 6 / 2.54 * PITCH, cx = w / 2, cy = h / 2;
+    const bx = cx - side / 2, by = cy - side / 2;
     return [
-      rectShape(bx, by, 18, 18, { class: "lt-bb-button" }),
-      circShape(w / 2, h / 2, 5, { fill: "#1f2937" }),
+      ...[0, w].flatMap(x => [lineShape(x, 0, x, by, { class: "lt-bb-lead" }), lineShape(x, h, x, by + side, { class: "lt-bb-lead" })]),
+      rectShape(bx, by, side, side, { class: "lt-bb-button", rx: 2 }),
+      ...[-1, 1].flatMap(dx => [-1, 1].map(dy => circShape(cx + dx * (side / 2 - 4.8), cy + dy * (side / 2 - 4.8), 1.5, { fill: "#7D8288" }))),
+      circShape(cx, cy, 3.5 / 2.54 * PITCH / 2, { fill: "#45494F", stroke: "#1A1B1E", "stroke-width": 0.8 }),
+      circShape(cx - 1, cy - 1, 6.5, { fill: "#555A62" }),
     ].join("");
   },
+};
+
+const TRIMMER: PartSpec = {
+  kind: "potentiometer", category: "module", width: 6.99 / 2.54 * PITCH, height: 6.6 / 2.54 * PITCH + 8,
+  pins: [0, 1, 2].map(i => ({ name: String(i + 1), x: (6.99 / 2.54 * PITCH - 2 * PITCH) / 2 + i * PITCH, y: 6.6 / 2.54 * PITCH + 8 })),
+  body: (_part, w, h) => [
+    ...[0, 1, 2].map(i => lineShape((w - 2 * PITCH) / 2 + i * PITCH, h - 8, (w - 2 * PITCH) / 2 + i * PITCH, h, { class: "lt-bb-lead" })),
+    rectShape(0, 0, w, h - 8, { fill: "#2E64AE", stroke: "#1D4379", "stroke-width": 0.8, rx: 3 }),
+    circShape(w / 2, (h - 8) / 2, 12.4, { fill: "#F1ECDF", stroke: "#BDB39B", "stroke-width": 0.8 }),
+    el("g", { transform: `rotate(30 ${w / 2} ${(h - 8) / 2})` }, [
+      rectShape(w / 2 - 8, (h - 8) / 2 - 1.2, 16, 2.4, { fill: "#7A705C", rx: 0.8 }),
+      rectShape(w / 2 - 1.2, (h - 8) / 2 - 8, 2.4, 16, { fill: "#7A705C", rx: 0.8 }),
+    ]),
+  ].join(""),
 };
 
 function dipSpec(): PartSpec {
@@ -620,7 +632,7 @@ export const PART_CATALOG: Record<BreadboardPartKind, PartSpec> = {
   "mcu-nano": mcuSpec("mcu-nano", "#0d9488", "Arduino Nano", NANO_SLOTS, { width: 90, height: 180, cornerR: 4 }),
   "mcu-esp32": mcuSpec("mcu-esp32", "#1e293b", "ESP32 DevKit", ESP32_SLOTS, { width: 110, height: 180, cornerR: 4 }),
   "mcu-pico": mcuSpec("mcu-pico", "#1e3a8a", "Raspberry Pi Pico", PICO_SLOTS, { width: 100, height: 180, cornerR: 4 }),
-  potentiometer: moduleSpec("potentiometer", 54, 46, "#eab308", ["1", "2", "3"], "POT"),
+  potentiometer: TRIMMER,
   "sensor-hcsr04": moduleSpec("sensor-hcsr04", 100, 60, "#1e3a8a", ["VCC", "TRIG", "ECHO", "GND"], "HC-SR04"),
   "sensor-dht11": moduleSpec("sensor-dht11", 70, 60, "#1e40af", ["VCC", "DATA", "GND"], "DHT11"),
   "sensor-dht22": moduleSpec("sensor-dht22", 70, 60, "#1e40af", ["VCC", "DATA", "GND"], "DHT22"),

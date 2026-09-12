@@ -23,9 +23,11 @@ import {
   escapeXml,
 } from "../../core/svg";
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
+import { placeLabel, edgeLabelObstacles, labelPathPoints, type LabelBox } from "../../core/label-placement";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { resolveSceneTitle } from "../../core/title-scene";
 import { partSpec } from "./parts";
-import { breadboardCoordXY, layoutBreadboard, BB_CONST } from "./layout";
+import { breadboardCoordXY, breadboardPartBounds, layoutBreadboard, BB_CONST } from "./layout";
 import { parseBreadboard } from "./parser";
 
 const WIRE_COLOR_MAP: Record<string, string> = {
@@ -41,7 +43,7 @@ const WIRE_COLOR_MAP: Record<string, string> = {
   grey: "#64748b",
 };
 
-function buildCss(t: BaseTheme): string {
+export function breadboardStylesheet(t: BaseTheme): string {
   return `
 .lt-bb { font-family: system-ui, -apple-system, sans-serif; }
 .lt-bb-title { font: 700 16px sans-serif; fill: ${t.text}; }
@@ -56,9 +58,9 @@ function buildCss(t: BaseTheme): string {
 .lt-bb-col-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; }
 .lt-bb-row-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; dominant-baseline: middle; }
 .lt-bb-lead { stroke: #94a3b8; stroke-width: 1.6; fill: none; stroke-linecap: round; }
-.lt-bb-resistor { fill: #f5e9c8; stroke: #92400e; stroke-width: 0.7; }
+.lt-bb-resistor { fill: #DCC39A; stroke: #A88B5C; stroke-width: 0.7; }
 .lt-bb-cap-can { fill: #94a3b8; stroke: #1f2937; stroke-width: 0.8; }
-.lt-bb-button { fill: #475569; stroke: #1e293b; stroke-width: 0.8; rx: 1; }
+.lt-bb-button { fill: #2B2D31; stroke: #121314; stroke-width: 0.8; }
 .lt-bb-dip-body { fill: #1f2937; stroke: #475569; stroke-width: 0.8; }
 .lt-bb-dip-silk { font: 600 8px sans-serif; fill: #f3f4f6; }
 .lt-bb-pin-label { font: 6.5px sans-serif; fill: #f3f4f6; dominant-baseline: middle; }
@@ -66,7 +68,8 @@ function buildCss(t: BaseTheme): string {
 .lt-bb-board-title { font: 600 9px sans-serif; fill: #f3f4f6; }
 .lt-bb-board-title-sensor { font: 600 9px sans-serif; fill: #f3f4f6; }
 .lt-bb-part-label { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; }
-.lt-bb-wire { fill: none; stroke-width: 2.4; stroke-linecap: round; opacity: 0.95; }
+.lt-bb-wire { fill: none; stroke-width: 3.3; stroke-linecap: round; }
+.lt-bb-wire-edge { fill: none; stroke: #383B40; stroke-width: 5; stroke-linecap: round; }
 .lt-bb-wire-dot { stroke: #0f172a; stroke-width: 0.6; }
 `.trim();
 }
@@ -175,14 +178,16 @@ function editableCoord(coord: BreadboardCoord): { kind: "hole" | "rail"; col: nu
     : { kind: "rail", col: coord.col, rail: coord.rail };
 }
 
-function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[]): string {
+function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[], labelBox?: LabelBox): string {
   const spec = partSpec(lp.part.kind, lp.part.args);
   const body = spec.body(lp.part, lp.width, lp.height);
+  const bounds = breadboardPartBounds(lp);
+  const twoTerminal = spec.category === "grid" && spec.pins.length === 2;
   const labelText = lp.part.label ?? defaultPartLabel(lp);
   const labelEl = labelText
     ? textEl({
-        x: lp.x + lp.width / 2,
-        y: spec.category === "side" ? lp.y - 6 : lp.y - 4,
+        x: labelBox ? labelBox.x + labelBox.width / 2 : bounds.x + bounds.width / 2,
+        y: labelBox ? labelBox.y + 9 : bounds.y - 6,
         class: "lt-bb-part-label",
       }, labelText)
     : "";
@@ -208,7 +213,7 @@ function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, sc
       kind: "node",
       semanticId: lp.part.id,
       label: lp.part.label ?? lp.part.id,
-      bbox: { x: lp.x, y: lp.y, width: lp.width, height: lp.height },
+      bbox: bounds,
       positionSource: {
         kind: "breadboard",
         range: lp.part.placementSourceRange!,
@@ -232,7 +237,7 @@ function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, sc
       "data-sx-owner": scene && canMove ? key : undefined,
     },
     [
-      group({ transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})` }, [body]),
+      group({ transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})${twoTerminal ? ` rotate(${lp.rotation}) translate(0 ${-lp.height / 2})` : ""}` }, [body]),
       labelEl,
     ],
   );
@@ -289,14 +294,14 @@ function renderWire(lw: BreadboardLayoutResult["wires"][number], scene?: SceneIt
       "data-sx-live-start": from,
       "data-sx-live-end": to,
     } : {}),
-  }, [path, dot1, dot2]);
+  }, [pathEl({ d: lw.path, class: "lt-bb-wire-edge", "data-sx-live-edge": scene ? "true" : undefined }), path, dot1, dot2]);
 }
 
 // ─── Public API ─────────────────────────────────────────────
 
 export function renderBreadboardLayout(layout: BreadboardLayoutResult, config?: RenderConfig): string {
   const theme = resolveBaseTheme(config?.theme ?? "default");
-  const css = buildCss(theme);
+  const css = breadboardStylesheet(theme);
 
   const titleStr = layout.ast.title ?? "Breadboard";
 
@@ -308,7 +313,20 @@ export function renderBreadboardLayout(layout: BreadboardLayoutResult, config?: 
     : "";
 
   const substrate = renderSubstrate(layout.substrate);
-  const parts = layout.parts.map((part) => renderPart(part, layout.substrate, config?.__scene)).join("\n");
+  const occupied: LabelBox[] = [...layout.parts.map(breadboardPartBounds), ...layout.wires.flatMap(wire => edgeLabelObstacles(labelPathPoints(wire.path)))];
+  if (layout.ast.title) occupied.push({ x: 0, y: 0, width: layout.width, height: 30 });
+  const parts = layout.parts.map(part => {
+    const value = part.part.label ?? defaultPartLabel(part);
+    const bounds = breadboardPartBounds(part);
+    const labelBox = value ? placeLabel({ x: bounds.x + bounds.width / 2, y: bounds.y - 10 },
+      { width: estimateTextWidth(value, 9), height: 11 }, occupied, { x: 1, y: 0 }) : undefined;
+    if (labelBox) {
+      labelBox.x = Math.max(8, Math.min(labelBox.x, layout.width - labelBox.width - 8));
+      labelBox.y = Math.max(layout.ast.title ? 38 : 8, Math.min(labelBox.y, layout.height - labelBox.height - 8));
+      occupied.push(labelBox);
+    }
+    return renderPart(part, layout.substrate, config?.__scene, labelBox);
+  }).join("\n");
   const wires = layout.wires.map((wire, index) => renderWire(wire, config?.__scene, index)).join("\n");
 
   const inner = [

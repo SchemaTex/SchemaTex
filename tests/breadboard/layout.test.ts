@@ -1,8 +1,41 @@
 import { describe, it, expect } from "vitest";
 import { parseBreadboard } from "../../src/diagrams/breadboard/parser";
-import { layoutBreadboard } from "../../src/diagrams/breadboard/layout";
+import { breadboardCoordXY, layoutBreadboard } from "../../src/diagrams/breadboard/layout";
 
 describe("breadboard layout", () => {
+  it("keeps span terminals on their declared holes, including reversed and vertical spans", () => {
+    const layout = layoutBreadboard(parseBreadboard(`breadboard
+parts
+  r1: resistor 220 @3c..10c
+  d1: led red @12f..12e
+  r2: resistor 1k @18d..14b
+  pot: pot @1a
+wires
+  r1:2 --red-- d1:anode
+`));
+    const hole = (col: number, row: "b" | "c" | "d" | "e" | "f") => breadboardCoordXY(layout.substrate, { kind: "hole", col, row });
+    expect(layout.parts[0]!.pins["1"]).toEqual(hole(3, "c"));
+    expect(layout.parts[0]!.pins["2"]).toEqual(hole(10, "c"));
+    expect(layout.parts[1]!.pins.anode).toEqual(hole(12, "f"));
+    expect(layout.parts[1]!.pins.cathode).toEqual(hole(12, "e"));
+    expect(layout.parts[2]!.pins["2"]).toEqual(hole(14, "b"));
+    expect(layout.wires[0]!.fromXY).toEqual(hole(10, "c"));
+    expect(layout.wires[0]!.toXY).toEqual(hole(12, "f"));
+  });
+
+  it("puts tactile switch legs across the trough and trimmer legs on consecutive holes", () => {
+    const layout = layoutBreadboard(parseBreadboard(`breadboard
+parts
+  sw: button @9e
+  pot: pot @18e
+`));
+    const hole = (col: number, row: "e" | "f") => breadboardCoordXY(layout.substrate, { kind: "hole", col, row });
+    expect(layout.parts[0]!.pins["1"]).toEqual(hole(9, "e"));
+    expect(layout.parts[0]!.pins["4"]).toEqual(hole(11, "f"));
+    expect(layout.parts[1]!.pins["1"]).toEqual(hole(18, "e"));
+    expect(layout.parts[1]!.pins["3"]).toEqual(hole(20, "e"));
+  });
+
   it("places MCU to the left of substrate", () => {
     const ast = parseBreadboard(`breadboard
 parts

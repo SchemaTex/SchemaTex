@@ -23,7 +23,7 @@ import { PIN_ALIASES } from "./pin-aliases";
 export const BB_CONST = {
   PITCH: HOLE_PITCH,
   RAIL_HEIGHT: 18,
-  TROUGH: HOLE_PITCH,
+  TROUGH: 2 * HOLE_PITCH,
   BOARD_PAD_X: 24,
   BOARD_PAD_Y: 16,
   ROW_LABEL_W: 14,
@@ -60,7 +60,7 @@ function buildSubstrate(form: BreadboardAst["board"], originX: number, originY: 
   const height = innerH + BB_CONST.BOARD_PAD_Y * 2;
   // Trough sits between row e and row f. Top rails (if any) → col labels → rows a..e → trough → rows f..j → col labels → bottom rails.
   const topRailsH = hasRails ? BB_CONST.RAIL_HEIGHT : 0;
-  const troughY = y + BB_CONST.BOARD_PAD_Y + topRailsH + BB_CONST.COL_LABEL_H + 5 * PITCH + PITCH / 2;
+  const troughY = y + BB_CONST.BOARD_PAD_Y + topRailsH + BB_CONST.COL_LABEL_H + 5 * PITCH + BB_CONST.TROUGH / 2;
   return {
     x, y, width, height, pitch: PITCH, cols, hasRails, railsBreak,
     troughY, troughHeight: BB_CONST.TROUGH,
@@ -176,22 +176,34 @@ function placePart(
     return { part, x, y, width: spec.width, height: spec.height, rotation: 0, pins };
   }
 
-  // Grid part: pins[0] sits at anchor.
-  const x = anchorXY.x;
-  let y = anchorXY.y;
-  // For DIPs / button which straddle trough: anchor is row e, top edge — body extends across trough.
-  if (spec.straddlesTrough) {
-    // Center body so pin row 1 (y=0) stays at anchor row, pin row 2 (y=h) reaches the matching row across trough.
-    // anchor y is the *top* pin row; the layout coord anchor must be on row e (or symmetrical).
+  // Two-terminal grid parts use the declared holes as their actual endpoints.
+  // Their body is drawn horizontally and rotated with the terminal vector.
+  if (spec.pins.length === 2) {
+    const end = part.placement.kind === "span"
+      ? holeXY(sub, part.placement.to)
+      : { x: anchorXY.x + spec.width, y: anchorXY.y };
+    const dx = end.x - anchorXY.x, dy = end.y - anchorXY.y;
+    const pins = { [spec.pins[0]!.name]: anchorXY, [spec.pins[1]!.name]: end };
+    addPinAliases(part.kind, pins);
+    return { part, ...anchorXY, width: Math.hypot(dx, dy), height: spec.height,
+      rotation: Math.atan2(dy, dx) * 180 / Math.PI, pins };
   }
-  // Adjust y so pin centerline aligns with anchor when part is one-row tall.
-  if (spec.height === BB_CONST.PITCH) {
-    y = anchorXY.y - spec.height / 2;
-  }
+  const x = anchorXY.x, y = anchorXY.y;
   const pins: Record<string, { x: number; y: number }> = {};
   for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
   addPinAliases(part.kind, pins);
   return { part, x, y, width: spec.width, height: spec.height, rotation: 0, pins };
+}
+
+/** Canvas bounds of a part, including the rotation around its first terminal. */
+export function breadboardPartBounds(lp: BreadboardLayoutPart): { x: number; y: number; width: number; height: number } {
+  const spec = partSpec(lp.part.kind, lp.part.args);
+  if (spec.category !== "grid" || spec.pins.length !== 2) return { x: lp.x, y: lp.y, width: lp.width, height: lp.height };
+  const angle = lp.rotation * Math.PI / 180, cos = Math.cos(angle), sin = Math.sin(angle);
+  const corners = [[0, -lp.height / 2], [lp.width, -lp.height / 2], [lp.width, lp.height / 2], [0, lp.height / 2]];
+  const xs = corners.map(([x, y]) => lp.x + x! * cos - y! * sin);
+  const ys = corners.map(([x, y]) => lp.y + x! * sin + y! * cos);
+  return { x: Math.min(...xs), y: Math.min(...ys), width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys) };
 }
 
 // ─── Wire endpoint resolution ───────────────────────────────
@@ -343,11 +355,12 @@ function endpointXY(
   return { x: pin.x, y: pin.y };
 }
 
-function bezierPath(p1: { x: number; y: number }, p2: { x: number; y: number }, via?: { x: number; y: number }): string {
+function bezierPath(p1: { x: number; y: number }, p2: { x: number; y: number }, via?: { x: number; y: number }, clear = true): string {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist < 1) return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
+  // Aligned holes accept a straight jumper; other connections retain a flexible arc.
+  if (dist < 1 || (!via && clear && (dx === 0 || dy === 0))) return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
   // Perpendicular unit vector
   const nx = -dy / dist;
   const ny = dx / dist;
@@ -423,10 +436,11 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
   let maxX = sub.x + sub.width;
   let maxY = sub.y + sub.height;
   for (const lp of parts) {
-    minX = Math.min(minX, lp.x);
-    minY = Math.min(minY, lp.y);
-    maxX = Math.max(maxX, lp.x + lp.width);
-    maxY = Math.max(maxY, lp.y + lp.height);
+    const bounds = breadboardPartBounds(lp);
+    minX = Math.min(minX, bounds.x);
+    minY = Math.min(minY, bounds.y - 16);
+    maxX = Math.max(maxX, bounds.x + bounds.width);
+    maxY = Math.max(maxY, bounds.y + bounds.height);
   }
   for (const lw of wires) {
     minX = Math.min(minX, lw.fromXY.x, lw.toXY.x);
@@ -436,7 +450,8 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
   }
   // Translate everything so origin is at (MARGIN, MARGIN).
   const shiftX = BB_CONST.MARGIN - minX;
-  const shiftY = BB_CONST.MARGIN - minY;
+  const titleHeight = ast.title ? 30 : 0;
+  const shiftY = BB_CONST.MARGIN + titleHeight - minY;
   if (shiftX !== 0 || shiftY !== 0) {
     sub.x += shiftX;
     sub.y += shiftY;
@@ -444,9 +459,9 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     for (const lp of parts) {
       lp.x += shiftX;
       lp.y += shiftY;
-      for (const k of Object.keys(lp.pins)) {
-        lp.pins[k]!.x += shiftX;
-        lp.pins[k]!.y += shiftY;
+      for (const point of new Set(Object.values(lp.pins))) {
+        point.x += shiftX;
+        point.y += shiftY;
       }
     }
     for (const lw of wires) {
@@ -461,10 +476,16 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     const lw = wires[i]!;
     const wire = ast.wires[i]!;
     const viaXY = wire.via ? holeXY(sub, wire.via) : undefined;
-    lw.path = bezierPath(lw.fromXY, lw.toXY, viaXY);
+    const clear = parts.every(part => {
+      const b = breadboardPartBounds(part), a = lw.fromXY, z = lw.toXY;
+      if (a.x === z.x) return a.x <= b.x || a.x >= b.x + b.width || Math.max(a.y, z.y) <= b.y || Math.min(a.y, z.y) >= b.y + b.height;
+      if (a.y === z.y) return a.y <= b.y || a.y >= b.y + b.height || Math.max(a.x, z.x) <= b.x || Math.min(a.x, z.x) >= b.x + b.width;
+      return true;
+    });
+    lw.path = bezierPath(lw.fromXY, lw.toXY, viaXY, clear);
   }
   const width = (maxX - minX) + BB_CONST.MARGIN * 2;
-  const height = (maxY - minY) + BB_CONST.MARGIN * 2;
+  const height = (maxY - minY) + BB_CONST.MARGIN * 2 + titleHeight;
 
   return { ast, substrate: sub, parts, wires, width, height };
 }
