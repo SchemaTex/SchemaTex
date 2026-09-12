@@ -46,19 +46,32 @@
 <path d="M 408.3056 362 L 408.3056 472" data-from="bus_mv" data-to="brk3" class="lt-sld-wire"/>
 <path d="M 408.3056 508 L 408.3056 570" class="lt-sld-wire-clearance"/>
 <path d="M 408.3056 508 L 408.3056 570" data-from="brk3" data-to="feeder3" class="lt-sld-wire"/>
-<g transform="translate(274.4234, 56)" data-type="utility" data-id="utility"><g><circle cx="0" cy="0" r="16" class="lt-sld-fill"/>
-<path d="M -8 0 Q -4 -8 0 0 Q 4 8 8 0" class="lt-sld-stroke" fill="none"/>
-<line x1="0" y1="-24" x2="0" y2="-16" class="lt-sld-stroke"/>
-<line x1="0" y1="16" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<g transform="translate(274.4234, 56)" data-type="utility" data-id="utility"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<g><line x1="0" y1="-24" x2="0" y2="-17" class="lt-sld-stroke"/>
+<line x1="0" y1="17" x2="0" y2="18" class="lt-sld-stroke"/>
+<circle cx="0" cy="0" r="17" class="lt-sld-fill"/>
+<path d="M -9 0 Q -4.5 -9 0 0 T 9 0" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-fine"/></g></g></g>
 <text x="306.4234" y="53" class="lt-sld-id-side">Grid 138 kV</text>
-<g transform="translate(274.4234, 270)" data-type="transformer" data-id="xfmr1"><g><path d="M -12 -18 A 4 4 0 0 1 -4 -18 A 4 4 0 0 1 4 -18 A 4 4 0 0 1 12 -18" class="lt-sld-stroke" fill="none"/>
-<line x1="-14" y1="-8" x2="14" y2="-8" class="lt-sld-stroke"/>
-<line x1="-14" y1="-4" x2="14" y2="-4" class="lt-sld-stroke"/>
-<path d="M -12 18 A 4 4 0 0 0 -4 18 A 4 4 0 0 0 4 18 A 4 4 0 0 0 12 18" class="lt-sld-stroke" fill="none"/>
-<circle cx="-10" cy="-14" r="2" class="lt-sld-dot"/>
-<circle cx="10" cy="14" r="2" class="lt-sld-dot"/>
-<line x1="0" y1="-24" x2="0" y2="-22" class="lt-sld-stroke"/>
-<line x1="0" y1="22" x2="0" y2="24" class="lt-sld-stroke"/></g></g>
+<g transform="translate(274.4234, 270)" data-type="transformer" data-id="xfmr1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-24" x2="0" y2="-15.2" class="lt-sld-stroke"/>
+<line x1="0" y1="15.2" x2="0" y2="24" class="lt-sld-stroke"/>
+<path d="M -17.1 -9.5 A 5.7 5.7 0 0 1 -5.7 -9.5 A 5.7 5.7 0 0 1 5.7 -9.5 A 5.7 5.7 0 0 1 17.1 -9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -17.1 9.5 A 5.7 5.7 0 0 0 -5.7 9.5 A 5.7 5.7 0 0 0 5.7 9.5 A 5.7 5.7 0 0 0 17.1 9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -20.9 -2.85 L 20.9 -2.85 M -20.9 2.85 L 20.9 2.85" class="lt-sld-stroke lt-sld-ansi-core"/></g></g>
 <text x="310.4234" y="267" class="lt-sld-id-side">15 MVA</text>
 <line x1="226.4234" y1="142" x2="322.4234" y2="142" class="lt-sld-bus" data-id="bus_hv"/>
 <text x="173.61339999999998" y="139" class="lt-sld-id-side">bus_hv</text>
@@ -66,30 +79,87 @@
 <line x1="92.5412" y1="362" x2="456.3056" y2="362" class="lt-sld-bus" data-id="bus_mv"/>
 <text x="36" y="359" class="lt-sld-id-side">bus_mv</text>
 <text x="36" y="373" class="lt-sld-id-side">13.8 kV</text>
-<g transform="translate(140.5412, 490)" data-type="breaker" data-id="brk1"><g><line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="0" y2="18" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="11" y2="-7" class="lt-sld-stroke-thick" data-sld-role="blade"/>
-<circle cx="0" cy="8" r="1.8" class="lt-sld-dot"/>
-<path d="M 0 -10 Q 7 -10 7 -16" class="lt-sld-stroke"/></g></g>
+<g transform="translate(140.5412, 490)" data-type="breaker" data-id="brk1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
 <text x="172.5412" y="487" class="lt-sld-id-side">brk1</text>
 <text x="172.5412" y="501" class="lt-sld-rating-side">1200 A</text>
-<g transform="translate(274.4234, 490)" data-type="breaker" data-id="brk2"><g><line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="0" y2="18" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="11" y2="-7" class="lt-sld-stroke-thick" data-sld-role="blade"/>
-<circle cx="0" cy="8" r="1.8" class="lt-sld-dot"/>
-<path d="M 0 -10 Q 7 -10 7 -16" class="lt-sld-stroke"/></g></g>
+<g transform="translate(274.4234, 490)" data-type="breaker" data-id="brk2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
 <text x="306.4234" y="487" class="lt-sld-id-side">brk2</text>
 <text x="306.4234" y="501" class="lt-sld-rating-side">1200 A</text>
-<g transform="translate(408.3056, 490)" data-type="breaker" data-id="brk3"><g><line x1="0" y1="-18" x2="0" y2="-10" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="0" y2="18" class="lt-sld-stroke"/>
-<line x1="0" y1="8" x2="11" y2="-7" class="lt-sld-stroke-thick" data-sld-role="blade"/>
-<circle cx="0" cy="8" r="1.8" class="lt-sld-dot"/>
-<path d="M 0 -10 Q 7 -10 7 -16" class="lt-sld-stroke"/></g></g>
+<g transform="translate(408.3056, 490)" data-type="breaker" data-id="brk3"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
 <text x="440.3056" y="487" class="lt-sld-id-side">brk3</text>
 <text x="440.3056" y="501" class="lt-sld-rating-side">1200 A</text>
-<g transform="translate(140.5412, 582)" data-type="load" data-id="feeder1"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<g transform="translate(140.5412, 582)" data-type="load" data-id="feeder1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
 <text x="115.239" y="610" class="lt-sld-id-side">Feeder 1</text>
-<g transform="translate(274.4234, 582)" data-type="load" data-id="feeder2"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<g transform="translate(274.4234, 582)" data-type="load" data-id="feeder2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
 <text x="249.12120000000002" y="610" class="lt-sld-id-side">Feeder 2</text>
-<g transform="translate(408.3056, 582)" data-type="load" data-id="feeder3"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<g transform="translate(408.3056, 582)" data-type="load" data-id="feeder3"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
 <text x="383.00340000000006" y="610" class="lt-sld-id-side">Feeder 3</text></g></svg>

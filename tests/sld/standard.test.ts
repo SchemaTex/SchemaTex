@@ -39,9 +39,9 @@ describe("header parsing", () => {
 });
 
 describe("breaker glyph differs by standard", () => {
-  test("ANSI breaker draws the contact-arc (Q quarter-circle)", () => {
+  test("ANSI breaker draws the contact-arc (A 4.5 4.5 hook)", () => {
     const svg = renderSymbol("breaker", undefined, "ansi");
-    expect(svg).toMatch(/<path[^>]*d="[^"]*Q/);
+    expect(svg).toMatch(/<path[^>]*d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125"/);
   });
   test("IEC breaker drops the arc and adds the × breaking mark", () => {
     const svg = renderSymbol("breaker", undefined, "iec");
@@ -52,8 +52,8 @@ describe("breaker glyph differs by standard", () => {
 });
 
 describe("transformer glyph differs by standard", () => {
-  test("ANSI transformer uses coil humps (arc A 4 4)", () => {
-    expect(render("ansi")).toContain("A 4 4");
+  test("ANSI transformer uses coil humps (arc A 3 3)", () => {
+    expect(render("ansi")).toContain("A 3 3");
   });
   test("IEC transformer uses two interlinked circles (r=11)", () => {
     const svg = render("iec");
@@ -66,7 +66,7 @@ describe("fuse glyph differs by standard", () => {
   test("IEC fuse adds the conductor line through the body", () => {
     const ansi = render("ansi");
     const iec = render("iec");
-    // crude proxy: IEC fuse body is 22px tall (rect height 22), ANSI is 20
+    // crude proxy: IEC fuse body is 22px tall (rect height 22), ANSI is 30
     expect(iec).toContain('height="22"');
     expect(ansi).not.toContain('height="22"');
   });

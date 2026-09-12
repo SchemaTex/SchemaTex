@@ -8,9 +8,13 @@
  * straight into the page.
  */
 import type { DiagramType, SLDNodeType, LogicGateType } from "./core/types";
+import { resolveBaseTheme, resolveIndustrialTheme, resolveFloorplanTheme } from "./core/theme";
+import { circuitStylesheet } from "./diagrams/circuit/renderer";
+import { pidStylesheet } from "./diagrams/pid/renderer";
+import { floorplanStylesheet } from "./diagrams/floorplan/renderer";
 import { SYMBOLS } from "./diagrams/circuit/symbols";
 import { renderSymbol as sldRenderSymbol, geometryFor } from "./diagrams/sld/symbols";
-import { renderEquip, GEOMETRY as PID_GEOMETRY } from "./diagrams/pid/symbols";
+import { renderEquip, renderInstrument, GEOMETRY as PID_GEOMETRY } from "./diagrams/pid/symbols";
 import { iconNames, renderIcon } from "./diagrams/flowchart/icons";
 import { getGateGeometry } from "./diagrams/logic/symbols";
 import { drawDeviceIcon, iconSize } from "./diagrams/network/symbols";
@@ -21,6 +25,9 @@ import {
   SAFETY_KINDS,
   type SafetyKind,
 } from "./diagrams/floorplan/types";
+
+import { PART_CATALOG } from "./diagrams/breadboard/parts";
+import { breadboardStylesheet } from "./diagrams/breadboard/renderer";
 
 export interface SymbolCatalogEntry {
   id: string;
@@ -51,10 +58,7 @@ function svgDoc(viewBox: string, css: string, inner: string): string {
 }
 
 // ── Circuit (IEEE 315) ─────────────────────────────────────────────
-const CIRCUIT_CSS =
-  ".schematex-circuit-body{stroke:#0f172a;stroke-width:1.75;fill:none;stroke-linejoin:round;stroke-linecap:round}" +
-  ".schematex-circuit-fill{stroke:#0f172a;stroke-width:1.5;fill:#0f172a}" +
-  ".schematex-circuit-wire{stroke:#0f172a;stroke-width:1.75;fill:none;stroke-linecap:square}";
+const CIRCUIT_CSS = circuitStylesheet(resolveIndustrialTheme("default"));
 
 function circuitCatalog(): SymbolCatalogEntry[] {
   const symbols = SYMBOLS as Record<string, { length: number; svg: () => string }>;
@@ -113,11 +117,7 @@ function sldCatalog(): SymbolCatalogEntry[] {
 }
 
 // ── P&ID (ISA-5.1) equipment ───────────────────────────────────────
-const PID_CSS =
-  ".lt-pid-equip{fill:#ffffff;stroke:#1d1d1d;stroke-width:1.6}" +
-  ".lt-pid-equip-tag{font:600 11px system-ui,sans-serif;fill:#1d1d1d}" +
-  ".lt-pid-process{stroke:#1d1d1d;stroke-width:2.6;fill:none}" +
-  ".lt-pid-process-min{stroke:#1d1d1d;stroke-width:1.5;fill:none}";
+const PID_CSS = pidStylesheet();
 
 function pidCatalog(): SymbolCatalogEntry[] {
   const out: SymbolCatalogEntry[] = [];
@@ -138,6 +138,12 @@ function pidCatalog(): SymbolCatalogEntry[] {
         inner,
       ),
     });
+  }
+  for (const location of ["field", "cr", "local"]) {
+    for (const kind of location === "local" ? ["discrete", "shared"] : ["discrete", "shared", "computer", "plc"]) {
+      const id = `${location}_${kind}`;
+      out.push({ id, label: humanize(id), svg: svgDoc("-20 -20 40 40", PID_CSS, renderInstrument(id, "LIC", "101")) });
+    }
   }
   return out.sort((a, b) => a.label.localeCompare(b.label));
 }
@@ -235,18 +241,7 @@ function networkCatalog(): SymbolCatalogEntry[] {
 }
 
 // ── Floor plan furniture & fixtures (AGS plan view) ────────────────
-const FLOORPLAN_CSS =
-  ".sx-fp-furn{fill:#ffffff;stroke:#475569;stroke-width:1.2}" +
-  ".sx-fp-furn-nofill{fill:none;stroke:#475569;stroke-width:1.2}" +
-  ".sx-fp-furn-line{fill:none;stroke:#475569;stroke-width:1}" +
-  ".sx-fp-furn-dash{fill:none;stroke:#475569;stroke-width:1;stroke-dasharray:4 3}" +
-  ".sx-fp-furn-dot{fill:#475569;stroke:none}" +
-  ".sx-fp-furn-solid{fill:#334155;stroke:none}" +
-  ".sx-fp-board-inner{fill:#ffffff;stroke:none}" +
-  ".sx-fp-chair{fill:#f1f5f9;stroke:#475569;stroke-width:1}" +
-  ".sx-fp-rug{fill:none;stroke:#94a3b8;stroke-width:1.2;stroke-dasharray:5 4}" +
-  ".sx-fp-hatch{fill:none;stroke:#cbd5e1;stroke-width:1}" +
-  ".sx-fp-furn-text{font-weight:600;font-family:sans-serif;fill:#475569}";
+const FLOORPLAN_CSS = floorplanStylesheet(resolveFloorplanTheme("default"));
 
 function floorplanCatalog(): SymbolCatalogEntry[] {
   const scale = 40; // px per meter for the standalone sheet
@@ -297,6 +292,7 @@ function floorplanCatalog(): SymbolCatalogEntry[] {
 
 // ── Evacuation signs (ISO 7010 / ISO 3864 visual grammar) ─────────
 const EVACUATION_CSS =
+  ".sx-fp-safety-location{fill:#005387;stroke:none}" +
   ".sx-fp-safety-plate-safe{fill:#00843D;stroke:none}" +
   ".sx-fp-safety-plate-fire{fill:#C8102E;stroke:none}" +
   ".sx-fp-safety-plate-mand{fill:#005387;stroke:none}" +
@@ -325,7 +321,7 @@ function evacuationCatalog(): SymbolCatalogEntry[] {
         .replace(/^Here$/, "You Are Here"),
       ...(aliases.length > 0 ? { aliases } : {}),
       svg: svgDoc(
-        "0 0 24 24",
+        `0 0 ${def.viewWidth ?? 24} 24`,
         EVACUATION_CSS,
         def.draw({ hand: "right", profile: "iso" })
       ),
@@ -333,7 +329,19 @@ function evacuationCatalog(): SymbolCatalogEntry[] {
   }).sort((a, b) => a.label.localeCompare(b.label));
 }
 
+function breadboardCatalog(): SymbolCatalogEntry[] {
+  const css = breadboardStylesheet(resolveBaseTheme("default"));
+  return Object.values(PART_CATALOG).map(spec => ({
+    id: spec.kind,
+    label: humanize(spec.kind),
+    svg: svgDoc(`-12 -12 ${spec.width + 24} ${spec.height + 24}`, css, spec.body({
+      id: spec.kind, kind: spec.kind, args: {}, placement: { kind: "point", at: { kind: "hole", col: 1, row: "a" } },
+    }, spec.width, spec.height)),
+  }));
+}
+
 const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
+  breadboard: () => ({ type: "breadboard", label: "Breadboard parts", note: "Physical parts drawn by the breadboard engine, at a 2.54 mm hole pitch.", entries: breadboardCatalog() }),
   circuit: () => ({
     type: "circuit",
     label: "Circuit components",

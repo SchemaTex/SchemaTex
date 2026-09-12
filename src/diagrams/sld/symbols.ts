@@ -1,6 +1,7 @@
 import type { SLDNodeType, SLDStandard } from "../../core/types";
 import { isIecFamily } from "../../core/types";
 import { el, group, line, path as pathEl, text as textEl } from "../../core/svg";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 /**
  * Symbol renderers — each returns SVG markup centered at (0,0)
@@ -228,8 +229,8 @@ function threeWindingSymbol(): string {
 function contactBlade(x1 = 0, y1 = 8, x2 = 11, y2 = -7): string {
   return line({ x1, y1, x2, y2, class: "lt-sld-stroke-thick", "data-sld-role": "blade" });
 }
-function contactDot(x: number, y: number): string {
-  return el("circle", { cx: x, cy: y, r: 1.8, class: "lt-sld-dot" });
+function contactDot(x: number, y: number, r = 1.8): string {
+  return el("circle", { cx: x, cy: y, r, class: "lt-sld-dot" });
 }
 function openContact(): string[] {
   return [lineEl(0, -18, 0, -10), lineEl(0, 8, 0, 18),
@@ -503,12 +504,442 @@ function fuseSymbolIEC(): string {
   ]);
 }
 
+/** Reviewed IEEE 315 artwork, fitted to the existing routing terminals.
+ * Keep these ANSI renderers separate: the original shared drawings below also
+ * serve IEC, ABNT and AS/NZS, whose inventories have not been reviewed yet.
+ */
+function ansiArtwork(parts: string[]): string {
+  return group({ class: "lt-sld-ansi" }, [el("style", {}, `.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }`), ...parts]);
+}
+
+function ansiBreakerSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -14.25),
+    lineEl(0, 14.25, 0, 18),
+    contactBlade(0, 14.25, 8.25, -8.25),
+    contactDot(0, 14.25, 2.1),
+    contactDot(0, -14.25, 2.1),
+    pathEl({ d: "M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-hook" })
+  ]);
+}
+
+function ansiUtilitySymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -24, 0, -17),
+    lineEl(0, 17, 0, 18),
+    el("circle", { cx: "0", cy: "0", r: "17", class: "lt-sld-fill" }),
+    pathEl({ d: "M -9 0 Q -4.5 -9 0 0 T 9 0", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ])]);
+}
+
+function ansiLoadSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -12, 0, -10.4),
+    lineEl(0, 10.4, 0, 12),
+    pathEl({ d: "M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z", "stroke-linejoin": "miter", class: "lt-sld-fill" })
+  ]);
+}
+
+function ansiGeneratorSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -8.5),
+    lineEl(0, 8.5, 0, 18),
+    el("circle", { cx: "0", cy: "0", r: "12", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "-0.5", "font-size": "14", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "G"),
+    pathEl({ d: "M -3.5 4 Q -1.75 1 0 4 T 3.5 4", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -16.25 -4 L -13.25 -1 L -10.25 -4 M -13.25 -1 L -13.25 6.5", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -17.25 6.5 L -9.25 6.5 M -15.75 8.5 L -10.75 8.5 M -14.25 10.5 L -12.25 10.5", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiWatthourMeterSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -14, 0, -13),
+    lineEl(0, 13, 0, 14),
+    el("circle", { cx: "0", cy: "0", r: "13", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "4", "font-size": "9", "font-weight": "600", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "Wh")
+  ])]);
+}
+
+function ansiSwitchSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -14.25),
+    lineEl(0, 14.25, 0, 18),
+    contactBlade(0, 14.25, 8.25, -8.25),
+    contactDot(0, 14.25, 2.1),
+    contactDot(0, -14.25, 2.1)
+  ]);
+}
+
+function ansiSwitchLoadSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -16.25),
+    lineEl(0, 12.35, 0, 18),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 0, y1: -16.25, x2: 0, y2: -12.35 }),
+    contactBlade(0, 12.35, 7.15, -7.15),
+    contactDot(0, 12.35, 1.82),
+    contactDot(0, -12.35, 1.82),
+    el("rect", { x: "-2.925", y: "-16.25", width: "5.85", height: "7.8", class: "lt-sld-fill lt-sld-ansi-fine" }),
+    contactDot(0, -12.35, 1.82)
+  ]);
+}
+
+function ansiVfdSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -12),
+    lineEl(0, 12, 0, 18),
+    el("rect", { x: "-22.5", y: "-12", width: "45", height: "24", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "3", "font-size": "11", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "VFD")
+  ]);
+}
+
+function ansiSurgeArresterSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -16, 0, -11.2),
+    lineEl(0, 24, 0, 26),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 0, y1: 11.2, x2: 0, y2: 17.6 }),
+    el("rect", { x: "-8", y: "-11.2", width: "16", height: "22.4", class: "lt-sld-fill" }),
+    pathEl({ d: "M 0 -11.2 L 0 -7.2 M -4 -7.2 L 4 -7.2 L 0 -1.6 Z M -4 7.2 L 4 7.2 L 0 1.6 Z M 0 7.2 L 0 11.2", "stroke-linecap": "round", "stroke-linejoin": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -6.4 17.6 L 6.4 17.6 M -4 20.8 L 4 20.8 M -1.6 24 L 1.6 24", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiTransformerSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -15.2),
+    lineEl(0, 15.2, 0, 24),
+    pathEl({ d: "M -17.1 -9.5 A 5.7 5.7 0 0 1 -5.7 -9.5 A 5.7 5.7 0 0 1 5.7 -9.5 A 5.7 5.7 0 0 1 17.1 -9.5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -17.1 9.5 A 5.7 5.7 0 0 0 -5.7 9.5 A 5.7 5.7 0 0 0 5.7 9.5 A 5.7 5.7 0 0 0 17.1 9.5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -20.9 -2.85 L 20.9 -2.85 M -20.9 2.85 L 20.9 2.85", class: "lt-sld-stroke lt-sld-ansi-core" })
+  ]);
+}
+
+function ansiSolarSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -6.24),
+    lineEl(0, 6.24, 0, 18),
+    el("rect", { x: "-9.88", y: "-6.24", width: "19.76", height: "12.48", class: "lt-sld-fill" }),
+    pathEl({ d: "M -9.88 0 L 9.88 0 M -3.2916 -6.24 L -3.2916 6.24 M 3.2916 -6.24 L 3.2916 6.24", class: "lt-sld-stroke lt-sld-ansi-grid" }),
+    pathEl({ d: "M -17.16 -13 L -12.48 -8.32 M -13.52 -15.08 L -8.84 -10.4", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -11.44 -7.28 L -12.168 -10.244 L -14.404 -8.008 Z M -7.8 -9.36 L -8.528 -12.324 L -10.764 -10.088 Z", class: "lt-sld-dot" })
+  ]);
+}
+
+function ansiMotorSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -16, 0, -15),
+    lineEl(0, 15, 0, 22),
+    el("circle", { cx: "0", cy: "0", r: "15", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "5", "font-size": "13", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "M")
+  ])]);
+}
+
+function ansiCtSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -16, 0, -4.05),
+    lineEl(0, 4.05, 0, 16),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke lt-sld-ansi-core", x1: -4.05, y1: 0, x2: -9.45, y2: 0 }),
+    el("circle", { cx: "0", cy: "0", r: "9", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "1.35", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "CT")
+  ]);
+}
+
+function ansiFuseSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -18, 0, -15),
+    lineEl(0, 15, 0, 18),
+    el("rect", { x: "-6", y: "-15", width: "12", height: "30", class: "lt-sld-fill" })
+  ])]);
+}
+
+function ansiRelaySymbol(detail?: string): string {
+  // Full-size lettering can exceed the routing footprint; keep that footprint fixed.
+  const radius = Math.max(16, estimateTextWidth(detail ?? "50/51", 10, { fontWeight: 700 }) / 2 + 2);
+  return ansiArtwork([
+    line({ x1: 0, y1: -12, x2: 0, y2: -6.84, class: "lt-sld-stroke lt-sld-ansi-core", "stroke-dasharray": "1.8 1.44" }),
+    lineEl(0, 6.84, 0, 12),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke lt-sld-ansi-core", x1: 6.84, y1: 0, x2: 11.16, y2: 0 }),
+    el("circle", { cx: "0", cy: "0", r: radius, class: "lt-sld-fill lt-sld-ansi-fine" }),
+    textEl({ x: "0", y: "1.26", "font-size": "10", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, detail ?? "50/51")
+  ]);
+}
+
+function ansiTransformerDySymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -8),
+    lineEl(0, 8, 0, 24),
+    pathEl({ d: "M -9 -5 A 3 3 0 0 1 -3 -5 A 3 3 0 0 1 3 -5 A 3 3 0 0 1 9 -5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -9 5 A 3 3 0 0 0 -3 5 A 3 3 0 0 0 3 5 A 3 3 0 0 0 9 5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -11 -1.5 L 11 -1.5 M -11 1.5 L 11 1.5", class: "lt-sld-stroke lt-sld-ansi-core" }),
+    pathEl({ d: "M -16.5 -8.5 L -13.25 -3 L -19.75 -3 Z", "stroke-linejoin": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -19.5 2.5 L -16.5 5.5 L -13.5 2.5 M -16.5 5.5 L -16.5 13", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -20.5 13 L -12.5 13 M -19 15 L -14 15 M -17.5 17 L -15.5 17", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiBreakerVacuumSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -18, 0, -15),
+    lineEl(0, 15, 0, 18),
+    // The opaque 52 enclosure covers its closed contact; retain the blade role.
+    contactBlade(0, -15, 0, 15),
+    el("rect", { x: "-15", y: "-15", width: "30", height: "30", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "4", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "52")
+  ])]);
+}
+
+function ansiGroundFaultSymbol(detail?: string): string {
+  const radius = Math.max(14, estimateTextWidth(detail ?? "50/51", 9, { fontWeight: 700 }) / 2 + 2);
+  return ansiArtwork([
+    line({ x1: 0, y1: -14, x2: 0, y2: -7.6, class: "lt-sld-stroke lt-sld-ansi-core", "stroke-dasharray": "2 1.6" }),
+    lineEl(0, 12.92, 0, 14),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke lt-sld-ansi-core", x1: 7.6, y1: 0, x2: 12.4, y2: 0 }),
+    el("circle", { cx: "0", cy: "0", r: radius, class: "lt-sld-fill lt-sld-ansi-fine" }),
+    textEl({ x: "0", y: "1.4", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, detail ?? "50/51"),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke lt-sld-ansi-core", x1: 0, y1: 7.6, x2: 0, y2: 9.72 }),
+    pathEl({ d: "M -3.2 9.72 L 3.2 9.72 M -2 11.32 L 2 11.32 M -0.8 12.92 L 0.8 12.92", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiUpsSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -12),
+    lineEl(0, 12, 0, 18),
+    el("rect", { x: "-22.5", y: "-12", width: "45", height: "24", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "3", "font-size": "11", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "UPS")
+  ]);
+}
+
+function ansiPtSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -16, 0, -4.05),
+    lineEl(0, 4.05, 0, 16),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke lt-sld-ansi-core", x1: -4.05, y1: 0, x2: -9.45, y2: 0 }),
+    el("circle", { cx: "0", cy: "0", r: "9", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "1.35", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "PT")
+  ]);
+}
+
+function ansiCapacitorBankSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -14, 0, -4),
+    lineEl(0, 4, 0, 14),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: -12.0, y1: -4.0, x2: 12.0, y2: -4.0 }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: -12.0, y1: 4.0, x2: 12.0, y2: 4.0 })
+  ])]);
+}
+
+function ansiGroundSwitchSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -7.6),
+    lineEl(0, 15.6, 0, 18),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 0, y1: 7.6, x2: 0, y2: 12.4 }),
+    contactBlade(0, 7.6, 4.4, -4.4),
+    contactDot(0, 7.6, 1.12),
+    contactDot(0, -7.6, 1.12),
+    pathEl({ d: "M -3.2 12.4 L 3.2 12.4 M -2 14 L 2 14 M -0.8 15.6 L 0.8 15.6", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiBusTieSymbol(): string {
+  return ansiArtwork([group({ transform: "rotate(-90)" }, [
+    lineEl(0, -18, 0, -14.25),
+    lineEl(0, 14.25, 0, 18),
+    contactBlade(0, 14.25, 8.25, -8.25),
+    contactDot(0, 14.25, 2.1),
+    contactDot(0, -14.25, 2.1),
+    pathEl({ d: "M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-hook" })
+  ])]);
+}
+
+function ansiFuseClSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -7.2),
+    lineEl(0, 7.2, 0, 18),
+    el("rect", { x: "-2.88", y: "-7.2", width: "5.76", height: "14.4", class: "lt-sld-fill" }),
+    textEl({ x: "10.56", y: "1.68", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "CL")
+  ]);
+}
+
+function ansiTransformerYdSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -8),
+    lineEl(0, 8, 0, 24),
+    pathEl({ d: "M -9 -5 A 3 3 0 0 1 -3 -5 A 3 3 0 0 1 3 -5 A 3 3 0 0 1 9 -5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -9 5 A 3 3 0 0 0 -3 5 A 3 3 0 0 0 3 5 A 3 3 0 0 0 9 5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -11 -1.5 L 11 -1.5 M -11 1.5 L 11 1.5", class: "lt-sld-stroke lt-sld-ansi-core" }),
+    pathEl({ d: "M -19.5 -14.5 L -16.5 -11.5 L -13.5 -14.5 M -16.5 -11.5 L -16.5 -4", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -20.5 -4 L -12.5 -4 M -19 -2 L -14 -2 M -17.5 0 L -15.5 0", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -16.5 3 L -13.25 8.5 L -19.75 8.5 Z", "stroke-linecap": "round", "stroke-linejoin": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiDemandMeterSymbol(): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -14, 0, -13),
+    lineEl(0, 13, 0, 14),
+    el("circle", { cx: "0", cy: "0", r: "13", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "4", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "DM")
+  ])]);
+}
+
+function ansiRecloserSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -5.7),
+    lineEl(0, 5.7, 0, 18),
+    // The opaque 52 enclosure covers its closed contact; retain the blade role.
+    contactBlade(0, -5.7, 0, 5.7),
+    el("rect", { x: "-5.7", y: "-5.7", width: "11.4", height: "11.4", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "1.52", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "52"),
+    group({ transform: "translate(17.48 0) rotate(-90)" }, [line({ "stroke-linecap": "butt", "stroke-dasharray": "1.9 1.52", class: "lt-sld-stroke lt-sld-ansi-core", x1: 0, y1: -7.22, x2: 0, y2: -11.78 })]),
+    el("circle", { cx: "17.48", cy: "0", r: "9", class: "lt-sld-fill lt-sld-ansi-fine" }),
+    textEl({ x: "17.48", y: "1.33", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "79")
+  ]);
+}
+
+function ansiTransformerYySymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -8),
+    lineEl(0, 8, 0, 24),
+    pathEl({ d: "M -9 -5 A 3 3 0 0 1 -3 -5 A 3 3 0 0 1 3 -5 A 3 3 0 0 1 9 -5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -9 5 A 3 3 0 0 0 -3 5 A 3 3 0 0 0 3 5 A 3 3 0 0 0 9 5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -11 -1.5 L 11 -1.5 M -11 1.5 L 11 1.5", class: "lt-sld-stroke lt-sld-ansi-core" }),
+    pathEl({ d: "M -19.5 -8.5 L -16.5 -5.5 L -13.5 -8.5 M -16.5 -5.5 L -16.5 -2", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -19.5 2.5 L -16.5 5.5 L -13.5 2.5 M -16.5 5.5 L -16.5 9", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiTransformerDdSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -8),
+    lineEl(0, 8, 0, 24),
+    pathEl({ d: "M -9 -5 A 3 3 0 0 1 -3 -5 A 3 3 0 0 1 3 -5 A 3 3 0 0 1 9 -5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -9 5 A 3 3 0 0 0 -3 5 A 3 3 0 0 0 3 5 A 3 3 0 0 0 9 5", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    pathEl({ d: "M -11 -1.5 L 11 -1.5 M -11 1.5 L 11 1.5", class: "lt-sld-stroke lt-sld-ansi-core" }),
+    pathEl({ d: "M -16.5 -8.5 L -13.25 -3 L -19.75 -3 Z", "stroke-linecap": "round", "stroke-linejoin": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    pathEl({ d: "M -16.5 2.5 L -13.25 8 L -19.75 8 Z", "stroke-linecap": "round", "stroke-linejoin": "round", class: "lt-sld-stroke lt-sld-ansi-fine" })
+  ]);
+}
+
+function ansiHubSymbol(detail?: string): string {
+  return ansiArtwork([group({}, [
+    lineEl(0, -20, 0, -16),
+    lineEl(0, 16, 0, 20),
+    el("rect", { x: "-30", y: "-16", width: "60", height: "32", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "4", "font-size": "11", textLength: detail && detail.length > 8 ? 54 : undefined, lengthAdjust: "spacingAndGlyphs", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, detail ?? "HUB")
+  ])]);
+}
+
+function ansiWindSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -11.9),
+    lineEl(0, 11.9, 0, 18),
+    el("circle", { cx: "0", cy: "0", r: "11.9", class: "lt-sld-fill" }),
+    textEl({ x: "0", y: "-0.7", "font-size": "13", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "G"),
+    pathEl({ d: "M -4.9 5.6 Q -2.45 1.4 0 5.6 T 4.9 5.6", "stroke-linecap": "round", class: "lt-sld-stroke lt-sld-ansi-fine" }),
+    textEl({ x: "-2.1", y: "-17.5", "font-size": "9", "font-weight": "700", "text-anchor": "end", class: "lt-sld-symbol-text lt-sld-wdg" }, "WIND")
+  ]);
+}
+
+function ansiHarmonicFilterSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -14, 0, -7.2),
+    lineEl(0, 8.4, 0, 14),
+    group({ transform: "translate(0 -1.8) rotate(90)" }, [pathEl({ d: "M -5.4 0 A 1.8 1.8 0 0 1 -1.8 0 A 1.8 1.8 0 0 1 1.8 0 A 1.8 1.8 0 0 1 5.4 0", "stroke-linecap": "round", class: "lt-sld-stroke" })]),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 0, y1: 3.6, x2: 0, y2: 6 }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: -3.6, y1: 6, x2: 3.6, y2: 6 }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: -3.6, y1: 8.4, x2: 3.6, y2: 8.4 })
+  ]);
+}
+
+function ansiAutotransformerSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -24, 0, -21.6),
+    lineEl(0, 21.6, 0, 24),
+    pathEl({ d: "M 0 -21.6 A 5.4 5.4 0 0 0 0 -10.8 A 5.4 5.4 0 0 0 0 0 A 5.4 5.4 0 0 0 0 10.8 A 5.4 5.4 0 0 0 0 21.6", "stroke-linecap": "round", class: "lt-sld-stroke" }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 0, y1: 0, x2: 16.2, y2: 0 }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 16.2, y1: 0, x2: 16.2, y2: 21.6 }),
+    line({ "stroke-linecap": "square", class: "lt-sld-stroke", x1: 16.2, y1: 21.6, x2: 16.2, y2: 24 }),
+    contactDot(0, 0, 2.52)
+  ]);
+}
+
+function ansiSectionalizerSymbol(): string {
+  return ansiArtwork([
+    lineEl(0, -18, 0, -14.25),
+    lineEl(0, 14.25, 0, 18),
+    contactBlade(0, 14.25, 8.25, -8.25),
+    contactDot(0, 14.25, 2.1),
+    contactDot(0, -14.25, 2.1),
+    textEl({ x: "18", y: "2.625", "font-size": "9", "font-weight": "700", "text-anchor": "middle", class: "lt-sld-symbol-text lt-sld-wdg" }, "S")
+  ]);
+}
+
+function ansiAtsSymbol(): string {
+  const g = geometryFor("ats");
+  return ansiArtwork([
+    ...g.inputXs!.flatMap(x => [lineEl(x, g.topY, x, -8), contactDot(x, -8, 2.6)]),
+    lineEl(0, 20, 0, g.bottomY),
+    contactBlade(0, 20, -22, -8),
+    line({ x1: 0, y1: 20, x2: 22, y2: -8, class: "lt-sld-stroke lt-sld-ansi-fine", "stroke-dasharray": "3 3" }),
+    contactDot(0, 20, 3),
+    textEl({ x: -18, y: -12, class: "lt-sld-symbol-text", "font-size": 9, "font-weight": 700 }, "N"),
+    textEl({ x: 18, y: -12, class: "lt-sld-symbol-text", "text-anchor": "end", "font-size": 9, "font-weight": 700 }, "E"),
+  ]);
+}
+
 /** Main entry — render a node symbol at origin. */
 export function renderSymbol(
   type: SLDNodeType,
   detail?: string,
   standard?: SLDStandard
 ): string {
+  if (!isIecFamily(standard)) {
+    switch (type) {
+      case "breaker": return ansiBreakerSymbol();
+      case "utility": return ansiUtilitySymbol();
+      case "load": return ansiLoadSymbol();
+      case "generator": return ansiGeneratorSymbol();
+      case "watthour_meter": return ansiWatthourMeterSymbol();
+      case "switch": return ansiSwitchSymbol();
+      case "switch_load": return ansiSwitchLoadSymbol();
+      case "vfd": return ansiVfdSymbol();
+      case "surge_arrester": return ansiSurgeArresterSymbol();
+      case "transformer": return ansiTransformerSymbol();
+      case "solar": return ansiSolarSymbol();
+      case "motor": return ansiMotorSymbol();
+      case "ct": return ansiCtSymbol();
+      case "fuse": return ansiFuseSymbol();
+      case "relay": return ansiRelaySymbol(detail);
+      case "transformer_dy": return ansiTransformerDySymbol();
+      case "breaker_vacuum": return ansiBreakerVacuumSymbol();
+      case "ground_fault": return ansiGroundFaultSymbol(detail);
+      case "ups": return ansiUpsSymbol();
+      case "pt": return ansiPtSymbol();
+      case "capacitor_bank": return ansiCapacitorBankSymbol();
+      case "ground_switch": return ansiGroundSwitchSymbol();
+      case "bus_tie": return ansiBusTieSymbol();
+      case "fuse_cl": return ansiFuseClSymbol();
+      case "transformer_yd": return ansiTransformerYdSymbol();
+      case "demand_meter": return ansiDemandMeterSymbol();
+      case "recloser": return ansiRecloserSymbol();
+      case "transformer_yy": return ansiTransformerYySymbol();
+      case "transformer_dd": return ansiTransformerDdSymbol();
+      case "hub": return ansiHubSymbol(detail);
+      case "wind": return ansiWindSymbol();
+      case "harmonic_filter": return ansiHarmonicFilterSymbol();
+      case "autotransformer": return ansiAutotransformerSymbol();
+      case "sectionalizer": return ansiSectionalizerSymbol();
+      case "ats": return ansiAtsSymbol();
+    }
+  }
   if (isIecFamily(standard)) {
     switch (type) {
       case "transformer":

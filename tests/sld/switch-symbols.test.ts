@@ -47,3 +47,21 @@ it('routes to the same ATS input terminals that the symbol draws',()=>{
  for(const x of geometry.inputXs!)
   expect(lines.some(line=>+line.x1===x && +line.x2===x && +line.y1===geometry.topY)).toBe(true);
 });
+
+it.each(['breaker_vacuum','recloser'] as SLDNodeType[])('%s ANSI uses the reviewed 52 square with connected leads',type=>{
+ const svg=renderSymbol(type,undefined,'ansi');
+ const lines=segments(svg);
+ expect(lines.filter(l=>l['data-sld-role']==='blade')).toHaveLength(1);
+ const halfSize=type==='recloser'?5.7:15;
+ expect(svg).toContain(`x="${-halfSize}" y="${-halfSize}" width="${halfSize*2}" height="${halfSize*2}"`);
+ expect(svg).toContain('>52</text>');
+ expect(lines.some(l=>+l.x2===0 && +l.y2===-halfSize)).toBe(true);
+ expect(lines.some(l=>+l.x1===0 && +l.y1===halfSize)).toBe(true);
+});
+it('ANSI ATS rests on its labelled normal source',()=>{
+ const svg=renderSymbol('ats');
+ const blade=segments(svg).find(l=>l['data-sld-role']==='blade')!;
+ expect([+blade.x2,+blade.y2]).toEqual([-22,-8]);
+ expect(svg).toContain('>N</text>');
+ expect(svg).toContain('>E</text>');
+});
