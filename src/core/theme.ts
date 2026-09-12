@@ -1800,7 +1800,7 @@ const DEFAULT_FLOORPLAN: FloorplanTokens = {
   chairFill: "#f1f5f9",
   doorLeaf: "#334155",
   doorArc: "#94a3b8",
-  windowStroke: "#334155",
+  windowStroke: "#4F86B0",
   rugStroke: "#94a3b8",
   hatchStroke: "#cbd5e1",
   roomName: "#0f172a",

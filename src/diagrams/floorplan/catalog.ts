@@ -42,6 +42,31 @@ function chairAt(px: (m: number) => number, cx: number, cy: number, deg: number)
   return el("g", { transform: `translate(${px(cx)},${px(cy)}) rotate(${rot})` }, [body]);
 }
 
+/** Task chair: caster base below the seat, curved north back and side arms. */
+function taskChair(c: SymbolDrawCtx, cx: number, cy: number, diameter: number): string {
+  const unit = diameter / 0.65;
+  const X = (m: number) => c.px(cx + m * unit);
+  const Y = (m: number) => c.px(cy + m * unit);
+  const R = (m: number) => c.px(m * unit);
+  const parts: string[] = [];
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / 5;
+    const x = 0.3 * Math.cos(a);
+    const y = 0.3 * Math.sin(a);
+    parts.push(line({ class: "sx-fp-furn-line", x1: X(0), y1: Y(0), x2: X(x), y2: Y(y) }));
+    parts.push(circle({ class: "sx-fp-furn", cx: X(x), cy: Y(y), r: R(0.0265) }));
+  }
+  parts.push(rect({ class: "sx-fp-furn", x: X(-0.23), y: Y(-0.18), width: R(0.46), height: R(0.42), rx: R(0.0625) }));
+  parts.push(path({
+    class: "sx-fp-furn",
+    d: `M ${X(-0.25)} ${Y(-0.16)} A ${R(0.55)} ${R(0.55)} 0 0 1 ${X(0.25)} ${Y(-0.16)} L ${X(0.21)} ${Y(-0.1)} A ${R(0.5)} ${R(0.5)} 0 0 0 ${X(-0.21)} ${Y(-0.1)} Z`,
+  }));
+  for (const side of [-1, 1]) {
+    parts.push(path({ class: "sx-fp-furn-line", d: `M ${X(side * 0.23)} ${Y(-0.04)} H ${X(side * 0.28)} V ${Y(0.17)} H ${X(side * 0.23)}` }));
+  }
+  return el("g", { class: "sx-fp-chair" }, parts);
+}
+
 /** Default / minimum seat-name font size (meters). */
 const SEAT_FS = 0.17;
 const SEAT_FS_MIN = 0.085;
@@ -117,14 +142,13 @@ function glyphText(c: SymbolDrawCtx, label: string): string {
 
 function bedDraw(pillows: 1 | 2) {
   return (c: SymbolDrawCtx): string => {
+    const gap = c.w * 0.06, pillowWidth = (c.w - (pillows + 1) * gap) / pillows;
     const parts = [box(c, "sx-fp-furn", 0.05)];
-    const pw = pillows === 2 ? c.w / 2 - 0.18 : c.w - 0.24;
-    parts.push(rect({ class: "sx-fp-furn", x: c.px(0.12), y: c.px(0.1), width: c.px(pw), height: c.px(0.42), rx: c.px(0.06) }));
-    if (pillows === 2) {
-      parts.push(rect({ class: "sx-fp-furn", x: c.px(c.w / 2 + 0.06), y: c.px(0.1), width: c.px(pw), height: c.px(0.42), rx: c.px(0.06) }));
+    for (let i = 0; i < pillows; i++) {
+      parts.push(rect({ class: "sx-fp-furn", x: c.px(gap + i * (pillowWidth + gap)), y: c.px(c.h * 0.05), width: c.px(pillowWidth), height: c.px(c.h * 0.15), rx: c.px(0.05) }));
     }
-    // blanket fold line
-    parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(0.72), x2: c.px(c.w), y2: c.px(0.72) }));
+    parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h * 0.3), x2: c.px(c.w), y2: c.px(c.h * 0.3) }));
+    parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h * 0.45), x2: c.px(c.w), y2: c.px(c.h * 0.375) }));
     return parts.join("");
   };
 }
@@ -238,26 +262,11 @@ function treadLines(
 /** 45° zigzag break line across a run (the drafting cut-plane symbol). */
 function breakLine(c: SymbolDrawCtx, vert: boolean, lo: number, hi: number, at: number): string {
   const span = hi - lo;
-  const dz = Math.min(0.12, span * 0.18);
-  const tilt = span * 0.18;
-  const pts = vert
-    ? [
-        [lo, at + tilt],
-        [lo + span * 0.4, at + tilt * 0.2],
-        [lo + span * 0.5 - dz, at + tilt * 0.2 + dz],
-        [lo + span * 0.5 + dz, at - tilt * 0.2 - dz],
-        [lo + span * 0.6, at - tilt * 0.2],
-        [hi, at - tilt],
-      ]
-    : [
-        [at + tilt, lo],
-        [at + tilt * 0.2, lo + span * 0.4],
-        [at + tilt * 0.2 + dz, lo + span * 0.5 - dz],
-        [at - tilt * 0.2 - dz, lo + span * 0.5 + dz],
-        [at - tilt * 0.2, lo + span * 0.6],
-        [at - tilt, hi],
-      ];
-  const d = pts.map(([a, b], i) => `${i === 0 ? "M" : "L"} ${c.px(vert ? a! : a!)} ${c.px(vert ? b! : b!)}`).join(" ");
+  const offsets: [number, number][] = [[0, 0.18], [0.42, 0.03], [0.46, -0.10], [0.52, 0.13], [0.56, -0.01], [1, -0.18]];
+  const pts = offsets.map(([fraction, offset]) => vert
+    ? [lo + fraction * span, at + offset * span]
+    : [at + offset * span, lo + fraction * span]);
+  const d = pts.map(([a, b], i) => `${i === 0 ? "M" : "L"} ${c.px(a!)} ${c.px(b!)}`).join(" ");
   return path({ class: "sx-fp-stair-break", d });
 }
 
@@ -776,21 +785,23 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
     w: 1.8,
     h: 0.6,
     draw: (c) => {
-      // hanger rail runs along the long axis, with cross ticks for hangers
+      // Rail and angled hangers follow the long axis, inset from the case.
       const parts = [box(c)];
       if (c.w >= c.h) {
-        parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h / 2), x2: c.px(c.w), y2: c.px(c.h / 2) }));
-        const n = Math.max(2, Math.round(c.w / 0.15));
-        for (let i = 0; i < n; i++) {
-          const x = c.px(((i + 0.5) / n) * c.w);
-          parts.push(line({ class: "sx-fp-furn-line", x1: x, y1: c.px(c.h / 2 - 0.1), x2: x, y2: c.px(c.h / 2 + 0.1) }));
+        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(c.w / 30), y1: c.px(c.h / 2), x2: c.px(c.w * 29 / 30), y2: c.px(c.h / 2) }));
+        const n = Math.max(4, Math.round(c.w / 0.15));
+        for (let i = 1; i < n - 1; i++) {
+          const x = ((i + 0.5) / n) * c.w;
+          const slant = Math.min(0.03, c.w / n / 5);
+          parts.push(line({ class: "sx-fp-furn-line", x1: c.px(x + slant), y1: c.px(c.h * 23 / 30), x2: c.px(x - slant), y2: c.px(c.h * 7 / 30) }));
         }
       } else {
-        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(c.w / 2), y1: 0, x2: c.px(c.w / 2), y2: c.px(c.h) }));
-        const n = Math.max(2, Math.round(c.h / 0.15));
-        for (let i = 0; i < n; i++) {
-          const y = c.px(((i + 0.5) / n) * c.h);
-          parts.push(line({ class: "sx-fp-furn-line", x1: c.px(c.w / 2 - 0.1), y1: y, x2: c.px(c.w / 2 + 0.1), y2: y }));
+        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(c.w / 2), y1: c.px(c.h / 30), x2: c.px(c.w / 2), y2: c.px(c.h * 29 / 30) }));
+        const n = Math.max(4, Math.round(c.h / 0.15));
+        for (let i = 1; i < n - 1; i++) {
+          const y = ((i + 0.5) / n) * c.h;
+          const slant = Math.min(0.03, c.h / n / 5);
+          parts.push(line({ class: "sx-fp-furn-line", x1: c.px(c.w * 7 / 30), y1: c.px(y + slant), x2: c.px(c.w * 23 / 30), y2: c.px(y - slant) }));
         }
       }
       return parts.join("");
@@ -818,19 +829,19 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
     h: 0.5,
     draw: (c) => {
       const r = Math.min(c.w, c.h) / 2;
-      const parts = [circle({ class: "sx-fp-furn", cx: c.px(c.w / 2), cy: c.px(c.h / 2), r: c.px(r) })];
-      for (const a of [0, 60, 120, 180, 240, 300]) {
-        const rad = (a * Math.PI) / 180;
-        parts.push(
-          line({
-            class: "sx-fp-furn-line",
-            x1: c.px(c.w / 2),
-            y1: c.px(c.h / 2),
-            x2: c.px(c.w / 2 + (r - 0.03) * Math.cos(rad)),
-            y2: c.px(c.h / 2 + (r - 0.03) * Math.sin(rad)),
-          })
-        );
+      const cx = c.w / 2;
+      const cy = c.h / 2;
+      const parts = [circle({ class: "sx-fp-furn", cx: c.px(cx), cy: c.px(cy), r: c.px(r * 2 / 3) })];
+      for (let i = 0; i < 7; i++) {
+        const a = -Math.PI / 2 + i * 2 * Math.PI / 7;
+        const x1 = c.px(cx + r * 0.1 * Math.cos(a));
+        const y1 = c.px(cy + r * 0.1 * Math.sin(a));
+        const x2 = c.px(cx + r * Math.cos(a));
+        const y2 = c.px(cy + r * Math.sin(a));
+        const arc = c.px(r * 0.60625);
+        parts.push(path({ class: "sx-fp-furn", d: `M ${x1} ${y1} A ${arc} ${arc} 0 0 1 ${x2} ${y2} A ${arc} ${arc} 0 0 1 ${x1} ${y1} Z` }));
       }
+      parts.push(circle({ class: "sx-fp-furn-dot", cx: c.px(cx), cy: c.px(cy), r: c.px(r * 0.1167) }));
       return parts.join("");
     },
   },
@@ -1056,17 +1067,14 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   toilet: {
     w: 0.5,
     h: 0.7,
-    draw: (c) =>
-      [
-        rect({ class: "sx-fp-furn", x: 0, y: 0, width: c.px(c.w), height: c.px(0.2), rx: c.px(0.04) }),
-        el("ellipse", {
-          class: "sx-fp-furn",
-          cx: c.px(c.w / 2),
-          cy: c.px(0.2 + (c.h - 0.24) / 2),
-          rx: c.px(c.w / 2 - 0.04),
-          ry: c.px((c.h - 0.28) / 2),
-        }),
-      ].join(""),
+    draw: (c) => {
+      const x = (n: number) => c.px(n * c.w), y = (n: number) => c.px(n * c.h);
+      return [
+        path({ class: "sx-fp-furn", d: `M ${x(0.1)} ${y(0.3)} L ${x(0.13)} ${y(0.62)} C ${x(0.15)} ${y(1.12)} ${x(0.85)} ${y(1.12)} ${x(0.87)} ${y(0.62)} L ${x(0.9)} ${y(0.3)} Z` }),
+        el("ellipse", { class: "sx-fp-furn-line", cx: x(0.5), cy: y(0.68), rx: x(0.24), ry: y(0.21) }),
+        rect({ class: "sx-fp-furn", x: 0, y: 0, width: x(1), height: y(0.3), rx: c.px(0.035) }),
+      ].join("");
+    },
   },
   sink: {
     w: 0.55,
@@ -1201,24 +1209,16 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   "desk-chair": {
     w: 0.6,
     h: 0.75,
-    draw: (c) =>
-      [
-        rect({ class: "sx-fp-furn", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h * 0.58) }),
-        rect({
-          class: "sx-fp-chair",
-          x: c.px(c.w / 2 - (c.w * 0.3)),
-          y: c.px(c.h * 0.66),
-          width: c.px(c.w * 0.6),
-          height: c.px(c.h * 0.32),
-          rx: c.px(0.07),
-        }),
-      ].join(""),
+    draw: (c) => taskChair(c, c.w / 2, c.h / 2, Math.min(c.w, c.h) * 0.94),
   },
   desk: {
     w: 1.4,
     h: 0.7,
     envelope: [0, 0, CHAIR_OVERHANG, 0],
-    draw: (c) => box(c) + chairAt(c.px, c.w / 2, c.h + CHAIR_GAP, 180),
+    // Tuck the front casters under the worktop to keep the existing envelope.
+    draw: (c) => el("g", {
+      transform: `translate(${c.px(c.w / 2)},${c.px(c.h + CHAIR_GAP)}) rotate(180)`,
+    }, taskChair(c, 0, 0.09, Math.min(0.6, c.w * 0.9))) + box(c, "sx-fp-furn", 0.03),
   },
   // Classroom lectern/teacher station: a front-facing worktop without the
   // office chair that the generic `desk` symbol auto-adds.
@@ -1249,8 +1249,10 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
     w: 0.45,
     h: 0.45,
     draw: (c) =>
-      rect({ class: "sx-fp-chair", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.1) }) +
-      line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(0.06), x2: 0, y2: c.px(c.h - 0.06) }),
+      el("g", { class: "sx-fp-chair" }, [
+        box(c, "sx-fp-furn", Math.min(c.w, c.h) / 9),
+        line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h / 6), x2: c.px(c.w), y2: c.px(c.h / 6) }),
+      ]),
   },
   // A-frame easel in plan: triangular stance with the drawing board crossing
   // the two front legs.

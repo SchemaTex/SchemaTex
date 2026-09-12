@@ -26,6 +26,33 @@ describe("evacuation safety symbol catalog", () => {
     }
   });
 
+  it("gives the combination escape-route sign a 2:1 landscape plate", () => {
+    // The running figure is the same pictogram as the plain exit sign, at the
+    // same size; squeezing it into a square plate is what made it unreadable.
+    for (const hand of ["left", "right"] as const) {
+      for (const profile of ["iso", "nfpa"] as const) {
+        const def = resolveSafetySymbol("exit-direction", { hand, profile });
+        expect(def.viewWidth, `${hand}/${profile}`).toBe(48);
+        const svg = def.draw({ hand, profile });
+        expect(svg, `${hand}/${profile}`).toContain('width="48"');
+        // No sub-unit scaling of the figure: full-size limb strokes survive.
+        expect(svg, `${hand}/${profile}`).toContain('stroke-width="2.05"');
+        // The arrow points the way the route runs.
+        const arrow = /M([\d.]+) 9 H([\d.]+)/.exec(svg);
+        expect(arrow, `${hand}/${profile}`).not.toBeNull();
+        const [tail, neck] = [Number(arrow![1]), Number(arrow![2])];
+        expect(hand === "right" ? neck > tail : neck < tail).toBe(true);
+      }
+    }
+  });
+
+  it("keeps every other plate square", () => {
+    for (const [key, def] of Object.entries(SAFETY_PREVIEW_SYMBOLS)) {
+      if (key.startsWith("exit-direction")) continue;
+      expect(def.viewWidth, key).toBeUndefined();
+    }
+  });
+
   it("uses solid semantic plates with knockout pictograms", () => {
     const exit = resolveSafetySymbol("exit", {
       hand: "right",

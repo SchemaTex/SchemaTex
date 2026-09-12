@@ -10,6 +10,7 @@ import type {
   RouteGeom,
   RoutePoint,
   SafetyKind,
+  SafetySymbolDef,
   SafetySymbolGeom,
 } from "./types";
 import { buildEvacuationLegend } from "./legend";
@@ -74,6 +75,15 @@ export const EVACUATION_PROFILES: Readonly<
 
 const round = (value: number): number => Math.round(value * 1e6) / 1e6;
 const key = (floor: number, id: string): string => `${floor}\0${id}`;
+
+/**
+ * Horizontal footprint in metres. Plates are sized by printed *height*, so a
+ * landscape combination sign is proportionally wider at the same `sheetMm`.
+ */
+function symbolWidthM(def: SafetySymbolDef, denominator: number): number {
+  const sizeM = (def.sheetMm * denominator) / 1000;
+  return round((sizeM * (def.viewWidth ?? 24)) / 24);
+}
 
 function plateExtent(
   ast: FloorplanAst,
@@ -380,6 +390,7 @@ function buildSafetySymbols(
       x: round(x),
       y: round(y),
       sizeM: round((def.sheetMm * scale.denominator) / 1000),
+      widthM: symbolWidthM(def, scale.denominator),
       sheetMm: def.sheetMm,
       code,
       colour: def.colour,
@@ -409,6 +420,7 @@ function buildSafetySymbols(
         x: round(item.x + item.w / 2),
         y: round(item.y + item.h / 2),
         sizeM: round((def.sheetMm * scale.denominator) / 1000),
+        widthM: symbolWidthM(def, scale.denominator),
         sheetMm: def.sheetMm,
         code: def.code,
         colour: def.colour,
@@ -640,7 +652,7 @@ export function validateEvacuation(
       const b = data.symbols[j];
       if (!b || a.floor !== b.floor) continue;
       if (
-        Math.abs(a.x - b.x) + 1e-9 < (a.sizeM + b.sizeM) / 2 &&
+        Math.abs(a.x - b.x) + 1e-9 < (a.widthM + b.widthM) / 2 &&
         Math.abs(a.y - b.y) + 1e-9 < (a.sizeM + b.sizeM) / 2
       ) {
         warnings.push(
@@ -728,11 +740,12 @@ export function finalizeEvacuationLayout(
   lay.warnings.push(...validation.warnings);
 
   for (const symbol of symbols) {
-    const half = symbol.sizeM / 2;
-    lay.bounds.minX = Math.min(lay.bounds.minX, symbol.x - half);
-    lay.bounds.minY = Math.min(lay.bounds.minY, symbol.y - half);
-    lay.bounds.maxX = Math.max(lay.bounds.maxX, symbol.x + half);
-    lay.bounds.maxY = Math.max(lay.bounds.maxY, symbol.y + half);
+    const halfX = symbol.widthM / 2;
+    const halfY = symbol.sizeM / 2;
+    lay.bounds.minX = Math.min(lay.bounds.minX, symbol.x - halfX);
+    lay.bounds.minY = Math.min(lay.bounds.minY, symbol.y - halfY);
+    lay.bounds.maxX = Math.max(lay.bounds.maxX, symbol.x + halfX);
+    lay.bounds.maxY = Math.max(lay.bounds.maxY, symbol.y + halfY);
   }
   return lay;
 }

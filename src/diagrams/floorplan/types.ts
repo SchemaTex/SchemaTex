@@ -793,6 +793,8 @@ export interface SafetySymbolGeom {
   y: number;
   /** Real-world footprint derived from fixed printed millimetres × scale. */
   sizeM: number;
+  /** Horizontal footprint; equals `sizeM` unless the plate is landscape. */
+  widthM: number;
   sheetMm: number;
   code: string;
   colour: SafetyColour;
@@ -1043,6 +1045,13 @@ export interface SafetySymbolDef {
   /** ISO/NFPA identity reference; empty when no registered code applies. */
   code: string;
   colour: SafetyColour;
-  /** Draw original line art in a fixed 24×24 viewBox. */
+  /**
+   * Plate width on the 24-high drawing grid. Square signs omit it; landscape
+   * combination signs (running figure beside an arrow) declare 48 so the
+   * pictogram keeps ISO proportions instead of being squeezed into a square.
+   * `sheetMm` always states the printed *height*.
+   */
+  viewWidth?: number;
+  /** Draw original line art in a `viewWidth`×24 viewBox. */
   draw: (ctx: SafetyDrawCtx) => string;
 }
