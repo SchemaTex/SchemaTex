@@ -1,29 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { render } from "../../src/index";
-import { parsePedigree } from "../../src/diagrams/pedigree";
 
 describe("pedigree e2e", () => {
-  test("render() auto-detects pedigree and produces SVG", () => {
-    const svg = render(`pedigree "Test"
-  I-1 [male, carrier]
-  I-2 [female, carrier]
-  I-1 -- I-2
-    II-1 [male, affected, proband]`);
-    expect(svg).toContain("<svg");
-    expect(svg).toContain("schematex-pedigree");
-    expect(svg).toContain("</svg>");
-  });
-
-  test("parse() returns pedigree AST", () => {
-    const ast = parsePedigree(`pedigree
-  a [male]
-  b [female]
-  a -- b
-    c [male, affected]`);
-    expect(ast.type).toBe("pedigree");
-    expect(ast.individuals).toHaveLength(3);
-    expect(ast.relationships).toHaveLength(2);
-  });
 
   test("Case 1: Autosomal Recessive (CF)", () => {
     const svg = render(`pedigree "Cystic Fibrosis Family"

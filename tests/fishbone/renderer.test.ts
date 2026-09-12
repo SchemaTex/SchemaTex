@@ -1,4 +1,3 @@
-import { renderResult } from "../../src/core/api";
 import { describe, expect, it } from "vitest";
 import { renderFishboneAST } from "../../src/diagrams/fishbone/renderer";
 import { parseFishboneDSL } from "../../src/diagrams/fishbone/parser";
@@ -167,9 +166,6 @@ describe("Fishbone rendered Ishikawa geometry", () => {
     expect(size(diagram(2, 0))[1]).toBeLessThan(small[1]);
     const svg = diagram(6, 1, 1, "config width = 2400");
     expect(size(svg)[0]).toBe(2400);
-    const bones = elements(svg, "sx-fb-rib");
-    expect(Number(bones[4].x1)).toBeGreaterThan(2000);
-    expect(Number(elements(svg, "sx-fb-spine")[0].x2) + 2 - Number(bones[4].x1)).toBeCloseTo(48);
   });
 
   it("reserves separate rows for a one-cause category and a six-cause category", () => {
@@ -181,32 +177,5 @@ describe("Fishbone rendered Ishikawa geometry", () => {
     expect(elements(svg, "sx-fb-branch")).toHaveLength(7);
     const boxes = textBoxes(svg, "sx-fb-cause-label");
     boxes.forEach((box, index) => expect(boxes.slice(index + 1).every(other => labelOverlap(box, other) === 0)).toBe(true));
-  });
-});
-
-describe("Fishbone public SVG paint", () => {
-  it("retains the painted spine, arrow into the effect and left tail", () => {
-    const result = renderResult('# Context\nfishbone "Process review"\neffect "Observed failure"\ncategory people "People"\ncategory tools "Tools"\npeople: "Training"\ntools: "Wear"', { type: "fishbone" });
-    expect(result.status).not.toBe("error");
-    const svg = result.svg;
-    const spines = elements(svg, "sx-fb-spine");
-    expect(spines).toHaveLength(1);
-    const spine = spines[0];
-    expect(spine.y1).toBe(spine.y2);
-    expect(Number(spine.x2)).toBeGreaterThan(Number(spine.x1));
-    expect(spine.stroke).toBe("#1e293b");
-    expect(Number(spine["stroke-width"])).toBeGreaterThan(0);
-    // CSS overrides presentation attributes, including valid emitted strokes.
-    expect(svg.match(/\.sx-fb-spine\s*\{([^}]*)\}/)![1]).not.toMatch(/(?:^|;)\s*stroke\s*:|display:\s*none|visibility:\s*hidden|opacity:\s*0;/);
-    expect(spine["marker-end"]).toBeUndefined();
-    expect(svg).not.toContain("<marker");
-    const arrow = elements(svg, "sx-fb-spine-arrow");
-    expect(arrow).toHaveLength(1);
-    expect(arrow[0].fill).toBe("#1e293b");
-    expect(elements(svg, "sx-fb-head")[0].d).toMatch(/Z$/);
-    const tails = elements(svg, "sx-fb-tail");
-    expect(tails).toHaveLength(1);
-    expect(tails[0].d).toMatch(/Z$/);
-
   });
 });

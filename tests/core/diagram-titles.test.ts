@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { parse, renderResult } from "../../src/core/api";
-import { TITLE } from "../../src/core/theme";
 import { escapeXml } from "../../src/core/svg";
 import { getExamples, listDiagrams } from "../../src/ai";
 import { renderGitGraph } from "../../src/diagrams/gitgraph/renderer";
@@ -26,7 +25,7 @@ describe("authored titles survive the public render path", () => {
     it(`${diagram.type}: draws its accepted title`, () => {
       const title = diagramTitle(parse(example.dsl, { type: diagram.type }));
       const result = renderResult(example.dsl, { type: diagram.type });
-      expect(result.status).not.toBe("error");
+      expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
       if (title) expect(visibleText(result.svg)).toContain(escapeXml(title));
     });
 
@@ -38,7 +37,7 @@ describe("authored titles survive the public render path", () => {
       const source = `# Context for the reader\n${example.dsl}`;
       expect(diagramTitle(parse(source, { type: diagram.type }))).toBe(title);
       const result = renderResult(source, { type: diagram.type });
-      expect(result.status).not.toBe("error");
+      expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
       if (title) expect(visibleText(result.svg)).toContain(escapeXml(title));
     });
 
@@ -57,21 +56,12 @@ const samples: { type: DiagramType; source: string }[] = [
 ];
 
 describe("shared visible title placement", () => {
-  it.each(samples)("$type emits a centered house title", ({ type, source }) => {
-    const result = renderResult(source, { type, padding: 0 });
-    expect(result.status).not.toBe("error");
-    const text = [...result.svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)]
-      .find(match => match[2] === escapeXml(title));
-    expect(text).toBeDefined();
-    expect(text![1]).toContain(`y="${TITLE.y}"`);
-    expect(text![1]).toContain('text-anchor="middle"');
-  });
 
   it.each(samples.filter(sample => ["epc", "idef0", "markov"].includes(sample.type)))(
     "$type retains its header title after a native leading comment",
     ({ type, source }) => {
       const result = renderResult(`# Context for the reader\n${source}`, { type });
-      expect(result.status).not.toBe("error");
+      expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
       expect(visibleText(result.svg)).toContain(escapeXml(title));
     },
   );

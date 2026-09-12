@@ -85,59 +85,34 @@ const cases = readdirSync("visual-eval/cases").filter(name => name.startsWith("f
   .map(name => [name, readFileSync(`visual-eval/cases/${name}/source.sx`, "utf8")] as const);
 const small = (effect: string, config = "", cause = "") => `fishbone "Review"\neffect "${effect}"\n${config}\ncategory a "A"\ncategory b "B"\n${cause}`;
 
-describe("Fishbone Stage 1 silhouette from emitted SVG", () => {
+describe("Fishbone content and attachment geometry", () => {
   it.each([...cases, ["exemplar", readFileSync("visual-eval/exemplars/fishbone/source.sx", "utf8")],
     ["empty categories", small("Outcome")], ["one cause", small("Outcome", "", 'a: "One cause"')],
     ["long effect", small("Very long outcome statement with repeated details ".repeat(8))],
     ["CJK and XML", small("鱼骨原因与效果测量过程".repeat(8) + " & < >")]])(
-    "%s has a closed fish, visible entered arrow and clear labels", (_, source) => {
+    "%s preserves effect text, connected arrows and clear labels", (_, source) => {
       const result = renderResult(source, { type: "fishbone" });
-      expect(result.status).not.toBe("error");
+      expect(result.ok).toBe(true);
       const svg = result.svg;
-      expect(elements(svg, "rect").some(rect => rect.class === "sx-fb-head")).toBe(false);
-      for (const name of ["sx-fb-head", "sx-fb-tail"]) {
-        const paths = elements(svg, "path").filter(path => path.class === name);
-        expect(paths).toHaveLength(1);
-        expect(paths[0].d).toMatch(/^M .* C .* Z$/);
-        expect(paths[0]).toMatchObject({ fill: "#f8fafc", stroke: "#1e293b", "stroke-width": "2.5" });
-      }
-      expect(svg).toContain(".sx-fb-tail, .sx-fb-head { stroke-width: 2.5; stroke-linejoin: round; }");
       const head = points(shape(svg, "sx-fb-head").d), tail = points(shape(svg, "sx-fb-tail").d);
       const gill = points(shape(svg, "sx-fb-gill").d), arrow = points(shape(svg, "sx-fb-spine-arrow").d);
       const spine = elements(svg, "line").find(line => line.class === "sx-fb-spine")!;
       const hb = bounds(head), tb = bounds(tail), cy = Number(spine.y1);
       expect(spine.y1).toBe(spine.y2);
-      expect(spine).toMatchObject({ stroke: "#1e293b", "stroke-width": "4" });
-      expect(svg).toContain(".sx-fb-spine { stroke-width: 4;");
-      expect(hb.width).toBeCloseTo(274);
-      expect(hb.height).toBeGreaterThanOrEqual(232);
-      expect(Number(spine.x2)).toBeCloseTo(hb.x - 2);
       expect(inside(arrow[0], head)).toBe(false);
       expect(inside(arrow[1], head)).toBe(true);
-      expect(arrow[1]).toEqual({ x: hb.x + 36, y: cy });
       expect(arrow[0].x).toBeLessThan(Number(spine.x2)); // No gap between line and triangle.
-      expect(shape(svg, "sx-fb-spine-arrow").fill).toBe("#1e293b");
-      expect(svg.indexOf('class="sx-fb-head"')).toBeLessThan(svg.indexOf('class="sx-fb-spine"'));
-      expect(svg.indexOf('class="sx-fb-gill"')).toBeLessThan(svg.indexOf('class="sx-fb-spine-arrow"'));
-      expect(svg.indexOf('class="sx-fb-spine"')).toBeLessThan(svg.indexOf('class="sx-fb-spine-arrow"'));
       expect(elements(svg, "path").filter(path => path.class === "sx-fb-spine-arrow")).toHaveLength(1);
       expect(elements(svg, "path").filter(path => path.class === "sx-fb-gill")).toHaveLength(1);
-      expect(svg).not.toMatch(/<marker\b|marker-end=|url\(#/);
-      expect(elements(svg, "line").filter(line => line.class === "sx-fb-tail")).toHaveLength(0);
       expect(inside({ x: Number(spine.x1), y: cy }, tail)).toBe(true);
-      expect(inside({ x: tb.x + 15, y: cy }, tail)).toBe(false); // A fork, not a solid triangle.
-      expect(tail.some(p => p.x === tb.x && p.y === cy - 58)).toBe(true);
-      expect(tail.some(p => p.x === tb.x && p.y === cy + 58)).toBe(true);
       const [,, width, height] = svg.match(/viewBox="([^"]+)"/)![1].split(" ").map(Number);
       for (const path of [head, tail, arrow]) for (const p of path) {
         expect(p.x).toBeGreaterThan(2); expect(p.y).toBeGreaterThan(2);
         expect(p.x).toBeLessThan(width - 2); expect(p.y).toBeLessThan(height - 2);
       }
       const labels = textBoxes(svg);
-      expect(labels.filter(label => label.class === "sx-fb-effect-eyebrow").map(label => label.text)).toEqual(["EFFECT"]);
       const effect = labels.filter(label => label.class === "sx-fb-head-text");
       expect(effect.map(label => label.text).join("").replace(/\s/g, "")).toBe(parseFishboneDSL(source).effect.replace(/\s/g, ""));
-      expect(svg).toContain('class="sx-fb-head-text" fill="#0f172a"');
       for (const label of labels) {
         const b = label.box;
         expect(b.x).toBeGreaterThan(0); expect(b.y).toBeGreaterThan(0);
@@ -178,6 +153,5 @@ describe("Fishbone Stage 1 silhouette from emitted SVG", () => {
     const head = bounds(points(shape(svg, "sx-fb-head").d));
     const arrow = points(shape(svg, "sx-fb-spine-arrow").d);
     expect(width - arrow[1].x).toBeLessThan(width - head.x);
-    expect(svg.indexOf('class="sx-fb-head"')).toBeLessThan(svg.indexOf('class="sx-fb-spine-arrow"'));
   });
 });

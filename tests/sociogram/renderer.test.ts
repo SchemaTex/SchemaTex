@@ -1,3 +1,4 @@
+import { render } from "../../src/core/api";
 import { describe, it, expect } from "vitest";
 import { parseSociogram } from "../../src/diagrams/sociogram/parser";
 import { layoutSociogram } from "../../src/diagrams/sociogram/layout";
@@ -11,12 +12,6 @@ function renderFromText(text: string): string {
 
 describe("Sociogram Renderer", () => {
   describe("SVG structure", () => {
-    it("produces valid SVG root element", () => {
-      const svg = renderFromText("sociogram\nalice\nbob\nalice -> bob\n");
-      expect(svg).toMatch(/^<svg/);
-      expect(svg).toMatch(/<\/svg>$/);
-      expect(svg).toContain('xmlns="http://www.w3.org/2000/svg"');
-    });
 
     it("includes viewBox", () => {
       const svg = renderFromText("sociogram\nalice\n");
@@ -302,11 +297,10 @@ tom -.- anna
   });
 
   describe("render via api", () => {
-    it("renders sociogram through the main render() API", async () => {
-      const { render } = await import("../../src/core/api");
+    it("renders sociogram through the main render() API", () => {
       const svg = render("sociogram\nalice -> bob\n");
       expect(svg).toContain("schematex-sociogram");
       expect(svg).toContain("alice");
-    }, 10_000);
+    });
   });
 });

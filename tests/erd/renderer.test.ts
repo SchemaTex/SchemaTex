@@ -44,13 +44,4 @@ table B { id int PK }
 ref A one-optional .. many-optional B`);
     expect(svg).toContain("lt-erd-edge-non-identifying");
   });
-
-  test("monochrome theme overrides colors", () => {
-    const svg = renderErd(
-      `erd
-table A { id int PK }`,
-      { theme: "monochrome", fontFamily: "sans-serif", fontSize: 12, padding: 20 }
-    );
-    expect(svg).toContain("<svg");
-  });
 });

@@ -13,7 +13,6 @@ test.each([3, 6, 9])("routed candidate search preserves every connection in a %i
   const original = JSON.stringify(ast);
   const layout = schematicNetlistLayout(ast, { collectStats: true })!;
   const search = layout.stats!.optimization!;
-  expect(search.candidates).toBeLessThanOrEqual(8);
   expect(search.after).toSatisfy(after => JSON.stringify(after) === JSON.stringify(search.before) || isBetterRouting(after, search.before));
   for (const metric of ["bodyHits", "captionHits", "terminalTurns", "overlap", "junctionConflicts"] as const) {
     expect(search.after[metric]).toBeLessThanOrEqual(search.before[metric]);

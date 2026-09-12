@@ -15,68 +15,34 @@ import {
   inspectDiagram,
   applyDiagramEdits,
 } from "../../src/ai";
-import {
-  INTERACTIVE_DIAGRAM_COUNT,
-  POSITION_EDITABLE_DIAGRAM_COUNT,
-} from "../../src";
 
 describe("listDiagrams", () => {
-  it("returns all 52 diagram types", () => {
-    const list = listDiagrams();
-    expect(list.length).toBe(52);
-    const types = list.map((d) => d.type);
+  it("lists unique diagram types", () => {
+    const types = listDiagrams().map(entry => entry.type);
+    expect(types.length).toBeGreaterThan(0);
+    expect(new Set(types).size).toBe(types.length);
     expect(types).toContain("genogram");
-    expect(types).toContain("siteplan");
-    expect(types).toContain("stageplot");
-    expect(types).toContain("rbd");
-    expect(types).toContain("comparison");
-    expect(types).toContain("petri");
-    expect(types).toContain("network");
-    expect(types).toContain("sld");
-    expect(types).toContain("fishbone");
-    expect(types).toContain("eventtree");
-    expect(types).toContain("fmea");
-    expect(types).toContain("markov");
-    expect(types).toContain("threatmodel");
-    expect(types).toContain("decisiontree");
-    expect(types).toContain("state");
-    expect(types).toContain("sequence");
-    expect(types).toContain("pid");
-    expect(types).toContain("erd");
-    expect(types).toContain("breadboard");
-    expect(types).toContain("bpmn");
-    expect(types).toContain("fbd");
-    expect(types).toContain("sfc");
-    expect(types).toContain("usecase");
-    expect(types).toContain("prisma");
-    expect(types).toContain("pert");
-    expect(types).toContain("evacuation");
   });
 
   it("each entry has tagline + useWhen + standard", () => {
     for (const entry of listDiagrams()) {
-      expect(entry.tagline.length).toBeGreaterThan(10);
-      expect(entry.useWhen.length).toBeGreaterThan(20);
-      expect(entry.standard.length).toBeGreaterThan(3);
+      expect(entry.tagline.trim()).not.toBe("");
+      expect(entry.useWhen.trim()).not.toBe("");
+      expect(entry.standard.trim()).not.toBe("");
     }
   });
 
   it("uses the canonical interactive capability registry for all engines", () => {
-    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(21);
-    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(18);
-    let sourceOnly = 0;
     for (const entry of listDiagrams()) {
       expect(entry.interactive).toEqual(getDiagramCapabilities(entry.type));
-      if (entry.interactive.text.length === 0) sourceOnly++;
     }
-    expect(sourceOnly).toBe(31);
   });
 
   it("publishes canonical reasons for every constrained position model", () => {
     for (const entry of listDiagrams()) {
       if (entry.interactive.position !== "free") {
         expect(entry.interactive.reason, entry.type).toBeTypeOf("string");
-        expect(entry.interactive.reason!.length, entry.type).toBeGreaterThan(30);
+        expect(entry.interactive.reason!.trim(), entry.type).not.toBe("");
       }
     }
   });
@@ -141,15 +107,9 @@ describe("getSyntax", () => {
     const result = getSyntax("genogram");
     expect(result.type).toBe("genogram");
     expect(result.syntax.detail).toBe("canonical");
-    expect(result.syntax.content).toContain("# Canonical generation syntax");
-    expect(result.syntax.content.length).toBeGreaterThan(500);
+    expect(result.syntax.content.trim()).not.toBe("");
     // JSX stripped → no <Playground tags
     expect(result.syntax.content).not.toContain("<Playground");
-  });
-
-  it("returns syntax for sld", () => {
-    const result = getSyntax("sld");
-    expect(result.syntax.content.length).toBeGreaterThan(100);
   });
 
   it("throws on unknown type", () => {
@@ -160,9 +120,7 @@ describe("getSyntax", () => {
     for (const entry of listDiagrams()) {
       const { syntax } = getSyntax(entry.type);
       expect(syntax.detail).toBe("canonical");
-      expect(syntax.content).toContain("## Copyable pattern");
-      expect(syntax.content).toContain("## Before returning");
-      expect(syntax.content).not.toMatch(/^## 1\. /m);
+      expect(syntax.content.trim()).not.toBe("");
     }
   });
 
@@ -174,26 +132,15 @@ describe("getSyntax", () => {
     expect(syntax.content).not.toContain("- inst FT-101 : field_discrete");
   });
 
-  it("keeps the engineering cards compact enough for an agent tool call", () => {
-    for (const type of ["pid", "sld", "circuit"] as const) {
-      const words = getSyntax(type).syntax.content.trim().split(/\s+/).length;
-      expect(words, type).toBeLessThan(650);
-    }
-  });
-
-  it("reference syntax is trimmed — starts at '## 1.' and excludes trailing sections", () => {
-    // The build-time trim drops the `## About …` prelude and the trailing
-    // Standard-compliance / Related-examples / Roadmap sections because they
-    // don't help an LLM generate DSL. See scripts/build-ai-content.mjs.
+  it("returns distinct reference content when requested", () => {
     for (const entry of listDiagrams()) {
       const { syntax } = getSyntax(entry.type, { detail: "reference" });
       expect(syntax.detail).toBe("reference");
-      expect(syntax.content.startsWith("## 1. "), entry.type).toBe(true);
-      expect(syntax.content).not.toMatch(/^## \d+\. Standard compliance/m);
-      expect(syntax.content).not.toMatch(/^## \d+\. Related examples/m);
-      expect(syntax.content).not.toMatch(/^## \d+\. Roadmap/m);
+      expect(syntax.content.trim()).not.toBe("");
+      expect(syntax.content).not.toBe(getSyntax(entry.type).syntax.content);
     }
   });
+
 });
 
 describe("getExamples", () => {

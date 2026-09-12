@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { measureRouting } from "../../src/diagrams/circuit/layout-quality";
+import { isBetterRouting, measureRouting } from "../../src/diagrams/circuit/layout-quality";
 const route = (netId: string, points: number[][]) => ({ netId, points: points.map(([x, y]) => ({ x: x!, y: y! })) });
 
 test("shared same-net ink is counted once, regardless of segment splitting", () => {
@@ -38,4 +38,13 @@ test("terminal entry must extend outward along the pin axis", () => {
   expect(measureRouting([route("a", [[0, 0], [0, 100]])], ["a"], [], [], leads).terminalTurns).toBe(1);
   expect(measureRouting([route("a", [[0, 0], [100, 0]])], ["a"], [], [], leads).terminalTurns).toBe(1);
   expect(measureRouting([route("a", [[-100, 0], [0, 0]])], ["a"], [], [], leads).terminalTurns).toBe(0);
+});
+
+test('removing a body collision takes priority over shorter wiring', () => {
+  const obstacle={left:4,right:6,top:-1,bottom:1};
+  const blocked=measureRouting([{netId:'n',points:[{x:0,y:0},{x:10,y:0}]}],['n'],[obstacle]);
+  const clear=measureRouting([{netId:'n',points:[{x:0,y:0},{x:0,y:3},{x:10,y:3},{x:10,y:0}]}],['n'],[obstacle]);
+  expect(clear.cost).toBeGreaterThan(blocked.cost);
+  expect(isBetterRouting(clear,blocked)).toBe(true);
+  expect(isBetterRouting(blocked,clear)).toBe(false);
 });
