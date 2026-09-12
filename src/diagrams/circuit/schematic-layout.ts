@@ -1135,6 +1135,189 @@ function layoutCandidate(
       reserve(upright(comp, toGround ? signalPin[0] : supplyPin[0], x, y));
     }
 
+    // Closed islands share only supply/return nets with the rest of the drawing.
+    // Arrange an island only when every peripheral is a path around one host.
+    // Never relocate a fragment of a larger signal network.
+    const groupedUnits: LaidOutComponent[][] = [];
+    {
+      const movable = items.filter(it => pinEntriesOf(ast, it.component).length === 2 &&
+        !isSource(it.component) && !effectiveSymbolDef(it.component.componentType, it.component.attrs).keepUpright &&
+        it.component.attrs?.dirExplicit !== "true");
+      const movableSet = new Set(movable);
+      const byNet = new Map<string, LaidOutComponent[]>();
+      for (const it of items)
+        for (const [, net] of pinEntriesOf(ast, it.component)) {
+          if (isSupplyNet(net))
+            continue;
+          const list = byNet.get(net) ?? [];
+          list.push(it);
+          byNet.set(net, list);
+        }
+      const visited = new Set<LaidOutComponent>();
+      for (const seed of items) {
+        if (visited.has(seed))
+          continue;
+        const island = [seed];
+        visited.add(seed);
+        for (let i = 0; i < island.length; i++)
+          for (const [, net] of pinEntriesOf(ast, island[i]!.component))
+            for (const it of byNet.get(net) ?? [])
+              if (!visited.has(it)) {
+                visited.add(it);
+                island.push(it);
+              }
+        const hosts = island.filter(it => pinEntriesOf(ast, it.component).length > 2);
+        if (hosts.length !== 1)
+          continue;
+        const host = hosts[0]!;
+        const peers = island.filter(it => it !== host);
+        if (!peers.length || peers.some(it => !movableSet.has(it)))
+          continue;
+        const bounds = boxOf(host, 0);
+        const remaining = new Set(peers);
+        const groups: LaidOutComponent[][] = [];
+        for (const peer of peers) {
+          if (!remaining.delete(peer))
+            continue;
+          const group = [peer];
+          for (let i = 0; i < group.length; i++)
+            for (const [, net] of pinEntriesOf(ast, group[i]!.component))
+              for (const it of byNet.get(net) ?? [])
+                if (remaining.delete(it))
+                  group.push(it);
+          groups.push(group);
+        }
+        // Nest branches in terminal order. A lower port returning downward stays
+        // nearer the host, so higher ports need not cross its terminal lead.
+        const branchOrder = (group: LaidOutComponent[]) => {
+          const nets = new Set(group.flatMap(it => pinEntriesOf(ast, it.component).map(([, n]) => n)));
+          const ys = pinEntriesOf(ast, host.component).filter(([, n]) => nets.has(n) && !isSupplyNet(n)).map(([p]) => host.anchors[p]!.y);
+          return [...nets].some(n => groundNets.has(n)) && ![...nets].some(n => powerNets.has(n)) ? -Math.max(...ys) : Math.min(...ys);
+        };
+        groups.sort((a, b) => branchOrder(a) - branchOrder(b));
+        const plans: {
+          old: LaidOutComponent[];
+          next: LaidOutComponent[];
+          side: number;
+        }[] = [];
+        for (const group of groups) {
+          const members = new Set(group.map(it => it.component.id));
+          const nets = new Map<string, LaidOutComponent[]>();
+          for (const it of group)
+            for (const [, net] of pinEntriesOf(ast, it.component)) {
+              const list = nets.get(net) ?? [];
+              list.push(it);
+              nets.set(net, list);
+            }
+          if ([...nets.values()].some(v => v.length > 2))
+            break;
+          const ends = [...nets].filter(([, v]) => v.length === 1).map(([net]) => net);
+          if (ends.length !== 2)
+            break;
+          const contacts = allPins.filter(p => nets.has(p.net) && !isSupplyNet(p.net) && !members.has(p.compId));
+          if (!contacts.length || contacts.some(p => p.compId !== host.component.id))
+            break;
+          const anchors = contacts.map(p => ({ net: p.net, at: host.anchors[p.pinName]! }));
+          const sideOf = (p: PinAnchor) => p.x <= bounds.minX + BODY_CLEARANCE ? -1 : p.x >= bounds.maxX - BODY_CLEARANCE ? 1 : 0;
+          const side = sideOf(anchors[0]!.at);
+          if (!side || anchors.some(p => sideOf(p.at) !== side))
+            break;
+          const netY = (net: string) => Math.min(...anchors.filter(a => a.net === net).map(a => a.at.y));
+          let start = ends.find(n => powerNets.has(n)) ?? ends.find(n => !groundNets.has(n) && anchors.some(a => a.net === n)) ?? ends[0]!;
+          if (!ends.some(isSupplyNet) && netY(ends[1]!) < netY(ends[0]!))
+            start = ends[1]!;
+          const chain: {
+            item: LaidOutComponent;
+            pin: string;
+            net: string;
+          }[] = [];
+          const seen = new Set<LaidOutComponent>();
+          let net = start;
+          while (chain.length < group.length) {
+            const item = nets.get(net)?.find(it => !seen.has(it));
+            if (!item)
+              break;
+            seen.add(item);
+            const pins = pinEntriesOf(ast, item.component);
+            const pin = pins.find(([, n]) => n === net)![0];
+            chain.push({ item, pin, net });
+            net = pins.find(([p]) => p !== pin)![1];
+          }
+          if (chain.length !== group.length)
+            break;
+          const offsets = new Map<string, number>();
+          let cursor = 0;
+          for (const link of chain) {
+            offsets.set(link.net, cursor);
+            cursor += link.item.length + clearance + TERMINAL_LEAD;
+          }
+          offsets.set(net, cursor - clearance - TERMINAL_LEAD);
+          const alignment = anchors.map(a => a.at.y - offsets.get(a.net)!).sort((a, b) => a - b);
+          const y = alignment[Math.floor(alignment.length / 2)]!;
+          const gutter = Math.max(clearance + TERMINAL_LEAD, ...group.map(it => {
+            const b = labelBox(it.component, { x: 0, y: 0 });
+            return (b.maxX - b.minX) / 2 + clearance + TERMINAL_LEAD;
+          }));
+          const lane = plans.filter(p => p.side === side).reduce((sum, p) => sum + Math.max(...p.next.map(it => spacing(it.component).width)), 0);
+          const x = side < 0 ? bounds.minX - gutter - lane : bounds.maxX + gutter + lane;
+          plans.push({ old: chain.map(c => c.item), next: chain.map(link => upright({ ...link.item.component, attrs: { ...link.item.component.attrs } }, link.pin, x, y + offsets.get(link.net)!)), side });
+        }
+        if (plans.length !== groups.length)
+          continue;
+        for (const plan of plans)
+          for (let i = 0; i < plan.old.length; i++) {
+            const next = plan.next[i]!;
+            items[items.indexOf(plan.old[i]!)] = next;
+            placed.set(next.component.id, next);
+          }
+        groupedUnits.push([host, ...plans.flatMap(p => p.next)]);
+      }
+      if (groupedUnits.length) {
+        const grouped = new Set(groupedUnits.flat());
+        const sources = items.filter(it => supplySources.includes(it.component));
+        const others = items.filter(it => !grouped.has(it) && !sources.includes(it));
+        const box = (unit: LaidOutComponent[]) => ({
+          minX: Math.min(...unit.map(it => boxOf(it, clearance).minX)),
+          maxX: Math.max(...unit.map(it => boxOf(it, clearance).maxX)),
+          minY: Math.min(...unit.map(it => boxOf(it, clearance).minY)),
+          maxY: Math.max(...unit.map(it => boxOf(it, clearance).maxY)),
+        });
+        const shift = (unit: LaidOutComponent[], dx: number, dy: number) => {
+          for (const it of unit) {
+            it.x += dx;
+            it.y += dy;
+            for (const a of Object.values(it.anchors)) {
+              a.x += dx;
+              a.y += dy;
+            }
+          }
+        };
+        const arranged = others.map(it => [it]);
+        // Independent islands read as neighboring panels, with shared rails above/below.
+        let x = Math.min(...groupedUnits.map(u => box(u).minX));
+        const y = TOP_MARGIN;
+        for (const unit of groupedUnits) {
+          let b = box(unit);
+          shift(unit, x - b.minX, y - b.minY);
+          for (let attempt = 0; attempt < arranged.length + 1; attempt++) {
+            b = box(unit);
+            const hits = arranged.map(box).filter(o => boxesOverlap(b, o));
+            if (!hits.length)
+              break;
+            shift(unit, Math.max(...hits.map(o => o.maxX)) - b.minX + clearance, 0);
+          }
+          arranged.push(unit);
+          x = box(unit).maxX + clearance;
+        }
+        let left = Math.min(...arranged.map(u => box(u).minX));
+        for (const source of sources) {
+          const b = boxOf(source, clearance);
+          shift([source], Math.min(0, left - clearance - b.maxX), 0);
+          left = boxOf(source, clearance).minX;
+        }
+      }
+    }
+
     // Terminal strips bound the wiring area. Opposite banks use opposite faces,
     // without mirroring their numbers or printing the caption inside the symbol.
     const inner = items.map((it) => boxOf(it, 0));
@@ -1158,7 +1341,7 @@ function layoutCandidate(
     const originSpan = Math.max(...items.map((it) => it.y)) - Math.min(...items.map((it) => it.y));
     const targetHeight = (Math.max(...bounds.map((b) => b.maxX)) - Math.min(...bounds.map((b) => b.minX))) / MAX_ASPECT;
     const scaleY = originSpan ? Math.max(1, (targetHeight - Math.max(...bounds.map((b) => b.maxY - b.minY)) - 2 * (clearance + BUS_CLEARANCE)) / originSpan) : 1;
-    if (!channelBanks.length && scaleY > 1) for (const item of items) {
+    if (!groupedUnits.length && !channelBanks.length && scaleY > 1) for (const item of items) {
       const rowY = item.y - (item.rotation === 270 ? item.length : 0);
       const dy = (rowY - TOP_MARGIN) * (scaleY - 1);
       item.y += dy;
