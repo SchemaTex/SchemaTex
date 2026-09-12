@@ -25,7 +25,7 @@ import {
   escapeXml,
   path as pathEl,
 } from "../../core/svg";
-import { resolveIndustrialTheme } from "../../core/theme";
+import { resolveIndustrialTheme, type IndustrialTokens, type ResolvedTheme } from "../../core/theme";
 import { resolveSceneTitle } from "../../core/title-scene";
 
 // Three-pixel dashes distinguish caption leaders from electrical conductors.
@@ -302,6 +302,35 @@ function renderRoute(
   }, [line, dots]);
 }
 
+export function circuitStylesheet(t: ResolvedTheme<IndustrialTokens>): string {
+  return `
+.schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-circuit-hit { fill: transparent; stroke: none; pointer-events: all; }
+.schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
+.schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
+.schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
+.schematex-circuit-label-leader { stroke: ${t.stroke}; stroke-width: 1; stroke-dasharray: ${LABEL_LEADER_DASH} ${LABEL_LEADER_DASH}; fill: none; }
+.schematex-circuit-label { font-size: 11px; font-weight: 600; fill: ${t.text}; }
+.schematex-circuit-value { font-size: 10px; font-style: italic; fill: ${t.textMuted}; }
+.schematex-circuit-net-label { font-size: 11px; font-weight: 600; fill: ${t.accent}; }
+.schematex-circuit-electrode { stroke: ${t.stroke}; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+.schematex-circuit-pol { font-size: 9px; fill: ${t.stroke}; }
+.schematex-circuit-meter { font-size: 12px; font-weight: 700; fill: ${t.stroke}; }
+.schematex-circuit-title { font-size: 16px; font-weight: 700; fill: ${t.text}; }
+.schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
+.schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+.schematex-circuit-panel-label { font-size: 11px; font-weight: 700; fill: ${t.text}; }
+.schematex-circuit-din { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.4; }
+.schematex-circuit-din-slot { fill: ${t.textMuted}; opacity: 0.5; }
+.schematex-circuit-duct { fill: none; stroke: ${t.textMuted}; stroke-width: 1.2; stroke-dasharray: 3 2; }
+.schematex-circuit-duct-tooth { stroke: ${t.textMuted}; stroke-width: 0.8; opacity: 0.65; }
+.schematex-circuit-panel-led { fill: ${t.accent}; stroke: ${t.stroke}; stroke-width: 0.8; }
+.schematex-circuit-panel-light { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.5; }
+.schematex-circuit-estop { fill: ${t.error}; stroke: ${t.stroke}; stroke-width: 1.4; }
+`.trim();
+}
+
 export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const isNetlist = ast.mode === "netlist";
   const topOff = ast.title ? 24 : 0;
@@ -387,31 +416,7 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
     })
     .join("");
 
-  const css = `
-.schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-circuit-hit { fill: transparent; stroke: none; pointer-events: all; }
-.schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
-.schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
-.schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
-.schematex-circuit-label-leader { stroke: ${t.stroke}; stroke-width: 1; stroke-dasharray: ${LABEL_LEADER_DASH} ${LABEL_LEADER_DASH}; fill: none; }
-.schematex-circuit-label { font-size: 11px; font-weight: 600; fill: ${t.text}; }
-.schematex-circuit-value { font-size: 10px; font-style: italic; fill: ${t.textMuted}; }
-.schematex-circuit-net-label { font-size: 11px; font-weight: 600; fill: ${t.accent}; }
-.schematex-circuit-pol { font-size: 9px; fill: ${t.stroke}; }
-.schematex-circuit-meter { font-size: 12px; font-weight: 700; fill: ${t.stroke}; }
-.schematex-circuit-title { font-size: 16px; font-weight: 700; fill: ${t.text}; }
-.schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
-.schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
-.schematex-circuit-panel-label { font-size: 11px; font-weight: 700; fill: ${t.text}; }
-.schematex-circuit-din { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.4; }
-.schematex-circuit-din-slot { fill: ${t.textMuted}; opacity: 0.5; }
-.schematex-circuit-duct { fill: none; stroke: ${t.textMuted}; stroke-width: 1.2; stroke-dasharray: 3 2; }
-.schematex-circuit-duct-tooth { stroke: ${t.textMuted}; stroke-width: 0.8; opacity: 0.65; }
-.schematex-circuit-panel-led { fill: ${t.accent}; stroke: ${t.stroke}; stroke-width: 0.8; }
-.schematex-circuit-panel-light { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.5; }
-.schematex-circuit-estop { fill: ${t.error}; stroke: ${t.stroke}; stroke-width: 1.4; }
-`.trim();
+  const css = circuitStylesheet(t);
 
   const titleScene = ast.title
     ? resolveSceneTitle(ast.title, ast.titleSourceRange, left + width / 2, 18, config)

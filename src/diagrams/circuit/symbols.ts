@@ -10,7 +10,7 @@
  * an SVG rotation transform around (0,0) and the layout rotates the anchor
  * coordinates accordingly.
  */
-import { escapeXml, line as svgLine, text as svgText } from "../../core/svg";
+import { escapeXml, line as svgLine, text as svgText, path as svgPath, circle as svgCircle, polygon as svgPolygon } from "../../core/svg";
 import { edgeLabelObstacles, placeLabel, type LabelBox } from "../../core/label-placement";
 import type { CircuitComponentType } from "../../core/types";
 import { estimateTextWidth } from "../../core/text-metrics";
@@ -53,7 +53,7 @@ const resistor: SymbolDef = {
   length: 40,
   anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
   svg: () =>
-    `<path d="M 0,0 L 5,0 L 8,-8 L 12,8 L 16,-8 L 20,8 L 24,-8 L 28,8 L 32,-8 L 35,0 L 40,0" ${BODY}/>`,
+    svgPath({ d: "M 0 0 H 5 L 7.5 -5.5 L 12.5 5.5 L 17.5 -5.5 L 22.5 5.5 L 27.5 -5.5 L 32.5 5.5 L 35 0 H 40", class: "schematex-circuit-body" }),
 };
 
 const capacitor: SymbolDef = {
@@ -71,15 +71,14 @@ const capacitor: SymbolDef = {
 const electrolytic_cap: SymbolDef = {
   length: 20,
   anchors: { start: { x: 0, y: 0 }, end: { x: 20, y: 0 } },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<line x1="8" y1="-10" x2="8" y2="10" ${BODY}/>`,
-      `<path d="M 12,-10 Q 16,0 12,10" fill="none" class="schematex-circuit-body"/>`,
-      lineWire(12, 0, 20, 0),
-      `<text x="5" y="-12" class="schematex-circuit-pol">+</text>`,
-      `<text x="15" y="-12" class="schematex-circuit-pol">−</text>`,
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 8, 0),
+    svgLine({ x1: 8, y1: -10, x2: 8, y2: 10, class: "schematex-circuit-body" }),
+    // The negative lead meets the curved plate at its midpoint, without crossing it.
+    svgPath({ d: "M 16 -10 Q 8 0 16 10", class: "schematex-circuit-body" }),
+    lineWire(12, 0, 20, 0),
+    svgText({ x: 6, y: -12, class: "schematex-circuit-pol" }, "+"),
+  ].join(""),
 };
 
 const inductor: SymbolDef = {
@@ -201,15 +200,14 @@ const battery: SymbolDef = {
     minus: { x: 0, y: 0 },
     plus: { x: 24, y: 0 },
   },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<line x1="8" y1="-8" x2="8" y2="8" ${BODY}/>`,
-      `<line x1="12" y1="-4" x2="12" y2="4" ${BODY}/>`,
-      `<line x1="14" y1="-8" x2="14" y2="8" ${BODY}/>`,
-      `<line x1="18" y1="-4" x2="18" y2="4" ${BODY}/>`,
-      lineWire(18, 0, 24, 0),
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 5.5, 0),
+    // Short, heavy plates face minus; long plates face the named plus pin.
+    ...[5.5, 14.5].map((x) => svgLine({ x1: x, y1: -5.5, x2: x, y2: 5.5, class: "schematex-circuit-electrode" })),
+    ...[9.5, 18.5].map((x) => svgLine({ x1: x, y1: -11, x2: x, y2: 11, class: "schematex-circuit-body" })),
+    lineWire(18.5, 0, 24, 0),
+    svgText({ x: 16, y: -14, class: "schematex-circuit-pol" }, "+"),
+  ].join(""),
 };
 
 // IEC 60617 photovoltaic cell: cell plates with incident-light arrows.
@@ -306,16 +304,16 @@ const schottky: SymbolDef = {
 const led: SymbolDef = {
   length: 30,
   anchors: { start: { x: 0, y: 0 }, end: { x: 30, y: 0 } },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<polygon points="8,-8 8,8 22,0" ${FILL}/>`,
-      `<line x1="22" y1="-8" x2="22" y2="8" ${BODY}/>`,
-      lineWire(22, 0, 30, 0),
-      // outward light arrows
-      `<path d="M 12,-10 L 20,-18 M 18,-18 L 20,-18 L 20,-16" fill="none" ${BODY}/>`,
-      `<path d="M 16,-10 L 24,-18 M 22,-18 L 24,-18 L 24,-16" fill="none" ${BODY}/>`,
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 8, 0),
+    svgPolygon({ points: "8,-8 8,8 22,0", class: "schematex-circuit-fill" }),
+    svgLine({ x1: 22, y1: -8, x2: 22, y2: 8, class: "schematex-circuit-body" }),
+    lineWire(22, 0, 30, 0),
+    ...[0, 7].flatMap((offset) => [
+      svgLine({ x1: 15 + offset, y1: -10, x2: 7 + offset, y2: -19, class: "schematex-circuit-body" }),
+      svgPolygon({ points: `${7 + offset},-19 ${11.15 + offset},-17.34 ${8.16 + offset},-14.68`, class: "schematex-circuit-fill" }),
+    ]),
+  ].join(""),
 };
 
 const photodiode: SymbolDef = {
@@ -349,18 +347,20 @@ const npn: SymbolDef = {
     c: { x: 40, y: -16 },
     e: { x: 40, y: 16 },
   },
-  svg: () =>
-    [
-      `<circle cx="20" cy="0" r="16" fill="white" ${BODY}/>`,
-      `<line x1="14" y1="-10" x2="14" y2="10" ${BODY}/>`,
-      lineWire(0, 0, 14, 0),
-      `<line x1="14" y1="-6" x2="30" y2="-12" ${BODY}/>`,
-      lineWire(30, -12, 40, -16),
-      `<line x1="14" y1="6" x2="30" y2="12" ${BODY}/>`,
-      lineWire(30, 12, 40, 16),
-      // NPN arrow (outward on emitter)
-      `<polygon points="30,12 24,10 26,16" ${FILL}/>`,
-    ].join(""),
+  svg: () => {
+    const dx = 19, dy = 10.5, length = Math.hypot(dx, dy);
+    const ux = dx / length, uy = dy / length;
+    const tipX = 21 + ux * 12, tipY = 5.5 + uy * 12;
+    const backX = tipX - ux * 6.5, backY = tipY - uy * 6.5;
+    return [
+      svgCircle({ cx: 24, cy: 0, r: 15, class: "schematex-circuit-body" }),
+      lineWire(0, 0, 21, 0),
+      svgLine({ x1: 21, y1: -11, x2: 21, y2: 11, class: "schematex-circuit-electrode" }),
+      svgLine({ x1: 21, y1: -5.5, x2: 40, y2: -16, class: "schematex-circuit-body" }),
+      svgLine({ x1: 21, y1: 5.5, x2: 40, y2: 16, class: "schematex-circuit-body" }),
+      svgPolygon({ points: `${tipX},${tipY} ${backX - uy * 3},${backY + ux * 3} ${backX + uy * 3},${backY - ux * 3}`, class: "schematex-circuit-fill" }),
+    ].join("");
+  },
 };
 
 const pnp: SymbolDef = {

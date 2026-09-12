@@ -35,9 +35,9 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 - **Pin**: `start`（左/入方向端）, `end`（右/出方向端）
 - **SVG Path (ANSI, 水平)**:
   ```
-  M 0,0 L 5,0 L 8,-8 L 12,8 L 16,-8 L 20,8 L 24,-8 L 28,8 L 32,-8 L 35,0 L 40,0
+  M 0 0 H 5 L 7.5 -5.5 L 12.5 5.5 L 17.5 -5.5 L 22.5 5.5 L 27.5 -5.5 L 32.5 5.5 L 35 0 H 40
   ```
-  其中 y 偏移 ±8px 为锯齿幅度
+  其中 y 偏移 ±5.5px 为锯齿幅度
 
 #### Capacitor (非极性)
 - **符号**: 两条平行线，间距 4px，两端引线
@@ -55,7 +55,7 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 
 #### Capacitor (极性/电解)
 - 右板改为弧形（curved plate）或标注 `+`
-- 弧形右板: `<path d="M 12,-12 Q 16,0 12,12" fill="none"/>`
+- 弧形右板: `<path d="M 16,-10 Q 8,0 16,10" fill="none"/>`
 - `+` 标注: 在左板外侧添加 `+` 文字
 
 #### Inductor
