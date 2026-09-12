@@ -284,6 +284,10 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
       "Declare electrical connectivity and pin identity; the engine owns placement, wire routing and label clearance. Do not repair a drawing by adding coordinates, component dimensions or `dir=` overrides to a generated netlist.",
+      'Optional functional structure: `group sense "Sensing": U1 R1` keeps a stage and its supporting parts together. Add groups only for distinct functional stages; leave simple circuits ungrouped. Each component belongs to at most one group.',
+      '`flow sense -> compute -> output` orders declared groups for reading; use separate flow lines for branches. It adds no electrical connections. Without flow, groups follow declaration order. Electrical feedback stays in the netlist, not a cycle in flow.',
+      '`bus A,B: R1 -> U1 -> U2 -> R2` declares physical cable order when that order is known. Every listed component must connect to every listed bus net. Keep the bus in one group or entirely ungrouped; a component or net can belong to only one physical bus.',
+      'Reuse a supported component type and its pin definition before choosing a generic IC. For a custom device, `U1 VP GND IN OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output"` binds nets to pin names in the same order. Available roles are input, output, bidirectional, power and return; annotate every pin when using roles.',
     ],
     avoid: [
       "Do not switch to positional cursor mode to fix a schematic. Physical cabinet placement is a separate user request; consult the reference syntax only for that task.",
@@ -292,6 +296,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'A `terminal_block` with `pins="1,2"` has two independent terminals, not an internal jumper. Use a shared net or explicit wire when those terminals must be electrically connected.',
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
       "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
+      "Do not change an electrical pin role to move its drawing. A differential input's negative pin is input, not return; return denotes a supply reference. Keep coordinates, bends, spacing and pin-side choices in the engine.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",

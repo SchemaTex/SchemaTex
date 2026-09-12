@@ -515,6 +515,12 @@ For exact publication drawings, positional DSL is still available, but generated
 A netlist says what is connected. Add functional information when a circuit has
 several stages or a physical cable bus. Simple circuits do not need groups.
 
+For LLM generation, start with components and connections. Add groups only for
+distinct functional stages; do not split every small circuit into input/core/output
+groups. Prefer an existing component type with its defined pins. Use generic IC
+pin roles only when representing a custom device, keeping net order and pin order
+aligned. Choose roles from the device's function, never to move a pin on the page.
+
 ```text
 circuit "Sensor interface" netlist
 V1 VP GND 5V
