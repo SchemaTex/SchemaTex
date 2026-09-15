@@ -55,30 +55,25 @@ describe("genogram status symbols", () => {
     expect(Number(femaleCross![1])).toBeCloseTo(-20 * 0.707);
   });
 
-  test.each(["male", "female", "unknown"] satisfies Individual["sex"][])("stillborn halves the %s shape and adds SB without a deceased cross", (sex) => {
+  test.each(["male", "female", "unknown"] satisfies Individual["sex"][])("stillborn uses a small square and X for %s", (sex) => {
     const svg = symbol("stillborn", sex);
-    const living = base(symbol("alive", sex));
-    expect(base(svg)).not.toBe(living);
-    expect(base(svg)).toBe(living.replaceAll("20", "10").replaceAll("40", "20"));
-    expect(svg).toMatch(/<text\b[^>]*class="schematex-genogram-stillborn-mark"[^>]*>SB<\/text>/);
-    expect(svg).not.toContain("<line");
-    expect(svg).not.toContain("stroke-dasharray");
-  });
-
-  test("miscarriage is a solid 12 by 12 triangle with no living-person shape or other status mark", () => {
-    const svg = symbol("miscarriage");
-    expect(base(svg)).toContain('<polygon points="0,-6 6,6 -6,6"');
-    expect(svg).not.toMatch(/<(rect|circle|line)\b/);
+    expect(base(svg)).toContain('<rect x="-10" y="-10" width="20" height="20"');
+    expect(svg.match(/data-mark="stillbirth-cross"/g)).toHaveLength(2);
     expect(svg).not.toContain(">SB<");
+  });
+
+  test("miscarriage is a hollow circle filling its 12 by 12 box", () => {
+    const svg = symbol("miscarriage");
+    expect(base(svg)).toContain('<circle cx="0" cy="0" r="6"');
+    expect(svg).not.toMatch(/<(rect|polygon|line)\b/);
     expect(svg).not.toContain("stroke-dasharray");
   });
 
-  test("pregnancy is a 20 by 20 triangle with the standard 4,3 dashed outline", () => {
+  test("pregnancy is a 20 by 20 triangle with a continuous outline", () => {
     const svg = symbol("pregnancy", "female");
     expect(base(svg)).toContain('<polygon points="0,-10 10,10 -10,10"');
-    expect(base(svg)).toContain('stroke-dasharray="4,3"');
+    expect(base(svg)).not.toContain("stroke-dasharray");
     expect(svg).not.toMatch(/<(rect|circle|line)\b/);
-    expect(svg).not.toContain(">SB<");
   });
 
   test("all four statuses and alive have different visible symbol treatments", () => {
@@ -110,13 +105,13 @@ describe("genogram status symbols", () => {
     expect(absent.items.filter((item) => item.key.startsWith("status."))).toEqual([]);
   });
 
-  test("legend swatches distinguish SB, the cross, and the two triangles", () => {
+  test("legend swatches distinguish stillbirth, deceased, miscarriage and pregnancy", () => {
     const ast = parseGenogram(`genogram\n${statuses.map((status) => `  ${status} [male, ${status}]`).join("\n")}`);
     const items = buildGenogramLegend(ast).items;
     expect(items.find((item) => item.key === "status.deceased")).toMatchObject({ marker: "X" });
-    expect(items.find((item) => item.key === "status.stillborn")).toMatchObject({ marker: "SB" });
-    expect(items.find((item) => item.key === "status.miscarriage")).toMatchObject({ kind: "shape", shape: "triangle" });
-    expect(items.find((item) => item.key === "status.pregnancy")).toMatchObject({ kind: "shape", shape: "triangle", pattern: "dashed" });
+    expect(items.find((item) => item.key === "status.stillborn")).toMatchObject({ shape: "square", marker: "X" });
+    expect(items.find((item) => item.key === "status.miscarriage")).toMatchObject({ kind: "shape", shape: "circle" });
+    expect(items.find((item) => item.key === "status.pregnancy")).toMatchObject({ kind: "shape", shape: "triangle", fill: "none" });
   });
 
   test.each(statuses)("%s leaves generations and sibling ordering unchanged", (status) => {
@@ -128,7 +123,7 @@ describe("genogram status symbols", () => {
   test("status-selected shapes also govern condition fills and index borders", () => {
     const svg = renderIndividualSymbol({ id: "p", label: "P", sex: "female", status: "pregnancy", markers: ["index-person"], conditions: [{ label: "condition", fill: "full", color: "#123456" }] }, 0, 0, 40);
     expect(svg).not.toContain("<circle");
-    expect(svg.match(/<polygon\b/g)).toHaveLength(3);
+    expect(svg.match(/<polygon\b/g)).toHaveLength(4);
     expect(svg).toMatch(/<polygon points="0,-10 10,10 -10,10"[^>]*class="schematex-genogram-condition-fill/);
   });
 });

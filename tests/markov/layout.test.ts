@@ -55,6 +55,27 @@ describe("markov layout", () => {
     expect(self.points).toHaveLength(4);
   });
 
+  it("keeps incoming arrow tips just outside the state outline in every direction", () => {
+    for (const mode of ["ring", "layered"]) {
+      const lo = layoutMarkov(parseMarkov(`markov
+layout: ${mode}
+analysis: classify
+A -> A : 0.5
+A -> B : 0.5
+B -> B : 0.5
+B -> C : 0.5
+C -> C : 0.5
+C -> A : 0.5`));
+      for (const arc of lo.arcs) {
+        const state = lo.states.find(s => s.state.id === arc.transition.to)!;
+        const end = arc.points[3]!;
+        const clearance = Math.hypot(end.x - state.cx, end.y - state.cy) - state.r;
+        expect(clearance).toBeGreaterThan(1); // Clear the two-pixel node stroke.
+        expect(clearance).toBeLessThan(5); // Still visibly attached to its state.
+      }
+    }
+  });
+
   it("flags absorbing states for double-ring rendering", () => {
     const ast = parseMarkov(`markov
   state Stop absorbing

@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { parseGenogram } from "../../src/diagrams/genogram/parser";
 import { render } from "../../src/index";
+import { resolveGenogramTheme } from "../../src/core/theme";
 
 // ─── Feature 1: Chart Title ────────────────────────────────
 
@@ -166,18 +167,18 @@ describe("emotional relationships", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary\n  john -hostile- mary`);
     expect(svg).toContain("schematex-genogram-emotional");
     expect(svg).toContain("schematex-genogram-emotional-hostile");
-    expect(svg).toContain("#e53935"); // hostile = red
+    expect(svg).toContain(`.schematex-genogram-ink-negative { color: ${resolveGenogramTheme("default").negative}; }`);
   });
 
   test("renderer draws positive emotional edges in green", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary\n  john -harmony- mary`);
-    expect(svg).toContain("#4caf50"); // positive = green
+    expect(svg).toContain(`.schematex-genogram-ink-positive { color: ${resolveGenogramTheme("default").positive}; }`);
   });
 
   test("directional emotional edge has arrow marker", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary\n  john -abuse-> mary`);
     expect(svg).toContain("schematex-genogram-arrow");
-    expect(svg).toContain("marker-end");
+    expect(svg).toContain('data-mark="arrow"');
   });
 
   test("all emotional type categories render with correct colors", () => {
@@ -191,9 +192,9 @@ describe("emotional relationships", () => {
   a -close- b
   a -distant- c
   a -fused- d`);
-    expect(svg).toContain("#4caf50"); // close = green
-    expect(svg).toContain("#9e9e9e"); // distant = gray
-    expect(svg).toContain("#9c27b0"); // fused = purple... wait, fused is ambivalent
+    expect(svg).toContain("schematex-genogram-ink-positive");
+    expect(svg).toContain("schematex-genogram-ink-neutral");
+    expect(svg).toContain("schematex-genogram-ink-accent");
   });
 });
 
@@ -221,7 +222,7 @@ describe("cross-generation emotional relationships", () => {
     dad [male, 1955]
   dad -close- grandma`);
     expect(svg).toContain("schematex-genogram-emotional-close");
-    expect(svg).toMatch(/<path d="M [^"]+ L [^"]+" fill="none" stroke="#4caf50"/); // quadratic curve for cross-gen
+    expect(svg).toMatch(/<path d="M [^"]+ L [^"]+" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive"/);
   });
 });
 

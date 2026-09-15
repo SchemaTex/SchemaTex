@@ -113,3 +113,28 @@ A & B : 3
     expect(vals.has("3")).toBe(true);
   });
 });
+
+test("keeps long intersection labels inside their own compartments without clipping", () => {
+  const ast = parseVennDSL(`venn "Access requirements"
+set A "Membership"
+set B "Training"
+set C "Certification"
+A only: "Member without training"
+B only: "Trained non-member"
+C only: "Certified external visitor"
+A & B: "Membership and training completed"
+A & C: "Certified member awaiting training"
+B & C: "Certified trainee awaiting membership"
+A & B & C: "All requirements completed"`);
+  const result = layoutVenn(ast);
+  expect(result.labels).toHaveLength(7);
+  for (const label of result.labels) {
+    expect(label.external).toBe(false);
+    for (const shape of result.shapes) {
+      if (shape.kind !== "circle") throw Error("expected circles");
+      expect(Math.hypot(label.x - shape.cx, label.y - shape.cy) < shape.r).toBe(label.sets.includes(shape.id));
+    }
+    expect(label.x).toBeGreaterThan(0);
+    expect(label.y).toBeLessThan(result.height);
+  }
+});

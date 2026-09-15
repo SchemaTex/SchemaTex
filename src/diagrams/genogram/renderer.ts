@@ -1,6 +1,6 @@
 import { captionGeometry } from "./captions";
 import { relationshipCaptions, EMOTIONAL_REL_TYPES } from "./routing";
-import { renderEmotionalForm } from "./line-forms";
+import { relationshipPoints, renderEmotionalForm } from "./line-forms";
 import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, SceneItem } from "../../core/types";
 import { svgRoot, el, group, text, title, desc, escapeXml } from "../../core/svg";
 import { cssCustomProperties, resolveGenogramTheme, STROKE_WIDTH } from "../../core/theme";
@@ -16,8 +16,7 @@ export function renderGenogram(
   config: RenderConfig,
   ast?: DiagramAST
 ): string {
-  const hasDirectional = layout.edges.some(e => e.relationship.directional);
-  const defsStr = getRequiredDefs(layout.nodes.map((n) => n.individual), hasDirectional);
+  const defsStr = getRequiredDefs(layout.nodes.map((n) => n.individual));
   const styleStr = buildStyles(config);
 
   const genGroups = groupByGeneration(layout.nodes);
@@ -39,7 +38,7 @@ export function renderGenogram(
   // Adjust viewBox and add title offset if title exists
   const titleHeight = chartTitle ? 40 : 0;
   const totalHeight = layout.height + titleHeight;
-  const nodeLayers = renderNodes(genGroups, titleHeight, config.__scene, ast?.metadata?.asOf === undefined ? undefined : Number(ast.metadata.asOf));
+  const nodeLayers = renderNodes(genGroups, titleHeight, config.__scene, ast?.metadata?.asOf === undefined ? undefined : Number(ast.metadata.asOf), layout.edges);
   const labelLayer = renderLabels(layout.nodes, config, config.__scene);
 
   const layers: string[] = [
@@ -162,13 +161,32 @@ function buildStyles(config: RenderConfig): string {
 /* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
 .schematex-genogram-edge-secondary path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
 .schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: ${t.fill}; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
 /* Sibling-of bracket (known relative, unknown ancestry) — dashed */
 .schematex-genogram-sibling-of path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
 .schematex-genogram-unknown-siblings-mark { fill: ${t.text}; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: ${t.fill}; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-genogram-status-cross { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: ${t.stroke}; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: ${t.stroke}; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: ${t.positive}; }
+.schematex-genogram-ink-negative { color: ${t.negative}; }
+.schematex-genogram-ink-neutral { color: ${t.neutral}; }
+.schematex-genogram-ink-accent { color: ${t.accent}; }
+.schematex-genogram-ink-warn { color: ${t.warn}; }
 .schematex-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 /* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
 .schematex-genogram-condition-fill:not([fill]) { fill: ${t.conditionFill}; }
 .schematex-genogram-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: ${config.fontFamily}; font-weight: 400; fill: ${t.stroke}; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: ${t.fill}; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: ${t.fill}; stroke: ${t.text}; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
 .schematex-genogram-title { fill: ${t.text}; }
 .schematex-genogram-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
 .schematex-genogram-index-border { stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; fill: none; }
@@ -300,8 +318,7 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
     ];
 
     if (isSecondary) {
-      elements.unshift(el("path", { d: edgePath, class: "schematex-genogram-placement-halo",
-        style: "stroke: white; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none" }));
+      elements.unshift(el("path", { d: edgePath, class: "schematex-genogram-placement-halo" }));
     }
 
     // cohabiting-ended: single slash mark like separation
@@ -315,7 +332,6 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
             x2: mid.x + 4,
             y2: mid.y + 6,
             class: "schematex-genogram-separation-mark",
-            stroke: "#333",
             "stroke-width": "2",
             "data-sx-live-midpoint": scene ? "true" : undefined,
           })
@@ -334,7 +350,6 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
             x2: mid.x + 4,
             y2: mid.y + 6,
             class: "schematex-genogram-divorce-mark",
-            stroke: "#333",
             "stroke-width": "2",
             "data-sx-live-midpoint": scene ? "true" : undefined,
           }),
@@ -344,7 +359,6 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
             x2: mid.x + 4 + 6,
             y2: mid.y + 6,
             class: "schematex-genogram-divorce-mark",
-            stroke: "#333",
             "stroke-width": "2",
             "data-sx-live-midpoint": scene ? "true" : undefined,
           })
@@ -363,7 +377,6 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
             x2: mid.x + 4,
             y2: mid.y + 6,
             class: "schematex-genogram-separation-mark",
-            stroke: "#333",
             "stroke-width": "2",
             "data-sx-live-midpoint": scene ? "true" : undefined,
           })
@@ -432,7 +445,8 @@ function renderNodes(
   genGroups: Map<number, LayoutNode[]>,
   titleHeight: number,
   scene?: SceneItem[],
-  asOf?: number
+  asOf?: number,
+  edges: readonly LayoutEdge[] = []
 ): string[] {
   const layers: string[] = [];
   const sortedGens = Array.from(genGroups.keys()).sort((a, b) => a - b);
@@ -454,7 +468,13 @@ function renderNodes(
         bbox: { x: node.x, y: node.y + titleHeight, width: node.width, height: node.height },
         editable: { label: node.individual.labelSourceRange !== undefined, position: "move-x" },
       });
-      const symbol = renderIndividualSymbol(node.individual, cx, cy, node.width, asOf);
+      const attachments = node.individual.status === "abortion" ? edges.flatMap(edge => {
+        if (edge.from !== node.id && edge.to !== node.id) return [];
+        const points = relationshipPoints(edge.path);
+        const point = edge.from === node.id ? points[0] : points.at(-1);
+        return point ? [{ x: point.x - cx, y: point.y - cy }] : [];
+      }) : [];
+      const symbol = renderIndividualSymbol(node.individual, cx, cy, node.width, asOf, attachments);
       nodeElements.push(scene
         ? group({ "data-sx-key": key, "data-sx-owner": key, "data-individual-id": node.id }, [symbol])
         : symbol);

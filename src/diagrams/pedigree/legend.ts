@@ -91,27 +91,30 @@ export function geneticStatusItem(
       return {
         key: `status.${s}`,
         label: "Carrier",
-        kind: "fill-pattern",
-        color: theme.conditionFill,
-        shape: "half-left",
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "carrier-x":
       return {
         key: `status.${s}`,
         label: "X-linked carrier",
-        kind: "marker",
-        marker: "dot",
-        color: theme.conditionFill,
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "obligate-carrier":
       return {
         key: `status.${s}`,
         label: "Obligate carrier",
-        kind: "marker",
-        marker: "dot",
-        color: theme.conditionFill,
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "presymptomatic":

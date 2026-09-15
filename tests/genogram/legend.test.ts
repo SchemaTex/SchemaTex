@@ -32,6 +32,16 @@ genogram
     expect(keys).not.toContain("sex.female");
   });
 
+  test.each(["unknown", "other"])("%s legend uses a question mark", sex => {
+    const source = `genogram\n  a [${sex}]`;
+    const item = buildGenogramLegend(parseGenogram(source)).items.find(i => i.key === `sex.${sex}`);
+    expect(item).toMatchObject({ kind: "marker", marker: "?" });
+    expect(item?.shape).toBeUndefined();
+    const row = genogram.render(source).match(new RegExp(`<g[^>]*data-legend-key="sex.${sex}"[^>]*>[\\s\\S]*?<\\/g>`))?.[0];
+    expect(row).toMatch(/<text[^>]*>\?<\/text>/);
+    expect(row).not.toContain('<polygon');
+  });
+
   test("`married` and `parent-child` are excluded by default (universal McGoldrick conventions)", () => {
     const ast = parseGenogram(`
 genogram

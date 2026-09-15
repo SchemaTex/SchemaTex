@@ -2,7 +2,7 @@ import type { Individual } from '../../core/types';
 import { estimateTextWidth, wrapTextToWidth } from '../../core/text-metrics';
 
 /** Shared measured caption geometry: layout reserves exactly what SVG paints. */
-export function ecomapLabel(ind: Individual): string {
+function ecomapLabel(ind: Individual): string {
   return ind.label !== ind.id ? ind.label : ind.id.charAt(0).toUpperCase() + ind.id.slice(1);
 }
 export function systemCaption(ind: Individual, fontSize = 12): { lines: string[]; radius: number } {

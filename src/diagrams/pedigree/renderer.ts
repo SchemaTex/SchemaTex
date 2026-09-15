@@ -86,7 +86,7 @@ export function renderPedigree(
 
   // Defer chart-content push until legend bbox is known so we can center.
   const chartContent = [genLabels, edges.svg, nodes.svg, labelLayer];
-  const chartHeight = Math.max(layout.height, nodes.bottom + 16);
+  const chartHeight = Math.max(layout.height, nodes.bottom + 16) + (layout.nodes.some(n => n.individual.childType?.startsWith("donor-")) ? 16 : 0);
 
   const chartTitle = ast?.metadata?.title;
   const titleHeight = chartTitle ? TITLE.bandH : 0;
@@ -147,6 +147,10 @@ export function renderPedigree(
 
 // ─── Defs ──────────────────────────────────────────────────
 
+// Bennett et al. 2022 §4.5 retired the centre dot: every carrier, X-linked and obligate included,
+// is drawn with the key-defined fill pattern.
+const CARRIER_STATUSES = new Set(["carrier", "carrier-x", "obligate-carrier"]);
+
 function buildDefs(nodes: LayoutNode[]): string {
   const children: string[] = [];
   const needs = new Set<string>();
@@ -156,13 +160,13 @@ function buildDefs(nodes: LayoutNode[]): string {
     if (gs) needs.add(gs);
   }
 
-  if (needs.has("carrier")) {
+  if ([...needs].some((s) => CARRIER_STATUSES.has(s))) {
     children.push(
-      el("clipPath", { id: "schematex-pedigree-clip-carrier-rect" }, [
-        rect({ x: "0", y: "0", width: "50%", height: "100%" }),
-      ]),
-      el("clipPath", { id: "schematex-pedigree-clip-carrier-circle" }, [
-        rect({ x: "-50", y: "-50", width: "50", height: "100" }),
+      el("pattern", {
+        id: "schematex-pedigree-carrier-pattern", width: 6, height: 6,
+        patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)",
+      }, [
+        line({ x1: 0, y1: 0, x2: 0, y2: 6, class: "schematex-pedigree-carrier-hatch" }),
       ])
     );
   }
@@ -182,8 +186,8 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 .schematex-pedigree-edge { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-pedigree-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-pedigree-affected-fill { fill: ${t.conditionFill}; }
-.schematex-pedigree-carrier-fill { fill: ${t.conditionFill}; }
-.schematex-pedigree-carrier-x-dot { fill: ${t.conditionFill}; }
+.schematex-pedigree-carrier-fill { fill: url(#schematex-pedigree-carrier-pattern); stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
+.schematex-pedigree-carrier-hatch { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${POINTER.stroke}; fill: none; }
 .schematex-pedigree-proband-arrow-head { fill: ${t.stroke}; stroke: none; }
@@ -191,6 +195,7 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 .schematex-pedigree-loss-shape { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-pedigree-tab-slash { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-pedigree-status-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.text}; }
+.schematex-pedigree-pregnancy-mark { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; font-weight: bold; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; }
 .schematex-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: ${t.text}; }
 .schematex-pedigree-legend-box { fill: ${t.fill}; stroke: ${t.neutral}; stroke-width: 1; }
 `;
@@ -214,13 +219,13 @@ function renderEdges(edges: LayoutEdge[], t: ResolvedTheme<PersonTokens>): Rende
     if (relType === "separated") {
       const mid = pathMidpoint(edge.path);
       if (mid) {
-        elements.push(
+        elements.push(...[-5, 5].map(offset =>
           line({
-            x1: mid.x - 4, y1: mid.y - 6,
-            x2: mid.x + 4, y2: mid.y + 6,
+            x1: mid.x + offset - 4, y1: mid.y + 6,
+            x2: mid.x + offset + 4, y2: mid.y - 6,
             class: "schematex-pedigree-edge",
           })
-        );
+        ));
         legendItems.push({
           key: "relationship.separated", label: "No longer together",
           kind: "marker", marker: "slash", color: t.stroke, section: "symbols",
@@ -310,7 +315,7 @@ function renderPedigreeSymbol(
   const half = size / 2;
   const legendItems: LegendItem[] = [];
   const classes = ["schematex-pedigree-node", `schematex-pedigree-${ind.sex === "other" ? "unknown" : ind.sex}`];
-  if (ind.status === "deceased") classes.push("schematex-pedigree-deceased");
+  if (ind.status === "deceased" || ind.status === "stillborn") classes.push("schematex-pedigree-deceased");
   if (ind.geneticStatus) classes.push(`schematex-pedigree-${ind.geneticStatus}`);
 
   const titleText = formatTitle(ind);
@@ -337,7 +342,7 @@ function renderPedigreeSymbol(
       label: affected ? `Affected ${lossLabel.charAt(0).toLowerCase()}${lossLabel.slice(1)}` : lossLabel,
       kind: "shape", shape: "triangle", fill, color: theme.stroke, section: "symbols",
     });
-    if (ind.status === "tab") {
+    if (ind.status === "tab" || ind.status === "ectopic") {
       children.push(
         line({
           x1: -t * 1.1, y1: t * 1.1, x2: t * 1.1, y2: -t * 1.1,
@@ -348,7 +353,7 @@ function renderPedigreeSymbol(
     if (ind.status === "ectopic") {
       children.push(
         text(
-          { x: 0, y: t + 14, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
+          { x: 0, y: labelOffset + 15, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
           "ECT"
         )
       );
@@ -373,12 +378,12 @@ function renderPedigreeSymbol(
   // Base shape
   children.push(baseShape(ind.sex, half, legendItems, theme));
 
-  // Stillborn: keep the sex-based shape, add an "SB" label below.
+  // Stillborn keeps the sex shape and carries both SB and the deceased slash.
   if (ind.status === "stillborn") {
     classes.push("schematex-pedigree-stillborn");
     children.push(
       text(
-        { x: 0, y: half + 14, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
+        { x: 0, y: labelOffset + 15, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
         "SB"
       )
     );
@@ -393,11 +398,8 @@ function renderPedigreeSymbol(
   if (gs === "affected") {
     children.push(affectedFill(ind.sex, half));
     legendItems.push(geneticStatusItem(gs, theme));
-  } else if (gs === "carrier") {
+  } else if (gs && CARRIER_STATUSES.has(gs)) {
     children.push(carrierFill(ind.sex, half));
-    legendItems.push(geneticStatusItem(gs, theme));
-  } else if (gs === "carrier-x" || gs === "obligate-carrier") {
-    children.push(carrierDot(half));
     legendItems.push(geneticStatusItem(gs, theme));
   }
 
@@ -410,15 +412,21 @@ function renderPedigreeSymbol(
   }
 
   // Deceased: diagonal slash (pedigree uses / not X)
-  if (ind.status === "deceased") {
+  if (ind.status === "deceased" || ind.status === "stillborn") {
     const ext = ind.sex === "female" ? half * 0.707 : half;
     children.push(
       line({ x1: ext, y1: -ext, x2: -ext, y2: ext, class: "schematex-pedigree-deceased-mark" })
     );
-    legendItems.push({
+    // SB and its slash form one composite status, with one existing legend row.
+    if (ind.status === "deceased") legendItems.push({
       key: "status.deceased", label: "Deceased", kind: "marker",
       marker: "slash", color: theme.deceasedMark, section: "symbols",
     });
+  }
+
+  if (ind.status === "pregnancy") {
+    classes.push("schematex-pedigree-pregnancy");
+    children.push(text({ x: 0, y: 0, class: "schematex-pedigree-pregnancy-mark" }, "P"));
   }
 
   // Render the shaft and head directly: their direction and size remain the
@@ -494,11 +502,7 @@ function affectedFill(sex: Individual["sex"], half: number): string {
 }
 
 function carrierFill(sex: Individual["sex"], half: number): string {
-  const clipSuffix = sex === "female" ? "circle" : "rect";
-  const attrs = {
-    class: "schematex-pedigree-carrier-fill",
-    "clip-path": `url(#schematex-pedigree-clip-carrier-${clipSuffix})`,
-  };
+  const attrs = { class: "schematex-pedigree-carrier-fill" };
   switch (sex) {
     case "male":
       return rect({ x: -half, y: -half, width: half * 2, height: half * 2, ...attrs });
@@ -509,9 +513,6 @@ function carrierFill(sex: Individual["sex"], half: number): string {
   }
 }
 
-function carrierDot(half: number): string {
-  return circle({ cx: 0, cy: 0, r: half * 0.15, class: "schematex-pedigree-carrier-x-dot" });
-}
 
 function formatTitle(ind: Individual): string {
   const name = ind.label.charAt(0).toUpperCase() + ind.label.slice(1);
@@ -549,6 +550,9 @@ function renderLabels(
 
     const pedigreeId = genNumbering.get(ind.id) ?? ind.id;
     const displayLabel = ind.label !== ind.id ? ind.label : pedigreeId;
+    if (ind.childType?.startsWith("donor-")) {
+      labels.push(text({ x: cx, y: labelY + 16, class: "schematex-pedigree-label", "font-size": 10 }, `${ind.childType.slice(6)} donation`));
+    }
 
     labels.push(
       text(

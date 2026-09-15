@@ -48,7 +48,7 @@ export function parseGitGraph(text: string): GitGraphAst {
     mainBranchOrder: 0,
     showBranches: true,
     showCommitLabel: true,
-    rotateCommitLabel: true,
+    rotateCommitLabel: false,
     operations: [],
   };
 

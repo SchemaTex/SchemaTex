@@ -80,7 +80,7 @@ describe("clinical emotional forms in edges and legend", () => {
         for (const cap of lines.slice(2)) expect(Math.hypot(cap[2] - cap[0], cap[3] - cap[1])).toBeCloseTo(12);
         expect(markup).not.toContain("stroke-dasharray");
       } else if (type === "conflict") {
-        expect(lines).toHaveLength(3);
+        expect(lines).toHaveLength(1);
         const ys = lines[0].filter((_, i) => i % 2 === 1);
         const turns = ys.slice(2).map((y, i) => (y - ys[i + 1]) * (ys[i + 1] - ys[i]));
         expect(turns.filter(turn => turn < 0).length).toBeGreaterThan(1);
@@ -88,7 +88,7 @@ describe("clinical emotional forms in edges and legend", () => {
       } else {
         expect(lines).toHaveLength(1);
         expect(markup).toContain('stroke-width="1.25"');
-        expect(markup).toContain('stroke-dasharray="2,5"');
+        expect(markup).toContain('stroke-dasharray="4,4"');
       }
     }
   });
@@ -97,7 +97,7 @@ describe("clinical emotional forms in edges and legend", () => {
     const svg = genogram.render('genogram\n  a [male, deceased, age: 70, conditions: heart(full, #e53935)]');
     const node = /<g class="schematex-genogram-node [\s\S]*?<\/g>/.exec(svg)![0];
     expect(node).toMatch(/<text\b[^>]*class="schematex-genogram-age"[^>]*>70<\/text>/);
-    expect(node.match(/class="schematex-genogram-deceased-halo" stroke="white" stroke-width="5"/g)).toHaveLength(2);
+    expect(node.match(/class="schematex-genogram-deceased-halo"/g)).toHaveLength(2);
     expect(node.lastIndexOf('class="schematex-genogram-deceased-halo"')).toBeLessThan(node.indexOf('class="schematex-genogram-deceased-mark"'));
     expect(svg).toMatch(/\.schematex-genogram-deceased-mark \{ stroke: #[0-9a-f]+; stroke-width: 2;/);
   });

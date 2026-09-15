@@ -36,7 +36,8 @@ describe("source-dated genogram ages", () => {
       expect(age(symbol)).toBe("78");
       expect(symbol.match(/class="schematex-genogram-deceased-mark"/g)).toHaveLength(2);
       expect(symbol.indexOf('class="schematex-genogram-age"')).toBeGreaterThan(symbol.lastIndexOf('class="schematex-genogram-deceased-mark"'));
-      expect(symbol).toContain('paint-order: stroke');
+      expect(symbol).toContain('data-contrast="halo"');
+      expect(svg).toContain('paint-order: stroke');
       expect(svg).toContain('Person (1940–2018)');
     }
     expect(age(genogram.render('genogram [asOf: 2026]\n  p [male, 1940, deceased]'))).toBeUndefined();
@@ -105,15 +106,17 @@ describe("source-dated genogram ages", () => {
   });
 
   it.each([
-    ['full, #222', 'white', 'black'],
-    ['full, #ffffff', 'black', 'white'],
-    ['half-left, #222', 'white', 'black'],
-    ['quad-br, #ffffff', 'black', 'white'],
-    ['striped', 'white', 'black'],
-  ])("keeps the numeral readable over %s", (fill, ink, halo) => {
+    ['full, #222', 'on-dark'],
+    ['full, #ffffff', 'halo'],
+    ['half-left, #222', 'on-dark'],
+    ['quad-br, #ffffff', 'halo'],
+    ['striped', 'on-dark'],
+  ])("keeps the numeral readable over %s", (fill, contrast) => {
     const svg = genogram.render(`genogram [asOf: 2026]\n  p [female, 1969, conditions: condition(${fill})]`);
     expect(age(node(svg, "p"))).toBe("57");
-    expect(node(svg, "p")).toContain(`style="fill: ${ink}; stroke: ${halo}; stroke-width: 2; paint-order: stroke; stroke-linejoin: round"`);
+    expect(node(svg, "p")).toContain(`data-contrast="${contrast}"`);
+    expect(svg).toContain("paint-order: stroke");
+    expect(node(svg, "p")).not.toContain("style=");
     expect(node(svg, "p")).toContain('schematex-genogram-condition-fill');
   });
 

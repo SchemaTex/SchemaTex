@@ -74,9 +74,17 @@ test("renaming taxa of equal display width does not change layout geometry", () 
 });
 
 test("highlighted clades show their semantic names without duplicate DSL labels", () => {
-  const source = 'phylo\n newick: "((A:1,B:1):1,C:2);"\n clade Group = (A, B) [highlight: both]';
+  const source = 'phylo\n newick: "((A:1,B:1):1,C:2);"\n clade Group = (A, B)';
   const layout = layoutPhylo(parsePhylo(source));
   expect(renderPhylo(layout)).toMatch(/<text[^>]*clade-label[^>]*>Group<\/text>/);
   const renamed = layoutPhylo(parsePhylo(source.replace('clade Group', 'clade A_much_longer_group_name')));
   expect(renamed.width).toBeGreaterThan(layout.width);
+});
+
+test("nested named clades with the same center row have separate annotation columns", () => {
+  const ast = parsePhylo('phylo\n newick: "(A:2,(B:1,C:1):1,D:2);"\n clade All = (A,B,C,D)\n clade Inner = (B,C)');
+  const svg = renderPhylo(layoutPhylo(ast));
+  const labels = [...svg.matchAll(/<text[^>]*x="([\d.]+)"[^>]*class="schematex-phylo-clade-label[^>]*>(All|Inner)<\/text>/g)];
+  expect(labels).toHaveLength(2);
+  expect(Math.abs(Number(labels[0][1]) - Number(labels[1][1]))).toBeGreaterThan(30);
 });

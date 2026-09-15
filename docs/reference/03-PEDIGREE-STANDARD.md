@@ -49,11 +49,13 @@
 |--------|-------------|-----|-----|
 | Unaffected | Empty (white fill) | `fill: white` | (default) |
 | Affected (single trait) | Full fill (black/dark) | `fill: #333` | `[affected]` |
-| Carrier (autosomal) | Half-filled (left half, vertical divide) | `<clipPath>` left half | `[carrier]` |
-| Carrier (X-linked female) | Dot in center | Small `<circle>` inside | `[carrier-x]` |
-| Obligate carrier | Dot in center | Small filled `<circle>` inside | `[obligate-carrier]` |
-| Asymptomatic/presymptomatic | Vertical line through shape | `<line>` through center | `[presymptomatic]` |
+| Carrier (autosomal) | Key-defined diagonal hatch fill | SVG `<pattern>` rotated 45° | `[carrier]` |
+| Carrier (X-linked) | Key-defined diagonal hatch fill | Same SVG hatch pattern | `[carrier-x]` |
+| Obligate carrier | Key-defined diagonal hatch fill | Same SVG hatch pattern | `[obligate-carrier]` |
+| Asymptomatic/presymptomatic | Vertical line from edge to edge | `<line>` through center, spanning the full symbol height | `[presymptomatic]` |
 | Multiple traits | Quadrant fill (like genogram) | See below | `[affected: trait1 + trait2]` |
+
+Carrier 填充依据 NSGC Bennett 2022 §4.5：用 key 定义填充含义；Schematex 对 `carrier`、`carrier-x` 和 `obligate-carrier` 统一绘制 diagonal hatch，并在 key 中分别标明状态。
 
 **多 trait pedigree（最多 4 traits）：**
 ```
@@ -74,11 +76,11 @@ pedigree "Breast/Ovarian Cancer Family"
 |--------|--------|-----|-----|
 | Alive | Normal shape | Default rendering | (default) |
 | Deceased | Diagonal slash through shape (/) | Single `<line>` top-right to bottom-left | `[deceased]` |
-| Stillborn (SB) | Small shape + SB text | 60% scale + label "SB" | `[stillborn]` |
-| Pregnancy (P) | Diamond (sex unknown) or shape with P | shape + "P" label | `[pregnancy]` |
-| Spontaneous abortion (SAB) | Small triangle | `<polygon>` 15×15 | `[sab]` |
-| Induced abortion (TAB) | Small triangle with horizontal line | `<polygon>` + `<line>` | `[tab]` |
-| Ectopic pregnancy (ECT) | Small triangle + ECT label | `<polygon>` + text | `[ectopic]` |
+| Stillborn (SB) | Sex shape + deceased slash + SB text | Normal-size shape + diagonal `<line>` + label "SB" | `[stillborn]` |
+| Pregnancy (P) | P inside the sex shape (diamond if unknown) | Centered "P" text inside shape | `[pregnancy]` |
+| Spontaneous abortion (SAB) | Small triangle + SAB label | `<polygon>` + text | `[sab]` |
+| Induced abortion (TAB) | Small triangle with diagonal termination slash | `<polygon>` + `<line>` | `[tab]` |
+| Ectopic pregnancy (ECT) | Small triangle + diagonal termination slash + ECT label | `<polygon>` + `<line>` + text | `[ectopic]` |
 | Affected SAB | Filled small triangle | `<polygon>` filled | `[sab, affected]` |
 
 **Bennett 2022 注意：** 
@@ -98,6 +100,9 @@ pedigree "Breast/Ovarian Cancer Family"
 | Adopted out | Brackets around shape, dashed line to parents | `[` shape `]` + dashed line | `[adopted-out]` |
 
 ### 2.5 Assisted Reproduction (Bennett 2022)
+
+Current engine scope: `donor-egg`, `donor-sperm`, and `donor-embryo` on a child preserve a donor-assisted-birth annotation. They do not identify a donor or establish genetic parentage. The public lint result emits `PEDIGREE_DONOR_LINK_UNSPECIFIED`; a donor node or connecting line is never invented. Full donor-link / surrogacy notation below remains a design reference, not an implemented inference.
+
 
 Bennett 2022 增加了辅助生殖的标准符号，这在现代临床中越来越重要：
 
@@ -120,11 +125,14 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
 | Mated (together) | Single horizontal solid line | `A -- B` | 有后代的配偶 |
-| Mated (no longer together) | Single line + single slash | `A -/- B` | 分开（不区分 divorce/separation） |
+| Mated (no longer together) | Continuous line + two diagonal slashes | `A -/- B` | 分开（不区分 divorce/separation） |
 | Consanguinity | Double horizontal line | `A == B` | 近亲婚配（遗传学关键！） |
 | Relationship line (no offspring) | Single horizontal dashed | `A ~ B` | 配偶但无后代 |
 
 ### 3.2 Parent-Child Lines
+
+Current twin support: matching `twin-mz` / `twin-dz` flags identify exactly one pair within the same family and zygosity, and the layout keeps that birth pair adjacent even if another sibling was declared between them. MZ twins share a fork and crossbar; DZ twins share a fork without a bar. An unmatched flag or more than two members of the same family/zygosity is an error; the engine does not guess among multiple possible pairs. Unknown bare properties (including unsupported multiplet forms) produce a diagnostic instead of disappearing.
+
 
 | Type | Line | DSL |
 |------|------|-----|
@@ -284,7 +292,7 @@ pedigree "Cystic Fibrosis Family"
     II-3 [male, affected, proband]
     II-4 [female, unaffected]
 ```
-验证：I-1/I-2 half-filled (carrier)，II-3 full-filled + proband arrow，左侧有 "I" "II" 标记。
+验证：I-1/I-2 使用 key 中定义的 diagonal hatch fill (carrier)，II-3 full-filled + proband arrow，左侧有 "I" "II" 标记。
 
 ### Case 2: Consanguinity
 ```
@@ -318,7 +326,7 @@ pedigree "Hemophilia A"
     III-2 [female, carrier-x]
     III-3 [male, unaffected]
 ```
-验证：carrier-x females 有 center dot，affected males full-filled。
+验证：carrier-x females 使用 key 中定义的 diagonal hatch fill，affected males full-filled。
 
 ### Case 4: Multi-Trait Pedigree
 ```
@@ -404,7 +412,7 @@ pedigree "Huntington Disease"
 | P1 | Deceased slash (/ not X), SAB/TAB/stillborn symbols | Medium |
 | P1 | Legend box rendering | Medium |
 | P2 | Multi-trait quadrant fill system | Medium |
-| P2 | X-linked carrier dot | Low |
+| P2 | X-linked carrier key-defined hatch fill | Low |
 | P2 | Bennett 2022 sex/gender annotation | Low |
 | P2 | Assisted reproduction symbols (donor, surrogate) | Medium |
 | P3 | Presymptomatic vertical line marker | Low |

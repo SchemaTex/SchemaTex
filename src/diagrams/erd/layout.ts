@@ -7,6 +7,9 @@ import type {
   ErdLayoutRow,
   ErdRef,
 } from "../../core/types";
+import { labelOverlap, edgeLabelObstacles, labelPathPoints, type LabelBox } from "../../core/label-placement";
+import { estimateTextWidth } from "../../core/text-metrics";
+import { compactRoute, intersectsBox, orthogonalRoute, type RoutePoint } from "../logic/orthogonal-router";
 import { applyPins } from "../../core/editing";
 
 // ─── Layout constants ─────────────────────────────────────────
@@ -34,10 +37,9 @@ export const ERD_CONST = {
   GLYPH_BAR_HALF: 6,          // bar half-length perpendicular to line
   GLYPH_CIRCLE_R: 4,          // open-circle radius
   LABEL_OFFSET: 6,
+  WIRE_CLEARANCE: 20,
 
-  /** Pixels between adjacent vertical-segment x-coordinates of nearby edges
-   *  to keep their bend points from overlapping. */
-  EDGE_BEND_STAGGER: 10,
+
 };
 
 // ─── Entity sizing ────────────────────────────────────────────
@@ -307,6 +309,9 @@ function assignYCoordinates(
 export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number }>): ErdLayoutResult {
   const C = ERD_CONST;
   const isLR = ast.direction === "LR";
+  // A relationship corridor accommodates both endpoint glyphs and its text.
+  const columnGap = Math.max(C.COL_GAP, ...ast.refs.map(r =>
+    estimateTextWidth(r.label ?? "", 10) + 2 * (C.WIRE_CLEARANCE + 8) + 2 * C.LABEL_OFFSET));
 
   // Measure all entities first.
   const measured = new Map<string, { ent: ErdEntity; width: number; height: number; rows: ErdLayoutRow[] }>();
@@ -392,7 +397,7 @@ export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number
           rows: m.rows,
         });
       }
-      cursorX += ls.maxWidth + C.COL_GAP;
+      cursorX += ls.maxWidth + columnGap;
     }
   } else {
     let cursorY = C.PADDING;
@@ -412,7 +417,7 @@ export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number
           rows: m.rows,
         });
       }
-      cursorY += ls.maxHeight + C.ROW_GAP;
+      cursorY += ls.maxHeight + Math.max(C.ROW_GAP, 2 * (C.WIRE_CLEARANCE + 8) + 16 + 2 * C.LABEL_OFFSET);
     }
   }
 
@@ -428,13 +433,13 @@ export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number
     if (e.x + e.width > maxX) maxX = e.x + e.width;
     if (e.y + e.height > maxY) maxY = e.y + e.height;
   }
-  const width = maxX + C.PADDING;
-  const height = maxY + C.PADDING;
+  let width = maxX + C.PADDING;
+  let height = maxY + C.PADDING;
 
-  // Edges: orthogonal Manhattan with bend-point staggering.
+  // Route around measured tables; terminal escapes reserve space for cardinality glyphs.
   const placedById = new Map(placed.map((p) => [p.entity.id, p] as const));
   const edges: ErdLayoutEdge[] = [];
-  const bendBucketUses = new Map<string, number>();
+
 
   for (const r of ast.refs) {
     const fromTable = parseRefSide(r.from).table;
@@ -445,14 +450,41 @@ export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number
 
     const fromCol = parseRefSide(r.from).column;
     const toCol = parseRefSide(r.to).column;
-    const route = routeOrthogonal(a, b, fromCol, toCol, bendBucketUses);
+    const route = routeOrthogonal(a, b, fromCol, toCol, placed, edges);
     edges.push({
       ref: r,
       path: route.path,
       fromAnchor: route.fromAnchor,
       toAnchor: route.toAnchor,
-      labelAt: route.labelAt,
     });
+  }
+
+  const occupied: LabelBox[] = placed.map(e => ({ x: e.x, y: e.y, width: e.width, height: e.height }));
+  const wireObstacles = edges.flatMap(e => [...edgeLabelObstacles(labelPathPoints(e.path)),
+    ...[e.fromAnchor, e.toAnchor].map(anchor => {
+      const b = glyphBox(anchor);
+      return { x: b.left, y: b.top, width: b.right - b.left, height: b.bottom - b.top };
+    })]);
+  for (const edge of edges) {
+    if (!edge.ref.label) continue;
+    const box = placeRelationshipLabel(edge, [...occupied, ...wireObstacles]);
+    edge.labelAt = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    occupied.push(box);
+  }
+
+  // Detours and labels can extend beyond the original table bounds.
+  const points = edges.flatMap(e => labelPathPoints(e.path));
+  const minX = Math.min(C.PADDING, ...points.map(p => p.x), ...occupied.map(b => b.x));
+  const minY = Math.min(C.PADDING, ...points.map(p => p.y), ...occupied.map(b => b.y));
+  const shiftX = C.PADDING - minX, shiftY = C.PADDING - minY;
+  width = Math.max(width, ...points.map(p => p.x + C.PADDING), ...occupied.map(b => b.x + b.width + C.PADDING)) + shiftX;
+  height = Math.max(height, ...points.map(p => p.y + C.PADDING), ...occupied.map(b => b.y + b.height + C.PADDING)) + shiftY;
+  for (const entity of placed) { entity.x += shiftX; entity.y += shiftY; }
+  for (const edge of edges) {
+    edge.path = pathString(labelPathPoints(edge.path).map(p => ({ x: p.x + shiftX, y: p.y + shiftY })));
+    for (const point of [edge.fromAnchor, edge.toAnchor, edge.labelAt]) {
+      if (point) { point.x += shiftX; point.y += shiftY; }
+    }
   }
 
   return {
@@ -464,7 +496,7 @@ export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number
   };
 }
 
-// ─── Orthogonal routing (single-bend Manhattan w/ stagger) ────
+// ─── Table-aware routing and relationship labels ───────────────
 
 function rowYByColumn(e: ErdLayoutEntity, col: string | undefined): number {
   if (col) {
@@ -474,85 +506,130 @@ function rowYByColumn(e: ErdLayoutEntity, col: string | undefined): number {
   return e.y + e.height / 2;
 }
 
+function pathString(points: RoutePoint[]): string {
+  return points.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
+}
+
+type Side = ErdLayoutEdge["fromAnchor"]["side"];
+const DIRECTIONS = { left: { x: -1, y: 0 }, right: { x: 1, y: 0 }, top: { x: 0, y: -1 }, bottom: { x: 0, y: 1 } };
+
+function glyphBox(anchor: ErdLayoutEdge["fromAnchor"]) {
+  const d = DIRECTIONS[anchor.side];
+  const end = { x: anchor.x + d.x * (ERD_CONST.GLYPH_OFFSET + ERD_CONST.GLYPH_CIRCLE_R),
+    y: anchor.y + d.y * (ERD_CONST.GLYPH_OFFSET + ERD_CONST.GLYPH_CIRCLE_R) };
+  return { left: Math.min(anchor.x, end.x) - 8, right: Math.max(anchor.x, end.x) + 8,
+    top: Math.min(anchor.y, end.y) - 8, bottom: Math.max(anchor.y, end.y) + 8 };
+}
+
 function routeOrthogonal(
   a: ErdLayoutEntity,
   b: ErdLayoutEntity,
   fromCol: string | undefined,
   toCol: string | undefined,
-  bendBucketUses: Map<string, number>
-): {
-  path: string;
-  fromAnchor: ErdLayoutEdge["fromAnchor"];
-  toAnchor: ErdLayoutEdge["toAnchor"];
-  labelAt: { x: number; y: number };
-} {
-  const C = ERD_CONST;
-
-  const aCenterX = a.x + a.width / 2;
-  const bCenterX = b.x + b.width / 2;
-  const aCenterY = a.y + a.height / 2;
-  const bCenterY = b.y + b.height / 2;
-
-  const dx = bCenterX - aCenterX;
-  const dy = bCenterY - aCenterY;
-
-  type Side = "left" | "right" | "top" | "bottom";
-  let aSide: Side;
-  let bSide: Side;
-  if (Math.abs(dx) >= Math.abs(dy)) {
-    aSide = dx >= 0 ? "right" : "left";
-    bSide = dx >= 0 ? "left" : "right";
-  } else {
-    aSide = dy >= 0 ? "bottom" : "top";
-    bSide = dy >= 0 ? "top" : "bottom";
+  entities: ErdLayoutEntity[],
+  previous: ErdLayoutEdge[],
+): Pick<ErdLayoutEdge, "path" | "fromAnchor" | "toAnchor"> {
+  const clearance = ERD_CONST.WIRE_CLEARANCE;
+  const boxes = entities.map(e => ({ left: e.x - clearance, right: e.x + e.width + clearance,
+    top: e.y - clearance, bottom: e.y + e.height + clearance }));
+  const ports = (e: ErdLayoutEntity, other: ErdLayoutEntity, col: string | undefined) => {
+    // A field reference must terminate on its row, not on the table header.
+    const sides: Side[] = col ? ["left", "right"] : ["right", "left", "bottom", "top"];
+    return sides.map(side => {
+      const anchor = { ...sideAnchor(e, side, col), side };
+      if (!col) {
+        const verticalSide = side === "left" || side === "right";
+        const key = verticalSide ? "y" : "x";
+        const min = verticalSide ? e.y + 12 : e.x + 12;
+        const max = verticalSide ? e.y + e.height - 12 : e.x + e.width - 12;
+        const used = previous.flatMap(edge => [edge.fromAnchor, edge.toAnchor])
+          .filter(p => p.side === side && (verticalSide ? p.x === anchor.x : p.y === anchor.y));
+        const toward = verticalSide
+          ? Math.sign(other.y + other.height / 2 - anchor.y) || 1
+          : Math.sign(other.x + other.width / 2 - anchor.x) || 1;
+        const offsets = [0, ...Array.from({ length: Math.ceil((max - min) / 22) }, (_, i) => i + 1).flatMap(i => [toward * i * 22, -toward * i * 22])];
+        const position = offsets.map(offset => anchor[key] + offset).find(value => value >= min && value <= max && used.every(p => Math.abs(p[key] - value) >= 14));
+        if (position === undefined) return undefined;
+        anchor[key] = position;
+      }
+      const d = DIRECTIONS[side];
+      return { anchor, escape: { x: anchor.x + d.x * (clearance + 8), y: anchor.y + d.y * (clearance + 8) } };
+    }).filter(p => p !== undefined).filter(p => !entities.some((other, i) => other !== e && intersectsBox(p.anchor, p.escape, boxes[i]!)));
+  };
+  let best: ReturnType<typeof routeOrthogonal> | undefined;
+  let bestCost = Infinity;
+  for (const source of ports(a, b, fromCol)) for (const target of ports(b, a, toCol)) {
+    if (a === b && source.anchor.side === target.anchor.side) continue;
+    const glyphs = previous.flatMap(edge => [edge.fromAnchor, edge.toAnchor])
+      // An explicitly shared field may legitimately reuse its own endpoint.
+      .filter(p => ![source.anchor, target.anchor].some(a => a.x === p.x && a.y === p.y && a.side === p.side))
+      .map(glyphBox);
+    if (glyphs.some(box => intersectsBox(source.anchor, source.escape, box) || intersectsBox(target.anchor, target.escape, box))) continue;
+    let middle: RoutePoint[];
+    try { middle = orthogonalRoute(source.escape, target.escape, [...boxes, ...glyphs],
+      previous.map((edge, i) => ({ net: String(i), points: labelPathPoints(edge.path) })), "relationship"); }
+    catch (error) {
+      if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
+      continue;
+    }
+    const points = compactRoute([source.anchor, ...middle, target.anchor]);
+    let cost = (points.length - 2) * 28;
+    for (let i = 1; i < points.length; i++) {
+      const p = points[i - 1]!, q = points[i]!;
+      cost += Math.abs(p.x - q.x) + Math.abs(p.y - q.y);
+      // Relationships may cross, but shared-looking strokes are ambiguous in an ERD.
+      for (const edge of previous) {
+        const other = labelPathPoints(edge.path);
+        for (let j = 1; j < other.length; j++) {
+          const r = other[j - 1]!, t = other[j]!;
+          const vertical = p.x === q.x;
+          if (vertical === (r.x === t.x)) {
+            const separation = vertical ? Math.abs(p.x - r.x) : Math.abs(p.y - r.y);
+            const overlap = vertical
+              ? Math.min(Math.max(p.y, q.y), Math.max(r.y, t.y)) - Math.max(Math.min(p.y, q.y), Math.min(r.y, t.y))
+              : Math.min(Math.max(p.x, q.x), Math.max(r.x, t.x)) - Math.max(Math.min(p.x, q.x), Math.min(r.x, t.x));
+            if (separation < 8 && overlap > 0) cost += overlap * 2;
+          } else {
+            const v = vertical ? [p, q] : [r, t], h = vertical ? [r, t] : [p, q];
+            if (v[0]!.x > Math.min(h[0]!.x, h[1]!.x) && v[0]!.x < Math.max(h[0]!.x, h[1]!.x) &&
+                h[0]!.y > Math.min(v[0]!.y, v[1]!.y) && h[0]!.y < Math.max(v[0]!.y, v[1]!.y)) cost += 28;
+          }
+        }
+      }
+    }
+    if (cost < bestCost) {
+      bestCost = cost;
+      best = { path: pathString(points), fromAnchor: { ...source.anchor }, toAnchor: { ...target.anchor } };
+    }
   }
+  if (!best) throw new Error("ERD relationship has no clear terminal escape");
+  return best;
+}
 
-  const aAnchor = sideAnchor(a, aSide, fromCol);
-  const bAnchor = sideAnchor(b, bSide, toCol);
-
-  if (aSide === "right" || aSide === "left") {
-    const baseMidX = (aAnchor.x + bAnchor.x) / 2;
-    // Bucket by integer midX to detect collisions; stagger by use count.
-    const bucketKey = `H:${Math.round(baseMidX / 4) * 4}`;
-    const useIdx = bendBucketUses.get(bucketKey) ?? 0;
-    bendBucketUses.set(bucketKey, useIdx + 1);
-    // Alternate left / right of the base midpoint by stagger amount.
-    const sign = useIdx % 2 === 0 ? 1 : -1;
-    const stagger = Math.ceil(useIdx / 2) * C.EDGE_BEND_STAGGER * sign;
-    const midX = baseMidX + stagger;
-
-    const path =
-      `M ${aAnchor.x} ${aAnchor.y} ` +
-      `L ${midX} ${aAnchor.y} ` +
-      `L ${midX} ${bAnchor.y} ` +
-      `L ${bAnchor.x} ${bAnchor.y}`;
-    return {
-      path,
-      fromAnchor: { x: aAnchor.x, y: aAnchor.y, side: aSide },
-      toAnchor: { x: bAnchor.x, y: bAnchor.y, side: bSide },
-      labelAt: { x: midX, y: (aAnchor.y + bAnchor.y) / 2 - C.LABEL_OFFSET },
-    };
-  } else {
-    const baseMidY = (aAnchor.y + bAnchor.y) / 2;
-    const bucketKey = `V:${Math.round(baseMidY / 4) * 4}`;
-    const useIdx = bendBucketUses.get(bucketKey) ?? 0;
-    bendBucketUses.set(bucketKey, useIdx + 1);
-    const sign = useIdx % 2 === 0 ? 1 : -1;
-    const stagger = Math.ceil(useIdx / 2) * C.EDGE_BEND_STAGGER * sign;
-    const midY = baseMidY + stagger;
-
-    const path =
-      `M ${aAnchor.x} ${aAnchor.y} ` +
-      `L ${aAnchor.x} ${midY} ` +
-      `L ${bAnchor.x} ${midY} ` +
-      `L ${bAnchor.x} ${bAnchor.y}`;
-    return {
-      path,
-      fromAnchor: { x: aAnchor.x, y: aAnchor.y, side: aSide },
-      toAnchor: { x: bAnchor.x, y: bAnchor.y, side: bSide },
-      labelAt: { x: (aAnchor.x + bAnchor.x) / 2, y: midY - C.LABEL_OFFSET },
-    };
+function placeRelationshipLabel(edge: ErdLayoutEdge, occupied: LabelBox[]): LabelBox {
+  const points = labelPathPoints(edge.path);
+  const width = estimateTextWidth(edge.ref.label!, 10) + 8, height = 16;
+  const candidates: { box: LabelBox; preference: number }[] = [];
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1]!, b = points[i]!;
+    const horizontal = a.y === b.y;
+    const length = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    for (const fraction of [0.5, 0.25, 0.75]) {
+      const x = a.x + (b.x - a.x) * fraction, y = a.y + (b.y - a.y) * fraction;
+      for (const side of [-1, 1]) {
+        const box = horizontal
+          ? { x: x - width / 2, y: y + (side < 0 ? -height - ERD_CONST.LABEL_OFFSET : ERD_CONST.LABEL_OFFSET), width, height }
+          : { x: x + (side < 0 ? -width - ERD_CONST.LABEL_OFFSET : ERD_CONST.LABEL_OFFSET), y: y - height / 2, width, height };
+        candidates.push({ box, preference: (horizontal ? 0 : 20) + (side < 0 ? 0 : 4) +
+          Math.max(0, (horizontal ? width : height) - length) + Math.abs(fraction - 0.5) * 8 });
+      }
+    }
   }
+  const ranked = candidates.map(candidate => ({ ...candidate, overlap: occupied.reduce((sum, obstacle) =>
+    sum + labelOverlap({ x: candidate.box.x - 3, y: candidate.box.y - 3,
+      width: candidate.box.width + 6, height: candidate.box.height + 6 }, obstacle), 0) }));
+  ranked.sort((a, b) => a.overlap - b.overlap || a.preference - b.preference);
+  return ranked[0]!.box;
 }
 
 function sideAnchor(

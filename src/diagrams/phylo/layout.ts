@@ -3,6 +3,8 @@ import type {
   PhyloNode,
   PhyloLayoutNode,
 } from "../../core/types";
+import { estimateTextWidth } from "../../core/text-metrics";
+import { FONT_SIZE } from "../../core/theme";
 import { isDendrogram, layoutDendrogram } from "./dendrogram";
 
 export interface PhyloLayoutResult {
@@ -80,9 +82,9 @@ function maxDepth(node: PhyloNode): number {
   return max;
 }
 
-function estimateLabelWidth(node: PhyloNode): number {
-  const label = node.label ?? node.id;
-  return label.length * 7.2 + 6;
+export function estimateLabelWidth(node: PhyloNode): number {
+  const label = (node.label ?? node.id).replaceAll("_", " ");
+  return Math.max(label.length * 7.2, estimateTextWidth(label, FONT_SIZE.label) * 1.1) + 6;
 }
 
 // ─── Clade Membership ───────────────────────────────────────
@@ -143,7 +145,7 @@ const PADDING_RIGHT = 20;
 const PADDING_TOP = 24;
 const PADDING_BOTTOM = 56;
 
-export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
+function layoutTree(ast: PhyloTreeAST): PhyloLayoutResult {
   if (isDendrogram(ast)) {
     return layoutDendrogram(ast);
   }
@@ -157,7 +159,7 @@ export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
   const maxDist = maxRootToTip(ast.root, 0);
   const isCladogram = ast.mode === "cladogram";
 
-  const availableWidth = Math.max(300, numLeaves * 24 + maxLabelWidth + 100);
+  const availableWidth = Math.max(280, numLeaves * 24) + PADDING_LEFT + PADDING_RIGHT + maxLabelWidth;
   const plotWidth = availableWidth - PADDING_LEFT - PADDING_RIGHT - maxLabelWidth;
 
   let scale: number;
@@ -233,10 +235,8 @@ export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
   const tipLabels = new Map<string, { x: number; y: number }>();
   for (const n of leaves) tipLabels.set(n.id, { x: labelX, y: nodeMap.get(n.id)!.y });
   if (ast.layout === "slanted") {
-    // Keep the ordinary vertical positions wherever they fit. Each subtree is
-    // bounded by rays to its first/last label row; sibling regions do not overlap.
-    // Project only positions outside that region back onto its boundary. X is
-    // never changed, so horizontal distance retains the authored branch length.
+    // Keep ordinary vertical positions inside the angular region of each
+    // subtree. X never changes: horizontal distance encodes branch length.
     const spans = new Map<string, [number, number]>();
     const span = (n: PhyloNode): [number, number] => {
       const rows = n.isLeaf ? [tipLabels.get(n.id)!.y] : n.children.flatMap(span);
@@ -328,17 +328,7 @@ export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
 
   // Compute final dimensions
   const allNodes = Array.from(nodeMap.values());
-  let maxX = Math.max(...allNodes.map((n) => (n.node.isLeaf ? labelX + estimateLabelWidth(n.node) : n.x)));
-
-  // Add space for clade labels (background/both mode places labels to the right)
-  let maxCladeLabelWidth = 0;
-  for (const clade of ast.clades) {
-    if (clade.highlight && clade.highlight !== "branch") {
-      const w = (clade.label ?? clade.id).length * 8 + 30;
-      if (w > maxCladeLabelWidth) maxCladeLabelWidth = w;
-    }
-  }
-  maxX += maxCladeLabelWidth;
+  const maxX = Math.max(...allNodes.map((n) => (n.node.isLeaf ? labelX + estimateLabelWidth(n.node) : n.x)));
 
   const maxNodeY = Math.max(...allNodes.map((n) => n.y), ...Array.from(tipLabels.values(), n => n.y));
 
@@ -378,4 +368,35 @@ function assignCladogramInternalX(
   }
 
   return layout?.x ?? PADDING_LEFT;
+}
+
+/** Place overlapping clade spans in separate columns; disjoint spans share one. */
+export function cladeLabelPositions(layout: PhyloLayoutResult): Map<string, { x: number; width: number }> {
+  const leaves = layout.nodes.filter(n => n.node.isLeaf);
+  const right = Math.max(...leaves.map(n => (layout.tipLabels?.get(n.node.id)?.x ?? n.x) + estimateLabelWidth(n.node) + 20));
+  const placed: { top: number; bottom: number; x: number; width: number }[] = [];
+  const result = new Map<string, { x: number; width: number }>();
+  for (const clade of layout.ast.clades) {
+    const members = leaves.filter(n => clade.members.includes(n.node.id));
+    if (!members.length) continue;
+    const ys = members.map(n => layout.tipLabels?.get(n.node.id)?.y ?? n.y);
+    const top = Math.min(...ys) - 10, bottom = Math.max(...ys) + 10;
+    const label = clade.label ?? clade.id;
+    const width = Math.max(label.length * 8, estimateTextWidth(label, 13, { fontWeight: 700 }) * 1.1);
+    let x = right + 8;
+    for (const prior of placed) {
+      if (top <= prior.bottom && bottom >= prior.top) x = Math.max(x, prior.x + prior.width + 16);
+    }
+    placed.push({ top, bottom, x, width });
+    result.set(clade.id, { x, width });
+  }
+  return result;
+}
+
+export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
+  const result = layoutTree(ast);
+  for (const label of cladeLabelPositions(result).values()) {
+    result.width = Math.max(result.width, label.x + label.width + PADDING_RIGHT);
+  }
+  return result;
 }

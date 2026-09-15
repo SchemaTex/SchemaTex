@@ -133,7 +133,8 @@ function parseNewickSubtree(): PhyloNode {
       skipWhitespace();
     }
     skipWhitespace();
-    if (peek() === ")") advance();
+    if (peek() !== ")") throw new PhyloParseError(`Expected closing parenthesis at position ${_pos + 1}.`);
+    advance();
   }
 
   const name = parseNewickName();
@@ -167,6 +168,8 @@ export function parseNewick(newick: string): PhyloNode {
   }
 
   const root = parseNewickSubtree();
+  skipWhitespace();
+  if (_pos !== _src.length) throw new PhyloParseError(`Unexpected content at position ${_pos + 1}; enclose all sibling subtrees in parentheses.`);
   return root;
 }
 

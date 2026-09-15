@@ -2,7 +2,9 @@ import { describe, test, expect } from "vitest";
 import {
   renderIndividualSymbol,
   getRequiredDefs,
+  individualPerimeter,
 } from "../../src/diagrams/genogram/symbols";
+import { genogram } from "../../src/diagrams/genogram";
 import type { Individual } from "../../src/core/types";
 
 function makeIndividual(overrides: Partial<Individual> = {}): Individual {
@@ -32,21 +34,68 @@ describe("genogram symbols", () => {
     expect(svg).toContain("schematex-genogram-female");
   });
 
-  test("unknown symbol is a diamond polygon", () => {
-    const svg = renderIndividualSymbol(
-      makeIndividual({ id: "u", sex: "unknown" }),
-      0, 0, 40
-    );
-    expect(svg).toContain("<polygon");
-    expect(svg).toContain("schematex-genogram-unknown");
+  test.each(["unknown", "other"] as const)("%s uses a question mark with the existing perimeter", sex => {
+    const person = makeIndividual({ sex });
+    const svg = renderIndividualSymbol(person, 0, 0, 40);
+    expect(svg).not.toMatch(/<(polygon|rect|circle)\b/);
+    expect(svg).toMatch(/<text[^>]*class="schematex-genogram-unknown-mark"[^>]*>\?<\/text>/);
+    expect(individualPerimeter(person, 40)).toEqual({ half: 20, shape: "diamond" });
+    expect(individualPerimeter({ ...person, markers: ["index-person"] }, 40)).toEqual({ half: 24, shape: "diamond" });
   });
 
-  test("other sex uses diamond like unknown", () => {
-    const svg = renderIndividualSymbol(
-      makeIndividual({ id: "o", sex: "other" }),
-      0, 0, 40
+  test.each(["unknown", "other"] as const)("%s retains an explicit diamond", sex => {
+    const svg = renderIndividualSymbol(makeIndividual({ sex, shape: "diamond" }), 0, 0, 40);
+    expect(svg).toContain('<polygon points="0,-20 20,0 0,20 -20,0"');
+    expect(svg).not.toContain('>?</text>');
+  });
+
+  test("the DSL preserves explicit shapes and the sibling placeholder alongside unknown people", () => {
+    const svg = genogram.render(`genogram
+  u [unknown]
+  o [other]
+  d [unknown, shape: diamond]
+  s [unknown-siblings]
+  u -- o
+    ?`);
+    const node = (id: string) => svg.match(new RegExp(`<g[^>]*data-individual-id="${id}"[^>]*>[\\s\\S]*?<\\/g>`))?.[0] ?? "";
+    for (const id of ["u", "o"]) {
+      expect(node(id)).toContain('>?</text>');
+      expect(node(id)).not.toContain('<polygon');
+    }
+    expect(node("d")).toContain('<polygon');
+    expect(node("d")).not.toContain('>?</text>');
+    expect(node("s")).toContain('<polygon');
+    expect(node("s")).toContain('schematex-genogram-unknown-siblings-mark');
+    expect(svg.match(/class="schematex-genogram-unknown-siblings-mark"/g)).toHaveLength(2);
+  });
+
+  test("unknown-siblings retains its exact diamond and question mark", () => {
+    expect(renderIndividualSymbol(makeIndividual({ sex: "unknown", markers: ["unknown-siblings"] }), 0, 0, 40)).toBe(
+      '<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-unknown schematex-genogram-unknown-siblings" data-individual-id="test" data-status="alive" transform="translate(0, 0)">' +
+      '<title>Test</title>\n<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/>\n' +
+      '<text x="0" y="5" class="schematex-genogram-unknown-siblings-mark" text-anchor="middle" font-size="16" font-weight="bold">?</text></g>'
     );
-    expect(svg).toContain("<polygon");
+  });
+
+  test.each(["full", "half-left", "quad-tr", "striped", "dotted"] as const)("unknown %s condition uses a rounded frame with a legible question mark and age", fill => {
+    const svg = renderIndividualSymbol(makeIndividual({
+      sex: "unknown", status: "deceased", age: 42, external: true, markers: ["index-person"],
+      conditions: [{ label: "illness", fill, color: "#111111" }],
+    }), 0, 0, 40);
+    expect(svg).not.toContain("<polygon");
+    expect(svg).toMatch(/<rect[^>]*rx="[^"]+"[^>]*class="schematex-genogram-index-border"/);
+    expect(svg).toMatch(/<rect[^>]*rx="[^"]+"[^>]*class="schematex-genogram-condition-fill/);
+    expect(svg).toContain('stroke-dasharray="4,3"');
+    expect(svg.match(/class="schematex-genogram-deceased-mark"/g)).toHaveLength(2);
+    expect(svg.indexOf('class="schematex-genogram-unknown-mark"')).toBeGreaterThan(svg.lastIndexOf('class="schematex-genogram-deceased-mark"'));
+    expect(svg).toMatch(/<text x="0" y="0"[^>]*class="schematex-genogram-unknown-mark"[^>]*data-contrast="on-dark"[^>]*>\?</);
+    expect(svg).toMatch(/<text x="0" y="17"[^>]*class="schematex-genogram-age"[^>]*>42</);
+  });
+
+  test.each(["stillborn", "miscarriage", "abortion", "pregnancy"] as const)("%s still overrides unknown sex", status => {
+    const svg = renderIndividualSymbol(makeIndividual({ sex: "unknown", status }), 0, 0, 40);
+    expect(svg).not.toContain('schematex-genogram-unknown-mark');
+    if (status === "abortion") expect(svg).not.toMatch(/<(polygon|rect|circle)\b/);
   });
 
   test("deceased has X overlay lines", () => {

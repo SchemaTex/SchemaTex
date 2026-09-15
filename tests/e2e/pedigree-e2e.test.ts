@@ -50,7 +50,10 @@ describe("pedigree e2e", () => {
     III-1 [male, affected]
     III-2 [female, carrier-x]
     III-3 [male, unaffected]`);
-    expect(svg).toContain("schematex-pedigree-carrier-x-dot");
+    // X-linked carriers use the 2022 carrier hatch; the centre dot is retired (Bennett et al. 2022 §4.5).
+    expect(svg).toContain("schematex-pedigree-carrier-fill");
+    expect(svg).toContain('id="schematex-pedigree-carrier-pattern"');
+    expect(svg).not.toContain("schematex-pedigree-carrier-x-dot");
     expect(svg).toContain("schematex-pedigree-affected-fill");
     expect(svg).toContain(">III<");
   });

@@ -907,3 +907,9 @@ a only : 24
 ---
 
 *End of 15-VENN-STANDARD.md — Schematex 进入 ChatDiagram 主流量的 #1 流量入口，也是 Mermaid 空白中最显著的一块。实现优先级：P0.*
+
+### Automatic label fitting
+
+Region labels prefer the distinct compartment for their set combination. Inclusive intersections may use the full intersection if the distinct compartment is absent; values are not recomputed. The layout measures wrapped text and checks the whole text box against included and excluded shapes. When text cannot fit, it tries bounded uniform enlargement without changing relative set geometry, then uses external leaders if needed. Set labels retain the topology-specific placements; annotation bounds expand the canvas to prevent clipping. No per-case coordinates or label layout settings are required.
+
+The default visual palette uses translucent fills and solid set-coloured outlines. Dark and monochrome themes retain their own tokens. Complex Euler subset/disjoint/overlap constraints remain limited by the existing geometry solver.

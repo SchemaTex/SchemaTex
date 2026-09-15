@@ -23,25 +23,19 @@ import {
 
 function buildCss(t: BaseTheme): string {
   return `
-.lt-entity { font-family: system-ui, -apple-system, sans-serif; }
-.lt-entity-title { font: bold 16px sans-serif; fill: ${t.text}; }
-.lt-entity-name { font: 600 12px sans-serif; fill: ${t.text}; text-anchor: middle; }
-.lt-entity-type { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-entity { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.lt-entity-title { font-size: 20px; font-weight: 600; fill: ${t.text}; }
+.lt-entity-name { font-size: 13px; font-weight: 600; fill: ${t.text}; text-anchor: middle; }
+.lt-entity-type { font-size: 11px; font-weight: 400; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-role { font: italic 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-note { font: 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
-.lt-entity-badge-bg { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
-.lt-entity-badge-text { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; letter-spacing: 0.5px; }
 .lt-entity-edge { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
-.lt-entity-edge-voting { stroke: ${t.stroke}; stroke-width: 1.2; fill: none; }
 .lt-entity-edge-pool { stroke: ${t.neutral}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-license { stroke: ${t.palette[3]}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-distribution { stroke: ${t.positive}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-voting-pref { stroke: ${t.accent}; stroke-width: 1.8; fill: none; }
-.lt-entity-label-bg { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
-.lt-entity-label { font: 600 10px sans-serif; fill: ${t.text}; text-anchor: middle; }
-.lt-entity-label-sub { font: 500 9px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-entity-edge-license { stroke: ${t.textMuted}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-distribution { stroke: ${t === resolveBaseTheme("default") ? "#b45309" : t.warn}; stroke-width: 1.5; fill: none; stroke-dasharray: 2,4; }
+.lt-entity-edge-voting-pref { stroke: ${t.accent}; stroke-width: 1.5; fill: none; stroke-dasharray: 7,4; }
+.lt-entity-label { font-size: 11px; font-weight: 600; fill: ${t.text}; text-anchor: middle; }
 .lt-entity-cluster { fill: none; stroke-dasharray: 6,4; stroke-width: 1.2; }
-.lt-entity-cluster-label-bg { fill: ${t.bg}; }
 .lt-entity-cluster-label { font: 600 11px sans-serif; letter-spacing: 0.5px; }
 .lt-entity-status-new { stroke: ${t.positive}; stroke-width: 2.2; }
 .lt-entity-status-eliminated { stroke: ${t.negative}; stroke-width: 2.2; }
@@ -53,25 +47,13 @@ function buildCss(t: BaseTheme): string {
 const FILL: Record<string, string> = {
   corp: "#dbeafe",
   llc: "#dcfce7",
-  lp: "#fef9c3",
+  lp: "#fef3c7",
   trust: "#ede9fe",
   individual: "#fed7aa",
-  foundation: "#fef9c3",
-  disregarded: "#f5f5f5",
+  foundation: "#dbeafe",
+  disregarded: "#dcfce7",
   pool: "#f1f5f9",
   placeholder: "#f9fafb",
-};
-
-const TYPE_LABEL: Record<string, string> = {
-  corp: "Corporation",
-  llc: "LLC",
-  lp: "LP / Fund",
-  trust: "Trust",
-  individual: "Individual",
-  foundation: "Foundation",
-  disregarded: "Disregarded Entity",
-  pool: "Reserved Pool",
-  placeholder: "To Be Formed",
 };
 
 function statusClass(node: EntityNode): string | undefined {
@@ -89,7 +71,7 @@ function statusClass(node: EntityNode): string | undefined {
 
 function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
   const n = ln.node;
-  const fill = FILL[n.entityType] ?? t.bg;
+  const fill = t === resolveBaseTheme("default") ? FILL[n.entityType] ?? t.bg : t.bg;
   const sc = statusClass(n);
   const commonAttrs: Record<string, string | number> = {
     fill,
@@ -101,7 +83,6 @@ function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
   }
   // Dashed stroke for disregarded / placeholder / pool
   const dashed =
-    n.entityType === "disregarded" ||
     n.entityType === "placeholder" ||
     n.entityType === "pool";
 
@@ -133,21 +114,7 @@ function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
         ...commonAttrs,
       });
     case "lp": {
-      // Notched top corners polygon
-      const w = ln.width;
-      const h = ln.height;
-      const notch = 12;
-      const pts = [
-        [x + notch, y],
-        [x + w - notch, y],
-        [x + w, y + notch],
-        [x + w, y + h],
-        [x, y + h],
-        [x, y + notch],
-      ]
-        .map((p) => p.join(","))
-        .join(" ");
-      return polygon({ points: pts, ...commonAttrs });
+      return polygon({ points: `0,${y} ${-x},${-y} ${x},${-y}`, ...commonAttrs });
     }
     case "trust":
       return el("ellipse", {
@@ -161,33 +128,16 @@ function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
       return circle({
         cx: 0,
         cy: 0,
-        r: Math.min(ln.width, ln.height) / 2 - 4,
+        r: Math.min(ln.width, ln.height) / 2,
         ...commonAttrs,
       });
-    case "foundation": {
-      const w = ln.width;
-      const h = ln.height;
-      const tip = 14;
-      const pts = [
-        [x + w / 2, y - tip],
-        [x + w, y],
-        [x + w, y + h],
-        [x, y + h],
-        [x, y],
-      ]
-        .map((p) => p.join(","))
-        .join(" ");
-      return polygon({ points: pts, ...commonAttrs });
-    }
+    case "foundation":
+      return rect({ x, y, width: ln.width, height: ln.height, ...commonAttrs });
     case "disregarded":
-      return rect({
-        x,
-        y,
-        width: ln.width,
-        height: ln.height,
-        ...commonAttrs,
-        ...dashAttr,
-      });
+      return group({}, [
+        rect({ x, y, width: ln.width, height: ln.height, rx: 8, ...commonAttrs }),
+        el("ellipse", { cx: 0, cy: 0, rx: ln.width / 2 - 10, ry: ln.height / 2 - 10, ...commonAttrs, fill: t === resolveBaseTheme("default") ? "#f4fdf7" : t.bg }),
+      ]);
     case "pool":
       return rect({
         x,
@@ -212,23 +162,6 @@ function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
         ...opacity,
       });
   }
-}
-
-function renderBadge(ln: EntityLayoutNode): string | undefined {
-  const j = ln.node.jurisdiction;
-  if (!j) return undefined;
-  const bw = j.length >= 3 ? 26 : 20;
-  const bh = 13;
-  // Top-right corner
-  const bx = ln.width / 2 - bw - 4;
-  const by = -ln.height / 2 + 4;
-  return group({}, [
-    rect({ x: bx, y: by, width: bw, height: bh, rx: 2, class: "lt-entity-badge-bg" }),
-    textEl(
-      { x: bx + bw / 2, y: by + bh - 3, class: "lt-entity-badge-text" },
-      j
-    ),
-  ]);
 }
 
 function renderStatusTag(ln: EntityLayoutNode, t: BaseTheme): string | undefined {
@@ -274,26 +207,16 @@ function renderNodeLabels(ln: EntityLayoutNode): string[] {
     return pieces;
   }
 
-  // Inside-shape rendering
-  // Name centered, type underneath
-  const topY = -6;
-  pieces.push(textEl({ x: 0, y: topY, class: "lt-entity-name" }, n.name));
-  pieces.push(textEl({ x: 0, y: topY + 14, class: "lt-entity-type" }, TYPE_LABEL[n.entityType] ?? n.entityType));
-
-  // Below-node: role, note, formation date
-  let belowY = ln.height / 2 + 14;
-  if (n.role) {
-    pieces.push(textEl({ x: 0, y: belowY, class: "lt-entity-role" }, n.role));
-    belowY += 12;
+  const rows = ln.nameLines.length + ln.detailLines.length;
+  // The triangle's lower half has enough horizontal room for the measured text.
+  let y = n.entityType === "lp" ? ln.height / 2 - rows * 15 + 3 : -(rows - 1) * 8 + 4;
+  for (const name of ln.nameLines) {
+    pieces.push(textEl({ x: 0, y, class: "lt-entity-name" }, name));
+    y += 16;
   }
-  if (n.note) {
-    pieces.push(textEl({ x: 0, y: belowY, class: "lt-entity-note" }, n.note));
-    belowY += 12;
-  }
-  if (n.formationDate) {
-    pieces.push(
-      textEl({ x: 0, y: belowY, class: "lt-entity-note" }, `est. ${n.formationDate}`)
-    );
+  for (const detail of ln.detailLines) {
+    pieces.push(textEl({ x: 0, y, class: "lt-entity-type" }, detail));
+    y += 15;
   }
   return pieces;
 }
@@ -319,49 +242,14 @@ function edgeClass(edge: EntityEdge): string {
 }
 
 function renderEdgeLabel(le: EntityLayoutEdge): string | undefined {
-  const e = le.edge;
-  const lines: string[] = [];
-  if (e.percentage) lines.push(e.percentage);
-  if (e.label) lines.push(e.label);
-  const hasClass = !!e.shareClass;
-  if (!lines.length && !hasClass) return undefined;
-
-  const main = lines[0];
-  const sub = lines[1];
-  const classLabel = hasClass ? e.shareClass : undefined;
-
-  // Approximate width
-  const maxText = Math.max(
-    main ? main.length : 0,
-    sub ? sub.length : 0,
-    classLabel ? classLabel.length : 0
-  );
-  const w = Math.max(30, maxText * 6 + 10);
-  const rows = (main ? 1 : 0) + (sub ? 1 : 0) + (classLabel ? 1 : 0);
-  const h = 4 + rows * 12;
-  const x = le.labelX - w / 2;
-  const y = le.labelY - h / 2;
-  const pieces: string[] = [];
-  pieces.push(rect({ x, y, width: w, height: h, rx: 3, class: "lt-entity-label-bg" }));
-  let ty = y + 12;
-  if (main) {
-    pieces.push(textEl({ x: le.labelX, y: ty, class: "lt-entity-label" }, main));
-    ty += 12;
-  }
-  if (sub) {
-    pieces.push(textEl({ x: le.labelX, y: ty, class: "lt-entity-label-sub" }, sub));
-    ty += 12;
-  }
-  if (classLabel) {
-    pieces.push(textEl({ x: le.labelX, y: ty, class: "lt-entity-label-sub" }, classLabel));
-  }
-  return group({}, pieces);
+  if (!le.labelLines.length) return undefined;
+  return group({}, le.labelLines.map((label,i)=>textEl({ x:le.labelX, y:le.labelY-(le.labelLines.length-1)*7+4+i*14, class:"lt-entity-label" },label)));
 }
 
 export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
   const layout = layoutEntity(ast);
   const t = resolveBaseTheme(config?.theme ?? "default");
-  const titleOffset = ast.title ? 34 : 12;
+  const titleOffset = ast.title ? 54 : 12;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
 
@@ -378,15 +266,15 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
   children.push(
     defs([
       arrowMarker("lt-entity-arrow", t.stroke),
-      arrowMarker("lt-entity-arrow-purple", t.palette[3] ?? t.stroke),
-      arrowMarker("lt-entity-arrow-green", t.positive),
+      arrowMarker("lt-entity-arrow-contract", t.textMuted),
+      arrowMarker("lt-entity-arrow-green", t === resolveBaseTheme("default") ? "#b45309" : t.warn),
       arrowMarker("lt-entity-arrow-grey", t.neutral),
       arrowMarker("lt-entity-arrow-blue", t.accent),
     ])
   );
 
   if (ast.title) {
-    children.push(textEl({ x: width / 2, y: 22, class: "lt-entity-title", "text-anchor": "middle" }, ast.title));
+    children.push(textEl({ x: 40, y: 30, class: "lt-entity-title", "text-anchor": "start" }, ast.title));
   }
 
   const inner: string[] = [];
@@ -421,11 +309,11 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
       pathEl({
         d: le.path,
         class: cls,
-        "marker-end": `url(#${markerId})`,
+        ...(le.edge.op === "ownership" ? {} : { "marker-end": `url(#${markerId})` }),
       })
     );
   }
-  // Edge labels AFTER paths so they cover lines
+  // Labels are positioned beside clear segments by the layout.
   for (const le of layout.edges) {
     const piece = renderEdgeLabel(le);
     if (piece) inner.push(piece);
@@ -435,8 +323,6 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
   for (const ln of layout.nodes) {
     const parts: string[] = [];
     parts.push(renderShape(ln, t));
-    const badge = renderBadge(ln);
-    if (badge) parts.push(badge);
     const status = renderStatusTag(ln, t);
     if (status) parts.push(status);
     for (const p of renderNodeLabels(ln)) parts.push(p);
@@ -486,7 +372,7 @@ function arrowMarker(id: string, color: string): string {
 }
 
 function pickMarker(_edge: EntityEdge, cls: string): string {
-  if (cls === "lt-entity-edge-license") return "lt-entity-arrow-purple";
+  if (cls === "lt-entity-edge-license") return "lt-entity-arrow-contract";
   if (cls === "lt-entity-edge-distribution") return "lt-entity-arrow-green";
   if (cls === "lt-entity-edge-pool") return "lt-entity-arrow-grey";
   if (cls === "lt-entity-edge-voting-pref") return "lt-entity-arrow-blue";

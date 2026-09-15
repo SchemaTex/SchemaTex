@@ -1,8 +1,9 @@
 # 01 — Genogram Standard Reference (Comprehensive)
 
-*McGoldrick et al. (2020) 符号系统 + GenoPro emotional taxonomy + Bennett 2022 gender inclusivity + 临床医疗条件系统 + Cultural Heritage genogram 支持。*
+*McGoldrick MFI 2017 handout 符号系统与 McGoldrick et al. (2020) family structure + GenoPro emotional taxonomy + Bennett 2022 gender inclusivity + 临床医疗条件系统 + Cultural Heritage genogram 支持。*
 
 > **Primary References:**
+> - McGoldrick, Multicultural Family Institute (MFI), 2017 genogram handout — status symbols 与其中定义的 relationship notation；未定义的 relationship marks 使用 GenoPro。
 > - McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment.* 4th ed.
 > - Bennett, R.L. et al. (2022). *Standardized human pedigree nomenclature: Update and assessment of the recommendations of the National Society of Genetic Counselors.* J Genet Couns.
 > - Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram: Key to training culturally competent family therapists. *J Marital Fam Ther*, 21(3), 227-237.
@@ -19,7 +20,7 @@
 |--------|-------|-------------|------|
 | □ | Square (40×40) | `<rect>` | Male |
 | ○ | Circle (r=20) | `<circle>` | Female |
-| ◇ | Diamond (40×40) | `<polygon>` | Unknown sex / Nonbinary (Bennett 2022) |
+| ? | Question mark (40×40 symbol box) | `<text>` | Unknown / other sex ([GenoPro](https://genopro.com/genogram/symbols/): question mark for unknown gender; diamond for a pet). Explicit `shape:diamond` and nonbinary/intersex shapes remain diamonds. |
 | △ | Triangle (small, 20×20) | `<polygon>` | Pregnancy (current) |
 | Concentric shape | Double outline (gap=3px) | Two shapes, inner + outer | Index Person (IP) / Identified Patient |
 
@@ -28,11 +29,10 @@
 | Status | Visual | SVG Implementation |
 |--------|--------|-------------------|
 | Deceased | X through shape, corner to corner | Two `<line>` elements crossing shape |
-| Stillborn | 50% size shape + SB label | Scaled shape with text |
-| Miscarriage | Small triangle (△, 12×12) | `<polygon>` small |
-| Spontaneous abortion | Small × (12×12) | Two short `<line>` elements |
-| Induced abortion | Small × with horizontal line through | `<line>` elements + cross bar |
-| Pregnancy | Dashed outline | `stroke-dasharray="4,3"` on shape |
+| Stillborn (`stillborn`) | Small square with an X, no SB label | 50% size `<rect>` + two crossing `<line>` elements |
+| Miscarriage / spontaneous abortion (`miscarriage`) | Small hollow circle | 30% size `<circle>` with no fill |
+| Induced abortion (`abortion`) | Small x | Two short crossing `<line>` elements |
+| Pregnancy | Small hollow triangle | 50% size `<polygon>` with no fill |
 
 ### 1.3 Bennett 2022 Gender/Sex Inclusivity Update
 
@@ -54,7 +54,7 @@ jordan [intersex, 1990]          # → diamond (UAAB)
 ```
 
 **实现规则：**
-- `sex` property 控制 shape（male→□, female→○, unknown/nonbinary/intersex→◇）
+- `sex` property 控制 shape（male→□, female→○, unknown/other→?, nonbinary/intersex→◇）
 - `transgender` property 添加一个小三角标记在 shape 角落
 - `gender` property 可选，用于 label 显示
 
@@ -422,27 +422,27 @@ To turn off entirely: `legend: off`.
 | Same-sex marriage | Same as marriage | `A -- B` (both same sex) | Same rendering, positioning by age |
 | Domestic partnership | Dashed + DP label | `A ~dp~ B` | stroke-dasharray + text label |
 
-### 3.2 Emotional Relationship Types (GenoPro 34-Type Taxonomy)
+### 3.2 Emotional Relationship Types (McGoldrick MFI / GenoPro)
 
-这是 genogram 临床使用中最重要的扩展。GenoPro 定义了 34 种 emotional relationship types，分为 7 大类：
+以下是 engine 支持的 emotional relationships。符号以 McGoldrick MFI 2017 handout 为优先；love、inlove、admirer、limerence、distrust、manipulative、controlling、jealous、nevermet、neglect、bestfriends 等扩展标记采用 GenoPro。
 
 #### Category 1: Positive/Close Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Harmony | Single green solid line | `A -harmony- B` | 和谐关系 |
-| Close | Two parallel green lines | `A -close- B` | 亲密 |
-| Best friends | Three parallel green lines | `A -bestfriends- B` | 最好的朋友 |
-| Love | Heart symbol on line | `A -love- B` | 爱 |
-| In love | Double heart on line | `A -inlove- B` | 热恋 |
-| Friendship | Single blue line | `A -friendship- B` | 友谊 |
+| Harmony | Single solid line (`positive` ink) | `A -harmony- B` | 和谐关系 |
+| Close | Two parallel lines (`positive` ink) | `A -close- B` | 亲密 |
+| Best friends | Two parallel lines with short cross ticks | `A -bestfriends- B` | 最好的朋友 |
+| Love | Hollow circle at line midpoint | `A -love- B` | 爱 |
+| In love | Two overlapping hollow circles at line midpoint | `A -inlove- B` | 热恋 |
+| Friendship | Two parallel lines (`positive` ink) | `A -friendship- B` | 友谊 |
 
 #### Category 2: Negative/Hostile Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Hostile | Zigzag red line | `A -hostile- B` | 敌对 |
-| Conflict | Zigzag line + hash marks | `A -conflict- B` | 冲突 |
-| Enmity | Thick zigzag red line | `A -enmity- B` | 仇恨 |
-| Distant-hostile | Dotted zigzag line | `A -distant-hostile- B` | 疏远+敌对 |
+| Hostile | Zigzag (`negative` ink) | `A -hostile- B` | 敌对 |
+| Conflict | Zigzag line | `A -conflict- B` | 冲突 |
+| Enmity | Zigzag (`negative` ink) | `A -enmity- B` | 仇恨 |
+| Distant-hostile | Zigzag over a dashed line | `A -distant-hostile- B` | 疏远+敌对 |
 | Cutoff | Broken line with gap | `A -cutoff- B` | 断绝关系 |
 
 #### Category 3: Ambivalent/Complex Relationships
@@ -455,57 +455,50 @@ To turn off entirely: `legend: off`.
 #### Category 4: Distance Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Distant | Dotted thin line | `A -distant- B` | 疏远 |
+| Distant | Short-dash thin line | `A -distant- B` | 疏远 |
 | Plain/Normal | Single solid line (default) | `A -normal- B` | 普通关系 |
-| Never met | No line (gap symbol) | `A -nevermet- B` | 从未见面 |
+| Never met | Line with a boxed X at its midpoint | `A -nevermet- B` | 从未见面 |
 
 #### Category 5: Abuse Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Abuse (general) | Arrow + red zigzag | `A -abuse-> B` | 虐待（方向性） |
-| Physical abuse | Arrow + thick red zigzag | `A -physical-abuse-> B` | 身体虐待 |
-| Emotional abuse | Arrow + wavy red line | `A -emotional-abuse-> B` | 情感虐待 |
-| Sexual abuse | Arrow + red zigzag + dot | `A -sexual-abuse-> B` | 性虐待 |
-| Neglect | Arrow + thin dotted red | `A -neglect-> B` | 忽视 |
+| Abuse (general) | Zigzag with a filled arrowhead | `A -abuse-> B` | 虐待（方向性） |
+| Physical abuse | Zigzag with a filled arrowhead | `A -physical-abuse-> B` | 身体虐待 |
+| Emotional abuse | Zigzag with a hollow arrowhead | `A -emotional-abuse-> B` | 情感虐待 |
+| Sexual abuse | Zigzag between two parallel lines with a filled arrowhead | `A -sexual-abuse-> B` | 性虐待 |
+| Neglect | Dashed line with an open arrowhead | `A -neglect-> B` | 忽视 |
 
 **注意：** 虐待关系有**方向性**（`->` 表示 A 对 B 施虐）。
 
 #### Category 6: Control/Power Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Manipulative | Arrow + curved line | `A -manipulative-> B` | 操控 |
-| Controlling | Arrow + thick line + bar | `A -controlling-> B` | 控制 |
-| Jealous | Arrow + green zigzag | `A -jealous-> B` | 嫉妒 |
+| Manipulative | Open arrow with an X at line midpoint | `A -manipulative-> B` | 操控 |
+| Controlling | Open arrow with a boxed X at line midpoint | `A -controlling-> B` | 控制 |
+| Jealous | Open arrow with a hollow diamond at line midpoint | `A -jealous-> B` | 嫉妒 |
 
 #### Category 7: Special Relationships
 | Type | Line Style | DSL | 含义 |
 |------|-----------|-----|------|
-| Focused on | Arrow + magnifying symbol | `A -focused-> B` | 关注（正面） |
-| Focused on negatively | Arrow + negative magnifying | `A -focused-neg-> B` | 负面关注 |
-| Distrust | Dotted line + X | `A -distrust- B` | 不信任 |
-| Fan/Admirer | Arrow + star | `A -admirer-> B` | 崇拜/粉丝 |
-| Limerence | Arrow + heart + question | `A -limerence-> B` | 单恋/迷恋 |
+| Focused on | Solid line with a filled arrowhead (`accent` ink) | `A -focused-> B` | 关注（正面） |
+| Focused on negatively | Solid line with a filled arrowhead (`negative` ink) | `A -focused-neg-> B` | 负面关注 |
+| Distrust | Row of short perpendicular ticks along the line | `A -distrust- B` | 不信任 |
+| Fan/Admirer | Open arrow with a hollow circle at line midpoint | `A -admirer-> B` | 崇拜/粉丝 |
+| Limerence | Open arrow with two overlapping hollow circles at line midpoint | `A -limerence-> B` | 单恋/迷恋 |
 
 ### 3.3 Emotional Relationship SVG Implementation
 
-**Line rendering priority：**
-1. Base line shape: straight / zigzag / wavy / dotted / dashed
-2. Color coding: green (positive), red (negative/abuse), blue (neutral), orange (control)
-3. Multiplicity: 1 line (normal), 2 lines (close), 3 lines (fused/best friends)
-4. Directional markers: arrowhead for abuse/control/focused relationships
-5. Special symbols: heart, X, star (rendered as small SVG markers at line midpoint)
+Emotional-line colours resolve from the active theme through `emotionalInk`, rather than fixed hex values:
 
-**SVG markers in `<defs>`：**
-```xml
-<defs>
-  <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
-  </marker>
-  <marker id="heart" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="8" markerHeight="8">
-    <path d="M6,10 C2,6 0,4 2,2 C4,0 6,2 6,4 C6,2 8,0 10,2 C12,4 10,6 6,10z" fill="#E53935"/>
-  </marker>
-</defs>
-```
+| Theme ink | Relationships |
+|---|---|
+| `positive` | harmony, close, bestfriends, love, inlove, friendship |
+| `negative` | hostile, conflict, enmity, distant-hostile, cutoff, close-hostile, fused-hostile, abuse, physical-abuse, emotional-abuse, sexual-abuse, neglect, focused-neg |
+| `neutral` | distant, normal, nevermet |
+| `warn` | manipulative, controlling, jealous |
+| `accent` | fused, focused, distrust, admirer, limerence |
+
+`renderEmotionalForm` 沿 layout 提供的 route 绘制 strokes 和 midpoint marks。Close 为双线，fused 为三线，bestfriends 为双线加 cross ticks。Distant-hostile 的 dashed 基线、close-hostile / fused-hostile 的平行线使用 `neutral` ink，zigzag 使用 `negative` ink。Arrowheads 直接绘制为 open、hollow 或 filled paths；circle、overlapping circles、X、boxed X、diamond 与 ticks 沿 route 定位。CSS 从当前 theme 取色，支持 monochrome 和 dark。
 
 **Zigzag path generation（for hostile/conflict）：**
 ```
@@ -881,7 +874,7 @@ genogram
   father -physical-abuse-> mother
   father -emotional-abuse-> child
 ```
-验证：abuse lines 有方向箭头，red zigzag 样式，overlaid on structural connections。
+验证：physical abuse 为 zigzag + filled arrowhead，emotional abuse 为 zigzag + hollow arrowhead；两者使用 theme 的 `negative` ink，叠加在 structural connections 上。
 
 ### Case 10: Nonbinary / Transgender
 ```

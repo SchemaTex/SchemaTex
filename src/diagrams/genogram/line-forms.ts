@@ -1,6 +1,7 @@
 import type { RelationshipType, LegendLinePattern } from "../../core/types";
 import { labelPathPoints, type LabelPoint } from "../../core/label-placement";
-import { el } from "../../core/svg";
+import { circle, el } from "../../core/svg";
+import { resolveGenogramTheme } from "../../core/theme";
 
 interface LineForm {
   color: string;
@@ -10,13 +11,7 @@ interface LineForm {
 }
 
 export function emotionalForm(type: RelationshipType): LineForm {
-  let color = "#1565c0";
-  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(type)) color = "#4caf50";
-  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff"].includes(type)) color = "#e53935";
-  if (["close-hostile", "fused", "fused-hostile"].includes(type)) color = "#9c27b0";
-  if (["distant", "normal", "nevermet"].includes(type)) color = "#9e9e9e";
-  if (["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect"].includes(type)) color = "#b71c1c";
-  if (["manipulative", "controlling", "jealous"].includes(type)) color = "#e65100";
+  const color = resolveGenogramTheme("default")[emotionalInk(type)];
   const offsets = type === "fused" ? [-4, 0, 4] : type === "close" ? [-2.5, 2.5] : [0];
   let pattern: LegendLinePattern = "solid";
   if (["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(type)) pattern = "zigzag";
@@ -34,16 +29,15 @@ function polyline(points: LabelPoint[]): string {
   return points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
 }
 
-/** One arclength/tangent mechanism supplies parallel offsets, teeth, and break caps. */
-export function emotionalPaths(path: string, type: RelationshipType): string[] {
-  const form = emotionalForm(type);
+/** These widths, offsets and paths are the fixed routing footprint. Drawing a
+ * new notation must not change the route search, caption placement or bounds. */
+function routeSampler(path: string) {
   const points = relationshipPoints(path);
   const lengths = [0];
   for (let i = 1; i < points.length; i++) {
     lengths.push(lengths[i - 1] + Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y));
   }
   const total = lengths[lengths.length - 1];
-  if (!total) return [];
   const at = (distance: number, offset = 0): LabelPoint => {
     let i = 1;
     while (i < lengths.length - 1 && lengths[i] < distance) i++;
@@ -53,6 +47,14 @@ export function emotionalPaths(path: string, type: RelationshipType): string[] {
     return { x: a.x + (b.x - a.x) * t - (b.y - a.y) / length * offset,
       y: a.y + (b.y - a.y) * t + (b.x - a.x) / length * offset };
   };
+  return { total, at };
+}
+
+/** Layout's reserved line geometry; independent of the artwork below. */
+export function emotionalPaths(path: string, type: RelationshipType): string[] {
+  const form = emotionalForm(type);
+  const { total, at } = routeSampler(path);
+  if (!total) return [];
   const count = Math.max(2, Math.ceil(total / 6));
   const samples = Array.from({ length: count + 1 }, (_, i) => i * total / count);
   const gap = Math.min(16, total / 3);
@@ -79,14 +81,98 @@ export function emotionalPaths(path: string, type: RelationshipType): string[] {
   return paths;
 }
 
+/** Semantic colours come from the engine theme, including monochrome/dark. */
+function emotionalInk(type: RelationshipType): "positive" | "negative" | "neutral" | "accent" | "warn" {
+  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(type)) return "positive";
+  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff", "close-hostile", "fused-hostile",
+    "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect", "focused-neg"].includes(type)) return "negative";
+  if (["distant", "normal", "nevermet"].includes(type)) return "neutral";
+  if (["manipulative", "controlling", "jealous"].includes(type)) return "warn";
+  return "accent";
+}
+
+/** MFI 2017 takes precedence; GenoPro supplies the additional relationship marks.
+ * Coordinates are baked into the reserved route, never scaled SVG artwork. */
 export function renderEmotionalForm(path: string, type: RelationshipType, directional = false): string {
+  const { total, at } = routeSampler(path);
+  if (!total) return "";
   const form = emotionalForm(type);
-  return emotionalPaths(path, type).map((d, i) => el("path", {
-    d, fill: "none", stroke: form.color, "stroke-width": form.width,
-    "stroke-linecap": "round", "stroke-linejoin": "round",
-    "stroke-dasharray": form.pattern === "dotted" ? "2,5" : undefined,
-    "marker-end": directional && i === (form.pattern === "broken" ? 1 : 0) ? "url(#schematex-genogram-arrow)" : undefined,
-  })).join("");
+  const ink = `schematex-genogram-ink-${emotionalInk(type)}`;
+  const classes = (extra = "") => `schematex-genogram-emotional-stroke ${ink}${extra ? ` ${extra}` : ""}`;
+  const result: string[] = [];
+  const stroke = (d: string, mark: string, extra = "", dashed = false, width = 2) => {
+    result.push(el("path", { d, class: classes(extra), "data-mark": mark,
+      "stroke-width": width, "stroke-dasharray": dashed ? "4,4" : undefined }));
+  };
+  const openArrow = ["neglect", "manipulative", "controlling", "jealous", "admirer", "limerence"].includes(type);
+  const abuse = ["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse"].includes(type);
+  const arrow = openArrow || abuse || ["focused", "focused-neg"].includes(type) || directional;
+  const headLength = Math.min(12, total / 5);
+  const headHalf = Math.min(6, total / 6);
+  const end = arrow && !openArrow ? total - headLength : total;
+  const run = (start: number, finish: number, offset: number, zigzag: boolean, mark: string, dashed = false) => {
+    const count = Math.max(2, Math.ceil((finish - start) / 6));
+    const distances = Array.from({ length: count + 1 }, (_, i) => start + (finish - start) * i / count);
+    const neutral = (mark === "parallel" && ["close-hostile", "fused-hostile"].includes(type)) || mark === "dashed";
+    stroke(polyline(distances.map((d, i) => at(d, offset +
+      (zigzag && i > 0 && i < count ? (i % 2 === 0 ? -4 : 4) : 0)))), mark,
+      neutral ? "schematex-genogram-ink-neutral" : "", dashed,
+      type === "distant" ? form.width : 2);
+  };
+  if (type === "cutoff") {
+    for (const d of emotionalPaths(path, type)) stroke(d, "cutoff");
+  } else {
+    const parallel = type === "fused-hostile" ? [-6, 0, 6] : type === "close-hostile" ? [-6, 6]
+      : type === "fused" ? [-4, 0, 4]
+      : type === "close" || type === "friendship" ? [-2.5, 2.5]
+      : type === "bestfriends" || type === "sexual-abuse" ? [-4, 4] : [];
+    for (const offset of parallel) run(0, end, offset, false, "parallel");
+    const zigzag = abuse || ["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(type);
+    if (type === "distant-hostile") run(0, end, 0, false, "dashed", true);
+    if (zigzag) run(0, end, 0, true, "zigzag");
+
+    const circles = ["love", "admirer"].includes(type) ? 1 : ["inlove", "limerence"].includes(type) ? 2 : 0;
+    const box = type === "nevermet" || type === "controlling";
+    const diamond = type === "jealous";
+    const radius = Math.min(6, total / (circles === 2 ? 5 : 4));
+    const separation = circles === 2 ? radius / 2 : 0;
+    const gap = circles ? radius + separation : box || diamond ? radius : 0;
+    if (!parallel.length && !zigzag) {
+      if (gap) {
+        run(0, total / 2 - gap, 0, false, "shaft");
+        run(total / 2 + gap, end, 0, false, "shaft");
+      } else run(0, end, 0, false, "shaft", type === "distant" || type === "neglect");
+    }
+    for (const offset of circles === 2 ? [-separation, separation] : circles ? [0] : []) {
+      const p = at(total / 2 + offset);
+      result.push(circle({ cx: p.x, cy: p.y, r: radius, class: classes(), "data-mark": "circle", "stroke-width": 2 }));
+    }
+    const middle = total / 2;
+    if (box) stroke(polyline([at(middle - radius, -radius), at(middle + radius, -radius),
+      at(middle + radius, radius), at(middle - radius, radius)]) + " Z", "box");
+    if (diamond) stroke(polyline([at(middle - radius), at(middle, -radius),
+      at(middle + radius), at(middle, radius)]) + " Z", "diamond");
+    if (box || type === "manipulative") {
+      const cross = box ? radius * 0.7 : radius;
+      for (const sign of [-1, 1]) stroke(polyline([at(middle - cross, sign * cross), at(middle + cross, -sign * cross)]), "cross");
+    }
+    if (type === "distrust" || type === "bestfriends") {
+      const count = Math.max(3, Math.floor(total / 10));
+      for (let i = 1; i < count; i++) {
+        const d = total * i / count;
+        stroke(polyline([at(d, -6), at(d, 6)]), "tick");
+      }
+    }
+  }
+  if (arrow) {
+    // Orient against the original final tangent, not the final zigzag tooth.
+    const tip = at(total), base = at(total - headLength);
+    const length = Math.hypot(tip.x - base.x, tip.y - base.y);
+    const nx = -(tip.y - base.y) / length * headHalf, ny = (tip.x - base.x) / length * headHalf;
+    const d = polyline([{ x: base.x + nx, y: base.y + ny }, tip, { x: base.x - nx, y: base.y - ny }]);
+    stroke(d + (openArrow ? "" : " Z"), "arrow", `schematex-genogram-arrow-${openArrow ? "open" : type === "emotional-abuse" ? "hollow" : "filled"}`);
+  }
+  return result.join("");
 }
 
 /** Multiple-birth branches share an apex; the joining bar means identical. */

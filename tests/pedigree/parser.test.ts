@@ -148,3 +148,42 @@ describe("pedigree parser", () => {
     expect(ast.individuals[0].label).toBe("John Smith");
   });
 });
+
+test("rejects unsupported bare flags rather than silently deleting them", () => {
+  expect(() => parsePedigree('pedigree\np [female, twinn]')).toThrow(/Unknown property/);
+});
+
+test("preserves donor-assisted birth without inventing a donor individual", () => {
+  const ast = parsePedigree('pedigree\np [unknown, donor-sperm]');
+  expect(ast.individuals).toHaveLength(1);
+  expect(ast.individuals[0].childType).toBe('donor-sperm');
+});
+
+test("refuses ambiguous multiple twin pairs instead of inventing pairings", () => {
+  expect(() => parsePedigree(`pedigree
+p [male]
+q [female]
+p -- q
+  a [female, twin-mz]
+  b [female, twin-mz]
+  c [female, twin-mz]
+  d [female, twin-mz]`)).toThrow(/exactly two/);
+});
+
+test("repeated child declarations do not multiply twin or descent relationships", () => {
+  const ast = parsePedigree(`pedigree
+p [male]
+q [female]
+p -- q
+  a [female, twin-mz]
+  b [female, twin-mz]
+p -- q
+  a [female, twin-mz]
+  b [female, twin-mz]`);
+  expect(ast.relationships.filter(r => r.type === "twin-identical")).toHaveLength(1);
+  expect(ast.relationships.filter(r => r.type === "parent-child")).toHaveLength(2);
+});
+
+test("quoted commas remain label text when validating bare flags", () => {
+  expect(parsePedigree('pedigree\np [female, label: "Ann, MD"]')).toMatchObject({individuals: [{label: "Ann, MD"}]});
+});

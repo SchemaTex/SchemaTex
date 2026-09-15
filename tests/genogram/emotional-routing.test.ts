@@ -74,7 +74,8 @@ function verify(svg: string, checkCurrentPatterns = true) {
     const strokes = all.filter(e => e.tag === "path" && e.ancestors.includes(group));
     expect(strokes.length).toBeGreaterThan(0);
     const type = group.attrs["data-relationship-type"];
-    const lines = strokes.map(points);
+    const runs = strokes.filter(e => e.attrs["data-mark"] !== "arrow");
+    const lines = runs.map(points);
     if (type === "close" || type === "fused") {
       expect(lines).toHaveLength(type === "close" ? 2 : 3);
       for (let i = 1; i < lines.length; i++) {
@@ -84,7 +85,7 @@ function verify(svg: string, checkCurrentPatterns = true) {
         }
       }
     } else if (type === "conflict") {
-      if (checkCurrentPatterns) expect(lines).toHaveLength(3);
+      if (checkCurrentPatterns) expect(lines).toHaveLength(1);
       for (const hash of lines.slice(1)) expect(Math.hypot(hash[1].x - hash[0].x, hash[1].y - hash[0].y)).toBeCloseTo(12, 2);
       const p = lines[0];
       // Signed turns follow the local tangent, independent of the route's orientation.
@@ -103,7 +104,7 @@ function verify(svg: string, checkCurrentPatterns = true) {
       }
     } else if (type === "distant") {
       expect(strokes).toHaveLength(1);
-      expect(strokes[0].attrs["stroke-dasharray"]).toBe("2,5");
+      expect(strokes[0].attrs["stroke-dasharray"]).toBe("4,4");
     }
     for (const stroke of strokes) {
       expect(stroke.attrs.d).not.toMatch(/[QC]/);
@@ -140,8 +141,9 @@ function verify(svg: string, checkCurrentPatterns = true) {
       }
     }
     // The average parallel endpoint lies on the declared owner's cardinal perimeter.
-    const runCount = type === "cutoff" ? 2 : type === "conflict" ? 1 : strokes.length;
-    const first = points(strokes[0])[0], last = points(strokes[runCount - 1]).at(-1)!;
+    const runCount = type === "cutoff" ? 2 : type === "conflict" ? 1 : runs.length;
+    const arrow = strokes.find(e => e.attrs["data-mark"] === "arrow");
+    const first = points(runs[0])[0], last = arrow ? points(arrow)[1] : points(runs[runCount - 1]).at(-1)!;
     for (const [id, point] of [[group.attrs["data-from"], first], [group.attrs["data-to"], last]] as const) {
       const node = nodes.find(n => n.attrs["data-individual-id"] === id)!;
       const box = symbolBox(node, all), cx = box.x + box.width / 2, cy = box.y + box.height / 2;
@@ -349,8 +351,8 @@ ${children}
     ]);
     const conflict = groups[2];
     const strokes = all.filter(e => e.tag === "path" && e.ancestors.includes(conflict));
-    expect(strokes).toHaveLength(3);
-    expect(strokes[0].attrs["marker-end"]).toBe("url(#schematex-genogram-arrow)");
+    expect(strokes).toHaveLength(2);
+    expect(strokes.map(e => e.attrs["data-mark"])).toEqual(["zigzag", "arrow"]);
     genogram.render(source("care-network"));
     expect(genogram.render(input)).toBe(svg);
   });
@@ -365,8 +367,9 @@ ${children}
     const { all, groups } = verify(svg);
     expect(groups).toHaveLength(3);
     const strokes = all.filter(e => e.tag === "path" && e.ancestors.some(a => groups.includes(a)));
-    expect(new Set(strokes.map(e => e.attrs.d)).size).toBe(strokes.length);
-    expect(strokes.filter(e => e.attrs["marker-end"])).toHaveLength(3);
+    const runs = strokes.filter(e => e.attrs["data-mark"] !== "arrow");
+    expect(new Set(runs.map(e => e.attrs.d)).size).toBe(runs.length);
+    expect(strokes.filter(e => e.attrs["data-mark"] === "arrow")).toHaveLength(3);
   });
   it("keeps a titleless chart within a legend-widened viewBox, including scene and pins", () => {
     const input = 'genogram\n a [male]\n b [female]\n a -conflict- b [label: "Disagreement"]';

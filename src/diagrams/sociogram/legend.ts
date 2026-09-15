@@ -26,7 +26,8 @@ const SECTIONS: LegendSection[] = [
 
 export function buildSociogramLegend(
   ast: SociogramAST,
-  theme: BaseTheme
+  theme: BaseTheme,
+  computedRoles: readonly NodeRole[] = [],
 ): LegendSpec {
   const items: LegendItem[] = [];
 
@@ -47,7 +48,7 @@ export function buildSociogramLegend(
 
   // Roles: emit each role actually used (star/isolate/neglectee/rejected).
   // "bridge" is excluded — it's a structural notion (no special visual).
-  const usedRoles = new Set<NodeRole>();
+  const usedRoles = new Set<NodeRole>(computedRoles);
   for (const n of ast.nodes) {
     if (n.role) usedRoles.add(n.role);
   }

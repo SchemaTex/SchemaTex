@@ -2,6 +2,12 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { pedigree } from "../../src/diagrams/pedigree";
 import { render } from "../../src/core/api";
+import { parsePedigree, layoutPedigree, renderPedigree } from "../../src/diagrams/pedigree";
+
+function required<T>(value: T | null | undefined): T {
+  if (value === undefined || value === null) throw new Error("Expected SVG element or attribute");
+  return value;
+}
 
 // Read only the emitted SVG vocabulary, including ancestor translations. No
 // layout/AST/inventory objects are used as evidence for these assertions.
@@ -21,7 +27,7 @@ function svgElements(svg: string): Element[] {
       if (stack.length) stack[stack.length - 1].text += token.trim();
       continue;
     }
-    const tag = /^<([\w:-]+)/.exec(token)![1];
+    const tag = required(/^<([\w:-]+)/.exec(token))[1];
     const attrs = Object.fromEntries([...token.matchAll(/([\w:-]+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
     const parent = stack[stack.length - 1];
     const element: Element = { tag, attrs, text: "", children: [], parent };
@@ -77,19 +83,19 @@ function expectLegendMatchesChart(es: Element[]): void {
       const c = glyph.attrs.class ?? "";
       if (glyph.tag === "polygon" && hasClass(glyph, "schematex-pedigree-shape")) drawn.add("sex.unknown");
       if (glyph.tag === "polygon" && hasClass(glyph, "schematex-pedigree-loss-shape")) {
-        const status = /schematex-pedigree-(sab|tab|ectopic)-shape/.exec(c)![1];
+        const status = required(/schematex-pedigree-(sab|tab|ectopic)-shape/.exec(c))[1];
         // Every theme tested below also has an ordinary empty symbol to compare.
         const empty = nodes(es).flatMap((n) => n.children).find((e) => hasClass(e, "schematex-pedigree-shape"));
         const affected = empty ? paint(es, glyph, "fill") !== paint(es, empty, "fill") : glyph.attrs.fill !== "#ffffff";
         drawn.add(`status.${status}${affected ? ".affected" : ""}`);
       }
       if (hasClass(glyph, "schematex-pedigree-affected-fill")) drawn.add("status.affected");
-      if (hasClass(glyph, "schematex-pedigree-carrier-fill")) drawn.add("status.carrier");
-      if (glyph.tag === "circle" && hasClass(glyph, "schematex-pedigree-carrier-x-dot")) {
-        drawn.add(hasClass(node, "schematex-pedigree-obligate-carrier") ? "status.obligate-carrier" : "status.carrier-x");
+      if (hasClass(glyph, "schematex-pedigree-carrier-fill")) {
+        drawn.add(hasClass(node, "schematex-pedigree-obligate-carrier") ? "status.obligate-carrier"
+          : hasClass(node, "schematex-pedigree-carrier-x") ? "status.carrier-x" : "status.carrier");
       }
       if (glyph.tag === "line" && hasClass(glyph, "schematex-pedigree-presymptomatic-mark")) drawn.add("status.presymptomatic");
-      if (glyph.tag === "line" && hasClass(glyph, "schematex-pedigree-deceased-mark")) drawn.add("status.deceased");
+      if (glyph.tag === "line" && hasClass(glyph, "schematex-pedigree-deceased-mark") && !hasClass(node, "schematex-pedigree-stillborn")) drawn.add("status.deceased");
       if (glyph.tag === "text" && glyph.text === "SB") drawn.add("status.stillborn");
       if (glyph.tag === "text" && hasClass(glyph, "schematex-pedigree-proband-label")) {
         if (glyph.text === "E") drawn.add("marker.evaluated");
@@ -112,7 +118,7 @@ function expectLegendMatchesChart(es: Element[]): void {
   expect(new Set(keys(es)).size).toBe(keys(es).length);
   for (const row of rows(es)) {
     if (/^status\.(sab|tab|ectopic)(\.|$)/.test(row.attrs["data-legend-key"])) {
-      const swatch = row.children.find((e) => e.tag === "polygon")!;
+      const swatch = required(row.children.find((e) => e.tag === "polygon"));
       upwardTriangle(swatch);
       const status = row.attrs["data-legend-key"].split(".")[1];
       const chartFills = nodes(es).flatMap((e) => e.children)
@@ -140,11 +146,11 @@ describe("rendered pedigree status symbols and automatic legend", () => {
       for (const sex of ["unknown", "male", "female"]) {
         const svg = pedigree.render(`pedigree\n  empty [male]\n  loss [${sex}, ${status}]\n  affected [${sex}, ${status}, affected]\n  reference [female, affected]`, { theme, fontSize: 12, fontFamily: "system-ui", padding: 20 });
         const es = svgElements(svg);
-        const empty = nodes(es).find((e) => e.attrs["data-individual-id"] === "empty")!.children.find((e) => e.tag === "rect")!;
-        const full = nodes(es).find((e) => e.attrs["data-individual-id"] === "reference")!.children.find((e) => hasClass(e, "schematex-pedigree-affected-fill"))!;
+        const empty = required(required(nodes(es).find((e) => e.attrs["data-individual-id"] === "empty")).children.find((e) => e.tag === "rect"));
+        const full = required(required(nodes(es).find((e) => e.attrs["data-individual-id"] === "reference")).children.find((e) => hasClass(e, "schematex-pedigree-affected-fill")));
         for (const id of ["loss", "affected"]) {
-          const node = nodes(es).find((e) => e.attrs["data-individual-id"] === id)!;
-          const glyph = node.children.find((e) => e.tag === "polygon")!;
+          const node = required(nodes(es).find((e) => e.attrs["data-individual-id"] === id));
+          const glyph = required(node.children.find((e) => e.tag === "polygon"));
           upwardTriangle(glyph);
           expect(glyph.attrs.points).toBe("0,-12 12,12 -12,12");
           expect(paint(es, glyph, "fill")).toBe(paint(es, id === "loss" ? empty : full, "fill"));
@@ -176,8 +182,8 @@ describe("rendered pedigree status symbols and automatic legend", () => {
     const es = svgElements(pedigree.render(`pedigree\n  a [unknown]\n  b [unknown, sab]\n  c [unknown, sab]`));
     expectLegendMatchesChart(es);
     expect(keys(es)).toEqual(["sex.unknown", "status.sab"]);
-    const diamond = nodes(es)[0].children.find((e) => e.tag === "polygon")!;
-    const swatch = rows(es)[0].children.find((e) => e.tag === "polygon")!;
+    const diamond = required(nodes(es)[0].children.find((e) => e.tag === "polygon"));
+    const swatch = required(rows(es)[0].children.find((e) => e.tag === "polygon"));
     expect(swatch.attrs.points.split(" ")).toHaveLength(4);
     expect(paint(es, diamond, "fill")).toBe(paint(es, swatch, "fill"));
   });
@@ -200,13 +206,13 @@ describe("rendered pedigree status symbols and automatic legend", () => {
   test("SAB caption stays below its identifier and above the legend", () => {
     for (const fontSize of [12, 72]) {
       const es = svgElements(pedigree.render(caseSource("consanguineous-recessive"), { fontSize, fontFamily: "system-ui", theme: "default", padding: 20 }));
-      const node = nodes(es).find((e) => e.attrs["data-individual-id"] === "iv-3")!;
-      const caption = node.children.find((e) => e.tag === "text" && e.text === "SAB")!;
-      const identifier = es.find((e) => e.tag === "text" && e.attrs["data-individual-id"] === "iv-3")!;
+      const node = required(nodes(es).find((e) => e.attrs["data-individual-id"] === "iv-3"));
+      const caption = required(node.children.find((e) => e.tag === "text" && e.text === "SAB"));
+      const identifier = required(es.find((e) => e.tag === "text" && e.attrs["data-individual-id"] === "iv-3"));
       expect(point(caption)[0]).toBe(point(identifier)[0]);
       expect(point(caption)[1] - point(identifier)[1]).toBe(15);
       expect(paint(es, caption, "text-anchor")).toBe("middle");
-      const firstLegendLabel = rows(es)[0].children.find((e) => e.tag === "text")!;
+      const firstLegendLabel = required(rows(es)[0].children.find((e) => e.tag === "text"));
       expect(point(firstLegendLabel)[1]).toBeGreaterThan(point(caption)[1] + 10);
       expect(Number(es[0].attrs.height)).toBeGreaterThan(point(caption)[1]);
     }
@@ -215,8 +221,8 @@ describe("rendered pedigree status symbols and automatic legend", () => {
   test("public SVG keeps proband and sibling identifiers centred at identical offsets", () => {
     const es = svgElements(render(caseSource("autosomal-dominant")));
     const offsets = ["iv-1", "iv-2"].map((id) => {
-      const node = nodes(es).find((e) => e.attrs["data-individual-id"] === id)!;
-      const label = es.find((e) => e.tag === "text" && e.attrs["data-individual-id"] === id)!;
+      const node = required(nodes(es).find((e) => e.attrs["data-individual-id"] === id));
+      const label = required(es.find((e) => e.tag === "text" && e.attrs["data-individual-id"] === id));
       expect(paint(es, label, "text-anchor")).toBe("middle");
       return point(label).map((v, i) => v - point(node)[i]);
     });
@@ -237,10 +243,128 @@ describe("rendered pedigree status symbols and automatic legend", () => {
     expect(nodes(off)[0].children.some((e) => e.tag === "polygon")).toBe(true);
     expect(keys(svgElements(pedigree.render(source("legend.hide: status.sab"))))).toEqual([]);
     const renamed = svgElements(pedigree.render(source('legend.label status.sab: "Pregnancy loss"')));
-    expect(rows(renamed)[0].children.find((e) => e.tag === "text")!.text).toBe("Pregnancy loss");
+    expect(required(rows(renamed)[0].children.find((e) => e.tag === "text")).text).toBe("Pregnancy loss");
     const added = svgElements(pedigree.render(source('legend.item note: "Custom" (kind: marker, marker: E)')));
     expect(keys(added)).toEqual(["status.sab", "note"]);
     const traits = svgElements(pedigree.render(source('legend: cf = "Cystic fibrosis" (fill: quad-tl)')));
     expect(keys(traits)).toEqual(["cf", "status.sab"]);
+  });
+});
+
+describe("accepted NSGC symbol forms inside frozen footprints", () => {
+  const config = { fontFamily: "Inter", fontSize: 12, theme: "default", padding: 20 };
+  const drawing = (sex: string, status: string, size = 40, theme = "default") => {
+    const ast = parsePedigree(`pedigree\n  subject [${sex}, ${status}]`);
+    const layout = layoutPedigree(ast, { nodeWidth: size, nodeHeight: size, nodeSpacingX: 80, nodeSpacingY: 100 });
+    const before = structuredClone(layout);
+    const svg = renderPedigree(layout, { ...config, theme }, ast);
+    expect(layout).toEqual(before);
+    expect(svg).not.toMatch(/(?:transform|patternTransform)="[^"]*scale\(/);
+    return svgElements(svg);
+  };
+
+  test.each(["male", "female", "unknown"].flatMap(sex => [24, 40, 64].map(size => ({ sex, size }))))(
+    "$sex presymptomatic reaches both edges at size $size without shading", ({ sex, size }) => {
+      const es = drawing(sex, "presymptomatic", size);
+      const node = nodes(es)[0];
+      const mark = required(node.children.find(e => hasClass(e, "schematex-pedigree-presymptomatic-mark")));
+      expect([mark.attrs.x1, mark.attrs.y1, mark.attrs.x2, mark.attrs.y2].map(Number)).toEqual([0, -size / 2, 0, size / 2]);
+      expect(node.children.some(e => /-(affected|carrier)-fill/.test(e.attrs.class ?? ""))).toBe(false);
+    }
+  );
+
+  test.each(["male", "female", "unknown"])("%s carrier hatches the entire outline and its legend in every theme", sex => {
+    for (const theme of ["default", "monochrome", "dark"]) {
+      const es = drawing(sex, "carrier", 40, theme);
+      const node = nodes(es)[0];
+      const fill = required(node.children.find(e => hasClass(e, "schematex-pedigree-carrier-fill")));
+      const shape = required(node.children.find(e => hasClass(e, "schematex-pedigree-shape")));
+      expect(fill.tag).toBe(shape.tag);
+      for (const key of ["x", "y", "width", "height", "cx", "cy", "r", "points"]) expect(fill.attrs[key]).toBe(shape.attrs[key]);
+      expect(fill.attrs["clip-path"]).toBeUndefined();
+      expect(node.children.some(e => hasClass(e, "schematex-pedigree-carrier-x-dot"))).toBe(false);
+      const pattern = required(es.find(e => e.tag === "pattern" && e.attrs.id === "schematex-pedigree-carrier-pattern"));
+      expect(pattern).toBeDefined();
+      expect(paint(es, fill, "fill")).toBe(`url(#${pattern.attrs.id})`);
+      expect(pattern.attrs.patternUnits).toBe("userSpaceOnUse");
+      const hatch = required(pattern.children.find(e => e.tag === "path" || e.tag === "line"));
+      expect(hatch).toBeDefined();
+      expect(pattern.attrs.patternTransform === "rotate(45)" || hatch.attrs.d?.includes("L")).toBe(true);
+      const affected = drawing(sex, "affected", 40, theme);
+      expect(paint(es, hatch, "stroke")).toBe(paint(affected, required(nodes(affected)[0].children.find(e => hasClass(e, "schematex-pedigree-affected-fill"))), "fill"));
+      const row = required(rows(es).find(e => e.attrs["data-legend-key"] === "status.carrier"));
+      expect(row.children.some(e => paint(es, e, "fill") === `url(#${pattern.attrs.id})`)).toBe(true);
+    }
+  });
+
+  // Bennett et al. 2022 §4.5 retired the centre dot for every carrier, not only the plain one.
+  test.each(["carrier-x", "obligate-carrier"])("%s uses the 2022 carrier hatch, not the retired centre dot", status => {
+    const es = drawing("female", status);
+    const node = nodes(es)[0];
+    expect(node.children.some(e => hasClass(e, "schematex-pedigree-carrier-fill"))).toBe(true);
+    expect(node.children.some(e => e.tag === "circle" && hasClass(e, "schematex-pedigree-carrier-x-dot"))).toBe(false);
+    expect(es.some(e => e.tag === "pattern" && e.attrs.id === "schematex-pedigree-carrier-pattern")).toBe(true);
+  });
+
+  test("ended relationship keeps its continuous path and adds two parallel rising slashes", () => {
+    const ast = parsePedigree("pedigree\n  first [male]\n  second [female]\n  first -/- second\n    child [female]");
+    const layout = layoutPedigree(ast, { nodeWidth: 40, nodeHeight: 40, nodeSpacingX: 80, nodeSpacingY: 100 });
+    const es = svgElements(renderPedigree(layout, config, ast));
+    const edge = required(es.find(e => hasClass(e, "schematex-pedigree-edge-separated")));
+    expect(required(edge.children.find(e => e.tag === "path")).attrs.d).toBe(required(layout.edges.find(e => e.relationship.type === "separated")).path);
+    const slashes = edge.children.filter(e => e.tag === "line");
+    expect(slashes).toHaveLength(2);
+    for (const slash of slashes) {
+      expect(+slash.attrs.x2).toBeGreaterThan(+slash.attrs.x1);
+      expect(+slash.attrs.y2).toBeLessThan(+slash.attrs.y1);
+    }
+    expect(+slashes[0].attrs.y1).toBe(+slashes[1].attrs.y1);
+    expect(+slashes[0].attrs.y2).toBe(+slashes[1].attrs.y2);
+    expect(+slashes[0].attrs.x2 - +slashes[0].attrs.x1).toBe(+slashes[1].attrs.x2 - +slashes[1].attrs.x1);
+  });
+
+  test.each(["ectopic", "ectopic, affected"])("%s retains the loss triangle and adds termination slash and ECT", status => {
+    const node = nodes(drawing("unknown", status))[0];
+    const triangle = required(node.children.find(e => hasClass(e, "schematex-pedigree-loss-shape")));
+    upwardTriangle(triangle);
+    const slash = required(node.children.find(e => hasClass(e, "schematex-pedigree-tab-slash")));
+    expect(slash).toBeDefined();
+    expect(+slash.attrs.x1).toBeLessThan(-12);
+    expect(+slash.attrs.y2).toBeLessThan(-12);
+    expect(node.children.some(e => e.tag === "text" && e.text === "ECT")).toBe(true);
+  });
+
+  test.each(["male", "female", "unknown"])("%s stillborn keeps SB and deceased slash in either property order", sex => {
+    for (const status of ["stillborn", "stillborn, deceased", "deceased, stillborn"]) {
+      const node = nodes(drawing(sex, status))[0];
+      expect(node.children.filter(e => hasClass(e, "schematex-pedigree-deceased-mark"))).toHaveLength(1);
+      expect(node.children.filter(e => e.tag === "text" && e.text === "SB")).toHaveLength(1);
+    }
+  });
+
+  test.each(["male", "female", "unknown"])("%s pregnancy places P inside the existing symbol", sex => {
+    const es = drawing(sex, "pregnancy");
+    const node = nodes(es)[0];
+    const mark = required(node.children.find(e => hasClass(e, "schematex-pedigree-pregnancy-mark")));
+    expect(mark).toBeDefined();
+    expect(mark.text).toBe("P");
+    expect(+mark.attrs.x).toBe(0);
+    expect(Math.abs(+mark.attrs.y)).toBeLessThan(10);
+    expect(paint(es, mark, "text-anchor")).toBe("middle");
+  });
+
+  test.each(["stillborn", "ectopic"])("%s qualifier clears the unchanged individual number", status => {
+    const es = drawing("unknown", status);
+    const qualifier = required(nodes(es)[0].children.find(e => e.tag === "text"));
+    const identifier = required(es.find(e => hasClass(e, "schematex-pedigree-label")));
+    expect(point(qualifier)[1] - point(identifier)[1]).toBe(15);
+  });
+
+  test("repeated stillborn/deceased declarations retain the more specific status in either order", () => {
+    for (const statuses of [["stillborn", "deceased"], ["deceased", "stillborn"]]) {
+      const es = svgElements(pedigree.render(`pedigree\n  subject [female, ${statuses[0]}]\n  subject [${statuses[1]}]`));
+      expect(nodes(es)[0].children.filter(e => hasClass(e, "schematex-pedigree-deceased-mark"))).toHaveLength(1);
+      expect(nodes(es)[0].children.some(e => e.tag === "text" && e.text === "SB")).toBe(true);
+    }
   });
 });

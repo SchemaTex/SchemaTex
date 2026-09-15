@@ -1,5 +1,5 @@
 import type { PhyloTreeAST } from "../../core/types";
-import type { PhyloLayoutResult } from "./layout";
+import { cladeLabelPositions, estimateLabelWidth, type PhyloLayoutResult } from "./layout";
 import {
   svgRoot,
   group,
@@ -145,11 +145,11 @@ function renderScaleBar(
 
 function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<BiologyTokens>): string[] {
   const elements: string[] = [];
+  const labelPositions = cladeLabelPositions(layout);
 
   for (let ci = 0; ci < layout.ast.clades.length; ci++) {
     const clade = layout.ast.clades[ci];
     const hl = clade.highlight ?? "branch";
-    if (hl === "branch") continue;
 
     const memberNodes = layout.nodes.filter(
       (n) => n.node.isLeaf && clade.members.includes(n.node.id)
@@ -160,13 +160,13 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
     const maxY = Math.max(...memberNodes.map((n) => layout.tipLabels?.get(n.node.id)?.y ?? n.y)) + 10;
     const minX = Math.min(...memberNodes.map((n) => layout.tipLabels?.get(n.node.id)?.x ?? n.x)) - 2;
     const maxX = Math.max(...memberNodes.map((n) => {
-      const labelW = ((n.node.label ?? n.node.id).length * 7.2) + TIP_LABEL_GAP + 8;
+      const labelW = estimateLabelWidth(n.node) + TIP_LABEL_GAP + 14;
       return (layout.tipLabels?.get(n.node.id)?.x ?? n.x) + labelW;
     }));
 
     const color = clade.color ?? t.cladeColors[ci % t.cladeColors.length];
 
-    elements.push(
+    if (hl !== "branch") elements.push(
       rect({
         x: minX,
         y: minY,
@@ -179,10 +179,16 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
       })
     );
 
+    const labelX = labelPositions.get(clade.id)?.x ?? maxX + 8;
+    if (hl === "branch") elements.push(path({
+      d: `M ${labelX - 10},${minY} H ${labelX - 6} V ${maxY} H ${labelX - 10}`,
+      fill: "none", stroke: color, "stroke-width": STROKE_WIDTH.thin,
+      class: "schematex-phylo-clade-bracket",
+    }));
     elements.push(
       text(
         {
-          x: maxX + 4,
+          x: labelX,
           y: (minY + maxY) / 2,
           class: `schematex-phylo-clade-label schematex-phylo-clade-label-${clade.id}`,
           fill: color,
@@ -344,6 +350,11 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   for (const layoutNode of nodes) {
     const { node, x, y } = layoutNode;
+
+    // A visible fork distinguishes short shared ancestry from a polytomy.
+    if (ast.layout === "slanted" && !node.isLeaf && node !== ast.root && node.support === undefined) {
+      nodeElements.push(circle({ cx: x, cy: y, r: 2, fill: t.text, class: "schematex-phylo-fork" }));
+    }
 
     // Support dots / labels for internal nodes
     if (!node.isLeaf && node.support !== undefined) {

@@ -64,8 +64,8 @@ This is a **layout engine**, not an analysis engine. Correctness = the rendered 
    - `cherry-pick id: "c"` → new single-parent node on the current branch that *references* source commit `c`.
 2. **Lane assignment.** One swimlane per branch, allocated in **order of first appearance**; `main` is lane 0 (`mainBranchOrder: 0`). `order:` on `branch`/`checkout` overrides. **Open design point:** whether to *reuse a freed lane* after a branch's last commit to compact the layout, and the policy for doing so without creating merge-edge crossings (see TODO).
 3. **Chronological ordering.** Commits step monotonically along the time axis in source order (a topological order consistent with parent links). `parallelCommits: true` (Mermaid) relaxes strict time-stepping so a commit sits at the same axis position as its parent rather than strictly after.
-4. **Merge-edge routing.** Draw the curve from the merged branch's tip into the merge commit (the open/double circle) on the target lane, crossing lanes with a smooth bend; the branch-divergence elbow is the mirror at the fork.
-5. **Annotations.** Place branch-name pills at lane heads, commit ids below dots (rotated), tag pills at the tagged commit, and cherry-pick markers on cherry-picked nodes.
+4. **Merge-edge routing.** Actual parent edges form the branch tracks. Cross-lane ancestry uses straight runs and short rounded turns in gaps between commit columns: divergence near the parent; merge crosses into the merge node itself, without joining its backbone early. Simultaneous transitions get separate channels. Geometry follows the declared LR/TB/BT time axis, never the apparent slope between endpoints. Cherry-pick provenance is a separate dashed curve, not an extra parent edge. Lane crossings remain possible; no global optimality claim.
+5. **Annotations.** Commit IDs default to horizontal text. In LR, the outside top lane uses labels above the dots and other lanes below; tags occupy a separate band. Merge labels use the side opposite the incoming merge line. In TB/BT, labels sit beside dots and tags on the opposite side. Explicit `rotateCommitLabel: true` remains available. Spacing accounts for label/tag footprints and simultaneous transition channels. Branch names keep their colour-matched pills. Cherry-picks are identified by dashed source relations and semantic node metadata, without an unexplained floating glyph.
 
 **Validation.** No probabilities, no cut sets. Readable errors for: `merge`/`checkout` of an **undeclared branch**; `cherry-pick` of an **unknown id**; **duplicate commit id**; **merge into self** (a branch merging itself); cherry-pick missing the mandatory `parent:` when the source is a merge commit.
 
@@ -173,3 +173,7 @@ Verified, downloadable reference images to develop the renderer against. All res
 - [ ] Cluster placement + `00-OVERVIEW.md` update (developer / software family).
 - [ ] 3–5 canonical test cases (linear; feature-branch + merge; Git-Flow with develop+feature+release+hotfix; cherry-pick; orientation TB) with **expected lane assignments** as golden strings.
 - [ ] impl doc in `../CoCEO/schematex/impl/`.
+
+### Annotation layout
+
+Horizontal histories keep commit labels beside their lanes. Vertical histories use one chronological row per commit, with messages, branch-tip pills and tags in separate columns to the right of the graph. Explicit rotated labels retain their rotated presentation. Lane colours follow lane order, never branch-name matching. Pale alternating bands aid tracing; highlighted commits are filled squares and tags are outlined pills. Curve radii adapt to available time and lane spacing.

@@ -288,6 +288,7 @@ Clade 高亮是 phylogenetic tree 的核心视觉特性——用颜色块标记 
 - Clade 内所有 branch 染同一色
 - 继承到 tip labels
 - 最简洁的视觉方式
+- Clade 名称仍显示在 tips 右侧的括号旁；嵌套或重叠范围自动分列，不需要重复写 label 或指定位置。
 
 **DSL:**
 ```
