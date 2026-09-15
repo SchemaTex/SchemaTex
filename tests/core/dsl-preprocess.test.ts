@@ -132,3 +132,8 @@ describe("isBlankOrComment", () => {
     expect(isBlankOrComment("foo")).toBe(false);
   });
 });
+
+it("keeps comment markers inside smart quotes and closes strings after escaped backslashes", () => {
+  expect(stripLineComment('node 「Contains %% and #」 # comment')).toBe('node 「Contains %% and #」 ');
+  expect(stripLineComment(String.raw`node "ends in \\" # comment`)).toBe(String.raw`node "ends in \\" `);
+});

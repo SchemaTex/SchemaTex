@@ -471,7 +471,7 @@ function layoutSwimlane(ast: PertAst, schedule: PertScheduleResult): PertLayoutR
 
   // Group tasks by (lane, rank) cell.
   const cell = new Map<string, string[]>();
-  const key = (lane: string, r: number): string => `${lane} ${r}`;
+  const key = (lane: string, r: number): string => `${lane}\u0000${r}`;
   for (const t of ast.tasks) {
     const k = key(laneOf.get(t.id)!, rank.get(t.id)!);
     if (!cell.has(k)) cell.set(k, []);

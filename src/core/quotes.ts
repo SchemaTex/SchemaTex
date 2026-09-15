@@ -131,3 +131,10 @@ export function stripQuotes(s: string): string {
   const inner = t.slice(1, -1);
   return open === '"' || open === "'" ? unescapeAscii(inner, open) : inner;
 }
+
+/** Optional quoted prefix used by keyword-based parsers. */
+export function matchQuoted(s: string): { value: string; length: number } | undefined {
+  if (findClosingQuote(s, 0) < 0) return undefined;
+  const quoted = extractQuotedString(s, 0);
+  return quoted ? { value: quoted.value, length: quoted.end } : undefined;
+}

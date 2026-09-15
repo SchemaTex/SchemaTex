@@ -1,3 +1,5 @@
+import { stripLineComment } from "../../core/dsl-preprocess";
+import { matchQuoted } from "../../core/quotes";
 /**
  * IDEF0 (idef0) parser — flat declaration DSL.
  * Per docs/reference/45-IDEF0-STANDARD.md §"DSL sketch".
@@ -73,7 +75,7 @@ export function parseIdef0(text: string): Idef0Ast {
   // ── Header ──
   let headerSeen = false;
   for (; i < rawLines.length; i++) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", ["#"]).trim();
     if (t === "") continue;
     const h = /^idef0\b(.*)$/i.exec(t);
     if (h) {
@@ -91,7 +93,7 @@ export function parseIdef0(text: string): Idef0Ast {
 
   // ── Body ──
   for (; i < rawLines.length; i++) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", ["#"]).trim();
     if (t === "") continue;
     const lineNo = i + 1;
 
@@ -280,43 +282,6 @@ function parseFlowArrow(ast: Idef0Ast, t: string, lineNo: number): void {
 
 function consumeTunnel(s: string): boolean {
   return /\(\s*tunnel\s*\)/i.test(s);
-}
-
-interface Quoted {
-  value: string;
-  length: number;
-}
-function matchQuoted(s: string): Quoted | undefined {
-  if (!s) return undefined;
-  const open = s[0]!;
-  if (open !== '"' && open !== "「" && open !== "“") return undefined;
-  const close = closingQuote(open);
-  const end = s.indexOf(close, 1);
-  if (end < 0) return undefined;
-  return { value: s.slice(1, end), length: end + 1 };
-}
-
-function closingQuote(open: string): string {
-  return open === "「" ? "」" : open === "“" ? "”" : '"';
-}
-
-function stripComment(line: string): string {
-  let inQ = false;
-  let qc = "";
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
-    if (inQ) {
-      if (ch === qc) inQ = false;
-      continue;
-    }
-    if (ch === '"' || ch === "「" || ch === "“") {
-      inQ = true;
-      qc = closingQuote(ch);
-      continue;
-    }
-    if (ch === "#") return line.slice(0, i);
-  }
-  return line;
 }
 
 function truncate(s: string, n: number): string {

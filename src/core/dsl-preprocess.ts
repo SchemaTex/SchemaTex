@@ -1,3 +1,4 @@
+import { QUOTE_PAIRS } from "./quotes";
 /**
  * DSL preprocessing shared across all diagram parsers.
  *
@@ -277,26 +278,25 @@ export const UNIVERSAL_COMMENT_MARKERS: readonly CommentMarker[] = ["%%"];
  * {@link UNIVERSAL_COMMENT_MARKERS} so it only removes `%%`, leaving `#`/`//`
  * to diagrams where they are content (e.g. `#` headings in mindmap).
  *
- * Markers inside ASCII double-quoted regions are preserved verbatim so URLs
- * (`"https://..."`) and CSS-color values (`"#ff0"`) survive. Smart-quoted
- * regions are NOT special-cased — they're rare inside attribute strings,
- * and the cost of full Unicode quote tracking for every line isn't worth
- * the protection.
+ * Markers inside double-quoted and smart-quoted strings are preserved.
  */
 export function stripLineComment(
   line: string,
   markers: readonly CommentMarker[] = DEFAULT_COMMENT_MARKERS,
 ): string {
-  let inQuote = false;
+  let close = "";
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]!;
-    if (ch === '"') {
-      // Respect a backslash escape so `"foo\""` stays inside the quote.
-      if (i > 0 && line[i - 1] === "\\") continue;
-      inQuote = !inQuote;
+    if (close) {
+      if (close === '"' && ch === "\\") { i++; continue; }
+      if (ch === close) close = "";
       continue;
     }
-    if (inQuote) continue;
+    // Apostrophes in unquoted labels are ordinary text, not string openers.
+    if (ch === '"' || ch === "“" || ch === "「" || ch === "『" || ch === "«") {
+      close = QUOTE_PAIRS[ch]!;
+      continue;
+    }
     for (const marker of markers) {
       if (line.startsWith(marker, i)) return line.slice(0, i);
     }

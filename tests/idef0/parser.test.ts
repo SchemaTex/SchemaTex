@@ -95,3 +95,9 @@ describe("idef0 parser", () => {
     expect(ast.boxes[0]!.name).toBe("计划生产");
   });
 });
+
+it("reads escaped quotes and literal comment markers in function labels", () => {
+  const ast = parseIdef0(String.raw`idef0 "Quoted labels"
+function A1 "Use \"approved\" # procedure"`);
+  expect(ast.boxes[0]!.name).toBe('Use "approved" # procedure');
+});

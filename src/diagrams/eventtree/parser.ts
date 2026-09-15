@@ -1,3 +1,5 @@
+import { stripLineComment } from "../../core/dsl-preprocess";
+import { matchQuoted } from "../../core/quotes";
 /**
  * Event Tree (eventtree / eta) parser — flat declaration DSL.
  * Per docs/reference/39-EVENT-TREE-STANDARD.md §"DSL sketch".
@@ -55,7 +57,7 @@ export function parseEventTree(text: string): EventTreeAst {
   // ── Header ──
   let headerSeen = false;
   while (i < rawLines.length) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", ["#", "//"]).trim();
     if (t === "") { i++; continue; }
     const h = /^(eventtree|eta)\b(.*)$/i.exec(t);
     if (h) {
@@ -75,7 +77,7 @@ export function parseEventTree(text: string): EventTreeAst {
 
   // ── Body ──
   for (; i < rawLines.length; i++) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", ["#", "//"]).trim();
     if (t === "") continue;
     const lineNo = i + 1;
 
@@ -250,36 +252,9 @@ function parseFreq(s: string, lineNo: number): number | undefined {
   return v;
 }
 
-interface Quoted { value: string; length: number }
-function matchQuoted(s: string): Quoted | undefined {
-  if (!s) return undefined;
-  const open = s[0]!;
-  if (open !== '"' && open !== "「" && open !== "“") return undefined;
-  const close = closingQuote(open);
-  const end = s.indexOf(close, 1);
-  if (end < 0) return undefined;
-  return { value: s.slice(1, end), length: end + 1 };
-}
-
-function closingQuote(open: string): string {
-  return open === "「" ? "」" : open === "“" ? "”" : '"';
-}
-
 function afterColon(s: string): string {
   const i = s.indexOf(":");
   return i < 0 ? "" : s.slice(i + 1).trim();
-}
-
-function stripComment(line: string): string {
-  let inQ = false, qc = "";
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
-    if (inQ) { if (ch === qc) inQ = false; continue; }
-    if (ch === '"' || ch === "「" || ch === "“") { inQ = true; qc = closingQuote(ch); continue; }
-    if (ch === "#") return line.slice(0, i);
-    if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
-  }
-  return line;
 }
 
 function truncate(s: string, n: number): string {
