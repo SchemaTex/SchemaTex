@@ -35,6 +35,12 @@ const LABEL_VERTICAL_PADDING = 4;
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 function buildCss(t: Theme): string {
+  // Opaque tint derived from the existing theme: overlapping VM tiles and
+  // camera housings must hide the strokes behind them, not show through.
+  const panelFill = "#" + [1, 3, 5].map(offset => Math.round(
+    parseInt(t.deviceStroke.slice(offset, offset + 2), 16) * .12 +
+    parseInt(t.deviceFill.slice(offset, offset + 2), 16) * .88,
+  ).toString(16).padStart(2, "0")).join("");
   return `
 .sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
 .sx-net-body { fill: ${t.deviceFill}; stroke: ${t.deviceStroke}; stroke-width: 1.4; }
@@ -43,6 +49,12 @@ function buildCss(t: Theme): string {
 .sx-net-glyph-line { fill: none; stroke: ${t.deviceAccent}; stroke-width: 1.4; }
 .sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: ${t.deviceAccent}; }
 .sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: ${panelFill}; stroke-width: 1; }
+.sx-net-screen { fill: ${panelFill}; stroke: none; }
+.sx-net-port-solid { fill: ${t.deviceStroke}; }
+.sx-net-ink-line { stroke-width: 1.4; }
 .sx-net-cloud-body { fill: ${t.cloudFill}; stroke: ${t.cloudStroke}; stroke-width: 1.4; }
 .sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: ${t.text}; }
 .sx-net-bus { stroke: ${t.deviceStroke}; stroke-width: 4; stroke-linecap: round; }

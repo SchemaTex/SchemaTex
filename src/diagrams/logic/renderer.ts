@@ -1,5 +1,6 @@
 import type { LogicGateAST, LogicGateStyle, RenderConfig } from "../../core/types";
 import { layoutLogic } from "./layout";
+import { curvedBackX, getGatePaths, OUTPUT_BUBBLE_R } from "./symbols";
 import {
   svgRoot,
   defs,
@@ -24,6 +25,7 @@ function renderGateBody(
   const out: string[] = [];
   if (!n.geometry) return out;
   const g = n.geometry;
+  const bodyWidth = g.width - (g.outputBubble ? 8 : 0);
 
   if (style === "iec") {
     // Rectangle
@@ -31,7 +33,7 @@ function renderGateBody(
       el("rect", {
         x: 0,
         y: 0,
-        width: g.width,
+        width: bodyWidth,
         height: g.height,
         class: "schematex-logic-gate-body",
       })
@@ -40,7 +42,7 @@ function renderGateBody(
       out.push(
         text(
           {
-            x: g.width / 2,
+            x: bodyWidth / 2,
             y: g.height / 2 + 4,
             class: "schematex-logic-gate-iec-label",
             "text-anchor": "middle",
@@ -50,9 +52,36 @@ function renderGateBody(
       );
     }
   } else {
+    const artwork = getGatePaths(n.gateType ?? "unknown", g.width, g.height, g.bodyScaleY);
+    if (artwork.xorGap) {
+      out.push(pathEl({ d: artwork.xorGap, class: "schematex-logic-xor-gap" }));
+    }
     out.push(
-      el("path", { d: g.ansiPath, class: "schematex-logic-gate-body", transform: g.bodyScaleY ? `scale(1 ${g.bodyScaleY})` : undefined, "vector-effect": "non-scaling-stroke" })
+      pathEl({ d: artwork.body, class: "schematex-logic-gate-body" })
     );
+    if (artwork.xorArc) {
+      out.push(pathEl({ d: artwork.xorArc, class: "schematex-logic-xor-arc" }));
+    }
+
+    for (const pin of g.inputPins) {
+      const backX = curvedBackX(n.gateType ?? "unknown", pin.y, g.height, Boolean(artwork.xorArc));
+      // The frozen anchor may stop short of the curved back. Extend only
+      // the visible shortfall; the body/gap masks any excess routed wire.
+      if (backX !== null && pin.x < backX) {
+        out.push(el("line", { x1: pin.x, y1: pin.y, x2: backX, y2: pin.y, class: "schematex-logic-wire" }));
+      }
+    }
+
+    if (n.gateType === "TRISTATE_BUF" || n.gateType === "TRISTATE_INV") {
+      const enable = g.inputPins.find(pin => pin.id === "en");
+      if (enable) {
+        out.push(el("line", {
+          x1: enable.x, y1: enable.y,
+          x2: enable.x, y2: (55 - 25 * (enable.x - 10) / (bodyWidth - 10)) * (g.bodyScaleY ?? 1),
+          class: "schematex-logic-enable-pin",
+        }));
+      }
+    }
   }
 
   // Unrecognised gate: stamp a centred "?" so the ANSI box reads as a flagged
@@ -76,9 +105,9 @@ function renderGateBody(
     const op = g.outputPins[0];
     out.push(
       circle({
-        cx: op.x - 4,
+        cx: op.x - OUTPUT_BUBBLE_R,
         cy: op.y,
-        r: 4,
+        r: OUTPUT_BUBBLE_R,
         class: "schematex-logic-bubble",
       })
     );
@@ -314,6 +343,9 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
   const css = `
 .schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-logic-gate-body { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-arc { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-gap { fill: ${t.bg}; stroke: none; }
+.schematex-logic-enable-pin { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linecap: square; }
 .schematex-logic-bubble { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.5; }
 .schematex-logic-clock-tri { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linejoin: round; }
 .schematex-logic-wire { stroke: ${t.strokeHeavy}; stroke-width: 1.5; fill: none; stroke-linecap: square; }

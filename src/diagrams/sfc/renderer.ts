@@ -24,7 +24,6 @@ const STYLES = `
 .lt-sfc-action-body { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #222; }
 .lt-sfc-action-time { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
 .lt-sfc-jump { stroke: #000; stroke-width: 1.5; fill: none; marker-end: url(#sfc-arrow); }
-.lt-sfc-jump-label { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
 .lt-sfc-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
 `;
 
@@ -115,8 +114,14 @@ export function renderSfcLayout(layout: SfcLayoutResult): string {
         width: ls.width - off * 2, height: ls.height - off * 2,
       }));
     }
+    if (ls.step.label && ls.step.label !== ls.step.id) {
+      stepGroup.push(text(
+        { class: "lt-sfc-transition-id", x: ls.x + ls.width / 2, y: ls.y + 12, "text-anchor": "middle" },
+        ls.step.id
+      ));
+    }
     stepGroup.push(text(
-      { class: "lt-sfc-step-name", x: ls.x + ls.width / 2, y: ls.y + ls.height / 2 + 4, "text-anchor": "middle" },
+      { class: "lt-sfc-step-name", x: ls.x + ls.width / 2, y: ls.y + ls.height / 2 + (ls.step.label && ls.step.label !== ls.step.id ? 10 : 4), "text-anchor": "middle" },
       ls.step.label ?? ls.step.id
     ));
     parts.push(group(
@@ -179,13 +184,7 @@ export function renderSfcLayout(layout: SfcLayoutResult): string {
   // Jumps
   for (const j of layout.jumps) {
     parts.push(path({ class: "lt-sfc-jump", d: j.path }));
-    const labelParts: string[] = [];
-    if (j.condition) labelParts.push(j.condition);
-    labelParts.push(`→ ${j.labelText}`);
-    parts.push(text(
-      { class: "lt-sfc-jump-label", x: j.labelX, y: j.labelY, "text-anchor": "middle" },
-      labelParts.join("  ")
-    ));
+
   }
 
   return svgRoot(

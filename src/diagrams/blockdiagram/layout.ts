@@ -1,3 +1,5 @@
+import { orthogonalRoute, compactRoute, intersectsBox, type RoutedNet } from "../logic/orthogonal-router";
+import { labelPathPoints, edgeLabelObstacles, labelOverlap } from "../../core/label-placement";
 import type {
   BlockAST,
   BlockEdge,
@@ -138,7 +140,7 @@ function measureEdgeLabel(label: string | undefined): {
   return {
     label: normalized,
     lines,
-    // The renderer intentionally uses italic serif for signal notation; leave
+    // Signal names use italic text; leave
     // a conservative optical allowance beyond system-ui measurement.
     width: Math.ceil(estimateMaxLineWidth(normalized, EDGE_FONT) * 1.16) + 14,
     height: lines.length * EDGE_LINE_H + 4,
@@ -269,23 +271,27 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     return 0;
   });
 
-  // First-visit layering deliberately leaves later edges that point to an
-  // earlier layer as feedback. It is stable under declaration-order changes
-  // and, unlike the old fixed-row policy, never collapses peers together.
-  const layer = new Map<string, number>();
-  const queue = [...entries];
-  for (const entry of entries) layer.set(entry, 0);
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-    const nextLayer = (layer.get(current) ?? 0) + 1;
-    for (const edge of outgoing.get(current) ?? []) {
-      if (layer.has(edge.to)) continue;
-      layer.set(edge.to, nextLayer);
-      queue.push(edge.to);
+  // Separate actual cycle-closing edges, then rank the remaining DAG by
+  // longest path. A shortcut (power/control feeding multiple stages) must not
+  // collapse those successive stages into the same column.
+  const visited = new Set<string>(), active = new Set<string>();
+  const reverseOrder: string[] = [];
+  const feedback = new Set<BlockEdge>();
+  const visit = (id: string): void => {
+    if (visited.has(id)) return;
+    visited.add(id); active.add(id);
+    for (const edge of outgoing.get(id) ?? []) {
+      if (active.has(edge.to)) feedback.add(edge);
+      else visit(edge.to);
     }
-  }
-  for (const id of nodeIds) {
-    if (!layer.has(id)) layer.set(id, 0);
+    active.delete(id); reverseOrder.push(id);
+  };
+  for (const id of [...entries, ...nodeIds]) visit(id);
+  const layer = new Map([...nodeIds].map(id => [id, 0]));
+  for (const id of reverseOrder.reverse()) {
+    for (const edge of outgoing.get(id) ?? []) {
+      if (!feedback.has(edge)) layer.set(edge.to, Math.max(layer.get(edge.to)!, layer.get(id)! + 1));
+    }
   }
 
   const measures = new Map<string, NodeMeasure>();
@@ -440,7 +446,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     columnCenters.push(xCursor + width / 2);
     xCursor += width + (columnGaps[rank] ?? 0);
   }
-  const width = Math.max(360, xCursor + SIDE_PAD);
+  let width = Math.max(360, xCursor + SIDE_PAD);
 
   const centers = new Map<string, { x: number; y: number }>();
   normalLayers.forEach((ids, rank) => {
@@ -652,7 +658,10 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     edges.push({
       from: edge.from,
       to: edge.to,
-      ...measuredLabel,
+      label: measuredLabel.label,
+      labelLines: measuredLabel.lines,
+      labelWidth: measuredLabel.width,
+      labelHeight: measuredLabel.height,
       discrete: !!edge.discrete,
       path,
       midX,
@@ -662,9 +671,63 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     });
   }
 
-  const height =
+  const routeBoxes = nodes.map(n => n.kind === "block"
+    ? {id:n.id,left:n.x-16,right:n.x+n.width+16,top:n.y-16,bottom:n.y+n.height+16}
+    : n.kind === "sum" ? {id:n.id,left:n.cx-n.r-16,right:n.cx+n.r+16,top:n.cy-n.r-16,bottom:n.cy+n.r+16} : undefined).filter(n => n !== undefined);
+  const routed: RoutedNet[] = [];
+  for (const edge of edges) {
+    let points = labelPathPoints(edge.path);
+    const blocked = points.slice(1).some((p,i) => routeBoxes.some(box => box.id !== edge.from && box.id !== edge.to && intersectsBox(points[i]!,p,box)));
+    if (blocked && !edge.isFeedback) {
+      const start = points[0]!, end = points[points.length-1]!;
+      points = compactRoute([start, ...orthogonalRoute({x:start.x+24,y:start.y},{x:end.x-24,y:end.y},routeBoxes,routed,String(routed.length)),end]);
+      edge.path = points.map((p,i)=>`${i?"L":"M"} ${p.x} ${p.y}`).join(" ");
+    }
+    routed.push({net:String(routed.length),points});
+  }
+
+  // Labels belong to a clear horizontal run, not necessarily its final run.
+  // Keep the nearest collision-free position on their own edge.
+  const occupied = nodes.flatMap(node => node.kind === "block"
+    ? [{ x: node.x - 5, y: node.y - 5, width: node.width + 10, height: node.height + 10 }]
+    : node.kind === "sum" ? [{ x: node.cx - node.r - 5, y: node.cy - node.r - 5, width: node.r * 2 + 10, height: node.r * 2 + 10 }] : []);
+  const wireObstacles = edges.flatMap(edge => edgeLabelObstacles(labelPathPoints(edge.path)));
+  for (const edge of edges) {
+    if (!edge.labelWidth || !edge.labelHeight) continue;
+    const width = edge.labelWidth, height = edge.labelHeight;
+    const points = labelPathPoints(edge.path);
+    const candidates: {x:number;y:number}[] = [];
+    for (let i = points.length-1; i > 0; i--) {
+      const a=points[i-1]!,b=points[i]!;
+      if (a.y===b.y && Math.abs(a.x-b.x)>16) {
+        for (const fraction of [0.5,0.25,0.75]) for (const sign of [-1,1]) candidates.push({x:a.x+(b.x-a.x)*fraction,y:a.y+sign*(height/2+7)});
+      } else if (a.x===b.x && Math.abs(a.y-b.y)>height+8) {
+        for (const fraction of [0.5,0.25,0.75]) for (const sign of [1,-1]) candidates.push({x:a.x+sign*(width/2+7),y:a.y+(b.y-a.y)*fraction});
+      }
+    }
+    let best={x:edge.midX,y:edge.midY},score=Infinity,wireScore=Infinity;
+    for (const p of candidates) {
+      const rect={x:p.x-width/2,y:p.y-height/2,width,height};
+      // Never trade text over a block for fewer wire intersections in a
+      // dense fanout: preserve nodes and other labels before scoring wires.
+      const overlap=occupied.reduce((sum,o)=>sum+labelOverlap(rect,o),0);
+      const wireOverlap=wireObstacles.reduce((sum,o)=>sum+labelOverlap(rect,o),0);
+      if (overlap<score || (overlap===score && wireOverlap<wireScore)) {best=p;score=overlap;wireScore=wireOverlap;}
+      if (!score && !wireScore) break;
+    }
+    edge.midX=best.x;edge.midY=best.y;
+    occupied.push({x:best.x-width/2-3,y:best.y-height/2-3,width:width+6,height:height+6});
+  }
+
+  let height =
     belowLaneStart +
     Math.max(BOTTOM_PAD, belowFeedbackCount * FEEDBACK_LANE_GAP);
+
+  for (const edge of edges) {
+    for (const p of labelPathPoints(edge.path)) {width=Math.max(width,p.x+SIDE_PAD);height=Math.max(height,p.y+BOTTOM_PAD);}
+    width=Math.max(width,edge.midX+(edge.labelWidth??0)/2+SIDE_PAD);
+    height=Math.max(height,edge.midY+(edge.labelHeight??0)/2+BOTTOM_PAD);
+  }
 
   return {
     width,

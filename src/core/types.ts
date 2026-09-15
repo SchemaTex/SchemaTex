@@ -1738,6 +1738,8 @@ export type VennShape =
   | ({ kind: "ellipse" } & VennEllipse);
 
 export interface VennLabelPosition {
+  /** Measured text lines shared by layout and renderer. */
+  lines?: string[];
   /** Region this label describes (sorted set ids). */
   sets: string[];
   /** Canonical label text (e.g. "A ∩ B", "42", "[a,b,c]"). */

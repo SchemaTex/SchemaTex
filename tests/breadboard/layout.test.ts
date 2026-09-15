@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
+import { labelPathPoints } from "../../src/core/label-placement";
 import { parseBreadboard } from "../../src/diagrams/breadboard/parser";
-import { breadboardCoordXY, layoutBreadboard } from "../../src/diagrams/breadboard/layout";
+import { breadboardCoordXY, breadboardPartBounds, layoutBreadboard } from "../../src/diagrams/breadboard/layout";
 
 describe("breadboard layout", () => {
   it("keeps span terminals on their declared holes, including reversed and vertical spans", () => {
@@ -78,27 +79,50 @@ wires
     expect(layout.wires).toHaveLength(3);
   });
 
-  it("emits a wire path that's a Bézier (contains C)", () => {
-    const ast = parseBreadboard(`breadboard
+  it("keeps side modules outside the substrate and packs neighbors without overlap", () => {
+    for (const side of ["beside-left", "beside-right", "above", "below"]) {
+      const layout = layoutBreadboard(parseBreadboard(`breadboard
 parts
-  uno: mcu uno @beside-left
-wires
-  uno:5V --red-- @+t1
-`);
-    const layout = layoutBreadboard(ast);
-    expect(layout.wires).toHaveLength(1);
-    expect(layout.wires[0]!.path).toMatch(/M [\d.]+ [\d.]+ C/);
+  first: sensor hcsr04 @${side}
+  second: display oled-ssd1306 @${side}
+`));
+      const boxes = [layout.substrate, ...layout.parts.map(breadboardPartBounds)];
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]!, b = boxes[j]!;
+        expect(a.x + a.width <= b.x || b.x + b.width <= a.x ||
+          a.y + a.height <= b.y || b.y + b.height <= a.y).toBe(true);
+      }
+    }
   });
 
-  it("returns positive width and height", () => {
-    const ast = parseBreadboard(`breadboard
+  it("keeps routed wires on their pins and inside the canvas after translation", () => {
+    const layout = layoutBreadboard(parseBreadboard(`breadboard "Header routing"
 parts
-  uno: mcu uno @beside-left
-  r1: resistor 220 @5e..9e
-  d1: led red @10e..10f
-`);
-    const layout = layoutBreadboard(ast);
-    expect(layout.width).toBeGreaterThan(0);
-    expect(layout.height).toBeGreaterThan(0);
+  controller: mcu nano @above
+  display: display oled-ssd1306 @beside-right
+wires
+  controller:5V --red-- display:VCC
+  controller:GND --black-- display:GND
+  controller:A4 --green-- display:SDA
+  controller:A5 --white-- display:SCL
+`));
+    for (const wire of layout.wires) {
+      const points = labelPathPoints(wire.path);
+      expect(points[0]!.x).toBeCloseTo(wire.fromXY.x, 1);
+      expect(points[0]!.y).toBeCloseTo(wire.fromXY.y, 1);
+      expect(points.at(-1)!.x).toBeCloseTo(wire.toXY.x, 1);
+      expect(points.at(-1)!.y).toBeCloseTo(wire.toXY.y, 1);
+      for (const point of points) {
+        expect(point.x).toBeGreaterThanOrEqual(0);
+        expect(point.y).toBeGreaterThanOrEqual(0);
+        expect(point.x).toBeLessThanOrEqual(layout.width);
+        expect(point.y).toBeLessThanOrEqual(layout.height);
+        for (const part of layout.parts) {
+          // Header pins are inset into a PCB; only that terminal band may be entered.
+          expect(point.x > part.x + 6 && point.x < part.x + part.width - 6 &&
+            point.y > part.y + 6 && point.y < part.y + part.height - 6).toBe(false);
+        }
+      }
+    }
   });
 });

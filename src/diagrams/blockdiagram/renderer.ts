@@ -23,18 +23,18 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
   const height = layout.height + titleOffset;
 
   const css = `
-.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-bd-block { stroke: ${t.blockStroke}; stroke-width: 2; }
-.schematex-bd-tf { font: italic 14px serif; fill: ${t.blockText}; }
+.schematex-bd { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.schematex-bd-block { stroke: ${t.blockStroke}; stroke-width: 1.5; }
+.schematex-bd-tf { font-size: 14px; font-weight: 600; fill: ${t.blockText}; }
 .schematex-bd-block-name { font: 10px sans-serif; fill: ${t.blockName}; }
-.schematex-bd-sum { fill: ${t.sumFill}; stroke: ${t.blockStroke}; stroke-width: 2; }
+.schematex-bd-sum { fill: ${t.sumFill}; stroke: ${t.blockStroke}; stroke-width: 1.5; }
 .schematex-bd-sum-sign { font: bold 11px sans-serif; fill: ${t.signalStroke}; }
-.schematex-bd-signal { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; }
-.schematex-bd-signal-discrete { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal { stroke: ${t.signalStroke}; stroke-width: 1.5; fill: none; }
+.schematex-bd-signal-discrete { stroke: ${t.signalStroke}; stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
 .schematex-bd-signal-label-bg { fill: ${t.sumFill}; opacity: .94; stroke: none; }
-.schematex-bd-signal-label { font: italic 12px serif; fill: ${t.signalStroke}; }
-.schematex-bd-port-label { font: italic 13px serif; fill: ${t.blockText}; }
-.schematex-bd-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${t.blockText}; }
+.schematex-bd-signal-label { font-size: 12px; font-style: italic; fill: ${t.blockName}; }
+.schematex-bd-port-label { font-size: 13px; fill: ${t.blockText}; }
+.schematex-bd-title { font-size: ${TITLE.size}px; font-weight: ${TITLE.weight}; fill: ${t.blockText}; }
 .schematex-bd-branch { fill: ${t.signalStroke}; stroke: none; }
 `.trim();
 
@@ -42,13 +42,14 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
     "marker",
     {
       id: "lt-bd-arrow",
-      markerWidth: 10,
-      markerHeight: 8,
+      markerWidth: 9,
+      markerUnits: "userSpaceOnUse",
+      markerHeight: 7,
       refX: 9,
-      refY: 4,
+      refY: 3.5,
       orient: "auto",
     },
-    [el("polygon", { points: "0 0, 10 4, 0 8", fill: t.signalStroke })]
+    [el("polygon", { points: "0 0, 9 3.5, 0 7", fill: t.signalStroke })]
   );
 
   const nodeSvgs: string[] = [];
@@ -71,7 +72,7 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
               height: n.height,
               fill,
               class: "schematex-bd-block",
-              rx: 2,
+              rx: 4,
             }),
             multilineText(
               {
@@ -80,7 +81,8 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
                 "text-anchor": "middle",
                 class: "schematex-bd-tf",
               },
-              n.label
+              n.label,
+              16
             ),
           ]
         )
@@ -190,9 +192,9 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
   const titleSvg = ast.title
     ? text(
         {
-          x: width / 2,
+          x: 34,
           y: TITLE.y,
-          "text-anchor": "middle",
+          "text-anchor": "start",
           class: "schematex-bd-title",
         },
         ast.title

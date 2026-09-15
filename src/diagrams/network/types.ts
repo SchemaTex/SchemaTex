@@ -61,7 +61,43 @@ export type DeviceKind =
   | "wan"
   | "cloud"
   | "pstn"
-  | "lan";
+  | "lan"
+  // Additional physical and virtual devices
+  | "database"
+  | "hypervisor"
+  | "nas"
+  | "wireless-bridge"
+  | "container"
+  | "cellular-router"
+  | "satellite-terminal"
+  | "access-control"
+  | "iot-sensor"
+  | "display"
+  | "san"
+  | "olt"
+  | "ont"
+  | "pbx"
+  | "tablet"
+  | "plc"
+  | "ups"
+  | "hmi"
+  | "media-converter"
+  | "pos-terminal"
+  | "patch-panel";
+
+/** Every canonical device kind, in the order the DSL reference lists them. */
+export const DEVICE_KINDS: ReadonlySet<DeviceKind> = new Set<DeviceKind>([
+  "router", "switch", "l3switch", "firewall", "loadbalancer", "ap", "wlc",
+  "gateway", "modem", "ids", "proxy", "vpngw",
+  "server", "serverfarm", "pc", "laptop", "mobile", "ipphone", "printer", "storage",
+  "camera", "nvr", "dvr", "poeswitch", "encoder", "monitor",
+  "internet", "wan", "cloud", "pstn", "lan",
+  "database", "hypervisor", "nas", "wireless-bridge", "container",
+  "cellular-router", "satellite-terminal", "access-control", "iot-sensor", "display",
+  "san", "olt", "ont", "pbx", "tablet",
+  "plc", "ups", "hmi", "media-converter", "pos-terminal",
+  "patch-panel",
+]);
 
 export type LinkType =
   | "copper"

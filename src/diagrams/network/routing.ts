@@ -1,15 +1,7 @@
-import { compactRoute, intersectsBox, orthogonalRoute, type RouteBox, type RoutedNet } from '../logic/orthogonal-router';
+import { segmentEntersBox, compactRoute, intersectsBox, orthogonalRoute, type RouteBox, type RoutedNet } from '../logic/orthogonal-router';
 import type { DeviceBox, NetPoint } from './types';
 
-/** Open segment/rectangle intersection; unlike the orthogonal router, accepts diagonals. */
-export function segmentEntersBox(a: NetPoint, b: NetPoint, box: RouteBox): boolean {
-  let lo=0, hi=1;
-  for(const [start,delta,min,max] of [[a.x,b.x-a.x,box.left,box.right],[a.y,b.y-a.y,box.top,box.bottom]]) {
-    if(Math.abs(delta)<1e-9) { if(start<=min||start>=max)return false; }
-    else { const u=(min-start)/delta,v=(max-start)/delta;lo=Math.max(lo,Math.min(u,v));hi=Math.min(hi,Math.max(u,v)); }
-  }
-  return hi-lo>1e-9;
-}
+export { segmentEntersBox } from "../logic/orthogonal-router";
 
 export function edgePoint(box: DeviceBox, target: NetPoint): NetPoint {
   const dx=target.x-box.cx,dy=target.y-box.cy;

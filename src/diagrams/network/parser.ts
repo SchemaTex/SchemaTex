@@ -16,6 +16,7 @@ import type {
   NetworkLayoutMode,
   NetworkLink,
 } from "./types";
+import { DEVICE_KINDS } from "./types";
 import { createSourceLocator } from "../../core/source-range";
 
 export class NetworkParseError extends Error {
@@ -24,13 +25,6 @@ export class NetworkParseError extends Error {
 
 // ─── Vocabulary ──────────────────────────────────────────────────
 
-const DEVICE_KINDS = new Set<DeviceKind>([
-  "router", "switch", "l3switch", "firewall", "loadbalancer", "ap", "wlc",
-  "gateway", "modem", "ids", "proxy", "vpngw",
-  "server", "serverfarm", "pc", "laptop", "mobile", "ipphone", "printer", "storage",
-  "camera", "nvr", "dvr", "poeswitch", "encoder", "monitor",
-  "internet", "wan", "cloud", "pstn", "lan",
-]);
 
 /** Aliases → canonical device kind. */
 const KIND_ALIASES: Record<string, DeviceKind> = {
@@ -39,8 +33,6 @@ const KIND_ALIASES: Record<string, DeviceKind> = {
   workstation: "pc",
   phone: "mobile",
   voip: "ipphone",
-  nas: "storage",
-  san: "storage",
   servers: "serverfarm",
   ips: "ids",
   decoder: "encoder",
@@ -53,17 +45,14 @@ const KIND_ALIASES: Record<string, DeviceKind> = {
   dns: "server",
   dhcp: "server",
   ntp: "server",
-  database: "server",
-  dbserver: "server",
-  db: "server",
+  dbserver: "database",
+  db: "database",
   vm: "server",
   host: "server",
-  hypervisor: "server",
   activedirectory: "server",
   domaincontroller: "server",
   desktop: "pc",
   smartphone: "mobile",
-  tablet: "mobile",
   accesspoint: "ap",
   wap: "ap",
   hub: "switch",

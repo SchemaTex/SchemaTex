@@ -43,6 +43,8 @@ export const NET_CONST = {
 const ENDPOINT_KINDS = new Set([
   "pc", "laptop", "mobile", "ipphone", "printer", "camera",
   "server", "serverfarm", "storage", "monitor", "nvr", "dvr",
+  // These distinct kinds previously inherited endpoint placement through aliases.
+  "database", "hypervisor", "nas", "san", "tablet",
 ]);
 
 // ─── small geometry helpers ──────────────────────────────────────

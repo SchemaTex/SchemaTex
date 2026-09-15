@@ -45,31 +45,31 @@ const WIRE_COLOR_MAP: Record<string, string> = {
 
 export function breadboardStylesheet(t: BaseTheme): string {
   return `
-.lt-bb { font-family: system-ui, -apple-system, sans-serif; }
-.lt-bb-title { font: 700 16px sans-serif; fill: ${t.text}; }
-.lt-bb-substrate { fill: #e7d8b6; stroke: #b08c4f; stroke-width: 1.5; }
+.lt-bb { font-family: "Helvetica Neue", Helvetica, sans-serif; }
+.lt-bb-title { font-weight: 700; font-size: 16px; fill: ${t.text}; }
+.lt-bb-substrate { fill: #F4F0E6; stroke: #C7BDAA; stroke-width: 1; }
 .lt-bb-rail-pos { fill: #fde2e2; stroke: #dc2626; stroke-width: 0.6; }
 .lt-bb-rail-neg { fill: #dde7fa; stroke: #2563eb; stroke-width: 0.6; }
 .lt-bb-rail-stripe-pos { stroke: #dc2626; stroke-width: 1.2; }
 .lt-bb-rail-stripe-neg { stroke: #2563eb; stroke-width: 1.2; }
-.lt-bb-trough { fill: #fcfaf3; stroke: #b08c4f; stroke-width: 0.6; }
-.lt-bb-hole { fill: #fafaf6; stroke: #78350f; stroke-width: 0.4; }
-.lt-bb-hole-rail { fill: #fafaf6; stroke: #78350f; stroke-width: 0.4; }
-.lt-bb-col-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; }
-.lt-bb-row-label { font: 7px sans-serif; fill: #78350f; text-anchor: middle; dominant-baseline: middle; }
+.lt-bb-trough { fill: #FCFAF5; stroke: #C7BDAA; stroke-width: 0.6; }
+.lt-bb-hole { fill: #FCFAF5; stroke: #9C9486; stroke-width: 0.4; }
+.lt-bb-hole-rail { fill: #FCFAF5; stroke: #9C9486; stroke-width: 0.4; }
+.lt-bb-col-label { font-size: 7px; fill: #787268; text-anchor: middle; }
+.lt-bb-row-label { font-size: 7px; fill: #787268; text-anchor: middle; dominant-baseline: middle; }
 .lt-bb-lead { stroke: #94a3b8; stroke-width: 1.6; fill: none; stroke-linecap: round; }
 .lt-bb-resistor { fill: #DCC39A; stroke: #A88B5C; stroke-width: 0.7; }
 .lt-bb-cap-can { fill: #94a3b8; stroke: #1f2937; stroke-width: 0.8; }
 .lt-bb-button { fill: #2B2D31; stroke: #121314; stroke-width: 0.8; }
 .lt-bb-dip-body { fill: #1f2937; stroke: #475569; stroke-width: 0.8; }
-.lt-bb-dip-silk { font: 600 8px sans-serif; fill: #f3f4f6; }
-.lt-bb-pin-label { font: 6.5px sans-serif; fill: #f3f4f6; dominant-baseline: middle; }
-.lt-bb-pin-label-sensor { font: 6.5px sans-serif; fill: #f3f4f6; dominant-baseline: middle; }
-.lt-bb-board-title { font: 600 9px sans-serif; fill: #f3f4f6; }
-.lt-bb-board-title-sensor { font: 600 9px sans-serif; fill: #f3f4f6; }
-.lt-bb-part-label { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; }
-.lt-bb-wire { fill: none; stroke-width: 3.3; stroke-linecap: round; }
-.lt-bb-wire-edge { fill: none; stroke: #383B40; stroke-width: 5; stroke-linecap: round; }
+.lt-bb-dip-silk { font-weight: 600; font-size: 8px; fill: #f3f4f6; }
+.lt-bb-pin-label { font-size: 6.5px; fill: #f3f4f6; dominant-baseline: middle; }
+.lt-bb-pin-label-sensor { font-size: 6.5px; fill: #f3f4f6; dominant-baseline: middle; }
+.lt-bb-board-title { font-weight: 600; font-size: 9px; fill: #f3f4f6; }
+.lt-bb-board-title-sensor { font-weight: 600; font-size: 9px; fill: #f3f4f6; }
+.lt-bb-part-label { font-weight: 600; font-size: 9px; fill: ${t.text}; text-anchor: middle; }
+.lt-bb-wire { fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.lt-bb-wire-edge { fill: none; stroke: #64748B; stroke-width: 3; stroke-linecap: round; }
 .lt-bb-wire-dot { stroke: #0f172a; stroke-width: 0.6; }
 `.trim();
 }
@@ -118,7 +118,7 @@ function renderSubstrate(sub: BreadboardLayoutSubstrate): string {
         const breakX2 = breakX1 + PITCH;
         elements.push(rectEl({
           x: breakX1, y: r.y, width: breakX2 - breakX1, height: BB_CONST.RAIL_HEIGHT,
-          fill: "#e7d8b6",
+          fill: "#F4F0E6",
         }));
       }
       // Rail holes

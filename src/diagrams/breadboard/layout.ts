@@ -18,6 +18,7 @@ import type {
   BreadboardPart,
 } from "../../core/types";
 import { partSpec, HOLE_PITCH } from "./parts";
+import { routeJumper, jumperPath } from "./routing";
 import { PIN_ALIASES } from "./pin-aliases";
 
 export const BB_CONST = {
@@ -108,11 +109,10 @@ export function breadboardCoordXY(
 function placePart(
   sub: BreadboardLayoutSubstrate,
   part: BreadboardPart,
-  reservedSides: { left: number; right: number; above: number; below: number }
 ): BreadboardLayoutPart {
   const spec = partSpec(part.kind, part.args);
-  if (spec.category === "side") {
-    const placement = part.placement.kind === "side" ? part.placement.side : "beside-left";
+  if (part.placement.kind === "side" && spec.category !== "grid") {
+    const placement = part.placement.side;
     let x = 0, y = 0;
     if (placement === "beside-left") {
       x = sub.x - BB_CONST.MCU_GAP - spec.width;
@@ -130,11 +130,6 @@ function placePart(
     const pins: Record<string, { x: number; y: number }> = {};
     for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
     addPinAliases(part.kind, pins);
-    // track reservations
-    if (placement === "beside-left") reservedSides.left = Math.max(reservedSides.left, spec.width + BB_CONST.MCU_GAP);
-    if (placement === "beside-right") reservedSides.right = Math.max(reservedSides.right, spec.width + BB_CONST.MCU_GAP);
-    if (placement === "above") reservedSides.above = Math.max(reservedSides.above, spec.height + BB_CONST.MCU_GAP);
-    if (placement === "below") reservedSides.below = Math.max(reservedSides.below, spec.height + BB_CONST.MCU_GAP);
     return {
       part, x, y, width: spec.width, height: spec.height, rotation: 0, pins,
     };
@@ -144,18 +139,7 @@ function placePart(
   let anchor: BreadboardCoord;
   if (part.placement.kind === "point") anchor = part.placement.at;
   else if (part.placement.kind === "span") anchor = part.placement.from;
-  else if (spec.category === "module") {
-    const centeredCol = Math.max(1, Math.round(sub.cols / 2));
-    if (part.placement.side === "beside-left") {
-      anchor = { kind: "hole", col: 2, row: "a" };
-    } else if (part.placement.side === "beside-right") {
-      anchor = { kind: "hole", col: Math.max(1, sub.cols - 1), row: "a" };
-    } else if (part.placement.side === "below") {
-      anchor = { kind: "hole", col: centeredCol, row: "j" };
-    } else {
-      anchor = { kind: "hole", col: centeredCol, row: "a" };
-    }
-  } else {
+  else {
     throw new Error(`Grid part '${part.id}' must use @coord placement`);
   }
   const anchorXY = holeXY(sub, anchor);
@@ -163,13 +147,9 @@ function placePart(
   // For module parts (sensors / displays): anchor is the first pin (lower-left of module),
   // so module sits *above* the anchor with pin row at its bottom edge.
   if (spec.category === "module") {
-    // Compute total pin span:
-    const lastPin = spec.pins[spec.pins.length - 1]!;
-    const pinSpanX = lastPin.x - spec.pins[0]!.x;
     // Position module so first pin lands on anchor.
     const x = anchorXY.x - spec.pins[0]!.x;
     const y = anchorXY.y - spec.pins[0]!.y; // pin y is near bottom of module body
-    void pinSpanX;
     const pins: Record<string, { x: number; y: number }> = {};
     for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
     addPinAliases(part.kind, pins);
@@ -355,67 +335,28 @@ function endpointXY(
   return { x: pin.x, y: pin.y };
 }
 
-function bezierPath(p1: { x: number; y: number }, p2: { x: number; y: number }, via?: { x: number; y: number }, clear = true): string {
-  const dx = p2.x - p1.x;
-  const dy = p2.y - p1.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  // Aligned holes accept a straight jumper; other connections retain a flexible arc.
-  if (dist < 1 || (!via && clear && (dx === 0 || dy === 0))) return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
-  // Perpendicular unit vector
-  const nx = -dy / dist;
-  const ny = dx / dist;
-  // Magnitude: 0.4 × max(|dx|,|dy|), but at least 14 so short wires still arc visibly.
-  const mag = Math.max(14, 0.4 * Math.max(Math.abs(dx), Math.abs(dy)));
-  // For "natural" arc: bow upward (negative y) when chord runs left→right horizontally;
-  // bow rightward when chord runs top→bottom.
-  // We pick perpendicular sign so the wire arcs away from the substrate center for off-board MCUs,
-  // but a single-sign default works fine: use +nx,+ny for left→right, flip for right→left.
-  const sign = dx >= 0 ? 1 : -1;
-  let cp1x: number, cp1y: number, cp2x: number, cp2y: number;
-  if (via) {
-    // Steer both control points toward 'via'.
-    cp1x = (p1.x + via.x) / 2;
-    cp1y = (p1.y + via.y) / 2;
-    cp2x = (via.x + p2.x) / 2;
-    cp2y = (via.y + p2.y) / 2;
-  } else {
-    const offX = nx * mag * sign;
-    const offY = ny * mag * sign;
-    cp1x = p1.x + dx * 0.25 + offX;
-    cp1y = p1.y + dy * 0.25 + offY;
-    cp2x = p1.x + dx * 0.75 + offX;
-    cp2y = p1.y + dy * 0.75 + offY;
-  }
-  return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)} ${cp2x.toFixed(2)} ${cp2y.toFixed(2)} ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
-}
-
 // ─── Public API ─────────────────────────────────────────────
 
 export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
-  // Place parts to discover side reservations.
-  const reserved = { left: 0, right: 0, above: 0, below: 0 };
-  // Pre-scan side-placed parts only to compute final substrate offset.
-  for (const part of ast.parts) {
-    if (part.placement.kind === "side") {
-      const spec = partSpec(part.kind, part.args);
-      const side = part.placement.side;
-      if (side === "beside-left") reserved.left = Math.max(reserved.left, spec.width + BB_CONST.MCU_GAP);
-      if (side === "beside-right") reserved.right = Math.max(reserved.right, spec.width + BB_CONST.MCU_GAP);
-      if (side === "above") reserved.above = Math.max(reserved.above, spec.height + BB_CONST.MCU_GAP);
-      if (side === "below") reserved.below = Math.max(reserved.below, spec.height + BB_CONST.MCU_GAP);
+  const sub = buildSubstrate(ast.board, 0, 0);
+  const parts = ast.parts.map(p => placePart(sub, p));
+  // Stack boards/modules along their requested side. Hole-anchored footprints
+  // remain fixed; only genuinely off-board parts participate in packing.
+  for (const side of ["beside-left", "beside-right", "above", "below"]) {
+    const group = parts.filter(p => p.part.placement.kind === "side" && p.part.placement.side === side);
+    const vertical = side.startsWith("beside");
+    const extent = group.reduce((sum, p) => sum + (vertical ? p.height : p.width), 0)
+      + Math.max(0, group.length - 1) * BB_CONST.MCU_GAP;
+    let cursor = (vertical ? sub.y + sub.height / 2 : sub.x + sub.width / 2) - extent / 2;
+    for (const p of group) {
+      const shift = cursor - (vertical ? p.y : p.x);
+      if (vertical) p.y += shift; else p.x += shift;
+      for (const pin of new Set(Object.values(p.pins))) {
+        if (vertical) pin.y += shift; else pin.x += shift;
+      }
+      cursor += (vertical ? p.height : p.width) + BB_CONST.MCU_GAP;
     }
   }
-
-  // Final substrate origin: shift right by `reserved.left`, down by `reserved.above`.
-  const sub = buildSubstrate(
-    ast.board,
-    BB_CONST.MARGIN + reserved.left,
-    BB_CONST.MARGIN + reserved.above + (ast.title ? 30 : 0)
-  );
-
-  // Now place all parts against final substrate.
-  const reservedFinal = { left: 0, right: 0, above: 0, below: 0 };
-  const parts: BreadboardLayoutPart[] = ast.parts.map((p) => placePart(sub, p, reservedFinal));
 
   // Wires.
   const wires: BreadboardLayoutWire[] = ast.wires.map((wire) => {
@@ -430,6 +371,11 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     };
   });
 
+  const obstacles = parts.map(breadboardPartBounds);
+  const routes: { x: number; y: number }[][] = [];
+  for (const lw of wires) routes.push(routeJumper(lw.fromXY, lw.toXY, obstacles,
+    lw.wire.via ? holeXY(sub, lw.wire.via) : undefined, routes).map(p => ({ ...p })));
+
   // Canvas size — bounding box across substrate + side parts + wires.
   let minX = sub.x;
   let minY = sub.y;
@@ -442,11 +388,11 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
     maxX = Math.max(maxX, bounds.x + bounds.width);
     maxY = Math.max(maxY, bounds.y + bounds.height);
   }
-  for (const lw of wires) {
-    minX = Math.min(minX, lw.fromXY.x, lw.toXY.x);
-    minY = Math.min(minY, lw.fromXY.y, lw.toXY.y);
-    maxX = Math.max(maxX, lw.fromXY.x, lw.toXY.x);
-    maxY = Math.max(maxY, lw.fromXY.y, lw.toXY.y);
+  for (const route of routes) for (const p of route) {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
   }
   // Translate everything so origin is at (MARGIN, MARGIN).
   const shiftX = BB_CONST.MARGIN - minX;
@@ -471,18 +417,8 @@ export function layoutBreadboard(ast: BreadboardAst): BreadboardLayoutResult {
       lw.toXY.y += shiftY;
     }
   }
-  // Render wire paths AFTER the substrate-relative shift so via coords also align.
-  for (let i = 0; i < wires.length; i++) {
-    const lw = wires[i]!;
-    const wire = ast.wires[i]!;
-    const viaXY = wire.via ? holeXY(sub, wire.via) : undefined;
-    const clear = parts.every(part => {
-      const b = breadboardPartBounds(part), a = lw.fromXY, z = lw.toXY;
-      if (a.x === z.x) return a.x <= b.x || a.x >= b.x + b.width || Math.max(a.y, z.y) <= b.y || Math.min(a.y, z.y) >= b.y + b.height;
-      if (a.y === z.y) return a.y <= b.y || a.y >= b.y + b.height || Math.max(a.x, z.x) <= b.x || Math.min(a.x, z.x) >= b.x + b.width;
-      return true;
-    });
-    lw.path = bezierPath(lw.fromXY, lw.toXY, viaXY, clear);
+  for (const [i, route] of routes.entries()) {
+    wires[i]!.path = jumperPath(route.map(p => ({ x: p.x + shiftX, y: p.y + shiftY })));
   }
   const width = (maxX - minX) + BB_CONST.MARGIN * 2;
   const height = (maxY - minY) + BB_CONST.MARGIN * 2 + titleHeight;

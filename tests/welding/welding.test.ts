@@ -1,6 +1,11 @@
 import { describe, test, expect } from "vitest";
 import { parseWelding } from "../../src/diagrams/welding/parser";
 import { renderWelding } from "../../src/diagrams/welding/renderer";
+import { layoutWelding } from "../../src/diagrams/welding/layout";
+import { weldGlyph } from "../../src/diagrams/welding/symbols";
+import { WELD_TYPE_NAMES } from "../../src/diagrams/welding/types";
+import type { WeldType } from "../../src/diagrams/welding/types";
+import { Resvg } from "@resvg/resvg-js";
 
 // ─────────────────────────────────────────────────────────────
 // Welding symbols (47-WELDING-SYMBOL-STANDARD) — AWS A2.4 / ISO 2553
@@ -11,6 +16,27 @@ import { renderWelding } from "../../src/diagrams/welding/renderer";
 // ─────────────────────────────────────────────────────────────
 
 describe("welding — parsing", () => {
+  test("keeps apostrophes in bare names while recognizing quoted directive values", () => {
+    const ast = parseWelding(`welding Farmer's gate
+joint Farmer's corner { arrow: fillet size=6 tail:'field inspection' }`);
+    expect(ast.title).toBe("Farmer's gate");
+    expect(ast.joints).toHaveLength(1);
+    expect(ast.joints[0]).toMatchObject({
+      label: "Farmer's corner", arrow: { type: "fillet", size: 6 },
+      tail: "field inspection", field: false,
+    });
+  });
+
+  test("preserves quoted directive words and consumes header brackets", () => {
+    const ast = parseWelding(`welding "Joint inspection" [standard: iso-b]
+joint "support" { arrow: fillet size=6 tail: "FIELD; site; around; label: checked" }`);
+    expect(ast.title).toBe("Joint inspection");
+    expect(ast.standard).toBe("iso-b");
+    expect(ast.joints[0]!.tail).toBe("FIELD; site; around; label: checked");
+    expect(ast.joints[0]!.field).toBe(false);
+    expect(ast.joints[0]!.around).toBe(false);
+  });
+
   test("parses a single-line joint with an arrow-side fillet", () => {
     const ast = parseWelding(`welding "Bracket"\njoint "plate" { arrow: fillet size=8 }`);
     expect(ast.type).toBe("welding");
@@ -97,6 +123,43 @@ describe("welding — validation (the structural differentiator)", () => {
 });
 
 describe("welding — rendering", () => {
+  test("every glyph stays on its declared side of the reference line", () => {
+    for (const type of Object.keys(WELD_TYPE_NAMES) as WeldType[]) {
+      for (const dir of [1, -1] as const) {
+        const glyph = weldGlyph(type, 50, 50, dir, "weld", 28, 24).join("");
+        const box = new Resvg(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><style>.weld {fill:none;stroke:black;stroke-width:1}</style>${glyph}</svg>`, { font: { loadSystemFonts: false } }).getBBox()!;
+        expect(box.width, type).toBeGreaterThan(0);
+        if (dir === 1) expect(box.y, type).toBeGreaterThanOrEqual(49.5);
+        else expect(box.y + box.height, type).toBeLessThanOrEqual(50.5);
+      }
+    }
+  });
+  test("ISO-A preserves both sides, including unequal dimensions of the same weld type", () => {
+    const svg = renderWelding(`welding standard: iso-a
+joint "Independent dimensions" { arrow: fillet size=7 other: fillet size=11 }`);
+    expect(svg).toContain('class="sx-weld-ref-dashed"');
+    expect(svg).toContain('>11</text>');
+    const equal = renderWelding(`welding standard: iso-a
+joint "Equal dimensions" { both: fillet size=7 }`);
+    expect(equal).not.toContain('class="sx-weld-ref-dashed"');
+    expect(equal.match(/class="sx-weld-side"/g)).toHaveLength(2);
+  });
+
+  test("measures long dimensions and annotations before stacking the next callout", () => {
+    const ast = parseWelding(`welding "A measured drawing"
+joint "A long attachment description with no implied geometry" {
+  arrow: vgroove size=123.45 root=0.125 angle=75 contour=flush finish=G len=1234 pitch=2345
+  other: fillet size=9 contour=convex finish=M
+  tail: "Process specification with a long qualification and inspection requirement"
+}
+joint "Next attachment" { arrow: fillet size=5 }`);
+    const lay = layoutWelding(ast);
+    const [first, second] = lay.joints;
+    expect(first!.refX1).toBeGreaterThan(first!.symbolX + first!.rightExtent);
+    expect(first!.labelY).toBeGreaterThan(first!.arrowY);
+    expect(second!.top).toBeGreaterThan(first!.bottom);
+    expect(first!.refX1 + 20 + first!.tailWidth).toBeLessThan(lay.canvasWidth);
+  });
   test("emits a semantic welding SVG", () => {
     const svg = renderWelding(`welding "T"\njoint "plate" { arrow: fillet size=8 }`);
     expect(svg).toContain('data-diagram-type="welding"');

@@ -13,6 +13,16 @@ export interface RoutedNet {
   net: string;
   points: RoutePoint[];
 }
+/** Open segment/rectangle intersection; unlike the orthogonal router, accepts diagonals. */
+export function segmentEntersBox(a: RoutePoint, b: RoutePoint, box: RouteBox): boolean {
+  let lo=0, hi=1;
+  for(const [start,delta,min,max] of [[a.x,b.x-a.x,box.left,box.right],[a.y,b.y-a.y,box.top,box.bottom]]) {
+    if(Math.abs(delta)<1e-9) { if(start<=min||start>=max)return false; }
+    else { const u=(min-start)/delta,v=(max-start)/delta;lo=Math.max(lo,Math.min(u,v));hi=Math.min(hi,Math.max(u,v)); }
+  }
+  return hi-lo>1e-9;
+}
+
 export function intersectsBox(
   a: RoutePoint,
   b: RoutePoint,
