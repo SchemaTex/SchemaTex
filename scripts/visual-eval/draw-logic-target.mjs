@@ -3,7 +3,7 @@
  *   node scripts/visual-eval/draw-logic-target.mjs [case-id ...]
  *
  * Symbol geometry, palette and type scale come from
- * visual-eval/exemplars/logic/ideal.svg, so all six targets are the same drawing
+ * visual-eval/exemplars/logic/ansi/ideal.svg, so all six targets are the same drawing
  * repeated. Placement and wiring stay per-case below: these circuits each want
  * a different idiom — a decoder tree, a sum-of-products rail field, a stacked
  * ripple chain, a cross-coupled latch — and one router good enough for all of

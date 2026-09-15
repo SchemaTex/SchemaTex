@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { defineConfig } from "vite";
 
 /** Vite's MPA mode 404s on a directory path without a trailing slash, so
- *  /tools/eval comes back blank while /tools/eval/ works. Redirect, but only
+ *  /eval comes back blank while /eval/ works. Redirect, but only
  *  for paths that really are a directory holding an index.html — Vite's own
  *  internals (/@vite/client and friends) are not directories. */
 const redirectDirectories = {

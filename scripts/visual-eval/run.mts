@@ -121,7 +121,11 @@ let writeSeq = 0;
 /** A filtered run must not throw away the cases it did not touch: merge into
  *  whatever the last full run wrote, so the review tool keeps the whole corpus. */
 async function writeReport() {
-  const merged = (shard ? [...cases] : [...previousCases.filter((c) => !cases.some((n) => n.id === c.id)), ...cases])
+  // Other render or judge runs may have updated unrelated cases since startup.
+  const latestCases = shard ? [] : await readFile(reportPath, "utf8")
+    .then((text) => JSON.parse(text).cases as typeof previousCases)
+    .catch(() => previousCases);
+  const merged = (shard ? [...cases] : [...latestCases.filter((c) => !cases.some((n) => n.id === c.id)), ...cases])
     .sort((a, b) => String(a.id).localeCompare(String(b.id)));
   // Write-then-rename. `writeFile` truncates first, so a run killed inside that
   // window leaves a zero-byte report — which is exactly how an hour of finished
@@ -145,20 +149,27 @@ async function writeReport() {
 async function processCase(goal: (typeof goals)[number]) {
   const dir = new URL(`${goal.id}/`, outDir);
   await mkdir(dir, { recursive: true });
+  const targetSvg = goal.ideal
+    ? await readFile(new URL(`${goal.id}/${goal.ideal.file}`, casesDir), "utf8")
+    : null;
+  const targetHash = targetSvg === null ? null : hash(targetSvg);
+  const rubricHash = hash(JSON.stringify(goal.rubric));
 
   // A drawing that has not changed does not need grading again — and grading it
   // again would only add the judge's own run-to-run noise to the comparison.
   const priorJudged = new Map(
     (previousCases.find((c) => c.id === goal.id)?.versions ?? [])
-      .filter((v: { judged?: unknown; svgHash?: string }) => v.judged && v.svgHash)
+      .filter((v: { judged?: { targetHash?: string | null; rubricHash?: string; model?: string; effort?: string }; svgHash?: string }) =>
+        v.judged?.targetHash === targetHash && v.judged?.rubricHash === rubricHash && v.svgHash
+        && (!wantJudge || (v.judged.model === model && v.judged.effort === effort)))
       .map((v: { svgHash: string; judged: unknown }) => [v.svgHash, v.judged]),
   );
   const grade = async (key: string, hasIdeal: boolean, svgHash?: string) => {
-    if (!wantJudge || !shouldJudge(key)) return null;
     if (svgHash && priorJudged.has(svgHash)) {
       console.log(`  reused verdict for ${goal.id}/${key} (unchanged drawing)`);
       return priorJudged.get(svgHash);
     }
+    if (!wantJudge || !shouldJudge(key)) return null;
     // Measured across eight cases: grading without the reference drawing shifts
     // the corpus mean by under 4 points, but individual cases move as much as
     // 30 — always upward, because a judge with nothing to compare against
@@ -173,13 +184,13 @@ async function processCase(goal: (typeof goals)[number]) {
       effort,
     });
     console.log(`  judged ${goal.id}/${key} in ${verdict.seconds}s${hasIdeal ? "" : " (no target)"}`);
-    return { ...verdict, againstTarget: hasIdeal };
+    return verdict ? { ...verdict, model, effort, targetHash, rubricHash, againstTarget: hasIdeal } : null;
   };
 
   // The reference drawing, if this goal has one.
   let hasIdeal = false;
-  if (goal.ideal) {
-    const svg = await readFile(new URL(`${goal.id}/${goal.ideal.file}`, casesDir), "utf8");
+  if (targetSvg !== null) {
+    const svg = targetSvg;
     await writeFile(new URL("ideal.svg", dir), svg);
     await rasterize(svg, new URL("ideal.png", dir));
     hasIdeal = true;
@@ -285,4 +296,4 @@ if (wantJudge) {
   }
 }
 console.log(`\nWrote preview/visual-eval/report.json — ${cases.length} of ${merged.length} cases refreshed, judge ${wantJudge ? "on" : "off"}`);
-console.log("Read it at http://127.0.0.1:3031/tools/eval/ (npx vite --port 3031 --config vite.preview.config.ts .)");
+console.log("Read it at http://127.0.0.1:3031/eval/ (npx vite --port 3031 --config vite.preview.config.ts .)");

@@ -16,7 +16,7 @@
  *   node scripts/visual-eval/draw-blockdiagram-target.mjs control-loop
  */
 import { readFile, writeFile } from "node:fs/promises";
-import { chromium } from "playwright";
+import { Resvg } from "@resvg/resvg-js";
 
 const FONT = 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif';
 const FONT_SVG = "Inter, Helvetica Neue, Helvetica, Arial, sans-serif";
@@ -27,19 +27,6 @@ const RULE = "#C9D2DC";
 const ACCENT = "#B4462A";      // the feedback path, and nothing else
 const BUS_FILL = "#EEF2F6";
 
-/** Light fills keyed to the block's declared `role:`. The DSL states the role
- *  on every block, so a drawing that leaves every body white is throwing away
- *  information the author supplied. Kept pale and outlined in ink, so the
- *  terracotta accent stays the loudest thing on the page and still means only
- *  one thing: the measured/feedback path. */
-const ROLE_FILL = {
-  reference: "#F5F7F9", input: "#EDF3FA", controller: "#E7EFFA", actuator: "#E9F5EC",
-  plant: "#F6F1E7", sensor: "#F3EDF8", output: "#FBF3E5", generic: "#FFFFFF",
-};
-const ROLE_NAME = {
-  reference: "Reference", input: "Input", controller: "Control", actuator: "Actuator",
-  plant: "Plant", sensor: "Sensor", output: "Output",
-};
 
 const M = 46;
 const U = 8;                   // spacing unit
@@ -48,29 +35,19 @@ const BLOCK_R = 4, W_BLOCK = 1.5, W_WIRE = 1.5;
 const SUM_R = 17, DOT_R = 3.5;
 const HEAD_L = 9, HEAD_W = 3.5;
 const COL_GAP = 116, ROW_GAP = 46;
-const MAX_ROW = 1600;
+const MAX_ROW = 1400;
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const n2 = (v) => Math.round(v * 100) / 100;
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
-const ruler = await browser.newPage();
-await ruler.setContent("<canvas id=c></canvas>");
 const cache = new Map();
 const measure = async (text, size, weight = 400, style = "normal") => {
   const key = `${style}|${weight}|${size}|${text}`;
-  if (cache.has(key)) return cache.get(key);
-  const w = await ruler.evaluate(
-    ([t, s, wt, st, f]) => {
-      const ctx = document.getElementById("c").getContext("2d");
-      ctx.font = `${st} ${wt} ${s}px ${f}`;
-      return ctx.measureText(t).width;
-    },
-    [text, size, weight, style, FONT]
-  );
-  cache.set(key, w);
-  return w;
+  if (!cache.has(key)) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="4000" height="100"><text x="10" y="50" font-family="Helvetica" font-size="${size}" font-weight="${weight}" font-style="${style}">${esc(text)}</text></svg>`;
+    cache.set(key, new Resvg(svg, { font: { loadSystemFonts: false, fontFiles: ["/System/Library/Fonts/Helvetica.ttc"] } }).getBBox()?.width ?? 0);
+  }
+  return cache.get(key);
 };
 
 // ---------------------------------------------------------------- parse
@@ -195,6 +172,7 @@ class Sheet {
     // wire, not just against other labels.
     const pts = [...d.matchAll(/[ML]\s*(-?[\d.]+)\s+(-?[\d.]+)/g)].map((m) => [+m[1], +m[2]]);
     for (let i = 1; i < pts.length; i++) this.segs.push([...pts[i - 1], ...pts[i]]);
+    for (const [x, y] of pts) this.grow(x, y);
     this.wires.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ""} stroke-linejoin="round" stroke-linecap="butt"/>`);
   }
   head(x, y, ux, uy, stroke = INK) {
@@ -228,7 +206,7 @@ class Sheet {
     o.push(`<text x="${M}" y="48" font-family="${FONT_SVG}" font-size="${FS_TITLE}" font-weight="600" fill="${INK}">${esc(this.title)}</text>`);
     o.push(`<text x="${M}" y="70" font-family="${FONT_SVG}" font-size="${FS_SUB}" fill="${SLATE}">${esc(this.deck)}</text>`);
     o.push(`<line x1="${M}" y1="84" x2="${this.w - M}" y2="84" stroke="${RULE}" stroke-width="1"/>`);
-    o.push(...this.back, ...this.wires, ...this.shapes, ...this.texts);
+    o.push(`<g transform="translate(${this.offsetX ?? 0} 0)">`, ...this.back, ...this.wires, ...this.shapes, ...this.texts, "</g>");
     o.push("</svg>");
     return o.join("\n") + "\n";
   }
@@ -294,6 +272,17 @@ const build = async (name) => {
   }
   const cols = [...byRank.entries()].sort((a, b) => a[0] - b[0]).map(([k, ns]) => ({ k, ns, hw: Math.max(...ns.map((n) => n.hw)) }));
 
+  // Align parallel paths with their destinations before assigning coordinates.
+  for (let i = cols.length - 2; i >= 0; i--) {
+    const order = new Map(cols[i + 1].ns.map((n, index) => [n.id, index]));
+    const position = (n) => {
+      const positions = doc.edges.filter((e) => e.from === n.id && order.has(e.to)).map((e) => order.get(e.to));
+      return positions.length ? positions.reduce((a, b) => a + b, 0) / positions.length : cols[i].ns.indexOf(n);
+    };
+    const ranked = cols[i].ns.map((n) => ({ n, position: position(n) }));
+    cols[i].ns = ranked.sort((a, b) => a.position - b.position).map((r) => r.n);
+  }
+
   // Fold the column run into bands so no band outruns the page.
   const bands = [];
   let cur = [], width = 0;
@@ -343,7 +332,10 @@ const build = async (name) => {
     for (const n of fbList) { n.cx = x - n.hw; n.cy = fbY; x = n.cx - n.hw - COL_GAP; }
   }
 
-  for (const n of doc.nodes.values()) s.solids.push({ x: n.cx - n.hw, y: n.cy - n.hh, w: n.hw * 2, h: n.hh * 2, s: n.id });
+  for (const n of doc.nodes.values()) {
+    s.solids.push({ x: n.cx - n.hw, y: n.cy - n.hh, w: n.hw * 2, h: n.hh * 2, s: n.id });
+    s.grow(n.cx + n.hw, n.cy + n.hh);
+  }
 
   // ---- wires
   const bandOf = (n) => bands.findIndex((b) => b.some((c) => c.ns.includes(n)));
@@ -374,7 +366,9 @@ const build = async (name) => {
       const down = b.cy > a.cy;
       const bEdge = down ? b.cy - b.hh : b.cy + b.hh;
       const optA = { pts: [[x1, a.cy], [b.cx, a.cy], [b.cx, bEdge - (down ? HEAD_L : -HEAD_L)]], into: "v" };
-      const kx = a.cx + a.hw + COL_GAP / 2;
+      const laneKey = `pair:${ba}:${a.cx}:${b.cx}`;
+      const used = lanes.get(laneKey) ?? 0; lanes.set(laneKey, used + 1);
+      const kx = a.cx + a.hw + 28 + used * 18;
       const optB = { pts: [[x1, a.cy], [kx, a.cy], [kx, b.cy], [x2 - HEAD_L, b.cy]], into: "h" };
       // Last resort for a long reach across a crowded row: drop into the channel
       // under the band, run along it, and come back up into the target.
@@ -400,7 +394,7 @@ const build = async (name) => {
       const key = `fold${ba}`;
       const seen = lanes.get(key) ?? 0; lanes.set(key, seen + 1);
       const ch = (bands[ba].bottom + bands[bb].top) / 2 + seen * 18;
-      s.path(`M ${n2(a.cx + a.hw)} ${n2(a.cy)} L ${n2(a.cx + a.hw + 30)} ${n2(a.cy)} L ${n2(a.cx + a.hw + 30)} ${n2(ch)} L ${n2(b.cx - b.hw - 30)} ${n2(ch)} L ${n2(b.cx - b.hw - 30)} ${n2(b.cy)} L ${n2(b.cx - b.hw - HEAD_L)} ${n2(b.cy)}`, { stroke });
+      s.path(`M ${n2(a.cx + a.hw)} ${n2(a.cy)} L ${n2(a.cx + a.hw + 30 + seen * 14)} ${n2(a.cy)} L ${n2(a.cx + a.hw + 30 + seen * 14)} ${n2(ch)} L ${n2(b.cx - b.hw - 30 - seen * 14)} ${n2(ch)} L ${n2(b.cx - b.hw - 30 - seen * 14)} ${n2(b.cy)} L ${n2(b.cx - b.hw - HEAD_L)} ${n2(b.cy)}`, { stroke });
       s.head(b.cx - b.hw, b.cy, 1, 0, stroke);
       await sig([0, 1, 2, 3].flatMap((i) => [[(a.cx + b.cx) / 2 + i * 40, ch - 10, "middle"], [(a.cx + b.cx) / 2 + i * 40, ch + 20, "middle"]]));
     } else {
@@ -453,7 +447,7 @@ const build = async (name) => {
       await s.at(n.cx, n.cy + 4, n.lines.join(" "), { size: FS_SIG, weight: 600, fill: SLATE, anchor: "middle", block: `n-${n.id}` });
       continue;
     }
-    s.shapes.push(`<rect x="${n2(n.cx - n.hw)}" y="${n2(n.cy - n.hh)}" width="${n2(n.hw * 2)}" height="${n2(n.hh * 2)}" rx="${BLOCK_R}" fill="${ROLE_FILL[n.role] ?? "#ffffff"}" stroke="${stroke}" stroke-width="${W_BLOCK}"/>`);
+    s.shapes.push(`<rect x="${n2(n.cx - n.hw)}" y="${n2(n.cy - n.hh)}" width="${n2(n.hw * 2)}" height="${n2(n.hh * 2)}" rx="${BLOCK_R}" fill="#FFFFFF" stroke="${stroke}" stroke-width="${W_BLOCK}"/>`);
     const k = n.lines.length;
     for (const [i, l] of n.lines.entries())
       await s.at(n.cx, n.cy + 4.5 - ((k - 1) * 16) / 2 + i * 16, l, { size: FS_BLOCK, weight: 500, fill: INK, anchor: "middle", block: `n-${n.id}` });
@@ -465,8 +459,6 @@ const build = async (name) => {
   const items = [["Forward signal path", INK, false]];
   if (fbList.length || doc.edges.some((e) => e.back)) items.push(["Feedback / measured path", ACCENT, false]);
   if (doc.edges.some((e) => fbNodes.has(e.to))) items.push(["Pickoff (branch) point", INK, true]);
-  const rolesUsed = [...new Set([...doc.nodes.values()].filter((n) => n.kind === "block" && ROLE_NAME[n.role]).map((n) => n.role))]
-    .sort((a, b) => Object.keys(ROLE_NAME).indexOf(a) - Object.keys(ROLE_NAME).indexOf(b));
   for (const [text, colour, isDot] of items) {
     if (isDot) s.dot(lx + 14, legendY - 4, colour);
     else {
@@ -477,15 +469,10 @@ const build = async (name) => {
     lx += 38 + (await measure(text, FS_CAP)) + 44;
   }
 
-  let rx2 = M;
-  const roleY = legendY + (rolesUsed.length ? 26 : 0);
-  for (const role of rolesUsed) {
-    s.shapes.push(`<rect x="${n2(rx2)}" y="${n2(roleY - 12)}" width="26" height="14" rx="3" fill="${ROLE_FILL[role]}" stroke="${INK}" stroke-width="1.2"/>`);
-    await s.at(rx2 + 36, roleY, ROLE_NAME[role], { size: FS_CAP, fill: SLATE });
-    rx2 += 36 + (await measure(ROLE_NAME[role], FS_CAP)) + 30;
-  }
-  s.w = Math.ceil(Math.max(s.maxX, lx, rx2) + M);
-  s.h = Math.ceil(roleY + M);
+  s.w = Math.ceil(Math.max(s.maxX, lx) + M);
+  s.h = Math.ceil(legendY + M);
+  s.offsetX = Math.max(0, M - Math.min(...s.segs.flatMap(([x1, , x2]) => [x1, x2]), ...s.solids.map((b) => b.x)));
+  s.w += s.offsetX;
   const fwd = [...doc.nodes.values()].filter((n) => n.kind === "block" && !fbNodes.has(n.id));
   s.desc =
     `A functional block diagram of ${doc.title}. ` +
@@ -510,8 +497,7 @@ const duplicateAttributes = (svgText) => {
 };
 
 const check = (sheet) =>
-  page.evaluate(
-    ([labels, solids, segs, W, H]) => {
+  (([labels, solids, segs, W, H]) => {
       const pad = 4;
       const hit = (a, c) => a.x < c.x + c.w + pad && c.x < a.x + a.w + pad && a.y < c.y + c.h + pad && c.y < a.y + a.h + pad;
       const out = [];
@@ -549,9 +535,7 @@ const check = (sheet) =>
         }
       }
       return [...new Set(out)];
-    },
-    [sheet.labels, sheet.solids, sheet.segs, sheet.w, sheet.h]
-  );
+    })([sheet.labels, sheet.solids, sheet.segs, sheet.w, sheet.h]);
 
 // ---------------------------------------------------------------- run
 
@@ -562,7 +546,6 @@ let failed = 0;
 for (const name of names) {
   const sheet = await build(name);
   const svgText = sheet.render();
-  await page.setContent(`<style>html,body{margin:0}</style>${svgText}`);
   const found = [...duplicateAttributes(svgText), ...(await check(sheet))];
   if (found.length) {
     failed++;
@@ -572,5 +555,4 @@ for (const name of names) {
   await writeFile(`visual-eval/cases/blockdiagram-${name}/ideal.svg`, svgText);
   console.log(`blockdiagram-${name}: ${sheet.w}x${sheet.h}, 0 collisions`);
 }
-await browser.close();
 if (failed) process.exit(1);

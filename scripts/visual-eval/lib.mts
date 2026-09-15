@@ -50,7 +50,7 @@ export type Goal = {
   ideal?: Ideal;
 };
 
-export type Variant = { id: string; label: string; about: string };
+export type Variant = { id: string; label: string; about: string; default?: boolean };
 
 export const loadVariants = async (): Promise<Record<string, Variant[]>> =>
   JSON.parse(await readFile(new URL("visual-eval/variants.json", repoRoot), "utf8"));

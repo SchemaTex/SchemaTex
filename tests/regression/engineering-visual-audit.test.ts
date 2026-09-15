@@ -6,7 +6,7 @@ import { intersectsBox, orthogonalRoute } from "../../src/diagrams/logic/orthogo
 
 const source = (id: string) =>
   readFileSync(
-    new URL(`../../preview/engineering-review/${id}.sx`, import.meta.url),
+    new URL(`../fixtures/regression/engineering-${id}.sx`, import.meta.url),
     "utf8",
   );
 it("keeps every adder connection and aligns output labels with their drivers", () => {

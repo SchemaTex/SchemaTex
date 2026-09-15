@@ -2,15 +2,15 @@
  * Reuse shipped symbols/styles; fixed positions describe the design target only.
  * Run with vite-node. Original replay assets remain immutable.
  */
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { svgRoot, el, group, rect, path, circle, text } from '../src/core/svg';
 import { getGateGeometry } from '../src/diagrams/logic/symbols';
 import { parseLogic } from '../src/diagrams/logic/parser';
 
 const dir = new URL('../preview/engineering-review/', import.meta.url);
-const read = (name: string) => readFile(new URL(name, dir), 'utf8');
-const save = (name: string, value: string) => writeFile(new URL(name, dir), value);
+const read = (name: string) => readFile(new URL(`../tests/fixtures/regression/engineering-${name}`, import.meta.url), 'utf8');
+const save = async (name: string, value: string) => { await mkdir(dir, { recursive: true }); await writeFile(new URL(name, dir), value); };
 const ink = '#1d1d1d', paper = '#ffffff';
 const label = (x: number, y: number, content: string, size = 13) => text({x,y,fill:ink,'font-size':size,'font-family':'IBM Plex Sans, Helvetica Neue'},content);
 type Point = [number, number];

@@ -17,7 +17,7 @@
  *   node scripts/visual-eval/draw-causalloop-target.mjs burnout
  */
 import { readFile, writeFile } from "node:fs/promises";
-import { chromium } from "playwright";
+import { Resvg } from "@resvg/resvg-js";
 
 const FONT = 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif';
 const FONT_SVG = "Inter, Helvetica Neue, Helvetica, Arial, sans-serif";
@@ -36,24 +36,14 @@ const PAD_X = 14, PAD_Y = 9;   // clear air kept round a variable's text
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const n2 = (v) => Math.round(v * 100) / 100;
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
-const ruler = await browser.newPage();
-await ruler.setContent("<canvas id=c></canvas>");
 const cache = new Map();
 const measure = async (text, size, weight = 400, style = "normal") => {
   const key = `${style}|${weight}|${size}|${text}`;
-  if (cache.has(key)) return cache.get(key);
-  const w = await ruler.evaluate(
-    ([t, s, wt, st, f]) => {
-      const ctx = document.getElementById("c").getContext("2d");
-      ctx.font = `${st} ${wt} ${s}px ${f}`;
-      return ctx.measureText(t).width;
-    },
-    [text, size, weight, style, FONT]
-  );
-  cache.set(key, w);
-  return w;
+  if (!cache.has(key)) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="4000" height="100"><text x="10" y="50" font-family="Helvetica" font-size="${size}" font-weight="${weight}" font-style="${style}">${esc(text)}</text></svg>`;
+    cache.set(key, new Resvg(svg, { font: { loadSystemFonts: false, fontFiles: ["/System/Library/Fonts/Helvetica.ttc"] } }).getBBox()?.width ?? 0);
+  }
+  return cache.get(key);
 };
 
 // ---------------------------------------------------------------- parse
@@ -238,7 +228,7 @@ const build = async (name) => {
     const mx = (a.cx + b.cx) / 2, my = (a.cy + b.cy) / 2;
     // Ring links bow outward, which is what makes the loop read as a loop.
     const outward = Math.hypot(mx, my) || 1;
-    const bow = both ? 0.20 : 0.17;   // a two-variable pair needs the lens opened up
+    const bow = both ? 0.20 : 0.30;   // a two-variable pair needs the lens opened up
     const chord = Math.hypot(b.cx - a.cx, b.cy - a.cy);
     const cxp = both ? mx + (mx / outward) * chord * bow : mx + (-(b.cy - a.cy) / chord) * chord * bow;
     const cyp = both ? my + (my / outward) * chord * bow : my + ((b.cx - a.cx) / chord) * chord * bow;
@@ -259,8 +249,8 @@ const build = async (name) => {
 
     if (l.delay) {
       // Two hash marks across the link: the standard "this takes time" mark.
-      const hx = 0.5 * (0.5 * sx + cxp) + 0.5 * (0.5 * cxp + baseX);
-      const hy = 0.5 * (0.5 * sy + cyp) + 0.5 * (0.5 * cyp + baseY);
+      const hx = 0.25 * sx + 0.5 * cxp + 0.25 * baseX;
+      const hy = 0.25 * sy + 0.5 * cyp + 0.25 * baseY;
       const dx2 = baseX - sx, dy2 = baseY - sy, dl = Math.hypot(dx2, dy2) || 1;
       const nx = -dy2 / dl, ny = dx2 / dl, tx2 = dx2 / dl, ty2 = dy2 / dl;
       for (const d of [-4, 4])
@@ -312,13 +302,12 @@ const build = async (name) => {
     s.path(`M ${n2(x0)} ${n2(y0)} A ${rr} ${rr} 0 1 ${sweep} ${n2(x1)} ${n2(y1)}`, { stroke: colour, width: 1.8 });
     const tang = cw ? [-Math.sin(a1), Math.cos(a1)] : [Math.sin(a1), -Math.cos(a1)];
     s.head(x1, y1, tang[0], tang[1], colour);
-    ring.label = `${ring.kind}${i + 1}`;
-    ring.title = named[i]?.name ?? "";
+    const namedIndex = named.findIndex((label) => label.id.startsWith(ring.kind));
+    const declaration = namedIndex < 0 ? undefined : named.splice(namedIndex, 1)[0];
+    ring.label = declaration?.id ?? `${ring.kind}${i + 1}`;
+    ring.title = declaration?.name ?? "";
     ring.cx = cx; ring.cy = cy;
     verdicts.push(ring);
-  }
-  for (const ring of verdicts) {
-    const colour = ring.kind === "R" ? R_COL : B_COL;
     await s.at(ring.cx, ring.cy + 5, ring.label, { size: FS_LOOP, weight: 700, fill: colour, block: `loop-${ring.label}` });
     if (ring.title)
       await s.tryAt([44, 60, -40, 76, -56, 92].map((d) => [ring.cx, ring.cy + d]), ring.title,
@@ -330,15 +319,10 @@ const build = async (name) => {
   s.dy = 132 - s.minY;
   const bodyBottom = s.maxY + s.dy;
   s.w = Math.ceil(Math.max(s.maxX - s.minX + 2 * M + 40, 900));
+  s.dx = (s.w - (s.maxX - s.minX)) / 2 - s.minX;
   const foot = [];
   let fy = bodyBottom + 54;
-  const lines = [
-    `Loop polarity is counted, not copied: ${verdicts.map((v) => `${v.label} has ${v.negatives} negative link${v.negatives === 1 ? "" : "s"} — ${v.negatives % 2 === 0 ? "even, so reinforcing" : "odd, so balancing"}`).join("; ")}.`,
-    "A link's + means the two variables move together, − that they move opposite. Two hash marks across a link mark a delay.",
-  ];
-  const mismatch = verdicts.filter((v, i) => named[i] && named[i].id[0] !== v.kind);
-  if (mismatch.length)
-    lines.push(`The source declares ${mismatch.map((v, i) => `${named[verdicts.indexOf(v)].id} for "${v.title}"`).join(", ")}, which contradicts its own link polarities; the computed letter is shown.`);
+  const lines = ["+  same direction     −  opposite direction     ||  delay     R  reinforcing loop     B  balancing loop", ...named.map((label) => `Source declaration ${label.id} (${label.name}) does not match a computed loop polarity.`)];
   for (const [i, t] of lines.entries())
     foot.push(`<text x="${M}" y="${n2(fy + i * 18)}" font-family="${FONT_SVG}" font-size="${FS_CAP}" fill="${SLATE}">${esc(t)}</text>`);
   s.foot = foot;
@@ -367,8 +351,7 @@ const duplicateAttributes = (svgText) => {
 };
 
 const check = (sheet) =>
-  page.evaluate(
-    ([labels, dx, dy, W, H]) => {
+  (([labels, dx, dy, W, H]) => {
       const pad = 4;
       const box = (l) => (l.foot ? l : { ...l, x: l.x + dx, y: l.y + dy });
       const hit = (a, c) => a.x < c.x + c.w + pad && c.x < a.x + a.w + pad && a.y < c.y + c.h + pad && c.y < a.y + a.h + pad;
@@ -382,9 +365,7 @@ const check = (sheet) =>
         }
       }
       return [...new Set(out)];
-    },
-    [sheet.labels, sheet.dx, sheet.dy, sheet.w, sheet.h]
-  );
+    })([sheet.labels, sheet.dx, sheet.dy, sheet.w, sheet.h]);
 
 // ---------------------------------------------------------------- run
 
@@ -394,7 +375,6 @@ let failed = 0;
 for (const nm of names) {
   const sheet = await build(nm);
   const svgText = sheet.render();
-  await page.setContent(`<style>html,body{margin:0}</style>${svgText}`);
   const found = [...duplicateAttributes(svgText), ...(await check(sheet))];
   if (found.length) {
     failed++;
@@ -404,5 +384,4 @@ for (const nm of names) {
   await writeFile(`visual-eval/cases/causalloop-${nm}/ideal.svg`, svgText);
   console.log(`causalloop-${nm}: ${sheet.w}x${sheet.h}, 0 collisions`);
 }
-await browser.close();
 if (failed) process.exit(1);

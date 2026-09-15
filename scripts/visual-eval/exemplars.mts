@@ -48,7 +48,7 @@ for (const dirent of (await readdir(exemplarDir, { withFileTypes: true })).sort(
     await writeFile(new URL("current.svg", out), result.svg);
     await rasterize(ideal, new URL("ideal.png", out));
     await rasterize(result.svg, new URL("current.png", out));
-    const title = /<title>([^<]*)<\/title>/.exec(ideal)?.[1] ?? type;
+    const title = /<title\b[^>]*>([^<]*)<\/title>/.exec(ideal)?.[1] ?? type;
     entries.push({
       type, variant, title, notes, status: result.status,
       diagnostics: result.diagnostics.map((d) => ({ severity: d.severity, message: d.message, line: d.line })),
@@ -62,6 +62,6 @@ for (const dirent of (await readdir(exemplarDir, { withFileTypes: true })).sort(
 const key = (e: Entry) => `${e.type}/${e.variant ?? ""}`;
 const manifestUrl = new URL("preview/visual-eval/exemplars.json", repoRoot);
 const previous: Entry[] = only && existsSync(manifestUrl) ? JSON.parse(await readFile(manifestUrl, "utf8")).entries ?? [] : [];
-const merged = [...previous.filter((p) => !entries.some((e) => key(e) === key(p))), ...entries]
+const merged = [...previous.filter((p) => p.type !== only && !entries.some((e) => key(e) === key(p))), ...entries]
   .sort((a, b) => key(a).localeCompare(key(b)));
 await writeFile(manifestUrl, JSON.stringify({ generatedAt: new Date().toISOString(), engine: stamp, entries: merged }, null, 2) + "\n");

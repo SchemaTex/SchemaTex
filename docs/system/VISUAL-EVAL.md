@@ -42,7 +42,7 @@ npm run eval -- --type logic --judge
 
 # Read the result: start the preview server, then open the tool
 npx vite --port 3031 --config vite.preview.config.ts .
-open http://127.0.0.1:3031/tools/eval/index.html
+open http://127.0.0.1:3031/eval/
 
 # Check the tool in a real browser and capture its screenshots
 npm run eval:verify
@@ -63,12 +63,15 @@ npm run eval:verify
 | `visual-eval/cases/<id>/snapshots/<label>/` | A frozen past render plus the commit it came from |
 | `visual-eval/variants.json` | The types that can be drawn more than one way, and their variants |
 | `visual-eval/exemplars/<type>/[<variant>/]` | One hand-drawn exemplar per variant: `source.sx`, `ideal.svg`, `notes.md` |
+| `visual-eval/symbols/<type>/` | A type's symbols drawn in its exemplar's style: one SVG per symbol and a `manifest.json` |
+| `visual-eval/demand.json` | ChatDiagram usage and payment counts per type, the willingness-to-pay judgement behind each grade, and each type's search-volume benchmark keyword |
 | `scripts/visual-eval/lib.mts` | Case loading, rendering, rasterising |
 | `scripts/visual-eval/run.mts` | The orchestrator; writes `report.json` |
 | `scripts/visual-eval/exemplars.mts` | Renders each exemplar's source beside its drawing; writes `exemplars.json` |
+| `scripts/visual-eval/symbols.mts` | Collects the symbol sets and the engine's catalog drawing of each symbol; writes `symbols.json` |
 | `scripts/visual-eval/judge.mjs` | The vision judge |
 | `scripts/visual-eval/propose-target.mjs` | Drafts a target drawing with Codex |
-| `tools/eval/` | The review tool — a small React app served by the preview server |
+| `eval/` | The review tool — a small React app served by the preview server |
 | `scripts/visual-eval/verify.mjs` | Browser check for the tool |
 | `preview/visual-eval/report.json` | **The contract.** Everything else is a view of this |
 
@@ -79,7 +82,7 @@ read the same files.
 
 The tool is React because the corpus is meant to reach every diagram type, and
 at that size the review surface needs routes — `#/` (the coverage board),
-`#/exemplars`, `#/<type>`, `#/<type>/<variant>` and `#/<type>[/<variant>]/<case>` —
+`#/exemplars`, `#/symbols/<type>`, `#/<type>`, `#/<type>/<variant>` and `#/<type>[/<variant>]/<case>` —
 a search box and filters — state that is tedious to hand-roll. It builds through
 the preview server's own esbuild JSX transform, so it adds no dependency.
 
@@ -177,9 +180,109 @@ A colour scheme is not a variant. `default`, `monochrome` and `dark` redraw the
 same geometry, so drawing each would multiply the work without testing a single
 new layout decision.
 
+A different symbol standard is a variant. ANSI and IEC logic gates, ANSI and
+IEC one-line symbols, AWS and ISO system A weld callouts, and ISO, NFPA and UAE
+evacuation symbols are each checked against different published shapes.
+
+Moving the same elements around is not a variant. Direction (left to right or
+top to bottom) and placement algorithms (ring, layered, force-directed, network
+topologies) keep one kit of shapes, so network, markov and sociogram each stay
+a single variant with cases that exercise the layouts. Git graphs are the
+exception: a horizontal history puts each commit's message along its lane, a
+vertical one gives every commit its own row with the message beside it, and
+both are established conventions, so `horizontal` and `vertical` are variants.
+
+Phylo explicitly compares two branch drawing variants: `slanted` (default) and
+`rectangular`. They share tree semantics but differ in how branches meet. The
+registry may mark one variant `"default": true`: its type page opens that variant,
+while `#/<type>/all` shows all cases. This does not change a case’s authored DSL.
+
+A mode the parser accepts but the engine does not yet draw differently is not a
+variant until it is drawn: ERD Chen and Barker notation, PRISMA 2009, IEC
+fault-tree gates, compact bowtie, FMEA worksheet types, and phylo circular and
+unrooted layouts.
+
 The coverage board (`#/`) gives each variant one next step, in the order the
 work has to happen: duplicate cases (sources that agree once comments and
 titles are removed), no cases, only one case, no exemplar, targets still to draw.
+
+
+## Symbols
+
+A symbol-heavy type (floor plans, one-lines, schematics, P&IDs, evacuation plans,
+breadboards) is only as consistent as its symbols. Each type's symbol library is
+drawn from its exemplar: the same stroke weights, palette, fills and proportions,
+at the scale the symbol has in that exemplar. The exemplar decides the look; the
+symbols make that look reusable, and every later target and engine symbol is
+checked against them.
+
+A set lives in `visual-eval/symbols/<type>/`: one SVG per symbol and a
+`manifest.json` naming the exemplar it copies, one `style` sentence a reviewer can
+check by eye, and per symbol its label, DSL names, the standard it follows, and the
+id of the engine's catalog entry for the same symbol (`getSymbolCatalog`), if any.
+`scripts/visual-eval/symbols.mts` collects the sets and the engine's drawings into
+`preview/visual-eval/symbols.json`.
+
+The Symbols page (`#/symbols/<type>`) shows the exemplar the set copies, a sheet of
+every symbol at its true relative size (uneven line weights and proportions show up
+there, not one symbol at a time), and each symbol beside the engine's version at
+diagram size, 2× or 4×, with its standard. Accept / needs-change marks are kept in
+the reviewer's browser and copied out as a text summary.
+
+## Demand grades
+
+The coverage board rates each type three ways, as a level from nothing through 🚗, ✈️ and 🚀, so the order of work can follow
+value rather than habit. The grades often disagree, and that is the point:
+flowchart is the most used type and one of the least worth paying for, while
+pedigree is rarely requested and read by clinical geneticists.
+
+**Usage** is the number of people who got a successful diagram of the type on
+ChatDiagram in the snapshot window: 🚀 for 1,000 or more, ✈️ for 300
+or more, 🚗 for 100 or more, and nothing below 100.
+
+**Willingness to pay** starts from a judgement, because ChatDiagram's paying
+users are too few (about 230 in 90 days) to rank 50 types on their own. Each
+type is scored 0 to 2 on four questions:
+
+- Is the drawing a professional obligation, or mostly for students and casual use?
+- Is there no good free substitute? Flowcharts, mind maps and timelines have many.
+- Does a wrong drawing cost something real, such as a failed inspection or a misread family history?
+- Is there a published standard the drawing can be checked against?
+
+A total of 7–8 earns 🚀, 5–6 ✈️, 3–4 🚗, and 0–2 nothing. Payment
+data then moves the level by one step, and only when at least 150 users
+generated the type. The data
+combines two measures, each compared with the site-wide rate: the share of the
+type's users who were on a paid plan when they generated it, and the share of
+new users who started a subscription within 30 days of first using it. Both are
+pulled toward the site-wide rate in proportion to how few users a type has, so
+a type with three users cannot look exceptional. At 1.3 times average or more
+the type moves up a level; at 0.75 or less it moves down one.
+
+**Search volume** is how many people in the US search each month for a tool
+that makes the type, from Google Keyword Planner (English). The benchmark is
+the type's most-searched tool keyword: the biggest of "maker", "creator",
+"generator", "software", "tool", "builder", "online", "app" and "designer" after
+each name people use for the drawing or one of its variants. 🚀 for
+5,000 or more, ✈️ for 1,000 or more, 🚗 for 200 or more, and nothing below 200.
+
+The bare name is not the benchmark, because most people searching "venn diagram"
+want a definition or an example, not a tool. Templates, simulators and
+calculators are left out too, since each is a different job, and so is a variant name that is a
+software category of its own: people searching "gantt chart software" want a project-management
+suite, so pert is benchmarked on "critical path software". Keyword Planner
+reports near-identical words as one number, so "maker", "creator" and
+"generator" often read the same. A keyword that mostly means something else is
+skipped and named in the cell's hover text: "circuit maker" is mostly Altium's
+CircuitMaker product, and "pedigree online" is dog and horse pedigrees.
+
+`demand.json` holds the raw counts and the four scores with a one-line reason;
+the board computes the levels. To refresh it, rerun the queries against the
+ChatDiagram database (tables `artifacts`, `ai_usage` with `metadata->>'plan'`,
+and `subscriptions`), excluding the owner's account, and update the counts and
+the `window` label. Refresh search volume by looking up the same keywords in
+Keyword Planner and updating `search` on each type and its `pulled` date. Types ChatDiagram routes elsewhere (charts, economics
+curves, chemistry) are not in the file.
 
 ---
 

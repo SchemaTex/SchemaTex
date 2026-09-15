@@ -12,7 +12,7 @@ import { chromium } from "playwright";
 const root = new URL("../../", import.meta.url);
 const shots = new URL("preview/visual-eval/", root);
 const report = JSON.parse(await readFile(new URL("report.json", shots), "utf8"));
-const base = process.env.VISUAL_EVAL_URL ?? "http://127.0.0.1:3031/tools/eval/index.html";
+const base = process.env.VISUAL_EVAL_URL ?? "http://127.0.0.1:3031/eval/";
 const types = [...new Set(report.cases.map((c) => c.type))].sort();
 
 const browser = await chromium.launch({ headless: true });
