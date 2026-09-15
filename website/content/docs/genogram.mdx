@@ -61,7 +61,7 @@ An individual line is `id [attr1, attr2, …]`. Attributes are comma-separated, 
 
 | Attribute | Values | Effect |
 |---|---|---|
-| Sex | `male`, `female`, `unknown`, `other` | Shape: square, circle, diamond, diamond |
+| Sex | `male`, `female`, `unknown`, `other` | Shape: square, circle, question mark, question mark |
 | Status | `deceased`, `stillborn`, `miscarriage`, `abortion` | Visual modifier (X-out, scaled shape, etc.) |
 | Birth year | 4-digit number, e.g. `1980` | First 4-digit token = birth year |
 | Death year | 4-digit number after birth, e.g. `1980, 2055` | Second 4-digit token = death year |
@@ -93,9 +93,16 @@ will not draw a boundary.
 |---|---|---|
 | ☐ Square | `male` | Male |
 | ○ Circle | `female` | Female |
-| ◇ Diamond | `unknown`, `other`, *or* attribute omitted | Unknown / unspecified |
+| ? Question mark | `unknown`, `other`, *or* attribute omitted | Unknown / unspecified; explicit `shape:diamond` still draws a diamond |
 
-Status modifiers layer on top of the base shape:
+Status symbols follow the McGoldrick Multicultural Family Institute (MFI) 2017 handout:
+
+| Status | Drawing |
+|---|---|
+| `deceased` | X through the sex shape |
+| `miscarriage` | Small hollow circle (spontaneous abortion) |
+| `abortion` | Small x (induced abortion) |
+| `stillborn` | Small square with an X, without an SB label |
 
 <Playground initial={`genogram
   alive [male, 1960]
@@ -214,6 +221,26 @@ All 32 types the parser accepts today:
 | Abuse *(directional)* | `abuse`, `physical-abuse`, `emotional-abuse`, `sexual-abuse`, `neglect` |
 | Control *(directional)* | `manipulative`, `controlling`, `jealous` |
 | Special | `focused`, `focused-neg`, `distrust`, `admirer`, `limerence` |
+
+The McGoldrick MFI 2017 handout supplies the relationship notation it defines; GenoPro supplies the additional relationship marks.
+
+| Type | Drawing |
+|---|---|
+| `distant` | Short-dash line |
+| `distant-hostile` | Zigzag over a dashed line |
+| `abuse`, `physical-abuse` | Zigzag with a filled arrowhead |
+| `emotional-abuse` | Zigzag with a hollow arrowhead |
+| `sexual-abuse` | Zigzag between two parallel lines with a filled arrowhead |
+| `love` / `inlove` | One hollow circle / two overlapping hollow circles mid-line |
+| `admirer` / `limerence` | Open arrow with one hollow circle / two overlapping hollow circles |
+| `distrust` | Row of short perpendicular ticks along the line |
+| `manipulative` / `controlling` | Open arrow with an X / boxed X mid-line |
+| `jealous` | Open arrow with a hollow diamond mid-line |
+| `nevermet` | Boxed X mid-line |
+| `neglect` | Dashed line with an open arrowhead |
+| `bestfriends` | Two parallel lines with short cross ticks |
+
+Emotional-line colors follow the active theme's `positive`, `negative`, `neutral`, `accent`, and `warn` inks; they are not fixed hex values.
 
 <Playground initial={`genogram
   dad [male, 1950]
@@ -362,7 +389,7 @@ Authoritative source: `src/diagrams/genogram/parser.ts`. If this diverges from t
 
 ## 10. Standard compliance
 
-Schematex genograms follow **McGoldrick, Gerson & Petry (2020), *Genograms: Assessment and Treatment*, 4th ed.** for structural symbols, couple operators, and generation alignment. Emotional-relationship taxonomy follows **GenoPro's 32-type classification** (we do not implement GenoPro's 34-type set in full; `focused-admirer` and one duplicate are folded into `focused` and `admirer`).
+Schematex genograms follow **McGoldrick, Gerson & Petry (2020), *Genograms: Assessment and Treatment*, 4th ed.** for family structure and generation alignment, with status symbols and relationship notation from the **McGoldrick MFI 2017 handout**. Additional relationship marks follow **GenoPro**. Emotional-relationship taxonomy follows **GenoPro's 32-type classification** (we do not implement GenoPro's 34-type set in full; `focused-admirer` and one duplicate are folded into `focused` and `admirer`).
 
 What is implemented today vs. the standard:
 

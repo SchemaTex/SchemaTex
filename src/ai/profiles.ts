@@ -127,7 +127,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     prefer: [
       "Use Roman-numeral generation labels (`I-1`, `II-3`) for individual ids — the NSGC clinical convention.",
-      "Declare genetic status on each individual: `affected`, `carrier`, `carrier-x` (X-linked dot), `obligate-carrier`, `presymptomatic`, or `unaffected`.",
+      "Declare genetic status on each individual: `affected`, `carrier`, `carrier-x` (X-linked carrier), `obligate-carrier`, `presymptomatic`, or `unaffected`.",
+      "All carrier statuses use the diagonal hatch fill defined in the key (NSGC Bennett 2022 §4.5); `presymptomatic` draws an edge-to-edge vertical line.",
+      "Life symbols: `stillborn` = deceased slash + SB; `ectopic` = loss triangle + termination slash + ECT; `pregnancy` = P inside the sex shape. `-/-` draws a continuous line with two slashes (relationship no longer exists).",
       "Mark the index case with `proband`; mark a family member seeking advice with `consultand`.",
     ],
     avoid: [
@@ -340,7 +342,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'ladder "Title"',
     mode: "rungs with IEC 61131-3 contacts / coils / function blocks; OR branches via parallel:/branch:",
     keywords:
-      'rung N ["comment"]: · contacts XIC XIO ONS OSF · coils OTE OTL OTU OTN RES · function blocks TON TOFF TP CTU CTD CTUD ADD SUB MUL DIV MOV EQU NEQ GRT LES GEQ LEQ · parallel: branch: (OR branch block) · element syntax ELEM(tag [, address] [, name="…"])',
+      'rung N ["comment"]: · contacts XIC XIO ONS OSF · coils OTE OTL OTU OTN · reset instruction RES · function blocks TON TOFF TP CTU CTD CTUD ADD SUB MUL DIV MOV EQU NEQ GRT LES GEQ LEQ · parallel: branch: (OR branch block) · element syntax ELEM(tag [, address] [, name="…"])',
     forms: [
       'ladder "Motor Start/Stop"',
       'rung 1 "Seal-in circuit":',
@@ -353,8 +355,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       '  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")',
     ],
     prefer: [
-      "Use uppercase element names: contacts `XIC` `XIO` `ONS` `OSF`; coils `OTE` `OTL` `OTU` `OTN` `RES`; function blocks `TON` `TOFF` `TP` `CTU` `CTD` `CTUD` `ADD` `SUB` `MUL` `DIV` `MOV` `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ`.",
+      "Use uppercase element names: contacts `XIC` `XIO` `ONS` `OSF`; coils `OTE` `OTL` `OTU` `OTN`; reset instruction `RES`; function blocks `TON` `TOFF` `TP` `CTU` `CTD` `CTUD` `ADD` `SUB` `MUL` `DIV` `MOV` `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ`.",
       "Keep the tag as the first argument in parentheses; optional address (second positional) and `name=` follow: `XIC(START_PB, \"IN 1.0\", name=\"Start Button\")`.",
+      "`OTL`/`OTU` draw Allen-Bradley L/U coils; `ONS`/`RES` draw bracketed inline instructions; timer/counter blocks have a ruled header.",
       "Model parallel contacts (OR logic) with an indented `parallel:` block containing two or more `branch:` sub-blocks.",
     ],
     avoid: [
@@ -1155,7 +1158,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'network "Title"',
     mode: "device declarations + links (annotations are optional)",
     keywords:
-      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf · spines: / leaves:',
+      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan database hypervisor nas wireless-bridge container cellular-router satellite-terminal access-control iot-sensor display san olt ont pbx tablet plc ups hmi media-converter pos-terminal patch-panel · aliases: multilayer->l3switch wifi->ap workstation->pc db/dbserver->database · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf · spines: / leaves:',
     forms: [
       'network "Branch office"',
       'site hq "HQ Building" {',

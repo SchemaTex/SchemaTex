@@ -1,0 +1,57 @@
+---
+title: Semaphore mutual exclusion with a firing sequence
+description: Two processes share one semaphore token, laid out left to right; a firing sequence is played from the initial marking so the diagram shows the resulting state and which transition is enabled next.
+diagram: petri
+standard: Murata 1989 / ISO-IEC 15909-1 (place/transition net)
+industry: [software, industrial]
+persona: For the concurrency engineer
+complexity: 2
+tags: [petri, mutual-exclusion, semaphore, fire-sequence, concurrency]
+featured: false
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  # Mutual exclusion: one semaphore token allows exactly one of two critical-section entries at a time.
+  petri "Semaphore Mutual Exclusion"
+    layout: lr
+    place Semaphore *1
+    place ReadyA *1
+    place ReadyB *1
+    place CriticalA
+    place CriticalB
+    transition EnterA
+    transition ExitA
+    transition EnterB
+    transition ExitB
+    ReadyA -> EnterA
+    Semaphore -> EnterA
+    EnterA -> CriticalA
+    CriticalA -> ExitA
+    ExitA -> ReadyA
+    ExitA -> Semaphore
+    ReadyB -> EnterB
+    Semaphore -> EnterB
+    EnterB -> CriticalB
+    CriticalB -> ExitB
+    ExitB -> ReadyB
+    ExitB -> Semaphore
+    fire: EnterA, ExitA, EnterB
+---
+
+## Scenario
+
+Processes A and B each cycle Ready → Enter → Critical → Exit and back. A single Semaphore token is shared between them, so only one process can be in its critical section at a time. The net also replays a short run — A enters and leaves, then B enters — so you see the state after those three steps instead of the starting state.
+
+## Annotation key
+
+- `layout: lr` — lay the net out left to right
+- `place Name *1` — a place holding one token at the start; no `*` means empty
+- `transition Name` — an action that moves tokens
+- `A -> B` — an arc from a place to a transition, or from a transition to a place
+- `fire: EnterA, ExitA, EnterB` — transitions to fire in order, starting from the initial marking
+
+## How to read
+
+The two process cycles mirror each other, with the Semaphore between them feeding both Enter transitions and refilled by both Exit transitions. After the firing sequence, A is back in ReadyA, B holds its token in CriticalB, and the Semaphore is empty. So EnterA cannot fire — it needs the semaphore token — and the only enabled transition is ExitB. No marking ever puts tokens in CriticalA and CriticalB together; that is the mutual-exclusion guarantee.

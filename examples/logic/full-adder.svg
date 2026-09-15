@@ -2,6 +2,9 @@
 <desc>Logic gate diagram with 5 gates, 3 inputs, 2 outputs</desc>
 <defs><style>.schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-logic-gate-body { fill: #ffffff; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-arc { fill: none; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-gap { fill: #ffffff; stroke: none; }
+.schematex-logic-enable-pin { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linecap: square; }
 .schematex-logic-bubble { fill: #ffffff; stroke: #111111; stroke-width: 1.5; }
 .schematex-logic-clock-tri { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linejoin: round; }
 .schematex-logic-wire { stroke: #111111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
@@ -33,15 +36,19 @@
 <circle cx="70" cy="110" r="2.5" class="schematex-logic-junction" data-net="B"/>
 <circle cx="298" cy="95" r="2.5" class="schematex-logic-junction" data-net="s1"/>
 <circle cx="290" cy="250" r="2.5" class="schematex-logic-junction" data-net="Cin"/></g>
-<g class="schematex-logic-gates"><g transform="translate(160, 65)" data-gate-id="s1" data-gate-type="XOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z M 8,60 Q 3,30 8,0" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<g class="schematex-logic-gates"><g transform="translate(160, 65)" data-gate-id="s1" data-gate-type="XOR"><path d="M 6,0 Q 22,30 6,60 L 12,60 Q 28,30 12,0 Z" class="schematex-logic-xor-gap"/>
+<path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
+<path d="M 6,0 Q 22,30 6,60" class="schematex-logic-xor-arc"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">XOR</text></g>
-<g transform="translate(160, 205)" data-gate-id="c1" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<g transform="translate(160, 205)" data-gate-id="c1" data-gate-type="AND"><path d="M 20,0 H 50 A 30 30 0 0 1 50,60 H 20 Z" class="schematex-logic-gate-body"/>
 <text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
-<g transform="translate(320, 65)" data-gate-id="Sum" data-gate-type="XOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z M 8,60 Q 3,30 8,0" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<g transform="translate(320, 65)" data-gate-id="Sum" data-gate-type="XOR"><path d="M 6,0 Q 22,30 6,60 L 12,60 Q 28,30 12,0 Z" class="schematex-logic-xor-gap"/>
+<path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
+<path d="M 6,0 Q 22,30 6,60" class="schematex-logic-xor-arc"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">XOR</text></g>
-<g transform="translate(320, 205)" data-gate-id="c2" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<g transform="translate(320, 205)" data-gate-id="c2" data-gate-type="AND"><path d="M 20,0 H 50 A 30 30 0 0 1 50,60 H 20 Z" class="schematex-logic-gate-body"/>
 <text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
-<g transform="translate(480, 205)" data-gate-id="Cout" data-gate-type="OR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<g transform="translate(480, 205)" data-gate-id="Cout" data-gate-type="OR"><path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">OR</text></g></g>
 <g class="schematex-logic-input-bubbles"></g>
 <g class="schematex-logic-ports"><g transform="translate(20, 65)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">A</text>

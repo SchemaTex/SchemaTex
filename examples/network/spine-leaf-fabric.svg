@@ -7,6 +7,12 @@
 .sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
 .sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
 .sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
 .sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
 .sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
 .sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
@@ -40,84 +46,66 @@
 <g class="sx-net-link-g" data-from="sp2" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="349.94,54 323.83,78 235.71,159 209.6,183"/></g>
 <g class="sx-net-link-g" data-from="sp2" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="349.94,54 351.29,78 355.85,159 357.2,183"/></g>
 <g class="sx-net-link-g" data-from="sp2" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="349.94,54 371.38,78 443.76,159 465.2,183"/></g></g>
-<g class="sx-net-devices"><g class="sx-net-device" data-id="h1" data-kind="server"><g><rect class="sx-net-body" x="46.64" y="291.84" width="30.72" height="40.32" rx="2"/>
-<rect class="sx-net-detail" x="50.64" y="296.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="69.36" cy="300.34" r="1"/>
-<line class="sx-net-glyph-line" x1="53.64" y1="300.34" x2="64.36" y2="300.34"/>
-<rect class="sx-net-detail" x="50.64" y="306.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="69.36" cy="310.34" r="1"/>
-<line class="sx-net-glyph-line" x1="53.64" y1="310.34" x2="64.36" y2="310.34"/>
-<rect class="sx-net-detail" x="50.64" y="316.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="69.36" cy="320.34" r="1"/>
-<line class="sx-net-glyph-line" x1="53.64" y1="320.34" x2="64.36" y2="320.34"/></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="h1" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="45.18" y="290.7" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="50.23" y="298.55" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="50.23" y="311.44" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="70.97" cy="302.47" r="1.4"/>
+<circle class="sx-net-glyph" cx="70.97" cy="315.36" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 51.35 327.13 L 65.36 327.13"/></g></g>
 <text class="sx-net-label" x="62" y="353" text-anchor="middle">h1</text></g>
-<g class="sx-net-device" data-id="h2" data-kind="server"><g><rect class="sx-net-body" x="194.23999999999995" y="291.84" width="30.72" height="40.32" rx="2"/>
-<rect class="sx-net-detail" x="198.23999999999995" y="296.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="216.95999999999995" cy="300.34" r="1"/>
-<line class="sx-net-glyph-line" x1="201.23999999999995" y1="300.34" x2="211.95999999999995" y2="300.34"/>
-<rect class="sx-net-detail" x="198.23999999999995" y="306.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="216.95999999999995" cy="310.34" r="1"/>
-<line class="sx-net-glyph-line" x1="201.23999999999995" y1="310.34" x2="211.95999999999995" y2="310.34"/>
-<rect class="sx-net-detail" x="198.23999999999995" y="316.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="216.95999999999995" cy="320.34" r="1"/>
-<line class="sx-net-glyph-line" x1="201.23999999999995" y1="320.34" x2="211.95999999999995" y2="320.34"/></g>
+<g class="sx-net-device" data-id="h2" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="192.78" y="290.7" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="197.83" y="298.55" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="197.83" y="311.44" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="218.57" cy="302.47" r="1.4"/>
+<circle class="sx-net-glyph" cx="218.57" cy="315.36" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 198.95 327.13 L 212.96 327.13"/></g></g>
 <text class="sx-net-label" x="209.6" y="353" text-anchor="middle">h2</text></g>
-<g class="sx-net-device" data-id="h3" data-kind="server"><g><rect class="sx-net-body" x="449.84" y="291.84" width="30.72" height="40.32" rx="2"/>
-<rect class="sx-net-detail" x="453.84" y="296.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="472.55999999999995" cy="300.34" r="1"/>
-<line class="sx-net-glyph-line" x1="456.84" y1="300.34" x2="467.55999999999995" y2="300.34"/>
-<rect class="sx-net-detail" x="453.84" y="306.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="472.55999999999995" cy="310.34" r="1"/>
-<line class="sx-net-glyph-line" x1="456.84" y1="310.34" x2="467.55999999999995" y2="310.34"/>
-<rect class="sx-net-detail" x="453.84" y="316.84" width="22.72" height="7" rx="0.6"/>
-<circle class="sx-net-glyph" cx="472.55999999999995" cy="320.34" r="1"/>
-<line class="sx-net-glyph-line" x1="456.84" y1="320.34" x2="467.55999999999995" y2="320.34"/></g>
+<g class="sx-net-device" data-id="h3" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="448.38" y="290.7" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="453.43" y="298.55" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="453.43" y="311.44" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="474.17" cy="302.47" r="1.4"/>
+<circle class="sx-net-glyph" cx="474.17" cy="315.36" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 454.55 327.13 L 468.56 327.13"/></g></g>
 <text class="sx-net-label" x="465.2" y="353" text-anchor="middle">h3</text></g>
-<g class="sx-net-device" data-id="sp1" data-kind="l3switch"><g><rect class="sx-net-body" x="168.9" y="42.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="174.9" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="181.9" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="188.9" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="195.9" y="52" width="4" height="5" rx="0.5"/>
-<line class="sx-net-glyph-line" x1="210.22" y1="49.96" x2="220.22" y2="49.96"/><polygon class="sx-net-glyph" points="220.22,49.96 218.03,51.16 218.03,48.76"/>
-<line class="sx-net-glyph-line" x1="220.22" y1="57.96" x2="210.22" y2="57.96"/><polygon class="sx-net-glyph" points="210.22,57.96 212.41,56.76 212.41,59.16"/></g>
+<g class="sx-net-device" data-id="sp1" data-kind="l3switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="167.72" y="43" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="174.53" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="185.01" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="195.49" y="51.38" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 207.54 50.33 L 220.12 50.33 M 217.5 47.71 L 220.12 50.33 L 217.5 52.95 M 220.12 58.72 L 207.54 58.72 M 210.16 56.1 L 207.54 58.72 L 210.16 61.34"/>
+<circle class="sx-net-glyph" cx="177.67" cy="47.19" r="1.31"/></g></g>
 <text class="sx-net-label" x="257.5" y="58" text-anchor="middle">sp1</text></g>
-<g class="sx-net-device" data-id="sp2" data-kind="l3switch"><g><rect class="sx-net-body" x="321.78" y="42.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="327.78" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="334.78" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="341.78" y="52" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="348.78" y="52" width="4" height="5" rx="0.5"/>
-<line class="sx-net-glyph-line" x1="363.1" y1="49.96" x2="373.1" y2="49.96"/><polygon class="sx-net-glyph" points="373.1,49.96 370.91,51.16 370.91,48.76"/>
-<line class="sx-net-glyph-line" x1="373.1" y1="57.96" x2="363.1" y2="57.96"/><polygon class="sx-net-glyph" points="363.1,57.96 365.29,56.76 365.29,59.16"/></g>
+<g class="sx-net-device" data-id="sp2" data-kind="l3switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="320.6" y="43" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="327.41" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="337.89" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="348.37" y="51.38" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 360.42 50.33 L 373 50.33 M 370.38 47.71 L 373 50.33 L 370.38 52.95 M 373 58.72 L 360.42 58.72 M 363.04 56.1 L 360.42 58.72 L 363.04 61.34"/>
+<circle class="sx-net-glyph" cx="330.55" cy="47.19" r="1.31"/></g></g>
 <text class="sx-net-label" x="410.38" y="58" text-anchor="middle">sp2</text></g>
-<g class="sx-net-device" data-id="lf1" data-kind="switch"><g><rect class="sx-net-body" x="33.84" y="171.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="39.84" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="46.84" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="53.84" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="60.84" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="67.84" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="74.84" y="181" width="4" height="5" rx="0.5"/></g>
+<g class="sx-net-device" data-id="lf1" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="32.66" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="39.47" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="49.95" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="60.43" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="70.91" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="84.53" cy="183.52" r="2.1"/></g></g>
 <text class="sx-net-label" x="119.8" y="187" text-anchor="middle">lf1</text></g>
-<g class="sx-net-device" data-id="lf2" data-kind="switch"><g><rect class="sx-net-body" x="181.43999999999997" y="171.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="187.43999999999997" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="194.43999999999997" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="201.43999999999997" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="208.43999999999997" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="215.43999999999997" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="222.43999999999997" y="181" width="4" height="5" rx="0.5"/></g>
+<g class="sx-net-device" data-id="lf2" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="180.26" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="187.07" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="197.55" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="208.03" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="218.51" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="232.13" cy="183.52" r="2.1"/></g></g>
 <text class="sx-net-label" x="267.4" y="187" text-anchor="middle">lf2</text></g>
-<g class="sx-net-device" data-id="lf3" data-kind="switch"><g><rect class="sx-net-body" x="329.03999999999996" y="171.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="335.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="342.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="349.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="356.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="363.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="370.03999999999996" y="181" width="4" height="5" rx="0.5"/></g>
+<g class="sx-net-device" data-id="lf3" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="327.86" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="334.67" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="345.15" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="355.63" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="366.11" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="379.73" cy="183.52" r="2.1"/></g></g>
 <text class="sx-net-label" x="357.2" y="224" text-anchor="middle">lf3</text></g>
-<g class="sx-net-device" data-id="lf4" data-kind="switch"><g><rect class="sx-net-body" x="437.03999999999996" y="171.96" width="56.32" height="22.080000000000002" rx="2"/>
-<rect class="sx-net-glyph" x="443.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="450.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="457.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="464.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="471.03999999999996" y="181" width="4" height="5" rx="0.5"/>
-<rect class="sx-net-glyph" x="478.03999999999996" y="181" width="4" height="5" rx="0.5"/></g>
+<g class="sx-net-device" data-id="lf4" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="435.86" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="442.67" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="453.15" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="463.63" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="474.11" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="487.73" cy="183.52" r="2.1"/></g></g>
 <text class="sx-net-label" x="523" y="187" text-anchor="middle">lf4</text></g></g></g></svg>

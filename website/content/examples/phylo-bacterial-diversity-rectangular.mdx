@@ -1,0 +1,40 @@
+---
+title: Bacterial diversity — rectangular phylogram with bootstrap support
+description: Eight-taxon bacterial phylogram in rectangular layout from Newick/NHX, with bootstrap support on internal branches, three highlighted clades, and a substitutions-per-site scale bar.
+diagram: phylo
+standard: Newick/NHX
+industry: [research, education]
+persona: For the microbiologist
+complexity: 3
+tags: [phylo, rectangular, phylogram, NHX, bootstrap, clade]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Bacterial diversity" [layout: rectangular, mode: phylogram]
+    # Illustrative data for a design reference, not a tree inferred from sequences.
+    newick: "(((Escherichia_coli:0.04,Salmonella_enterica:0.05)[&&NHX:B=99]:0.06,Vibrio_cholerae:0.12)[&&NHX:B=96]:0.12,((Bacillus_subtilis:0.07,Staphylococcus_aureus:0.09)[&&NHX:B=94]:0.05,Listeria_monocytogenes:0.15)[&&NHX:B=98]:0.10,(Mycobacterium_tuberculosis:0.16,Streptomyces_coelicolor:0.18)[&&NHX:B=97]:0.12);"
+    clade Proteobacteria = (Escherichia_coli, Salmonella_enterica, Vibrio_cholerae) [color: "#0f766e", highlight: both]
+    clade Firmicutes = (Bacillus_subtilis, Staphylococcus_aureus, Listeria_monocytogenes) [color: "#2563eb", highlight: both]
+    clade Actinobacteria = (Mycobacterium_tuberculosis, Streptomyces_coelicolor) [color: "#a16207", highlight: both]
+    scale "substitutions/site"
+---
+
+## Scenario
+
+A figure-style tree of eight bacteria in three familiar groups — Proteobacteria, Firmicutes and Actinobacteria — drawn as a rectangular phylogram, the conventional view when branch length matters. The topology, branch lengths and bootstrap values are illustrative and were not inferred from sequence data.
+
+## Annotation key
+
+- `[layout: rectangular, mode: phylogram]` — right-angle branches, with branch length drawn to scale
+- `newick: "..."` — the tree in Newick format; `:0.04` after a name is that branch's length
+- `[&&NHX:B=99]` — NHX metadata on an internal node; `B` is the bootstrap support value
+- `clade Name = (tip, tip, ...)` — groups tips into a named clade
+- `[color: "#0f766e", highlight: both]` — the clade colour, applied to both its branches and a background band
+- `scale "substitutions/site"` — the unit printed on the scale bar
+
+## How to read
+
+Only horizontal distance carries meaning: it is evolutionary change, measured against the scale bar. Vertical spacing just keeps tips apart. Two tips whose paths join close to the right are close relatives — E. coli and Salmonella join first. The number beside an internal branch is its bootstrap support: the share of resampled trees that recover that group, so higher means more trustworthy. The coloured bands mark the three clades.

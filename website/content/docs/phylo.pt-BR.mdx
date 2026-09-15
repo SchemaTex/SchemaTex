@@ -101,8 +101,8 @@ Defina o layout nos colchetes do cabeçalho: `phylo "Title" [layout: rectangular
 
 | Layout | Valor | Descrição |
 |---|---|---|
-| Retangular | `rectangular` | Padrão. Ramos em formato L; raiz à esquerda, folhas à direita |
-| Inclinado | `slanted` | Linhas diagonais do pai para o filho; mais compacto |
+| Retangular | `rectangular` | Ramos em formato L; raiz à esquerda, folhas à direita |
+| Inclinado | `slanted` | Padrão. Linhas diagonais do pai para o filho; mais compacto |
 | Circular | `circular` | Raiz no centro, folhas ao redor da circunferência |
 | Sem raiz | `unrooted` | Radial de ângulo igual; enfatiza distância, não ancestralidade |
 
@@ -220,7 +220,7 @@ Todas as opções vão dentro de `[…]` na linha de cabeçalho `phylo`, ou em u
 
 | Propriedade | Valores | Padrão | Efeito |
 |---|---|---|---|
-| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Layout da árvore |
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `slanted` | Layout da árvore |
 | `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Semântica do comprimento de ramo |
 | `unrooted` | (flag) | — | Equivalente a `layout: unrooted` |
 | `branch-width:` | número | `1.5` | Largura do traço dos ramos |

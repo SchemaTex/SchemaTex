@@ -103,8 +103,8 @@ Set the layout in the header brackets: `phylo "Title" [layout: rectangular]`.
 
 | Layout | Value | Description |
 |---|---|---|
-| Rectangular | `rectangular` | Default. L-shaped branches; root on left, tips on right |
-| Slanted | `slanted` | Diagonal lines from parent to child; more compact |
+| Rectangular | `rectangular` | L-shaped branches; root on left, tips on right |
+| Slanted | `slanted` | Default. Diagonal lines from parent to child; more compact |
 | Circular | `circular` | Root at center, tips around the circumference |
 | Unrooted | `unrooted` | Equal-angle radial; emphasizes distance, not ancestry |
 
@@ -125,7 +125,7 @@ Set the layout in the header brackets: `phylo "Title" [layout: rectangular]`.
   clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
   scale "substitutions/site"`} height={480} />
 
-**Slanted** — diagonal lines from parent to child; more compact than rectangular, same left-to-right reading direction.
+**Slanted (default)** — diagonal lines join parent and child directly. Layout is separate from branch-length semantics: in `phylogram`, horizontal displacement represents distance, not the diagonal line length. Choose `mode: cladogram` for a topology-only triangular tree with aligned tips; choose `layout: rectangular` for elbow branches. Clustering dendrograms retain rectangular connectors.
 
 <Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
   newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
@@ -222,7 +222,7 @@ All options go inside `[…]` on the `phylo` header line, or in a `style […]` 
 
 | Prop | Values | Default | Effect |
 |---|---|---|---|
-| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Tree layout |
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `slanted` | Tree layout |
 | `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Branch length semantics |
 | `unrooted` | (flag) | — | Equivalent to `layout: unrooted` |
 | `branch-width:` | number | `1.5` | Stroke width of branches |
