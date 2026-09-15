@@ -134,3 +134,9 @@ describe("threatmodel parser", () => {
     expect(ast.flows[0]!.label).toBe("登录请求");
   });
 });
+
+
+it("rejects duplicate boundary declarations and deduplicates members within one zone",()=>{
+ expect(()=>parseThreatModel('threatmodel\nprocess A: One\nboundary "Zone" { A }\nboundary "Zone" { A }')).toThrow(/Duplicate trust boundary/);
+ expect(parseThreatModel('threatmodel\nprocess A: One\nboundary "Zone" { A, A }').boundaries[0].members).toEqual(['A']);
+});

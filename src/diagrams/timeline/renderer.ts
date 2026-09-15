@@ -1,6 +1,8 @@
 import type { RenderConfig } from "../../core/types";
 import { svgRoot, group, rect, line, path, text as textEl, title as titleEl, desc as descEl, defs, circle, escapeXml } from "../../core/svg";
-import { resolveTimelineTheme, cssCustomProperties, type ResolvedTheme, type TimelineTokens } from "../../core/theme";
+import { resolveTimelineTheme, type ResolvedTheme, type TimelineTokens } from "../../core/theme";
+import { wrapTextToWidth } from "../../core/text-metrics";
+import { formatDate } from "./dates";
 import { parseTimeline } from "./parser";
 import { layoutTimeline } from "./layout";
 import { resolveSceneTitle } from "../../core/title-scene";
@@ -14,8 +16,6 @@ import type {
 
 type Theme = ResolvedTheme<TimelineTokens>;
 
-const ERA_BAND_HEIGHT = 16;
-const ERA_ROW_GAP = 2;
 
 export function renderTimeline(src: string, config?: RenderConfig): string {
   const ast = parseTimeline(src);
@@ -75,56 +75,42 @@ export function renderTimeline(src: string, config?: RenderConfig): string {
 // ─── Styles ───────────────────────────────────────────────
 
 function styleForTheme(theme: Theme, fontFamily?: string): string {
-  const font = fontFamily ?? "system-ui, -apple-system, sans-serif";
+  const font = fontFamily ?? '"Helvetica Neue", Helvetica, sans-serif';
   return `
-    .st-timeline { ${cssCustomProperties(theme)}
-      --st-axis: ${theme.axis};
-      --st-axis-label: ${theme.axisLabel};
-      --st-era-label: ${theme.eraLabel};
-      --st-lane-stripe: ${theme.laneStripe};
-      --st-marker-ring: ${theme.markerRing};
-      --st-marker-fill: ${theme.markerFill};
-      --st-milestone-fill: ${theme.milestoneFill};
-      --st-pin-shaft: ${theme.pinShaft};
-      --st-card-bg: ${theme.cardBg};
-      --st-card-stroke: ${theme.cardStroke};
-      --st-card-text: ${theme.cardText};
-      --st-legend-bg: ${theme.legendBg};
-      --st-legend-stroke: ${theme.legendStroke};
-      font-family: ${font}; }
-    .st-title { font-size: 16px; font-weight: 600; fill: var(--schematex-text); }
-    .st-axis-line { stroke: var(--st-axis); stroke-width: 1.5; fill: none; }
-    .st-axis-tick { stroke: var(--st-axis); stroke-width: 1; opacity: 0.55; }
-    .st-axis-label { font-size: 11px; fill: var(--st-axis-label); }
+    .st-timeline { font-family: ${font}; }
+    .st-title { font-size: 16px; font-weight: 600; fill: ${theme.text}; }
+    .st-axis-line { stroke: ${theme.axis}; stroke-width: 1.5; fill: none; }
+    .st-axis-tick { stroke: ${theme.axis}; stroke-width: 1; opacity: 0.55; }
+    .st-axis-label { font-size: 11px; fill: ${theme.axisLabel}; }
     .st-era-rect { opacity: ${theme.eraOpacity}; }
     .st-era-strip { opacity: ${theme.eraPlotOpacity}; }
-    .st-era-label { font-size: 11px; font-weight: 500; fill: var(--st-era-label); }
-    .st-event-dot { stroke: var(--st-marker-fill); stroke-width: 1.5; }
-    .st-event-label { font-size: 12px; fill: var(--schematex-text); }
+    .st-era-label { font-size: 11px; font-weight: 500; fill: ${theme.eraLabel}; }
+    .st-event-dot { stroke: ${theme.markerFill}; stroke-width: 1.5; }
+    .st-event-label { font-size: 12px; fill: ${theme.text}; }
     .st-range-bar { opacity: 0.88; }
     .st-range-label { font-size: 11px; fill: #fff; font-weight: 500; }
-    .st-milestone { stroke: var(--st-marker-fill); stroke-width: 2; }
-    .st-milestone-label { font-size: 12px; fill: var(--schematex-text); font-weight: 600; }
-    .st-track-label { font-size: 12px; font-weight: 600; fill: var(--schematex-text); }
-    .st-lane-stripe { fill: var(--st-lane-stripe); opacity: ${theme.laneStripeOpacity}; }
-    .st-callout-line { stroke: var(--st-axis); stroke-width: 0.8; stroke-dasharray: 2 2; opacity: 0.5; fill: none; }
-    .st-callout-text { font-size: 10.5px; fill: var(--schematex-text-muted); }
-    .st-label-leader { stroke: var(--st-axis); stroke-width: 0.75; opacity: 0.35; fill: none; }
+    .st-milestone { stroke: ${theme.markerFill}; stroke-width: 2; }
+    .st-milestone-label { font-size: 12px; fill: ${theme.text}; font-weight: 600; }
+    .st-track-label { font-size: 12px; font-weight: 600; fill: ${theme.text}; }
+    .st-lane-stripe { fill: ${theme.laneStripe}; opacity: ${theme.laneStripeOpacity}; }
+    .st-callout-line { stroke: ${theme.axis}; stroke-width: 0.8; stroke-dasharray: 2 2; opacity: 0.5; fill: none; }
+    .st-callout-text { font-size: 10.5px; fill: ${theme.textMuted}; }
+    .st-label-leader { stroke: ${theme.axis}; stroke-width: 0.75; opacity: 0.35; fill: none; }
     .st-icon { font-size: 14px; }
     /* Gantt */
-    .st-pin-shaft { stroke: var(--st-pin-shaft); stroke-width: 1.25; stroke-dasharray: 3 2; fill: none; }
-    .st-pin-label { font-size: 11.5px; fill: var(--schematex-text); font-weight: 500; }
-    .st-pin-head { stroke: var(--st-marker-fill); stroke-width: 1.5; }
-    .st-lane-label { font-size: 11px; fill: var(--schematex-text-muted); font-weight: 500; }
-    .st-legend-box { fill: var(--st-legend-bg); stroke: var(--st-legend-stroke); stroke-width: 1; }
-    .st-legend-title { font-size: 11px; font-weight: 600; fill: var(--schematex-text-muted); }
-    .st-legend-label { font-size: 11px; fill: var(--schematex-text); }
+    .st-pin-shaft { stroke: ${theme.pinShaft}; stroke-width: 1.25; stroke-dasharray: 3 2; fill: none; }
+    .st-pin-label { font-size: 11.5px; fill: ${theme.text}; font-weight: 500; }
+    .st-pin-head { stroke: ${theme.markerFill}; stroke-width: 1.5; }
+    .st-lane-label { font-size: 11px; fill: ${theme.textMuted}; font-weight: 500; }
+    .st-legend-box { fill: ${theme.legendBg}; stroke: ${theme.legendStroke}; stroke-width: 1; }
+    .st-legend-title { font-size: 11px; font-weight: 600; fill: ${theme.textMuted}; }
+    .st-legend-label { font-size: 11px; fill: ${theme.text}; }
     /* Lollipop */
-    .st-card { fill: var(--st-card-bg); stroke: var(--st-card-stroke); stroke-width: 1; }
-    .st-card-title { font-size: 12px; font-weight: 600; fill: var(--st-card-text); }
-    .st-card-date { font-size: 10.5px; fill: var(--schematex-text-muted); }
+    .st-card { fill: ${theme.cardBg}; stroke: ${theme.cardStroke}; stroke-width: 1; }
+    .st-card-title { font-size: 12px; font-weight: 600; fill: ${theme.cardText}; }
+    .st-card-date { font-size: 10.5px; fill: ${theme.textMuted}; }
     .st-card-icon { font-size: 16px; }
-    .st-stem { stroke: var(--st-axis); stroke-width: 1.25; opacity: 0.55; fill: none; }
+    .st-stem { stroke: ${theme.axis}; stroke-width: 1.25; opacity: 0.55; fill: none; }
     .st-lp-marker-ring { stroke-width: 2.5; }
     .st-lp-marker-core { stroke: none; }
     .sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: ew-resize; }
@@ -175,7 +161,7 @@ function renderNativeGeometry(layout: TimelineLayoutResult, config?: RenderConfi
   };
 
   for (const event of layout.events) {
-    const y = event.y + event.h / 2;
+    const y = event.y + (event.event.kind === "range" ? event.h / 2 : 0);
     add(`handle:event:${event.event.id}:start`, event.x, y, event.event.start, event.event.startSourceRange);
     if (event.event.end && event.event.endSourceRange) {
       add(`handle:event:${event.event.id}:end`, event.x + (event.w ?? 0), y, event.event.end, event.event.endSourceRange);
@@ -188,7 +174,7 @@ function renderNativeGeometry(layout: TimelineLayoutResult, config?: RenderConfi
     add(`handle:event:${card.event.id}:start`, card.x, card.axisY, card.event.start, card.event.startSourceRange);
   }
   for (const era of layout.eras) {
-    const y = (layout.title ? 54 : 40) + era.bandRow * (ERA_BAND_HEIGHT + ERA_ROW_GAP) + ERA_BAND_HEIGHT / 2;
+    const y = (layout.title ? 54 : 40) + era.bandY + era.bandHeight / 2;
     add(`handle:era:${era.era.id}:start`, era.x, y, era.era.start, era.era.startSourceRange);
     add(`handle:era:${era.era.id}:end`, era.x + era.width, y, era.era.end, era.era.endSourceRange);
   }
@@ -214,9 +200,9 @@ function renderEras(layout: TimelineLayoutResult, theme: Theme): string {
   const plotEnd = layout.plotX + layout.plotW;
 
   const items = layout.eras.map((e, i) => {
-    const y = topBase + e.bandRow * (ERA_BAND_HEIGHT + ERA_ROW_GAP);
+    const y = topBase + e.bandY;
     const fill = e.era.color ?? palette[i % palette.length]!;
-    const labelX = e.x + 6;
+    const labelX = e.labelX;
     // Plot strip extends to plot edges for the leftmost/rightmost era on its
     // band row — otherwise cards overhanging the first/last event sit on bare
     // background.
@@ -229,7 +215,7 @@ function renderEras(layout: TimelineLayoutResult, theme: Theme): string {
         x: e.x,
         y,
         width: e.width,
-        height: ERA_BAND_HEIGHT,
+        height: e.bandHeight,
         fill,
         class: "st-era-rect",
         "data-era-id": e.era.id,
@@ -242,10 +228,9 @@ function renderEras(layout: TimelineLayoutResult, theme: Theme): string {
         fill,
         class: "st-era-strip",
       }),
-      textEl(
-        { x: labelX, y: y + 12, class: "st-era-label" },
-        truncate(e.era.label, Math.max(4, Math.floor(e.width / 7))),
-      ),
+      ...e.labelLines.map((label, index) => textEl(
+        { x: labelX, y: y + 13 + index * 13, class: "st-era-label" }, label,
+      )),
     ].join("");
   });
   return group({ class: "st-eras" }, items);
@@ -273,16 +258,23 @@ function renderSwimlane(layout: TimelineLayoutResult, theme: Theme): string {
   parts.push(renderSwimlanePoints(layout, theme));
   parts.push(renderLabels(layout));
   parts.push(renderNotes(layout));
+  parts.push(group({ class: "st-event-dates" }, layout.events.filter(e => e.dateY !== undefined).map(e => {
+    return textEl({ x: e.labelX, y: e.dateY!, "text-anchor": "middle", class: "st-callout-text" },
+      formatDate(e.event.start) + (e.event.end ? ` – ${formatDate(e.event.end)}` : ""));
+  })));
   return parts.join("");
 }
 
 function renderTrackLabels(layout: TimelineLayoutResult): string {
   const items = layout.lanes
     .filter(l => l.label)
-    .map(l => textEl(
-      { x: layout.plotX - 12, y: l.y + l.height / 2 + 4, "text-anchor": "end", class: "st-track-label" },
-      l.label,
-    ));
+    .flatMap(l => {
+      const lines = wrapTextToWidth(l.label, 12, layout.plotX - 32, { fontWeight: 600 });
+      return lines.map((label, i) => textEl(
+        { x: layout.plotX - 12, y: l.y + l.height / 2 + 4 + (i - (lines.length - 1) / 2) * 15,
+          "text-anchor": "end", class: "st-track-label" }, label,
+      ));
+    });
   return group({ class: "st-track-labels" }, items);
 }
 
@@ -320,18 +312,12 @@ function renderSwimlaneRanges(layout: TimelineLayoutResult, theme: Theme): strin
       class: "st-range-bar",
       "data-event-id": ev.event.id,
     }));
-    const w = ev.w ?? 0;
-    if (w >= 60) {
-      items.push(textEl(
-        { x: ev.labelX, y: ev.labelY, "text-anchor": "middle", class: "st-range-label" },
-        truncate(ev.event.label, Math.floor(w / 6)),
-      ));
-    } else if (w > 0) {
-      items.push(textEl(
-        { x: ev.x + w + 4, y: ev.labelY, "text-anchor": "start", class: "st-event-label" },
-        ev.event.label,
-      ));
-    }
+    const inside = ev.labelInside === true;
+    const lines = ev.labelLines ?? [ev.event.label];
+    lines.forEach((label, i) => items.push(textEl(
+      { x: ev.labelX, y: ev.labelY + i * 15, "text-anchor": ev.labelAnchor,
+        class: inside ? "st-range-label" : "st-event-label" }, label,
+    )));
   }
   return group({ class: "st-ranges" }, items);
 }
@@ -385,13 +371,14 @@ function renderLabels(layout: TimelineLayoutResult): string {
     const dy = ev.labelY - ev.y;
     if (Math.abs(dy) > 22) {
       const y1 = dy < 0 ? ev.y - 6 : ev.y + 6;
-      const y2 = dy < 0 ? ev.labelY + 3 : ev.labelY - 10;
-      items.push(line({ x1: ev.x, y1, x2: ev.x, y2, class: "st-label-leader" }));
+      const labelBottom = ev.labelY + ((ev.labelLines?.length ?? 1) - 1) * 15;
+      const y2 = dy < 0 ? labelBottom + 3 : ev.labelY - 10;
+      items.push(line({ x1: ev.x, y1, x2: ev.labelX, y2, class: "st-label-leader" }));
     }
-    items.push(textEl(
-      { x: ev.labelX, y: ev.labelY, "text-anchor": ev.labelAnchor, class: cls },
-      text,
-    ));
+    (ev.labelLines ?? [text]).forEach((label, i) => items.push(textEl(
+      { x: ev.labelX, y: ev.labelY + i * 15, "text-anchor": ev.labelAnchor, class: cls },
+      label,
+    )));
   }
   return group({ class: "st-labels" }, items);
 }
@@ -403,7 +390,7 @@ function renderNotes(layout: TimelineLayoutResult): string {
     const x = ev.x;
     const ny = (ev.noteY ?? ev.y + 18);
     const nx = (ev.noteX ?? x + 10);
-    const wrapped = wrapText(ev.event.note, 46);
+    const wrapped = ev.noteLines ?? wrapText(ev.event.note, 46);
     items.push(path({ d: `M ${x} ${ev.y + 6} Q ${x + 4} ${ny - 4} ${nx} ${ny}`, class: "st-callout-line" }));
     wrapped.forEach((ln, i) => {
       items.push(textEl(

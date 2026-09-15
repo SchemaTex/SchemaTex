@@ -41,7 +41,7 @@ A `SportModule` provides:
 | `resolveNamed?` | football named routes (route tree → polyline shape) |
 | `resolveLandmark?` | named coordinate ("elbow", "near-post") → x,y |
 | `bounds(ast, …)` | crop the field to the play |
-| `drawField(lay, ctx, t)` | the sport's field/court/pitch markings (the surface base, out-of-bounds surround and boundary are drawn by the shared renderer) |
+| `drawField(lay, ctx, t)` | the sport's physical surface, boundary and markings; the shared renderer owns the surrounding viewport |
 | `legend(lay)` | the legend rows for this sport |
 
 The three shipped modules: `football.ts`, `basketball.ts`, `soccer.ts`.
@@ -111,13 +111,16 @@ player <id> <pos> at <x>,<y> label <text>
 
 ## 5. Field / court / pitch markings
 
-Each module draws its standards-correct surface; the shared renderer frames it with an **out-of-bounds surround band**, a rounded **surface base**, and a **boundary line**, then clips the internal markings.
+Each sport module draws its physical surface and boundary markings. The shared renderer supplies the surrounding preview window and clips to it; the window edge is not a playing boundary. Cropped basketball and football views stay open at the crop.
 
-- **Football** — yard lines every 5 yds, yard numbers (counting to the goal when `goal` is set), NFL/NCAA hash marks (`hash nfl|college|none`), line of scrimmage (bold), end-zone band + gold goal line + goalpost when in the red zone (`goal N`), the ball on the LOS.
-- **Basketball** — NBA half-court: lane/paint, free-throw circle (r = 6 ft), backboard + rim, restricted-area arc (r = 4 ft), three-point line (corners at x = ±22 ft + arc r = 23.75 ft), centre circle. Drawn on **light maple hardwood** (never green) with a mid-wood apron.
+- **Football** — yard lines every 5 yds, yard numbers when `goal` or `los` supplies a field reference, NFL/NCAA hash marks (`hash nfl|college|none`), line of scrimmage (gold dashed overlay), end-zone band + gold goal line + goalpost when in the red zone (`goal N`), the ball on the LOS.
+  Physical sidelines stay 53⅓ yards apart; the viewport may extend beyond them. With `los` or `goal`, painted lines follow absolute five-yard marks, even when scrimmage falls between them. The end zone is 10 yards deep and the goalpost crossbar is 18½ feet wide. Yard numerals are diagram annotations, not a reproduction of field-painted typography.
+- **Basketball** — NBA half-court: 16 ft lane/paint extending 19 ft from the baseline (15 ft from the backboard), free-throw circle (r = 6 ft, dashed within the lane), backboard + rim, restricted-area arc (r = 4 ft), three-point line (corners at x = ±22 ft + arc r = 23.75 ft), centre circle. Drawn on **light maple hardwood** (never green) with a mid-wood apron.
 - **Soccer** — IFAB pitch: mowing stripes, halfway line, centre circle (r = 9.15 m) + spot, both penalty areas (16.5 × 40.32 m) + goal areas (5.5 × 18.32 m) + penalty spots (11 m) + penalty arcs (clipped to the part outside the box), goals, and 1 m corner arcs.
 
 ---
+
+Basketball movement to `rim` / `basket` / `hoop` arrives 3 ft before the hoop along the approach direction. Later passes resolve to this receiving position; a subsequent `shot` ends at the actual hoop. Explicit coordinates remain exact. This is a diagrammatic finishing position, not a simulation of a player's jump. Steps include the action name; zero-distance movement is labelled `hold`.
 
 ## 6. Defensive overlays (`defense`)
 
@@ -157,6 +160,8 @@ zone <x>,<y> <rx>,<ry> "label"
 view half|full
 ```
 
+Basketball and soccer actions execute in declaration order: movement updates that player's current location, later passes target that location, and a pass/shot does not move the player. Initial player symbols stay at their starting positions and action numbers show the sequence. A shot at the current goal location is labelled as a finish rather than receiving an invented travel vector. Football routes remain simultaneous assignments from the snap formation; their order does not move players.
+
 Named routes (route tree): `go fly streak vertical slant flat hitch out in dig curl comeback corner flag post wheel cross drag seam`. Run concepts: `dive iso power counter sweep toss draw trap`. CJK quotes (`“…”` `「…」`) are normalised. Labels and coordinates accept landmark refs resolved at layout time.
 
 ---
@@ -175,7 +180,7 @@ Warnings (rendered, non-fatal — the offending move is skipped, the rest of the
 
 ## 9. Theming
 
-`PlaybookTokens` (in `core/theme.ts`) — **default** (broadcast grass green for football/soccer turf; light maple hardwood for basketball; navy ink, red defense, gold goal accents), **monochrome** (print/regulator — shape- and dash-based, no colour), **dark** (night-game turf / dim hardwood).
+`PlaybookTokens` (in `core/theme.ts`) — **default** (muted grass green for football/soccer turf; light maple hardwood for basketball; navy ink, red defense, gold goal accents), **monochrome** (print/regulator — shape- and dash-based, no colour), **dark** (night-game turf / dim hardwood).
 
 **Soccer has no dark variant** (a pitch reads as a daylight surface; `theme: dark` falls back to `default` for soccer). Basketball and football honour all three. The basketball court is **always hardwood, never green** — green is reserved for the grass sports.
 
@@ -194,7 +199,7 @@ Five canonical plays per sport (see `website/content/examples/playbook-*.mdx`):
 ## 11. Deferred (not in v0.1)
 
 - Additional sports (ice hockey, lacrosse, futsal, volleyball, rugby) — additive via new `SportModule`s.
-- Multi-frame / animated plays; sequence numbering of steps.
+- Multi-frame / animated plays; explicit simultaneous groups within a court/pitch sequence.
 - Football: full 11-personnel defensive fits, blitz paths, pass-protection slides; auto-drawn coverage responsibilities.
 - Basketball: full-court sets, transition, BLOB/SLOB inbounds frames, continuity-offense multi-phase.
 - Soccer: set-piece libraries (corner/free-kick routines as presets), pressing-trigger annotations, opponent build-up shapes that spatially agree with our press.

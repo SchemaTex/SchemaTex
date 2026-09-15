@@ -25,6 +25,8 @@ import type {
   ThreatModelAst,
   ThreatModelLayout,
 } from "./types";
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
+import { placeLabel, edgeLabelObstacles, labelOverlap } from "../../core/label-placement";
 import { analyseThreatModel } from "./analysis";
 
 export const TM_CONST = {
@@ -131,41 +133,44 @@ export function layoutThreatModel(ast: ThreatModelAst): ThreatModelLayout {
     byLayer.get(l)!.push(id);
   }
 
-  // ── Assign coordinates ──
+  // A declared trust zone is a spatial container, not an overlay painted across
+  // unrelated nodes. Order zones by the flow-derived layer, keeping their members
+  // together. Without boundaries, retain the flow layers.
+  const columns: string[][] = ast.boundaries.length > 0
+    ? [...ast.boundaries.map(b => [...new Set(b.members)].filter(id => idSet.has(id))),
+      ...ids.filter(id => !ast.boundaries.some(b => b.members.includes(id))).map(id => [id])]
+      .filter(column => column.length > 0)
+      .sort((a, b) => Math.min(...a.map(id => layer.get(id)!)) - Math.min(...b.map(id => layer.get(id)!)))
+    : [...byLayer.values()];
   const nodes: LaidOutNode[] = [];
   const nodeMap = new Map<string, LaidOutNode>();
-  // When trust boundaries exist, each inflates BOUNDARY_PAD + BOUNDARY_HEADER
-  // ABOVE / to the LEFT of its topmost / leftmost member. Reserve that room so a
-  // boundary's red frame + label tab never rides up into the title band or clips
-  // the left edge.
-  const boundaryInset = ast.boundaries.length > 0
-    ? TM_CONST.BOUNDARY_PAD + TM_CONST.BOUNDARY_HEADER
-    : 0;
-  const x0 = TM_CONST.PAD + (ast.boundaries.length > 0 ? TM_CONST.BOUNDARY_PAD : 0);
-  const y0 = TM_CONST.PAD + TM_CONST.TITLE_H + (boundaryInset > 0 ? boundaryInset + TM_CONST.TITLE_GAP : 0);
-
-  for (let l = 0; l <= maxLayer; l++) {
-    const colIds = byLayer.get(l)!;
-    const colX = x0 + l * TM_CONST.COL_GAP;
-    colIds.forEach((id, row) => {
-      const src = ast.nodes.find((n) => n.id === id)!;
-      const sz = sizeOf(src.kind);
-      const cx = colX + TM_CONST.EXTERNAL_W / 2;
-      let cy = y0 + row * TM_CONST.ROW_GAP + sz.h / 2;
-      if (src.kind === "store") cy += TM_CONST.STORE_DROP;
-      const node: LaidOutNode = {
-        ...src,
-        x: cx - sz.w / 2,
-        y: cy - sz.h / 2,
-        w: sz.w,
-        h: sz.h,
-        cx,
-        cy,
-        stride: strideById.get(id)!,
-      };
-      nodes.push(node);
-      nodeMap.set(id, node);
+  const x0 = TM_CONST.PAD + TM_CONST.BOUNDARY_PAD;
+  const y0 = TM_CONST.PAD + TM_CONST.TITLE_H + TM_CONST.BOUNDARY_HEADER + TM_CONST.BOUNDARY_PAD + 24;
+  let columnX = x0;
+  for (const column of columns) {
+    const measured = column.map(id => {
+      const src = ast.nodes.find(n => n.id === id)!;
+      const labelLines = wrapTextToWidth(src.label, 12, src.kind === "process" ? 100 : 140, {fontWeight: 600});
+      const labelWidth = Math.max(...labelLines.map(line => estimateTextWidth(line, 12, {fontWeight: 600})));
+      const base = sizeOf(src.kind);
+      const diameter = Math.max(base.w, Math.hypot(labelWidth, labelLines.length * 15) + 24);
+      return {src, labelLines, w: src.kind === "process" ? diameter : Math.max(base.w, labelWidth + 28),
+        h: src.kind === "process" ? diameter : Math.max(base.h, labelLines.length * 15 + 24)};
     });
+    const boundary = ast.boundaries.find(b => column.some(id => b.members.includes(id)));
+    const headerWidth = boundary ? estimateTextWidth(boundary.name, 10, {fontWeight: 700}) + 16 : 0;
+    const columnWidth = Math.max(headerWidth, ...measured.map(n => n.w));
+    let cursorY = y0;
+    for (const {src, labelLines, w, h} of measured) {
+      const node: LaidOutNode = {...src, labelLines, x: columnX + (columnWidth - w) / 2,
+        y: cursorY, w, h, cx: columnX + columnWidth / 2, cy: cursorY + h / 2,
+        stride: strideById.get(src.id)!};
+      nodes.push(node); nodeMap.set(src.id, node);
+      cursorY += h + 74; // badge, annotation and connection channel
+    }
+    const maxFlowLabel = Math.max(0, ...analysis.flows.filter(f => column.includes(f.source))
+      .map(f => estimateTextWidth(f.label, 10)));
+    columnX += columnWidth + Math.max(100, Math.min(190, maxFlowLabel + 24));
   }
 
   // ── Flow routing (straight center-to-center polyline with a slight elbow) ──
@@ -174,9 +179,10 @@ export function layoutThreatModel(ast: ThreatModelAst): ThreatModelLayout {
     const s = nodeMap.get(f.source);
     const tg = nodeMap.get(f.target);
     if (!s || !tg) continue;
-    const start = edgePoint(s, tg.cx, tg.cy);
-    const end = edgePoint(tg, s.cx, s.cy);
-    const points = [start, end];
+    const points = routeFlow(s, tg, nodes, flows.length);
+    const longest = points.slice(1).map((end, i) => ({start: points[i], end}))
+      .sort((a, b) => Math.hypot(b.end.x-b.start.x,b.end.y-b.start.y)-Math.hypot(a.end.x-a.start.x,a.end.y-a.start.y))[0];
+    const {start, end} = longest;
     flows.push({
       ...f,
       points,
@@ -196,19 +202,37 @@ export function layoutThreatModel(ast: ThreatModelAst): ThreatModelLayout {
       const mn = nodeMap.get(m);
       if (!mn) continue;
       l = Math.min(l, mn.x);
-      t = Math.min(t, mn.y);
+      t = Math.min(t, mn.y - 19);
       r = Math.max(r, mn.x + mn.w);
       bm = Math.max(bm, mn.y + mn.h);
     }
+    for (const flow of flows) {
+      if (!b.members.includes(flow.source) || !b.members.includes(flow.target)) continue;
+      for (const point of flow.points) {
+        l=Math.min(l,point.x); t=Math.min(t,point.y); r=Math.max(r,point.x); bm=Math.max(bm,point.y);
+      }
+    }
     if (!Number.isFinite(l)) continue;
     const p = TM_CONST.BOUNDARY_PAD;
+    const boundaryWidth = Math.max(r-l+p*2, estimateTextWidth(b.name,10,{fontWeight:700})+16);
     boundaries.push({
       name: b.name,
-      x: l - p,
+      x: (l+r-boundaryWidth)/2,
       y: t - p - TM_CONST.BOUNDARY_HEADER,
-      w: r - l + p * 2,
+      w: boundaryWidth,
       h: bm - t + p * 2 + TM_CONST.BOUNDARY_HEADER,
     });
+  }
+
+  // Labels avoid full node/badge bounds, boundary headers, and other labels.
+  const occupied = nodes.map(n => ({x:n.x, y:n.y-19, width:n.w, height:n.h+19}));
+  occupied.push(...boundaries.map(b => ({x:b.x, y:b.y, width:b.w, height:TM_CONST.BOUNDARY_HEADER})));
+  for (const flow of flows) {
+    const otherEdges = flows.filter(f => f !== flow).flatMap(f => edgeLabelObstacles(f.points));
+    const box = placeLabel({x:flow.labelX,y:flow.labelY},
+      {width:estimateTextWidth(flow.label,10)+8,height:16}, [...occupied,...otherEdges], {x:1,y:0});
+    flow.labelX=box.x+box.width/2; flow.labelY=box.y+box.height/2;
+    occupied.push(box);
   }
 
   // ── Canvas extent ──
@@ -223,6 +247,8 @@ export function layoutThreatModel(ast: ThreatModelAst): ThreatModelLayout {
     maxY = Math.max(maxY, b.y + b.h);
   }
   for (const f of flows) {
+    maxX = Math.max(maxX, f.labelX + estimateTextWidth(f.label, 10)/2 + 4);
+    maxY = Math.max(maxY, f.labelY + 10);
     for (const p of f.points) {
       maxX = Math.max(maxX, p.x);
       maxY = Math.max(maxY, p.y);
@@ -250,7 +276,7 @@ function edgePoint(
   const dy = ty - n.cy;
   if (dx === 0 && dy === 0) return { x: n.cx, y: n.cy };
   if (n.kind === "process") {
-    const r = TM_CONST.PROCESS_R;
+    const r = n.w / 2;
     const len = Math.hypot(dx, dy);
     return { x: n.cx + (dx / len) * r, y: n.cy + (dy / len) * r };
   }
@@ -264,3 +290,29 @@ function edgePoint(
 }
 
 export { sizeOf };
+
+/** Prefer a direct connection; detour only when another node/badge blocks it. */
+function routeFlow(a: LaidOutNode, b: LaidOutNode, nodes: LaidOutNode[], index: number): Array<{x:number;y:number}> {
+  const obstacles=nodes.filter(n=>n!==a && n!==b).map(n=>({x:n.x-8,y:n.y-27,width:n.w+16,height:n.h+35}));
+  const candidates = [[edgePoint(a,b.cx,b.cy),edgePoint(b,a.cx,a.cy)]];
+  const channelYs = [...new Set(nodes.flatMap(n=>[n.y-34,n.y+n.h+30]))];
+  for(const y of channelYs) {
+    // Both vertical terminal legs must leave their symbols before turning.
+    // A channel from a shorter neighbor can otherwise lie inside an endpoint.
+    if ([a, b].some(n => y >= n.y - 8 && y <= n.y + n.h + 8)) continue;
+    const p={x:a.cx,y}, q={x:b.cx,y};
+    candidates.push([edgePoint(a,p.x,p.y),p,q,edgePoint(b,q.x,q.y)]);
+  }
+  if(Math.abs(a.cx-b.cx)<1) {
+    for(const sign of [-1,1]) {
+      const x=a.cx+sign*(Math.max(a.w,b.w)/2+30+index*4);
+      candidates.push([edgePoint(a,x,a.cy),{x,y:a.cy},{x,y:b.cy},edgePoint(b,x,b.cy)]);
+    }
+  }
+  const score=(points:Array<{x:number;y:number}>) => {
+    const overlap=edgeLabelObstacles(points).reduce((sum,s)=>sum+obstacles.reduce((n,o)=>n+labelOverlap(s,o),0),0);
+    const length=points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-points[i].x,p.y-points[i].y),0);
+    return overlap*10000+length+points.length*20;
+  };
+  return candidates.sort((a,b)=>score(a)-score(b))[0];
+}

@@ -89,14 +89,15 @@ function parseKV(tokens: string[]): { keys: Record<string, string>; labels: stri
   const keys: Record<string, string> = {};
   const labels: string[] = [];
   const rest: string[] = [];
-  for (const tok of tokens) {
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i]!;
     if (tok.startsWith('"') && tok.endsWith('"')) {
       labels.push(unquote(tok));
     } else if (tok.includes("=")) {
       const idx = tok.indexOf("=");
       const k = tok.slice(0, idx);
       const v = tok.slice(idx + 1);
-      keys[k] = v;
+      keys[k] = v === "" && tokens[i + 1]?.startsWith('"') ? unquote(tokens[++i]!) : v;
     } else {
       rest.push(tok);
     }
@@ -213,9 +214,12 @@ function parseMlLine(tokens: string[], ctx: ParseContext, lineNum: number): DTre
 
   // Impurity number — extract from any of gini/entropy/mse/gain/impurity
   let impurity: number | undefined;
-  for (const impKey of ["gini", "entropy", "mse", "gain", "impurity"]) {
+  let impurityName: DTreeImpurity | undefined;
+  const metrics: DTreeImpurity[] = ["gini", "entropy", "mse", "gain", "impurity"];
+  for (const impKey of metrics) {
     if (k[impKey] !== undefined) {
       impurity = Number(k[impKey]);
+      impurityName = impKey;
       break;
     }
   }
@@ -231,6 +235,7 @@ function parseMlLine(tokens: string[], ctx: ParseContext, lineNum: number): DTre
     samples: k.samples !== undefined ? Number(k.samples) : undefined,
     value,
     impurity,
+    impurityName,
     mlBranch,
     className: k.class,
   };
@@ -281,6 +286,7 @@ function parseTaxonomyLine(tokens: string[], _ctx: ParseContext, lineNum: number
     label: parsed.labels[0] ?? "",
     children: [],
     branchLabel,
+    className: parsed.keys.class,
   };
 }
 
@@ -301,7 +307,7 @@ function attachNodeLabelRange(
 ): DTreeNode {
   if (!node.label) return node;
   const quoted = [...line.text.matchAll(/"[^"]*"/g)];
-  const token = quoted[quoted.length - 1];
+  const token = quoted.find(match => unquote(match[0]) === node.label);
   if (token?.index !== undefined) {
     node.labelSourceRange = range(line.start + token.index, line.start + token.index + token[0].length);
   }

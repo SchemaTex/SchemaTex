@@ -125,6 +125,7 @@ export const soccerModule: SportModule = {
     const parts: string[] = [];
     const ln = (x1: number, y1: number, x2: number, y2: number): string =>
       line({ class: "sx-pb-pitch-line", x1: r2(X(x1)), y1: r2(Y(y1)), x2: r2(X(x2)), y2: r2(Y(y2)) });
+    parts.push(rect({ class: "sx-pb-turf", x: X(0), y: Y(0), width: px(K.L), height: px(K.W) }));
     // stripe bands (mowing) — alternating tints (surface base + boundary drawn by renderer)
     const bands = 10;
     for (let i = 0; i < bands; i++) {
@@ -138,7 +139,7 @@ export const soccerModule: SportModule = {
       const cx = X(cxF), cy = Y(cyF);
       const sx = cxF === 0 ? 1 : -1;
       const sy = cyF === 0 ? 1 : -1;
-      parts.push(path({ class: "sx-pb-pitch-line", fill: "none", d: `M ${r2(cx + sx * cr)} ${r2(cy)} A ${r2(cr)} ${r2(cr)} 0 0 ${q === 1 || q === 2 ? 1 : 0} ${r2(cx)} ${r2(cy + sy * cr)}` }));
+      parts.push(path({ class: "sx-pb-pitch-line", fill: "none", d: `M ${r2(cx + sx * cr)} ${r2(cy)} A ${r2(cr)} ${r2(cr)} 0 0 ${q === 1 || q === 2 ? 0 : 1} ${r2(cx)} ${r2(cy + sy * cr)}` }));
     }
     // halfway line + center circle + spot
     parts.push(ln(52.5, 0, 52.5, K.W));
@@ -163,8 +164,16 @@ export const soccerModule: SportModule = {
       parts.push(path({ class: "sx-pb-pitch-line", fill: "none", d: `M ${r2(X(edgeX))} ${r2(Y(34 - dy))} A ${r2(px(K.circleR))} ${r2(px(K.circleR))} 0 0 ${sweep} ${r2(X(edgeX))} ${r2(Y(34 + dy))}` }));
       // goal (outside the goal line)
       const goalX = gx - sgn * 2.2;
+      // A restrained net distinguishes the goal from another field marking.
+      for (let depth = 0.55; depth < 2.2; depth += 0.55) {
+        parts.push(line({ class: "sx-pb-goalnet", x1: r2(X(gx - sgn * depth)), y1: r2(topY(K.goalHalf)), x2: r2(X(gx - sgn * depth)), y2: r2(Y(34 + K.goalHalf)) }));
+      }
+      for (let across = -K.goalHalf + 0.61; across < K.goalHalf; across += 0.61) {
+        parts.push(line({ class: "sx-pb-goalnet", x1: r2(X(gx)), y1: r2(Y(34 + across)), x2: r2(X(goalX)), y2: r2(Y(34 + across)) }));
+      }
       parts.push(rect({ class: "sx-pb-goalbox", x: r2(X(Math.min(gx, goalX))), y: r2(topY(K.goalHalf)), width: r2(px(2.2)), height: r2(px(2 * K.goalHalf)) }));
     }
+    parts.push(rect({ class: "sx-pb-boundary", x: X(0), y: Y(0), width: px(K.L), height: px(K.W) }));
     void t;
     return group({ class: "sx-pb-field-g" }, parts);
   },

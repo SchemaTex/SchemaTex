@@ -4,6 +4,8 @@
  * Spec: docs/reference/29-USECASE-STANDARD.md §6, §10
  */
 
+import { estimateTextWidth } from "../../core/text-metrics";
+
 import type { RenderConfig } from "../../core/types";
 import {
   svgRoot,
@@ -260,8 +262,7 @@ function renderEdgeLabel(e: UsecaseEdge): string | null {
   const rows = e.label.rows;
   const lineH = 12;
   const totalH = rows.length * lineH;
-  const widest = rows.reduce((m, r) => Math.max(m, r.length), 0);
-  const pillW = widest * 6.0 + 8;
+  const pillW = Math.max(...rows.map(row => estimateTextWidth(row, 10))) + 8;
   const pillH = totalH + 4;
   const startY = e.label.cy - totalH / 2 + 9;
   const accent = e.relation.kind === "extend";

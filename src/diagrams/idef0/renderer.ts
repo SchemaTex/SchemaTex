@@ -100,6 +100,13 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
     );
   }
 
+  inner.push(rect({
+    x: C.MARGIN / 3, y: TITLE.bandH + C.MARGIN / 3,
+    width: layout.width - C.MARGIN * 2 / 3,
+    height: layout.height - C.TITLEBLOCK_H - TITLE.bandH - C.MARGIN / 3,
+    class: "sx-idef0-frame",
+  }));
+
   // Arrows (under boxes so heads sit cleanly at the edge).
   for (const a of layout.arrows) {
     inner.push(renderArrow(a));
@@ -183,7 +190,12 @@ function renderArrow(a: Idef0LayoutArrow): string {
       ...(a.margin ? { "data-margin": "true" } : {}),
       ...(a.arrow.tunneled ? { "data-tunneled": "true" } : {}),
     }),
-    arrowHead(a.head.x, a.head.y, a.head.dir, a.margin),
+    arrowHead(a.head.x, a.head.y,
+      a.arrow.to.kind === "boundary" ? a.head.dir
+        : a.head.dir === "left" ? "right"
+        : a.head.dir === "top" ? "bottom"
+        : a.head.dir === "bottom" ? "top" : "left",
+      a.margin),
   ];
 
   // Label at the open end.
@@ -257,8 +269,8 @@ function arrowHead(x: number, y: number, dir: BoxSide, margin: boolean): string 
 function renderTitleBlock(width: number, height: number, node: string, title: string): string {
   const h = C.TITLEBLOCK_H;
   const y = height - h;
-  const x0 = C.MARGIN / 2;
-  const x1 = width - C.MARGIN / 2;
+  const x0 = C.MARGIN / 3;
+  const x1 = width - C.MARGIN / 3;
   const w = x1 - x0;
   const c1 = x0 + w * 0.22;
   const c2 = x0 + w * 0.78;

@@ -161,9 +161,12 @@ export function parseInfluence(src: string, title: string | undefined): Influenc
 
     let label = "";
     let utility: number | undefined;
+    let deterministic = false;
     for (let k = idIdx; k < tokens.length; k++) {
       const tok = tokens[k]!;
-      if (isQuoted(tok)) {
+      if (tok === "deterministic") {
+        deterministic = true;
+      } else if (isQuoted(tok)) {
         label = unquote(tok);
       } else if (tok.includes("=")) {
         const eq = tok.indexOf("=");
@@ -190,6 +193,7 @@ export function parseInfluence(src: string, title: string | undefined): Influenc
 
     const node: InfluenceNode = { id, kind, label: label || id };
     if (utility !== undefined) node.utility = utility;
+    if (deterministic && kind === "chance") node.deterministic = true;
     nodes.push(node);
     nodeById.set(id, node);
   }

@@ -106,3 +106,40 @@ G --|> C
     expect(a).toBe(b);
   });
 });
+
+it('keeps long include and extend annotations readable without covering ellipses',()=>{
+ const l=layoutUsecase(parseUsecase(`usecase
+system: "Review service"
+actor: Requester
+usecase: "Submit" as Submit
+usecase: "Review" as Review
+usecase: "Escalate" as Escalate
+Requester -- Submit
+Submit ..> Review : <<include>>
+Escalate ..> Submit : <<extend>> [when additional independent review is required]
+`));
+ for(const e of l.edges.filter(e=>e.label))for(const n of l.usecases){
+  const label=e.label!;
+  expect(Math.abs(label.cx-n.cx)>n.rx || Math.abs(label.cy-n.cy)>n.ry).toBe(true);
+ }
+});
+
+it('routes an association past intervening use cases instead of through them',()=>{
+ const l=layoutUsecase(parseUsecase(`usecase
+actor: Reader
+usecase: "First" as First
+usecase: "Middle" as Middle
+usecase: "Final" as Final
+Reader -- First
+Reader -- Final
+First ..> Middle : <<include>>
+Middle ..> Final : <<include>>`));
+ const edge=l.edges.find(e=>e.relation.source==='Reader'&&e.relation.target==='Final')!;
+ const points=[...edge.d.matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(m=>({x:Number(m[1]),y:Number(m[2])}));
+ for(const ellipse of l.usecases.filter(n=>n.usecase.id!=='Final')){
+  for(let i=1;i<points.length;i++)for(let step=0;step<=20;step++){
+   const t=step/20,x=points[i-1].x+(points[i].x-points[i-1].x)*t,y=points[i-1].y+(points[i].y-points[i-1].y)*t;
+   expect(((x-ellipse.cx)/ellipse.rx)**2+((y-ellipse.cy)/ellipse.ry)**2).toBeGreaterThanOrEqual(1);
+  }
+ }
+});

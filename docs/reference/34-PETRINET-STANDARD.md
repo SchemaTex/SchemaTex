@@ -288,9 +288,9 @@ Constants (px):
 ### 5.4 Arc routing
 
 1. Arcs attach to node boundaries (circle edge / bar face), not centers.
-2. **Forward arcs** route straight or with a single orthogonal bend (shared flowchart router).
-3. **Back-edges** (reversed during cycle removal) route as a smooth curve around the outside of the layered band — the characteristic Petri-net feedback loop.
-4. **Weight labels** sit at the arc midpoint, offset `ARC_WEIGHT_OFFSET` perpendicular, drawn **only when weight > 1**.
+2. **Forward arcs** stay straight when clear of other nodes and labels; obstructed arcs use the shared orthogonal obstacle router.
+3. **Back-edges** use orthogonal obstacle routing after final placement, with boundary contacts and escape segments. Node and label clearance is reserved; routing does not guarantee a crossing-free drawing.
+4. **Weight labels** sit beside the longest actual route segment, offset `ARC_WEIGHT_OFFSET`, drawn **only when weight > 1**.
 5. **Arrowhead by arc type**: filled triangle (standard), hollow circle (inhibitor), none (read/test), double/hollow triangle (reset).
 
 ### 5.5 Enabled-transition highlight
@@ -471,7 +471,7 @@ petri "classic"
   T2 -> P4
   P4 -> T1
 ```
-*Assert:* `P4 -> T1` detected as a cycle, reversed for layering, routed as a back-edge curve; T1 enabled (P1, P4 ≥ 1), T2 dead under M₀ (P2 empty); P3 shows 2 dots; no weight labels (all weight 1).
+*Assert:* `P4 -> T1` detected as a cycle, reversed for layering, routed as an orthogonal feedback path; T1 enabled (P1, P4 ≥ 1), T2 dead under M₀ (P2 empty); P3 shows 2 dots; no weight labels (all weight 1).
 
 ### TC-3 — Weights, capacity, timed transition
 ```

@@ -6,8 +6,8 @@
  * (0, 5.25). Rendered un-flipped: baseline + hoop at the top, half-court line
  * at the bottom — the universal coaching view. Spec: 49 §7 (basketball).
  *
- * Geometry per NBA Rule No. 1: lane 16 ft wide × 15 ft (FT line), FT circle
- * r=6 @ (0,15), 3-pt arc r=23.75 from the rim with straight corners at x=±22,
+ * Geometry per NBA Rule No. 1: lane 16 ft wide × 19 ft (FT line), FT circle
+ * r=6 @ (0,19), 3-pt arc r=23.75 from the rim with straight corners at x=±22,
  * restricted-area arc r=4, center circle r=6 @ (0,47).
  */
 
@@ -28,11 +28,11 @@ const K = {
   half: 47,
   rimY: 5.25,
   laneHalf: 8, // NBA lane half-width
-  ftY: 15,
+  ftY: 19,
   ftR: 6,
   threeR: 23.75,
   cornerX: 22,
-  cornerMeetY: 14.2,
+  cornerMeetY: 5.25 + Math.sqrt(23.75 ** 2 - 22 ** 2),
   restrictedR: 4,
   centerR: 6,
   margin: 2.5,
@@ -48,10 +48,10 @@ const LANDMARKS: Record<string, { x: number; y: number }> = {
   rwing: { x: 19, y: 17 }, lwing: { x: -19, y: 17 }, wing: { x: 19, y: 17 },
   rcorner: { x: 22, y: 3 }, lcorner: { x: -22, y: 3 }, corner: { x: 22, y: 3 },
   "rshort-corner": { x: 12, y: 2 }, "lshort-corner": { x: -12, y: 2 },
-  relbow: { x: 8, y: 15 }, lelbow: { x: -8, y: 15 }, elbow: { x: 8, y: 15 },
+  relbow: { x: 8, y: K.ftY }, lelbow: { x: -8, y: K.ftY }, elbow: { x: 8, y: K.ftY },
   rblock: { x: 8, y: 7 }, lblock: { x: -8, y: 7 }, block: { x: 8, y: 7 },
   rdunker: { x: 9, y: 4 }, ldunker: { x: -9, y: 4 },
-  "high-post": { x: 0, y: 15 }, ft: { x: 0, y: 15 }, "free-throw": { x: 0, y: 15 },
+  "high-post": { x: 0, y: K.ftY }, ft: { x: 0, y: K.ftY }, "free-throw": { x: 0, y: K.ftY },
   "rlow-post": { x: 9, y: 8 }, "llow-post": { x: -9, y: 8 },
   rim: { x: 0, y: 5.25 }, basket: { x: 0, y: 5.25 }, hoop: { x: 0, y: 5.25 }, paint: { x: 0, y: 10 },
 };
@@ -142,10 +142,22 @@ export const basketballModule: SportModule = {
   drawField(_lay: PlaybookLayoutResult, ctx: RenderCtx, t: PbTheme): string {
     const parts: string[] = [];
     const X = ctx.X, Y = ctx.Y, px = ctx.px;
+    // The physical boundary is independent of the preview crop.
+    parts.push(rect({ class: "sx-pb-court", x: X(-25), y: Y(0), width: px(K.width), height: px(K.half) }));
+    parts.push(path({ class: "sx-pb-boundary-court", d: `M ${X(-25)} ${Y(K.half)} L ${X(-25)} ${Y(0)} L ${X(25)} ${Y(0)} L ${X(25)} ${Y(K.half)}` }));
+    parts.push(line({ class: "sx-pb-court-line", x1: X(-25), y1: Y(K.half), x2: X(25), y2: Y(K.half) }));
     // paint / lane
+    parts.push(rect({ class: "sx-pb-paint", x: X(-K.laneHalf), y: Y(0), width: px(2 * K.laneHalf), height: px(K.ftY) }));
     parts.push(rect({ class: "sx-pb-court-line", fill: "none", x: r2(X(-K.laneHalf)), y: r2(Y(0)), width: r2(px(2 * K.laneHalf)), height: r2(px(K.ftY)) }));
     // free-throw circle
-    parts.push(circle({ class: "sx-pb-court-line", fill: "none", cx: r2(X(0)), cy: r2(Y(K.ftY)), r: r2(px(K.ftR)) }));
+    for (const inside of [false, true]) parts.push(path({ class: "sx-pb-court-line",
+      ...(inside ? { "stroke-dasharray": "4 4" } : {}),
+      d: `M ${X(-K.ftR)} ${Y(K.ftY)} A ${px(K.ftR)} ${px(K.ftR)} 0 0 ${inside ? 1 : 0} ${X(K.ftR)} ${Y(K.ftY)}` }));
+    for (const side of [-1, 1]) {
+      for (const y of [7, 11, 14]) parts.push(line({ class: "sx-pb-court-line", x1: X(side * K.laneHalf), y1: Y(y), x2: X(side * (K.laneHalf + 0.5)), y2: Y(y) }));
+      parts.push(line({ class: "sx-pb-court-line", x1: X(side * 25), y1: Y(28), x2: X(side * 22), y2: Y(28) }));
+      parts.push(line({ class: "sx-pb-court-line", x1: X(side * K.restrictedR), y1: Y(4), x2: X(side * K.restrictedR), y2: Y(K.rimY) }));
+    }
     // backboard + rim
     parts.push(line({ class: "sx-pb-court-line", x1: r2(X(-3)), y1: r2(Y(4)), x2: r2(X(3)), y2: r2(Y(4)) }));
     parts.push(circle({ class: "sx-pb-rim", fill: "none", cx: r2(X(0)), cy: r2(Y(K.rimY)), r: r2(px(0.75)) }));
@@ -163,7 +175,7 @@ export const basketballModule: SportModule = {
     return group({ class: "sx-pb-field-g" }, parts);
   },
 
-  legend(): LegendItem[] {
+  legend(lay): LegendItem[] {
     return [
       { kind: "offense", label: "Offense (1–5)" },
       { kind: "defense", label: "Defense (X)" },
@@ -171,6 +183,7 @@ export const basketballModule: SportModule = {
       { kind: "pass", label: "Pass" },
       { kind: "dribble", label: "Dribble" },
       { kind: "screen", label: "Screen" },
+      ...(lay.moves.some(move => move.kind === "shot") ? [{ kind: "shot" as const, label: "Shot" }] : []),
     ];
   },
 };

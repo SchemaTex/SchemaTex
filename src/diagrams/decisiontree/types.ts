@@ -49,6 +49,8 @@ export interface DTreeNode {
   /** Classification: array of class counts; regression: single predicted value. */
   value?: number[] | number;
   impurity?: number;
+  /** Metric named on this node (for example mse in a regression tree). */
+  impurityName?: DTreeImpurity;
   /** ML branch direction (true / false). */
   mlBranch?: "true" | "false";
   className?: string;
@@ -72,7 +74,7 @@ export interface DTreeAST {
   branchLabels?: DTreeBranchLabels;
   /** Probability-weighted branch length (decision-mode). */
   branchLengthProb?: boolean;
-  /** Edge visual style. Default: decision→diagonal, ml/taxonomy→orthogonal. */
+  /** Edge visual style. Default: orthogonal. */
   edgeStyle?: DTreeEdgeStyle;
   /** Is this a regression tree (value=number)? */
   regression?: boolean;
@@ -114,10 +116,7 @@ export interface DTreeLayoutResult {
   edgeStyle: DTreeEdgeStyle;
   /** Per-edge label anchor points (for diagonal edges, midpoint of segment). */
   labelAnchors?: Record<string, { x: number; y: number; angle: number }>;
-  /** For decision mode: absolute x where payoff/EV column begins (right of all triangles). */
-  payoffColumnX?: number;
-  /** Per-depth rail position (for orthogonal edges — common elbow y/x so siblings align). */
-  levelRails?: number[];
+
 }
 
 // ─── Influence Diagram (Howard & Matheson 1981/2005) ─────────
@@ -144,6 +143,8 @@ export interface InfluenceNode {
   id: string;
   kind: InfluenceNodeKind;
   label: string;
+  /** A deterministic calculation, drawn with a double oval. */
+  deterministic?: boolean;
   /** Optional utility/payoff annotation on a value node. */
   utility?: number;
 }

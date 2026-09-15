@@ -129,6 +129,11 @@ export interface TimelineEventLayout {
   labelX: number;
   labelY: number;
   labelAnchor: "start" | "middle" | "end";
+  /** Measured text lines; used by swimlane packing and rendering. */
+  labelLines?: string[];
+  labelInside?: boolean;
+  dateY?: number;
+  noteLines?: string[];
   /** Note callout anchor (if note present). */
   noteX?: number;
   noteY?: number;
@@ -140,6 +145,10 @@ export interface TimelineEraLayout {
   width: number;
   /** Era bands can stack vertically at top of chart when they overlap. */
   bandRow: number;
+  bandY: number;
+  labelX: number;
+  bandHeight: number;
+  labelLines: string[];
 }
 
 export interface TimelineLegendItem {

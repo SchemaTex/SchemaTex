@@ -41,22 +41,28 @@ const r2 = (n: number): number => Math.round(n * 100) / 100;
 function buildCss(t: Theme, interactive = false): string {
   return `
 .sx-pb { font-family: ${DEFAULT_FONT_FAMILY}; }
-.sx-pb-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${t.text}; }
+.sx-pb-title { font: ${TITLE.weight} ${TITLE.size}px ${DEFAULT_FONT_FAMILY}; fill: ${t.text}; }
 .sx-pb-field, .sx-pb-turf { fill: ${t.surface}; }
 .sx-pb-court { fill: ${t.courtSurface}; }
+.sx-pb-paint { fill: ${t.courtLine}; fill-opacity: 0.12; }
 .sx-pb-surround { fill: ${t.surround}; }
 .sx-pb-surround-court { fill: ${t.courtSurround}; }
 .sx-pb-boundary { fill: none; stroke: ${t.lineBold}; stroke-width: 2.6; }
 .sx-pb-boundary-court { fill: none; stroke: ${t.courtLine}; stroke-width: 2.6; }
 .sx-pb-stripe { fill: ${t.surfaceAlt}; }
-.sx-pb-yard, .sx-pb-pitch-line, .sx-pb-goalbox { fill: none; stroke: ${t.lineSoft}; stroke-width: 1.4; }
+.sx-pb-yard, .sx-pb-pitch-line { fill: none; stroke: ${t.lineSoft}; stroke-width: 1.4; }
 .sx-pb-court-line { fill: none; stroke: ${t.courtLine}; stroke-width: 1.5; }
 .sx-pb-hash { fill: none; stroke: ${t.lineSoft}; stroke-width: 1.2; }
-.sx-pb-los, .sx-pb-goalline { fill: none; stroke: ${t.lineBold}; stroke-width: 2.4; }
+.sx-pb-goalbox { fill: none; stroke: ${t.lineBold}; stroke-width: 2.2; }
+.sx-pb-goalnet { fill: none; stroke: ${t.lineSoft}; stroke-width: 0.6; }
+.sx-pb-los { fill: none; stroke: ${t.goalAccent}; stroke-width: 1.6; stroke-dasharray: 7 4; }
+.sx-pb-goalline { fill: none; stroke: ${t.lineBold}; stroke-width: 2.4; }
 .sx-pb-goalline { stroke: ${t.goalAccent}; }
 .sx-pb-goalpost { fill: none; stroke: ${t.goalAccent}; stroke-width: 2.4; stroke-linecap: round; }
 .sx-pb-endzone { fill: ${t.endzoneFill}; }
-.sx-pb-yardnum { font: 600 11px sans-serif; fill: ${t.surfaceText}; }
+.sx-pb-yardnum { font: 600 18px sans-serif; fill: ${t.surfaceText}; }
+.sx-pb-shot-double { stroke-width: 5; }
+.sx-pb-shot-gap { fill: none; stroke: ${t.surface}; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
 .sx-pb-rim { stroke: ${t.rim}; stroke-width: 2.4; }
 .sx-pb-pitch-dot { fill: ${t.lineBold}; }
 .sx-pb-zone { fill: ${t.zoneFill}; stroke: ${t.zoneStroke}; stroke-width: 1.3; stroke-dasharray: 5 4; }
@@ -68,6 +74,7 @@ function buildCss(t: Theme, interactive = false): string {
 .sx-pb-move-fill { fill: ${t.moveStroke}; stroke: none; }
 .sx-pb-shot-fill { fill: ${t.shotStroke}; stroke: none; }
 .sx-pb-motion-fill { fill: ${t.motionStroke}; stroke: none; }
+.sx-pb-step { fill: ${t.annotation}; font-size: 11px; font-weight: 600; stroke: ${t.bg}; stroke-width: 3; paint-order: stroke; stroke-linejoin: round; }
 .sx-pb-o { fill: ${t.offenseFill}; stroke: ${t.offenseStroke}; stroke-width: 2; }
 .sx-pb-gk { fill: ${t.gkFill}; stroke: ${t.offenseStroke}; stroke-width: 2; }
 .sx-pb-o-text { font: 700 10.5px sans-serif; fill: ${t.offenseLabel}; }
@@ -186,6 +193,10 @@ function renderMove(
   ctx: RenderCtx,
   options: {
     index: number;
+    sequential: boolean;
+    playerCenters: Array<{ x: number; y: number }>;
+    stepLabels: Array<{ x: number; y: number; width: number }>;
+    labelWidth: number;
     coordinate?: MoveCoordinateRange;
     config?: RenderConfig;
     scale: number;
@@ -194,6 +205,14 @@ function renderMove(
 ): string {
   const pts = mv.points.map((p) => ({ x: ctx.X(p.x), y: ctx.Y(p.y) }));
   const endpoint = pts[pts.length - 1];
+  // Clip to the visible roster symbols. Current movement locations without a
+  // symbol remain exact, so later passes still meet the movement endpoint.
+  for (const [index, adjacent] of [[0, 1], [pts.length - 1, pts.length - 2]]) {
+    const p = pts[index], next = pts[adjacent];
+    if (!p || !next || !options.playerCenters.some(center => Math.hypot(center.x - p.x, center.y - p.y) < 0.1)) continue;
+    const distance = Math.hypot(next.x - p.x, next.y - p.y);
+    if (distance > 24) pts[index] = { x: p.x + (next.x - p.x) / distance * 12, y: p.y + (next.y - p.y) / distance * 12 };
+  }
   const scene = options.config?.__scene;
   const handleSemanticId = options.coordinate && scene
     ? `route:${options.index}:endpoint`
@@ -228,12 +247,37 @@ function renderMove(
     }));
   } else {
     parts.push(path({
-      class: strokeCls,
+      class: `${strokeCls}${mv.style === "double" ? " sx-pb-shot-double" : ""}`,
       d: pts.map((p, i) => `${i === 0 ? "M" : "L"} ${r2(p.x)} ${r2(p.y)}`).join(" "),
       "data-sx-live-edge": scene ? "true" : undefined,
     }));
   }
-  if (mv.end === "arrow") parts.push(arrowHead(pts, headCls));
+  if (mv.style === "double") parts.push(path({ class: "sx-pb-shot-gap",
+    d: pts.map((p, i) => `${i ? "L" : "M"} ${r2(p.x)} ${r2(p.y)}`).join(" ") }));
+  const travel = pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p.x - pts[i]!.x, p.y - pts[i]!.y), 0);
+  if (options.sequential && endpoint) {
+    // Numbers encode action order, including a finish at the current location.
+    // A zero-distance shot is a shooting action, not an invented travel vector.
+    const first = pts[0]!;
+    const second = pts[1] ?? first;
+    const dx = second.x - first.x, dy = second.y - first.y;
+    const length = Math.hypot(dx, dy);
+    const label = `${options.index + 1} ${travel < 0.1 && mv.kind !== "shot" ? "hold" : mv.kind}`;
+    const width = label.length * 6 + 6;
+    const candidates = [0.5, 0.35, 0.65].flatMap(fraction => [14, -14, 24, -24].map(offset => ({
+      x: length > 0.1 ? first.x + dx * fraction - dy / length * (offset + Math.sign(offset) * Math.abs(dy / length) * width / 2) : endpoint.x + (offset > 0 ? 1 : -1) * (width / 2 + 12),
+      y: length > 0.1 ? first.y + dy * fraction + dx / length * (offset + Math.sign(offset) * Math.abs(dy / length) * width / 2) : endpoint.y - Math.abs(offset),
+    })));
+    const collision = (p: { x: number; y: number }): number =>
+      options.playerCenters.filter(c => Math.abs(c.x - p.x) < width / 2 + 13 && Math.abs(c.y - p.y) < 21).length +
+      options.stepLabels.filter(c => Math.abs(c.x - p.x) < (width + c.width) / 2 && Math.abs(c.y - p.y) < 16).length;
+    for (const p of candidates) p.x = Math.max(width / 2 + 18, Math.min(options.labelWidth - width / 2 - 18, p.x));
+    candidates.sort((a, b) => collision(a) - collision(b));
+    const at = candidates[0]!;
+    options.stepLabels.push({ ...at, width });
+    parts.push(textEl({ x: r2(at.x), y: r2(at.y), class: "sx-pb-step", "text-anchor": "middle" }, label));
+  }
+  if (mv.end === "arrow" && travel > 0.1) parts.push(arrowHead(pts, headCls));
   else if (mv.end === "tee") parts.push(teeBar(pts, strokeCls));
   if (handleKey && endpoint) {
     parts.push(circle({
@@ -343,22 +387,25 @@ function legendSwatch(kind: LegendItem["kind"], sport: PlaybookLayoutResult["spo
     case "pass": return `${line({ class: moveCls(sport !== "soccer"), x1: 0, y1: 0, x2: 14, y2: 0 })}${arrow}`;
     case "dribble": return `${path({ class: "sx-pb-move", d: "M0,0 Q3,-4 6,0 T12,0" })}${polygon({ class: "sx-pb-move-fill", points: "20,0 13,-3.5 13,3.5" })}`;
     case "screen": return `${line({ class: "sx-pb-move", x1: 0, y1: 0, x2: 16, y2: 0 })}${line({ class: "sx-pb-move", x1: 16, y1: -5, x2: 16, y2: 5 })}`;
-    case "shot": return `${line({ class: "sx-pb-shot", x1: 0, y1: 0, x2: 14, y2: 0 })}${polygon({ class: "sx-pb-shot-fill", points: "20,0 13,-3.5 13,3.5" })}`;
+    case "shot": return `${sport === "soccer" ? [-2, 2].map(y => line({ class: "sx-pb-shot", x1: 0, y1: y, x2: 14, y2: y })).join("") : line({ class: "sx-pb-shot", x1: 0, y1: 0, x2: 14, y2: 0 })}${polygon({ class: "sx-pb-shot-fill", points: "20,0 13,-3.5 13,3.5" })}`;
     case "motion": return `${line({ class: "sx-pb-motion", x1: 0, y1: 0, x2: 14, y2: 0 })}${polygon({ class: "sx-pb-motion-fill", points: "20,0 13,-3.5 13,3.5" })}`;
     case "zone": return rect({ class: "sx-pb-zone", x: 0, y: -6, width: 18, height: 12, rx: 6 });
     default: return "";
   }
 }
 
-function renderLegend(items: LegendItem[], y: number, sport: PlaybookLayoutResult["sport"]): string {
+function renderLegend(items: LegendItem[], y: number, sport: PlaybookLayoutResult["sport"], width: number): { svg: string; height: number } {
   const parts: string[] = [];
   let cx = 12;
+  let rowY = y;
   for (const it of items) {
-    parts.push(group({ transform: `translate(${r2(cx)},${r2(y)})` }, [legendSwatch(it.kind, sport)]));
-    parts.push(textEl({ class: "sx-pb-legend", x: r2(cx + 26), y: r2(y + 4) }, it.label));
-    cx += 26 + it.label.length * 6.5 + 20;
+    const itemWidth = 26 + it.label.length * 6.5 + 20;
+    if (cx > 12 && cx + itemWidth > width - 12) { cx = 12; rowY += 22; }
+    parts.push(group({ transform: `translate(${r2(cx)},${r2(rowY)})` }, [legendSwatch(it.kind, sport)]));
+    parts.push(textEl({ class: "sx-pb-legend", x: r2(cx + 26), y: r2(rowY + 4) }, it.label));
+    cx += itemWidth;
   }
-  return group({ class: "sx-pb-legend-g" }, parts);
+  return { svg: group({ class: "sx-pb-legend-g" }, parts), height: rowY - y + 30 };
 }
 
 // ─── Main ────────────────────────────────────────────────────────
@@ -380,27 +427,25 @@ export function renderPlaybookLayout(lay: PlaybookLayoutResult, config?: RenderC
   const titleH = TITLE.bandH;
   const annoH = lay.sport === "football" && (lay.down || lay.distance || lay.losYard !== undefined) ? 20 : 0;
   const topH = titleH + annoH;
-  const legendH = 30;
   const EDGE = 16; // out-of-bounds band framing the surface
 
   const fieldW = (b.maxX - b.minX) * scale;
   const fieldH = (b.maxY - b.minY) * scale;
   const W = r2(fieldW + EDGE * 2);
   const fieldTop = topH + EDGE;
-  const H = r2(fieldH + topH + EDGE * 2 + legendH);
+  const legend = renderLegend(mod.legend(lay), fieldH + topH + EDGE * 2 + 18, lay.sport, W);
+  const H = r2(fieldH + topH + EDGE * 2 + legend.height);
   const X = (u: number): number => r2((u - b.minX) * scale + EDGE);
   const Y = (v: number): number => r2(mod.yUp ? (b.maxY - v) * scale + fieldTop : (v - b.minY) * scale + fieldTop);
   const px = (u: number): number => r2(u * scale);
   const ctx: RenderCtx = { X, Y, px };
 
   const isCourt = lay.sport === "basketball";
-  const surfaceCls = isCourt ? "sx-pb-court" : lay.sport === "soccer" ? "sx-pb-turf" : "sx-pb-field";
   const surroundCls = isCourt ? "sx-pb-surround-court" : "sx-pb-surround";
-  const boundaryCls = isCourt ? "sx-pb-boundary-court" : "sx-pb-boundary";
   const fieldRx = 7;
   const surround = rect({ class: surroundCls, x: 2, y: r2(topH), width: r2(W - 4), height: r2(fieldH + EDGE * 2), rx: 12 });
-  const surfaceBase = rect({ class: surfaceCls, x: EDGE, y: r2(fieldTop), width: r2(fieldW), height: r2(fieldH), rx: fieldRx });
-  const boundary = rect({ class: boundaryCls, x: EDGE, y: r2(fieldTop), width: r2(fieldW), height: r2(fieldH), rx: fieldRx });
+  const surfaceBase = rect({ class: surroundCls, x: EDGE, y: r2(fieldTop), width: r2(fieldW), height: r2(fieldH), rx: fieldRx });
+
   const clipId = "sx-pb-clip";
   const clip = el("clipPath", { id: clipId }, [rect({ x: EDGE, y: r2(fieldTop), width: r2(fieldW), height: r2(fieldH), rx: fieldRx })]);
 
@@ -411,8 +456,13 @@ export function renderPlaybookLayout(lay: PlaybookLayoutResult, config?: RenderC
     if (z.label) zones.push(textEl({ class: "sx-pb-zone-text", x: X(z.x), y: r2(Y(z.y) - px(z.ry) + (mod.yUp ? 11 : -4)), "text-anchor": "middle" }, z.label));
   }
   const moveRanges = moveCoordinateRanges(config?.__source);
+  const stepLabels: Array<{ x: number; y: number; width: number }> = [];
   const moves = lay.moves.map((m, index) => renderMove(m, ctx, {
     index,
+    sequential: lay.sport !== "football",
+    stepLabels,
+    labelWidth: W,
+    playerCenters: lay.players.map(player => ({ x: X(player.x), y: Y(player.y) })),
     coordinate: moveRanges[index],
     config,
     scale,
@@ -460,10 +510,9 @@ export function renderPlaybookLayout(lay: PlaybookLayoutResult, config?: RenderC
       field,
       group({ class: "sx-pb-zones", "clip-path": `url(#${clipId})` }, zones),
       group({ class: "sx-pb-moves" }, moves),
-      boundary,
       group({ class: "sx-pb-players" }, players),
       ball,
-      renderLegend(mod.legend(lay), fieldH + topH + EDGE * 2 + 18, lay.sport),
+      legend.svg,
     ]
   );
 }

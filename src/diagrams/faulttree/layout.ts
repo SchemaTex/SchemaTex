@@ -12,6 +12,7 @@
  * centred under it when the parent box is wider) — no overlaps, O(n), stable.
  */
 
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 import { analyseFaultTree } from "./analysis";
 import type {
   FaultTreeAnalysis,
@@ -50,8 +51,6 @@ export const FAULTTREE_CONST = {
   CAP_GAP: 19,
   CAP_LINE_H: 13,
   CUTSET_PAD: 7,
-  /** Overlapping cut-set boxes alternate by this step, capped at ×2 (never balloon). */
-  CUTSET_OFFSET_STEP: 2,
   COND_GAP: 22,
   CANVAS_PAD: 30,
   TITLE_H: 34,
@@ -168,8 +167,11 @@ export function layoutFaultTree(ast: FaultTreeAst): FaultTreeLayoutResult {
   };
   const place = (n: TNode, originX: number): number => {
     if (n.children.length === 0) {
-      n.cx = originX + n.width / 2;
-      return n.width;
+      const event = byId.get(n.eventId)!;
+      const captionWidth = Math.min(C.EVENT_MIN_W, Math.max(estimateTextWidth(event.label ?? "", 11), estimateTextWidth(event.id, 11)));
+      const footprint = Math.max(n.width, captionWidth);
+      n.cx = originX + footprint / 2;
+      return footprint;
     }
     let x = originX;
     for (const c of n.children) {
@@ -285,9 +287,7 @@ export function layoutFaultTree(ast: FaultTreeAst): FaultTreeLayoutResult {
       minX = Math.min(minX, b.minX); minY = Math.min(minY, b.minY);
       maxX = Math.max(maxX, b.maxX); maxY = Math.max(maxY, b.maxY);
     }
-    // Alternate the inset for adjacent boxes so overlapping cut sets stay
-    // distinguishable, but cap it (×2) so a box never balloons over captions.
-    const pad = C.CUTSET_PAD + (idx % 3) * C.CUTSET_OFFSET_STEP;
+    const pad = C.CUTSET_PAD;
     return {
       cutSet: cs,
       index: idx,
@@ -304,12 +304,10 @@ export function layoutFaultTree(ast: FaultTreeAst): FaultTreeLayoutResult {
         for (const inst of instancesByEvent.get(cs.events[0]!) ?? []) {
           cutSetBoxes.push(boxFor([inst], cs, boxIndex++));
         }
-      } else {
-        const reps = cs.events
-          .map((id) => (instancesByEvent.get(id) ?? [])[0])
-          .filter((x): x is FaultTreeLayoutEvent => !!x);
-        if (reps.length > 0) cutSetBoxes.push(boxFor(reps, cs, boxIndex++));
       }
+      // A multi-event cut set is a logical combination, not a spatial region.
+      // Its members can be on unrelated branches; list the combination below.
+
     }
   }
 
@@ -336,7 +334,10 @@ export function layoutFaultTree(ast: FaultTreeAst): FaultTreeLayoutResult {
     if (e.role === "basic" || e.role === "undeveloped" || e.role === "house") {
       const hasLabel = !!e.event.label && e.event.label !== e.event.id;
       const hasProb = ast.analysis.probability && e.event.prob !== undefined;
-      if (hasLabel || hasProb) bump(b.maxX, b.maxY + (hasLabel && hasProb ? C.CAP_GAP + C.CAP_LINE_H + 8 : C.CAP_GAP + 6));
+      const idOutside = estimateTextWidth(e.event.id, 12, { fontWeight: 700 }) > e.width - 8;
+      const captionLines = (idOutside ? wrapTextToWidth(e.event.id, 11, C.EVENT_MIN_W).length : 0)
+        + (hasLabel ? wrapTextToWidth(e.event.label!, 11, C.EVENT_MIN_W).length : 0) + (hasProb ? 1 : 0);
+      if (captionLines) bump(Math.max(b.maxX, e.cx + C.EVENT_MIN_W / 2), b.maxY + C.CAP_GAP + captionLines * C.CAP_LINE_H);
     }
   }
   for (const g of gates) {

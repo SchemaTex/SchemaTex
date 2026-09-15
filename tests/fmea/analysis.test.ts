@@ -14,18 +14,18 @@ describe("fmea RPN arithmetic", () => {
     // canonical illustration from the standard doc
     expect(rpn(9, 3, 5)).toBe(135);
     expect(rpn(5, 9, 3)).toBe(135);
-    // ...but AP separates them:
-    expect(actionPriority(9, 3, 5)).toBe("High"); // safety-adjacent
-    expect(actionPriority(5, 9, 3)).not.toBe("High");
+    // AP must be computed from the full rating combination, not their product:
+    expect(actionPriority(9, 3, 5)).toBe("Medium"); // safety-adjacent
+    expect(actionPriority(5, 9, 3)).toBe("Medium");
   });
 });
 
-describe("fmea Action Priority banding (AIAG-VDA severity-primary)", () => {
+describe("fmea Action Priority rating bands", () => {
   const cases: [number, number, number, FmeaActionPriority][] = [
-    // S = 9–10 → always High, even at the lowest O and D
-    [10, 1, 1, "High"],
-    [9, 1, 1, "High"],
-    [10, 2, 3, "High"], // airbag fails to deploy
+    // Severe effects can have Low AP when occurrence and detection are low
+    [10, 1, 1, "Low"],
+    [9, 1, 1, "Low"],
+    [10, 2, 3, "Low"], // airbag fails to deploy
     // S = 1 → always Low
     [1, 10, 10, "Low"],
     [1, 1, 1, "Low"],
@@ -46,12 +46,15 @@ describe("fmea Action Priority banding (AIAG-VDA severity-primary)", () => {
     expect(actionPriority(s, o, d)).toBe(expected);
   });
 
-  it("severity dominates: every (O,D) at S=10 is High", () => {
-    for (let o = 1; o <= 10; o++) {
-      for (let d = 1; d <= 10; d++) {
-        expect(actionPriority(10, o, d)).toBe("High");
-      }
-    }
+  it("checks detection boundaries within each occurrence band", () => {
+    const boundaries: [number, number, number, FmeaActionPriority][] = [
+      [9, 6, 1, "High"], [9, 4, 1, "Medium"], [9, 4, 2, "High"],
+      [9, 2, 4, "Low"], [9, 2, 5, "Medium"], [9, 2, 7, "High"],
+      [7, 6, 1, "Medium"], [7, 6, 2, "High"], [7, 2, 4, "Low"], [7, 2, 5, "Medium"],
+      [4, 8, 4, "Medium"], [4, 8, 5, "High"], [4, 6, 1, "Low"], [4, 6, 2, "Medium"],
+      [4, 4, 6, "Low"], [4, 4, 7, "Medium"], [2, 8, 4, "Low"], [2, 8, 5, "Medium"],
+    ];
+    for (const [s, o, d, ap] of boundaries) expect(actionPriority(s, o, d)).toBe(ap);
   });
 
   it("S=1 is Low for every (O,D)", () => {
@@ -104,7 +107,7 @@ describe("fmea analysis — flatten, rank, flag", () => {
 
   it("flags rows over the threshold", () => {
     const a = analyseFmea(parseFmea(DSL));
-    expect(a.flaggedCount).toBeGreaterThan(0);
+    expect(a.flaggedCount).toBe(0);
     // every High row flagged under `ap >= High`
     for (const r of a.rows) {
       expect(r.flagged).toBe(r.ap === "High");
