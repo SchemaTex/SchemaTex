@@ -92,7 +92,7 @@ Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ Layout
                              (sociogram: circular/force-directed)
                              (timing: row-based trivial)
                              (logic gate: DAG topo-sort layers)
-                             (circuit: DSL-positional, no solver)
+                             (circuit: netlist topology + optional functional groups, automatic placement/routing)
                              (block: fixed L-R + feedback route)
                              (ladder: fixed power-rail per rung)
                              (sld: top-down voltage hierarchy)
@@ -121,6 +121,15 @@ interface DiagramPlugin {
 - `schematex/browser` — `renderToElement()` + `renderToContainer()`（需要 DOM）
 - `schematex/react` — `<SchematexDiagram dsl="..." />` React 组件（需要 React ≥18）
 - `schematex/export` — `svgToPngBlob()` + `downloadBlob()` + `printSvgAsPdf()`（浏览器 Canvas）
+
+---
+
+## Agent authoring guidance
+
+- `getSyntax(type)` returns the compact generation profile from `src/ai/profiles.ts`: one complete copyable pattern plus vocabulary and repair rules. Keep alternative modes out of the same pattern.
+- `getSyntax(type, { detail: "reference" })` returns the English website reference from `website/content/docs/*.mdx`, compiled into `src/ai/_generated.ts` by `npm run build:ai`. Editing only this directory's standards documents does not update agent reference text.
+- MCP and AI SDK adapters share these tools. After changing DSL semantics, update the profile, website reference and published examples that actually changed, then regenerate AI content. Appearance-only improvements do not require extra DSL settings.
+- Validate copyable patterns through the public `validateDsl` path. This catches broken authoring guidance; it does not measure an LLM's first-attempt success rate or visual quality.
 
 ---
 
@@ -171,7 +180,7 @@ schematex/
 │   │   │  ── Electrical Engineering Diagrams ──
 │   │   ├── 6.0-timing.md            # Digital timing diagram
 │   │   ├── 7.0-logic-gate.md        # Logic gate + DAG layout
-│   │   ├── 8.0-circuit-schematic.md # Positional DSL + component library
+│   │   ├── 8.0-circuit-schematic.md # Netlist DSL + semantic groups + component library
 │   │   ├── 9.0-block-diagram.md     # Control systems + feedback routing
 │   │   ├── 10.0-ladder-logic.md     # PLC ladder + function blocks
 │   │   ├── 11.0-single-line.md      # Power SLD + voltage hierarchy

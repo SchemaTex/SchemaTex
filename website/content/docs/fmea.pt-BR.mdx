@@ -7,7 +7,7 @@ description: Análise de Modos de Falha e Efeitos — o engine calcula o RPN e a
 
 **FMEA** (Failure Mode and Effects Analysis — Análise de Modos de Falha e Efeitos) é o método proativo de confiabilidade mais amplamente usado na manufatura: para cada parte de um sistema, lista-se como ela pode falhar (**modos de falha**), o que cada falha causa (**efeitos**), por que acontece (**causas**) e como é detectada (**controles**). Cada linha é avaliada em três escalas de 1 a 10 — **Severidade**, **Ocorrência**, **Detecção** — e priorizada. Padronizado pelo **AIAG-VDA FMEA Handbook (2019)** e pela **IEC 60812**.
 
-O diferencial do Schematex é que o engine **calcula a prioridade**, não apenas a tabela. Ele achata a cadeia de falhas em uma linha de planilha por (item, modo, causa), calcula **RPN = S × O × D** e — crucialmente — a **Prioridade de Ação** AIAG-VDA (faixa com severidade como eixo primário), que deliberadamente corrige o bug que uma ordenação por RPN bruto introduz: uma falha de airbag com S10·O2·D3 é *Alta* mesmo que seu RPN (60) pareça baixo.
+O motor calcula **RPN = S × O × D** e **Action Priority (AP)** por linha. AP depende dos três valores, não apenas do RPN. Na tabela implementada, S10·O2·D3 resulta em AP Low e RPN 60; AP Low não significa baixa severidade.
 
 <Playground initial={`fmea "Brake system DFMEA"
   type: design
@@ -65,7 +65,7 @@ Este é o diferencial. A partir do AST aninhado, o engine:
 
 1. **Achata** para uma linha por (item, modo, causa); a pior severidade de efeito do modo governa cada linha desse modo.
 2. **RPN = S × O × D** (1–1000).
-3. **Prioridade de Ação** pela estrutura de faixas AIAG-VDA — **Severidade é o eixo primário**, Ocorrência em segundo, Detecção em terceiro. S = 9–10 (segurança/regulatório) é Alta para *toda* O e D; severidade média degrada Alta→Média→Baixa conforme a Ocorrência diminui.
+3. **Action Priority** usa a tabela S/O/D de DFMEA/PFMEA. Severidade 9–10 não significa automaticamente High: ocorrência e detecção também determinam o resultado.
 4. **Ordena** pela chave escolhida. Para `ap`: Alta > Média > Baixa, com desempate por Severidade e depois RPN — *nunca* RPN sozinho, o que reintroduziria o bug que a AP foi projetada para corrigir.
 5. **Destaca** linhas acima do limite.
 
@@ -112,7 +112,7 @@ As classificações devem ser inteiros de 1 a 10; a cadeia de falhas deve aninha
 
 ## 6. Conformidade com o padrão
 
-A cadeia de falhas e as escalas de Severidade/Ocorrência/Detecção seguem o AIAG-VDA FMEA Handbook (2019) e a IEC 60812. A Prioridade de Ação implementa a *estrutura* de faixas publicada (severidade como eixo primário), não a tabela verbatim de 1000 células (paga). O RPN permanece disponível via `rank: rpn` para planilhas legadas.
+O motor usa a tabela S/O/D de DFMEA/PFMEA para AP. A tabela separada de severidade/frequência/monitoramento de FMEA-MSR não está implementada. RPN continua disponível via `rank: rpn`.
 
 ## 7. Roadmap
 

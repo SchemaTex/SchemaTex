@@ -116,11 +116,15 @@ describe("getSyntax", () => {
     expect(() => getSyntax("nonexistent")).toThrow(/Unknown diagram type/);
   });
 
-  it("canonical syntax stays on the generation profile by default", () => {
+  it("canonical copyable patterns validate without missing declarations", () => {
     for (const entry of listDiagrams()) {
       const { syntax } = getSyntax(entry.type);
       expect(syntax.detail).toBe("canonical");
-      expect(syntax.content.trim()).not.toBe("");
+      const pattern = syntax.content.split("## Copyable pattern\n\n")[1]
+        ?.split("\n\n")[0]?.split("\n").map((line) => line.slice(4)).join("\n");
+      expect(pattern, entry.type).toBeTruthy();
+      const result = validateDsl(entry.type, pattern ?? "");
+      expect(result, entry.type).toMatchObject({ ok: true, status: "valid" });
     }
   });
 

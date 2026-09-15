@@ -56,7 +56,7 @@ export interface GitGraphAst {
   showBranches: boolean;
   /** Draw commit ids below dots (Mermaid `showCommitLabel`, default true). */
   showCommitLabel: boolean;
-  /** Rotate commit-id labels ~45° (Mermaid `rotateCommitLabel`, default true). */
+  /** Rotate commit-id labels ~45° (Mermaid `rotateCommitLabel`, default false). */
   rotateCommitLabel: boolean;
   title?: string;
   operations: GitOperation[];

@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reject malformed phylogenetic trees and retain domain semantics such as pedigree twins and stillbirth.
 - Share quoted-prefix parsing across five parsers and preserve literal comment markers inside smart/escaped quotes.
 - Replace the previous approximate FMEA action-priority bands with the documented S/O/D matrix.
+- Repair incomplete agent copyable patterns and keep alternative modes in separate documents. Align FMEA reference guidance with the implemented S/O/D lookup.
 
 ### Maintenance
 - Remove obsolete review tools and tests that freeze SVG artwork hashes; retain semantic and terminal-connectivity checks.
