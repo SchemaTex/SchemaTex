@@ -1,8 +1,8 @@
 {
   "id": "epc-claims",
   "type": "epc",
-  "title": "Claims",
-  "goal": "A practitioner can read the claims artefact at a glance.",
+  "title": "Insurance claim handling",
+  "goal": "A practitioner can read this event-driven process chain at a glance: Insurance claim handling.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -33,8 +33,45 @@
   "split": "holdout",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: Image 2 clearly depicts the claims scenario using a complete, connected event-driven process chain, whereas Image 1 substitutes a generic request/service workflow and omits registration and the shared closure sequence."
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the epc exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: a downward arrow visibly connects Payout approved to the AND split, which branches to Pay claimant and Release reserve; the branches join at the lower AND connector before Claim settled. The first review incorrectly reported this visible arrow as missing.",
+      "model": "gpt-5.6-luna + Codex visual verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:06:07.244Z",
+      "targetHash": "5ab72839539a",
+      "sourceHash": "5eca6afc71b8",
+      "exemplarHash": "293804276dc2",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title “Insurance claim handling” is prominent and identifies the scenario."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The diagram uses EPC-style event hexagons, function rectangles, and XOR/AND connector symbols in a connected process."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The continuous covered-claim branch runs through Calculate payout, Payout approved, the AND split, both settlement functions, the AND join and Claim settled; events and functions retain distinct hexagonal/rounded rectangular shapes."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The visible event, function, and title labels are legible and attached to their shapes."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "The continuous covered-claim branch runs through Calculate payout, Payout approved, the AND split, both settlement functions, the AND join and Claim settled; events and functions retain distinct hexagonal/rounded rectangular shapes."
+        }
+      ]
+    }
   }
 }

@@ -1,27 +1,283 @@
 {
   "bpmn": [
-    { "id": "collaboration", "label": "Collaboration", "about": "Two or more pools exchanging message flows." },
-    { "id": "single-pool", "label": "Single pool", "about": "One pool divided into lanes, with no message flows." }
+    {
+      "id": "collaboration",
+      "label": "Collaboration",
+      "about": "Two or more pools exchanging message flows."
+    },
+    {
+      "id": "single-pool",
+      "label": "Single pool",
+      "about": "One pool divided into lanes, with no message flows."
+    }
   ],
   "comparison": [
-    { "id": "tchart", "label": "T-chart", "about": "Two or more labelled columns of points." },
-    { "id": "pros-cons", "label": "Pros and cons", "about": "A question, with its pros in one column and its cons in the other." },
-    { "id": "matrix", "label": "Matrix", "about": "Options across, criteria down; each cell is text or yes / partial / no." },
-    { "id": "decision", "label": "Decision", "about": "Weighted scores; the engine computes totals, ranks and the winner." },
-    { "id": "double-bubble", "label": "Double bubble", "about": "Two subjects, what they share between them, what is unique outside." }
+    {
+      "id": "tchart",
+      "label": "T-chart",
+      "about": "Two or more labelled columns of points."
+    },
+    {
+      "id": "pros-cons",
+      "label": "Pros and cons",
+      "about": "A question, with its pros in one column and its cons in the other."
+    },
+    {
+      "id": "matrix",
+      "label": "Matrix",
+      "about": "Options across, criteria down; each cell is text or yes / partial / no."
+    },
+    {
+      "id": "decision",
+      "label": "Decision",
+      "about": "Weighted scores; the engine computes totals, ranks and the winner."
+    },
+    {
+      "id": "double-bubble",
+      "label": "Double bubble",
+      "about": "Two subjects, what they share between them, what is unique outside."
+    }
+  ],
+  "decisiontree": [
+    {
+      "id": "taxonomy",
+      "label": "Question tree",
+      "about": "Yes/no questions that lead to a classification or a next step, with no probabilities or payoffs. The default when the header has no suffix."
+    },
+    {
+      "id": "decision",
+      "label": "Decision analysis",
+      "about": "Decision and chance nodes with probabilities and payoffs, rolled back to expected values. Header `decisiontree:decision`."
+    },
+    {
+      "id": "ml",
+      "label": "Classifier tree",
+      "about": "A trained model's splits and leaf classes with sample counts. Header `decisiontree:ml`."
+    },
+    {
+      "id": "influence",
+      "label": "Influence diagram",
+      "about": "Decision, chance and value nodes joined by influence arcs, drawn as a network rather than a tree. Header `decisiontree:influence`."
+    }
+  ],
+  "evacuation": [
+    {
+      "id": "iso",
+      "label": "ISO 23601",
+      "about": "ISO 7010 safe-condition and fire-equipment symbols with the ISO legend. The default."
+    },
+    {
+      "id": "nfpa",
+      "label": "NFPA 170",
+      "about": "US fire-safety symbols and NFPA legend conventions."
+    },
+    {
+      "id": "uae",
+      "label": "UAE Civil Defence",
+      "about": "UAE Civil Defence plan symbols and its required legend."
+    }
+  ],
+  "gitgraph": [
+    {
+      "id": "horizontal",
+      "label": "Horizontal",
+      "about": "Time runs left to right with one lane per branch, as in the Pro Git book, Atlassian tutorials and Mermaid. The default.",
+      "default": true
+    },
+    {
+      "id": "vertical",
+      "label": "Vertical",
+      "about": "Newest commit at the top, one row per commit with its message beside it, as in git log --graph and desktop Git clients (`gitgraph BT`)."
+    }
+  ],
+  "logic": [
+    {
+      "id": "ansi",
+      "label": "ANSI / IEEE 91 shapes",
+      "about": "Distinctive gate outlines: D-shaped AND, curved OR, triangle buffers. The default."
+    },
+    {
+      "id": "iec",
+      "label": "IEC 60617 rectangles",
+      "about": "Every gate a rectangle with its function symbol (&, \u22651, =1) inside."
+    }
+  ],
+  "matrix": [
+    {
+      "id": "quadrant",
+      "label": "Quadrant",
+      "about": "Items placed on two axes into named quadrants: BCG, Eisenhower, impact\u2013effort, stakeholder maps."
+    },
+    {
+      "id": "heatmap",
+      "label": "Heatmap",
+      "about": "A scored grid coloured by value, such as a 5\u00d75 risk matrix."
+    },
+    {
+      "id": "correlation",
+      "label": "Correlation matrix",
+      "about": "A symmetric grid of pairwise relationships among one set of items."
+    },
+    {
+      "id": "sipoc",
+      "label": "SIPOC",
+      "about": "Suppliers, inputs, process, outputs and customers in five columns."
+    },
+    {
+      "id": "qfd",
+      "label": "House of quality",
+      "about": "Customer requirements against technical characteristics in a QFD relationship grid."
+    },
+    {
+      "id": "punnett",
+      "label": "Punnett square",
+      "about": "Parental alleles along two edges and offspring genotypes in the cells."
+    }
+  ],
+  "mindmap": [
+    {
+      "id": "map",
+      "label": "Radial map",
+      "about": "The root in the centre with branches fanning out on both sides. The default."
+    },
+    {
+      "id": "logic-right",
+      "label": "Logic chart",
+      "about": "The root on the left and a tidy tree growing to the right; `%% style: driver` draws a driver diagram the same way."
+    },
+    {
+      "id": "futureswheel",
+      "label": "Futures wheel",
+      "about": "Consequences in concentric rings around a central change, one ring per order of effect."
+    }
+  ],
+  "orgchart": [
+    {
+      "id": "tree",
+      "label": "Tree",
+      "about": "Boxes in a reporting hierarchy joined by connector lines. The default."
+    },
+    {
+      "id": "list",
+      "label": "Directory list",
+      "about": "The same hierarchy as a compact indented list (`layout: list`)."
+    }
   ],
   "pert": [
-    { "id": "network", "label": "Network", "about": "Activity-on-node boxes ranked by longest path." },
-    { "id": "timescaled", "label": "Time-scaled", "about": "Boxes placed on a time axis at their early start." },
-    { "id": "gantt", "label": "Gantt", "about": "Calendar bars placed from the computed schedule." }
+    {
+      "id": "network",
+      "label": "Network",
+      "about": "Activity-on-node boxes ranked by longest path."
+    },
+    {
+      "id": "aoa",
+      "label": "Activity on arrow",
+      "about": "Activities drawn as arrows between numbered event circles, with dashed dummy arcs where dependencies need them (`layout: aoa`)."
+    },
+    {
+      "id": "timescaled",
+      "label": "Time-scaled",
+      "about": "Boxes placed on a time axis at their early start."
+    },
+    {
+      "id": "gantt",
+      "label": "Gantt",
+      "about": "Calendar bars placed from the computed schedule."
+    }
   ],
   "playbook": [
-    { "id": "football", "label": "Football", "about": "American football on a yard-lined field." },
-    { "id": "basketball", "label": "Basketball", "about": "Half court with rim, elbow, wing and corner landmarks." },
-    { "id": "soccer", "label": "Soccer", "about": "Pitch with penalty areas, runs and passes." }
+    {
+      "id": "football",
+      "label": "Football",
+      "about": "American football on a yard-lined field."
+    },
+    {
+      "id": "basketball",
+      "label": "Basketball",
+      "about": "Half court with rim, elbow, wing and corner landmarks."
+    },
+    {
+      "id": "soccer",
+      "label": "Soccer",
+      "about": "Pitch with penalty areas, runs and passes."
+    }
   ],
   "prisma": [
-    { "id": "single", "label": "Single pipeline", "about": "Databases and registers only." },
-    { "id": "dual", "label": "Dual pipeline", "about": "A second column for records found by other methods." }
+    {
+      "id": "single",
+      "label": "Single pipeline",
+      "about": "Databases and registers only."
+    },
+    {
+      "id": "dual",
+      "label": "Dual pipeline",
+      "about": "A second column for records found by other methods."
+    }
+  ],
+  "sld": [
+    {
+      "id": "ansi",
+      "label": "ANSI / IEEE 315 symbols",
+      "about": "North American one-line symbols for breakers, transformers and switches."
+    },
+    {
+      "id": "iec",
+      "label": "IEC 60617 symbols",
+      "about": "IEC one-line symbols, also used by the ABNT NBR 5410 and AS/NZS 3000 profiles."
+    }
+  ],
+  "timeline": [
+    {
+      "id": "swimlane",
+      "label": "Swimlane",
+      "about": "Events on one time axis, grouped into horizontal tracks. The default."
+    },
+    {
+      "id": "gantt",
+      "label": "Gantt bars",
+      "about": "Each item a bar from its start to its end date on its own row; dates are typed, not computed (for a computed schedule see pert)."
+    },
+    {
+      "id": "lollipop",
+      "label": "Lollipop",
+      "about": "Point events on stems above and below a single axis line."
+    }
+  ],
+  "venn": [
+    {
+      "id": "venn",
+      "label": "Venn",
+      "about": "Every combination of sets drawn as an overlap region, whether or not it holds anything."
+    },
+    {
+      "id": "euler",
+      "label": "Euler",
+      "about": "Only the relations that exist: subsets nest inside their superset and disjoint sets stand apart."
+    }
+  ],
+  "welding": [
+    {
+      "id": "aws",
+      "label": "AWS A2.4 / ISO 2553 system B",
+      "about": "A single solid reference line: arrow-side symbols below it, other-side symbols above."
+    },
+    {
+      "id": "iso-a",
+      "label": "ISO 2553 system A",
+      "about": "A solid reference line paired with a dashed identification line that carries the other-side symbol."
+    }
+  ],
+  "phylo": [
+    {
+      "id": "slanted",
+      "label": "Slanted (default)",
+      "about": "Diagonal branches meet at each ancestor. The default layout; phylograms preserve horizontal distances and cladograms align tips.",
+      "default": true
+    },
+    {
+      "id": "rectangular",
+      "label": "Rectangular",
+      "about": "Elbow branches with vertical connectors. Supports distance trees, time trees and clustering dendrograms."
+    }
   ]
 }

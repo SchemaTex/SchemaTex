@@ -1,8 +1,9 @@
 {
   "id": "evacuation-school-wing",
   "type": "evacuation",
-  "title": "School Wing",
-  "goal": "A practitioner can read the school wing artefact at a glance.",
+  "variant": "iso",
+  "title": "Science wing escape plan",
+  "goal": "A practitioner can read this escape plan at a glance: Science wing escape plan.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +31,48 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents the Science wing escape plan with a central YOU ARE HERE marker, two distinct green routes leading in opposite directions to separately marked west and east exits, legible room and safety labels, and a complete legend. No material visible defect or unintended connection is apparent.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:46.312Z",
+      "targetHash": "358a9eb76bc7",
+      "sourceHash": "a30f7cf56576",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "A prominent blue YOU ARE HERE marker is visible in the corridor; the right-side legend is visible; both corridor ends have green final-exit symbols and EXIT labels."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The primary route uses right-pointing arrows from the marker to the east exit, while the alternative route uses left-pointing arrows from the marker to the west exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The continuous green corridor route and directional arrowheads make both evacuation paths immediately traceable from the marker to their exits."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The plan title, Classroom 1–3, Science Lab, Library, CORRIDOR, YOU ARE HERE, EXIT, ASSEMBLY POINT, ABC extinguisher marking, and legend entries are visibly legible and associated with the correct symbols."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Routes remain confined to the corridor and terminate visibly at the two exit symbols; doors, the library opening, safety equipment, and assembly point do not imply unintended route connections."
+        }
+      ]
+    }
+  }
 }

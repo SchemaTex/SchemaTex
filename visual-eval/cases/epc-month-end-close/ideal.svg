@@ -1,43 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1060" viewBox="0 0 1200 1060">
-  <title>Month End Close — Event-driven process chain</title>
-  <rect width="1200" height="1060" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="920" viewBox="0 0 1080 920">
+  <title>Month-end close</title>
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#111"/></marker>
+    <marker id="arrow" markerWidth="7" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3L0 6Z" fill="#1F1B2E"/></marker>
+    <style>
+      text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1F1B2E}
+      .label{font-size:12px;text-anchor:middle;dominant-baseline:middle}
+      .event{fill:#E9D5FF;stroke:#1F1B2E;stroke-width:1.4}
+      .function{fill:#BBF7D0;stroke:#1F1B2E;stroke-width:1.4}
+      .flow{fill:none;stroke:#1F1B2E;stroke-width:1.5;stroke-linejoin:round;marker-end:url(#arrow)}
+      .bus{fill:none;stroke:#1F1B2E;stroke-width:1.5;stroke-linejoin:round}
+      .connector{fill:#E5E7EB;stroke:#1F1B2E;stroke-width:1.4}
+      .operator{fill:none;stroke:#1F1B2E;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    </style>
   </defs>
-  <g font-family="Helvetica, Arial, sans-serif" fill="#111">
-    <text x="40" y="69" font-size="54" font-weight="700">Month End Close</text>
-    <text x="42" y="111" font-size="29">Event-driven process chain (EPC)</text>
-  </g>
-  <g fill="none" stroke="#111" stroke-width="2.7" stroke-linejoin="miter" marker-end="url(#arrow)">
-    <path d="M600 242 V292"/>
-    <path d="M600 376 V421"/>
-    <path d="M567 454 H340 V542"/>
-    <path d="M633 454 H860 V542"/>
-    <path d="M340 630 V696"/>
-    <path d="M860 630 V696"/>
-    <path d="M340 780 V846"/>
-    <path d="M860 780 V846"/>
-  </g>
-  <g fill="white" stroke="#111" stroke-width="2.7">
-    <path id="E1" d="M505 154 H695 L725 198 L695 242 H505 L475 198 Z"/>
-    <rect id="F1" x="480" y="292" width="240" height="84" rx="12"/>
-    <circle id="X1" cx="600" cy="454" r="33"/>
-    <path id="E2" d="M245 542 H435 L465 586 L435 630 H245 L215 586 Z"/>
-    <path id="E3" d="M765 542 H955 L985 586 L955 630 H765 L735 586 Z"/>
-    <rect id="F2" x="220" y="696" width="240" height="84" rx="12"/>
-    <rect id="F3" x="740" y="696" width="240" height="84" rx="12"/>
-    <path id="E4" d="M245 846 H435 L465 890 L435 934 H245 L215 890 Z"/>
-    <path id="E5" d="M765 846 H955 L985 890 L955 934 H765 L735 890 Z"/>
-  </g>
-  <g font-family="Helvetica, Arial, sans-serif" font-size="25" text-anchor="middle" fill="#111">
-    <text x="600" y="190"><tspan x="600">Request</tspan><tspan x="600" dy="29">received</tspan></text>
-    <text x="600" y="343">Assess request</text>
-    <text x="600" y="467" font-size="38">×</text>
-    <text x="340" y="578"><tspan x="340">Request</tspan><tspan x="340" dy="29">approved</tspan></text>
-    <text x="860" y="578"><tspan x="860">Request</tspan><tspan x="860" dy="29">rejected</tspan></text>
-    <text x="340" y="747">Perform service</text>
-    <text x="860" y="747">Notify requester</text>
-    <text x="340" y="882"><tspan x="340">Service</tspan><tspan x="340" dy="29">completed</tspan></text>
-    <text x="860" y="882"><tspan x="860">Request</tspan><tspan x="860" dy="29">closed</tspan></text>
-  </g>
+  <rect width="1080" height="920" fill="white"/>
+  <text x="65" y="40" font-size="22" font-weight="700">Month-end close</text>
+  <text x="65" y="60" font-size="10" fill="#6B7280" style="fill:#6B7280">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+  <path d="M65 70H1015" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Control flow -->
+  <path class="flow" d="M540 124V150"/>
+  <path class="flow" d="M540 200V226"/>
+  <path class="flow" d="M540 272V298"/>
+  <path class="bus" d="M540 326V352M215 352H865"/>
+  <path class="flow" d="M215 352V378"/>
+  <path class="flow" d="M540 352V378"/>
+  <path class="flow" d="M865 352V378"/>
+  <path class="flow" d="M215 428V454"/>
+  <path class="flow" d="M540 428V454"/>
+  <path class="flow" d="M865 428V454"/>
+  <path class="bus" d="M215 500V526H865V500M540 500V526"/>
+  <path class="flow" d="M540 526V552"/>
+  <path class="flow" d="M540 580V606"/>
+  <path class="flow" d="M540 656V682"/>
+  <path class="flow" d="M540 728V754"/>
+  <path class="flow" d="M540 804V830"/>
+
+  <!-- Events -->
+  <path class="event" d="M432 78H648L663 101L648 124H432L417 101Z"/>
+  <text class="label" x="540" y="101">Period ended</text>
+  <path class="event" d="M432 226H648L663 249L648 272H432L417 249Z"/>
+  <text class="label" x="540" y="249">Sub-ledgers locked</text>
+  <path class="event" d="M107 454H323L338 477L323 500H107L92 477Z"/>
+  <text class="label" x="215" y="477">Bank reconciled</text>
+  <path class="event" d="M432 454H648L663 477L648 500H432L417 477Z"/>
+  <text class="label" x="540" y="477">Accruals posted</text>
+  <path class="event" d="M757 454H973L988 477L973 500H757L742 477Z"/>
+  <text class="label" x="865" y="477">Intercompany agreed</text>
+  <path class="event" d="M432 682H648L663 705L648 728H432L417 705Z"/>
+  <text class="label" x="540" y="705">Trial balance ready</text>
+  <path class="event" d="M432 830H648L663 853L648 876H432L417 853Z"/>
+  <text class="label" x="540" y="853">Books closed</text>
+
+  <!-- Functions -->
+  <rect class="function" x="417" y="150" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="175">Lock sub-ledgers</text>
+  <rect class="function" x="92" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="215" y="403">Reconcile bank accounts</text>
+  <rect class="function" x="417" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="403">Post accruals</text>
+  <rect class="function" x="742" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="865" y="403">Agree intercompany balances</text>
+  <rect class="function" x="417" y="606" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="631">Prepare trial balance</text>
+  <rect class="function" x="417" y="754" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="779">Approve financial statements</text>
+
+  <!-- AND split and AND join -->
+  <circle class="connector" cx="540" cy="312" r="14"/>
+  <path class="operator" d="M534 317L540 306L546 317"/>
+  <circle class="connector" cx="540" cy="566" r="14"/>
+  <path class="operator" d="M534 571L540 560L546 571"/>
 </svg>

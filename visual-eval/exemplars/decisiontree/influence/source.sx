@@ -1,0 +1,33 @@
+decisiontree:influence "New product launch"
+# Illustrative structure only: the probabilities and cash flows live in the model, not on the diagram.
+
+decision Launch "Launch nationally?"
+decision Price "Set list price"
+
+chance Market "Market size"
+chance TestSales "Test-market sales"
+chance Competitor "Competitor response"
+chance Units "Units sold"
+chance Cost "Unit cost"
+chance Margin "Unit margin" deterministic
+
+value NPV "Five-year NPV"
+
+# What is known before each decision
+TestSales -> Launch
+TestSales -> Price
+Launch -> Price
+
+# What each uncertainty depends on
+Market -> TestSales
+Market -> Units
+Price -> Competitor
+Price -> Units
+Competitor -> Units
+Price -> Margin
+Cost -> Margin
+
+# What the value depends on
+Launch -> NPV
+Units -> NPV
+Margin -> NPV

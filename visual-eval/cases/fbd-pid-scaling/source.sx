@@ -1,12 +1,16 @@
-# Scenario: Pid Scaling IEC 61131-3 function block logic.
-fbd "Pid Scaling"
-var Start: bool
-var Stop: bool
-var Inhibit: bool
-var Output: bool
-var Latch: bool
-network 0 "Permissive latch":
-  Latch = OR(Start, AND(Latch, ~Stop, ~Inhibit))
-network 1 "Output command":
-  Output = MOVE(Latch)
-
+# Scenario: IEC 61131-3 scaling of a raw level transmitter into a clamped percentage for a PID loop.
+fbd "PID level input scaling"
+var RawCounts: real
+var Setpoint: real = 60.0
+var LevelPct: real
+var LoopError: real
+var HighAlarm: bool
+network 0 "Remove the 4 mA offset":
+  Offset = SUB(RawCounts, 5530.0)
+network 1 "Convert counts to percent and clamp":
+  Scaled = DIV(Offset, 272.3)
+  LevelPct = LIMIT(MN: 0.0, IN: Scaled, MX: 100.0)
+network 2 "Loop error for the controller":
+  LoopError = SUB(Setpoint, LevelPct)
+network 3 "High level alarm":
+  HighAlarm = GT(IN1: LevelPct, IN2: 90.0)

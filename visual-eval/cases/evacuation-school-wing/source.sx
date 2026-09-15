@@ -1,20 +1,24 @@
-# Scenario: School Wing ISO 23601 escape plan with routes to two exits.
-evacuation "School Wing" unit m
+# Scenario: a school classroom wing whose corridor opens straight to the playground at both ends.
+evacuation "Science wing escape plan" unit m
 compliance iso
 sheet a3 landscape
-room main "Occupied Area" at 0,0 size 7x5
-room corridor "Corridor" below main size 7x2
-room east "East Stair" right-of corridor size 3x2
-room west "West Stair" left-of corridor size 3x2
-opening between main corridor at 50% width 1.2
-door between corridor east at 50% width 1.1
-door between corridor west at 50% width 1.1
-here in main at 3.5,2.5 "YOU ARE HERE"
-exit-final east in east at 2.8,1 side east "EXIT"
-exit-final west in west at 0.2,1 side west "EXIT"
-extinguisher f1 in corridor at 0.5,1 class "ABC"
-assembly muster outside at 9,8 "ASSEMBLY POINT"
-route primary here -> main -> corridor -> east -> east
-route secondary here -> main -> corridor -> west -> west
+room c1 "Classroom 1" at 0,0 size 7x6
+room c2 "Classroom 2" at 7,0 size 7x6
+room c3 "Classroom 3" at 14,0 size 7x6
+room corridor "Corridor" at 0,6 size 21x3
+room lab "Science Lab" at 0,9 size 10x7
+room library "Library" at 10,9 size 11x7
+door between c1 corridor at 50% width 1
+door between c2 corridor at 50% width 1
+door between c3 corridor at 50% width 1
+door between lab corridor at 30% width 1.2
+opening between library corridor at 50% width 2.4
+here in corridor at 10.5,1.5 "YOU ARE HERE"
+exit-final xW in corridor at 0,1.5 side west "EXIT"
+exit-final xE in corridor at 21,1.5 side east "EXIT"
+extinguisher f1 in lab at 9.5,0.5 class "ABC"
+safety first-aid aid1 in library at 1,6
+assembly field outside at 26,4 "ASSEMBLY POINT"
+route primary here -> xE
+route secondary here -> xW
 legend auto
-

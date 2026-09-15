@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="912" viewBox="0 0 1360 912" role="img">
+<title>555 LED Flasher</title>
+<desc>Circuit schematic drawn with IEEE 315 symbols. A 9 V battery BT1 feeds a +9 V rail across the top and a GND return rail along the bottom, with C3 100 nF decoupling across them. An NE555 timer U1 runs astable: R1 1 kilohm from +9 V to DISCH pin 7, R2 68 kilohm from DISCH to the joined THR pin 6 and TRIG pin 2, and the 10 microfarad electrolytic C1 from that node to ground; RESET pin 4 and VCC pin 8 go to +9 V, GND pin 1 to ground, and CTRL pin 5 is bypassed by C2 10 nF. OUT pin 3 drives the base of the 2N3904 NPN transistor Q1 through R3 4.7 kilohm; Q1 switches a red LED D1 in series with R4 330 ohm from the +9 V rail to its collector, and its emitter returns to ground. Dots mark T-junctions; no wires cross.</desc>
+<rect x="0" y="0" width="1360" height="912" fill="#FFFFFF"/>
+<g fill="none" stroke="#17212B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<polyline data-net="VCC" points="170,656 170,190 1190,190 1190,212"/>
+<polyline data-net="VCC" points="330,190 330,660"/>
+<polyline data-net="VCC" points="540,190 540,275"/>
+<polyline data-net="VCC" points="744,190 744,364"/>
+<polyline data-net="VCC" points="840,190 840,364"/>
+<polyline data-net="GND" points="170,704 170,800 1190,800 1190,500"/>
+<polyline data-net="GND" points="330,700 330,800"/>
+<polyline data-net="GND" points="540,700 540,800"/>
+<polyline data-net="GND" points="792,636 792,800"/>
+<polyline data-net="GND" points="1010,700 1010,800"/>
+<polyline data-net="DIS" points="540,355 540,460"/>
+<polyline data-net="DIS" points="540,440 664,440"/>
+<polyline data-net="THR" points="540,540 540,660"/>
+<polyline data-net="THR" points="540,560 664,560"/>
+<polyline data-net="THR" points="610,560 610,500 664,500"/>
+<polyline data-net="CV" points="920,560 1010,560 1010,660"/>
+<polyline data-net="OUT" points="920,468 975,468"/>
+<polyline data-net="BASE" points="1055,468 1110,468"/>
+<polyline data-net="LED_A" points="1190,292 1190,322"/>
+<polyline data-net="LED_K" points="1190,382 1190,436"/>
+</g>
+<rect x="680" y="380" width="224" height="240" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<line x1="792" y1="620" x2="792" y2="636" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="664" y1="500" x2="680" y2="500" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="904" y1="468" x2="920" y2="468" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="840" y1="364" x2="840" y2="380" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="904" y1="560" x2="920" y2="560" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="664" y1="560" x2="680" y2="560" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="664" y1="440" x2="680" y2="440" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="744" y1="364" x2="744" y2="380" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="170" y1="656" x2="170" y2="668" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="148" y1="668" x2="192" y2="668" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="159" y1="676" x2="181" y2="676" stroke="#17212B" stroke-width="5" stroke-linecap="round"/>
+<line x1="148" y1="686" x2="192" y2="686" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="159" y1="694" x2="181" y2="694" stroke="#17212B" stroke-width="5" stroke-linecap="round"/>
+<line x1="170" y1="694" x2="170" y2="704" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="330" y1="660" x2="330" y2="676" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="310" y1="676" x2="350" y2="676" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="310" y1="684" x2="350" y2="684" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="330" y1="684" x2="330" y2="700" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<polyline points="540,275 540,285 551,290 529,300 551,310 529,320 551,330 529,340 540,345 540,355" fill="none" stroke="#17212B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="540,460 540,470 551,475 529,485 551,495 529,505 551,515 529,525 540,530 540,540" fill="none" stroke="#17212B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="540" y1="660" x2="540" y2="676" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="520" y1="676" x2="560" y2="676" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M 520,692 Q 540,676 560,692" fill="none" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="540" y1="684" x2="540" y2="700" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1010" y1="660" x2="1010" y2="676" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="990" y1="676" x2="1030" y2="676" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="990" y1="684" x2="1030" y2="684" stroke="#17212B" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1010" y1="684" x2="1010" y2="700" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="1170" cy="468" r="36" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<line x1="1110" y1="468" x2="1158" y2="468" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1158" y1="444" x2="1158" y2="492" stroke="#17212B" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="1158" y1="456" x2="1190" y2="436" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1158" y1="480" x2="1190" y2="500" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 1183.44,495.9 L 1169.24,494.1 L 1175.6,483.92 Z" fill="#17212B"/>
+<polyline points="975,468 985,468 990,457 1000,479 1010,457 1020,479 1030,457 1040,479 1045,468 1055,468" fill="none" stroke="#17212B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="1190,212 1190,222 1201,227 1179,237 1201,247 1179,257 1201,267 1179,277 1190,282 1190,292" fill="none" stroke="#17212B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="1190" y1="322" x2="1190" y2="338" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 1174,338 L 1206,338 L 1190,366 Z" fill="#17212B" stroke="#17212B" stroke-width="2.5" stroke-linejoin="round"/>
+<line x1="1174" y1="366" x2="1206" y2="366" stroke="#17212B" stroke-width="3" stroke-linecap="round"/>
+<line x1="1190" y1="366" x2="1190" y2="382" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1210" y1="352" x2="1228" y2="336" stroke="#17212B" stroke-width="2" stroke-linecap="round"/>
+<path d="M 1228,336 L 1224.68,344.3 L 1219.36,338.33 Z" fill="#17212B"/>
+<line x1="1210" y1="366" x2="1228" y2="350" stroke="#17212B" stroke-width="2" stroke-linecap="round"/>
+<path d="M 1228,350 L 1224.68,358.3 L 1219.36,352.33 Z" fill="#17212B"/>
+<line x1="250" y1="800" x2="250" y2="822" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="230" y1="822" x2="270" y2="822" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="237" y1="830" x2="263" y2="830" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="244" y1="838" x2="256" y2="838" stroke="#17212B" stroke-width="2.5" stroke-linecap="round"/>
+<g fill="#17212B">
+<circle cx="330" cy="190" r="5"/>
+<circle cx="540" cy="190" r="5"/>
+<circle cx="744" cy="190" r="5"/>
+<circle cx="840" cy="190" r="5"/>
+<circle cx="330" cy="800" r="5"/>
+<circle cx="540" cy="800" r="5"/>
+<circle cx="792" cy="800" r="5"/>
+<circle cx="1010" cy="800" r="5"/>
+<circle cx="540" cy="440" r="5"/>
+<circle cx="540" cy="560" r="5"/>
+<circle cx="610" cy="560" r="5"/>
+</g>
+<g font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="792" y="608" font-size="15" fill="#17212B" text-anchor="middle">GND</text>
+<text x="785" y="634" font-size="14" fill="#52606D" text-anchor="end">1</text>
+<text x="692" y="505" font-size="15" fill="#17212B">TRIG</text>
+<text x="672" y="493" font-size="14" fill="#52606D" text-anchor="middle">2</text>
+<text x="892" y="473" font-size="15" fill="#17212B" text-anchor="end">OUT</text>
+<text x="912" y="461" font-size="14" fill="#52606D" text-anchor="middle">3</text>
+<text x="840" y="402" font-size="15" fill="#17212B" text-anchor="middle">RESET</text>
+<text x="833" y="372" font-size="14" fill="#52606D" text-anchor="end">4</text>
+<text x="892" y="565" font-size="15" fill="#17212B" text-anchor="end">CTRL</text>
+<text x="912" y="553" font-size="14" fill="#52606D" text-anchor="middle">5</text>
+<text x="692" y="565" font-size="15" fill="#17212B">THR</text>
+<text x="672" y="553" font-size="14" fill="#52606D" text-anchor="middle">6</text>
+<text x="692" y="445" font-size="15" fill="#17212B">DISCH</text>
+<text x="672" y="433" font-size="14" fill="#52606D" text-anchor="middle">7</text>
+<text x="744" y="402" font-size="15" fill="#17212B" text-anchor="middle">VCC</text>
+<text x="737" y="372" font-size="14" fill="#52606D" text-anchor="end">8</text>
+<text x="792" y="492" font-size="19" font-weight="700" fill="#17212B" text-anchor="middle">U1</text>
+<text x="792" y="516" font-size="18" fill="#17212B" text-anchor="middle">NE555</text>
+<text x="198" y="674" font-size="17" fill="#52606D">+</text>
+<text x="564" y="672" font-size="17" fill="#52606D">+</text>
+<text x="60" y="62" font-size="28" font-weight="700" fill="#17212B">555 LED Flasher</text>
+<text x="60" y="94" font-size="16" fill="#52606D">NE555 astable at about 1 Hz, switching a red LED through a 2N3904 transistor · 9 V battery</text>
+<text x="184" y="178" font-size="17" font-weight="700" fill="#17212B">VCC · +9 V</text>
+<text x="280" y="836" font-size="17" font-weight="700" fill="#17212B">GND</text>
+<text x="134" y="674" font-size="19" font-weight="700" fill="#17212B" text-anchor="end">BT1</text>
+<text x="134" y="698" font-size="18" fill="#17212B" text-anchor="end">9 V</text>
+<text x="360" y="674" font-size="19" font-weight="700" fill="#17212B">C3</text>
+<text x="360" y="698" font-size="18" fill="#17212B">100 nF</text>
+<text x="514" y="309" font-size="19" font-weight="700" fill="#17212B" text-anchor="end">R1</text>
+<text x="514" y="333" font-size="18" fill="#17212B" text-anchor="end">1 kΩ</text>
+<text x="514" y="494" font-size="19" font-weight="700" fill="#17212B" text-anchor="end">R2</text>
+<text x="514" y="518" font-size="18" fill="#17212B" text-anchor="end">68 kΩ</text>
+<text x="508" y="674" font-size="19" font-weight="700" fill="#17212B" text-anchor="end">C1</text>
+<text x="508" y="698" font-size="18" fill="#17212B" text-anchor="end">10 µF</text>
+<text x="1040" y="674" font-size="19" font-weight="700" fill="#17212B">C2</text>
+<text x="1040" y="698" font-size="18" fill="#17212B">10 nF</text>
+<text x="1015" y="424" font-size="19" font-weight="700" fill="#17212B" text-anchor="middle">R3</text>
+<text x="1015" y="448" font-size="18" fill="#17212B" text-anchor="middle">4.7 kΩ</text>
+<text x="1248" y="246" font-size="19" font-weight="700" fill="#17212B">R4</text>
+<text x="1248" y="270" font-size="18" fill="#17212B">330 Ω</text>
+<text x="1248" y="346" font-size="19" font-weight="700" fill="#17212B">D1</text>
+<text x="1248" y="370" font-size="18" fill="#17212B">red LED</text>
+<text x="1248" y="462" font-size="19" font-weight="700" fill="#17212B">Q1</text>
+<text x="1248" y="486" font-size="18" fill="#17212B">2N3904</text>
+<text x="60" y="878" font-size="15" fill="#52606D">f ≈ 1.44 / ((R1 + 2·R2) · C1) ≈ 1.05 Hz, about 50 % duty  ·  LED current ≈ 21 mA  ·  C3 decouples U1 across pins 8 and 1</text>
+</g>
+</svg>

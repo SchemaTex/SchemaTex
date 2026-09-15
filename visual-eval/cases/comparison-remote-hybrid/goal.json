@@ -2,8 +2,8 @@
   "id": "comparison-remote-hybrid",
   "type": "comparison",
   "variant": "double-bubble",
-  "title": "Remote Hybrid",
-  "goal": "A practitioner can read the remote hybrid artefact at a glance.",
+  "title": "Fully remote and hybrid work",
+  "goal": "A practitioner can read this comparison at a glance: Fully remote and hybrid work.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -31,5 +31,48 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/double-bubble exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly presents “Fully remote and hybrid work” as a double-bubble comparison. Labels are legible, and the connecting lines distinguish shared points from items unique to each work arrangement without visible overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:04:22.583Z",
+      "targetHash": "b31454cb6651",
+      "sourceHash": "17c5ada3d9c9",
+      "exemplarHash": "4f6c996b6d7f",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title identifies the comparison, and the two central bubbles are labeled “Fully remote” and “Hybrid.”"
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "Two central bubbles connect to three shared points between them and three unique points on each outer side."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The comparison reads clearly from Fully remote through the shared middle points to Hybrid, with unique points grouped beside each subject."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "All labels are readable and positioned within their corresponding bubbles; the bottom captions identify the three groups."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Lines visibly connect each outer point to its intended subject and shared points to both subjects; no unintended cross-connections are apparent."
+        }
+      ]
+    }
+  }
 }

@@ -30,5 +30,48 @@
       "must": "Tokens, labels, and arrows remain readable as a one-page Petri net."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the petri exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly represents the complete bounded-buffer Petri net: five circular places, two bar transitions, the required directed arcs, two tokens in Empty, one token each in Ready and Consumer, capacity 2, and the firing sequence Produce → Consume.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:28:55.284Z",
+      "targetHash": "6bbd50723c1d",
+      "sourceHash": "c1a2ee911834",
+      "exemplarHash": "ee1a8c675b71",
+      "items": [
+        {
+          "id": "bipartite-net",
+          "verdict": "pass",
+          "evidence": "Empty, Ready, Item, Consumer, and Done are circles; Produce and Consume are bars. All visible directed arcs connect places to transitions or transitions to places."
+        },
+        {
+          "id": "initial-marking",
+          "verdict": "pass",
+          "evidence": "Empty visibly contains two tokens, while Ready and Consumer each contain one token, matching the initial marking required to enable production and subsequent consumption."
+        },
+        {
+          "id": "enabled-sequence",
+          "verdict": "pass",
+          "evidence": "Ready and Empty feed Produce; Produce returns Ready and creates Item. Item and Consumer feed Consume; Consume returns Consumer and Empty and marks Done. This visibly supports Produce followed by Consume."
+        },
+        {
+          "id": "domain-control",
+          "verdict": "pass",
+          "evidence": "The shared bounded-buffer control is visible through the Empty place labeled “empty slots · capacity: 2,” the Item place, and the producer/consumer return cycles."
+        },
+        {
+          "id": "marking-legibility",
+          "verdict": "pass",
+          "evidence": "Tokens, place and transition labels, arrowheads, capacity annotation, and the displayed firing sequence are readable on the one-page diagram."
+        }
+      ]
+    }
+  }
 }

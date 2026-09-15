@@ -1,19 +1,29 @@
-# Scenario: Lift Sequence IEC 61131-3 sequential control chart.
-sfc "Lift Sequence"
-var Start: bool
-var Ready: bool
-var Complete: bool
-var Reset: bool
+# Scenario: IEC 61131-3 lift trip: close doors, travel up or down to the called floor, then open doors.
+sfc "Lift trip sequence"
+var CallPending: bool
+var DoorsClosed: bool
+var TargetAbove: bool
+var TargetBelow: bool
+var AtFloor: bool
+var DoorTimerDone: bool
 step S0 [initial]
-  N Idle
-step S1 [label: "Prepare"]
-  N PrepareOutput
-step S2 [label: "Operate"]
-  D RunOutput T#10s
-step S3 [label: "Complete"]
-  N CompleteOutput
-transition from: S0 to: S1: Start
-transition from: S1 to: S2: Ready
-transition from: S2 to: S3: Complete
-transition from: S3 to: S0: Reset
-
+  N DoorsOpenIdle
+step S1 [label: "Close doors"]
+  N DoorCloseMotor
+alt from: S1:
+  branch [priority: 1]:
+    transition: DoorsClosed AND TargetAbove
+    step S2 [label: "Travel up"]
+      N HoistUp
+    transition: AtFloor
+  branch [priority: 2]:
+    transition: DoorsClosed AND TargetBelow
+    step S3 [label: "Travel down"]
+      N HoistDown
+    transition: AtFloor
+merge_to: S4
+step S4 [label: "Open doors"]
+  P BrakeSet
+  D DoorOpenMotor T#1s
+transition from: S0 to: S1: CallPending
+transition from: S4 to: S0: DoorTimerDone

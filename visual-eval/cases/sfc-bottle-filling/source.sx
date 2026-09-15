@@ -1,19 +1,31 @@
-# Scenario: Bottle Filling IEC 61131-3 sequential control chart.
-sfc "Bottle Filling"
-var Start: bool
-var Ready: bool
-var Complete: bool
-var Reset: bool
+# Scenario: IEC 61131-3 bottle filling: fill, weigh, then cap a good bottle or reject a light one.
+sfc "Bottle filling with weight check"
+var BottleInPlace: bool
+var LevelReached: bool
+var WeightOK: bool
+var CapDone: bool
+var RejectDone: bool
+var BottleClear: bool
 step S0 [initial]
-  N Idle
-step S1 [label: "Prepare"]
-  N PrepareOutput
-step S2 [label: "Operate"]
-  D RunOutput T#10s
-step S3 [label: "Complete"]
-  N CompleteOutput
-transition from: S0 to: S1: Start
-transition from: S1 to: S2: Ready
-transition from: S2 to: S3: Complete
-transition from: S3 to: S0: Reset
-
+  N ConveyorRun
+step S1 [label: "Fill"]
+  N FillValveOpen
+step S2 [label: "Weigh"]
+  P WeighBottle
+alt from: S2:
+  branch [priority: 1]:
+    transition: WeightOK
+    step S3 [label: "Cap"]
+      N CapperRun
+    transition: CapDone
+  branch [priority: 2]:
+    transition: NOT WeightOK
+    step S4 [label: "Reject"]
+      N RejectArmOut
+    transition: RejectDone
+merge_to: S5
+step S5 [label: "Release bottle"]
+  N ConveyorRun
+transition from: S0 to: S1: BottleInPlace
+transition from: S1 to: S2: LevelReached
+transition from: S5 to: S0: BottleClear

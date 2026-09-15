@@ -1,1 +1,41 @@
-{"id":"bpmn-incident-escalation","type":"bpmn","variant":"single-pool","title":"Incident escalation","goal":"Show critical incident escalation and response.","rubric":[{"id":"gateway","severity":"blocker","must":"Critical? visibly splits critical and noncritical response."},{"id":"timer","severity":"blocker","must":"A double-circle timer intermediate event labelled 15 minutes is visible."},{"id":"lanes","severity":"major","must":"Analyst and Manager lanes are visible."},{"id":"event","severity":"major","must":"Alert received is a signal start event."},{"id":"end","severity":"minor","must":"Resolved is an end event."}],"split":"train"}
+{
+  "id": "bpmn-incident-escalation",
+  "type": "bpmn",
+  "variant": "single-pool",
+  "title": "Incident escalation",
+  "goal": "Show critical incident escalation and response.",
+  "rubric": [
+    {
+      "id": "gateway",
+      "severity": "blocker",
+      "must": "Critical? visibly splits critical and noncritical response."
+    },
+    {
+      "id": "timer",
+      "severity": "blocker",
+      "must": "A double-circle timer intermediate event labelled 15 minutes is visible."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Analyst and Manager lanes are visible."
+    },
+    {
+      "id": "event",
+      "severity": "major",
+      "must": "Alert received is a signal start event."
+    },
+    {
+      "id": "end",
+      "severity": "minor",
+      "must": "Resolved is an end event."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/bpmn/single-pool/ideal.svg (sha256 7d08efe4ba9e). Vision reviewed all six rasterized targets: neutral process palette, event and task markers, swimlanes, separate conditional/default routes and pool-boundary message arrows; fixed wire-body overlaps and gateway caption collisions. Source and rubric unchanged; no engine rendering used as target. Follow-up vision audit: separated the yes-path arrival at Escalate commander from its outgoing containment path; Contain receives two distinct ports. No shared incoming/outgoing wire segment remains."
+  }
+}

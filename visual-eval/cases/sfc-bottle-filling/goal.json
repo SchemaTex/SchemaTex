@@ -1,8 +1,8 @@
 {
   "id": "sfc-bottle-filling",
   "type": "sfc",
-  "title": "Bottle Filling",
-  "goal": "A practitioner can read the bottle filling artefact at a glance.",
+  "title": "Bottle filling with weight check",
+  "goal": "A practitioner can read this sequential function chart at a glance: Bottle filling with weight check.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +30,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/sfc/ideal.svg (sha256 8ac068d6a3c4). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Hand-composed steps, action compartments, transition conditions and correctly ordered branch bars."
+  }
 }

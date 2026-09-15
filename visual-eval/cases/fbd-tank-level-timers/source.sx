@@ -1,12 +1,17 @@
-# Scenario: Tank Level Timers IEC 61131-3 function block logic.
-fbd "Tank Level Timers"
-var Start: bool
-var Stop: bool
-var Inhibit: bool
-var Output: bool
-var Latch: bool
-network 0 "Permissive latch":
-  Latch = OR(Start, AND(Latch, ~Stop, ~Inhibit))
-network 1 "Output command":
-  Output = MOVE(Latch)
-
+# Scenario: IEC 61131-3 fill pump with a start delay, dry-run protection and an off-delay on the outlet valve.
+fbd "Tank fill pump timers"
+var LowLevel: bool
+var HighLevel: bool
+var FlowSwitch: bool
+var PumpRun: bool
+var ValveOpen: bool
+network 0 "Start only after low level holds for 5 s":
+  LowDelay = TON(IN: LowLevel, PT: T#5s)
+network 1 "Dry-run trip after 10 s without flow":
+  NoFlow = AND(PumpRun, ~FlowSwitch)
+  DryRun = TON(IN: NoFlow, PT: T#10s)
+network 2 "Pump latch":
+  PumpRun = OR(LowDelay.Q, AND(PumpRun, ~HighLevel, ~DryRun.Q))
+network 3 "Keep outlet valve open 3 s after the pump stops":
+  Hold = TOF(IN: PumpRun, PT: T#3s)
+  ValveOpen = MOVE(Hold.Q)

@@ -4,12 +4,42 @@
   "title": "Timed traffic-light sequence",
   "goal": "A reviewer can trace the green, amber, and red timer sequence and its reset after the red interval.",
   "rubric": [
-    {"id":"green-timer","severity":"blocker","must":"A TON block labelled GreenTimer visibly shows a 30000 preset and drives the green phase."},
-    {"id":"chained-timers","severity":"blocker","must":"GreenTimer.Q visibly enables AmberTimer and AmberTimer.Q visibly enables RedTimer."},
-    {"id":"aspect-lamps","severity":"major","must":"GreenLamp, AmberLamp, and RedLamp appear on distinct rungs associated with their named timer contacts."},
-    {"id":"amber-preset","severity":"major","must":"The AmberTimer TON block visibly shows a 4000 preset."},
-    {"id":"red-preset","severity":"major","must":"The RedTimer TON block visibly shows a 30000 preset."},
-    {"id":"cycle-reset","severity":"major","must":"A RedTimer.Q contact visibly operates reset coils for all three named timers."}
+    {
+      "id": "green-timer",
+      "severity": "blocker",
+      "must": "A TON block labelled GreenTimer visibly shows a 30000 preset and drives the green phase."
+    },
+    {
+      "id": "chained-timers",
+      "severity": "blocker",
+      "must": "GreenTimer.Q visibly enables AmberTimer and AmberTimer.Q visibly enables RedTimer."
+    },
+    {
+      "id": "aspect-lamps",
+      "severity": "major",
+      "must": "GreenLamp, AmberLamp, and RedLamp appear on distinct rungs associated with their named timer contacts."
+    },
+    {
+      "id": "amber-preset",
+      "severity": "major",
+      "must": "The AmberTimer TON block visibly shows a 4000 preset."
+    },
+    {
+      "id": "red-preset",
+      "severity": "major",
+      "must": "The RedTimer TON block visibly shows a 30000 preset."
+    },
+    {
+      "id": "cycle-reset",
+      "severity": "major",
+      "must": "A RedTimer.Q contact visibly operates reset coils for all three named timers."
+    }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/ladder/ideal.svg (sha256 72319743d0eb). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Measured spacious rung bands and consistent AB contact, coil and reset-bracket symbols. All rungs and branch membership preserved. PROVISIONAL: each TON is disabled by its own Q contact, so it resets on completion; the source does not implement the promised stable 30 s / 4 s / 30 s cycle."
+  }
 }

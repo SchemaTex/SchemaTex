@@ -1,6 +1,7 @@
 {
   "id": "orgchart-matrix-project",
   "type": "orgchart",
+  "variant": "tree",
   "title": "Matrix project organisation",
   "goal": "Show functional ownership and shared project assignments.",
   "rubric": [
@@ -34,7 +35,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all required reporting and project relationships, while Image 2 substitutes different roles and projects and leaves project assignments ambiguous."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram shows Engineering, Design, and Delivery reporting to the COO; staff report through their functional managers; and all three labeled dashed project links are traceable without obscuring the solid reporting lines.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:40.756Z",
+      "targetHash": "68ce3a4ef0f2",
+      "sourceHash": "f12db44d94f7",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "functional-root",
+          "verdict": "pass",
+          "evidence": "Solid lines from the COO connect to Engineering Manager Jamie Wu, Design Manager Casey Brown, and PMO Director Jordan Fox."
+        },
+        {
+          "id": "functional-staff",
+          "verdict": "pass",
+          "evidence": "Morgan Lee and Riley Scott connect to Jamie Wu; Taylor King connects to Casey Brown."
+        },
+        {
+          "id": "atlas",
+          "verdict": "pass",
+          "evidence": "Two dashed green links labeled “Atlas project” connect Ari Bennett to Morgan Lee and Taylor King."
+        },
+        {
+          "id": "beacon",
+          "verdict": "pass",
+          "evidence": "A dashed green link labeled “Beacon project” connects Skyler Diaz to Riley Scott."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Solid reporting lines are thin gray and project links are dashed green; labels are readable and do not obscure the connections."
+        }
+      ]
+    }
   }
 }

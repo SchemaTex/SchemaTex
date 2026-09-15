@@ -1,0 +1,15 @@
+# Scenario: Smash from a 2x2 spread against a Cover 2 shell. On each side the outside receiver runs a hitch and the slot runs a corner, so the flat-playing cornerback cannot cover both; the line blocks the four-man rush and the back releases to the flat.
+playbook "Smash vs Cover 2" sport football
+field down 2 distance 7 los 35 hash college
+formation spread
+defense cover-2
+route X hitch 5
+route H corner 11
+route Y corner 11
+route Z hitch 5
+route RB flat right
+block LT DE_W
+block LG DT_W
+block C DT_S
+block RG DT_S
+block RT DE_S

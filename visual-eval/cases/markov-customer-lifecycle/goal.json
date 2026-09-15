@@ -30,5 +30,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/markov/ideal.svg (382d9af422f8); rendered and visually reviewed. All source probabilities retained; opposite transitions use separate curves, self-loops point into open space, absorbing states have a double ring. Every outgoing row sums to one."
+  }
 }

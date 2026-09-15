@@ -1,112 +1,196 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1080" viewBox="0 0 1600 1080">
-<title>Cooling Tower Circulating Water Loop</title>
-<defs>
- <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#182b38"/></marker>
- <marker id="sig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#182b38" stroke-width="1.5"/></marker>
- <g id="field"><circle r="30" fill="white" stroke="#182b38" stroke-width="2"/></g>
- <g id="shared"><rect x="-33" y="-33" width="66" height="66" fill="white" stroke="#182b38" stroke-width="2"/><circle r="30" fill="white" stroke="#182b38" stroke-width="2"/><path d="M-30 0H30" stroke="#182b38" stroke-width="2"/></g>
- <g id="valve"><path d="M-20-13L20 13V-13L-20 13Z" fill="white" stroke="#182b38" stroke-width="2.2"/><path d="M0 0V-35M-20-35A20 15 0 0 1 20-35Z" fill="white" stroke="#182b38" stroke-width="2"/></g>
- <g id="pump"><circle r="32" fill="white" stroke="#182b38" stroke-width="2.5"/><path d="M-14 18L21 0L-14-18Z" fill="none" stroke="#182b38" stroke-width="2"/><path d="M-22 25L-32 45H32L22 25" fill="none" stroke="#182b38" stroke-width="2"/></g>
-</defs>
-<rect width="1600" height="1080" fill="white"/>
-<g fill="#182b38" font-family="Helvetica, Arial, sans-serif">
-<text x="60" y="55" font-size="30" font-weight="700">COOLING TOWER CIRCULATING WATER LOOP</text>
-<text x="60" y="85" font-size="16">PIPING &amp; INSTRUMENTATION DIAGRAM · METRIC · FLOW LEFT TO RIGHT</text>
-<path d="M60 105H1540" stroke="#182b38" stroke-width="1.5"/>
-<!-- Main circulation. Arrows show the closed loop through both pump branches. -->
-<g fill="none" stroke="#182b38" stroke-width="3" stroke-linejoin="round">
- <path d="M420 480V570H210V625" marker-end="url(#arrow)"/>
- <path d="M230 715V890H580V785H648" marker-end="url(#arrow)"/>
- <path d="M580 890V935H648" marker-end="url(#arrow)"/>
- <path d="M712 785H840V860H910" marker-end="url(#arrow)"/>
- <path d="M712 935H840V860"/>
- <path d="M1130 860H1330V370H510" marker-end="url(#arrow)"/>
-</g>
-<g fill="#182b38"><circle cx="580" cy="890" r="5"/><circle cx="840" cy="860" r="5"/></g>
-<!-- Tower -->
-<path d="M350 330H490L515 480H325Z" fill="white" stroke="#182b38" stroke-width="2.5"/>
-<path d="M346 365H494M339 405H501M333 445H507" stroke="#182b38" stroke-width="1.7"/>
-<circle cx="420" cy="318" r="23" fill="white" stroke="#182b38" stroke-width="2"/>
-<path d="M420 296V340M398 318H442M404 302L436 334M404 334L436 302" stroke="#182b38" stroke-width="1.5"/>
-<text x="420" y="263" text-anchor="middle" font-size="21" font-weight="700">CT-601</text>
-<text x="420" y="287" text-anchor="middle" font-size="17">Cooling Tower</text>
-<text x="65" y="526" font-size="17">DN200 · COLD COOLING WATER</text>
-<path d="M200 595H220" stroke="white" stroke-width="7"/><path d="M200 595H220" stroke="#182b38" stroke-width="2"/>
-<!-- Basin -->
-<rect x="110" y="625" width="320" height="90" rx="45" fill="white" stroke="#182b38" stroke-width="2.5"/>
-<path d="M126 676H414" stroke="#182b38" stroke-width="1.5"/>
-<text x="270" y="654" text-anchor="middle" font-size="20" font-weight="700">B-601</text>
-<text x="270" y="702" text-anchor="middle" font-size="17">Tower Basin</text>
-<!-- Pumps -->
-<use href="#pump" x="680" y="785"/><use href="#pump" x="680" y="935"/>
-<text x="680" y="720" text-anchor="middle" font-size="20" font-weight="700">P-601A</text>
-<text x="680" y="745" text-anchor="middle" font-size="17">Circulating Pump</text>
-<text x="680" y="1000" text-anchor="middle" font-size="20" font-weight="700">P-601B</text>
-<text x="680" y="1025" text-anchor="middle" font-size="17">Standby Circulating Pump</text>
-<text x="355" y="876" font-size="17">DN200 · CW</text>
-<text x="744" y="771" font-size="16">DN150</text><text x="744" y="963" font-size="16">DN150</text>
-<!-- Shell-and-tube process cooler -->
-<rect x="910" y="820" width="220" height="80" rx="40" fill="white" stroke="#182b38" stroke-width="2.5"/>
-<path d="M935 824V896M1105 824V896M910 860H945L967 840L991 880L1015 840L1039 880L1063 840L1085 860H1130" fill="none" stroke="#182b38" stroke-width="2"/>
-<text x="1020" y="955" text-anchor="middle" font-size="21" font-weight="700">E-601</text>
-<text x="1020" y="981" text-anchor="middle" font-size="18">Process Cooler</text>
-<text x="888" y="352" font-size="18">DN150 · WARM COOLING WATER</text>
-<!-- Makeup process and level controls -->
-<path d="M70 190H315V115H55V595H330V625" fill="none" stroke="#182b38" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="70" y="163" font-size="18" font-weight="700">MakeupWater</text>
-<use href="#valve" x="270" y="190"/>
-<text x="270" y="225" text-anchor="middle" font-size="18" font-weight="700">LV-601 · FC</text>
-<text x="270" y="249" text-anchor="middle" font-size="16">Makeup Water Valve</text>
-<text x="68" y="296" font-size="16">DN40 · MAKEUP WATER</text>
-<path d="M140 625V415" fill="none" stroke="#182b38" stroke-width="1.5"/>
-<use href="#field" x="140" y="385"/>
-<text x="140" y="380" text-anchor="middle" font-size="17">LT</text><text x="140" y="400" text-anchor="middle" font-size="15">601</text>
-<path d="M170 385H237" fill="none" stroke="#182b38" stroke-width="1.6" stroke-dasharray="8 5" marker-end="url(#sig)"/>
-<use href="#shared" x="270" y="385"/>
-<text x="270" y="378" text-anchor="middle" font-size="17">LIC</text><text x="270" y="406" text-anchor="middle" font-size="15">601</text>
-<path d="M270 352V315H205V130H270V140" fill="none" stroke="#182b38" stroke-width="1.6" marker-end="url(#sig)"/>
-<path d="M198 321L212 311M198 315L212 305M198 281L212 271M198 275L212 265" stroke="#182b38" stroke-width="1.5"/>
-<text x="65" y="453" font-size="16">Low level opens LV-601</text>
-<!-- Blowdown and conductivity controls -->
-<path d="M430 670H1200" fill="none" stroke="#182b38" stroke-width="2" marker-end="url(#arrow)"/>
-<use href="#valve" x="1020" y="670"/>
-<text x="1020" y="710" text-anchor="middle" font-size="18" font-weight="700">AV-601 · FC</text>
-<text x="1020" y="735" text-anchor="middle" font-size="16">Blowdown Valve</text>
-<text x="1120" y="650" font-size="16">DN25 · BLOWDOWN</text>
-<path d="M430 646H490V555H620" fill="none" stroke="#182b38" stroke-width="1.5"/>
-<use href="#field" x="650" y="555"/>
-<text x="650" y="550" text-anchor="middle" font-size="17">AT</text><text x="650" y="570" text-anchor="middle" font-size="15">601</text>
-<path d="M680 555H827" fill="none" stroke="#182b38" stroke-width="1.6" stroke-dasharray="8 5" marker-end="url(#sig)"/>
-<use href="#shared" x="860" y="555"/>
-<text x="860" y="548" text-anchor="middle" font-size="17">AIC</text><text x="860" y="577" text-anchor="middle" font-size="15">601</text>
-<path d="M893 555H1020V620" fill="none" stroke="#182b38" stroke-width="1.6" marker-end="url(#sig)"/>
-<path d="M949 548L939 562M955 548L945 562" stroke="#182b38" stroke-width="1.5"/>
-<text x="650" y="499" font-size="18">CONDUCTIVITY CONTROL</text>
-<text x="650" y="604" font-size="16">High conductivity opens AV-601</text>
-<!-- Temperature loop, TV has no process connection in source DSL -->
-<path d="M1100 820V180H1130" fill="none" stroke="#182b38" stroke-width="1.5"/>
-<!-- white crossover at warm return and blowdown -->
-<path d="M1100 360V380M1100 660V680" stroke="white" stroke-width="7"/>
-<path d="M1100 360V380M1100 660V680" stroke="#182b38" stroke-width="1.5"/>
-<use href="#field" x="1160" y="180"/>
-<text x="1160" y="175" text-anchor="middle" font-size="17">TT</text><text x="1160" y="196" text-anchor="middle" font-size="15">601</text>
-<path d="M1190 180H1257" fill="none" stroke="#182b38" stroke-width="1.6" stroke-dasharray="8 5" marker-end="url(#sig)"/>
-<use href="#shared" x="1290" y="180"/>
-<text x="1290" y="173" text-anchor="middle" font-size="17">TIC</text><text x="1290" y="201" text-anchor="middle" font-size="15">601</text>
-<path d="M1323 180H1450V235" fill="none" stroke="#182b38" stroke-width="1.6" marker-end="url(#sig)"/>
-<path d="M1380 173L1370 187M1386 173L1376 187" stroke="#182b38" stroke-width="1.5"/>
-<use href="#valve" x="1450" y="285"/>
-<text x="1450" y="323" text-anchor="middle" font-size="18" font-weight="700">TV-601 · FO</text>
-<text x="1450" y="347" text-anchor="middle" font-size="16">Fan Bypass Valve</text>
-<text x="790" y="151" font-size="18">TEMPERATURE CONTROL</text>
-<text x="790" y="177" font-size="16">Cold-water supply setpoint: 30 °C</text>
-<text x="1380" y="400" font-size="14">TV-601 process piping</text>
-<text x="1380" y="420" font-size="14">not defined in source.</text>
-<!-- Legend -->
-<rect x="1190" y="915" width="350" height="120" fill="white" stroke="#182b38"/>
-<path d="M1210 940H1270" stroke="#182b38" stroke-width="3"/><text x="1285" y="946" font-size="15">Process piping</text>
-<path d="M1210 967H1270" stroke="#182b38" stroke-width="1.6" stroke-dasharray="8 5"/><text x="1285" y="973" font-size="15">Electric signal</text>
-<path d="M1210 994H1270M1239 987L1229 1001M1245 987L1235 1001" stroke="#182b38" stroke-width="1.6"/><text x="1285" y="1000" font-size="15">Pneumatic signal</text>
-<text x="1210" y="1024" font-size="14">FC = fail closed   ·   FO = fail open</text>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985"><title>Cooling Tower Circulating Water Loop</title><rect width="1600" height="985" fill="#FFFFFF"/><style>text{font-family:Arial,Helvetica,sans-serif;fill:#1E293B} .title{font-size:20px;font-weight:600}.tag{font-size:12px;font-weight:600}.sub{font-size:11.5px;fill:#64748B}.small{font-size:9.5px;letter-spacing:.3px}.inst{font-size:11.5px}.outline{fill:#FFFFFF;stroke:#1E293B;stroke-width:1.6;stroke-linejoin:round}.process{fill:none;stroke:#1E293B;stroke-width:2.5}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.signal{fill:none;stroke:#1E293B;stroke-width:1.4}</style>
+<text x="47" y="45" class="title" text-anchor="start">Cooling Tower Circulating Water Loop</text>
+<text x="47" y="70" class="sub" text-anchor="start">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text x="1553" y="70" class="sub" text-anchor="end">solid dot = connection · jumper = crossing, not connected</text>
+<path d="M47 99 H1553" class="signal" style="stroke:#E2E8F0;stroke-width:1"/>
+<path d="M47 257 H1553" class="signal" style="stroke:#64748B;stroke-width:1" stroke-dasharray="12 4 2 4"/>
+<text x="1553" y="247" class="small" text-anchor="end">CONTROL ROOM / DCS</text>
+<text x="1553" y="279" class="small" text-anchor="end">FIELD</text>
+<path d="M460 710 V750 H660 M660 650 V790 M660 650 H750 M660 790 H750 M810 650 H1060 M810 790 H920 V650" class="process" />
+<circle cx="660" cy="750" r="3" fill="#1E293B"/>
+<circle cx="920" cy="650" r="3" fill="#1E293B"/>
+<path d="M1230 650 H1430 V490 H850 V380 H782" class="process" />
+<path d="M710 465 V540 H480 V590" class="process" />
+<path d="M47 420 H390 V590" class="minor" />
+<path d="M350 690 H80 V770 H365" class="minor" />
+<path d="M355 765 L365 770 L355 775" class="signal" />
+<text x="47" y="397" class="tag" text-anchor="start">MakeupWater</text>
+<text x="365" y="796" class="sub" text-anchor="end">TO BLOWDOWN</text>
+<path d="M180 502 V223" class="signal" stroke-dasharray="7 5"/>
+<path d="M600 622 V549 Q590 540 600 531 V205 H518" class="signal" stroke-dasharray="7 5"/>
+<path d="M1300 552 V499 Q1310 490 1300 481 V205 H1118" class="signal" stroke-dasharray="7 5"/>
+<path d="M162 205 L120 205 L120 369" class="signal" />
+<path d="M136.0 201.0 l8 8" class="signal" />
+<path d="M116.0 223.0 l8 8" class="signal" />
+<path d="M116.0 257.0 l8 8" class="signal" />
+<path d="M116.0 291.0 l8 8" class="signal" />
+<path d="M116.0 325.0 l8 8" class="signal" />
+<path d="M116.0 359.0 l8 8" class="signal" />
+<path d="M482 205 L270 205 L270 411" class="signal" />
+<path d="M456.0 201.0 l8 8" class="signal" />
+<path d="M422.0 201.0 l8 8" class="signal" />
+<path d="M388.0 201.0 l8 8" class="signal" />
+<path d="M354.0 201.0 l8 8" class="signal" />
+<path d="M320.0 201.0 l8 8" class="signal" />
+<path d="M286.0 201.0 l8 8" class="signal" />
+<path d="M266.0 223.0 l8 8" class="signal" />
+<path d="M266.0 257.0 l8 8" class="signal" />
+<path d="M266.0 291.0 l8 8" class="signal" />
+<path d="M266.0 325.0 l8 8" class="signal" />
+<path d="M266.0 359.0 l8 8" class="signal" />
+<path d="M266.0 393.0 l8 8" class="signal" />
+<path d="M270 411 Q280 420 270 429" class="signal" />
+<path d="M270 429 L270 719" class="signal" />
+<path d="M266.0 447.0 l8 8" class="signal" />
+<path d="M266.0 481.0 l8 8" class="signal" />
+<path d="M266.0 515.0 l8 8" class="signal" />
+<path d="M266.0 549.0 l8 8" class="signal" />
+<path d="M266.0 583.0 l8 8" class="signal" />
+<path d="M266.0 617.0 l8 8" class="signal" />
+<path d="M266.0 651.0 l8 8" class="signal" />
+<path d="M266.0 685.0 l8 8" class="signal" />
+<path d="M1082 205 L1010 205 L1010 329" class="signal" />
+<path d="M1056.0 201.0 l8 8" class="signal" />
+<path d="M1022.0 201.0 l8 8" class="signal" />
+<path d="M1006.0 223.0 l8 8" class="signal" />
+<path d="M1006.0 257.0 l8 8" class="signal" />
+<path d="M1006.0 291.0 l8 8" class="signal" />
+<path d="M180 538 V570 H261 Q270 560 279 570 H330 V640 H350" class="signal" />
+<circle cx="180" cy="550" r="1.9" fill="#1E293B"/>
+<circle cx="180" cy="563" r="1.9" fill="#1E293B"/>
+<circle cx="200" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="215" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="230" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="245" cy="570" r="1.9" fill="#1E293B"/>
+
+
+<circle cx="290" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="305" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="320" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="330" cy="588" r="1.9" fill="#1E293B"/>
+<circle cx="330" cy="602" r="1.9" fill="#1E293B"/>
+<circle cx="330" cy="617" r="1.9" fill="#1E293B"/>
+<circle cx="330" cy="631" r="1.9" fill="#1E293B"/>
+<path d="M570 640 H582" class="signal" />
+<circle cx="576" cy="640" r="1.9" fill="#1E293B"/>
+<path d="M1180 620 V570 H1282" class="signal" />
+<circle cx="1180" cy="607" r="1.9" fill="#1E293B"/>
+<circle cx="1180" cy="592" r="1.9" fill="#1E293B"/>
+<circle cx="1180" cy="578" r="1.9" fill="#1E293B"/>
+<circle cx="1195" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="1210" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="1225" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="1240" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="1255" cy="570" r="1.9" fill="#1E293B"/>
+<circle cx="1270" cy="570" r="1.9" fill="#1E293B"/>
+<path d="M375 590 H545 C578 590 578 710 545 710 H375 C342 710 342 590 375 590 Z" class="outline" />
+<path d="M375 590 C400 590 400 710 375 710 M545 590 C520 590 520 710 545 710" class="signal" />
+<text x="460" y="645" class="tag" text-anchor="middle">B-601</text>
+<text x="460" y="666" class="sub" text-anchor="middle">Tower Basin</text>
+<path d="M620 465 L645 345 H775 L800 465 Z" class="outline" />
+<path d="M646 345 V330 H774 V345 M636 405 H784 M632 425 H788 M628 445 H792" class="signal" />
+<ellipse cx="710" cy="337" rx="31" ry="7" class="outline"/>
+<path d="M682 337 H738 M710 331 V343 M651 380 H768" class="signal" />
+<path d="M647 405 l-8 40" class="signal" />
+<path d="M665 405 l-8 40" class="signal" />
+<path d="M683 405 l-8 40" class="signal" />
+<path d="M701 405 l-8 40" class="signal" />
+<path d="M719 405 l-8 40" class="signal" />
+<path d="M737 405 l-8 40" class="signal" />
+<path d="M755 405 l-8 40" class="signal" />
+<path d="M773 405 l-8 40" class="signal" />
+<text x="710" y="369" class="tag" text-anchor="middle">CT-601</text>
+<text x="710" y="393" class="sub" text-anchor="middle">Cooling Tower</text>
+<circle cx="780" cy="650" r="30" class="outline"/>
+<path d="M766 634 L798 650 L766 666 Z" class="outline" />
+<text x="780" y="701" class="tag" text-anchor="middle">P-601A</text>
+<text x="780" y="721" class="sub" text-anchor="middle">Circulating Pump</text>
+<circle cx="780" cy="790" r="30" class="outline"/>
+<path d="M766 774 L798 790 L766 806 Z" class="outline" />
+<text x="780" y="841" class="tag" text-anchor="middle">P-601B</text>
+<text x="780" y="861" class="sub" text-anchor="middle">Standby Circulating Pump</text>
+<path d="M1090 620 H1200 C1240 620 1240 680 1200 680 H1090 C1050 680 1050 620 1090 620 Z" class="outline" />
+<path d="M1084 622 V678 M1206 622 V678 M1084 635 H1206 M1084 650 H1206 M1084 665 H1206" class="signal" />
+<text x="1145" y="719" class="tag" text-anchor="middle">E-601</text>
+<text x="1145" y="739" class="sub" text-anchor="middle">Process Cooler</text>
+<path d="M98 406 L142 434 V406 L98 434 Z" class="outline" />
+<path d="M120 406 V384" class="signal" />
+<path d="M100 384 C100 365 140 365 140 384 Z" class="outline" />
+<text x="150" y="380" class="tag" text-anchor="start">FC</text>
+<text x="120" y="469" class="tag" text-anchor="middle">LV-601</text>
+<text x="120" y="489" class="sub" text-anchor="middle">Makeup Water Valve</text>
+<path d="M248 756 L292 784 V756 L248 784 Z" class="outline" />
+<path d="M270 756 V734" class="signal" />
+<path d="M250 734 C250 715 290 715 290 734 Z" class="outline" />
+<text x="300" y="730" class="tag" text-anchor="start">FC</text>
+<text x="270" y="819" class="tag" text-anchor="middle">AV-601</text>
+<text x="270" y="839" class="sub" text-anchor="middle">Blowdown Valve</text>
+<path d="M988 366 L1032 394 V366 L988 394 Z" class="outline" />
+<path d="M1010 366 V344" class="signal" />
+<path d="M990 344 C990 325 1030 325 1030 344 Z" class="outline" />
+<text x="1040" y="340" class="tag" text-anchor="start">FO</text>
+<text x="1010" y="429" class="tag" text-anchor="middle">TV-601</text>
+<text x="1010" y="449" class="sub" text-anchor="middle">Fan Bypass Valve</text>
+<circle cx="180" cy="205" r="18" class="outline"/>
+<path d="M164 197 L180 187 L196 197 V213 L180 223 L164 213 Z" class="signal" />
+<path d="M162 205 H198" class="signal" />
+<text x="180" y="202" class="inst" text-anchor="middle">LIC</text>
+<text x="180" y="217" class="inst" text-anchor="middle">601</text>
+<circle cx="500" cy="205" r="18" class="outline"/>
+<path d="M484 197 L500 187 L516 197 V213 L500 223 L484 213 Z" class="signal" />
+<path d="M482 205 H518" class="signal" />
+<text x="500" y="202" class="inst" text-anchor="middle">AIC</text>
+<text x="500" y="217" class="inst" text-anchor="middle">601</text>
+<circle cx="1100" cy="205" r="18" class="outline"/>
+<path d="M1084 197 L1100 187 L1116 197 V213 L1100 223 L1084 213 Z" class="signal" />
+<path d="M1082 205 H1118" class="signal" />
+<text x="1100" y="202" class="inst" text-anchor="middle">TIC</text>
+<text x="1100" y="217" class="inst" text-anchor="middle">601</text>
+<circle cx="180" cy="520" r="18" class="outline"/>
+<text x="180" y="517" class="inst" text-anchor="middle">LT</text>
+<text x="180" y="532" class="inst" text-anchor="middle">601</text>
+<circle cx="600" cy="640" r="18" class="outline"/>
+<text x="600" y="637" class="inst" text-anchor="middle">AT</text>
+<text x="600" y="652" class="inst" text-anchor="middle">601</text>
+<circle cx="1300" cy="570" r="18" class="outline"/>
+<text x="1300" y="567" class="inst" text-anchor="middle">TT</text>
+<text x="1300" y="582" class="inst" text-anchor="middle">601</text>
+<text x="1100" y="169" class="sub" text-anchor="middle">SP 30 °C</text>
+<rect x="295.8" y="410" width="38.4" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="315" y="423" class="small" text-anchor="middle">DN40</text>
+<rect x="120.8" y="760" width="38.4" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="140" y="773" class="small" text-anchor="middle">DN25</text>
+<rect x="539.0" y="740" width="44.0" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="561" y="753" class="small" text-anchor="middle">DN200</text>
+<rect x="949.0" y="640" width="44.0" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="971" y="653" class="small" text-anchor="middle">DN150</text>
+<rect x="898.0" y="780" width="44.0" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="920" y="793" class="small" text-anchor="middle">DN150</text>
+<rect x="1288.0" y="480" width="44.0" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="1310" y="493" class="small" text-anchor="middle">DN150</text>
+<rect x="508.0" y="530" width="44.0" height="20" rx="1" fill="#FFFFFF" stroke="#1E293B" stroke-width="1"/>
+<text x="530" y="543" class="small" text-anchor="middle">DN200</text>
+<text x="1265" y="471" class="sub" text-anchor="start">Warm cooling water</text>
+<text x="720" y="518" class="sub" text-anchor="start">Cold cooling water</text>
+<path d="M690 646 L698 650 L690 654" class="signal" />
+<path d="M690 786 L698 790 L690 794" class="signal" />
+<path d="M1000 646 L1008 650 L1000 654" class="signal" />
+<path d="M1365 486 L1357 490 L1365 494" class="signal" />
+<path d="M520 536 L512 540 L520 544" class="signal" />
+<path d="M47 860 H1553" class="signal" style="stroke:#E2E8F0;stroke-width:1"/>
+<path d="M47 901 H92" class="process" />
+<text x="102" y="905" class="sub" text-anchor="start">Process</text>
+<path d="M188 901 H233" class="minor" />
+<text x="243" y="905" class="sub" text-anchor="start">Process, minor</text>
+<path d="M366 901 H411" class="signal" stroke-dasharray="7 5"/>
+<text x="421" y="905" class="sub" text-anchor="start">Electric signal</text>
+<path d="M538 901 L583 901" class="signal" />
+<path d="M556.0 897.0 l8 8" class="signal" />
+<text x="593" y="905" class="sub" text-anchor="start">Pneumatic signal</text>
+<path d="M727 901 H772" class="signal" />
+<circle cx="733" cy="901" r="1.9" fill="#1E293B"/>
+<circle cx="747" cy="901" r="1.9" fill="#1E293B"/>
+<circle cx="762" cy="901" r="1.9" fill="#1E293B"/>
+<text x="782" y="905" class="sub" text-anchor="start">Capillary / filled system</text>
+<text x="47" y="944" class="sub" text-anchor="start">LIC-601 opens makeup at low level; AIC-601 opens blowdown on high conductivity. TIC-601 controls to 30 °C; TV-601 process connections are not specified.</text>
 </svg>

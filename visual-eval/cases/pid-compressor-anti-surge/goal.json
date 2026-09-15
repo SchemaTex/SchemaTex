@@ -1,1 +1,87 @@
-{"id":"pid-compressor-anti-surge","type":"pid","title":"Compressor anti-surge recycle","goal":"A process engineer can trace the compressor recycle path and identify the low-flow anti-surge final element.","rubric":[{"id":"main-compression-path","severity":"blocker","must":"V-301, K-301, E-301, and NRV-301 form a visible suction-to-discharge process path."},{"id":"recycle-path","severity":"blocker","must":"A visible recycle pipe branches from compressor discharge through FV-301 and returns to the suction vessel."},{"id":"flow-loop","severity":"major","must":"FT-301 and FIC-301 visibly connect to FV-301 with distinct electric and pneumatic signal lines."},{"id":"fail-open","severity":"major","must":"FV-301 visibly shows a diaphragm actuator and FO fail position."},{"id":"pressure-monitoring","severity":"major","must":"PT-301 and PIC-301 are visibly associated with compressor discharge pressure."},{"id":"relief-protection","severity":"minor","must":"PSV-301 is visibly connected to the compressor discharge."}],"split":"train"}
+{
+  "id": "pid-compressor-anti-surge",
+  "type": "pid",
+  "title": "Compressor anti-surge recycle",
+  "goal": "A process engineer can trace the compressor recycle path and identify the low-flow anti-surge final element.",
+  "rubric": [
+    {
+      "id": "main-compression-path",
+      "severity": "blocker",
+      "must": "V-301, K-301, E-301, and NRV-301 form a visible suction-to-discharge process path."
+    },
+    {
+      "id": "recycle-path",
+      "severity": "blocker",
+      "must": "A visible recycle pipe branches from compressor discharge through FV-301 and returns to the suction vessel."
+    },
+    {
+      "id": "flow-loop",
+      "severity": "major",
+      "must": "FT-301 and FIC-301 visibly connect to FV-301 with distinct electric and pneumatic signal lines."
+    },
+    {
+      "id": "fail-open",
+      "severity": "major",
+      "must": "FV-301 visibly shows a diaphragm actuator and FO fail position."
+    },
+    {
+      "id": "pressure-monitoring",
+      "severity": "major",
+      "must": "PT-301 and PIC-301 are visibly associated with compressor discharge pressure."
+    },
+    {
+      "id": "relief-protection",
+      "severity": "minor",
+      "must": "PSV-301 is visibly connected to the compressor discharge."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a complete compressor train and anti-surge recycle system. The main process runs from V-301 through K-301, FE-301, E-301, NRV-301, and the discharge header. A DN100 recycle branch returns compressor discharge gas through fail-open control valve FV-301 to V-301. The flow-control and pressure-monitoring instrumentation and required signal types are visible.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:29:42.341Z",
+      "targetHash": "9caf074777a7",
+      "sourceHash": "3a0aeb13eb5e",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "main-compression-path",
+          "verdict": "pass",
+          "evidence": "A continuous left-to-right process line visibly connects V-301 Suction Scrubber, K-301 Centrifugal Compressor, E-301 Aftercooler, NRV-301 Discharge Check, and DISCHARGE HEADER."
+        },
+        {
+          "id": "recycle-path",
+          "verdict": "pass",
+          "evidence": "A visible DN100 anti-surge recycle pipe branches from the discharge line downstream of FE-301, passes through FV-301, and returns left to the inlet connection on V-301; the arrow shows flow toward the vessel."
+        },
+        {
+          "id": "flow-loop",
+          "verdict": "pass",
+          "evidence": "FT-301 is connected by a dashed electric signal to FIC-301, and FIC-301 is connected to the FV-301 actuator by a separate solid line with pneumatic slash marks."
+        },
+        {
+          "id": "fail-open",
+          "verdict": "pass",
+          "evidence": "FV-301 visibly has a diaphragm actuator and the fail-position marking FO."
+        },
+        {
+          "id": "pressure-monitoring",
+          "verdict": "pass",
+          "evidence": "PE-301 and PT-301 are visibly connected to the compressor discharge line, with an 8 barg annotation, and PT-301 has a dashed electric signal connection to PIC-301."
+        },
+        {
+          "id": "relief-protection",
+          "verdict": "pass",
+          "evidence": "PSV-301 is visibly connected by a vertical minor-process branch to the compressor discharge line and is labeled Set 10 barg."
+        }
+      ]
+    }
+  }
+}

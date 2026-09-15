@@ -35,5 +35,11 @@
       "must": "The generator-success path visibly terminates without proceeding to a battery branch."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/eventtree/ideal.svg (sha256 064a513719ee), source sha256 d3591db5c9a7. Independent orthogonal event tree with success above failure, pruned wildcard branches, complementary probabilities, aligned outcome table, and independently multiplied sequence frequencies; their sum equals the initiating frequency. No invented severity classes. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
 }

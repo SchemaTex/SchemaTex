@@ -1,1 +1,51 @@
-{"id":"decisiontree-equipment-maintenance","type":"decisiontree","title":"Equipment maintenance decision","goal":"Show safety-first maintenance routing for a monitored production asset.","rubric":[{"id":"safety-root","severity":"blocker","must":"The root visibly asks whether the equipment is safe to operate."},{"id":"safe-monitoring-path","severity":"blocker","must":"The safe path visibly checks condition-monitoring alarm limits and preventive-maintenance due date."},{"id":"unsafe-isolation-path","severity":"major","must":"The unsafe path visibly asks whether the hazard can be isolated and leads to lockout or emergency shutdown."},{"id":"fault-disposition","severity":"major","must":"An out-of-limit condition visibly branches to planned corrective work or reduced-load urgent repair."},{"id":"readable-outcomes","severity":"minor","must":"All visible leaves state an operational maintenance action."}],"split":"train"}
+{
+  "id": "decisiontree-equipment-maintenance",
+  "type": "decisiontree",
+  "variant": "taxonomy",
+  "title": "Equipment maintenance decision",
+  "goal": "Show safety-first maintenance routing for a monitored production asset.",
+  "rubric": [
+    {
+      "id": "safety-root",
+      "severity": "blocker",
+      "must": "The root visibly asks whether the equipment is safe to operate."
+    },
+    {
+      "id": "safe-monitoring-path",
+      "severity": "blocker",
+      "must": "The safe path visibly checks condition-monitoring alarm limits and preventive-maintenance due date."
+    },
+    {
+      "id": "unsafe-isolation-path",
+      "severity": "major",
+      "must": "The unsafe path visibly asks whether the hazard can be isolated and leads to lockout or emergency shutdown."
+    },
+    {
+      "id": "fault-disposition",
+      "severity": "major",
+      "must": "An out-of-limit condition visibly branches to planned corrective work or reduced-load urgent repair."
+    },
+    {
+      "id": "readable-outcomes",
+      "severity": "minor",
+      "must": "All visible leaves state an operational maintenance action."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Redrawn from the source with the independent taxonomy exemplar drawing script; no engine geometry or screenshot used to build the target.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Visually reviewed against the taxonomy exemplar and source: complete questions and outcomes, numbered hexagons, unambiguous Yes/No drops, and a shared outcome row. No clipped labels or material collisions. Unclassified outcomes remain neutral.",
+      "model": "Codex visual review",
+      "passes": 1,
+      "reviewedAt": "2026-09-14T21:56:58.146Z",
+      "targetHash": "c66c49055748",
+      "sourceHash": "8f52320bf79b",
+      "exemplarHash": "0c6f8008415a"
+    }
+  }
+}

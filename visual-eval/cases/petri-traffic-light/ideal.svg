@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067">
+  <title>Traffic Light Cycle</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#000"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="1067" fill="#fff"/>
+  <text x="800" y="70" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="60" fill="#000">Traffic Light Cycle</text>
+  <g fill="none" stroke="#000" stroke-width="3.3" stroke-linejoin="round" marker-end="url(#arrow)">
+    <path d="M 282 490 H 420"/>
+    <path d="M 444 490 H 598"/>
+    <path d="M 702 490 H 840"/>
+    <path d="M 864 490 H 1018"/>
+    <path d="M 1122 490 H 1260"/>
+    <path d="M 1284 490 H 1400 V 755 H 230 V 542"/>
+  </g>
+  <g fill="#fff" stroke="#000" stroke-width="3.3">
+    <circle cx="230" cy="490" r="52"/>
+    <circle cx="650" cy="490" r="52"/>
+    <circle cx="1070" cy="490" r="52"/>
+  </g>
+  <g fill="#000">
+    <circle cx="230" cy="490" r="13.5"/>
+    <rect x="420" y="435" width="24" height="110"/>
+    <rect x="840" y="435" width="24" height="110"/>
+    <rect x="1260" y="435" width="24" height="110"/>
+  </g>
+  <g fill="#000" font-family="Times New Roman, Times, serif" font-size="36" text-anchor="middle">
+    <text x="230" y="414">Red</text>
+    <text x="650" y="414">Green</text>
+    <text x="1070" y="414">Yellow</text>
+    <text x="432" y="592">ToGreen</text>
+    <text x="852" y="592">ToYellow</text>
+    <text x="1272" y="592">ToRed</text>
+  </g>
+  <text x="800" y="982" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-style="italic" fill="#000">Firing sequence: ToGreen → ToYellow → ToRed</text>
+</svg>

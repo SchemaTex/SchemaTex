@@ -1,1 +1,87 @@
-{"id":"flowchart-incident-response","type":"flowchart","title":"Incident response","goal":"Show an operational incident workflow across on-call, engineering, and communications teams.","rubric":[{"id":"team-subgraphs","severity":"blocker","must":"Three visible grouped areas distinguish On-call, Engineering, and Communications work."},{"id":"severity-escalation","severity":"blocker","must":"A severity decision visibly pages an incident commander for the high-severity branch."},{"id":"mitigation-loop","severity":"major","must":"An unrestored-service branch visibly escalates a specialist and loops back to mitigation."},{"id":"customer-impact","severity":"major","must":"A no-customer-impact path visibly closes after investigation without entering the major incident path."},{"id":"comms-updates","severity":"major","must":"The communications group visibly contains both a status update and a resolution update."},{"id":"postmortem","severity":"minor","must":"Resolved incidents visibly lead to a scheduled postmortem."}],"split":"train"}
+{
+  "id": "flowchart-incident-response",
+  "type": "flowchart",
+  "title": "Incident response",
+  "goal": "Show an operational incident workflow across on-call, engineering, and communications teams.",
+  "rubric": [
+    {
+      "id": "team-subgraphs",
+      "severity": "blocker",
+      "must": "Three visible grouped areas distinguish On-call, Engineering, and Communications work."
+    },
+    {
+      "id": "severity-escalation",
+      "severity": "blocker",
+      "must": "A severity decision visibly pages an incident commander for the high-severity branch."
+    },
+    {
+      "id": "mitigation-loop",
+      "severity": "major",
+      "must": "An unrestored-service branch visibly escalates a specialist and loops back to mitigation."
+    },
+    {
+      "id": "customer-impact",
+      "severity": "major",
+      "must": "A no-customer-impact path visibly closes after investigation without entering the major incident path."
+    },
+    {
+      "id": "comms-updates",
+      "severity": "major",
+      "must": "The communications group visibly contains both a status update and a resolution update."
+    },
+    {
+      "id": "postmortem",
+      "severity": "minor",
+      "must": "Resolved incidents visibly lead to a scheduled postmortem."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all requested workflow branches and team areas. Connections are traceable, labels are readable, and no material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:13:59.429Z",
+      "targetHash": "0baf3d472ad4",
+      "sourceHash": "95a207459677",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "team-subgraphs",
+          "verdict": "pass",
+          "evidence": "Three distinct grouped areas are labeled ON-CALL, ENGINEERING, and COMMUNICATIONS."
+        },
+        {
+          "id": "severity-escalation",
+          "verdict": "pass",
+          "evidence": "The “Severity 1 or 2?” decision’s Yes branch leads to “Page incident commander.”"
+        },
+        {
+          "id": "mitigation-loop",
+          "verdict": "pass",
+          "evidence": "“Service restored?” branches No to “Escalate specialist,” with a dashed loop returning to “Mitigate service.”"
+        },
+        {
+          "id": "customer-impact",
+          "verdict": "pass",
+          "evidence": "The No branch from “Customer impact?” leads to “Investigate and close,” which connects to “Resolve incident.”"
+        },
+        {
+          "id": "comms-updates",
+          "verdict": "pass",
+          "evidence": "The COMMUNICATIONS group contains both “Publish status update” and “Send resolution update.”"
+        },
+        {
+          "id": "postmortem",
+          "verdict": "pass",
+          "evidence": "“Resolve incident” connects downward to “Schedule postmortem.”"
+        }
+      ]
+    }
+  }
+}

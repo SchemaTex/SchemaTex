@@ -35,5 +35,11 @@
       "must": "Individual barrier labels are readable and distinguish prevention from mitigation."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/bowtie/ideal.svg (sha256 4484bd18b387), source sha256 917bce3f5bc0. Role-coloured threats and consequences, neutral prevention/mitigation chains, green top-event disc, hazard header, and a separately attached escalation/control chain; all declared barriers retained. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
 }

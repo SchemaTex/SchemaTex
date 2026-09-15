@@ -1,1 +1,87 @@
-{"id":"pid-cip-skid","type":"pid","title":"Clean-in-place skid","goal":"A process engineer can trace chemical supply and return pumping with conductivity, temperature, and diverter instrumentation.","rubric":[{"id":"supply-path","severity":"blocker","must":"A visible path runs from the CIP tanks through P-501 and DV-501 to ProcessCircuit."},{"id":"return-path","severity":"blocker","must":"A visible path runs from ProcessReturn through DV-502 and P-502 to TK-503."},{"id":"source-isolation","severity":"major","must":"XV-501 and XV-502 are visibly in the caustic and rinse tank paths before P-501."},{"id":"conductivity-loop","severity":"major","must":"AT-501 and AIC-501 are visibly connected by an electric signal line."},{"id":"temperature-loop","severity":"major","must":"TT-501 and TIC-501 are visibly connected by an electric signal line."},{"id":"diverter-fail-positions","severity":"minor","must":"DV-501 and DV-502 visibly show solenoid actuation and FC fail positions."}],"split":"train"}
+{
+  "id": "pid-cip-skid",
+  "type": "pid",
+  "title": "Clean-in-place skid",
+  "goal": "A process engineer can trace chemical supply and return pumping with conductivity, temperature, and diverter instrumentation.",
+  "rubric": [
+    {
+      "id": "supply-path",
+      "severity": "blocker",
+      "must": "A visible path runs from the CIP tanks through P-501 and DV-501 to ProcessCircuit."
+    },
+    {
+      "id": "return-path",
+      "severity": "blocker",
+      "must": "A visible path runs from ProcessReturn through DV-502 and P-502 to TK-503."
+    },
+    {
+      "id": "source-isolation",
+      "severity": "major",
+      "must": "XV-501 and XV-502 are visibly in the caustic and rinse tank paths before P-501."
+    },
+    {
+      "id": "conductivity-loop",
+      "severity": "major",
+      "must": "AT-501 and AIC-501 are visibly connected by an electric signal line."
+    },
+    {
+      "id": "temperature-loop",
+      "severity": "major",
+      "must": "TT-501 and TIC-501 are visibly connected by an electric signal line."
+    },
+    {
+      "id": "diverter-fail-positions",
+      "severity": "minor",
+      "must": "DV-501 and DV-502 visibly show solenoid actuation and FC fail positions."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All required process paths, isolation valves, instrument loops, and fail-closed solenoid actuators are clearly visible and traceable.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:29:31.228Z",
+      "targetHash": "6ea3a178583d",
+      "sourceHash": "6d915b26a1ce",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "supply-path",
+          "verdict": "pass",
+          "evidence": "Visible process lines run from TK-501/TK-502 through the merged suction, P-501, and DV-501 to ProcessCircuit."
+        },
+        {
+          "id": "return-path",
+          "verdict": "pass",
+          "evidence": "Visible process line runs from ProcessReturn through DV-502 and P-502 to TK-503."
+        },
+        {
+          "id": "source-isolation",
+          "verdict": "pass",
+          "evidence": "XV-501 is visibly installed between TK-501 and P-501; XV-502 is visibly installed between TK-502 and P-501."
+        },
+        {
+          "id": "conductivity-loop",
+          "verdict": "pass",
+          "evidence": "AT-501 and AIC-501 are visibly connected by a dashed electric signal line."
+        },
+        {
+          "id": "temperature-loop",
+          "verdict": "pass",
+          "evidence": "TT-501 and TIC-501 are visibly connected by a dashed electric signal line."
+        },
+        {
+          "id": "diverter-fail-positions",
+          "verdict": "pass",
+          "evidence": "DV-501 and DV-502 each visibly have an actuator box marked S and an adjacent FC fail-position label."
+        }
+      ]
+    }
+  }
+}

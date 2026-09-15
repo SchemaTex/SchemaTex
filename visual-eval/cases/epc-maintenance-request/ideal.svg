@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="944" height="1068" viewBox="0 0 944 1068">
+  <title>Facility maintenance request</title>
+  <defs>
+    <marker id="arrow" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L6 2.5L0 5Z" fill="#1F1B2E"/></marker>
+    <style>
+      text { font-family: Inter, Helvetica, Arial, sans-serif; fill: #1F1B2E; }
+      .label { font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+      .event { fill: #E9D5FF; stroke: #1F1B2E; stroke-width: 1.4; }
+      .function { fill: #BBF7D0; stroke: #1F1B2E; stroke-width: 1.4; }
+      .connector { fill: #E5E7EB; stroke: #1F1B2E; stroke-width: 1.4; }
+      .flow { fill: none; stroke: #1F1B2E; stroke-width: 1.5; marker-end: url(#arrow); }
+      .operator { fill: none; stroke: #1F1B2E; stroke-width: 2; stroke-linecap: round; }
+    </style>
+  </defs>
+  <rect width="944" height="1068" fill="white"/>
+  <text x="82" y="40" font-size="22" font-weight="700">Facility maintenance request</text>
+  <text x="82" y="60" font-size="10" fill="#6B7280" style="fill:#6B7280">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+  <path d="M82 70H862" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Control flow: arrowheads terminate at the boundaries of their targets. -->
+  <path class="flow" d="M475 124V150"/>
+  <path class="flow" d="M475 200V226"/>
+  <path class="flow" d="M475 272V298"/>
+  <path class="flow" d="M475 348V374"/>
+  <path class="flow" d="M475 402V428H356V454"/>
+  <path class="flow" d="M475 402V428H594V454"/>
+  <path class="flow" d="M356 500V526"/>
+  <path class="flow" d="M356 576V602"/>
+  <path d="M356 648V674H475M594 500V674H475" fill="none" stroke="#1F1B2E" stroke-width="1.5"/>
+  <path class="flow" d="M475 674V700"/>
+  <path class="flow" d="M475 728V754"/>
+  <path class="flow" d="M475 804V830"/>
+  <path class="flow" d="M475 876V902"/>
+  <path class="flow" d="M475 952V978"/>
+
+  <path class="event" d="M368 78H582L597 101L582 124H368L353 101Z"/>
+  <text class="label" x="475" y="101">Fault reported</text>
+
+  <rect class="function" x="353" y="150" width="244" height="50" rx="9"/>
+  <text class="label" x="475" y="175">Log work order</text>
+
+  <path class="event" d="M368 226H582L597 249L582 272H368L353 249Z"/>
+  <text class="label" x="475" y="249">Work order logged</text>
+
+  <rect class="function" x="353" y="298" width="244" height="50" rx="9"/>
+  <text class="label" x="475" y="323">Diagnose fault</text>
+
+  <circle class="connector" cx="475" cy="388" r="14"/>
+  <path class="operator" d="M469.5 382.5L480.5 393.5M480.5 382.5L469.5 393.5"/>
+
+  <path class="event" d="M271 454H441L456 477L441 500H271L256 477Z"/>
+  <text class="label" x="356" y="477">Parts needed</text>
+
+  <path class="event" d="M509 454H679L694 477L679 500H509L494 477Z"/>
+  <text class="label" x="594" y="477">Repairable on site</text>
+
+  <rect class="function" x="256" y="526" width="200" height="50" rx="9"/>
+  <text class="label" x="356" y="551">Order parts</text>
+
+  <path class="event" d="M271 602H441L456 625L441 648H271L256 625Z"/>
+  <text class="label" x="356" y="625">Parts delivered</text>
+
+  <circle class="connector" cx="475" cy="714" r="14"/>
+  <path class="operator" d="M469.5 708.5L480.5 719.5M480.5 708.5L469.5 719.5"/>
+
+  <rect class="function" x="353" y="754" width="244" height="50" rx="9"/>
+  <text class="label" x="475" y="779">Carry out repair</text>
+
+  <path class="event" d="M368 830H582L597 853L582 876H368L353 853Z"/>
+  <text class="label" x="475" y="853">Repair done</text>
+
+  <rect class="function" x="353" y="902" width="244" height="50" rx="9"/>
+  <text class="label" x="475" y="927">Close work order</text>
+
+  <path class="event" d="M368 978H582L597 1001L582 1024H368L353 1001Z"/>
+  <text class="label" x="475" y="1001">Work order closed</text>
+</svg>

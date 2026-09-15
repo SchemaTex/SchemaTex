@@ -38,7 +38,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the Arabic typography, labeling, furniture-count, and opening requirements more closely than the picture."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents one 3.00 m by 4.00 m bedroom with readable, correctly joined Arabic labels, exactly three labeled furniture pieces, an inward-swinging door, and a window with visible glazing lines.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:11:02.751Z",
+      "targetHash": "3d9cf2ad286b",
+      "sourceHash": "e3d44f29ac59",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "arabic-reading-order",
+          "verdict": "pass",
+          "evidence": "The room label \"غرفة نوم\" and furniture labels \"سرير\", \"خزانة\", and \"طاولة\" read naturally right to left with correctly oriented glyphs."
+        },
+        {
+          "id": "arabic-letter-joining",
+          "verdict": "pass",
+          "evidence": "All visible Arabic words use normal contextual joined letterforms rather than isolated characters."
+        },
+        {
+          "id": "arabic-label-fit",
+          "verdict": "pass",
+          "evidence": "The bedroom name fits within the room, and each furniture label is visibly contained within its respective bed, wardrobe, or table outline without clipping or stroke overlap."
+        },
+        {
+          "id": "arabic-label-identity",
+          "verdict": "pass",
+          "evidence": "The room is labeled \"غرفة نوم\"; the bed, wardrobe, and table are appropriately labeled \"سرير\", \"خزانة\", and \"طاولة\"."
+        },
+        {
+          "id": "small-room-and-furniture",
+          "verdict": "pass",
+          "evidence": "One rectangular room is dimensioned 3.00 by 4.00 metres and contains exactly three furniture pieces, all within the walls and clear of the door swing."
+        },
+        {
+          "id": "door-and-window",
+          "verdict": "pass",
+          "evidence": "The south-wall door has a visible leaf and inward swing arc, while the north-wall window occupies a separate opening and has visible glazing lines."
+        }
+      ]
+    }
   }
 }

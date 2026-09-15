@@ -30,5 +30,48 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the epc exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly identifies “Order to Cash” and shows the full event-driven process: order received → check credit → XOR split into approved and declined branches, each continuing through its function to a terminal event. Labels are legible, and the connectors trace cleanly without misleading crossings or overlaps.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:21.648Z",
+      "targetHash": "66cdf24c0611",
+      "sourceHash": "37fca4a15065",
+      "exemplarHash": "293804276dc2",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title “Order to Cash” is prominent, and the process begins with “Order received.”"
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "Events use hexagonal shapes, functions use rounded rectangles, and the split is marked with an XOR connector; the elements are connected."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The vertical flow reaches the XOR split, then clearly follows separate left and right branches to “Goods shipped” and “Order cancelled.”"
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "All key event and function labels are readable and centered within their corresponding shapes."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "The split’s outgoing connectors visibly lead to the approved and declined branches, with no confusing crossings or unintended joins."
+        }
+      ]
+    }
+  }
 }

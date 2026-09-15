@@ -1,0 +1,58 @@
+# Scenario: Al Reem Medical Centre ground floor — posted UAE Civil Defence escape plan.
+evacuation "Al Reem Medical Centre — Ground Floor Escape Plan" unit m
+compliance uae
+sheet a3 landscape
+show furniture
+
+room reception "Reception" at 3.6,0 size 5.4x5
+room waiting "Waiting Hall" at 9,0 size 6.6x5
+room triage "Triage" at 15.6,0 size 3.5x5
+room pharmacy "Pharmacy" at 19.1,0 size 3.2x5
+room lab "Laboratory" at 22.3,0 size 3.3x5
+room stairW "Stair 1" at 0,5 size 3.6x2.6
+room corridor "Corridor" at 3.6,5 size 22x2.6
+room stairE "Stair 2" at 25.6,5 size 3.6x2.6
+room consult1 "Consulting 1" at 3.6,7.6 size 4x5
+room consult2 "Consulting 2" at 7.6,7.6 size 4x5
+room treatment "Treatment" at 11.6,7.6 size 5x5
+room lift "Lift" at 16.6,7.6 size 2.6x5
+room wc "Toilets" at 19.2,7.6 size 3.2x5
+room staff "Staff Room" at 22.4,7.6 size 3.2x5
+
+opening between reception corridor at 50% width 2
+door between waiting corridor at 70% width 2.4 type double
+door between triage corridor at 50% width 1.1
+door between pharmacy corridor at 50% width 1.1
+door between lab corridor at 50% width 1
+door between consult1 corridor at 50% width 1
+door between consult2 corridor at 50% width 1
+door between treatment corridor at 50% width 1.2
+door between lift corridor at 50% width 1.1
+door between wc corridor at 50% width 0.9
+door between staff corridor at 50% width 0.9
+door between stairW corridor at 50% width 1.2
+door between corridor stairE at 50% width 1.2
+door stairW west at 50% width 1.2
+door stairE east at 50% width 1.2
+fire-door between stairW corridor rating "EI60"
+fire-door between corridor stairE rating "EI60"
+
+furniture stairs sw in stairW at 1.35,1.6 size 1.4x0.85
+furniture stairs se in stairE at 1.35,1.6 size 1.4x0.85
+
+here in waiting at 4.6,2.6 "YOU ARE HERE / أنت هنا"
+exit-final exitW in stairW at 1.3,0.6 side west hand left "FINAL EXIT / مخرج نهائي"
+exit-final exitE in stairE at 2.3,0.6 side east hand right "FINAL EXIT / مخرج نهائي"
+exit-direction dW in corridor at 3.8,0.6 hand left "EXIT / مخرج"
+exit-direction dE in corridor at 14.5,0.6 hand right "EXIT / مخرج"
+no-elevator noLift in lift at 1.3,0.85 "DO NOT USE THE LIFT / لا تستخدم المصعد"
+extinguisher f1 in corridor at 1.3,0.6 class "ABC" "FIRE EXTINGUISHER / طفاية حريق"
+extinguisher f2 in corridor at 18.1,0.6 class "CO2" "FIRE EXTINGUISHER / طفاية حريق"
+hose-reel hr1 in corridor at 6.8,0.6 "FIRE HOSE REEL / بكرة خرطوم الحريق"
+call-point cp1 in corridor at 20.2,0.6 "CALL POINT / نقطة إنذار الحريق"
+first-aid fa1 in triage at 1.75,3.4 "FIRST AID / الإسعافات الأولية"
+assembly muster outside at 31.05,12.4 "ASSEMBLY POINT / نقطة التجمع"
+
+route primary here -> waiting -> corridor -> stairE -> exitE -> muster
+route secondary here -> waiting -> corridor -> stairW -> exitW
+legend auto

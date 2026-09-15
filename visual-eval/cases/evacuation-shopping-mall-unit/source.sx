@@ -1,20 +1,23 @@
-# Scenario: Shopping Mall Unit ISO 23601 escape plan with routes to two exits.
-evacuation "Shopping Mall Unit" unit m
+# Scenario: a mall shop unit that escapes to the concourse at the front or the service corridor at the back.
+evacuation "Unit 14 escape plan" unit m
 compliance iso
 sheet a3 landscape
-room main "Occupied Area" at 0,0 size 7x5
-room corridor "Corridor" below main size 7x2
-room east "East Stair" right-of corridor size 3x2
-room west "West Stair" left-of corridor size 3x2
-opening between main corridor at 50% width 1.2
-door between corridor east at 50% width 1.1
-door between corridor west at 50% width 1.1
-here in main at 3.5,2.5 "YOU ARE HERE"
-exit-final east in east at 2.8,1 side east "EXIT"
-exit-final west in west at 0.2,1 side west "EXIT"
-extinguisher f1 in corridor at 0.5,1 class "ABC"
-assembly muster outside at 9,8 "ASSEMBLY POINT"
-route primary here -> main -> corridor -> east -> east
-route secondary here -> main -> corridor -> west -> west
+room mall "Mall Concourse" at 0,0 size 17x3
+room shop "Shop Floor" at 0,3 size 10x8
+room fitting "Fitting Rooms" at 10,3 size 4x4
+room stock "Stockroom" at 10,7 size 4x4
+room staff "Staff Room" at 14,3 size 3x8
+room service "Service Corridor" at 0,11 size 17x2
+opening between shop mall at 50% width 4
+door between shop fitting at 50% width 0.9
+door between shop stock at 50% width 1.2
+door between stock staff at 50% width 0.9
+door between stock service at 50% width 1.2
+here in shop at 5,6 "YOU ARE HERE"
+exit-final xMall in mall at 0,1.5 side west "EXIT"
+exit-final xService in service at 17,1 side east "EXIT"
+extinguisher f1 in stock at 3.5,0.5 class "ABC"
+assembly car outside at 22,16 "ASSEMBLY POINT"
+route primary here -> mall -> xMall
+route secondary here -> stock -> service -> xService
 legend auto
-

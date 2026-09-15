@@ -1,7 +1,18 @@
 gitgraph
-  commit id: "initial"
-  branch feature
-  checkout feature
-  commit id: "feature-work"
+  commit id: "t1"
+  branch fix-header
+  checkout fix-header
+  commit id: "header-css"
   checkout main
-  merge feature id: "merge-feature" tag: "v1.0"
+  merge fix-header id: "m1"
+  branch add-search
+  checkout add-search
+  commit id: "search-box"
+  checkout main
+  commit id: "t2"
+  merge add-search id: "m2"
+  branch flag-billing
+  checkout flag-billing
+  commit id: "billing-flag"
+  checkout main
+  merge flag-billing id: "m3" tag: "deploy-42"

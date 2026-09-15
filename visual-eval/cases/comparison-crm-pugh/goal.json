@@ -31,5 +31,48 @@
       "must": "The selected winner is visually emphasized."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/decision exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The matrix visibly uses HubSpot as the datum, compares all three CRMs across the four weighted criteria, and shows weighted totals of 55, 65, and 49. Salesforce is identified as the winner and highlighted in green. No blocking content or legibility defects are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:03:40.784Z",
+      "targetHash": "d04d6cd8af0c",
+      "sourceHash": "8da83e77255b",
+      "exemplarHash": "8168085fda8e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "HubSpot is labeled “Datum” in the matrix header, and the comparison is presented as a weighted decision matrix."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The weighted-total row shows Salesforce at 65, higher than HubSpot at 55 and Zoho CRM at 49; Salesforce is labeled “1st.”"
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "All four criteria have visible weights, and numeric scores are shown for each CRM."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "HubSpot, Salesforce, and Zoho CRM are all visible as option columns."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Salesforce’s column is shaded pale green, its total is emphasized in green, and a green “1st” badge marks it as the winner."
+        }
+      ]
+    }
+  }
 }

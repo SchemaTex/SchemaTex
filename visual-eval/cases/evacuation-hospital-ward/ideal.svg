@@ -1,77 +1,107 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 1400 990">
-<title>Hospital Ward — evacuation plan with routes to East and West exits</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="834" viewBox="0 0 1600 834" role="img" aria-labelledby="title desc">
+<title id="title">Ward 4B escape plan</title><desc id="desc">Hospital ward evacuation plan posted at the Nurse Station. The solid primary route leads east and the dashed alternative route leads west through EI60 fire doors to separate final exits.</desc>
 <defs>
- <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0 0L6 3L0 6Z" fill="#00834a"/></marker>
- <g id="exit"><rect width="64" height="54" rx="1" fill="#00834a"/><path d="M42 8H56V46H42" fill="none" stroke="white" stroke-width="4"/><circle cx="28" cy="12" r="5" fill="white"/><path d="M27 21L20 30L10 30M27 21L36 26L43 26M27 21L30 34L39 44M30 34L20 44" fill="none" stroke="white" stroke-width="5" stroke-linecap="square"/></g>
- <g id="ext"><rect width="38" height="46" fill="#d52c32"/><path d="M16 13H24V17H16ZM15 19H25V37H15Z" fill="white"/><path d="M19 13V9H28M24 12C32 12 32 20 32 24" fill="none" stroke="white" stroke-width="2.5"/></g>
- <g id="assembly"><rect width="66" height="66" fill="#00834a"/><g stroke="white" stroke-width="3" fill="none"><path d="M8 8L21 21M8 58L21 45M58 8L45 21M58 58L45 45"/><path d="M13 21H21V13M13 45H21V53M45 13V21H53M45 53V45H53"/></g><g fill="white"><circle cx="33" cy="25" r="5"/><circle cx="25" cy="32" r="4"/><circle cx="41" cy="32" r="4"/><path d="M28 32H38V46H28ZM21 38H27V49H21ZM39 38H45V49H39Z"/></g></g>
-</defs>
-<rect width="1400" height="990" fill="white"/>
-<g font-family="Helvetica, Arial, sans-serif" fill="#202c32">
-<text x="70" y="78" font-size="38" font-weight="700" letter-spacing="1">HOSPITAL WARD</text>
-<text x="70" y="114" font-size="21" letter-spacing="2">ESCAPE PLAN</text>
-<text x="1330" y="80" text-anchor="end" font-size="18">ISO 23601 · A3 landscape</text>
-<path d="M70 137H1330" stroke="#202c32" stroke-width="2"/>
-<!-- Geometry: 80 drawing units per metre. Main 7 × 5 m; corridor 7 × 2 m; stairs 3 × 2 m. -->
-<path d="M420 185H980V585H1220V745H180V585H420Z" fill="#f7faf8"/>
-<!-- Perimeter, with final-exit openings -->
-<g stroke="#202c32" stroke-width="6" fill="none" stroke-linecap="square">
- <path d="M420 585V185H980V585H1220V621M1220 709V745H180V709M180 621V585H420"/>
- <!-- Main-to-corridor opening: 1.2 m -->
- <path d="M420 585H652M748 585H980"/>
- <!-- Stair door openings: 1.1 m -->
- <path d="M420 585V621M420 709V745M980 585V621M980 709V745"/>
-</g>
-<!-- Door leaves and swing arcs, clear of the route -->
-<g fill="none" stroke="#65746e" stroke-width="1.7">
- <path d="M420 621H332M332 621A88 88 0 0 0 420 709"/>
- <path d="M980 621H1068M1068 621A88 88 0 0 1 980 709"/>
-</g>
-<text x="700" y="237" text-anchor="middle" font-size="27" font-weight="700">Occupied Area</text>
-<text x="700" y="268" text-anchor="middle" font-size="17" fill="#64726b">7 × 5 m</text>
-<text x="300" y="574" text-anchor="middle" font-size="24" font-weight="700">West Stair</text>
-<text x="1100" y="574" text-anchor="middle" font-size="24" font-weight="700">East Stair</text>
-<text x="700" y="724" text-anchor="middle" font-size="23" font-weight="700">Corridor</text>
-<!-- Continuous primary route: here → main opening → corridor → east stair → east final exit -->
-<path d="M706 394V665H1248" fill="none" stroke="#00834a" stroke-width="7" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M706 470V524M804 665H864M1084 665H1145" fill="none" stroke="#00834a" stroke-width="6" marker-end="url(#arrow)"/>
-<!-- Secondary route uses a separate parallel lane through the shared opening -->
-<path d="M691 394V681H152" fill="none" stroke="#00834a" stroke-width="5" stroke-dasharray="13 8" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M628 681H570M320 681H257" fill="none" stroke="#00834a" stroke-width="5" marker-end="url(#arrow)"/>
-<!-- Blue location marker sits at main-room coordinate 3.5, 2.5 -->
-<circle cx="700" cy="385" r="17" fill="#187bc0" stroke="white" stroke-width="4"/>
-<circle cx="700" cy="385" r="5" fill="white"/>
-<text x="700" y="345" text-anchor="middle" font-size="25" font-weight="700" fill="#126ca9">YOU ARE HERE</text>
-<text x="780" y="641" font-size="17" font-weight="700" fill="#00834a">PRIMARY</text>
-<text x="550" y="655" text-anchor="middle" font-size="17" font-weight="700" fill="#00834a">SECONDARY</text>
-<!-- Exit signs attached to the two open outer boundaries -->
-<use href="#exit" x="1190" y="595"/>
-<text x="1258" y="628" font-size="21" font-weight="700" fill="#00834a">EXIT</text>
-<g transform="translate(210 595) scale(-1 1)"><use href="#exit"/></g>
-<text x="138" y="628" text-anchor="end" font-size="21" font-weight="700" fill="#00834a">EXIT</text>
-<!-- Fire extinguisher at corridor coordinate 0.5, 1; route lane clears the symbol -->
-<use href="#ext" x="441" y="632"/>
-<text x="460" y="704" text-anchor="middle" font-size="15" font-weight="700">f1 · ABC</text>
-<!-- Assembly point outside, at plan coordinate 9,8 -->
-<use href="#assembly" x="1107" y="792"/>
-<text x="1140" y="886" text-anchor="middle" font-size="20" font-weight="700" fill="#00834a">ASSEMBLY POINT</text>
-<!-- Automatic legend -->
-<path d="M70 786H1010" stroke="#bac6bf" stroke-width="1.5"/>
-<text x="70" y="821" font-size="20" font-weight="700" letter-spacing="1">LEGEND</text>
-<circle cx="86" cy="853" r="11" fill="#187bc0"/><circle cx="86" cy="853" r="3.5" fill="white"/>
-<text x="113" y="860" font-size="18">You are here</text>
-<path d="M337 853H406" stroke="#00834a" stroke-width="5" marker-end="url(#arrow)"/>
-<text x="425" y="860" font-size="18">Primary route</text>
-<path d="M655 853H724" stroke="#00834a" stroke-width="4" stroke-dasharray="10 6" marker-end="url(#arrow)"/>
-<text x="742" y="860" font-size="18">Secondary route</text>
-<use href="#exit" transform="translate(70 883) scale(.55)"/>
-<text x="113" y="905" font-size="18">Final exit</text>
-<use href="#ext" transform="translate(340 880) scale(.75)"/>
-<text x="385" y="905" font-size="18">Fire extinguisher · ABC</text>
-<use href="#assembly" transform="translate(660 880) scale(.52)"/>
-<text x="714" y="905" font-size="18">Assembly point</text>
-<path d="M70 939H1330" stroke="#202c32" stroke-width="2"/>
-<text x="70" y="965" font-size="15" fill="#64726b">Hospital Ward · Evacuation</text>
-<text x="1330" y="965" text-anchor="end" font-size="15" fill="#64726b">Plan dimensions in metres</text>
-</g>
+<style>text{font-family:Inter,Helvetica,sans-serif;fill:#1B2430} .room{font-size:14px}.small{font-size:12px;fill:#5A646E}.caption{font-size:10px;fill:#8A939C}.section{font-size:11px;letter-spacing:1.2px;font-weight:700;fill:#8A939C}.panelhead{font-size:13px;letter-spacing:1.6px;font-weight:700}.legendtext{font-size:12.5px}.partition{fill:none;stroke:#B4BBC2;stroke-width:3.5}.swing{fill:none;stroke:#B4BBC2;stroke-width:1.1}.route{fill:none;stroke:#00A651;stroke-width:13;stroke-linejoin:round}</style>
+<g id="aid"><rect width="34" height="34" rx="2" fill="#00843D"/><path d="M13 6h8v7h7v8h-7v7h-8v-7H6v-8h7z" fill="white"/></g>
+<g id="ext"><rect width="34" height="34" rx="2" fill="#C8102E"/><g fill="none" stroke="white" stroke-width="2"><path d="M13 9v-3h8m-4 0v5m4-4q6 0 6 9M12 28h10"/><path d="M14 11h6v15h-6z" fill="white"/></g></g>
+<g id="runner"><rect width="34" height="34" rx="2" fill="#00843D"/><g fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 30V4h9M18 12l-5 8 6 4-4 7m4-7 8 5m-10-15 7 6 5-1m-12-3-6-1-4 5"/></g><circle cx="21" cy="8" r="3" fill="white"/></g>
+<g id="finalright"><use href="#runner"/><path d="M3 32h28" stroke="white" stroke-width="2"/></g>
+<g id="finalleft"><g transform="translate(34 0) scale(-1 1)"><use href="#finalright"/></g></g>
+<g id="direction"><rect width="59" height="34" rx="2" fill="#00843D"/><use href="#runner"/><path d="M39 9l14 8-14 8z" fill="white"/></g>
+<g id="assembly"><rect width="44" height="44" rx="3" fill="#00843D"/><g fill="white"><path d="M22 3l-6 9h12zM22 41l-6-9h12zM3 22l9-6v12zM41 22l-9-6v12z"/><path d="M14 14h16v16H14zm3 3v10h10V17z" fill-rule="evenodd"/></g></g>
+<g id="here"><circle r="19" fill="#005387"/><circle r="11.5" fill="none" stroke="white" stroke-width="2.5"/><circle r="4" fill="white"/></g>
+<path id="chevR" d="M-6-6L6 0-6 6z" fill="white"/><path id="chevL" d="M6-6L-6 0 6 6z" fill="white"/><path id="chevD" d="M-6-6L0 6 6-6z" fill="white"/>
+</defs><rect width="1600" height="834" fill="white"/><rect x="18" y="18" width="1564" height="798" fill="none" stroke="#D6DCE0"/>
+<text x="46" y="67" font-size="22" font-weight="600">Ward 4B escape plan</text>
+<text x="46" y="92" class="small">Escape and evacuation plan to ISO 23601:2020 · signs to ISO 7010:2019 · colours to ISO 3864-1</text>
+<text x="1577" y="67" text-anchor="end" font-size="13" font-weight="700" fill="#5A646E">WARD 4B · SHEET A3 · SCALE 1:100</text>
+<text x="1577" y="92" text-anchor="end" class="small">Posted at: Nurse Station · Rev 1 · Issued 2026-09</text>
+<path d="M46 110H1577" stroke="#CCD3D9"/>
+<!-- Building, projected with a single uniform scale: 36 drawing units per metre. -->
+<path d="M288 200H864V380H972V466.4H864V610.4H288V466.4H180V380H288Z" fill="#F2F4F5"/>
+<path d="M180 380H972V466.4H180Z" fill="white"/>
+<path d="M288 380V200H864V380H972V401.6M972 444.8V466.4H864V610.4H288V466.4H180V444.8M180 401.6V380H288" fill="none" stroke="#8D959D" stroke-width="9"/>
+<path d="M468 200V380M648 200V380M576 466.4V610.4M288 380H352.8M403.2 380H532.8M583.2 380H720M792 380H864M288 466.4H410.4M453.6 466.4H702M738 466.4H864M288 380V401.6M288 444.8V466.4M864 380V401.6M864 444.8V466.4" class="partition"/>
+<!-- Room door leaves and quarter-circle swings -->
+<path d="M352.8 380V329.6M532.8 380V329.6M410.4 466.4V509.6M702 466.4V502.4" class="partition" stroke-width="2"/>
+<path d="M352.8 329.6A50.4 50.4 0 0 1 403.2 380M532.8 329.6A50.4 50.4 0 0 1 583.2 380M410.4 509.6A43.2 43.2 0 0 1 453.6 466.4M702 502.4A36 36 0 0 1 738 466.4" class="swing"/>
+<!-- Protected stair flights -->
+<rect x="199" y="409" width="65" height="35" fill="white" stroke="#B4BBC2"/>
+<path d="M203 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M211 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M219 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M227 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M235 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M243 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M251 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M259 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<rect x="887" y="409" width="65" height="35" fill="white" stroke="#B4BBC2"/>
+<path d="M891 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M899 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M907 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M915 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M923 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M931 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M939 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<path d="M947 409v35" stroke="#B4BBC2" stroke-width="1"/>
+<!-- EI60 stair doors: heavy leaf, hinge dot, light swing -->
+<path d="M288 401.6H244.8M864 401.6H907.2" stroke="#1B2430" stroke-width="4"/>
+<circle cx="288" cy="401.6" r="3.3" fill="#1B2430"/><circle cx="864" cy="401.6" r="3.3" fill="#1B2430"/>
+<path d="M244.8 401.6A43.2 43.2 0 0 1 288 444.8M907.2 401.6A43.2 43.2 0 0 0 864 444.8" class="swing"/>
+<!-- Two separately readable route lanes, both attached to the location marker -->
+<path d="M764 290V423.2H1000" stroke="white" stroke-width="17" fill="none"/>
+<path d="M748 290V443H312L280 423.2H155" stroke="white" stroke-width="17" fill="none"/>
+<path d="M764 290V423.2H1000" class="route"/>
+<path d="M748 290V443H312L280 423.2H155" class="route" stroke-dasharray="76 24"/>
+<use href="#chevD" x="764" y="336"/><use href="#chevD" x="764" y="390"/>
+<use href="#chevR" x="811" y="423.2"/><use href="#chevR" x="901" y="423.2"/><use href="#chevR" x="987" y="423.2"/>
+<use href="#chevD" x="748" y="332"/><use href="#chevD" x="748" y="407"/>
+<use href="#chevL" x="691" y="443"/><use href="#chevL" x="591" y="443"/><use href="#chevL" x="491" y="443"/><use href="#chevL" x="391" y="443"/><use href="#chevL" x="206" y="423.2"/>
+<text x="378" y="286" text-anchor="middle" class="room">Bay 1</text><text x="558" y="286" text-anchor="middle" class="room">Bay 2</text>
+<text x="756" y="229" text-anchor="middle" class="room">Nurse Station</text>
+<text x="756" y="258" text-anchor="middle" font-size="13" font-weight="700" style="fill:#005387">YOU ARE HERE</text><use href="#here" x="756" y="290"/>
+<text x="420" y="405" text-anchor="middle" class="small" letter-spacing="1">WARD CORRIDOR</text>
+<text x="432" y="542" text-anchor="middle" class="room">Side Rooms</text><text x="720" y="542" text-anchor="middle" class="room">Clean Utility</text>
+<text x="234" y="397" text-anchor="middle" class="small">Stair West</text><text x="918" y="397" text-anchor="middle" class="small">Stair East</text>
+<use href="#aid" x="811" y="327"/>
+<text x="576" y="374" text-anchor="middle" font-size="10" style="fill:#C8102E">ABC</text><use href="#ext" x="559" y="380"/>
+<use href="#direction" x="789" y="381"/>
+<g transform="translate(690 381) scale(-1 1)"><use href="#direction"/></g>
+<use href="#finalleft" x="190" y="345"/><use href="#finalright" x="930" y="345"/>
+<text x="150" y="408" text-anchor="middle" font-size="11" font-weight="700" style="fill:#00843D">EXIT</text><text x="1004" y="408" text-anchor="middle" font-size="11" font-weight="700" style="fill:#00843D">EXIT</text>
+<!-- North point, in the same upper-right position as the exemplar -->
+<circle cx="1110" cy="260" r="33" fill="white" stroke="#B4BBC2"/><path d="M1110 234l-12 47 12-12 11 12z" fill="#1B2430"/><path d="M1110 237l-10 40 10-10z" fill="white"/><text x="1110" y="308" text-anchor="middle" class="small" font-weight="700">N</text>
+<!-- Assembly outside the building at metre coordinate (24,12) -->
+<rect x="1027" y="556" width="136" height="100" rx="7" fill="#EAF4EE" stroke="#00843D" stroke-width="1.5" stroke-dasharray="8 6"/>
+<use href="#assembly" x="1073" y="572"/><text x="1095" y="632" text-anchor="middle" font-size="13" font-weight="700" style="fill:#00843D">ASSEMBLY POINT</text><text x="1095" y="646" text-anchor="middle" class="small">Outside, east side</text>
+<!-- Scale -->
+<g transform="translate(139 634)"><rect width="216" height="8" fill="#1B2430"/><rect x="72" width="72" height="8" fill="white" stroke="#1B2430"/><text y="-5" class="caption">0</text><text x="72" y="-5" class="caption" text-anchor="middle">2</text><text x="144" y="-5" class="caption" text-anchor="middle">4</text><text x="216" y="-5" class="caption" text-anchor="middle">6 m</text><text y="26" class="small">Scale 1:100 at A3 · safety signs 11 mm</text></g>
+<!-- Fire action panel -->
+<rect x="457" y="623" width="572" height="168" rx="4" fill="white" stroke="#CCD3D9"/><text x="475" y="648" class="panelhead">IF YOU DISCOVER A FIRE</text><path d="M475 657H1010" stroke="#CCD3D9"/>
+
+<circle cx="483.5" cy="678" r="8.5" fill="#1B2430"/><text x="483.5" y="682" text-anchor="middle" font-size="11" font-weight="700" style="fill:white">1</text><text x="503" y="682" class="legendtext">Raise the alarm and notify ward staff immediately.</text>
+<circle cx="483.5" cy="702" r="8.5" fill="#1B2430"/><text x="483.5" y="706" text-anchor="middle" font-size="11" font-weight="700" style="fill:white">2</text><text x="503" y="706" class="legendtext">Follow the green route and staff instructions — never use a lift.</text>
+<circle cx="483.5" cy="726" r="8.5" fill="#1B2430"/><text x="483.5" y="730" text-anchor="middle" font-size="11" font-weight="700" style="fill:white">3</text><text x="503" y="730" class="legendtext">Close every door behind you.</text>
+<circle cx="483.5" cy="750" r="8.5" fill="#1B2430"/><text x="483.5" y="754" text-anchor="middle" font-size="11" font-weight="700" style="fill:white">4</text><text x="503" y="754" class="legendtext">Go to the assembly point and report to your fire marshal.</text>
+<text x="475" y="775" class="caption">Patients requiring assistance: follow the ward evacuation procedure.</text>
+<!-- Automatic legend: only signs and equipment present in this ward -->
+<rect x="1209" y="169" width="368" height="608" rx="4" fill="white" stroke="#CCD3D9"/><text x="1227" y="194" class="panelhead">LEGEND</text><path d="M1227 203H1559" stroke="#CCD3D9"/>
+<text x="1227" y="221" class="section">ESCAPE ROUTES</text>
+<path d="M1227 257h48" stroke="#00A651" stroke-width="10"/><use href="#chevR" transform="translate(1251 257) scale(.75)"/><text x="1287" y="262" class="legendtext">Primary escape route</text>
+<path d="M1227 287h48" stroke="#00A651" stroke-width="10" stroke-dasharray="20 6"/><use href="#chevL" transform="translate(1239 287) scale(.75)"/><text x="1287" y="292" class="legendtext">Alternative escape route</text>
+<text x="1227" y="315" class="section">EXITS AND ASSEMBLY</text>
+<use href="#finalright" transform="translate(1239 339) scale(.7353)"/><text x="1287" y="356" class="legendtext">Final exit (ISO 7010 E001/E002)</text>
+<use href="#direction" transform="translate(1227 369) scale(.83 .7353)"/><text x="1287" y="386" class="legendtext">Exit direction (runner + direction arrow)</text>
+<use href="#assembly" transform="translate(1239 399) scale(.5682)"/><text x="1287" y="416" class="legendtext">Assembly point (E007)</text>
+<text x="1227" y="440" class="section">FIRE EQUIPMENT</text>
+<use href="#ext" transform="translate(1239 461) scale(.7353)"/><text x="1287" y="478" class="legendtext">Fire extinguisher (F001), class marked</text>
+<text x="1227" y="509" class="section">FIRST AID</text>
+<use href="#aid" transform="translate(1239 530) scale(.7353)"/><text x="1287" y="547" class="legendtext">First aid point (E003)</text>
+<text x="1227" y="579" class="section">YOUR POSITION</text>
+<use href="#here" transform="translate(1251 612) scale(.6)"/><text x="1287" y="617" class="legendtext">You are here (ISO 23601 marker)</text>
+<text x="1227" y="652" class="section">BUILDING</text>
+<path d="M1232 704v-17" stroke="#1B2430" stroke-width="3"/><circle cx="1232" cy="704" r="3" fill="#1B2430"/><path d="M1232 687a17 17 0 0 1 17 17" fill="none" stroke="#B4BBC2" stroke-dasharray="3 3"/><text x="1287" y="701" class="legendtext">Fire-rated door, EI60</text>
+<rect x="1227" y="718" width="48" height="16" fill="none" stroke="#B4BBC2"/><path d="M1236 718v16m10-16v16m10-16v16m10-16v16" stroke="#B4BBC2"/><text x="1287" y="731" class="legendtext">Escape stair, protected enclosure</text>
+<text x="1227" y="763" class="caption">Lists every symbol used on this plan (ISO 23601 §6).</text>
+<text x="46" y="807" class="caption">Original symbol geometry drawn to the visual grammar described in ISO 7010 and ISO 3864-1. Occupant information only — not a fire-service pre-incident plan.</text><text x="1577" y="807" text-anchor="end" class="caption">Sheet 1 of 1</text>
 </svg>

@@ -1,8 +1,8 @@
 {
   "id": "sfc-car-wash",
   "type": "sfc",
-  "title": "Car Wash",
-  "goal": "A practitioner can read the car wash artefact at a glance.",
+  "title": "Car wash cycle",
+  "goal": "A practitioner can read this sequential function chart at a glance: Car wash cycle.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -33,8 +33,8 @@
   "split": "train",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: The picture clearly depicts an actual car-wash sequence with legible, connected SFC steps, whereas the SVG shows a generic process identified as a car wash only by its title."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/sfc/ideal.svg (sha256 8ac068d6a3c4). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Hand-composed steps, action compartments, transition conditions and correctly ordered branch bars."
   }
 }

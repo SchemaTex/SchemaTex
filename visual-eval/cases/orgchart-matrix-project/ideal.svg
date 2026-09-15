@@ -1,78 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
-  <title>Orion Systems · Matrix Delivery</title>
-  <defs>
-    <marker id="project-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#376b89" stroke-width="1.8"/></marker>
-    <style>
-      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; }
-      .box { fill: #fff; stroke: #334a59; stroke-width: 2; }
-      .functional { fill: none; stroke: #334a59; stroke-width: 2.5; stroke-linejoin: round; }
-      .project { fill: none; stroke: #376b89; stroke-width: 2.5; stroke-dasharray: 10 7; stroke-linejoin: round; marker-end: url(#project-arrow); }
-      .name { font-size: 24px; font-weight: 600; text-anchor: middle; }
-      .role { font-size: 19px; text-anchor: middle; }
-      .department { font-size: 15px; letter-spacing: 1.2px; text-anchor: middle; fill: #536e80; }
-      .label { font-size: 19px; fill: #376b89; }
-    </style>
-  </defs>
-  <rect width="1600" height="1000" fill="white"/>
-  <text x="70" y="61" font-size="32" font-weight="600">Orion Systems · Matrix Delivery</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+<title id="title">Orion Systems · Matrix Delivery</title>
+<desc id="desc">Nine people across three reporting levels. Alex Morgan leads Engineering, Design and Delivery. Solid lines show functional reports. Dashed arrows assign Morgan Lee and Taylor King to Ari Bennett's Atlas project, and Riley Scott to Skyler Diaz's Beacon project.</desc>
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L7 3.5 L0 7 Z" fill="#31865E"/></marker></defs>
+<style>text{font-family:Helvetica,Arial,sans-serif;fill:#12161C}.name{font-size:13px;font-weight:600}.job{font-size:11.5px;fill:#5C6672}.dept{font-size:9.5px;font-weight:600;letter-spacing:.7px;fill:#8B95A2}.initials{font-size:12px;font-weight:600;fill:white;text-anchor:middle}.solid{fill:none;stroke:#98A3B1;stroke-width:1.5;stroke-linejoin:round}.project{fill:none;stroke:#31865E;stroke-width:1.15;stroke-dasharray:6 4;stroke-linejoin:round;stroke-linecap:round}.legend{font-size:11.5px;fill:#5C6672}</style>
+<rect width="1600" height="760" fill="#FFFFFF"/>
+<text x="39" y="45" font-size="22" font-weight="600">Orion Systems · Matrix Delivery</text>
+<text x="39" y="67" font-size="12" fill="#8B95A2" style="fill:#8B95A2">9 people · three reporting levels · three departments</text>
+<!-- Functional reporting: COO to three managers; managers to their teams. -->
+<path class="solid" d="M784 174 V216 M284 250 V216 H1250 V250 M784 216 V250"/>
+<path class="solid" d="M284 316 V350 H164 V533 H184 M164 423 H184"/>
+<path class="solid" d="M784 316 V390"/>
+<path class="solid" d="M1250 316 V350 M1130 390 V350 H1370 V390"/>
+<!-- Separate orthogonal project-assignment channels. -->
+<path class="project" d="M1105 456 V472 H784 V456" marker-end="url(#arrow)"/>
+<path class="project" d="M1155 456 V488 H284 V456" marker-end="url(#arrow)"/>
+<path class="project" d="M1370 456 V588 H284 V566" marker-end="url(#arrow)"/>
 
-  <!-- Functional ownership: COO, department heads, and direct reports. -->
-  <path class="functional" d="M800 225 V270 M350 270 H1250 M350 270 V315 M800 270 V315 M1250 270 V315"/>
-  <path class="functional" d="M350 425 V485 M200 485 H500 M200 485 V550 M500 485 V550"/>
-  <path class="functional" d="M800 425 V550"/>
-  <path class="functional" d="M1250 425 V485 M1100 485 H1400 M1100 485 V550 M1400 485 V550"/>
-
-  <rect class="box" x="635" y="105" width="330" height="120" rx="3"/>
-  <text class="name" x="800" y="139">Alex Morgan</text>
-  <text class="role" x="800" y="168">Chief Operating Officer</text>
-  <text class="department" x="800" y="198">EXECUTIVE · ROLE: OPS</text>
-
-  <rect class="box" x="205" y="315" width="290" height="110" rx="3"/>
-  <text class="name" x="350" y="349">Jamie Wu</text>
-  <text class="role" x="350" y="378">Engineering Manager</text>
-  <text class="department" x="350" y="406">ENGINEERING</text>
-
-  <rect class="box" x="655" y="315" width="290" height="110" rx="3"/>
-  <text class="name" x="800" y="349">Casey Brown</text>
-  <text class="role" x="800" y="378">Design Manager</text>
-  <text class="department" x="800" y="406">DESIGN</text>
-
-  <rect class="box" x="1105" y="315" width="290" height="110" rx="3"/>
-  <text class="name" x="1250" y="349">Jordan Fox</text>
-  <text class="role" x="1250" y="378">PMO Director</text>
-  <text class="department" x="1250" y="406">DELIVERY</text>
-
-  <rect class="box" x="65" y="550" width="270" height="120" rx="3"/>
-  <text class="name" x="200" y="586">Morgan Lee</text>
-  <text class="role" x="200" y="618">Software Engineer</text>
-  <text class="department" x="200" y="649">ENGINEERING</text>
-
-  <rect class="box" x="365" y="550" width="270" height="120" rx="3"/>
-  <text class="name" x="500" y="586">Riley Scott</text>
-  <text class="role" x="500" y="618">Test Engineer</text>
-  <text class="department" x="500" y="649">ENGINEERING</text>
-
-  <rect class="box" x="665" y="550" width="270" height="120" rx="3"/>
-  <text class="name" x="800" y="586">Taylor King</text>
-  <text class="role" x="800" y="618">Product Designer</text>
-  <text class="department" x="800" y="649">DESIGN</text>
-
-  <rect class="box" x="965" y="550" width="270" height="120" rx="3"/>
-  <text class="name" x="1100" y="586">Ari Bennett</text>
-  <text class="role" x="1100" y="618">Project Manager, Atlas</text>
-  <text class="department" x="1100" y="649">DELIVERY</text>
-
-  <rect class="box" x="1265" y="550" width="270" height="120" rx="3"/>
-  <text class="name" x="1400" y="586">Skyler Diaz</text>
-  <text class="role" x="1400" y="618">Project Manager, Beacon</text>
-  <text class="department" x="1400" y="649">DELIVERY</text>
-
-  <!-- Independent dashed routes; white bridge gaps distinguish crossings. -->
-  <path class="project" d="M1065 670 V750 H800 V670"/>
-  <text class="label" x="860" y="735">Atlas project</text>
-  <path class="project" d="M1135 670 V830 H200 V670"/>
-  <text class="label" x="280" y="815">Atlas project</text>
-  <path d="M500 845 V815" stroke="white" stroke-width="10" fill="none"/>
-  <path class="project" d="M1400 670 V915 H500 V670"/>
-  <text class="label" x="930" y="900">Beacon project</text>
-</svg>
+<g id="COO"><defs><clipPath id="clip-COO"><rect x="668" y="96" width="232" height="78" rx="10"/></clipPath></defs><rect x="668" y="96" width="232" height="78" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="668" y="96" width="232" height="3" fill="#39435A" clip-path="url(#clip-COO)"/>
+<circle cx="700" cy="135.0" r="17" fill="#39435A"/><text class="initials" x="700" y="139.0">AM</text><text class="name" x="724" y="121" style="font-size:14px">Alex Morgan</text><text class="job" x="724" y="138">Chief Operating Officer</text><text class="dept" x="724" y="159">EXECUTIVE</text></g>
+<g id="Eng"><defs><clipPath id="clip-Eng"><rect x="184" y="250" width="200" height="66" rx="10"/></clipPath></defs><rect x="184" y="250" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="184" y="250" width="200" height="3" fill="#2D6EA3" clip-path="url(#clip-Eng)"/>
+<circle cx="216" cy="283.0" r="14" fill="#2D6EA3"/><text class="initials" x="216" y="287.0">JW</text><text class="name" x="240" y="275">Jamie Wu</text><text class="job" x="240" y="292">Engineering Manager</text><text class="dept" x="240" y="306">ENGINEERING</text></g>
+<g id="Design"><defs><clipPath id="clip-Design"><rect x="684" y="250" width="200" height="66" rx="10"/></clipPath></defs><rect x="684" y="250" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="684" y="250" width="200" height="3" fill="#613E98" clip-path="url(#clip-Design)"/>
+<circle cx="716" cy="283.0" r="14" fill="#613E98"/><text class="initials" x="716" y="287.0">CB</text><text class="name" x="740" y="275">Casey Brown</text><text class="job" x="740" y="292">Design Manager</text><text class="dept" x="740" y="306">DESIGN</text></g>
+<g id="Delivery"><defs><clipPath id="clip-Delivery"><rect x="1150" y="250" width="200" height="66" rx="10"/></clipPath></defs><rect x="1150" y="250" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="1150" y="250" width="200" height="3" fill="#31865E" clip-path="url(#clip-Delivery)"/>
+<circle cx="1182" cy="283.0" r="14" fill="#31865E"/><text class="initials" x="1182" y="287.0">JF</text><text class="name" x="1206" y="275">Jordan Fox</text><text class="job" x="1206" y="292">PMO Director</text><text class="dept" x="1206" y="306">DELIVERY</text></g>
+<g id="Dev1"><defs><clipPath id="clip-Dev1"><rect x="184" y="390" width="200" height="66" rx="10"/></clipPath></defs><rect x="184" y="390" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="184" y="390" width="200" height="3" fill="#2D6EA3" clip-path="url(#clip-Dev1)"/>
+<circle cx="216" cy="423.0" r="14" fill="#2D6EA3"/><text class="initials" x="216" y="427.0">ML</text><text class="name" x="240" y="415">Morgan Lee</text><text class="job" x="240" y="432">Software Engineer</text><text class="dept" x="240" y="446">ENGINEERING</text></g>
+<g id="Dev2"><defs><clipPath id="clip-Dev2"><rect x="184" y="500" width="200" height="66" rx="10"/></clipPath></defs><rect x="184" y="500" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="184" y="500" width="200" height="3" fill="#2D6EA3" clip-path="url(#clip-Dev2)"/>
+<circle cx="216" cy="533.0" r="14" fill="#2D6EA3"/><text class="initials" x="216" y="537.0">RS</text><text class="name" x="240" y="525">Riley Scott</text><text class="job" x="240" y="542">Test Engineer</text><text class="dept" x="240" y="556">ENGINEERING</text></g>
+<g id="UX1"><defs><clipPath id="clip-UX1"><rect x="684" y="390" width="200" height="66" rx="10"/></clipPath></defs><rect x="684" y="390" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="684" y="390" width="200" height="3" fill="#613E98" clip-path="url(#clip-UX1)"/>
+<circle cx="716" cy="423.0" r="14" fill="#613E98"/><text class="initials" x="716" y="427.0">TK</text><text class="name" x="740" y="415">Taylor King</text><text class="job" x="740" y="432">Product Designer</text><text class="dept" x="740" y="446">DESIGN</text></g>
+<g id="Pma"><defs><clipPath id="clip-Pma"><rect x="1030" y="390" width="200" height="66" rx="10"/></clipPath></defs><rect x="1030" y="390" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="1030" y="390" width="200" height="3" fill="#31865E" clip-path="url(#clip-Pma)"/>
+<circle cx="1062" cy="423.0" r="14" fill="#31865E"/><text class="initials" x="1062" y="427.0">AB</text><text class="name" x="1086" y="415">Ari Bennett</text><text class="job" x="1086" y="432">Project Manager, Atlas</text><text class="dept" x="1086" y="446">DELIVERY</text></g>
+<g id="Pmb"><defs><clipPath id="clip-Pmb"><rect x="1270" y="390" width="200" height="66" rx="10"/></clipPath></defs><rect x="1270" y="390" width="200" height="66" rx="10" fill="white" stroke="#DDE2E9" stroke-width="1"/><rect x="1270" y="390" width="200" height="3" fill="#31865E" clip-path="url(#clip-Pmb)"/>
+<circle cx="1302" cy="423.0" r="14" fill="#31865E"/><text class="initials" x="1302" y="427.0">SD</text><text class="name" x="1326" y="415">Skyler Diaz</text><text class="job" x="1326" y="432">Project Manager, Beacon</text><text class="dept" x="1326" y="446">DELIVERY</text></g>
+<rect x="864" y="462" width="86" height="20" rx="4" fill="white" stroke="#31865E" stroke-opacity=".3"/><text x="907.0" y="476" text-anchor="middle" font-size="11" style="fill:#31865E">Atlas project</text>
+<rect x="485" y="478" width="86" height="20" rx="4" fill="white" stroke="#31865E" stroke-opacity=".3"/><text x="528.0" y="492" text-anchor="middle" font-size="11" style="fill:#31865E">Atlas project</text>
+<rect x="700" y="578" width="100" height="20" rx="4" fill="white" stroke="#31865E" stroke-opacity=".3"/><text x="750.0" y="592" text-anchor="middle" font-size="11" style="fill:#31865E">Beacon project</text>
+<g id="legend"><rect x="1134" y="620" width="427" height="116" rx="10" fill="white" stroke="#DDE2E9"/>
+<text class="dept" x="1154" y="645">DEPARTMENTS</text><text class="dept" x="1360" y="645">NOTATION</text>
+<circle cx="1160" cy="664" r="5.5" fill="#39435A"/><text class="legend" x="1174" y="668">Executive</text>
+<circle cx="1160" cy="682" r="5.5" fill="#613E98"/><text class="legend" x="1174" y="686">Design</text>
+<circle cx="1160" cy="700" r="5.5" fill="#2D6EA3"/><text class="legend" x="1174" y="704">Engineering</text>
+<circle cx="1160" cy="718" r="5.5" fill="#31865E"/><text class="legend" x="1174" y="722">Delivery</text>
+<path class="solid" d="M1360 664 H1388"/><text class="legend" x="1400" y="668">Direct report</text>
+<path class="project" d="M1360 686 H1388"/><text class="legend" x="1400" y="690">Project assignment</text>
+</g></svg>

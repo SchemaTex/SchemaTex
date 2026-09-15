@@ -1,6 +1,7 @@
 {
   "id": "matrix-impact-effort",
   "type": "matrix",
+  "variant": "quadrant",
   "title": "Accessibility impact-effort priorities",
   "goal": "A university team can identify quick wins and larger projects for accessibility work.",
   "rubric": [
@@ -30,5 +31,48 @@
       "must": "Quadrant structure is clear."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The matrix clearly shows all five named initiatives on labeled impact and effort axes. The quick-win and major-project regions are distinguishable, and the quadrant structure and initiative labels are readable without visible overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:27:44.241Z",
+      "targetHash": "22808639422d",
+      "sourceHash": "12ad68401d52",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "All five named initiatives appear as bubbles positioned within the matrix, with impact on the vertical axis and effort on the horizontal axis."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The upper-left Quick wins region and upper-right Major projects region are visibly distinct and labeled."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Low-effort initiatives appear on the left, including Fix alt-text audit and Rename help links; high-effort initiatives appear on the right, including Add caption editor and Rebuild discussion tool."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "All five initiative labels are legible and unobstructed."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "A central vertical and horizontal divider form four clearly delineated quadrants, with axis labels and direction cues visible."
+        }
+      ]
+    }
+  }
 }

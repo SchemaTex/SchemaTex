@@ -1,6 +1,5 @@
-# Scenario: Uart Frame digital timing relationship.
-timing "Uart Frame" [hscale: 2]
-CLK: pppppppp
-ENABLE: 10000001
-DATA: x=======x data: ["0", "1", "0", "1", "1", "0", "1", "0"]
-
+# Scenario: one UART 8N1 frame sending 0x55, least significant bit first, from idle high back to idle.
+timing "UART frame: 0x55, 8N1" [hscale: 2]
+TX: 101010101011
+BIT: x==========x data: ["START", "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "STOP"]
+RX_READY: 000000000001

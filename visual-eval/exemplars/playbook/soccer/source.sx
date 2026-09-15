@@ -1,0 +1,15 @@
+# Scenario: breaking a 4-4-2 low block with a third-man run. 6 carries the ball at the front two and plays into 9 between the lines; 9 sets it first time into the path of 8, who has run beyond the back line, and 8 finishes at the near post.
+playbook "Third-Man Run Through a Low Block" sport soccer
+view half
+defense low-block
+player 6 o at 55,34
+player 8 o at 70,24
+player 10 o at 70,46
+player 9 o at 80,37
+player 11 o at 84,5
+player 7 o at 84,63
+dribble 6 to 62,34
+pass 6 9
+run 8 to 93,32
+pass 9 to 93,32
+shot 8 near-post

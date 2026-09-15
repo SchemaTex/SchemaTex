@@ -38,7 +38,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG clearly satisfies all six rules, while the picture lacks the required seating mix and explicit espresso-and-pastry counter labeling."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a readable, dimensioned plan with a labeled espresso and pastry counter beside a distinct dashed order queue; four small tables with chairs and a longer communal table; and separate prep/wash and customer WC rooms with visible door openings. No material overlap or cropping blocks the requested features or circulation.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:12:28.556Z",
+      "targetHash": "0f463a84e04c",
+      "sourceHash": "c026fb3b7730",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "service-counter-readable",
+          "verdict": "pass",
+          "evidence": "The labeled ESPRESSO & PASTRY COUNTER is clearly visible near the dashed ORDER QUEUE."
+        },
+        {
+          "id": "queue-clear-of-seating",
+          "verdict": "pass",
+          "evidence": "The dashed queue zone is above and separate from the four table-and-chair groups."
+        },
+        {
+          "id": "mixed-seating",
+          "verdict": "pass",
+          "evidence": "The cafe has four small two-person table settings and one longer labeled COMMUNAL TABLE."
+        },
+        {
+          "id": "back-of-house-separated",
+          "verdict": "pass",
+          "evidence": "PREP / WASH is a distinct enclosed room along the cafe’s right side, with a door opening connecting it to the cafe."
+        },
+        {
+          "id": "customer-toilet-visible",
+          "verdict": "pass",
+          "evidence": "CUSTOMER WC is a distinct enclosed room with visible toilet and sink symbols."
+        },
+        {
+          "id": "clear-circulation",
+          "verdict": "pass",
+          "evidence": "The south entry opens into the cafe; an unobstructed central path remains between the queue/counter and seating, with access to the prep door and the WC door."
+        }
+      ]
+    }
   }
 }

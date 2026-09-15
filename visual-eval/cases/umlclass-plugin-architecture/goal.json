@@ -1,1 +1,77 @@
-{"id":"umlclass-plugin-architecture","type":"umlclass","title":"Plugin architecture","goal":"Represent an extensible host with abstract plugin specializations.","rubric":[{"id":"inheritance","severity":"blocker","must":"ExportPlugin and ValidationPlugin have hollow-triangle generalization arrows pointing to abstract Plugin."},{"id":"interface-realization","severity":"blocker","must":"Both concrete plugins have dashed realization arrows to Configurable."},{"id":"abstract-visibility","severity":"major","must":"Plugin is visibly abstract and shows a protected # name member."},{"id":"aggregation","severity":"major","must":"PluginRegistry aggregates Plugin with a hollow diamond and 0..* multiplicity."},{"id":"host-association","severity":"minor","must":"AnalyticsHost has a directed association to PluginRegistry."}],"split":"holdout"}
+{
+  "id": "umlclass-plugin-architecture",
+  "type": "umlclass",
+  "title": "Plugin architecture",
+  "goal": "Represent an extensible host with abstract plugin specializations.",
+  "rubric": [
+    {
+      "id": "inheritance",
+      "severity": "blocker",
+      "must": "ExportPlugin and ValidationPlugin have hollow-triangle generalization arrows pointing to abstract Plugin."
+    },
+    {
+      "id": "interface-realization",
+      "severity": "blocker",
+      "must": "Both concrete plugins have dashed realization arrows to Configurable."
+    },
+    {
+      "id": "abstract-visibility",
+      "severity": "major",
+      "must": "Plugin is visibly abstract and shows a protected # name member."
+    },
+    {
+      "id": "aggregation",
+      "severity": "major",
+      "must": "PluginRegistry aggregates Plugin with a hollow diamond and 0..* multiplicity."
+    },
+    {
+      "id": "host-association",
+      "severity": "minor",
+      "must": "AnalyticsHost has a directed association to PluginRegistry."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly represents the requested abstract plugin hierarchy, interface realizations, registry aggregation, and host dependency. Connections are traceable and labels are readable; no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:33:05.101Z",
+      "targetHash": "3cee31d5a788",
+      "sourceHash": "b6b6abbe7048",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "inheritance",
+          "verdict": "pass",
+          "evidence": "ExportPlugin and ValidationPlugin connect to Plugin through solid generalization lines with hollow triangles pointing to Plugin."
+        },
+        {
+          "id": "interface-realization",
+          "verdict": "pass",
+          "evidence": "Both concrete plugins connect to Configurable with dashed lines ending in hollow triangles at the interface."
+        },
+        {
+          "id": "abstract-visibility",
+          "verdict": "pass",
+          "evidence": "Plugin is labeled {abstract}, and its name member is shown with protected visibility (# name: String)."
+        },
+        {
+          "id": "aggregation",
+          "verdict": "pass",
+          "evidence": "PluginRegistry connects to Plugin with a hollow diamond at the registry end and 0..* at the Plugin end; the relationship is labeled “registered plugins.”"
+        },
+        {
+          "id": "host-association",
+          "verdict": "pass",
+          "evidence": "AnalyticsHost has a directed association to PluginRegistry labeled “resolves.”"
+        }
+      ]
+    }
+  }
+}

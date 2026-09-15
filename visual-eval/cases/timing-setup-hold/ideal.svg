@@ -1,48 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="900" viewBox="0 0 1536 900">
-  <title>Setup Hold digital timing relationship</title>
-  <rect width="1536" height="900" fill="white"/>
-  <defs>
-    <pattern id="unknown" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#f0f0f0"/><path d="M-2 2L2-2M0 10L10 0M8 12L12 8" stroke="#999" stroke-width="1"/></pattern>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="black"/></marker>
-  </defs>
-  <g font-family="Helvetica, Arial, sans-serif" fill="black">
-    <text x="768" y="100" text-anchor="middle" font-size="80" font-weight="700">Setup Hold</text>
-    <g stroke="#dedede" stroke-width="1" stroke-dasharray="6 8">
-      <path d="M260 190V685M400 190V685M540 190V685M680 190V685M820 190V685M960 190V685M1100 190V685M1240 190V685M1380 190V685"/>
-    </g>
-    <g font-size="39" text-anchor="end">
-      <text x="220" y="285">CLK</text><text x="220" y="465">ENABLE</text><text x="220" y="640">DATA</text>
-    </g>
-    <g fill="none" stroke="black" stroke-width="4" stroke-linejoin="miter">
-      <path d="M260 315V225H330V315H400V225H470V315H540V225H610V315H680V225H750V315H820V225H890V315H960V225H1030V315H1100V225H1170V315H1240V225H1310V315H1380"/>
-      <path d="M260 405H400V495H1240V405H1380"/>
-    </g>
-    <g stroke="black" stroke-width="3" stroke-linejoin="miter">
-      <path d="M260 585H391L409 675H260Z" fill="url(#unknown)"/>
-      <path d="M391 585H531L549 675H409Z" fill="white"/>
-      <path d="M531 585H671L689 675H549Z" fill="white"/>
-      <path d="M671 585H811L829 675H689Z" fill="white"/>
-      <path d="M811 585H951L969 675H829Z" fill="white"/>
-      <path d="M951 585H1091L1109 675H969Z" fill="white"/>
-      <path d="M1091 585H1231L1249 675H1109Z" fill="white"/>
-      <path d="M1231 585H1371L1389 675H1249Z" fill="white"/>
-      <path d="M1371 585H1490V675H1389Z" fill="url(#unknown)"/>
-    </g>
-    <g fill="white" stroke="black" stroke-width="3">
-      <path d="M391 585L409 585L391 675L409 675"/>
-      <path d="M531 585L549 585L531 675L549 675"/>
-      <path d="M671 585L689 585L671 675L689 675"/>
-      <path d="M811 585L829 585L811 675L829 675"/>
-      <path d="M951 585L969 585L951 675L969 675"/>
-      <path d="M1091 585L1109 585L1091 675L1109 675"/>
-      <path d="M1231 585L1249 585L1231 675L1249 675"/>
-      <path d="M1371 585L1389 585L1371 675L1389 675"/>
-    </g>
-    <g font-size="38" text-anchor="middle">
-      <text x="330" y="643">x</text>
-      <text x="470" y="643">0</text><text x="610" y="643">1</text><text x="750" y="643">0</text><text x="890" y="643">1</text><text x="1030" y="643">1</text><text x="1170" y="643">0</text><text x="1310" y="643">1</text><text x="1435" y="643">0</text>
-    </g>
-    <path d="M260 775H1490" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrow)"/>
-    <text x="1480" y="827" text-anchor="end" font-size="36">Time</text>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="917" height="496" viewBox="0 0 917 496" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>D flip-flop setup and hold</title><desc>Independent reference target. PROVISIONAL: source CLK has 4 cells while D/Q have 8, and does not specify setup/hold intervals. Reference preserves waveforms without inventing constraints. Independent aligned waveforms and bus-cell geometry, exemplar monochrome palette and readable labels.</desc><rect width="917" height="496" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">D flip-flop setup and hold</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Digital timing  ·  Common time grid; one source character per cell</text>
+<line x1="48" y1="96" x2="869" y2="96" stroke="#CBD1D6" stroke-width="1"/>
+<line x1="245" y1="132" x2="245" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="245" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">0</text>
+<line x1="323" y1="132" x2="323" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="323" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">1</text>
+<line x1="401" y1="132" x2="401" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="401" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">2</text>
+<line x1="479" y1="132" x2="479" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="479" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">3</text>
+<line x1="557" y1="132" x2="557" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="557" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">4</text>
+<line x1="635" y1="132" x2="635" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="635" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">5</text>
+<line x1="713" y1="132" x2="713" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="713" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">6</text>
+<line x1="791" y1="132" x2="791" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="791" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">7</text>
+<line x1="869" y1="132" x2="869" y2="370" stroke="#E8ECEF" stroke-width="1"/>
+<text x="869" y="123" font-size="11" font-weight="400" text-anchor="middle" fill="#59636B">8</text>
+<defs><pattern id="unknown" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 7L7 0" stroke="#CBD1D6" stroke-width="1"/></pattern></defs>
+<text x="221" y="171" font-size="15" font-weight="600" text-anchor="end" fill="#20272B">CLK</text>
+<path d="M245 183 V149 H284 V183 H323" stroke="#20272B" stroke-width="1.7" fill="none"/>
+<path d="M323 183 V149 H362 V183 H401" stroke="#20272B" stroke-width="1.7" fill="none"/>
+<path d="M401 183 V149 H440 V183 H479" stroke="#20272B" stroke-width="1.7" fill="none"/>
+<path d="M479 183 V149 H518 V183 H557" stroke="#20272B" stroke-width="1.7" fill="none"/>
+<text x="221" y="253" font-size="15" font-weight="600" text-anchor="end" fill="#20272B">D</text>
+<path d="M245 248 L251 231 H317 L323 248 L317 265 H251 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M323 248 L329 231 H395 L401 248 L395 265 H329 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="362" y="253" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D0</text>
+<path d="M401 248 L407 231 H473 L479 248 L473 265 H407 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M479 248 L485 231 H551 L557 248 L551 265 H485 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="518" y="253" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D1</text>
+<path d="M557 248 L563 231 H629 L635 248 L629 265 H563 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M635 248 L641 231 H707 L713 248 L707 265 H641 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="674" y="253" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D2</text>
+<path d="M713 248 L719 231 H785 L791 248 L785 265 H719 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M791 248 L797 231 H863 L869 248 L863 265 H797 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="830" y="253" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D3</text>
+<text x="221" y="335" font-size="15" font-weight="600" text-anchor="end" fill="#20272B">Q</text>
+<path d="M245 330 L251 313 H317 L323 330 L317 347 H251 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M323 330 L329 313 H395 L401 330 L395 347 H329 Z" stroke="#20272B" stroke-width="1.2" fill="url(#unknown)"/>
+<path d="M401 330 L407 313 H551 L557 330 L551 347 H407 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="479" y="335" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D0</text>
+<path d="M557 330 L563 313 H707 L713 330 L707 347 H563 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="635" y="335" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D1</text>
+<path d="M713 330 L719 313 H863 L869 330 L863 347 H719 Z" stroke="#20272B" stroke-width="1.2" fill="white"/>
+<text x="791" y="335" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">D2</text>
+<line x1="48" y1="424" x2="869" y2="424" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="448" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Solid levels = logic 0 / 1.  Hatched cell = unknown or don’t-care.  Hexagonal cells carry source data labels.</text>
+<text x="48" y="468" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Source timing constraints need correction; diagram remains provisional.</text></svg>

@@ -1,8 +1,9 @@
 {
   "id": "gitgraph-gitflow-release",
   "type": "gitgraph",
-  "title": "Gitflow Release",
-  "goal": "A practitioner can read the gitflow release artefact at a glance.",
+  "variant": "horizontal",
+  "title": "Git flow release",
+  "goal": "A practitioner can read this branch history at a glance: Git flow release.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +31,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/gitgraph/horizontal/ideal.svg (2c8962e3f5d3); rendered and visually reviewed. Exemplar branch colours and horizontal lanes; every commit, branch fork, merge parent and tag follows the DSL. Cherry-picks are copies with dashed provenance, not merge ancestry."
+  }
 }

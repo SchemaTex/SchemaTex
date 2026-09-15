@@ -39,7 +39,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG is the closer target because it includes nearly all required components, values, and controller labels, although its wiring contains serious errors that must be corrected."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the circuit exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: the primary winding runs vertically through Q1 and RSENSE to primary GND, with U1 GATE and CS branching at their marked points. The optocoupler collector traces to FB around RSENSE using a non-junction bridge, its emitter returns to primary GND, and the LED cathode traces to TL431 K with a bridge across GNDSEC. The two return rails remain separate. Routing near the optocoupler is compact but traceable.",
+      "model": "gpt-5.6-luna + Codex visual verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T20:59:41.940Z",
+      "targetHash": "f415e5675253",
+      "sourceHash": "42052fe2d6d6",
+      "exemplarHash": "13f4de9a1aa1",
+      "items": [
+        {
+          "id": "bridge-and-bulk",
+          "verdict": "pass",
+          "evidence": "Four 1N4007 diodes are arranged around the AC input, with C1 labeled 47 µF, 400 V across the rectified high-voltage rails."
+        },
+        {
+          "id": "primary-switch-path",
+          "verdict": "pass",
+          "evidence": "The primary winding, Q1 drain/source, 0.33 Ω RSENSE and primary return form one visible vertical path; U1 GATE and CS meet their corresponding points."
+        },
+        {
+          "id": "isolated-secondary",
+          "verdict": "pass",
+          "evidence": "T1 is drawn separating primary and secondary sides; VSEC feeds the SS34 D5, and C2 is labeled 470 µF, 10 V across VOUT and GNDSEC."
+        },
+        {
+          "id": "regulated-output",
+          "verdict": "pass",
+          "evidence": "The secondary output has a labeled 10 Ω, 5 W load between VOUT and the distinct GNDSEC return; primary return is separately labeled."
+        },
+        {
+          "id": "feedback-crossing",
+          "verdict": "pass",
+          "evidence": "RTOP/RBOT feed TL431 REF; K runs to the optocoupler LED, and its transistor collector reaches U1 FB while the emitter returns to primary GND. Bridges mark the non-junction crossings."
+        },
+        {
+          "id": "controller-label",
+          "verdict": "pass",
+          "evidence": "The controller block is labeled UC3843 and shows GATE, CS, and FB pin labels with visible external connections."
+        }
+      ]
+    }
   }
 }

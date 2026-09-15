@@ -1,7 +1,14 @@
 gitgraph
-  commit id: "initial"
-  branch feature
-  checkout feature
-  commit id: "feature-work"
+  commit id: "release-2.0" tag: "v2.0.0"
+  branch develop
+  checkout develop
+  commit id: "new-dashboard"
   checkout main
-  merge feature id: "merge-feature" tag: "v1.0"
+  branch hotfix-2.0.1
+  checkout hotfix-2.0.1
+  commit id: "fix-payment-crash" type: HIGHLIGHT
+  checkout main
+  merge hotfix-2.0.1 id: "hotfix-merge" tag: "v2.0.1"
+  checkout develop
+  merge hotfix-2.0.1 id: "sync-hotfix"
+  commit id: "dashboard-tests"

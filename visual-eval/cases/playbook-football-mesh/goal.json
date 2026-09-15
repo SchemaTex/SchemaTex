@@ -2,8 +2,8 @@
   "id": "playbook-football-mesh",
   "type": "playbook",
   "variant": "football",
-  "title": "Football Mesh",
-  "goal": "A practitioner can read the football mesh artefact at a glance.",
+  "title": "Mesh Concept",
+  "goal": "A practitioner can read this play at a glance: Mesh Concept.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -34,8 +34,45 @@
   "split": "train",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: Image 2 visibly depicts the defining Mesh concept with two shallow crossing routes, while Image 1 labels itself Mesh but shows only vertical routes."
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/football exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:41:52.591112+00:00",
+      "targetHash": "99c31df0c20b",
+      "sourceHash": "6032c40a1946",
+      "exemplarHash": "3ef95b8af407",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "“Mesh Concept” is prominently titled, with trips-right personnel, five eligible routes, defensive markers, and a deep-middle Cover 1 zone visibly shown."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Title, field context, offensive labels, defensive labels, legend, and “DEEP MIDDLE” text are legible and positioned beside the corresponding symbols."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        }
+      ]
+    }
   }
 }

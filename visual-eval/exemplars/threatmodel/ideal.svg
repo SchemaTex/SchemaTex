@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 700" width="1160" height="700" role="img" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<title>Web application threat model</title>
+<desc>STRIDE data-flow diagram with Internet, DMZ and Internal trust zones; five of six data flows cross a trust boundary and are drawn red; each element carries its STRIDE-per-element badge.</desc>
+<rect x="0" y="0" width="1160" height="700" fill="#ffffff"/>
+<text x="48" y="56" font-size="22" font-weight="700" text-anchor="start" fill="#0f172a">Web application threat model</text>
+<text x="48" y="80" font-size="13" font-weight="400" text-anchor="start" fill="#64748b">STRIDE per element on a data-flow diagram  ·  5 of 6 data flows cross a trust boundary</text>
+<line x1="48" y1="98" x2="1112" y2="98" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="124" width="230" height="406" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text x="175" y="152.5" font-size="11.5" font-weight="700" letter-spacing="1.2" text-anchor="middle" fill="#475569">INTERNET</text>
+<rect x="500" y="124" width="190" height="406" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text x="595" y="152.5" font-size="11.5" font-weight="700" letter-spacing="1.2" text-anchor="middle" fill="#475569">DMZ</text>
+<rect x="880" y="124" width="220" height="406" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text x="990" y="152.5" font-size="11.5" font-weight="700" letter-spacing="1.2" text-anchor="middle" fill="#475569">INTERNAL</text>
+<path d="M 260 250 L 521 250" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round"/>
+<path d="M 564.02 306 L 430 306 L 430 430 L 270 430" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round"/>
+<path d="M 595 314 L 595 364" fill="none" stroke="#1e293b" stroke-width="1.6" stroke-linejoin="round"/>
+<path d="M 659 250 L 900 250" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round"/>
+<path d="M 655.1 272 L 800 272 L 800 426 L 900 426" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round"/>
+<path d="M 659.03 456 L 900 456" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round"/>
+<rect x="90" y="214" width="170" height="72" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<text x="175" y="244.5" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Customer Browser</text>
+<rect x="155" y="255" width="40" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="175" y="267" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">S · R</text>
+<rect x="90" y="394" width="170" height="72" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<text x="175" y="423.5" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Shipping API</text>
+<rect x="155" y="435" width="40" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="175" y="447" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">S · R</text>
+<circle cx="595" cy="250" r="64" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<text x="595" y="243.5" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Web Application</text>
+<rect x="543.5" y="257" width="103" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="595" y="269" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">S · T · R · I · D · E</text>
+<circle cx="595" cy="440" r="66" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<text x="595" y="422" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Authentication</text>
+<text x="595" y="439" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Service</text>
+<rect x="543.5" y="453" width="103" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="595" y="465" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">S · T · R · I · D · E</text>
+<rect x="910" y="218" width="160" height="64" fill="#ffffff"/>
+<line x1="910" y1="218" x2="1070" y2="218" stroke="#1e293b" stroke-width="2.2"/><line x1="910" y1="282" x2="1070" y2="282" stroke="#1e293b" stroke-width="2.2"/>
+<text x="990" y="244.5" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Audit Log</text>
+<rect x="952" y="255" width="76" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="990" y="267.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">T · R? · I · D</text>
+<rect x="910" y="408" width="160" height="64" fill="#ffffff"/>
+<line x1="910" y1="408" x2="1070" y2="408" stroke="#1e293b" stroke-width="2.2"/><line x1="910" y1="472" x2="1070" y2="472" stroke="#1e293b" stroke-width="2.2"/>
+<text x="990" y="435.5" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0f172a">Customer Database</text>
+<rect x="952" y="445" width="76" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="990" y="457.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#475569">T · R? · I · D</text>
+<path d="M 531 250 L 521 253.8 L 521 246.2 Z" fill="#b02a37"/>
+<text x="395" y="241" font-size="12" font-weight="500" text-anchor="middle" fill="#b02a37">HTTPS request</text>
+<path d="M 260 430 L 270 426.2 L 270 433.8 Z" fill="#b02a37"/>
+<text x="420" y="371" font-size="12" font-weight="500" text-anchor="end" fill="#b02a37">shipment request</text>
+<path d="M 595 374 L 591.2 364 L 598.8 364 Z" fill="#1e293b"/>
+<text x="605" y="351" font-size="12" font-weight="500" text-anchor="start" fill="#1e293b">credentials</text>
+<path d="M 910 250 L 900 253.8 L 900 246.2 Z" fill="#b02a37"/>
+<text x="785" y="242" font-size="12" font-weight="500" text-anchor="middle" fill="#b02a37">audit event</text>
+<path d="M 910 426 L 900 429.8 L 900 422.2 Z" fill="#b02a37"/>
+<text x="790" y="359" font-size="12" font-weight="500" text-anchor="end" fill="#b02a37">order data</text>
+<path d="M 910 456 L 900 459.8 L 900 452.2 Z" fill="#b02a37"/>
+<text x="740" y="473" font-size="12" font-weight="500" text-anchor="middle" fill="#b02a37">account lookup</text>
+<rect x="48" y="580" width="30" height="20" fill="#fff" stroke="#1e293b" stroke-width="1.6"/>
+<text x="88" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">External entity</text>
+<circle cx="209" cy="590" r="11" fill="#fff" stroke="#1e293b" stroke-width="1.6"/>
+<text x="230" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">Process</text>
+<line x1="305" y1="581" x2="335" y2="581" stroke="#1e293b" stroke-width="2"/><line x1="305" y1="599" x2="335" y2="599" stroke="#1e293b" stroke-width="2"/>
+<text x="345" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">Data store</text>
+<rect x="433" y="580" width="30" height="20" rx="5" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 3"/>
+<text x="473" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">Trust boundary</text>
+<line x1="587" y1="590" x2="613" y2="590" stroke="#1e293b" stroke-width="1.6"/><path d="M 621 590 L 612 586.4 L 612 593.6 Z" fill="#1e293b"/>
+<text x="631" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">Data flow within a zone</text>
+<line x1="791" y1="590" x2="817" y2="590" stroke="#b02a37" stroke-width="1.9"/><path d="M 825 590 L 816 586.4 L 816 593.6 Z" fill="#b02a37"/>
+<text x="835" y="594.5" font-size="12.5" font-weight="400" text-anchor="start" fill="#1e293b">Data flow crossing a boundary</text>
+<text x="48" y="632" font-size="12" font-weight="400" text-anchor="start" fill="#64748b">Badges list the STRIDE threats that apply to each element: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.</text>
+<text x="48" y="652" font-size="12" font-weight="400" text-anchor="start" fill="#64748b">R? marks repudiation as conditional on a data store; every data flow is exposed to T · I · D.</text>
+</svg>

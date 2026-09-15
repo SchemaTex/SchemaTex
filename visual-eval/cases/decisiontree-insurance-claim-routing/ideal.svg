@@ -1,76 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
-  <title>Insurance Claim Routing</title>
-  <rect width="1600" height="1000" fill="white"/>
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#334155"/></marker>
-    <style>
-      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b40; text-anchor: middle; font-size: 19px; }
-      .decision { fill: #f0f6fb; stroke: #334155; stroke-width: 2; }
-      .destination { fill: #f3f8f5; stroke: #334155; stroke-width: 2; }
-      .link { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
-      .label { font-size: 18px; font-weight: 600; }
-    </style>
-  </defs>
-  <text x="800" y="49" style="font-size:30px;font-weight:600">Insurance Claim Routing</text>
-
-  <!-- Orthogonal routing connections -->
-  <path class="link" d="M555 175H420V305"/>
-  <text class="label" x="480" y="158">Yes</text>
-  <path class="link" d="M1045 175H1180V305"/>
-  <text class="label" x="1110" y="158">No</text>
-
-  <path class="link" d="M200 395H180V745"/>
-  <text class="label" x="152" y="450">Yes</text>
-  <path class="link" d="M640 395H650V495"/>
-  <text class="label" x="678" y="450">No</text>
-
-  <path class="link" d="M650 665V700H485V850"/>
-  <text class="label" x="548" y="687">Yes</text>
-  <path class="link" d="M865 580H885V780H780V850"/>
-  <text class="label" x="857" y="738">No</text>
-
-  <path class="link" d="M1400 395H1420V745"/>
-  <text class="label" x="1450" y="450">Yes</text>
-  <path class="link" d="M1180 485V525"/>
-  <text class="label" x="1208" y="512">No</text>
-
-  <path class="link" d="M950 620H920V800H1075V850"/>
-  <text class="label" x="948" y="759">Yes</text>
-  <path class="link" d="M1180 715V840H1390V870"/>
-  <text class="label" x="1235" y="828">No</text>
-
-  <!-- Five decisions from the routing definition -->
-  <polygon class="decision" points="800,85 1045,175 800,265 555,175"/>
-  <text x="800" y="151"><tspan x="800">Is the reported loss above</tspan><tspan x="800" dy="25">the fast-track value</tspan><tspan x="800" dy="25">threshold?</tspan></text>
-
-  <polygon class="decision" points="420,305 640,395 420,485 200,395"/>
-  <text x="420" y="383"><tspan x="420">Does the claim involve</tspan><tspan x="420" dy="25">injury or liability?</tspan></text>
-
-  <polygon class="decision" points="650,495 865,580 650,665 435,580"/>
-  <text x="650" y="568"><tspan x="650">Is there suspected</tspan><tspan x="650" dy="25">fraud indicator?</tspan></text>
-
-  <polygon class="decision" points="1180,305 1400,395 1180,485 960,395"/>
-  <text x="1180" y="371"><tspan x="1180">Is the claim type</tspan><tspan x="1180" dy="25">covered by</tspan><tspan x="1180" dy="25">automated rules?</tspan></text>
-
-  <polygon class="decision" points="1180,525 1410,620 1180,715 950,620"/>
-  <text x="1180" y="596"><tspan x="1180">Does the loss require</tspan><tspan x="1180" dy="25">repair network</tspan><tspan x="1180" dy="25">coordination?</tspan></text>
-
-  <!-- Six operational destinations -->
-  <rect class="destination" x="45" y="745" width="270" height="90"/>
-  <text x="180" y="782"><tspan x="180">Assign complex</tspan><tspan x="180" dy="25">casualty adjuster</tspan></text>
-
-  <rect class="destination" x="350" y="850" width="270" height="90"/>
-  <text x="485" y="887"><tspan x="485">Refer to special</tspan><tspan x="485" dy="25">investigations</tspan></text>
-
-  <rect class="destination" x="645" y="850" width="270" height="90"/>
-  <text x="780" y="887"><tspan x="780">Assign field</tspan><tspan x="780" dy="25">property adjuster</tspan></text>
-
-  <rect class="destination" x="1285" y="745" width="270" height="90"/>
-  <text x="1420" y="782"><tspan x="1420">Route to fast-track</tspan><tspan x="1420" dy="25">settlement</tspan></text>
-
-  <rect class="destination" x="940" y="850" width="270" height="90"/>
-  <text x="1075" y="875"><tspan x="1075">Assign desk adjuster</tspan><tspan x="1075" dy="25">and repair partner</tspan></text>
-
-  <rect class="destination" x="1255" y="870" width="270" height="90"/>
-  <text x="1390" y="907"><tspan x="1390">Assign standard</tspan><tspan x="1390" dy="25">claims handler</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1226" height="616" viewBox="0 0 1226 616">
+<title>Insurance Claim Routing</title>
+<desc>Question tree: 5 yes/no questions lead to 6 actions, each colour-coded by urgency ().</desc>
+<rect x="0" y="0" width="1226" height="616" fill="#FFFFFF"/>
+<text x="40" y="50" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" fill="#1F2933" text-anchor="start">Insurance Claim Routing</text>
+<text x="1186" y="50" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#52606D" text-anchor="end">Question</text>
+<polygon points="1115.51,40 1127.51,40 1132.51,46 1127.51,52 1115.51,52 1110.51,46" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.2"/>
+<path d="M566.5,148 V170 Q566.5,176 560.5,176 H275.5 Q269.5,176 269.5,182 V220" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="269.5,228 265,220 274,220" fill="#3E4C59"/>
+<text x="262.5" y="199" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M566.5,148 V170 Q566.5,176 572.5,176 H857.5 Q863.5,176 863.5,182 V220" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="863.5,228 859,220 868,220" fill="#3E4C59"/>
+<text x="870.5" y="199" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M269.5,284 V306 Q269.5,312 263.5,312 H130 Q124,312 124,318 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="124,500 119.5,492 128.5,492" fill="#3E4C59"/>
+<text x="117" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M269.5,284 V306 Q269.5,312 275.5,312 H409 Q415,312 415,318 V356" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="415,364 410.5,356 419.5,356" fill="#3E4C59"/>
+<text x="422" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M415,420 V442 Q415,448 409,448 H328 Q322,448 322,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="322,500 317.5,492 326.5,492" fill="#3E4C59"/>
+<text x="315" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M415,420 V442 Q415,448 421,448 H502 Q508,448 508,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="508,500 503.5,492 512.5,492" fill="#3E4C59"/>
+<text x="515" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M863.5,284 V306 Q863.5,312 857.5,312 H724 Q718,312 718,318 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="718,500 713.5,492 722.5,492" fill="#3E4C59"/>
+<text x="711" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M863.5,284 V306 Q863.5,312 869.5,312 H1003 Q1009,312 1009,318 V356" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="1009,364 1004.5,356 1013.5,356" fill="#3E4C59"/>
+<text x="1016" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M1009,420 V442 Q1009,448 1003,448 H922 Q916,448 916,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="916,500 911.5,492 920.5,492" fill="#3E4C59"/>
+<text x="909" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M1009,420 V442 Q1009,448 1015,448 H1096 Q1102,448 1102,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="1102,500 1097.5,492 1106.5,492" fill="#3E4C59"/>
+<text x="1109" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<polygon points="466.21,92 666.79,92 684.79,120 666.79,148 466.21,148 448.21,120" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="566.5" y="116" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Is the reported loss above the</text>
+<text x="566.5" y="133" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">fast-track value threshold?</text>
+<circle cx="448.21" cy="120" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="448.21" y="123.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<polygon points="140.36,228 398.64,228 416.64,256 398.64,284 140.36,284 122.36,256" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="269.5" y="260.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Does the claim involve injury or liability?</text>
+<circle cx="122.36" cy="256" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="122.36" y="259.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<polygon points="300.3,364 529.7,364 547.7,392 529.7,420 300.3,420 282.3,392" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="415" y="396.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Is there suspected fraud indicator?</text>
+<circle cx="282.3" cy="392" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="282.3" y="395.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<polygon points="777.21,228 949.79,228 967.79,256 949.79,284 777.21,284 759.21,256" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="863.5" y="252" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Is the claim type covered</text>
+<text x="863.5" y="269" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">by automated rules?</text>
+<circle cx="759.21" cy="256" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="759.21" y="259.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<polygon points="915.42,364 1102.58,364 1120.58,392 1102.58,420 915.42,420 897.42,392" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="1009" y="388" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Does the loss require repair</text>
+<text x="1009" y="405" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">network coordination?</text>
+<circle cx="897.42" cy="392" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="897.42" y="395.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<rect x="40" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="124" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Assign complex</text>
+<text x="124" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">casualty adjuster</text>
+<rect x="238" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="322" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Refer to special</text>
+<text x="322" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">investigations</text>
+<rect x="424" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="508" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Assign field</text>
+<text x="508" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">property adjuster</text>
+<rect x="634" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="718" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Route to fast-track</text>
+<text x="718" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">settlement</text>
+<rect x="832" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="916" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Assign desk adjuster</text>
+<text x="916" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">and repair partner</text>
+<rect x="1018" y="500" width="168" height="76" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="1102" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Assign standard</text>
+<text x="1102" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">claims handler</text>
 </svg>

@@ -1,0 +1,15 @@
+pert
+title: "Warehouse management system rollout"
+unit: days
+layout: aoa
+
+task A "Requirements"      duration: 5 
+task B "Buy hardware"      duration: 10 after: A
+task C "Configure WMS"     duration: 15 after: A
+task D "Install scanners"  duration: 8  after: B
+task E "ERP integration"   duration: 12 after: C
+task F "System test"       duration: 6  after: D, E
+task G "Write SOPs"        duration: 10 after: A
+task H "Train staff"       duration: 5  after: F, G
+task I "Load data"         duration: 4  after: E
+task J "Go-live"           milestone after: H, I

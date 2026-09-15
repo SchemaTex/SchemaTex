@@ -1,1 +1,40 @@
-{"id":"sequence-payment-3ds","type":"sequence","title":"3-D Secure payment","goal":"Show payment authentication before authorization.","rubric":[{"id":"order","severity":"blocker","must":"3DS interaction visibly completes before issuer Authorization."},{"id":"alt","severity":"blocker","must":"An alt frame separates challenge and frictionless paths."},{"id":"activation","severity":"major","must":"PSP and ACS have activation bars."},{"id":"result","severity":"major","must":"CAVV and ECI visibly return before authorization."},{"id":"note","severity":"minor","must":"A note says Authenticate before authorize."}],"split":"train"}
+{
+  "id": "sequence-payment-3ds",
+  "type": "sequence",
+  "title": "3-D Secure payment",
+  "goal": "Show payment authentication before authorization.",
+  "rubric": [
+    {
+      "id": "order",
+      "severity": "blocker",
+      "must": "3DS interaction visibly completes before issuer Authorization."
+    },
+    {
+      "id": "alt",
+      "severity": "blocker",
+      "must": "An alt frame separates challenge and frictionless paths."
+    },
+    {
+      "id": "activation",
+      "severity": "major",
+      "must": "PSP and ACS have activation bars."
+    },
+    {
+      "id": "result",
+      "severity": "major",
+      "must": "CAVV and ECI visibly return before authorization."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Authenticate before authorize."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/sequence/ideal.svg (sha256 c97704a0e340). Vision reviewed all six rasterized targets: distinct call/reply arrowheads, nested frames and operand separators, activation bars, message labels and notes remain readable. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

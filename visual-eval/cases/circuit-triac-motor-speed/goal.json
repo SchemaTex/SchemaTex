@@ -37,8 +37,8 @@
   ],
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg",
+    "source": "hand-authored",
     "reviewed": true,
-    "notes": "Reviewed and corrected: a wire ran from the gate resistor's far end straight back to the gate, shorting it out. The resistor now sits in series between the diac and the gate. The phase-shift network, snubber and fuse on the live conductor are otherwise right."
+    "notes": "Visually reviewed against the circuit exemplar. Corrected the actual SVG to match the current source: R2 is in series from D1 to the TRIAC gate; removed the stale, undeclared W1 bypass and GATE_R annotation. Other topology and component values are preserved."
   }
 }

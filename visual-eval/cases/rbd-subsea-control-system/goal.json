@@ -35,5 +35,11 @@
       "must": "A computed system-reliability summary is visible on the drawing."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/rbd/ideal.svg (sha256 1f4f1225b103), source sha256 7e75508f5676. Independent recursive series/parallel drawing with all source blocks, separate complete redundant paths, reliability totals and Birnbaum importance computed from the success expression. Red borders mark actual single points of failure; highest importance uses green (inner border when both roles apply). All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
 }

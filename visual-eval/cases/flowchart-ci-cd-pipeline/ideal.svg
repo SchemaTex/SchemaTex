@@ -1,88 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3220 840" width="3220" height="840">
-<title>Continuous delivery pipeline with quality gates and production rollback</title>
-<rect width="3220" height="840" fill="white"/>
-<defs>
- <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4L0 8Z" fill="#334155"/></marker>
- <marker id="boldArrow" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L13 6L0 12Z" fill="#183f63"/></marker>
- <style>
- .node{fill:#f8fafc;stroke:#334155;stroke-width:2.5}
- .gate{fill:#fff8e8;stroke:#805b20;stroke-width:2.5}
- .terminal{fill:#edf5fa;stroke:#183f63;stroke-width:2.5}
- .edge{fill:none;stroke:#334155;stroke-width:2.5;marker-end:url(#arrow);stroke-linejoin:round}
- .loop{stroke-dasharray:7 6}
- text{font-family:Helvetica,Arial,sans-serif;font-size:22px;fill:#172b3d;text-anchor:middle;dominant-baseline:middle}
- .label{font-size:19px;fill:#475569}
- </style>
-</defs>
-<!-- Main flow: commit, build, tests, and security gates. -->
-<path d="M210 300H260" fill="none" stroke="#183f63" stroke-width="6" marker-end="url(#boldArrow)"/>
-<path class="edge" d="M430 300H480"/>
-<path class="edge" d="M680 300H740"/>
-<path class="edge" d="M910 300H960"/>
-<path class="edge" d="M1160 300H1220"/>
-<path class="edge" d="M1420 300H1470"/>
-<path class="edge" d="M1710 300H1770"/>
-<path class="edge" d="M1950 300H2010"/>
-<path class="edge" d="M2200 300H2250"/>
-<path class="edge" d="M2480 300H2540"/>
-<path class="edge" d="M2740 300H2790"/>
-<!-- Successful production health check -->
-<path class="edge" d="M2905 185V100H3115V260"/>
-<!-- Failed quality gates converge at the notification bus. -->
-<path d="M580 405V580H1060M1060 405V580H1590V420" fill="none" stroke="#334155" stroke-width="2.5"/>
-<path class="edge" d="M1060 580V650"/>
-<circle cx="1060" cy="580" r="4" fill="#334155"/>
-<path class="edge loop" d="M960 690H125V340"/>
-<!-- Approval hold and return. -->
-<path class="edge" d="M2365 415V515"/>
-<path class="edge loop" d="M2470 555H2510V150H2365V185"/>
-<!-- Production rollback and incident. -->
-<path class="edge" d="M2905 415V515"/>
-<path class="edge" d="M2905 595V680"/>
-<!-- Symbols -->
-<rect class="terminal" x="40" y="260" width="170" height="80" rx="40"/>
-<text x="125" y="300">Commit merged</text>
-<rect class="node" x="260" y="260" width="170" height="80"/>
-<text x="345" y="300">Build artifact</text>
-<polygon class="gate" points="580,195 680,300 580,405 480,300"/>
-<text x="580" y="288"><tspan x="580">Build</tspan><tspan x="580" dy="27">succeeds?</tspan></text>
-<rect class="node" x="740" y="260" width="170" height="80"/>
-<text x="825" y="288"><tspan x="825">Run unit</tspan><tspan x="825" dy="27">tests</tspan></text>
-<polygon class="gate" points="1060,195 1160,300 1060,405 960,300"/>
-<text x="1060" y="288"><tspan x="1060">Tests</tspan><tspan x="1060" dy="27">pass?</tspan></text>
-<polygon class="node" points="1245,250 1395,250 1420,300 1395,350 1245,350 1220,300"/>
-<text x="1320" y="288"><tspan x="1320">Security</tspan><tspan x="1320" dy="27">scan</tspan></text>
-<polygon class="gate" points="1590,180 1710,300 1590,420 1470,300"/>
-<text x="1590" y="288"><tspan x="1590">Findings</tspan><tspan x="1590" dy="27">acceptable?</tspan></text>
-<rect class="node" x="1770" y="260" width="180" height="80"/>
-<text x="1860" y="288"><tspan x="1860">Deploy to</tspan><tspan x="1860" dy="27">staging</tspan></text>
-<rect class="node" x="2010" y="260" width="190" height="80"/>
-<text x="2105" y="288"><tspan x="2105">Run integration</tspan><tspan x="2105" dy="27">tests</tspan></text>
-<polygon class="gate" points="2365,185 2480,300 2365,415 2250,300"/>
-<text x="2365" y="288"><tspan x="2365">Release</tspan><tspan x="2365" dy="27">approved?</tspan></text>
-<rect class="node" x="2540" y="260" width="200" height="80"/>
-<text x="2640" y="288"><tspan x="2640">Deploy</tspan><tspan x="2640" dy="27">production</tspan></text>
-<polygon class="gate" points="2905,185 3020,300 2905,415 2790,300"/>
-<text x="2905" y="288"><tspan x="2905">Health checks</tspan><tspan x="2905" dy="27">pass?</tspan></text>
-<rect class="terminal" x="3040" y="260" width="150" height="80" rx="40"/>
-<text x="3115" y="288"><tspan x="3115">Release</tspan><tspan x="3115" dy="27">complete</tspan></text>
-<rect class="node" x="960" y="650" width="200" height="80"/>
-<text x="1060" y="690">Notify developer</text>
-<rect class="node" x="2260" y="515" width="210" height="80"/>
-<text x="2365" y="555">Hold release</text>
-<rect x="2795" y="515" width="220" height="80" fill="#fff1ee" stroke="#943f35" stroke-width="2.5"/>
-<text x="2905" y="543"><tspan x="2905">Rollback</tspan><tspan x="2905" dy="27">production</tspan></text>
-<rect class="terminal" x="2800" y="680" width="210" height="80" rx="40"/>
-<text x="2905" y="720">Incident opened</text>
-<!-- Branch labels -->
-<text class="label" x="710" y="280">Yes</text>
-<text class="label" x="1190" y="280">Yes</text>
-<text class="label" x="1740" y="280">Yes</text>
-<text class="label" x="2509" y="280">Yes</text>
-<text class="label" x="603" y="448">No</text>
-<text class="label" x="1083" y="448">No</text>
-<text class="label" x="1613" y="455">No</text>
-<text class="label" x="2388" y="465">No</text>
-<text class="label" x="2928" y="465">No</text>
-<text class="label" x="2930" y="155">Yes</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2268" viewBox="0 0 1000 1620" role="img" aria-labelledby="title desc">
+<title id="title">Continuous delivery pipeline</title>
+<desc id="desc">Build, unit tests, and security gates precede staging. Failed quality gates notify the developer and return to the commit. Integration tests precede release approval. Failed production health checks trigger rollback and an incident.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#1B2430"/></marker></defs>
+<style>
+text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1B2430;font-size:13px;font-weight:400;text-anchor:middle}
+.node{fill:#FFFFFF;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round}
+.end{fill:#DFEBE0}.decision{fill:#FBEDCE}
+.edge{fill:none;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arrow)}
+.loop{stroke-dasharray:6 5}.pill rect{fill:white;stroke:#D7DFE9;stroke-width:1}.pill text{font-size:11px;font-weight:500}
+.legend text{font-size:11px;fill:#5F6B7A;text-anchor:start}
+</style>
+<rect width="1000" height="1620" fill="#FFFFFF"/>
+<text x="56" y="52" text-anchor="start" style="text-anchor:start;font-size:21px;font-weight:600">Continuous delivery pipeline</text>
+<text x="56" y="74" style="text-anchor:start;font-size:12px;fill:#5F6B7A">Engineering Operations · quality gates, release approval, production rollback</text>
+<path d="M56 88H944" stroke="#D7DFE9" stroke-width="1"/>
+<!-- Release approval stage, with a folder tab matching the exemplar. -->
+<path d="M55 867V850Q55 842 63 842H196Q204 842 204 850V867" fill="#E9EDF3" stroke="#5F6B7A" stroke-width="1.2"/>
+<text x="65" y="859" style="text-anchor:start;font-size:11px;font-weight:600;letter-spacing:.8px;fill:#5F6B7A">RELEASE APPROVAL</text>
+<rect x="55" y="867" width="700" height="252" rx="12" fill="#F5F7FA" stroke="#5F6B7A" stroke-width="1.2"/>
+
+<path class="edge" d="M500 147V184" style="stroke-width:3"/>
+<path class="edge " d="M500 236V264"/>
+<path class="edge " d="M500 356V384"/>
+<path class="edge " d="M500 436V464"/>
+<path class="edge " d="M500 556V584"/>
+<path class="edge " d="M500 636V664"/>
+<path class="edge " d="M500 756V784"/>
+<path class="edge " d="M500 836V879"/>
+<path class="edge " style="marker-end:none" d="M500 931V958"/>
+<path class="edge " d="M500 1076V1164"/>
+<path class="edge " d="M500 1216V1254"/>
+<path class="edge " d="M500 1346V1408"/>
+<path class="edge " style="marker-end:none" d="M433 310H284Q280 310 280 314V510"/>
+<path class="edge " d="M433 510H233"/>
+<path class="edge " style="marker-end:none" d="M418 710H284Q280 710 280 706V510"/>
+<path class="edge loop" d="M150 484V129Q150 125 154 125H421"/>
+<path class="edge " d="M430 1030H216"/>
+<path class="edge loop" d="M150 1004V962Q150 958 154 958H496Q500 958 500 962V984"/>
+<path class="edge " d="M418 1300H154Q150 1300 150 1304V1404"/>
+<path class="edge " d="M150 1456V1508"/>
+<rect class="node end" x="421.0" y="103.0" width="158" height="44" rx="22"/>
+<text><tspan x="500" y="129.5">Commit merged</tspan></text>
+<rect class="node " x="427.5" y="184.0" width="145" height="52" rx="4"/>
+<text><tspan x="500" y="214.5">Build artifact</tspan></text>
+<path class="node decision" d="M500 264L567 310L500 356L433 310Z"/>
+<text><tspan x="500" y="306.0">Build</tspan><tspan x="500" y="323.0">succeeds?</tspan></text>
+<rect class="node " x="67.0" y="484.0" width="166" height="52" rx="4"/>
+<text><tspan x="150" y="514.5">Notify developer</tspan></text>
+<rect class="node " x="422.0" y="384.0" width="156" height="52" rx="4"/>
+<text><tspan x="500" y="414.5">Run unit tests</tspan></text>
+<path class="node decision" d="M500 464L567 510L500 556L433 510Z"/>
+<text><tspan x="500" y="506.0">Tests</tspan><tspan x="500" y="523.0">pass?</tspan></text>
+<path class="node" d="M428 584H572L587 610L572 636H428L413 610Z"/>
+<text><tspan x="500" y="614.5">Security scan</tspan></text>
+<path class="node decision" d="M500 664L582 710L500 756L418 710Z"/>
+<text><tspan x="500" y="706.0">Findings</tspan><tspan x="500" y="723.0">acceptable?</tspan></text>
+<rect class="node " x="417.0" y="784.0" width="166" height="52" rx="4"/>
+<text><tspan x="500" y="814.5">Deploy to staging</tspan></text>
+<rect class="node " x="406.5" y="879.0" width="187" height="52" rx="4"/>
+<text><tspan x="500" y="909.5">Run integration tests</tspan></text>
+<path class="node decision" d="M500 984L570 1030L500 1076L430 1030Z"/>
+<text><tspan x="500" y="1026.0">Release</tspan><tspan x="500" y="1043.0">approved?</tspan></text>
+<rect class="node " x="84.0" y="1004.0" width="132" height="52" rx="4"/>
+<text><tspan x="150" y="1034.5">Hold release</tspan></text>
+<rect class="node " x="413.0" y="1164.0" width="174" height="52" rx="4"/>
+<text><tspan x="500" y="1194.5">Deploy production</tspan></text>
+<path class="node decision" d="M500 1254L582 1300L500 1346L418 1300Z"/>
+<text><tspan x="500" y="1296.0">Health checks</tspan><tspan x="500" y="1313.0">pass?</tspan></text>
+<rect class="node end" x="415.0" y="1408.0" width="170" height="44" rx="22"/>
+<text><tspan x="500" y="1434.5">Release complete</tspan></text>
+<rect class="node " x="59.0" y="1404.0" width="182" height="52" rx="4"/>
+<text><tspan x="150" y="1434.5">Rollback production</tspan></text>
+<rect class="node end" x="71.0" y="1508.0" width="158" height="44" rx="22"/>
+<text><tspan x="150" y="1534.5">Incident opened</tspan></text>
+<g class="pill"><rect x="386.0" y="284" width="28" height="19" rx="5"/><text x="400" y="297.5">No</text></g>
+<g class="pill"><rect x="512.0" y="359" width="34" height="19" rx="5"/><text x="529" y="372.5">Yes</text></g>
+<g class="pill"><rect x="386.0" y="484" width="28" height="19" rx="5"/><text x="400" y="497.5">No</text></g>
+<g class="pill"><rect x="512.0" y="559" width="34" height="19" rx="5"/><text x="529" y="572.5">Yes</text></g>
+<g class="pill"><rect x="376.0" y="684" width="28" height="19" rx="5"/><text x="390" y="697.5">No</text></g>
+<g class="pill"><rect x="512.0" y="759" width="34" height="19" rx="5"/><text x="529" y="772.5">Yes</text></g>
+<g class="pill"><rect x="377.0" y="1004" width="28" height="19" rx="5"/><text x="391" y="1017.5">No</text></g>
+<g class="pill"><rect x="512.0" y="1084" width="34" height="19" rx="5"/><text x="529" y="1097.5">Yes</text></g>
+<g class="pill"><rect x="375.0" y="1274" width="28" height="19" rx="5"/><text x="389" y="1287.5">No</text></g>
+<g class="pill"><rect x="512.0" y="1364" width="34" height="19" rx="5"/><text x="529" y="1377.5">Yes</text></g>
+<g class="legend" transform="translate(790 1375)">
+<text x="0" y="0" style="font-weight:600;letter-spacing:.8px">LEGEND</text>
+<rect class="node end" x="0" y="22" width="34" height="15" rx="8"/><text x="46" y="34">Start / end</text>
+<rect class="node" x="0" y="48" width="34" height="15" rx="3"/><text x="46" y="60">Process step</text>
+<path class="node decision" d="M0 82L17 74L34 82L17 90Z"/><text x="46" y="86">Decision</text>
+<path class="node" d="M6 100H28L34 108L28 116H6L0 108Z"/><text x="46" y="112">Preparation</text>
+<path d="M0 134H34" fill="none" stroke="#1B2430" stroke-width="1.5" stroke-dasharray="6 5"/><text x="46" y="138">Rework loop</text>
+</g>
 </svg>

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-timing" viewBox="0 0 860 170" width="860" height="170" role="img" data-diagram-type="timing"><title>Reset Enable</title>
-<desc>Digital timing diagram with 3 signals</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-timing" viewBox="0 0 620 322" width="620" height="322" role="img" data-diagram-type="timing"><title>Power-on reset and enable sequence</title>
+<desc>Digital timing diagram with 6 signals</desc>
 <defs><pattern id="schematex-timing-xhatch" patternUnits="userSpaceOnUse" width="6" height="6"><rect x="0" y="0" width="6" height="6" fill="#f1f5f9"/>
 <path d="M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5" stroke="#475569" stroke-width="0.8"/></pattern>
 <style>.schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
@@ -15,24 +15,38 @@
 .schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #0f172a; }
 .sx-native-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
 .sx-native-handle:hover { fill: #f1f5f9; stroke-width: 2; }</style></defs>
-<g class="schematex-timing-grid-g"><line x1="120" y1="40" x2="120" y2="158" class="schematex-timing-grid"/>
-<line x1="200" y1="40" x2="200" y2="158" class="schematex-timing-grid"/>
-<line x1="280" y1="40" x2="280" y2="158" class="schematex-timing-grid"/>
-<line x1="360" y1="40" x2="360" y2="158" class="schematex-timing-grid"/>
-<line x1="440" y1="40" x2="440" y2="158" class="schematex-timing-grid"/>
-<line x1="520" y1="40" x2="520" y2="158" class="schematex-timing-grid"/>
-<line x1="600" y1="40" x2="600" y2="158" class="schematex-timing-grid"/>
-<line x1="680" y1="40" x2="680" y2="158" class="schematex-timing-grid"/>
-<line x1="760" y1="40" x2="760" y2="158" class="schematex-timing-grid"/>
-<line x1="840" y1="40" x2="840" y2="158" class="schematex-timing-grid"/></g>
-<g class="schematex-timing-waves"><g transform="translate(120, 0)" data-signal="CLK"><path class="schematex-timing-wave" d="M 0,70 L 0,46 L 40,46 L 40,70 L 80,70"/><path class="schematex-timing-wave" d="M 80,70 L 80,46 L 120,46 L 120,70 L 160,70"/><path class="schematex-timing-wave" d="M 160,70 L 160,46 L 200,46 L 200,70 L 240,70"/><path class="schematex-timing-wave" d="M 240,70 L 240,46 L 280,46 L 280,70 L 320,70"/><path class="schematex-timing-wave" d="M 320,70 L 320,46 L 360,46 L 360,70 L 400,70"/><path class="schematex-timing-wave" d="M 400,70 L 400,46 L 440,46 L 440,70 L 480,70"/><path class="schematex-timing-wave" d="M 480,70 L 480,46 L 520,46 L 520,70 L 560,70"/><path class="schematex-timing-wave" d="M 560,70 L 560,46 L 600,46 L 600,70 L 640,70"/></g>
-<g transform="translate(120, 0)" data-signal="ENABLE"><path class="schematex-timing-wave" d="M 0,82 L 80,82 L 80,106 L 160,106 L 240,106 L 320,106 L 400,106 L 480,106 L 560,106 L 560,82 L 640,82"/></g>
-<g transform="translate(120, 0)" data-signal="DATA"><rect x="0" y="118" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><rect x="640" y="118" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><path class="schematex-timing-bus" d="M 85,118 L 155,118 L 160,130 L 155,142 L 85,142 L 80,130 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 165,118 L 235,118 L 240,130 L 235,142 L 165,142 L 160,130 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 245,118 L 315,118 L 320,130 L 315,142 L 245,142 L 240,130 Z" data-bus-index="2"/><path class="schematex-timing-bus" d="M 325,118 L 395,118 L 400,130 L 395,142 L 325,142 L 320,130 Z" data-bus-index="3"/><path class="schematex-timing-bus" d="M 405,118 L 475,118 L 480,130 L 475,142 L 405,142 L 400,130 Z" data-bus-index="4"/><path class="schematex-timing-bus" d="M 485,118 L 555,118 L 560,130 L 555,142 L 485,142 L 480,130 Z" data-bus-index="5"/><path class="schematex-timing-bus" d="M 565,118 L 635,118 L 640,130 L 635,142 L 565,142 L 560,130 Z" data-bus-index="6"/></g></g>
+<g class="schematex-timing-grid-g"><line x1="120" y1="40" x2="120" y2="310" class="schematex-timing-grid"/>
+<line x1="160" y1="40" x2="160" y2="310" class="schematex-timing-grid"/>
+<line x1="200" y1="40" x2="200" y2="310" class="schematex-timing-grid"/>
+<line x1="240" y1="40" x2="240" y2="310" class="schematex-timing-grid"/>
+<line x1="280" y1="40" x2="280" y2="310" class="schematex-timing-grid"/>
+<line x1="320" y1="40" x2="320" y2="310" class="schematex-timing-grid"/>
+<line x1="360" y1="40" x2="360" y2="310" class="schematex-timing-grid"/>
+<line x1="400" y1="40" x2="400" y2="310" class="schematex-timing-grid"/>
+<line x1="440" y1="40" x2="440" y2="310" class="schematex-timing-grid"/>
+<line x1="480" y1="40" x2="480" y2="310" class="schematex-timing-grid"/>
+<line x1="520" y1="40" x2="520" y2="310" class="schematex-timing-grid"/>
+<line x1="560" y1="40" x2="560" y2="310" class="schematex-timing-grid"/>
+<line x1="600" y1="40" x2="600" y2="310" class="schematex-timing-grid"/></g>
+<g class="schematex-timing-waves"><g transform="translate(120, 0)" data-signal="CLK"><path class="schematex-timing-wave" d="M 0,92 L 0,68 L 20,68 L 20,92 L 40,92"/><path class="schematex-timing-wave" d="M 40,92 L 40,68 L 60,68 L 60,92 L 80,92"/><path class="schematex-timing-wave" d="M 80,92 L 80,68 L 100,68 L 100,92 L 120,92"/><path class="schematex-timing-wave" d="M 120,92 L 120,68 L 140,68 L 140,92 L 160,92"/><path class="schematex-timing-wave" d="M 160,92 L 160,68 L 180,68 L 180,92 L 200,92"/><path class="schematex-timing-wave" d="M 200,92 L 200,68 L 220,68 L 220,92 L 240,92"/><path class="schematex-timing-wave" d="M 240,92 L 240,68 L 260,68 L 260,92 L 280,92"/><path class="schematex-timing-wave" d="M 280,92 L 280,68 L 300,68 L 300,92 L 320,92"/><path class="schematex-timing-wave" d="M 320,92 L 320,68 L 340,68 L 340,92 L 360,92"/><path class="schematex-timing-wave" d="M 360,92 L 360,68 L 380,68 L 380,92 L 400,92"/><path class="schematex-timing-wave" d="M 400,92 L 400,68 L 420,68 L 420,92 L 440,92"/><path class="schematex-timing-wave" d="M 440,92 L 440,68 L 460,68 L 460,92 L 480,92"/></g>
+<g transform="translate(120, 0)" data-signal="VDD_OK"><path class="schematex-timing-wave" d="M 0,128 L 40,128 L 80,128 L 80,104 L 120,104 L 160,104 L 200,104 L 240,104 L 280,104 L 320,104 L 360,104 L 400,104 L 440,104 L 480,104"/></g>
+<g transform="translate(120, 0)" data-signal="RST_N"><path class="schematex-timing-wave" d="M 0,186 L 40,186 L 80,186 L 120,186 L 160,186 L 200,186 L 200,162 L 240,162 L 280,162 L 320,162 L 360,162 L 400,162 L 440,162 L 480,162"/></g>
+<g transform="translate(120, 0)" data-signal="PLL_LOCK"><path class="schematex-timing-wave" d="M 0,222 L 40,222 L 80,222 L 120,222 L 160,222 L 200,222 L 240,222 L 280,222 L 280,198 L 320,198 L 360,198 L 400,198 L 440,198 L 480,198"/></g>
+<g transform="translate(120, 0)" data-signal="EN"><path class="schematex-timing-wave" d="M 0,258 L 40,258 L 80,258 L 120,258 L 160,258 L 200,258 L 240,258 L 280,258 L 320,258 L 360,258 L 360,234 L 400,234 L 440,234 L 480,234"/></g>
+<g transform="translate(120, 0)" data-signal="STATE"><rect x="0" y="270" width="40" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><path class="schematex-timing-bus" d="M 45,270 L 195,270 L 200,282 L 195,294 L 45,294 L 40,282 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 205,270 L 275,270 L 280,282 L 275,294 L 205,294 L 200,282 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 285,270 L 355,270 L 360,282 L 355,294 L 285,294 L 280,282 Z" data-bus-index="2"/><path class="schematex-timing-bus" d="M 365,270 L 475,270 L 480,282 L 475,294 L 365,294 L 360,282 Z" data-bus-index="3"/></g></g>
 <g class="schematex-timing-labels"><g transform="translate(120, 0)"></g>
 <g transform="translate(120, 0)"></g>
-<g transform="translate(120, 0)"><text x="120" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="200" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="280" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="360" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="440" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text><text x="520" y="134" class="schematex-timing-bus-label" text-anchor="middle">0</text><text x="600" y="134" class="schematex-timing-bus-label" text-anchor="middle">1</text></g></g>
-<g class="schematex-timing-names"><text x="112" y="62" class="schematex-timing-name" text-anchor="end">CLK</text>
-<text x="112" y="98" class="schematex-timing-name" text-anchor="end">ENABLE</text>
-<text x="112" y="134" class="schematex-timing-name" text-anchor="end">DATA</text></g>
+<g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"><text x="120" y="286" class="schematex-timing-bus-label" text-anchor="middle">RESET</text><text x="240" y="286" class="schematex-timing-bus-label" text-anchor="middle">CALIBRATE</text><text x="320" y="286" class="schematex-timing-bus-label" text-anchor="middle">IDLE</text><text x="420" y="286" class="schematex-timing-bus-label" text-anchor="middle">RUN</text></g></g>
+<g class="schematex-timing-names"><text x="6" y="56" class="schematex-timing-group-label">Supply and clock</text>
+<text x="112" y="84" class="schematex-timing-name" text-anchor="end">CLK</text>
+<text x="112" y="120" class="schematex-timing-name" text-anchor="end">VDD_OK</text>
+<text x="6" y="150" class="schematex-timing-group-label">Control</text>
+<text x="112" y="178" class="schematex-timing-name" text-anchor="end">RST_N</text>
+<text x="112" y="214" class="schematex-timing-name" text-anchor="end">PLL_LOCK</text>
+<text x="112" y="250" class="schematex-timing-name" text-anchor="end">EN</text>
+<text x="112" y="286" class="schematex-timing-name" text-anchor="end">STATE</text></g>
 <g class="sx-native-handles"></g>
-<text x="430" y="24" text-anchor="middle" class="schematex-timing-title">Reset Enable</text></svg>
+<text x="310" y="24" text-anchor="middle" class="schematex-timing-title">Power-on reset and enable sequence</text></svg>

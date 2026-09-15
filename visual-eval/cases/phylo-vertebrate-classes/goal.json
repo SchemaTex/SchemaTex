@@ -30,5 +30,49 @@
       "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "variant": "rectangular",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents the supplied rooted rectangular phylogram, with varied horizontal branch lengths, five legible tip labels, distinct purple highlighting for the named Amniotes members, and a labeled relative-divergence scale.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:22.065Z",
+      "targetHash": "3903594e0a54",
+      "sourceHash": "67336927ada7",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "Mammalia and Aves visibly share one immediate ancestor; Reptilia and Amphibia share another; those groups and Actinopterygii branch from the root as specified."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Horizontal segments visibly differ in length, including the slightly longer Mammalia than Aves branch, longer Amphibia than Reptilia branch, and long Actinopterygii branch."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "Mammalia, Aves, Reptilia, Amphibia, and Actinopterygii are clearly legible and aligned with their respective tips."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "Mammalia, Aves, and Reptilia are distinctly marked in purple and grouped by a purple bracket and shaded region labeled Amniotes; Amphibia and Actinopterygii remain unhighlighted."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled “0.10 relative divergence,” and accompanying text identifies horizontal distance as relative divergence."
+        }
+      ]
+    }
+  }
 }

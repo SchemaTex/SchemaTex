@@ -34,7 +34,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all five rules, while Image 2 fails both blockers and omits required associations and Account members."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly represents the requested account inheritance, composed records, customer multiplicities, policy interface and association, and Account member visibility. Connections are traceable and labels readable; no material overlaps or cropping are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:39.399Z",
+      "targetHash": "443792215fd8",
+      "sourceHash": "355a338c0bc9",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "account-inheritance",
+          "verdict": "pass",
+          "evidence": "CheckingAccount, SavingsAccount, and BusinessAccount connect through hollow triangles pointing to abstract Account."
+        },
+        {
+          "id": "record-ownership",
+          "verdict": "pass",
+          "evidence": "Filled composition diamonds appear at the Account end of the connections to LedgerEntry and Statement; both show 0..*."
+        },
+        {
+          "id": "customer-ownership",
+          "verdict": "pass",
+          "evidence": "Customer connects to Account with multiplicity 1 at Customer and 0..* at Account."
+        },
+        {
+          "id": "policy-interface",
+          "verdict": "pass",
+          "evidence": "InterestPolicy is marked «interface», and SavingsAccount has a directed association to it labeled “uses”."
+        },
+        {
+          "id": "visibility",
+          "verdict": "pass",
+          "evidence": "Account shows protected # number, private - balance, and public + credit(amount: Money): void."
+        }
+      ]
+    }
   }
 }

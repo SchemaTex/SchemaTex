@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="356" height="222" viewBox="0 0 356 222" role="img" aria-label="Git commit graph"><title>Git commit graph</title>
-<desc>Git commit graph: 3 commits across 2 branches, 1 merge, orientation LR.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="636" height="334" viewBox="0 0 636 334" role="img" aria-label="Git commit graph"><title>Git commit graph</title>
+<desc>Git commit graph: 8 commits across 4 branches, 3 merges, orientation LR.</desc>
 <style>.sx-gg-bg { fill: #ffffff; }
 .sx-gg-lane { stroke-width: 3; stroke-linecap: round; opacity: 0.9; }
 .sx-gg-pill { stroke: none; }
@@ -47,21 +47,44 @@
 .sx-gg-stroke-c7 { stroke: #666666; }
 .sx-gg-fill-c7 { fill: #666666; }
 .sx-gg-ink-c7 { fill: #ffffff; }</style>
-<rect x="0" y="0" width="356" height="222" class="sx-gg-bg"/>
-<g class="sx-gg-root" transform="translate(20, 20)" data-diagram-type="gitgraph" font-family="system-ui, -apple-system, sans-serif"><g class="sx-gg-lane-group"><line x1="92" y1="74" x2="232" y2="74" class="sx-gg-lane sx-gg-c0" data-branch="main"/>
+<rect x="0" y="0" width="636" height="334" class="sx-gg-bg"/>
+<g class="sx-gg-root" transform="translate(20, 20)" data-diagram-type="gitgraph" font-family="system-ui, -apple-system, sans-serif"><g class="sx-gg-lane-group"><line x1="92" y1="74" x2="512" y2="74" class="sx-gg-lane sx-gg-c0" data-branch="main"/>
 <g class="sx-gg-pill-group" data-branch="main"><rect x="56" y="64" width="44" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c0"/>
 <text x="78" y="74" class="sx-gg-pill-text sx-gg-ink-c0" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">main</text></g></g>
 <g class="sx-gg-lane-group">
-<g class="sx-gg-pill-group" data-branch="feature"><rect x="45.5" y="120" width="65" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c1"/>
-<text x="78" y="130" class="sx-gg-pill-text sx-gg-ink-c1" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">feature</text></g></g>
+<g class="sx-gg-pill-group" data-branch="fix-header"><rect x="35" y="120" width="86" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c1"/>
+<text x="78" y="130" class="sx-gg-pill-text sx-gg-ink-c1" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">fix-header</text></g></g>
+<g class="sx-gg-lane-group">
+<g class="sx-gg-pill-group" data-branch="add-search"><rect x="35" y="176" width="86" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c2"/>
+<text x="78" y="186" class="sx-gg-pill-text sx-gg-ink-c2" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">add-search</text></g></g>
+<g class="sx-gg-lane-group">
+<g class="sx-gg-pill-group" data-branch="flag-billing"><rect x="28" y="232" width="100" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c3"/>
+<text x="78" y="242" class="sx-gg-pill-text sx-gg-ink-c3" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">flag-billing</text></g></g>
 <path d="M 120 74 C 148 74, 148 130, 176 130" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c1" fill="none"/>
 <line x1="120" y1="74" x2="232" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
 <path d="M 176 130 C 204 130, 204 74, 232 74" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c1" fill="none"/>
-<g class="sx-gg-commit" data-commit-id="initial" data-branch="main" data-seq="0"><circle cx="120" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
-<text x="120" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 120 91)">initial</text></g>
-<g class="sx-gg-commit" data-commit-id="feature-work" data-branch="feature" data-seq="1"><circle cx="176" cy="130" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c1"/>
-<text x="176" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 176 147)">feature-work</text></g>
-<g class="sx-gg-commit" data-commit-id="merge-feature" data-branch="main" data-seq="2" data-merge="true" data-tag="v1.0"><circle cx="232" cy="74" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c0"/>
-<g class="sx-gg-tag-group"><rect x="213" y="43" width="38" height="16" rx="3" class="sx-gg-tag"/>
-<text x="232" y="51" class="sx-gg-tag-text" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">v1.0</text></g>
-<text x="232" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 232 91)">merge-feature</text></g></g></svg>
+<line x1="232" y1="74" x2="344" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<path d="M 232 74 C 232 130, 288 130, 288 186" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c2" fill="none"/>
+<line x1="344" y1="74" x2="400" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<path d="M 288 186 C 344 186, 344 74, 400 74" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c2" fill="none"/>
+<line x1="400" y1="74" x2="512" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<path d="M 456 242 C 456 158, 512 158, 512 74" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c3" fill="none"/>
+<path d="M 400 74 C 400 158, 456 158, 456 242" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c3" fill="none"/>
+<g class="sx-gg-commit" data-commit-id="t1" data-branch="main" data-seq="0"><circle cx="120" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
+<text x="120" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 120 91)">t1</text></g>
+<g class="sx-gg-commit" data-commit-id="header-css" data-branch="fix-header" data-seq="1"><circle cx="176" cy="130" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c1"/>
+<text x="176" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 176 147)">header-css</text></g>
+<g class="sx-gg-commit" data-commit-id="m1" data-branch="main" data-seq="2" data-merge="true"><circle cx="232" cy="74" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c0"/>
+<text x="232" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 232 91)">m1</text></g>
+<g class="sx-gg-commit" data-commit-id="search-box" data-branch="add-search" data-seq="3"><circle cx="288" cy="186" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c2"/>
+<text x="288" y="203" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 288 203)">search-box</text></g>
+<g class="sx-gg-commit" data-commit-id="t2" data-branch="main" data-seq="4"><circle cx="344" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
+<text x="344" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 344 91)">t2</text></g>
+<g class="sx-gg-commit" data-commit-id="m2" data-branch="main" data-seq="5" data-merge="true"><circle cx="400" cy="74" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c0"/>
+<text x="400" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 400 91)">m2</text></g>
+<g class="sx-gg-commit" data-commit-id="billing-flag" data-branch="flag-billing" data-seq="6"><circle cx="456" cy="242" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c3"/>
+<text x="456" y="259" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 456 259)">billing-flag</text></g>
+<g class="sx-gg-commit" data-commit-id="m3" data-branch="main" data-seq="7" data-merge="true" data-tag="deploy-42"><circle cx="512" cy="74" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c0"/>
+<g class="sx-gg-tag-group"><rect x="476.75" y="43" width="70.5" height="16" rx="3" class="sx-gg-tag"/>
+<text x="512" y="51" class="sx-gg-tag-text" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">deploy-42</text></g>
+<text x="512" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 512 91)">m3</text></g></g></svg>

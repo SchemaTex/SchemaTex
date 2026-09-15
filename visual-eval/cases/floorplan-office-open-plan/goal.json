@@ -38,7 +38,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Both satisfy the blockers, but the SVG clearly provides differently sized meeting rooms while the picture’s two meeting rooms are essentially equal in size."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly identifies the entrance, reception, 12 workstations, two meeting rooms, kitchenette, and phone booth. Open floor areas and four unobstructed internal doors visibly connect the workspace to every enclosed area.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:12:29.209Z",
+      "targetHash": "4e84b9333fa6",
+      "sourceHash": "1cad64001953",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "reception-at-entrance",
+          "verdict": "pass",
+          "evidence": "The north ENTRY door leads directly into the labeled RECEPTION, which contains a clearly labeled RECEPTION DESK."
+        },
+        {
+          "id": "desk-banks-visible",
+          "verdict": "pass",
+          "evidence": "The OPEN PLAN WORKSPACE visibly contains 12 desks arranged as three orderly rows of four."
+        },
+        {
+          "id": "circulation-reaches-desks",
+          "verdict": "pass",
+          "evidence": "Wide, continuous clear floor space surrounds the three desk rows and provides unobstructed approaches to every desk bank."
+        },
+        {
+          "id": "different-meeting-rooms",
+          "verdict": "pass",
+          "evidence": "Two enclosed rooms are labeled LARGE MEETING 20.0 m² and SMALL MEETING 14.0 m²; each visibly contains a meeting table and chairs."
+        },
+        {
+          "id": "support-amenities",
+          "verdict": "pass",
+          "evidence": "The bottom support area visibly includes a labeled KITCHENETTE with counter and refrigerator, plus a separately labeled PHONE BOOTH with its own desk and chair."
+        },
+        {
+          "id": "doors-clear",
+          "verdict": "pass",
+          "evidence": "The entrance and all four internal door leaves and swing arcs are clearly drawn, do not intersect furniture, and open into visible usable floor space."
+        }
+      ]
+    }
   }
 }

@@ -42,8 +42,55 @@
   ],
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: The picture provides a clear entry-to-hall route to every bedroom and the bathroom, whereas the SVG routes entry through Bedroom 1 and appears to obstruct it with furniture."
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a navigable single-storey three-bedroom house matching the stated intent: the front door enters the labeled porch, the porch connects through Bedroom 1 to the hall, and the hall serves all three bedrooms, the bathroom, living room, and kitchen. The attached garage is separately enclosed, contains a car, and connects to the kitchen through a visible door.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:12:29.443Z",
+      "targetHash": "ec74ef57ef15",
+      "sourceHash": "acc8f7446939",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "three-bedroom-house",
+          "verdict": "pass",
+          "evidence": "Bedroom 1, Bedroom 2, and Bedroom 3 are separately labeled, with visible door openings connecting each to the hall."
+        },
+        {
+          "id": "attached-garage-with-car",
+          "verdict": "pass",
+          "evidence": "The labeled Attached Garage shares its left wall with the kitchen area and visibly contains a vehicle symbol."
+        },
+        {
+          "id": "non-rectangular-outline",
+          "verdict": "pass",
+          "evidence": "The exterior outline visibly steps outward around the garage and downward around the bedroom and entry-porch wing instead of forming one rectangle."
+        },
+        {
+          "id": "entry-porch",
+          "verdict": "pass",
+          "evidence": "A labeled Entry Porch is visible below Bedroom 1, with a clearly drawn exterior front door and inward swing."
+        },
+        {
+          "id": "complete-common-rooms",
+          "verdict": "pass",
+          "evidence": "The Living Room contains a sofa, coffee table, and TV stand; the Kitchen contains counters, appliances, and a dining table; the Bathroom contains a sink, toilet, and bathtub."
+        },
+        {
+          "id": "clear-hall-circulation",
+          "verdict": "pass",
+          "evidence": "The hall is a continuous horizontal circulation space with visible doors to all three bedrooms and the bathroom; the entry reaches it through the porch and Bedroom 1, consistent with the supplied door connections."
+        },
+        {
+          "id": "garage-is-separate",
+          "verdict": "pass",
+          "evidence": "A substantial wall separates the garage from the kitchen, with a single visible swinging connecting door."
+        }
+      ]
+    }
   }
 }

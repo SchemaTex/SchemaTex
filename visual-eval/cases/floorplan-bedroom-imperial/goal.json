@@ -33,7 +33,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG meets both blockers and shows unobstructed access, a clear inward door swing, and a centered window opposite the entry."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly communicates an exactly 7'0\" by 9'0\" bedroom, with both required furniture pieces, a centered north-wall window opposite the south entry, and usable circulation around the inward-swinging door.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:11:04.783Z",
+      "targetHash": "b60fed1f69e1",
+      "sourceHash": "a40760ee1e54",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "imperial-overall-dimensions",
+          "verdict": "pass",
+          "evidence": "Exterior dimension strings visibly read 7'0\" horizontally and 9'0\" vertically."
+        },
+        {
+          "id": "bedroom-furniture",
+          "verdict": "pass",
+          "evidence": "A single bed and a labeled WARDROBE are both visibly placed inside the labeled BEDROOM."
+        },
+        {
+          "id": "door-clearance",
+          "verdict": "pass",
+          "evidence": "The south-wall entry door swings inward into open floor area without intersecting the bed or wardrobe."
+        },
+        {
+          "id": "window-visible",
+          "verdict": "pass",
+          "evidence": "A 3-foot-wide window is visibly centered along the north wall, opposite the entry door."
+        },
+        {
+          "id": "tight-but-usable",
+          "verdict": "pass",
+          "evidence": "Clear central floor space provides an unobstructed route from the entry to both the bed and wardrobe."
+        }
+      ]
+    }
   }
 }

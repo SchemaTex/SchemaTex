@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Markov chain" width="382.1110699893027" height="382.1110699893027" viewBox="0 0 382.1110699893027 382.1110699893027" data-diagram-type="markov"><title>Markov chain</title>
-<desc>3 states, 7 transitions. Classification: 0 recurrent, 2 transient, 1 absorbing. Absorbing: Failed. Stationary π: { Normal=0, Degraded=0, Failed=1 }. Unrecognized line 3: &quot;markov &quot;Queue Birth Death&quot;&quot;</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Markov chain" width="453.1692101715304" height="453.1692101715304" viewBox="0 0 453.1692101715304 453.1692101715304" data-diagram-type="markov"><title>Markov chain</title>
+<desc>5 states, 13 transitions. Stationary π: { Q0=0.104, Q1=0.138, Q2=0.184, Q3=0.246, Q4=0.328 }. Unrecognized line 3: &quot;markov &quot;Service desk queue length&quot;&quot;</desc>
 <style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
 .sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
 .sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
@@ -12,27 +12,44 @@
 .sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
 .sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
 <defs><marker id="sx-markov-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4"/></marker></defs>
-<g><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Normal" data-to="Normal" data-prob="0.8"><path class="sx-markov-arc-self" d="M 173.06 90.5 C 155.06 60.5 227.06 60.5 209.06 90.5" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="191.05553499465134" y="50.999999999999986" text-anchor="middle">0.8</text></g>
-<g class="sx-markov-arc-g" data-from="Normal" data-to="Degraded" data-prob="0.15"><path class="sx-markov-arc" d="M 214.63 134.55 C 230.35 146.92 248.92 179.09 251.78 198.89" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="246.07219549304673" y="162.2916512459885" text-anchor="middle">0.15</text></g>
-<g class="sx-markov-arc-g" data-from="Normal" data-to="Failed" data-prob="0.05"><path class="sx-markov-arc" d="M 181.02 144.27 C 174.98 161.28 157.24 192.02 145.52 205.76" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="168.9478398400646" y="181.2916512459885" text-anchor="middle">0.05</text></g>
-<g class="sx-markov-arc-g" data-from="Degraded" data-to="Normal" data-prob="0.3"><path class="sx-markov-arc" d="M 232.48 210.03 C 216.76 197.66 198.19 165.49 195.33 145.69" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="201.03887449625594" y="188.2916512459885" text-anchor="middle">0.3</text></g>
-<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Degraded" data-to="Degraded" data-prob="0.45"><path class="sx-markov-arc-self" d="M 287.14 225.74 C 322.12 225.16 286.12 287.51 269.14 256.92" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="314.9452624519932" y="265.583302491977" text-anchor="middle">0.45</text></g>
-<g class="sx-markov-arc-g" data-from="Degraded" data-to="Failed" data-prob="0.25"><path class="sx-markov-arc" d="M 226.55 234.03 C 208.8 237.31 173.31 237.31 155.56 234.03" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="191.05553499465134" y="243.583302491977" text-anchor="middle">0.25</text></g>
-<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Failed" data-to="Failed" data-prob="1"><path class="sx-markov-arc-self" d="M 112.97 256.92 C 95.99 287.51 59.99 225.16 94.97 225.74" marker-end="url(#sx-markov-head)"/>
-<text class="sx-markov-prob" x="67.16580753730953" y="265.58330249197707" text-anchor="middle">1</text></g></g>
-<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="Normal" data-class="transient" data-pi="0"><circle class="sx-markov-state" cx="191.05553499465134" cy="115.99999999999999" r="30"/>
-<text class="sx-markov-state-label" x="191.05553499465134" y="119.99999999999999" text-anchor="middle">Normal</text>
-<text class="sx-markov-pi" x="191.05553499465134" y="160" text-anchor="middle">π=0</text></g>
-<g class="sx-markov-state-g" data-id="Degraded" data-class="transient" data-pi="0"><circle class="sx-markov-state" cx="256.05553499465134" cy="228.583302491977" r="30"/>
-<text class="sx-markov-state-label" x="256.05553499465134" y="232.583302491977" text-anchor="middle">Degraded</text>
-<text class="sx-markov-pi" x="256.05553499465134" y="272.583302491977" text-anchor="middle">π=0</text></g>
-<g class="sx-markov-state-g" data-id="Failed" data-class="absorbing" data-pi="1"><circle class="sx-markov-state sx-markov-state-absorbing" cx="126.05553499465135" cy="228.58330249197704" r="30"/>
-<circle class="sx-markov-absorb-ring" cx="126.05553499465135" cy="228.58330249197704" r="25"/>
-<text class="sx-markov-state-label" x="126.05553499465135" y="232.58330249197704" text-anchor="middle">Failed</text>
-<text class="sx-markov-pi" x="126.05553499465135" y="272.58330249197707" text-anchor="middle">π=1</text></g></g></g></svg>
+<g><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Q0" data-to="Q0" data-prob="0.6"><path class="sx-markov-arc-self" d="M 208.58 90.5 C 190.58 60.5 262.58 60.5 244.58 90.5" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="226.5846050857652" y="51" text-anchor="middle">0.6</text></g>
+<g class="sx-markov-arc-g" data-from="Q0" data-to="Q1" data-prob="0.4"><path class="sx-markov-arc" d="M 242.57 141.39 C 253.23 158.31 283.28 180.15 302.67 185.05" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="263.88829316053244" y="178.2404832527594" text-anchor="middle">0.4</text></g>
+<g class="sx-markov-arc-g" data-from="Q1" data-to="Q0" data-prob="0.3"><path class="sx-markov-arc" d="M 315.77 167.03 C 305.11 150.1 275.06 128.27 255.67 123.36" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="294.45312627974107" y="136.17159954526213" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Q1" data-to="Q1" data-prob="0.3"><path class="sx-markov-arc-self" d="M 350.45 167.41 C 373.42 141.02 395.67 209.5 361.57 201.65" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="396.4286574625788" y="174.3989271805251" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g" data-from="Q1" data-to="Q2" data-prob="0.4"><path class="sx-markov-arc" d="M 333.75 222.35 C 335.07 242.31 323.59 277.63 310.79 293" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="336.39817914381075" y="265.26519821095513" text-anchor="middle">0.4</text></g>
+<g class="sx-markov-arc-g" data-from="Q2" data-to="Q1" data-prob="0.3"><path class="sx-markov-arc" d="M 289.6 286.12 C 288.27 266.16 299.75 230.83 312.55 215.46" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="286.94324029646276" y="249.19631450345787" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Q2" data-to="Q2" data-prob="0.3"><path class="sx-markov-arc-self" d="M 321.14 326.1 C 353.33 339.79 295.08 382.11 292.01 347.26" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="331.55400224165334" y="374.06258553388795" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g" data-from="Q2" data-to="Q3" data-prob="0.4"><path class="sx-markov-arc" d="M 263.73 327.19 C 245.16 334.62 208.01 334.62 189.44 327.19" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="226.5846050857652" y="345.0494299163915" text-anchor="middle">0.4</text></g>
+<g class="sx-markov-arc-g" data-from="Q3" data-to="Q2" data-prob="0.3"><path class="sx-markov-arc" d="M 189.44 304.91 C 208.01 297.48 245.16 297.48 263.73 304.91" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="226.5846050857652" y="293.0494299163915" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Q3" data-to="Q3" data-prob="0.3"><path class="sx-markov-arc-self" d="M 161.16 347.26 C 158.09 382.11 99.84 339.79 132.03 326.1" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="121.61520792987702" y="374.06258553388795" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g" data-from="Q3" data-to="Q4" data-prob="0.4"><path class="sx-markov-arc" d="M 142.38 293 C 129.58 277.63 118.1 242.31 119.42 222.35" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="116.7710310277196" y="265.26519821095513" text-anchor="middle">0.4</text></g>
+<g class="sx-markov-arc-g" data-from="Q4" data-to="Q3" data-prob="0.3"><path class="sx-markov-arc" d="M 140.62 215.46 C 153.42 230.83 164.9 266.16 163.57 286.12" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="166.2259698750676" y="249.19631450345787" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Q4" data-to="Q4" data-prob="0.7"><path class="sx-markov-arc-self" d="M 91.6 201.65 C 57.5 209.5 79.75 141.02 102.72 167.41" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="56.74055270895158" y="174.3989271805251" text-anchor="middle">0.7</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="Q0" data-pi="0.104"><circle class="sx-markov-state" cx="226.5846050857652" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="226.5846050857652" y="120" text-anchor="middle">Empty</text>
+<text class="sx-markov-pi" x="226.5846050857652" y="160" text-anchor="middle">π=0.104</text></g>
+<g class="sx-markov-state-g" data-id="Q1" data-pi="0.138"><circle class="sx-markov-state" cx="331.7568143545084" cy="192.41208279802152" r="30"/>
+<text class="sx-markov-state-label" x="331.7568143545084" y="196.41208279802152" text-anchor="middle">1 waiting</text>
+<text class="sx-markov-pi" x="331.7568143545084" y="236.41208279802152" text-anchor="middle">π=0.138</text></g>
+<g class="sx-markov-state-g" data-id="Q2" data-pi="0.184"><circle class="sx-markov-state" cx="291.5846050857652" cy="316.0494299163915" r="30"/>
+<text class="sx-markov-state-label" x="291.5846050857652" y="320.0494299163915" text-anchor="middle">2 waiting</text>
+<text class="sx-markov-pi" x="291.5846050857652" y="360.0494299163915" text-anchor="middle">π=0.184</text></g>
+<g class="sx-markov-state-g" data-id="Q3" data-pi="0.246"><circle class="sx-markov-state" cx="161.5846050857652" cy="316.0494299163915" r="30"/>
+<text class="sx-markov-state-label" x="161.5846050857652" y="320.0494299163915" text-anchor="middle">3 waiting</text>
+<text class="sx-markov-pi" x="161.5846050857652" y="360.0494299163915" text-anchor="middle">π=0.246</text></g>
+<g class="sx-markov-state-g" data-id="Q4" data-pi="0.328"><circle class="sx-markov-state" cx="121.41239581702202" cy="192.41208279802152" r="30"/>
+<text class="sx-markov-state-label" x="121.41239581702202" y="196.41208279802152" text-anchor="middle">Full</text>
+<text class="sx-markov-pi" x="121.41239581702202" y="236.41208279802152" text-anchor="middle">π=0.328</text></g></g></g></svg>

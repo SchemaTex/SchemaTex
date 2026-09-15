@@ -1,1 +1,88 @@
-{"id":"mindmap-product-strategy","type":"mindmap","title":"Product strategy","goal":"Show a multi-level product strategy map from market focus through measurable execution choices.","rubric":[{"id":"central-theme","severity":"blocker","must":"Product Strategy is visibly the central root of the map."},{"id":"four-workstreams","severity":"blocker","must":"Market Focus, Product Bets, Go to Market, and Success Measures visibly branch from the central topic."},{"id":"market-depth","severity":"major","must":"Market Focus visibly expands through Ideal Customers and Jobs to Be Done to concrete statements."},{"id":"product-depth","severity":"major","must":"Product Bets visibly expands through Core Workflow and Differentiation to named product outcomes."},{"id":"measurement-depth","severity":"major","must":"Success Measures visibly expands to Adoption and Retention with named metrics."},{"id":"hierarchy","severity":"minor","must":"At least three visual levels are distinguishable from root to detailed leaves."}],"split":"train"}
+{
+  "id": "mindmap-product-strategy",
+  "type": "mindmap",
+  "variant": "map",
+  "title": "Product strategy",
+  "goal": "Show a multi-level product strategy map from market focus through measurable execution choices.",
+  "rubric": [
+    {
+      "id": "central-theme",
+      "severity": "blocker",
+      "must": "Product Strategy is visibly the central root of the map."
+    },
+    {
+      "id": "four-workstreams",
+      "severity": "blocker",
+      "must": "Market Focus, Product Bets, Go to Market, and Success Measures visibly branch from the central topic."
+    },
+    {
+      "id": "market-depth",
+      "severity": "major",
+      "must": "Market Focus visibly expands through Ideal Customers and Jobs to Be Done to concrete statements."
+    },
+    {
+      "id": "product-depth",
+      "severity": "major",
+      "must": "Product Bets visibly expands through Core Workflow and Differentiation to named product outcomes."
+    },
+    {
+      "id": "measurement-depth",
+      "severity": "major",
+      "must": "Success Measures visibly expands to Adoption and Retention with named metrics."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "At least three visual levels are distinguishable from root to detailed leaves."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the mindmap/map exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows Product Strategy as the central root, with all four workstreams branching from it. Each workstream has traceable subtopics and leaf details; labels are readable, and nothing appears materially overlapped or cropped.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:27:57.842Z",
+      "targetHash": "17f862e72d84",
+      "sourceHash": "4c99b970029e",
+      "exemplarHash": "0bc04312aae8",
+      "items": [
+        {
+          "id": "central-theme",
+          "verdict": "pass",
+          "evidence": "Product Strategy is centered in the main root node."
+        },
+        {
+          "id": "four-workstreams",
+          "verdict": "pass",
+          "evidence": "Market Focus, Product Bets, Go to Market, and Success Measures each branch visibly from the central topic."
+        },
+        {
+          "id": "market-depth",
+          "verdict": "pass",
+          "evidence": "Market Focus branches through Ideal Customers to Mid-market operations teams, and through Jobs to Be Done to Reduce manual coordination."
+        },
+        {
+          "id": "product-depth",
+          "verdict": "pass",
+          "evidence": "Product Bets branches through Core Workflow to Faster approvals, and through Differentiation to Explainable automation."
+        },
+        {
+          "id": "measurement-depth",
+          "verdict": "pass",
+          "evidence": "Success Measures branches through Adoption to Weekly active teams, and through Retention to Net revenue retention."
+        },
+        {
+          "id": "hierarchy",
+          "verdict": "pass",
+          "evidence": "The central root, workstream nodes, subtopic labels, and detailed leaf statements form at least four distinguishable visual levels."
+        }
+      ]
+    }
+  }
+}

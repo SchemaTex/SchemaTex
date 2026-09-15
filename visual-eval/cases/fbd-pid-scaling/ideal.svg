@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1160" viewBox="0 0 1140 1160" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>PID level input scaling</title><desc>Hand-authored IEC FBD reference; source blocks, expressions, negations and literals preserved.</desc><rect width="1140" height="1160" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">PID level input scaling</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Function block diagram</text>
+<path d="M48 110L1092 110" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="137" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 0</text>
+<text x="164" y="137" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Remove the 4 mA offset</text>
+<rect x="390" y="185" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="208" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">SUB</text>
+<text x="402" y="236" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN1</text>
+<text x="357" y="236" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">RawCounts</text>
+<path d="M365 231L390 231" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="402" y="268" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN2</text>
+<text x="357" y="268" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">5530.0</text>
+<path d="M365 263L390 263" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="236" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M540 231L564 231" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M564 231L594 231" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="603" y="236" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Offset</text>
+<path d="M48 345L1092 345" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="372" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 1</text>
+<text x="164" y="372" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Convert counts to percent and clamp</text>
+<rect x="300" y="455" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="375" y="478" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">DIV</text>
+<text x="312" y="506" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN1</text>
+<text x="267" y="506" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Offset</text>
+<path d="M275 501L300 501" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="312" y="538" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN2</text>
+<text x="267" y="538" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">272.3</text>
+<path d="M275 533L300 533" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="440" y="506" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M450 501L474 501" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="556" y="486" font-size="13" font-weight="600" text-anchor="start" fill="#20272B">Scaled</text>
+<rect x="730" y="423" width="150" height="132" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="805" y="446" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">LIMIT</text>
+<text x="742" y="474" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">MN</text>
+<text x="697" y="474" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">0.0</text>
+<path d="M705 469L730 469" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="742" y="506" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="742" y="538" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">MX</text>
+<text x="697" y="538" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">100.0</text>
+<path d="M705 533L730 533" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="870" y="474" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M880 469L904 469" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M474 501H602V501H730" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M904 469L934 469" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="943" y="474" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">LevelPct</text>
+<path d="M48 645L1092 645" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="672" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 2</text>
+<text x="164" y="672" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Loop error for the controller</text>
+<rect x="390" y="715" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="738" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">SUB</text>
+<text x="402" y="766" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN1</text>
+<text x="357" y="766" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Setpoint = 60.0</text>
+<path d="M365 761L390 761" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="402" y="798" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN2</text>
+<text x="357" y="798" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">LevelPct</text>
+<path d="M365 793L390 793" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="766" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M540 761L564 761" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M564 761L594 761" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="603" y="766" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">LoopError</text>
+<path d="M48 865L1092 865" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="892" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 3</text>
+<text x="164" y="892" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">High level alarm</text>
+<rect x="390" y="935" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="958" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">GT</text>
+<text x="402" y="986" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN1</text>
+<text x="357" y="986" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">LevelPct</text>
+<path d="M365 981L390 981" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="402" y="1018" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN2</text>
+<text x="357" y="1018" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">90.0</text>
+<path d="M365 1013L390 1013" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="986" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M540 981L564 981" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M564 981L594 981" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="603" y="986" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">HighAlarm</text>
+<path d="M48 1084L1092 1084" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1112" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Open input circle = logical inversion.  Triangle at CU = rising-edge counter input.</text>
+<text x="48" y="1132" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Instance names sit above blocks; named variables connect separate networks.</text></svg>

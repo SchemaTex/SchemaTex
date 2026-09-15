@@ -1,1 +1,78 @@
-{"id":"orgchart-saas-company","type":"orgchart","title":"Northstar SaaS operating structure","goal":"Show functional leadership, delivery teams, and a product matrix report.","rubric":[{"id":"ceo-root","severity":"blocker","must":"Maya Ortiz is visibly the CEO at the top of the hierarchy."},{"id":"functional-vps","severity":"blocker","must":"Engineering, Product, and Revenue VPs visibly report to the CEO."},{"id":"teams","severity":"major","must":"Platform, product-engineering, sales, and customer-success teams are visibly nested beneath their functional leaders."},{"id":"matrix","severity":"blocker","must":"A clearly dashed line labelled Product leadership connects the product VP and group product manager."},{"id":"labels","severity":"minor","must":"Names, titles, and departments remain readable without collisions."}],"split":"train"}
+{
+  "id": "orgchart-saas-company",
+  "type": "orgchart",
+  "variant": "tree",
+  "title": "Northstar SaaS operating structure",
+  "goal": "Show functional leadership, delivery teams, and a product matrix report.",
+  "rubric": [
+    {
+      "id": "ceo-root",
+      "severity": "blocker",
+      "must": "Maya Ortiz is visibly the CEO at the top of the hierarchy."
+    },
+    {
+      "id": "functional-vps",
+      "severity": "blocker",
+      "must": "Engineering, Product, and Revenue VPs visibly report to the CEO."
+    },
+    {
+      "id": "teams",
+      "severity": "major",
+      "must": "Platform, product-engineering, sales, and customer-success teams are visibly nested beneath their functional leaders."
+    },
+    {
+      "id": "matrix",
+      "severity": "blocker",
+      "must": "A clearly dashed line labelled Product leadership connects the product VP and group product manager."
+    },
+    {
+      "id": "labels",
+      "severity": "minor",
+      "must": "Names, titles, and departments remain readable without collisions."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows Maya Ortiz as CEO above the Engineering, Product, and Revenue VPs. Their teams are nested beneath the corresponding leaders, and a dashed line labeled “Product leadership” connects Clara James to Owen Price. Names, titles, and departments are readable, with no material collisions or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:41.282Z",
+      "targetHash": "f344ce4a6386",
+      "sourceHash": "415c8b659292",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "ceo-root",
+          "verdict": "pass",
+          "evidence": "Maya Ortiz, Chief Executive Officer, appears at the top of the hierarchy."
+        },
+        {
+          "id": "functional-vps",
+          "verdict": "pass",
+          "evidence": "Evan Chen, Clara James, and Daniel Ross appear beneath the CEO, connected by solid reporting lines."
+        },
+        {
+          "id": "teams",
+          "verdict": "pass",
+          "evidence": "Platform and Product Engineering teams are nested under Evan Chen; Sales and Customer Success are nested under Daniel Ross."
+        },
+        {
+          "id": "matrix",
+          "verdict": "pass",
+          "evidence": "A dashed line labeled “Product leadership” connects Clara James to Owen Price."
+        },
+        {
+          "id": "labels",
+          "verdict": "pass",
+          "evidence": "Names, titles, and department labels are legible; no material overlaps or cropping are visible."
+        }
+      ]
+    }
+  }
+}

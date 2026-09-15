@@ -39,7 +39,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all six rules, while Image 2 changes the equipment identities, dosing topology, and control scheme."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The complete chemical dosing path and all specified instrumentation relationships are clearly visible, with no material source-data defect apparent.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:29:13.760Z",
+      "targetHash": "b3249b850ae1",
+      "sourceHash": "6a9cadd27dc3",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "dosing-path",
+          "verdict": "pass",
+          "evidence": "A continuous process line visibly connects TK-701 → AG-701 → P-701 → C-701 → XV-701 → FV-701 → NRV-701 → V-702."
+        },
+        {
+          "id": "ph-control",
+          "verdict": "pass",
+          "evidence": "AT-701 is visibly associated with V-702 and electrically connected by a dashed line to AIC-701; AIC-701 has a slashed pneumatic signal line down to FV-701."
+        },
+        {
+          "id": "calibration-column",
+          "verdict": "pass",
+          "evidence": "C-701 is drawn as a vertical calibration column downstream of P-701 and upstream of XV-701."
+        },
+        {
+          "id": "flow-verification",
+          "verdict": "pass",
+          "evidence": "FT-701 is visibly tapped from C-701 and connected by a dashed electric signal line to FI-701."
+        },
+        {
+          "id": "injection-check",
+          "verdict": "pass",
+          "evidence": "NRV-701 is visibly installed downstream of FV-701 and before the V-702 process mixing header."
+        },
+        {
+          "id": "fail-closed",
+          "verdict": "pass",
+          "evidence": "FV-701 visibly includes a diaphragm actuator and the fail-position marking FC."
+        }
+      ]
+    }
   }
 }

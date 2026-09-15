@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1270" height="1170" viewBox="0 0 1270 1170" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img"><title>Smart home hub</title><desc>Independent UML use-case target; subject boundary, ellipse compartments, external actors and canonical include/extend directions follow exemplar.</desc><defs><marker id="solid" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#334155"/></marker><marker id="open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#334155" stroke-width="1.3"/></marker><marker id="triangle" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="white" stroke="#334155"/></marker></defs><rect x="0" y="0" width="1270" height="1170" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="40" y="43" font-size="22" text-anchor="start" fill="#0F172A" font-weight="600">Smart Home</text>
+<text x="40" y="68" font-size="11" text-anchor="start" fill="#64748B" font-weight="400">UML 2.5.1 · USE CASE DIAGRAM</text>
+<path d="M40 84 L1230 84" fill="none" stroke="#CBD5E1" stroke-width="1.5"  />
+<rect x="245" y="112" width="735" height="1000" fill="#F8FAFC" stroke="#94A3B8" rx="12" stroke-width="1.5" />
+<text x="265" y="142" font-size="17" text-anchor="start" fill="#0F172A" font-weight="600">Smart Home Hub</text>
+<path d="M105 260 L105 400" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#triangle)"/>
+<path d="M117 440 L378.1729777199587 256.52561197913224" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M117 440 L308 440" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M117 440 L384.20325588172744 748.3737453022064" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M1133 1010 L942 1010" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M564.9138942445067 230.19223038108865 L685.0861057554933 244.80776961891135" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="587" y="215.5" width="76" height="19" fill="#F8FAFC" stroke="none" rx="0" stroke-width="1.5" />
+<text x="625" y="229.5" font-size="12" text-anchor="middle" fill="#475569" font-weight="400">«include»</text>
+<path d="M517.9608495221386 402.07310023247317 L732.0391504778614 297.92689976752683" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="587" y="328" width="76" height="19" fill="#F8FAFC" stroke="none" rx="0" stroke-width="1.5" />
+<text x="625" y="342" font-size="12" text-anchor="middle" fill="#475569" font-weight="400">«include»</text>
+<path d="M548.9943372369524 466.5121360846641 L701.0056627630476 503.4878639153359" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="587" y="463" width="76" height="19" fill="#F8FAFC" stroke="none" rx="0" stroke-width="1.5" />
+<text x="625" y="477" font-size="12" text-anchor="middle" fill="#475569" font-weight="400">«include»</text>
+<path d="M942 530 L1061 530" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M678 810 L572 810" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="587" y="788" width="76" height="19" fill="#F8FAFC" stroke="none" rx="0" stroke-width="1.5" />
+<text x="625" y="802" font-size="12" text-anchor="middle" fill="#475569" font-weight="400">«extend»</text>
+<rect x="547" y="813" width="156" height="16" fill="#F8FAFC" stroke="none" rx="0" stroke-width="1.5" />
+<text x="625" y="825" font-size="11" text-anchor="middle" fill="#475569" font-weight="400">[intrusion detected]</text>
+<path d="M942 810 L1061 810" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M942 1010 L960 1010 L960 260 L942 260" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="952" y="635" font-size="12" text-anchor="end" fill="#475569" font-weight="400">«include»</text>
+<ellipse cx="440" cy="215" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="440" y="215" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Control Devices</text>
+<ellipse cx="440" cy="440" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="440" y="440" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Create Automation</text>
+<ellipse cx="810" cy="260" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="810" y="260" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Authenticate Resident</text>
+<ellipse cx="810" cy="530" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="810" y="530" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Read Weather</text>
+<ellipse cx="440" cy="810" rx="132" ry="68" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="440" y="788" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Arm Security</text>
+<path d="M325 812 L555 812" fill="none" stroke="#94A3B8" stroke-width="1.5"  />
+<text x="440" y="831" font-size="11" text-anchor="middle" fill="#64748B" font-weight="400">extension points</text>
+<text x="440" y="849" font-size="11" text-anchor="middle" fill="#0F172A" font-weight="400">alarm triggered</text>
+<ellipse cx="810" cy="810" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="810" y="810" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Notify Monitoring Centre</text>
+<ellipse cx="810" cy="1010" rx="132" ry="47" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="810" y="1010" font-size="15" text-anchor="middle" fill="#0F172A" font-weight="600">Configure Devices</text>
+<ellipse cx="105" cy="416" rx="9" ry="9" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path d="M105 425 L105 454" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M88 435 L122 435" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M105 454 L90 475" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M105 454 L120 475" fill="none" stroke="#334155" stroke-width="1.5"  />
+<text x="105" y="498" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Resident</text>
+<ellipse cx="105" cy="146" rx="9" ry="9" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path d="M105 155 L105 184" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M88 165 L122 165" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M105 184 L90 205" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M105 184 L120 205" fill="none" stroke="#334155" stroke-width="1.5"  />
+<text x="105" y="228" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Home Owner</text>
+<ellipse cx="1145" cy="986" rx="9" ry="9" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path d="M1145 995 L1145 1024" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M1128 1005 L1162 1005" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M1145 1024 L1130 1045" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M1145 1024 L1160 1045" fill="none" stroke="#334155" stroke-width="1.5"  />
+<text x="1145" y="1068" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Installer</text>
+<rect x="1061" y="496" width="168" height="68" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="1145" y="517" font-size="11" text-anchor="middle" fill="#2563EB" font-weight="400">«actor»</text>
+<text x="1145" y="542" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Weather Service</text>
+<rect x="1061" y="776" width="168" height="68" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="1145" y="797" font-size="11" text-anchor="middle" fill="#2563EB" font-weight="400">«actor»</text>
+<text x="1145" y="822" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Monitoring Centre</text>
+<text x="40" y="1144" font-size="12" text-anchor="start" fill="#475569" font-weight="400">Solid line: association    ·    Dashed arrow: include (to included case) / extend (to base)    ·    Hollow triangle: actor generalization</text></svg>

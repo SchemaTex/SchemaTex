@@ -1,8 +1,8 @@
 {
   "id": "markov-credit-migration",
   "type": "markov",
-  "title": "Credit Migration",
-  "goal": "A practitioner can read the credit migration artefact at a glance.",
+  "title": "Annual credit rating migration",
+  "goal": "A practitioner can read this Markov chain at a glance: Annual credit rating migration.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -33,8 +33,8 @@
   "split": "train",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: Image 2 presents a clearer credit-rating Markov chain with explicit directional arrows and a matching transition matrix, while Image 1 leaves two transitions without visible arrowheads."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/markov/ideal.svg (382d9af422f8); rendered and visually reviewed. All source probabilities retained; opposite transitions use separate curves, self-loops point into open space, absorbing states have a double ring. Every outgoing row sums to one."
   }
 }

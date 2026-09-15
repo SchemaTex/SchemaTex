@@ -1,95 +1,108 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960" role="img" aria-labelledby="title">
-<title id="title">Vessel Level Control and Shutdown</title>
-<defs>
- <marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1 L9 5 L0 9 Z" fill="#172b3a"/></marker>
- <style>
- text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a} .pipe{fill:none;stroke:#172b3a;stroke-width:3;stroke-linejoin:round} .symbol{fill:white;stroke:#172b3a;stroke-width:2.5} .electric{fill:none;stroke:#172b3a;stroke-width:2.3;stroke-dasharray:12 7;stroke-linejoin:round} .capillary{fill:none;stroke:#172b3a;stroke-width:2.6;stroke-dasharray:1 7;stroke-linecap:round} .pneumatic{fill:none;stroke:#172b3a;stroke-width:2.2} .tag{font-size:23px;font-weight:700;text-anchor:middle} .desc{font-size:18px;text-anchor:middle} .small{font-size:17px} .bubbletext{font-size:21px;font-weight:700;text-anchor:middle}
- </style>
-</defs>
-<rect width="1500" height="960" fill="white"/>
-<text x="65" y="58" font-size="32" font-weight="700">Vessel Level Control and Shutdown</text>
-<text x="65" y="89" font-size="18">PIPING &amp; INSTRUMENTATION DIAGRAM</text>
-<path d="M65 111H1435" stroke="#a9b3ba"/>
-<!-- Process train: feed tank bottom to inlet valve to vessel top -->
-<path class="pipe" d="M170 470V530H320V315H428"/>
-<path class="pipe" d="M492 315H720V365"/>
-<path class="pipe" d="M720 605V720H1008"/>
-<path class="pipe" d="M1072 720H1185V595H1310V615"/>
-<!-- Process flow arrows on straight piping -->
-<path class="pipe" d="M350 315H400" marker-end="url(#flow)"/>
-<path class="pipe" d="M570 315H625" marker-end="url(#flow)"/>
-<path class="pipe" d="M805 720H875" marker-end="url(#flow)"/>
-<path class="pipe" d="M1095 720H1160" marker-end="url(#flow)"/>
-<!-- Open atmospheric feed tank -->
-<path class="symbol" d="M90 350V470H250V350"/>
-<path d="M102 421H238" fill="none" stroke="#9ba8b0" stroke-width="1.5"/>
-<text class="tag" x="170" y="299">TK-100</text>
-<text class="desc" x="170" y="326">Feed Tank</text>
-<!-- Vertical vessel, elliptical heads -->
-<path class="symbol" d="M640 390C640 357 800 357 800 390V580C800 613 640 613 640 580Z"/>
-<path d="M640 390C640 423 800 423 800 390" fill="none" stroke="#172b3a" stroke-width="1.5"/>
-<path d="M650 529H790" fill="none" stroke="#a9b3ba" stroke-width="1.5"/>
-<text class="tag" x="720" y="465">V-101</text>
-<text class="desc" x="720" y="494">Level Vessel</text>
-<!-- Product atmospheric tank; top inlet visibly continues into open tank -->
-<path class="symbol" d="M1230 615V800H1390V615"/>
-<path class="pipe" d="M1310 615V650" marker-end="url(#flow)"/>
-<path d="M1242 752H1378" stroke="#9ba8b0" stroke-width="1.5"/>
-<text class="tag" x="1310" y="550">TK-102</text>
-<text class="desc" x="1310" y="578">Product Tank</text>
-<!-- Inlet shutoff control valve and solenoid actuator -->
-<path class="symbol" d="M428 297L492 333V297L428 333Z"/>
-<path class="pipe" d="M460 315V262"/>
-<rect class="symbol" x="440" y="226" width="40" height="36"/>
-<path d="M445 256L475 232" stroke="#172b3a" stroke-width="2"/>
-<text x="494" y="245" font-size="22" font-weight="700">FC</text>
-<text x="494" y="268" class="small">solenoid</text>
-<text class="tag" x="460" y="369">XV-202</text>
-<text class="desc" x="460" y="397">High-level Shutoff</text>
-<!-- Outlet control valve and diaphragm actuator -->
-<path class="symbol" d="M1008 702L1072 738V702L1008 738Z"/>
-<path class="pipe" d="M1040 720V662"/>
-<path class="symbol" d="M1004 662A36 29 0 0 1 1076 662Z"/>
-<text x="1090" y="650" font-size="22" font-weight="700">FO</text>
-<text x="1090" y="674" class="small">diaphragm</text>
-<text class="tag" x="1040" y="778">LV-101</text>
-<text class="desc" x="1040" y="806">Level Outlet Valve</text>
-<!-- Independent high-high shutdown sensing and electric signal -->
-<path class="capillary" d="M640 455H585V470H532"/>
-<path class="electric" d="M490 428V170H460V226"/>
-<text x="525" y="161" class="small">202 · independent high-level shutdown</text>
-<circle class="symbol" cx="490" cy="470" r="42"/>
-<text class="bubbletext" x="490" y="466">LSHH</text>
-<text class="bubbletext" x="490" y="491">202</text>
-<!-- Level regulation: capillary vessel tap, field transmitter, electric measurement -->
-<path class="capillary" d="M800 490H862"/>
-<circle class="symbol" cx="904" cy="490" r="42"/>
-<text class="bubbletext" x="904" y="486">LT</text>
-<text class="bubbletext" x="904" y="511">101</text>
-<path class="electric" d="M904 448V275H998"/>
-<text x="917" y="371" class="small">electrical</text>
-<!-- Shared control-room controller: square enclosure and horizontal location mark -->
-<rect class="symbol" x="993" y="228" width="94" height="94"/>
-<circle class="symbol" cx="1040" cy="275" r="42"/>
-<path d="M998 275H1082" stroke="#172b3a" stroke-width="2"/>
-<text class="bubbletext" x="1040" y="267">LIC</text>
-<text class="bubbletext" x="1040" y="301">101</text>
-<text class="desc" x="1040" y="206">101 · level regulation</text>
-<!-- Pneumatic output from controller to diaphragm, paired diagonal stroke notation -->
-<path class="pneumatic" d="M1040 322V633"/>
-<g stroke="#172b3a" stroke-width="2.2">
- <path d="M1032 385L1048 373M1032 395L1048 383"/>
- <path d="M1032 475L1048 463M1032 485L1048 473"/>
- <path d="M1032 565L1048 553M1032 575L1048 563"/>
-</g>
-<text x="1065" y="439" class="small">pneumatic</text>
-<!-- Signal and symbol legend -->
-<path d="M65 851H1435" stroke="#a9b3ba"/>
-<text x="65" y="881" font-size="16" font-weight="700">LINE TYPES</text>
-<path class="pipe" d="M65 911H135"/><text x="150" y="917" class="small">Process</text>
-<path class="electric" d="M280 911H350"/><text x="365" y="917" class="small">Electrical</text>
-<path class="pneumatic" d="M515 911H585"/><path d="M543 919L553 903M553 919L563 903" stroke="#172b3a" stroke-width="2"/><text x="600" y="917" class="small">Pneumatic</text>
-<path class="capillary" d="M770 911H840"/><text x="855" y="917" class="small">Capillary sensing</text>
-<text x="1120" y="884" class="small">FC = fail closed</text>
-<text x="1120" y="912" class="small">FO = fail open</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+  <title>Vessel Level Control and Shutdown</title>
+  <desc>Vessel level is measured by LT-101 and regulated by control-room LIC-101 through pneumatic actuation of LV-101. Independent LSHH-202 closes inlet valve XV-202 by electrical signal.</desc>
+  <rect width="1600" height="985" fill="#FFFFFF"/>
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; fill: #1E293B; }
+    .title { font-size: 20px; font-weight: 600; }
+    .tag { font-size: 12px; font-weight: 600; }
+    .secondary { font-size: 11.5px; fill: #64748B; }
+    .letters { font-size: 11.5px; font-weight: 600; }
+    .number { font-size: 11.5px; }
+    .zone { font-size: 10px; letter-spacing: 1px; fill: #64748B; }
+    .process { fill: none; stroke: #1E293B; stroke-width: 2.5; stroke-linejoin: miter; }
+    .symbol { fill: #FFFFFF; stroke: #1E293B; stroke-width: 1.6; stroke-linejoin: round; }
+    .signal { fill: none; stroke: #1E293B; stroke-width: 1.4; }
+    .electric { fill: none; stroke: #1E293B; stroke-width: 1.4; stroke-dasharray: 7 5; }
+  </style>
+
+  <!-- Sheet furniture -->
+  <text class="title" x="47" y="45">Vessel Level Control and Shutdown</text>
+  <text class="secondary" x="47" y="70">ISA-5.1 instrumentation on ISO 10628 equipment · process flows left to right</text>
+  <text class="secondary" x="1553" y="70" text-anchor="end">solid dot = connection · jumper = crossing, not connected</text>
+  <path d="M47 98.5 H1553 M47 859.5 H1553" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+  <path d="M47 256.5 H1553" fill="none" stroke="#64748B" stroke-width="1" stroke-dasharray="12 4 3 4"/>
+  <text class="zone" x="1553" y="246" text-anchor="end">CONTROL ROOM / DCS</text>
+  <text class="zone" x="1553" y="279" text-anchor="end">FIELD</text>
+
+  <!-- Complete process connections: tank bottom, shutoff, vessel top, vessel bottom, outlet valve, product tank top -->
+  <path class="process" d="M174 626 V657 H316 M360 657 H512 V349 H635 V388"/>
+  <path class="process" d="M635 720 V770 H903 V657 H1168 M1212 657 H1282 V410 H1415 V456"/>
+
+  <!-- Independent high-level trip, direct from LSHH-202 to the solenoid -->
+  <path class="electric" d="M441 444 V349 H338 V607"/>
+  <!-- DCS measurement -->
+  <path class="electric" d="M810 516 V205 H905"/>
+  <!-- Pneumatic control to diaphragm, with diagonal marks -->
+  <path class="signal" d="M941 205 H1190 V606"/>
+  <path class="signal" d="M954 201 l9 9 M989 201 l9 9 M1024 201 l9 9 M1059 201 l9 9 M1094 201 l9 9 M1129 201 l9 9 M1164 201 l9 9 M1185.5 223 l9 -9 M1185.5 258 l9 -9 M1185.5 293 l9 -9 M1185.5 328 l9 -9 M1185.5 363 l9 -9 M1185.5 398 l9 -9 M1185.5 433 l9 -9 M1185.5 468 l9 -9 M1185.5 503 l9 -9 M1185.5 538 l9 -9 M1185.5 573 l9 -9 M1185.5 606 l9 -9"/>
+
+  <!-- Capillary sensing: a small jumper clears the inlet riser -->
+  <path d="M460 462 H503 Q503 453 512 453 Q521 453 521 462 H574" stroke="#FFFFFF" stroke-width="6" fill="none"/>
+  <path class="signal" d="M460 462 H503 Q503 453 512 453 Q521 453 521 462 H574 M697 534 H792"/>
+  <g fill="#1E293B">
+    <circle cx="468" cy="462" r="2"/><circle cx="483" cy="462" r="2"/><circle cx="498" cy="462" r="2"/>
+    <circle cx="524" cy="462" r="2"/><circle cx="539" cy="462" r="2"/><circle cx="554" cy="462" r="2"/><circle cx="569" cy="462" r="2"/>
+    <circle cx="704" cy="534" r="2"/><circle cx="719" cy="534" r="2"/><circle cx="734" cy="534" r="2"/><circle cx="749" cy="534" r="2"/><circle cx="764" cy="534" r="2"/><circle cx="779" cy="534" r="2"/><circle cx="791" cy="534" r="2"/>
+  </g>
+
+  <!-- Atmospheric feed tank -->
+  <path class="symbol" d="M92 626 V483 C92 446 256 446 256 483 V626 Z"/>
+  <text class="tag" x="174" y="550" text-anchor="middle">TK-100</text>
+  <text class="secondary" x="174" y="571" text-anchor="middle">Feed Tank</text>
+
+  <!-- Solenoid-actuated fail-closed inlet valve -->
+  <path class="symbol" d="M316 643 L360 671 V643 L316 671 Z"/>
+  <path class="signal" d="M338 643 V633"/>
+  <rect class="symbol" x="325" y="607" width="26" height="26"/>
+  <text class="tag" x="338" y="625" text-anchor="middle">S</text>
+  <text class="tag" x="362" y="616">FC</text>
+  <text class="tag" x="338" y="708" text-anchor="middle">XV-202</text>
+  <text class="secondary" x="338" y="729" text-anchor="middle">High-level Shutoff</text>
+
+  <!-- Vertical vessel with elliptical heads -->
+  <path class="symbol" d="M574 410 C574 380 697 380 697 410 V698 C697 728 574 728 574 698 Z"/>
+  <text class="tag" x="635.5" y="550" text-anchor="middle">V-101</text>
+  <text class="secondary" x="635.5" y="571" text-anchor="middle">Level Vessel</text>
+
+  <!-- Field instrument bubbles -->
+  <circle class="symbol" cx="441" cy="462" r="18"/>
+  <text x="441" y="459" text-anchor="middle" font-size="9" font-weight="600">LSHH</text>
+  <text class="number" x="441" y="475" text-anchor="middle">202</text>
+  <circle class="symbol" cx="810" cy="534" r="18"/>
+  <text class="letters" x="810" y="531" text-anchor="middle">LT</text>
+  <text class="number" x="810" y="547" text-anchor="middle">101</text>
+
+  <!-- Shared-display control-room instrument: hexagon and horizontal location mark -->
+  <circle class="symbol" cx="923" cy="205" r="18"/>
+  <path d="M923 187 L938.6 196 V214 L923 223 L907.4 214 V196 Z M905 205 H941" fill="none" stroke="#1E293B" stroke-width="1.4"/>
+  <text class="letters" x="923" y="202" text-anchor="middle">LIC</text>
+  <text class="number" x="923" y="218" text-anchor="middle">101</text>
+
+  <!-- Diaphragm-actuated fail-open outlet valve -->
+  <path class="symbol" d="M1168 643 L1212 671 V643 L1168 671 Z"/>
+  <path class="signal" d="M1190 643 V620"/>
+  <path class="symbol" d="M1170 620 C1170 601.3 1210 601.3 1210 620 Z"/>
+  <text class="tag" x="1220" y="616">FO</text>
+  <text class="tag" x="1190" y="708" text-anchor="middle">LV-101</text>
+  <text class="secondary" x="1190" y="729" text-anchor="middle">Level Outlet Valve</text>
+
+  <!-- Atmospheric product tank -->
+  <path class="symbol" d="M1333 626 V483 C1333 446 1497 446 1497 483 V626 Z"/>
+  <text class="tag" x="1415" y="550" text-anchor="middle">TK-102</text>
+  <text class="secondary" x="1415" y="571" text-anchor="middle">Product Tank</text>
+
+  <!-- Line-type legend, at actual drawing weights -->
+  <path class="process" d="M47 901 H92"/>
+  <text class="secondary" x="102" y="905">Process</text>
+  <path d="M188 901 H233" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+  <text class="secondary" x="243" y="905">Process, minor</text>
+  <path class="electric" d="M366 901 H411"/>
+  <text class="secondary" x="421" y="905">Electric signal</text>
+  <path class="signal" d="M537 901 H582 M550 897 l9 9"/>
+  <text class="secondary" x="592" y="905">Pneumatic signal</text>
+  <path class="signal" d="M726 901 H771"/>
+  <g fill="#1E293B"><circle cx="732" cy="901" r="2"/><circle cx="747" cy="901" r="2"/><circle cx="762" cy="901" r="2"/></g>
+  <text class="secondary" x="781" y="905">Capillary / filled system</text>
+  <text class="secondary" x="47" y="944">LSHH-202 trips XV-202 directly, so the high-level inlet shutdown stays independent of the LIC-101 loop running in the DCS.</text>
 </svg>

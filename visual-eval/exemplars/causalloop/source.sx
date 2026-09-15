@@ -1,0 +1,10 @@
+causalloop "Customer growth and capacity"
+"Active customers" -> "Customer referrals" : +
+"Customer referrals" -> "New customers" : +
+"New customers" -> "Active customers" : +
+"Active customers" -> "Support workload" : +
+"Support workload" -> "Response time" : +
+"Response time" -> "Customer satisfaction" : - delay
+"Customer satisfaction" -> "Customer referrals" : +
+loop R1 "Referral growth"
+loop B1 "Capacity constraint"

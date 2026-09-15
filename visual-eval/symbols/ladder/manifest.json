@@ -1,0 +1,624 @@
+{
+  "type": "ladder",
+  "variant": null,
+  "exemplar": "ladder",
+  "style": "IEC 61131-3 ladder with Allen-Bradley notation, ink #20272B on white. Symbol strokes 2, rung wires 1.5, power rails 3, butt caps. Contacts are two 28-unit blades 14 apart (normally closed adds a slash between them); coils are two facing 8 x 16 arcs 28 apart with the qualifier letter between; inline instructions are square brackets with 6-unit returns; instruction blocks are ruled rectangles (header rule #CBD1D6 at 1) with a 14 semibold mnemonic, 13-unit parameter rows (names #59636B, values ink semibold) and status terminals drawn as coils on the right edge. Lettering is Inter / Helvetica: 14 semibold ink inside symbols. Every symbol shows 20-unit rung stubs.",
+  "symbols": [
+    {
+      "id": "normally-open-contact",
+      "label": "Normally open contact (XIC)",
+      "file": "normally-open-contact.svg",
+      "engine": null,
+      "dsl": [
+        "XIC(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.4, Table 75 no. 1 — normally open contact",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: two 28-unit blades 14 apart at the symbol weight, the rung wire stopping exactly on each blade."
+    },
+    {
+      "id": "normally-closed-contact",
+      "label": "Normally closed contact (XIO)",
+      "file": "normally-closed-contact.svg",
+      "engine": null,
+      "dsl": [
+        "XIO(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.4, Table 75 no. 2 — normally closed contact",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the open contact with a slash from the lower-left of the left blade to the upper-right of the right blade, kept inside the blades so it never reads as a crossing wire."
+    },
+    {
+      "id": "output-coil",
+      "label": "Output coil (OTE)",
+      "file": "output-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTE(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 no. 1 — coil",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: two facing 8 x 16 arcs 28 apart. The engine draws rung stubs meeting the arc crowns."
+    },
+    {
+      "id": "ab-latch-coil",
+      "label": "Latch coil (OTL)",
+      "file": "ab-latch-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTL(tag)"
+      ],
+      "standard": "Allen-Bradley Logix OTL; IEC 61131-3 §8.2.5 Table 76 no. 3 is the equivalent set coil (S)",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/bit-instructions1.html",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the coil with a 14 semibold L between the arcs. The engine draws L for OTL and U for OTU, with the wire meeting each arc crown."
+    },
+    {
+      "id": "ab-one-shot",
+      "label": "One-shot rising (ONS)",
+      "file": "ab-one-shot.svg",
+      "engine": null,
+      "dsl": [
+        "ONS(tag)"
+      ],
+      "standard": "Allen-Bradley Logix ONS inline instruction; IEC 61131-3 §8.2.4 Table 75 no. 3 is the equivalent positive-transition contact (P)",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/bit-instructions1/one-shot--ons-1.html",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: square brackets 58 apart with 6-unit returns and the mnemonic between them. The engine draws bracketed ONS and RES instructions."
+    },
+    {
+      "id": "timer-on-delay-block",
+      "label": "On-delay timer block (TON)",
+      "file": "timer-on-delay-block.svg",
+      "engine": null,
+      "dsl": [
+        "TON(timer, preset, accum)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.6 function-block body; Allen-Bradley Logix TON with EN / DN status terminals",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 244 x 116 ruled block, mnemonic and ON DELAY in the header, Timer / Preset / Accum rows with names in secondary and values in ink, and EN and DN status terminals drawn as coils on the right edge. The engine draws a ruled mnemonic header and separate parameter names and values, with two inline leads. EN/DN status terminals and named block pins are unavailable."
+    },
+    {
+      "id": "left-power-rail",
+      "label": "Left power rail",
+      "file": "left-power-rail.svg",
+      "engine": null,
+      "dsl": [
+        "ladder"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.2, Table 74 — left power rail",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A 3-unit vertical rail feeds a contact through its left stub. The thicker rail and rightward attachment identify the left boundary of an IEC ladder network; the engine already draws this relationship."
+    },
+    {
+      "id": "right-power-rail",
+      "label": "Right power rail",
+      "file": "right-power-rail.svg",
+      "engine": null,
+      "dsl": [
+        "ladder"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.2, Table 74 — right power rail",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "An output coil ends on a 3-unit vertical rail through its right stub. The engine draws the rail and a lead meeting the coil crown."
+    },
+    {
+      "id": "horizontal-link",
+      "label": "Horizontal rung / series link",
+      "file": "horizontal-link.svg",
+      "engine": null,
+      "dsl": [
+        "rung 0:\n  XIC(Start)\n  OTE(Run)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.3, Table 74 — horizontal link",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A contact and coil share a horizontal wire made from their two 20-unit stubs. The continuous link carries ladder state between partner symbols at the exemplar wire weight; the engine generates these links automatically."
+    },
+    {
+      "id": "vertical-link",
+      "label": "Parallel split and merge",
+      "file": "vertical-link.svg",
+      "engine": null,
+      "dsl": [
+        "parallel:\n  branch:\n    XIC(Start)\n  branch:\n    XIC(Run)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.3, Table 74 — vertical link",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Two contacts sit on branches 66 units apart, joined by vertical links at their stub ends. The upper T joints split and merge the parallel paths without ambiguous crossings; the engine supports this through parallel and branch blocks."
+    },
+    {
+      "id": "negated-coil",
+      "label": "Negated coil (OTN)",
+      "file": "negated-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTN(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 — negated coil",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A diagonal slash sits inside the coil arcs, marking the IEC negated output. The engine draws the slash and stubs meeting both crowns."
+    },
+    {
+      "id": "set-coil",
+      "label": "IEC set coil (S)",
+      "file": "set-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTL(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 — set coil",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The qualifier S between the exemplar arcs identifies an IEC set coil. The engine draws Allen-Bradley L for OTL; the IEC S glyph has no DSL selection."
+    },
+    {
+      "id": "reset-coil",
+      "label": "IEC reset coil (R)",
+      "file": "reset-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTU(tag)",
+        "RES(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 — reset coil",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The qualifier R between the exemplar arcs identifies an IEC Boolean reset coil. The engine draws Allen-Bradley U for OTU and brackets around RES; the IEC R glyph has no DSL selection."
+    },
+    {
+      "id": "positive-transition-contact",
+      "label": "Positive-transition contact (P)",
+      "file": "positive-transition-contact.svg",
+      "engine": null,
+      "dsl": [
+        "ONS(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.4, Table 75 — positive-transition contact; vendor arrow form clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A P fits between the 28-unit contact blades, identifying the IEC positive-transition contact. The engine draws ONS as a bracketed inline instruction; the P contact glyph has no DSL selection."
+    },
+    {
+      "id": "negative-transition-contact",
+      "label": "Negative-transition contact (N)",
+      "file": "negative-transition-contact.svg",
+      "engine": null,
+      "dsl": [
+        "OSF(tag)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.4, Table 75 — negative-transition contact; vendor arrow form clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An N fits between the contact blades, distinguishing the IEC negative-transition contact from P. The engine draws this form for OSF."
+    },
+    {
+      "id": "comparison-contact",
+      "label": "Comparison contact",
+      "file": "comparison-contact.svg",
+      "engine": null,
+      "dsl": [
+        "EQU(value, IN1=A, IN2=B)",
+        "NEQ(value, IN1=A, IN2=B)",
+        "GRT(value, IN1=A, IN2=B)",
+        "LES(value, IN1=A, IN2=B)",
+        "GEQ(value, IN1=A, IN2=B)",
+        "LEQ(value, IN1=A, IN2=B)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.4, Table 75 nos. 5a–5b — typed / overloaded compare contact",
+      "sourceUrl": "https://cache.industry.siemens.com/dl/files/748/109476748/att_845621/v1/IEC_61131_compliance_en_US.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The comparison operator sits between contact terminals, with its two operands above and below, as shown in Table 75 reproduced in the Siemens compliance manual. The overloaded form represents the merged typed/overloaded family. The engine draws this contact layout, with IN1 above and IN2 below."
+    },
+    {
+      "id": "instruction-block",
+      "label": "Rectangular instruction body",
+      "file": "instruction-block.svg",
+      "engine": null,
+      "dsl": [
+        "TON",
+        "TOFF",
+        "TP",
+        "CTU",
+        "CTD",
+        "CTUD",
+        "ADD",
+        "SUB",
+        "MUL",
+        "DIV",
+        "MOV"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.6 and §6.6.1.4.3 — rectangular body; Allen-Bradley operand-row presentation",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A 244 by 116 instruction body uses the exemplar header and three operand rows, here showing ADD. The engine draws timer, counter, arithmetic and move blocks with a ruled mnemonic header and separate parameter names and values. Comparisons use contact blades; named pins and status terminals are unavailable."
+    },
+    {
+      "id": "block-terminal",
+      "label": "IEC block input / output pins",
+      "file": "block-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.6 and §6.6.1.4.3 — block terminals, EN / ENO",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An IEC ADD block shows EN and ENO on the upper pin row, two left operand pins and an unnamed function-result pin on the right. The body keeps the exemplar dimensions and 23-unit row pitch; the engine has no named or independently connectable pins."
+    },
+    {
+      "id": "pin-negation",
+      "label": "Boolean pin negation",
+      "file": "pin-negation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §6.6.1.4.3 rule 9 — negated Boolean terminal",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An open 8-unit circle sits immediately outside a Boolean input on a block-edge excerpt, with the wire ending on the circle. Its external position makes this IEC pin negation rather than a contact or junction; the engine cannot express it."
+    },
+    {
+      "id": "edge-sensitive-pin",
+      "label": "Edge-sensitive input pin",
+      "file": "edge-sensitive-pin.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3 standard function-block diagrams — edge-sensitive input; clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A small open triangle points into a counter input on a block-edge excerpt, with CU beyond its tip. This is the edge-sensitive pin convention rather than an external negation bubble; clause not verified, and the engine has no pin modifier."
+    },
+    {
+      "id": "ab-unlatch-coil",
+      "label": "Allen-Bradley unlatch coil (U)",
+      "file": "ab-unlatch-coil.svg",
+      "engine": null,
+      "dsl": [
+        "OTU(tag)"
+      ],
+      "standard": "Allen-Bradley Logix OTU; NEMA clause not verified",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/bit-instructions1.html",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar coil carries U, the Allen-Bradley unlatch qualifier paired with its L seed. The engine draws this form for OTU, with leads meeting the arc crowns; NEMA clause not verified."
+    },
+    {
+      "id": "ab-status-terminal",
+      "label": "Allen-Bradley block status terminal",
+      "file": "ab-status-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Allen-Bradley timer / counter status-terminal convention; clause not verified",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/timer-and-counter-instructions/timer-on-delay--ton-.html",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A right block-edge excerpt feeds the exemplar EN status parentheses, with a 12-unit qualifier and wires meeting both crowns. EN, DN and TT are merged label variants of this terminal family; clause not verified, and the engine draws no status terminals."
+    },
+    {
+      "id": "energized-overlay",
+      "label": "Energized / true highlight",
+      "file": "energized-overlay.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Rockwell online-monitoring convention, clause not verified; IEC 61131-3:2013 §8.2.3 defines state, not highlight colour",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A rule-grey field highlights a contact and its rung stubs, with TRUE identifying the monitored state. This monochrome adaptation preserves the exemplar palette rather than prescribing a vendor highlight colour; clause not verified, and the engine has no energized overlay."
+    },
+    {
+      "id": "rung-number",
+      "label": "Rung number",
+      "file": "rung-number.svg",
+      "engine": null,
+      "dsl": [
+        "rung 0:"
+      ],
+      "standard": "US ladder-editor numbering convention; clause not verified",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The three-digit number sits left of the power rail in secondary ink, aligned with a contact rung. This copies the exemplar editor adornment rather than adding an instruction; clause not verified, and the engine already generates rung numbers."
+    },
+    {
+      "id": "element-annotation",
+      "label": "Tag, address and description",
+      "file": "element-annotation.svg",
+      "engine": null,
+      "dsl": [
+        "XIC(StartPB, address=\"I:0/0\", name=\"Start pushbutton\")"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.2 — graphical variable representation; US addressing convention clause not verified",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A contact carries an ink tag above, an address below and a secondary description on a separate line. These identify the variable without becoming a fixed contact qualifier; the engine supports all three fields, and the US address notation has clause not verified."
+    },
+    {
+      "id": "rung-comment",
+      "label": "Rung comment",
+      "file": "rung-comment.svg",
+      "engine": null,
+      "dsl": [
+        "rung 0 \"Start spindle\":"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.1 — network comments; US rung-comment convention clause not verified",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A secondary 14-unit comment sits above a rail and contact, with the exemplar clearance from the rung. This is network documentation rather than a logic element; the engine supports quoted rung comments, and the US placement convention has clause not verified."
+    },
+    {
+      "id": "positive-transition-coil",
+      "label": "Positive-transition coil (P)",
+      "file": "positive-transition-coil.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 — positive-transition coil",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "P inside the exemplar coil identifies the IEC positive-transition output, distinct from the P contact’s straight blades. The engine has no transition-coil element; ONS draws a bracketed inline instruction."
+    },
+    {
+      "id": "negative-transition-coil",
+      "label": "Negative-transition coil (N)",
+      "file": "negative-transition-coil.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.2.5, Table 76 — negative-transition coil",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "N inside the exemplar coil identifies the IEC negative-transition output. It differs from both the P coil and the N contact; the engine has no transition-coil element and OSF only produces a contact."
+    },
+    {
+      "id": "jump-terminal",
+      "label": "IEC jump terminal",
+      "file": "jump-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.6, Table 73 — jump",
+      "sourceUrl": "https://cache.industry.siemens.com/dl/files/748/109476748/att_845621/v1/IEC_61131_compliance_en_US.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A contact's outgoing wire ends in two right-pointing arrowheads followed by the target name. Conditional and unconditional jumps share this IEC terminal, so there is no outgoing rung stub beyond the destination; the engine cannot express either form."
+    },
+    {
+      "id": "network-label",
+      "label": "IEC jump target / network label",
+      "file": "network-label.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.4 and Table 73 — network label",
+      "sourceUrl": "https://cache.industry.siemens.com/dl/files/748/109476748/att_845621/v1/IEC_61131_compliance_en_US.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "NEXT followed by a colon labels the entry to a contact rung beside its left rail. The colon distinguishes an IEC jump target from an ordinary tag or comment; the engine has no network-label element."
+    },
+    {
+      "id": "return-terminal",
+      "label": "IEC return terminal",
+      "file": "return-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.6, Table 73 — RETURN",
+      "sourceUrl": "https://cache.industry.siemens.com/dl/files/748/109476748/att_845621/v1/IEC_61131_compliance_en_US.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A contact's outgoing wire meets the angle-delimited RETURN terminal from the IEC character representation. Conditional and unconditional returns share this terminal and have no outgoing rung; the engine has no return element."
+    },
+    {
+      "id": "connection-continuation",
+      "label": "Named connection continuation",
+      "file": "connection-continuation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.3 — named connections; specific glyph clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two separated rung fragments terminate at matching LINK_A names, with a contact before the break and a coil after it. The shared name indicates continuity without a physical crossing; the specific glyph has clause not verified, and the engine has no named continuation."
+    },
+    {
+      "id": "connected-crossing",
+      "label": "Connected four-way crossing",
+      "file": "connected-crossing.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.3 — connection relationships; specific glyph clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled junction dot joins a vertical descent to the horizontal link between a contact and coil. The dot explicitly joins all four arms rather than merely crossing them; the specific glyph has clause not verified, and the DSL cannot request this junction."
+    },
+    {
+      "id": "unconnected-crossing",
+      "label": "Unconnected crossing",
+      "file": "unconnected-crossing.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §8.1.3 — connection relationships; specific glyph clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A vertical descent has a clear gap where it crosses the horizontal link between a contact and coil, with no junction dot. This distinguishes an unconnected crossing from the four-way junction; the specific glyph has clause not verified, and the engine cannot request this relationship."
+    },
+    {
+      "id": "in-out-terminal-pair",
+      "label": "VAR_IN_OUT terminal pair",
+      "file": "in-out-terminal-pair.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEC 61131-3:2013 §6.6.1.4, Figure 10 — VAR_IN_OUT pair",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An INC block carries matching V terminals connected across its interior, below a separate EN/ENO row. The shared formal name and internal line identify one VAR_IN_OUT variable rather than independent input and output values; the engine cannot express the pair."
+    },
+    {
+      "id": "ab-jump-marker",
+      "label": "Allen-Bradley jump marker (JMP)",
+      "file": "ab-jump-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Allen-Bradley JMP convention; clause not verified",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/program-control-instructions/jump-to-label--jmp--and-label--lbl-.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "JMP sits between outward-facing angle marks at the right rail, with its target above, following the Rockwell instruction figure. This vendor outline differs from the IEC double arrow; clause not verified, and JMP is rejected by the engine parser."
+    },
+    {
+      "id": "ab-label-marker",
+      "label": "Allen-Bradley label marker (LBL)",
+      "file": "ab-label-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Allen-Bradley LBL convention; clause not verified",
+      "sourceUrl": "https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/instruction-set/program-control-instructions/jump-to-label--jmp--and-label--lbl-.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "LBL uses the exemplar square brackets at the start of a rung, with the target name above and a contact after it, following the Rockwell instruction figure. Its distinctive context is the network entry rather than a new bracket geometry; clause not verified, and LBL is rejected by the engine parser."
+    },
+    {
+      "id": "routine-end-marker",
+      "label": "Routine end marker",
+      "file": "routine-end-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Rockwell ladder-editor END convention; clause not verified",
+      "sourceUrl": "https://literature.rockwellautomation.com/idc/groups/literature/documents/um/9399-um013_-en-p.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "END appears in the exemplar brackets on its own final rung, with both rails stopping just below it. The final-rung context distinguishes this editor terminator from an ordinary inline instruction, so mnemonic-only variants are merged here; clause not verified, and the engine has no end marker."
+    },
+    {
+      "id": "forced-io-overlay",
+      "label": "Forced I/O indicator",
+      "file": "forced-io-overlay.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Rockwell online-monitoring forced-I/O convention; clause not verified",
+      "sourceUrl": "https://www.rockwellautomation.com/en-no/docs/studio-5000-logix-designer/38-00/contents-ditamap/studio-5000-logix-designer/force/force-in-the-ladder-editor.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled right-pointing triangle and ON appear above a contact, indicating an enabled force beside its Boolean value. This uses the documented Rockwell mark in exemplar ink instead of the configurable vendor colour; clause not verified, and the engine cannot display forces."
+    },
+    {
+      "id": "online-edit-marker",
+      "label": "Online edit rung margin marker",
+      "file": "online-edit-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Rockwell online-editing convention; clause not verified",
+      "sourceUrl": "https://literature.rockwellautomation.com/idc/groups/literature/documents/um/9399-um013_-en-p.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Repeated I marks occupy the margin beside a contact rung and its power rail, indicating an inserted edit zone. Deleted D and replaced R are merged text variants of the same margin treatment; clause not verified, and the engine has no online-edit state."
+    }
+  ]
+}

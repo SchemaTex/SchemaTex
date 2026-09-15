@@ -1,0 +1,15 @@
+gantt "Warehouse management system rollout"
+start: 2026-10-05
+calendar: 5day
+unit: days
+
+task A "Requirements"      duration: 5  lane: "Planning"
+task B "Buy hardware"      duration: 10 after: A lane: "Infrastructure"
+task C "Configure WMS"     duration: 15 after: A lane: "Software"
+task D "Install scanners"  duration: 8  after: B lane: "Infrastructure"
+task E "ERP integration"   duration: 12 after: C lane: "Software"
+task F "System test"       duration: 6  after: D, E lane: "Software"
+task G "Write SOPs"        duration: 10 after: A lane: "Operations"
+task H "Train staff"       duration: 5  after: F, G lane: "Operations"
+task I "Load data"         duration: 4  after: E lane: "Software"
+task J "Go-live"           milestone after: H, I lane: "Operations"

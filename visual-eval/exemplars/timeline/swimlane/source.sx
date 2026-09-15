@@ -1,0 +1,20 @@
+# Launch program for a SaaS platform release, grouped by workstream.
+timeline "Platform v2 Launch Program"
+config: style = swimlane
+era 2026-01-05 - 2026-03-31: "Build"
+era 2026-04-01 - 2026-06-30: "Launch"
+track "Engineering":
+  2026-01-05 - 2026-03-13: "Core API rebuild"
+  2026-03-16 - 2026-04-24: "QA hardening"
+  2026-03-13: milestone "Feature freeze"
+track "Design":
+  2026-01-19 - 2026-02-27: "Design system v2"
+  2026-03-02 - 2026-03-27: "Onboarding flows"
+track "Marketing":
+  2026-02-16 - 2026-04-10: "Launch collateral"
+  2026-04-13 - 2026-05-22: "Paid campaign"
+  2026-04-30: milestone "Public launch"
+track "Customer Success":
+  2026-03-23 - 2026-04-17: "Beta customer program"
+  2026-04-20: "Help center live"
+  2026-05-04 - 2026-06-26: "Migration office hours"

@@ -43,7 +43,54 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required valve order, pump labels, valved smaller bypass, discharge pressure instrument, and unambiguous crossings, while the picture misses several of these requirements."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly shows separate duty and standby pump paths between the shared suction source and discharge destination, with the bypass and pressure indicator traceable and no material overlap or ambiguous crossings.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:30:15.660Z",
+      "targetHash": "2a2a73d7d3cc",
+      "sourceHash": "fbe99ea1e76a",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "two-parallel-pump-paths",
+          "verdict": "pass",
+          "evidence": "TK-101 feeds two distinct branches through P-101 and P-102, which join at the common discharge header leading to TK-102."
+        },
+        {
+          "id": "isolation-on-each-pump",
+          "verdict": "pass",
+          "evidence": "Each branch shows a suction isolation valve (XV-101 or XV-201) before its pump and a discharge isolation valve (XV-102 or XV-202) after it."
+        },
+        {
+          "id": "check-valve-per-discharge",
+          "verdict": "pass",
+          "evidence": "Each discharge branch has an identifiable check-valve symbol downstream of its discharge isolation valve, labeled NRV-101 and NRV-201."
+        },
+        {
+          "id": "duty-and-standby-labelled",
+          "verdict": "pass",
+          "evidence": "The pumps are distinctly labeled P-101 “Duty Pump 45 m³/h” and P-102 “Standby Pump 45 m³/h.”"
+        },
+        {
+          "id": "bypass-distinguishable",
+          "verdict": "pass",
+          "evidence": "A smaller DN25 upper bypass runs from the P-101 discharge downstream of NRV-101, through XV-301, and returns to the top of TK-101."
+        },
+        {
+          "id": "pressure-indicator-visible",
+          "verdict": "pass",
+          "evidence": "A readable PI-101 bubble is connected by a capillary-style line to the common discharge header near TK-102."
+        },
+        {
+          "id": "crossings-unambiguous",
+          "verdict": "pass",
+          "evidence": "The bypass crosses above the duty branch without a junction; the return to TK-101 and shared discharge connections are visually traceable."
+        }
+      ]
+    }
   }
 }

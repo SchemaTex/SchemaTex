@@ -1,1 +1,77 @@
-{"id":"siteplan-landscape-garden","type":"siteplan","title":"Hawthorn garden landscape","goal":"Show planting, paths, tree canopies, water feature, and dimensions.","rubric":[{"id":"spaces","severity":"blocker","must":"Residence, lawn, perennial border, and shrub border are visibly separate labelled areas."},{"id":"water","severity":"blocker","must":"The reflecting pond is visibly distinct and identified by a Water feature callout."},{"id":"trees","severity":"major","must":"Oak, Maple, and Birch canopies are visibly shown as separate tree symbols."},{"id":"path","severity":"major","must":"A flagstone path visibly connects the residence to the garden."},{"id":"dimensions","severity":"blocker","must":"Visible 150 ft and 110 ft dimensions, north arrow, scale, and legend orient the plan."}],"split":"holdout"}
+{
+  "id": "siteplan-landscape-garden",
+  "type": "siteplan",
+  "title": "Hawthorn garden landscape",
+  "goal": "Show planting, paths, tree canopies, water feature, and dimensions.",
+  "rubric": [
+    {
+      "id": "spaces",
+      "severity": "blocker",
+      "must": "Residence, lawn, perennial border, and shrub border are visibly separate labelled areas."
+    },
+    {
+      "id": "water",
+      "severity": "blocker",
+      "must": "The reflecting pond is visibly distinct and identified by a Water feature callout."
+    },
+    {
+      "id": "trees",
+      "severity": "major",
+      "must": "Oak, Maple, and Birch canopies are visibly shown as separate tree symbols."
+    },
+    {
+      "id": "path",
+      "severity": "major",
+      "must": "A flagstone path visibly connects the residence to the garden."
+    },
+    {
+      "id": "dimensions",
+      "severity": "blocker",
+      "must": "Visible 150 ft and 110 ft dimensions, north arrow, scale, and legend orient the plan."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly shows the labeled garden areas, a distinct reflecting pond with a Water feature callout, three separate tree canopy symbols, a flagstone path connecting the residence to the garden, and the requested dimensions, north arrow, scale, and legend. No material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:31:38.102Z",
+      "targetHash": "d7ba6bc044a8",
+      "sourceHash": "f7d7a91875eb",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "spaces",
+          "verdict": "pass",
+          "evidence": "Residence, Lawn, Perennial Border, and Shrub Border appear as separate, labeled areas."
+        },
+        {
+          "id": "water",
+          "verdict": "pass",
+          "evidence": "A blue pond labeled Reflecting pond is distinct, with a Water feature callout pointing to it."
+        },
+        {
+          "id": "trees",
+          "verdict": "pass",
+          "evidence": "Separate canopy symbols appear for the Oak, Maple, and Birch, with their names shown nearby."
+        },
+        {
+          "id": "path",
+          "verdict": "pass",
+          "evidence": "The labeled Flagstone path runs from the residence’s upper edge into the garden and continues toward the right side."
+        },
+        {
+          "id": "dimensions",
+          "verdict": "pass",
+          "evidence": "The plan shows 150 ft across the top and 110 ft along the left, plus a north arrow, graphic scale, and legend."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067" role="img" aria-labelledby="title desc">
+  <title id="title">Manufacturing Cell Shared Robot</title>
+  <desc id="desc">A left-to-right Petri net. RawPart, RobotFree, and MachineFree each initially contain one token. Load consumes these three tokens and produces Loaded and RobotFree. StartMachine moves Loaded to Machining. Unload consumes Machining and RobotFree, and produces Finished, RobotFree, and MachineFree. Firing sequence: Load, StartMachine, Unload.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="12" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#000"/></marker>
+    <style>
+      .arc { fill:none; stroke:#000; stroke-width:3.3; stroke-linejoin:round; marker-end:url(#arrow); }
+      .place { fill:#fff; stroke:#000; stroke-width:3.3; }
+      .label { font-family:'Times New Roman',Times,serif; font-size:36px; fill:#000; }
+      .heading { font-family:'Times New Roman',Times,serif; font-size:60px; fill:#000; }
+      .caption { font-family:Arial,Helvetica,sans-serif; font-size:32px; font-style:italic; fill:#000; }
+    </style>
+  </defs>
+  <rect width="1600" height="1067" fill="#fff"/>
+  <text class="heading" x="800" y="70" text-anchor="middle">Manufacturing Cell Shared Robot</text>
+
+  <!-- The state progression. -->
+  <g class="arc">
+    <path d="M181 550 H338.5"/>
+    <path d="M361.5 550 H519"/>
+    <path d="M621 550 H788.5"/>
+    <path d="M811.5 550 H979"/>
+    <path d="M1081 550 H1238.5"/>
+    <path d="M1261.5 550 H1419"/>
+    <!-- Separate take and return lanes for the shared robot. -->
+    <path d="M740 260 H350 V495"/>
+    <path d="M361.5 510 H440 V300 H755.279"/>
+    <path d="M860 260 H1250 V495"/>
+    <path d="M1238.5 510 H1160 V300 H844.721"/>
+    <!-- The machine is reserved by Load and released by Unload. -->
+    <path d="M740 820 H350 V605"/>
+    <path d="M1250 605 V820 H860"/>
+  </g>
+
+  <g>
+    <circle class="place" cx="130" cy="550" r="51"/>
+    <circle class="place" cx="570" cy="550" r="51"/>
+    <circle class="place" cx="1030" cy="550" r="51"/>
+    <circle class="place" cx="1470" cy="550" r="51"/>
+    <circle class="place" cx="800" cy="260" r="60"/>
+    <circle class="place" cx="800" cy="820" r="60"/>
+  </g>
+  <g fill="#000">
+    <rect x="338.5" y="495" width="23" height="110"/>
+    <rect x="788.5" y="495" width="23" height="110"/>
+    <rect x="1238.5" y="495" width="23" height="110"/>
+    <circle cx="130" cy="550" r="13.5"/>
+    <circle cx="800" cy="260" r="13.5"/>
+    <circle cx="800" cy="820" r="13.5"/>
+  </g>
+  <g class="label">
+    <text x="130" y="650" text-anchor="middle">RawPart</text>
+    <text x="570" y="650" text-anchor="middle">Loaded</text>
+    <text x="1030" y="650" text-anchor="middle">Machining</text>
+    <text x="1470" y="650" text-anchor="middle">Finished</text>
+    <text x="800" y="166" text-anchor="middle">RobotFree</text>
+    <text x="800" y="934" text-anchor="middle">MachineFree</text>
+    <text x="320" y="470" text-anchor="end">Load</text>
+    <text x="800" y="470" text-anchor="middle">StartMachine</text>
+    <text x="1280" y="470">Unload</text>
+  </g>
+  <text class="caption" x="800" y="1000" text-anchor="middle">Firing sequence: Load → StartMachine → Unload</text>
+</svg>

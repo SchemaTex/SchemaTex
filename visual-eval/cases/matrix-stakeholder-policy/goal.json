@@ -1,6 +1,7 @@
 {
   "id": "matrix-stakeholder-policy",
   "type": "matrix",
+  "variant": "quadrant",
   "title": "Congestion-pricing stakeholder map",
   "goal": "A policy team can decide whom to manage closely, keep satisfied, inform, or monitor.",
   "rubric": [
@@ -30,5 +31,48 @@
       "must": "Quadrant dividers make engagement regions readable."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The stakeholder map faithfully shows the six named groups against power and interest axes, with relative bubble sizes and readable quadrant guidance. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:27:50.727Z",
+      "targetHash": "08159cd98766",
+      "sourceHash": "99331996f09f",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "All six stakeholders are positioned within the matrix, with interest increasing to the right and power increasing upward."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Mayor's office and Freight association are in the high-power/high-interest quadrant; Occasional visitors is in the low-power/low-interest quadrant."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "All six stakeholder names and their scale values are readable."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "Bubble areas visibly vary with the listed scale values: 6 is largest, 2 is smallest, and equal values have matching sizes."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Both quadrant divider lines are visible, and each region has a readable engagement label and guidance."
+        }
+      ]
+    }
+  }
 }

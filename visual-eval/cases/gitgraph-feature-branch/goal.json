@@ -1,6 +1,7 @@
 {
   "id": "gitgraph-feature-branch",
   "type": "gitgraph",
+  "variant": "horizontal",
   "title": "Feature Branch",
   "goal": "A practitioner can read the feature branch artefact at a glance.",
   "rubric": [
@@ -33,8 +34,8 @@
   "split": "train",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: The picture more clearly identifies the feature-branch scenario and shows directional branching, development, and merging, while the SVG leaves flow direction implicit."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/gitgraph/horizontal/ideal.svg (sha256 2c8962e3f5d3). Exemplar coloured horizontal branches, compact commits, hollow merge commit and tag. Same four commits and merge history. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
   }
 }

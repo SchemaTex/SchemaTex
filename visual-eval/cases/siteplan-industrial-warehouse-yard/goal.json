@@ -35,5 +35,53 @@
       "must": "Supporting callouts, markers, and a legend are visible and readable."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The plan visibly includes both building footprints, the heavy-vehicle loop and truck gate, visitor parking and trailer staging, a north arrow and scale bar, a closed site boundary distinct from the street frontage, and readable supporting annotations and legend. No material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:31:35.497Z",
+      "targetHash": "397aebd0928c",
+      "sourceHash": "2cb4106dbb3f",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "footprints",
+          "verdict": "pass",
+          "evidence": "Labeled Warehouse and Operations Office footprints are both drawn and dimensioned."
+        },
+        {
+          "id": "circulation",
+          "verdict": "pass",
+          "evidence": "The heavy-vehicle loop is labeled with its 14 m width, and a truck gate is marked along Logistics Parkway."
+        },
+        {
+          "id": "areas",
+          "verdict": "pass",
+          "evidence": "Visitor Parking is labeled with 32 spaces, and the Trailer Staging Yard is labeled with dimensions and area."
+        },
+        {
+          "id": "orientation",
+          "verdict": "pass",
+          "evidence": "A north arrow and a graphic scale marked from 0 to 100 m are visible."
+        },
+        {
+          "id": "boundaries",
+          "verdict": "pass",
+          "evidence": "A closed dashed operational site boundary surrounds the plan; Logistics Parkway is separately shown as the street frontage."
+        },
+        {
+          "id": "annotations",
+          "verdict": "pass",
+          "evidence": "The plan includes a readable legend, fire-route note and dashed route, hydrant marker, loading-docks callout, security-fence label, and pedestrian-route label."
+        }
+      ]
+    }
+  }
 }

@@ -38,8 +38,8 @@
   "split": "train",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG better matches the required detail by showing pump and reservoir-leak causes and probabilities for all three hydraulic systems, despite severely malformed AND-gate outlines."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/faulttree/ideal.svg (sha256 7bffbe71b8bd). Corrected invalid relative arc in AND symbols. Exemplar green gate treatment and blue probabilities; existing gate logic retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
   }
 }

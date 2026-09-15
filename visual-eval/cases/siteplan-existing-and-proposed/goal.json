@@ -43,7 +43,54 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 clearly depicts the required industrial parcel and uses distinct building treatments, labelled access changes and relevant dimensions, whereas Image 2 depicts a residential site and omits Industrial Avenue and the extension dimension."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly communicates retained, proposed, and demolished work, revised vehicle access, principal site dimensions, road frontage, setbacks, north orientation, and scale. No material visible defect or missing source requirement is evident.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:32.509Z",
+      "targetHash": "4fe998ee378c",
+      "sourceHash": "cbe2f0104f89",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "parcel-and-road-clear",
+          "verdict": "pass",
+          "evidence": "The dashed property line clearly encloses the parcel, while Industrial Avenue is separately shown and labelled along the southern frontage."
+        },
+        {
+          "id": "existing-proposed-demolished-distinct",
+          "verdict": "pass",
+          "evidence": "The retained warehouse uses a solid grey fill, the proposed extension uses diagonal hatching, and the demolished outbuilding uses a dashed outline with an X."
+        },
+        {
+          "id": "revised-access-readable",
+          "verdict": "pass",
+          "evidence": "The proposed 7 m vehicle access is labelled near the central frontage, and the existing 5 m access to be removed is separately labelled at the eastern frontage."
+        },
+        {
+          "id": "proposed-extension-attached",
+          "verdict": "pass",
+          "evidence": "The hatched extension visibly adjoins the warehouse along its eastern wall, and both footprints remain individually readable."
+        },
+        {
+          "id": "dimensions-legible",
+          "verdict": "pass",
+          "evidence": "The 72 m parcel frontage, 64 m maximum parcel depth, and 17 m proposed-extension dimension are readable and positioned beside their measured edges."
+        },
+        {
+          "id": "north-and-scale-present",
+          "verdict": "pass",
+          "evidence": "A north arrow is visible at bottom right and a 0–40 m graphic scale is visible along the bottom."
+        },
+        {
+          "id": "annotations-do-not-obscure",
+          "verdict": "pass",
+          "evidence": "Building labels, callouts, setback labels, parking, pedestrian route, and access annotations remain legible without materially obscuring the relevant footprints or routes."
+        }
+      ]
+    }
   }
 }

@@ -1,1 +1,40 @@
-{"id":"usecase-permit-portal","type":"usecase","title":"Building permit portal","goal":"Show municipal permit submission, review, and revision services.","rubric":[{"id":"subject","severity":"blocker","must":"Municipal Permit Portal visibly bounds the permit-related use cases."},{"id":"submission-includes","severity":"blocker","must":"Submit Permit Application has dashed «include» arrows pointing to Validate Property, Pay Application Fee, and Review Plans."},{"id":"revision-extension","severity":"major","must":"Request Plan Revision extends Submit Permit Application toward its incomplete plans extension point."},{"id":"services","severity":"major","must":"Validate Property and Pay Application Fee connect to distinct external actors Property Registry and Payment Service."},{"id":"architect-generalization","severity":"minor","must":"Licensed Architect generalizes to Applicant."}],"split":"holdout"}
+{
+  "id": "usecase-permit-portal",
+  "type": "usecase",
+  "title": "Building permit portal",
+  "goal": "Show municipal permit submission, review, and revision services.",
+  "rubric": [
+    {
+      "id": "subject",
+      "severity": "blocker",
+      "must": "Municipal Permit Portal visibly bounds the permit-related use cases."
+    },
+    {
+      "id": "submission-includes",
+      "severity": "blocker",
+      "must": "Submit Permit Application has dashed «include» arrows pointing to Validate Property, Pay Application Fee, and Review Plans."
+    },
+    {
+      "id": "revision-extension",
+      "severity": "major",
+      "must": "Request Plan Revision extends Submit Permit Application toward its incomplete plans extension point."
+    },
+    {
+      "id": "services",
+      "severity": "major",
+      "must": "Validate Property and Pay Application Fee connect to distinct external actors Property Registry and Payment Service."
+    },
+    {
+      "id": "architect-generalization",
+      "severity": "minor",
+      "must": "Licensed Architect generalizes to Applicant."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/usecase/ideal.svg (sha256 7c0fac2f9989). Vision reviewed all six rasterized targets: named subject boundary, external actors, extension-point compartments, include arrows toward included use cases and extend arrows toward bases; long dependencies routed outside unrelated ellipses. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

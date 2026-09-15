@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="750" viewBox="0 0 1140 750" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Carton batch counter</title><desc>Hand-authored IEC FBD reference; source blocks, expressions, negations and literals preserved.</desc><rect width="1140" height="750" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Carton batch counter</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Function block diagram</text>
+<path d="M48 110L1092 110" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="137" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 0</text>
+<text x="164" y="137" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Count each carton once</text>
+<rect x="310" y="190" width="150" height="80" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="385" y="213" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">R_TRIG</text>
+<text x="385" y="178" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">Edge</text>
+<text x="322" y="241" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">CLK</text>
+<text x="277" y="241" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BoxSensor</text>
+<path d="M285 236L310 236" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="450" y="241" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M460 236L484 236" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="690" y="190" width="150" height="132" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="765" y="213" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">CTU</text>
+<text x="765" y="178" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">BatchCount</text>
+<text x="702" y="241" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">CU</text>
+<path d="M690 230l7 6-7 6" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="702" y="273" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">R</text>
+<text x="657" y="273" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">ResetBtn</text>
+<path d="M665 268L690 268" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="702" y="305" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">PV</text>
+<text x="657" y="305" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">12</text>
+<path d="M665 300L690 300" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="830" y="241" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M840 236L864 236" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="830" y="273" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">CV</text>
+<path d="M840 268L864 268" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M484 236H587V236H690" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M48 405L1092 405" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="432" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 1</text>
+<text x="164" y="432" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Stop conveyor at a full batch or emergency stop</text>
+<rect x="470" y="485" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="545" y="508" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">OR</text>
+<text x="437" y="536" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BatchCount.Q</text>
+<path d="M445 531L470 531" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="437" y="568" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">EStop</text>
+<path d="M445 563L470 563" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M620 531L644 531" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M644 531L674 531" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="683" y="536" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">ConveyorStop</text>
+<path d="M48 674L1092 674" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="702" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Open input circle = logical inversion.  Triangle at CU = rising-edge counter input.</text>
+<text x="48" y="722" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Instance names sit above blocks; named variables connect separate networks.</text></svg>

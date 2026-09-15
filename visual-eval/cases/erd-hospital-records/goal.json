@@ -1,1 +1,87 @@
-{"id":"erd-hospital-records","type":"erd","title":"Hospital records","goal":"Show clinical-record relationships among patients, encounters, clinicians, prescriptions, and laboratory results.","rubric":[{"id":"patient-encounters","severity":"blocker","must":"Patient visibly has a one-to-many relationship to Encounter."},{"id":"encounter-clinical-records","severity":"blocker","must":"Encounter visibly has one-to-many relationships to both Prescription and Lab Result."},{"id":"clinician-links","severity":"major","must":"Clinician visibly connects to encounters and authorises prescriptions."},{"id":"five-entities","severity":"major","must":"Patient, Encounter, Clinician, Prescription, and Lab Result are visible as distinct labelled entities."},{"id":"clinical-fields","severity":"major","must":"Encounter timing, medication, and laboratory test/result fields are visibly readable."},{"id":"cardinality","severity":"minor","must":"The relationship endpoints visibly communicate optionality and multiplicity."}],"split":"holdout"}
+{
+  "id": "erd-hospital-records",
+  "type": "erd",
+  "title": "Hospital records",
+  "goal": "Show clinical-record relationships among patients, encounters, clinicians, prescriptions, and laboratory results.",
+  "rubric": [
+    {
+      "id": "patient-encounters",
+      "severity": "blocker",
+      "must": "Patient visibly has a one-to-many relationship to Encounter."
+    },
+    {
+      "id": "encounter-clinical-records",
+      "severity": "blocker",
+      "must": "Encounter visibly has one-to-many relationships to both Prescription and Lab Result."
+    },
+    {
+      "id": "clinician-links",
+      "severity": "major",
+      "must": "Clinician visibly connects to encounters and authorises prescriptions."
+    },
+    {
+      "id": "five-entities",
+      "severity": "major",
+      "must": "Patient, Encounter, Clinician, Prescription, and Lab Result are visible as distinct labelled entities."
+    },
+    {
+      "id": "clinical-fields",
+      "severity": "major",
+      "must": "Encounter timing, medication, and laboratory test/result fields are visibly readable."
+    },
+    {
+      "id": "cardinality",
+      "severity": "minor",
+      "must": "The relationship endpoints visibly communicate optionality and multiplicity."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All five entities and their fields are visible and readable. The relationship lines are traceable, with endpoints showing the specified one-to-many optional cardinalities; no material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:49.309Z",
+      "targetHash": "1c536289b3da",
+      "sourceHash": "437f3949018b",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "patient-encounters",
+          "verdict": "pass",
+          "evidence": "PATIENT connects to ENCOUNTER with a single marker at Patient and optional-many markers at Encounter."
+        },
+        {
+          "id": "encounter-clinical-records",
+          "verdict": "pass",
+          "evidence": "ENCOUNTER connects separately to PRESCRIPTION and LAB_RESULT, with one at Encounter and optional-many at each record entity."
+        },
+        {
+          "id": "clinician-links",
+          "verdict": "pass",
+          "evidence": "CLINICIAN connects to ENCOUNTER via “attends” and to PRESCRIPTION via “authorises”; both show one clinician to optional-many records."
+        },
+        {
+          "id": "five-entities",
+          "verdict": "pass",
+          "evidence": "PATIENT, ENCOUNTER, CLINICIAN, PRESCRIPTION, and LAB_RESULT appear as distinct labeled entities."
+        },
+        {
+          "id": "clinical-fields",
+          "verdict": "pass",
+          "evidence": "ENCOUNTER shows admitted_at and encounter_type; PRESCRIPTION shows medication; LAB_RESULT shows test_name and result_value. The fields are readable."
+        },
+        {
+          "id": "cardinality",
+          "verdict": "pass",
+          "evidence": "Relationship endpoints visibly distinguish exactly one from optional one-or-many using bars, circles, and crow’s-foot markers."
+        }
+      ]
+    }
+  }
+}

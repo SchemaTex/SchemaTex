@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="656" viewBox="0 0 1600 656">
+  <title>Remote-first versus office-first policy</title>
+  <rect width="1600" height="656" fill="#FFFFFF"/>
+  <defs>
+    <g id="yes">
+      <circle r="16.5" fill="#E5F1EA" stroke="#2E7A4E" stroke-width="1.8"/>
+      <path d="M-7 0 L-1.5 5.5 L8 -5.5" fill="none" stroke="#2E7A4E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="partly">
+      <circle r="16.5" fill="#FAF0DC" stroke="#9A6A14" stroke-width="1.8"/>
+      <path d="M-7.5 2 C-4 -7 -1.5 -3 0 0 C2 5 5 5 8 -2" fill="none" stroke="#9A6A14" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="no">
+      <circle r="16.5" fill="#F6E5E5" stroke="#B03A3A" stroke-width="1.8"/>
+      <path d="M-5.5 -5.5 L5.5 5.5 M5.5 -5.5 L-5.5 5.5" fill="none" stroke="#B03A3A" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#1B2430">
+    <text x="79" y="96" font-size="37" font-weight="600">Remote-first versus office-first policy</text>
+    <g font-size="24" font-weight="600" text-anchor="middle">
+      <text x="800" y="200">Remote-first</text>
+      <text x="1280" y="200">Office-first</text>
+    </g>
+    <path d="M79 228.5 H1520" stroke="#1B2430" stroke-width="2.4"/>
+    <rect x="79" y="305" width="1441" height="76" fill="#F4F6F9"/>
+    <rect x="79" y="457" width="1441" height="77" fill="#F4F6F9"/>
+    <g font-size="22.5" font-weight="500">
+      <text x="105" y="275">Commute burden</text>
+      <text x="105" y="351">Informal collaboration</text>
+      <text x="105" y="427">Geographic hiring</text>
+      <text x="105" y="503">Workspace cost</text>
+    </g>
+    <g font-size="22.5" text-anchor="middle">
+      <text x="800" y="275">Low</text>
+      <text x="1280" y="275">High</text>
+      <text x="800" y="503">Lower</text>
+      <text x="1280" y="503">Higher</text>
+    </g>
+    <use href="#partly" x="800" y="343"/>
+    <use href="#yes" x="1280" y="343"/>
+    <use href="#yes" x="800" y="419"/>
+    <use href="#no" x="1280" y="419"/>
+    <path d="M79 534 H1520" stroke="#CED6DF" stroke-width="1.6"/>
+    <g font-size="20" fill="#5F6B7A">
+      <use href="#yes" transform="translate(94.5 583) scale(.91)"/>
+      <text x="119" y="590">Yes</text>
+      <use href="#partly" transform="translate(206.5 583) scale(.91)"/>
+      <text x="231" y="590">Partly</text>
+      <use href="#no" transform="translate(338.5 583) scale(.91)"/>
+      <text x="363" y="590">No</text>
+    </g>
+  </g>
+</svg>

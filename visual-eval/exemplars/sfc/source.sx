@@ -1,0 +1,27 @@
+# Scenario: batch oven — heat up, then bake (15 min delayed) and cool the jacket (5 min limited) concurrently.
+sfc "Bake and cool concurrently"
+
+var BakeReady: bool
+var HeatDone: bool
+var Bake_Done: bool
+var Cool_Done: bool
+
+step S0 [initial]
+
+step S_Heat
+  N Heater_On
+
+sim from: S_Heat: HeatDone
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+
+step S_Done
+  N AnnounceDone
+
+transition from: S0 to: S_Heat: BakeReady
+transition from: S_Done to: S0: NOT BakeReady

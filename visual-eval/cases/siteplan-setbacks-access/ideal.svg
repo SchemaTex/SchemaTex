@@ -1,76 +1,91 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1120" viewBox="0 0 1100 1120">
-<title>Parcel Setbacks and Access</title>
-<rect width="1100" height="1120" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1538" height="1600" viewBox="0 0 1538 1600">
+<title>Parcel Setbacks and Access — Site Plan</title>
 <defs>
- <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#202c32"/></marker>
- <pattern id="paving" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="#bdc4c7" stroke-width="0.7"/></pattern>
-</defs>
 <style>
- text{font-family:Arial,Helvetica,sans-serif;fill:#202c32;font-size:17px}
- .setback{fill:none;stroke:#68767c;stroke-width:1.8;stroke-dasharray:10 7}
- .dim{fill:none;stroke:#45535a;stroke-width:1.2}
- .small{font-size:15px}
+text{font-family:Helvetica,Arial,sans-serif;fill:#1F2328;font-size:16px} .title{font-size:30px;font-weight:700}.subtitle{font-size:18px;fill:#727D8B}.section{font-size:14px;font-weight:700;letter-spacing:1.4px;fill:#727D8B}.th{font-size:13px;font-weight:700;letter-spacing:1px;fill:#727D8B}.note{font-size:15px;fill:#727D8B}.annotation{font-size:15px;fill:#55606C}.name{font-size:19px;font-weight:700;letter-spacing:1px}.rule{stroke:#A3ABB4;stroke-width:1}.dim{stroke:#A3ABB4;stroke-width:1.2;fill:none}.tick{stroke:#1F2328;stroke-width:2}.setback{stroke:#55606C;stroke-width:1.7;stroke-dasharray:13 7;fill:none}.paving{fill:#EDEFF2;stroke:#55606C;stroke-width:1.5}
 </style>
-<text x="100" y="55" font-size="28" font-weight="bold">Parcel Setbacks and Access</text>
-<text x="100" y="83" class="small">SITE PLAN · Dimensions in metres</text>
-<!-- Coordinates: x = 250 + 15x; y = 175 + 15y. Rear is north. -->
-<!-- Road extends from x=-5 to x=35, with a six metre carriageway. -->
-<rect x="175" y="805" width="600" height="90" fill="#edf0f1"/>
-<path d="M175 805H775 M175 895H775" fill="none" stroke="#657177" stroke-width="2"/>
-<!-- Continuous access corridors, drawn beneath the boundary and setback convention. -->
-<rect x="527.5" y="595" width="45" height="255" fill="#d1d8db" stroke="#58676e" stroke-width="1.5"/>
-<rect x="406" y="595" width="18" height="255" fill="url(#paving)" stroke="#58676e" stroke-width="1.5"/>
-<!-- Property boundary: uninterrupted, closed and heavier than internal lines. -->
-<rect x="250" y="175" width="450" height="600" fill="none" stroke="#202c32" stroke-width="3.6"/>
-<!-- Four separate setback lines. -->
-<path class="setback" d="M325 265H625"/>
-<path class="setback" d="M325 655H625"/>
-<path class="setback" d="M325 265V655"/>
-<path class="setback" d="M625 265V655"/>
-<text x="475" y="247" text-anchor="middle">Rear setback 6 m</text>
-<path d="M625 655H745V734H780" fill="none" stroke="#68767c" stroke-width="1.2"/>
-<text x="790" y="740" font-size="16">Front setback 8 m</text>
-<text x="310" y="460" text-anchor="middle" transform="rotate(-90 310 460)">West setback 5 m</text>
-<text x="649" y="460" text-anchor="middle" transform="rotate(90 649 460)">East setback 5 m</text>
-<!-- Building footprint: 14 x 18 m, all sides clear of setbacks. -->
-<rect x="370" y="325" width="210" height="270" fill="#f2f1ed" stroke="#202c32" stroke-width="2.5"/>
-<text x="475" y="459" text-anchor="middle" font-size="23" font-weight="bold">Building</text>
-<!-- Entry at (11,28), sized 0.8 m. -->
-<path d="M409 601L415 589L421 601Z" fill="#202c32"/>
-<!-- Entrance callout at (2,24); elbow stays clear of access routes. -->
-<text x="280" y="526" font-size="16">Entrance</text>
-<path d="M280 535H348V615H394L410 600" fill="none" stroke="#202c32" stroke-width="1.3" marker-end="url(#arrow)"/>
-<!-- Access labels parallel to routes and outside their paving. -->
-<text x="394" y="747" transform="rotate(-90 394 747)" font-size="15">Pedestrian path</text>
-<text x="594" y="745" transform="rotate(-90 594 745)" font-size="16">Driveway</text>
-<text x="670" y="858" text-anchor="middle" font-size="22">Street</text>
-<!-- Parcel dimensions, extension lines anchored to property corners. -->
-<path class="dim" d="M250 175V121 M700 175V121 M250 133H700 M244 139L256 127 M694 139L706 127"/>
-<text x="475" y="119" text-anchor="middle">30 m parcel width</text>
-<path class="dim" d="M250 175H125 M250 775H125 M142 175V775 M136 181L148 169 M136 781L148 769"/>
-<text x="124" y="475" text-anchor="middle" transform="rotate(-90 124 475)">40 m parcel depth</text>
-<!-- North points toward the rear at y=0. -->
-<g transform="translate(848 198)">
-<text x="0" y="-24" text-anchor="middle" font-size="24" font-weight="bold">N</text>
-<path d="M0 0L-13 42L0 34L13 42Z" fill="#202c32"/>
-<path d="M0 34V94" stroke="#202c32" stroke-width="2"/>
+</defs>
+<rect width="1538" height="1600" fill="#FFFFFF"/>
+<text x="61" y="77" class="title">Parcel Setbacks and Access — Site Plan</text>
+<text x="61" y="111" class="subtitle">30 × 40 m parcel · 1,200 m² lot · building, setbacks and access · dimensions in metres</text>
+<path d="M61 135H1477" class="rule"/>
+<!-- All plan coordinates use 20 drawing units per metre. Rear is sheet-up. -->
+<!-- Street: centreline y=45 m, width 6 m. -->
+<path d="M70 1200H870V1320H70Z" fill="#EDEFF2"/>
+<path d="M70 1200H870M70 1320H870" stroke="#55606C" stroke-width="1.7"/>
+<path d="M70 1260H400M540 1260H870" stroke="#A3ABB4" stroke-width="1.2" stroke-dasharray="28 8 6 8"/>
+<text x="470" y="1266" text-anchor="middle" class="name">STREET</text>
+<!-- Access surfaces extend continuously to street centreline, meeting the building wall. -->
+<path d="M540 920H600V1260H540Z" class="paving"/>
+<path d="M378 920H402V1260H378Z" class="paving"/>
+<!-- Closed parcel: continuous heavier boundary is intentional. -->
+<rect x="170" y="360" width="600" height="800" fill="none" stroke="#1F2328" stroke-width="3.5"/>
+<!-- Four separately identified setback lines, above paving at crossings. -->
+<path d="M270 480H670" class="setback"/>
+<path d="M270 1000H670" class="setback"/>
+<path d="M270 480V1000" class="setback"/>
+<path d="M670 480V1000" class="setback"/>
+<text x="470" y="459" text-anchor="middle" class="annotation">Rear setback 6 m</text>
+<text x="470" y="1031" text-anchor="middle" class="annotation" style="font-size:14px">Front setback 8 m</text>
+<text x="247" y="682" transform="rotate(-90 247 682)" text-anchor="middle" class="annotation">West setback 5 m</text>
+<text x="696" y="739" transform="rotate(-90 696 739)" text-anchor="middle" class="annotation">East setback 5 m</text>
+<!-- Building: 8,10 to 22,28; all setbacks have positive clearance. -->
+<rect x="330" y="560" width="280" height="360" fill="#D5DAE0" stroke="#1F2328" stroke-width="2.8"/>
+<text x="470" y="735" text-anchor="middle" class="name">BUILDING</text>
+<text x="470" y="761" text-anchor="middle" class="subtitle" style="font-size:16px">14 × 18 m · 252 m²</text>
+<!-- Entrance at 11,28: 0.8 m marker centered on the building wall. -->
+<rect x="382" y="912" width="16" height="16" fill="#FFFFFF" stroke="#1F2328" stroke-width="2"/>
+<path d="M385 915L390 920L395 915" fill="none" stroke="#1F2328" stroke-width="1.5"/>
+<!-- Callout label at 2,24 with orthogonal leader to the actual entrance. -->
+<text x="210" y="840" class="annotation">Entrance</text>
+<path d="M210 849V944H390V929" fill="none" stroke="#55606C" stroke-width="1.3"/>
+<path d="M386 935L390 929L394 935" fill="none" stroke="#55606C" stroke-width="1.3"/>
+<text x="571" y="1100" transform="rotate(-90 571 1100)" text-anchor="middle" class="annotation">DRIVEWAY · 3 m</text>
+<text x="359" y="1090" transform="rotate(-90 359 1090)" text-anchor="middle" class="annotation">Pedestrian path · 1.2 m</text>
+<!-- Overall dimensions terminate at extensions from parcel corners only. -->
+<path d="M170 353V289M770 353V289M170 305H770" class="dim"/>
+<path d="M163 312L177 298M763 312L777 298" class="tick"/>
+<text x="470" y="286" text-anchor="middle">30 m parcel width</text>
+<path d="M163 360H111M163 1160H111M124 360V1160" class="dim"/>
+<path d="M117 367L131 353M117 1167L131 1153" class="tick"/>
+<text x="105" y="760" transform="rotate(-90 105 760)" text-anchor="middle">40 m parcel depth</text>
+<!-- Right-side tables follow the exemplar's typography and rule hierarchy. -->
+<text x="861" y="216" class="section">SITE DATA</text>
+<text x="861" y="247">Lot area 1,200 m² · 30.00 m × 40.00 m</text>
+<text x="861" y="284" class="th">SURFACE (M²)</text><text x="1370" y="284" text-anchor="end" class="th">AREA</text><text x="1477" y="284" text-anchor="end" class="th">% OF LOT</text>
+<path d="M861 294H1477" stroke="#55606C" stroke-width="1.2"/>
+<text x="861" y="324">Building</text><text x="1370" y="324" text-anchor="end">252</text><text x="1477" y="324" text-anchor="end">21.0%</text>
+<path d="M861 342H1477" class="rule"/>
+<text x="861" y="372">Driveway within parcel</text><text x="1370" y="372" text-anchor="end">36</text><text x="1477" y="372" text-anchor="end">3.0%</text>
+<text x="861" y="402">Pedestrian path within parcel</text><text x="1370" y="402" text-anchor="end">14.4</text><text x="1477" y="402" text-anchor="end">1.2%</text>
+<path d="M861 420H1477" class="rule"/>
+<text x="861" y="449" font-weight="700">Building and access</text><text x="1370" y="449" text-anchor="end" font-weight="700">302.4</text><text x="1477" y="449" text-anchor="end" font-weight="700">25.2%</text>
+<text x="861" y="479">Remaining parcel area</text><text x="1370" y="479" text-anchor="end">897.6</text><text x="1477" y="479" text-anchor="end">74.8%</text>
+<text x="861" y="511" class="note">Access surfaces beyond the property boundary are not counted.</text>
+<text x="861" y="668" class="section">SETBACKS (M)</text>
+<text x="861" y="702" class="th">LOT LINE</text><text x="1200" y="702" text-anchor="end" class="th">REQUIRED</text><text x="1477" y="702" text-anchor="end" class="th">BUILDING</text>
+<path d="M861 713H1477" stroke="#55606C" stroke-width="1.2"/>
+<text x="861" y="742">Front</text><text x="1200" y="742" text-anchor="end">8</text><text x="1477" y="742" text-anchor="end">12</text>
+<text x="861" y="772">Rear</text><text x="1200" y="772" text-anchor="end">6</text><text x="1477" y="772" text-anchor="end">10</text>
+<text x="861" y="802">Side (west)</text><text x="1200" y="802" text-anchor="end">5</text><text x="1477" y="802" text-anchor="end">8</text>
+<text x="861" y="832">Side (east)</text><text x="1200" y="832" text-anchor="end">5</text><text x="1477" y="832" text-anchor="end">8</text>
+<path d="M861 846H1477" class="rule"/>
+<text x="861" y="879" class="note">Measured square to each lot line from the nearest wall.</text>
+<text x="861" y="954" class="section">LEGEND</text>
+<path d="M861 988H929" stroke="#1F2328" stroke-width="3.5"/><text x="947" y="994">Property line</text>
+<path d="M861 1022H929" class="setback"/><text x="947" y="1028">Setback line</text>
+<rect x="871" y="1047" width="49" height="22" fill="#D5DAE0" stroke="#1F2328" stroke-width="2.5"/><text x="947" y="1063">Building</text>
+<rect x="1186" y="977" width="49" height="22" class="paving"/><text x="1263" y="994">Access paving</text>
+<path d="M1186 1022H1235" class="dim"/><path d="M1182 1027L1190 1017M1231 1027L1239 1017" class="tick"/><text x="1263" y="1028">Dimension</text>
+<rect x="1203" y="1049" width="16" height="16" fill="#FFFFFF" stroke="#1F2328" stroke-width="2"/><path d="M1206 1052L1211 1057L1216 1052" fill="none" stroke="#1F2328" stroke-width="1.5"/><text x="1263" y="1063">Entrance</text>
+<!-- Graphic scale: each 100-unit segment equals 5 metres at the plan scale. -->
+<g transform="translate(861 1493)">
+<text x="0" y="-9" text-anchor="middle" class="note">0</text><text x="100" y="-9" text-anchor="middle" class="note">5</text><text x="200" y="-9" text-anchor="middle" class="note">10</text><text x="300" y="-9" text-anchor="middle" class="note">15</text><text x="400" y="-9" text-anchor="middle" class="note">20</text>
+<path d="M0 0H400V9H0Z" fill="#FFFFFF" stroke="#1F2328" stroke-width="1"/><path d="M0 0H100V9H0ZM200 0H300V9H200Z" fill="#1F2328"/>
+<text x="418" y="9" class="note">m</text><text x="0" y="37" class="section">GRAPHIC SCALE</text>
 </g>
-<!-- Legend and a true five metre scale bar. -->
-<g transform="translate(790 415)">
-<text x="0" y="0" font-size="18" font-weight="bold">Legend</text>
-<path d="M0 32H48" stroke="#202c32" stroke-width="3.6"/><text x="61" y="38" class="small">Parcel boundary</text>
-<path d="M0 68H48" class="setback"/><text x="61" y="74" class="small">Setback</text>
-<rect x="0" y="94" width="48" height="18" fill="#f2f1ed" stroke="#202c32" stroke-width="2"/><text x="61" y="109" class="small">Building</text>
-<rect x="0" y="130" width="48" height="18" fill="#d1d8db" stroke="#58676e"/><text x="61" y="145" class="small">Driveway</text>
-<rect x="0" y="166" width="48" height="12" fill="url(#paving)" stroke="#58676e"/><text x="61" y="178" class="small">Pedestrian path</text>
-<path d="M18 212L24 200L30 212Z" fill="#202c32"/><text x="61" y="213" class="small">Entrance</text>
-</g>
-<g transform="translate(250 979)">
-<text x="0" y="-20" font-size="16">Scale</text>
-<rect width="37.5" height="10" fill="#202c32"/>
-<rect x="37.5" width="37.5" height="10" fill="white" stroke="#202c32"/>
-<path d="M0 -4V15 M75 -4V15" stroke="#202c32"/>
-<text x="0" y="34" text-anchor="middle" class="small">0</text>
-<text x="75" y="34" text-anchor="middle" class="small">5 m</text>
+<g transform="translate(1443 1496)">
+<text x="0" y="-36" text-anchor="middle" font-size="18" font-weight="700">N</text><circle r="26" fill="#FFFFFF" stroke="#A3ABB4" stroke-width="1.5"/>
+<path d="M0-21L-10 13L0 7Z" fill="#1F2328"/><path d="M0-21L10 13L0 7Z" fill="#FFFFFF" stroke="#1F2328" stroke-width="1.5"/>
 </g>
 </svg>

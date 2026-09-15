@@ -1,1 +1,56 @@
-{"id":"decisiontree-loan-default-risk","type":"decisiontree","title":"Loan default risk","goal":"Show an interpretable risk-classification tree with sample counts and class distributions.","rubric":[{"id":"income-root","severity":"blocker","must":"Income is visibly the root split, with low- and higher-income branches."},{"id":"credit-and-employment","severity":"blocker","must":"Credit score is visibly used below income and employment years visibly refine the lower-income, higher-credit branch."},{"id":"risk-leaves","severity":"major","must":"Visible leaves include low-risk, elevated-risk, and high-risk classifications."},{"id":"counts-values","severity":"major","must":"Split and leaf boxes visibly show sample counts and class-value counts."},{"id":"high-risk-leaf","severity":"major","must":"The low-income and low-credit path visibly terminates at a high-risk leaf."},{"id":"binary-branches","severity":"minor","must":"Every displayed split has visually distinct true and false branches."}],"split":"train"}
+{
+  "id": "decisiontree-loan-default-risk",
+  "type": "decisiontree",
+  "variant": "ml",
+  "title": "Loan default risk",
+  "goal": "Show an interpretable risk-classification tree with sample counts and class distributions.",
+  "rubric": [
+    {
+      "id": "income-root",
+      "severity": "blocker",
+      "must": "Income is visibly the root split, with low- and higher-income branches."
+    },
+    {
+      "id": "credit-and-employment",
+      "severity": "blocker",
+      "must": "Credit score is visibly used below income and employment years visibly refine the lower-income, higher-credit branch."
+    },
+    {
+      "id": "risk-leaves",
+      "severity": "major",
+      "must": "Visible leaves include low-risk, elevated-risk, and high-risk classifications."
+    },
+    {
+      "id": "counts-values",
+      "severity": "major",
+      "must": "Split and leaf boxes visibly show sample counts and class-value counts."
+    },
+    {
+      "id": "high-risk-leaf",
+      "severity": "major",
+      "must": "The low-income and low-credit path visibly terminates at a high-risk leaf."
+    },
+    {
+      "id": "binary-branches",
+      "severity": "minor",
+      "must": "Every displayed split has visually distinct true and false branches."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Existing independent target retained; corrected relation labels and arrow-tip registration to match the source.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Visually reviewed against the ML exemplar and source: four split rules, five predictions, source class counts and sample counts remain visible. Relation labels now show the authored thresholds. Leaf class headers, class-mix bars and aligned outcome cards are distinct and readable.",
+      "model": "Codex visual review",
+      "passes": 1,
+      "reviewedAt": "2026-09-14T21:56:58.148Z",
+      "targetHash": "69e66f6f1d8e",
+      "sourceHash": "c96ecfc93b41",
+      "exemplarHash": "388838e86089"
+    }
+  }
+}

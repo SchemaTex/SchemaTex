@@ -1,8 +1,8 @@
 {
   "id": "timing-uart-frame",
   "type": "timing",
-  "title": "Uart Frame",
-  "goal": "A practitioner can read the uart frame artefact at a glance.",
+  "title": "UART frame: 0x55, 8N1",
+  "goal": "A practitioner can read this timing diagram at a glance: UART frame: 0x55, 8N1.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +30,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/timing/ideal.svg (sha256 2c0d774545bd). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Independent aligned waveforms and bus-cell geometry, exemplar monochrome palette and readable labels."
+  }
 }

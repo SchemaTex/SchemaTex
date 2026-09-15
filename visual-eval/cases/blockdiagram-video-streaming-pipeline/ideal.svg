@@ -1,55 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1434 401" width="1434" height="401" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1434 380" width="1434" height="380" role="img">
 <title>Video streaming pipeline</title>
 <desc>A functional block diagram of Video streaming pipeline. 7 blocks carry the forward signal path. Every wire is orthogonal, every arrowhead lands on a block edge, signal names are set in italic beside the wire they name, and a legend at the foot states the line codes.</desc>
-<rect x="0" y="0" width="1434" height="401" fill="#ffffff"/>
+<rect x="0" y="0" width="1434" height="380" fill="#ffffff" />
 <text x="46" y="48" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#16202B">Video streaming pipeline</text>
 <text x="46" y="70" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#63707F">one live source is encoded into adaptive bitrate renditions before CDN delivery</text>
-<line x1="46" y1="84" x2="1388" y2="84" stroke="#C9D2DC" stroke-width="1"/>
-<path d="M 200.56 155 L 258.56 155 L 258.56 200 L 307.85 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 442.29 200 L 549.29 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 687.1 200 L 794.1 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 923.1 200 L 1030.1 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 1170.8 200 L 1277.8 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 200.85 250 L 622.7 250 L 622.7 237" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 200.85 250 L 1104.95 250 L 1104.95 237" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 46 324.68 L 65 324.68" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 316.85 200 L 307.85 203.5 L 307.85 196.5 Z" fill="#16202B"/>
-<path d="M 558.29 200 L 549.29 203.5 L 549.29 196.5 Z" fill="#16202B"/>
-<path d="M 803.1 200 L 794.1 203.5 L 794.1 196.5 Z" fill="#16202B"/>
-<path d="M 1039.1 200 L 1030.1 203.5 L 1030.1 196.5 Z" fill="#16202B"/>
-<path d="M 1286.8 200 L 1277.8 203.5 L 1277.8 196.5 Z" fill="#16202B"/>
-<path d="M 622.7 228 L 626.2 237 L 619.2 237 Z" fill="#16202B"/>
-<path d="M 1104.95 228 L 1108.45 237 L 1101.45 237 Z" fill="#16202B"/>
-<rect x="60.29" y="132" width="140.28" height="46" rx="4" fill="#EDF3FA" stroke="#16202B" stroke-width="1.5"/>
-<rect x="316.85" y="177" width="125.44" height="46" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-<rect x="558.29" y="172" width="128.81" height="56" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-<rect x="803.1" y="177" width="120" height="46" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-<rect x="1039.1" y="172" width="131.7" height="56" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-<rect x="1286.8" y="177" width="120" height="46" rx="4" fill="#FBF3E5" stroke="#16202B" stroke-width="1.5"/>
-<rect x="60" y="222" width="140.85" height="56" rx="4" fill="#E7EFFA" stroke="#16202B" stroke-width="1.5"/>
-<path d="M 74 324.68 L 65 328.18 L 65 321.18 Z" fill="#16202B"/>
-<rect x="46" y="342.68" width="26" height="14" rx="3" fill="#EDF3FA" stroke="#16202B" stroke-width="1.2"/>
-<rect x="137.07" y="342.68" width="26" height="14" rx="3" fill="#E7EFFA" stroke="#16202B" stroke-width="1.2"/>
-<rect x="239.13" y="342.68" width="26" height="14" rx="3" fill="#FBF3E5" stroke="#16202B" stroke-width="1.2"/>
-<text x="268.56" y="155.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">RTMP / SRT</text>
-<text x="500.29" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">mezzanine stream</text>
-<text x="745.1" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">HLS renditions</text>
-<text x="981.1" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">origin pull</text>
-<text x="1228.8" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">adaptive video</text>
-<text x="632.7" y="269" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">encoding profiles</text>
-<text x="1114.95" y="247" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">distribution policy</text>
-<text x="130.42" y="159.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Live Video Source</text>
-<text x="379.57" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Ingest Gateway</text>
-<text x="622.7" y="196.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Adaptive Bitrate</text>
-<text x="622.7" y="212.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Encoder</text>
-<text x="863.1" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Origin Storage</text>
-<text x="1104.95" y="196.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Content Delivery</text>
-<text x="1104.95" y="212.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Network</text>
-<text x="1346.8" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Viewer Player</text>
-<text x="130.42" y="246.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Streaming Control</text>
-<text x="130.42" y="262.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Plane</text>
-<text x="84" y="328.68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Forward signal path</text>
-<text x="82" y="354.68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Input</text>
-<text x="173.07" y="354.68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Control</text>
-<text x="275.13" y="354.68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Output</text>
+<line x1="46" y1="84" x2="1388" y2="84" stroke="#C9D2DC" stroke-width="1" />
+<g transform="translate(0 0)">
+<path d="M 195.73 155 L 223.73 155 L 223.73 200 L 302.73 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 432.63 200 L 539.63 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 671.65 200 L 778.65 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 907.65 200 L 1014.65 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 1151.02 200 L 1258.02 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 195.5 250 L 610.14 250 L 610.14 237" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 195.5 250 L 1087.33 250 L 1087.33 237" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 46 330 L 65 330" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt" />
+<path d="M 311.73 200 L 302.73 203.5 L 302.73 196.5 Z" fill="#16202B" />
+<path d="M 548.63 200 L 539.63 203.5 L 539.63 196.5 Z" fill="#16202B" />
+<path d="M 787.65 200 L 778.65 203.5 L 778.65 196.5 Z" fill="#16202B" />
+<path d="M 1023.65 200 L 1014.65 203.5 L 1014.65 196.5 Z" fill="#16202B" />
+<path d="M 1267.02 200 L 1258.02 203.5 L 1258.02 196.5 Z" fill="#16202B" />
+<path d="M 610.14 228 L 613.64 237 L 606.64 237 Z" fill="#16202B" />
+<path d="M 1087.33 228 L 1090.83 237 L 1083.83 237 Z" fill="#16202B" />
+<rect x="60" y="132" width="135.73" height="46" rx="4" fill="#E0F2FE" stroke="#16202B" stroke-width="1.5" />
+<rect x="311.73" y="177" width="120.9" height="46" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5" />
+<rect x="548.63" y="172" width="123.02" height="56" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5" />
+<rect x="787.65" y="177" width="120" height="46" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5" />
+<rect x="1023.65" y="172" width="127.37" height="56" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5" />
+<rect x="1267.02" y="177" width="120" height="46" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5" />
+<rect x="60.23" y="222" width="135.27" height="56" rx="4" fill="#DBEAFE" stroke="#16202B" stroke-width="1.5" />
+<path d="M 74 330 L 65 333.5 L 65 326.5 Z" fill="#16202B" />
+<text x="233.73" y="177.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">RTMP / SRT</text>
+<text x="490.63" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">mezzanine stream</text>
+<text x="729.65" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">HLS renditions</text>
+<text x="965.65" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">origin pull</text>
+<text x="1209.02" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">adaptive video</text>
+<text x="620.14" y="269" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">encoding profiles</text>
+<text x="1097.33" y="247" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">distribution policy</text>
+<text x="127.86" y="159.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Live Video Source</text>
+<text x="372.18" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Ingest Gateway</text>
+<text x="610.14" y="196.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Adaptive Bitrate</text>
+<text x="610.14" y="212.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Encoder</text>
+<text x="847.65" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Origin Storage</text>
+<text x="1087.33" y="196.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Content Delivery</text>
+<text x="1087.33" y="212.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Network</text>
+<text x="1327.02" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Viewer Player</text>
+<text x="127.86" y="246.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Streaming Control</text>
+<text x="127.86" y="262.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Plane</text>
+<text x="84" y="334" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Forward signal path</text>
+</g>
 </svg>

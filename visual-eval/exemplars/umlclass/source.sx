@@ -1,0 +1,81 @@
+%% Online store ordering domain: customers place orders made of order lines, products sit in categories, and each order is settled by payments through a pluggable gateway.
+umlclass
+title: "Online store — ordering and payments"
+
+namespace ordering {
+  «enumeration» OrderStatus {
+    PENDING
+    PAID
+    SHIPPED
+    CANCELLED
+  }
+  class Customer {
+    - id : UUID
+    - email : String
+    + placeOrder() : Order
+  }
+  class Category {
+    - name : String
+    - slug : String
+  }
+  class Order {
+    - id : UUID
+    - placedAt : Instant
+    - status : OrderStatus
+    + /total : Money
+    + addLine(product : Product, qty : int) : void
+    + checkout() : Payment
+  }
+  class Product {
+    - sku : String
+    - name : String
+    - price : Money
+    + isAvailable() : boolean
+  }
+  class OrderLine {
+    + MAX_QUANTITY : int = 99 {static}
+    - quantity : int
+    - unitPrice : Money
+    + subtotal() : Money
+  }
+}
+
+namespace payments {
+  «interface» PaymentGateway {
+    + authorize(amount : Money) : AuthResult
+    + capture(authId : String) : void
+  }
+  abstract class Payment {
+    - amount : Money
+    - paidAt : Instant [0..1]
+    + process(gateway : PaymentGateway) : boolean
+    + refund() : void {abstract}
+  }
+  class StripeGateway {
+    - apiKey : String
+    + authorize(amount : Money) : AuthResult
+    + capture(authId : String) : void
+  }
+  class CardPayment {
+    - cardLast4 : String
+    - expiry : YearMonth
+  }
+  class WalletPayment {
+    - walletId : String
+  }
+  class BankTransfer {
+    - iban : String
+    - reference : String
+  }
+}
+
+Customer "1" -- "0..*" Order : places
+Order "1" *-- "1..*" "lines" OrderLine
+OrderLine "0..*" --> "1" "product" Product
+Category "1..*" o-- "0..*" "products" Product
+Order "1" -- "0..*" "payments" Payment
+Payment <|-- CardPayment
+Payment <|-- WalletPayment
+Payment <|-- BankTransfer
+PaymentGateway <|.. StripeGateway
+Payment ..> PaymentGateway : «use»

@@ -31,5 +31,48 @@
       "must": "All labels are readable."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/matrix exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly presents a readable comparison matrix with three engine columns and four criteria rows. Green checks, amber partial marks, and red crosses distinguish the capability levels; alternating row shading keeps comparisons traceable. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:03:56.974Z",
+      "targetHash": "b68b27e1d288",
+      "sourceHash": "add076968750",
+      "exemplarHash": "2d3ee2a53d3e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "PostgreSQL, MongoDB, and DynamoDB appear as separate column headers."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Rows show ACID transactions, flexible schema, complex joins, and managed serverless option."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Green check, amber partial mark, and red cross are distinct and explained by the Yes/Partly/No legend."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "Each criterion forms a row aligned with capability marks under each engine column."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "All headings, row labels, and legend labels are readable, with no visible clipping."
+        }
+      ]
+    }
+  }
 }

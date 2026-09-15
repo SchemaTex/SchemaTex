@@ -35,5 +35,11 @@
       "must": "A computed probability or cut-set summary is visible without obscuring the tree."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/faulttree/ideal.svg (sha256 7bffbe71b8bd), source sha256 dc3d140f24aa. Independent top-down fault tree, exact boolean-state enumeration and minimal cut-set extraction, slate event boxes, green AND/OR/INHIBIT gates, blue probabilities. Output stems and the single-child inhibit connection corrected following visual inspection; all declared conditions and basic probabilities retained. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
 }

@@ -1,10 +1,10 @@
-# Scenario: Football Mesh coached play with routes and defence.
-playbook "Football Mesh" sport football
-field down 2 distance 8 los 35 hash nfl view full
+# Scenario: the mesh concept from trips: two shallow drags cross underneath a corner, a seam and a running-back wheel.
+playbook "Mesh Concept" sport football
+field down 1 distance 10 los 25 hash nfl
 formation trips right
-defense cover-2
-route X go 18 left
-route Y seam 18
-route Z go 18 right
-route H seam 16
-
+defense cover-1
+route X drag 2 right
+route Y drag 3 left
+route Z corner
+route H seam
+route RB wheel right

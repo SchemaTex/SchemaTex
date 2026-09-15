@@ -1,70 +1,88 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1073" viewBox="0 0 1360 912">
 <title>Current-Mirror Differential-Pair Bias</title>
-<rect width="1400" height="1000" fill="white"/>
-<style>
- wire{fill:none} .w{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round} .dot{fill:#17212b} .t{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:22px} .small{font-size:18px} .head{font-size:32px;font-weight:bold} .net{font-size:20px;font-weight:bold;fill:#245a80}
-</style>
-<g class="t">
-<text x="65" y="60" class="head">Current-Mirror Differential-Pair Bias</text>
-<text x="65" y="93" class="small">Diode-connected NPN reference and current-mirror tail sink</text>
-</g>
-<!-- Supply rail and voltage source V1 -->
-<g class="w">
-<path d="M110 150H1180 M110 150V625 M110 695V900"/>
-<circle cx="110" cy="660" r="35"/>
-<path d="M101 647H119 M110 638V656 M101 675H119"/>
-<path d="M110 900H1180"/>
-<path d="M690 900V925 M670 925H710 M677 934H703 M685 943H695"/>
-</g>
-<g class="t"><text x="1150" y="133" class="net">VCC · 5 V</text><text x="58" y="729">V1</text><text x="48" y="759">5 V</text><text x="130" y="620">VCC</text><text x="722" y="938" class="net">GND</text></g>
-<!-- RREF -->
-<g class="w">
-<path d="M350 150V280 L338 290 362 310 338 330 362 350 338 370 362 390 350 400 V600"/>
-</g>
-<g class="t"><text x="383" y="320">R1 · RREF</text><text x="383" y="352">4.3 kΩ, 1%</text></g>
-<!-- Collector loads -->
-<g class="w">
-<path d="M800 150V210 L788 220 812 240 788 260 812 280 788 300 812 320 800 330 V410"/>
-<path d="M1060 150V210 L1048 220 1072 240 1048 260 1072 280 1048 300 1072 320 1060 330 V410"/>
-</g>
-<g class="t"><text x="669" y="255">R2 · RC1</text><text x="681" y="285">2.2 kΩ</text><text x="1093" y="255">R3 · RC2</text><text x="1093" y="285">2.2 kΩ</text><text x="812" y="374" class="net">COL1</text><text x="1072" y="374" class="net">COL2</text></g>
-<!-- Q3 faces left: collector 800,410 base 740,450 emitter 800,490 -->
-<g class="w">
-<circle cx="775" cy="450" r="45"/>
-<path d="M758 423V477 M758 435L800 410 M758 465L800 490 M740 450H758"/>
-</g>
-<path d="M794 486L779 483L786 472Z" class="dot"/>
-<!-- Q4 mirrored symbol, base facing right -->
-<g class="w">
-<circle cx="1085" cy="450" r="45"/>
-<path d="M1102 423V477 M1102 435L1060 410 M1102 465L1060 490 M1102 450H1120"/>
-</g>
-<path d="M1066 486L1074 472L1081 483Z" class="dot"/>
-<!-- Common emitters feed exactly one tail -->
-<g class="w"><path d="M800 490V560H1060V490 M930 560V710"/></g>
-<g class="t"><text x="836" y="431">Q3</text><text x="830" y="461" class="small">2N3904</text><text x="970" y="431">Q4</text><text x="952" y="461" class="small">2N3904</text><text x="946" y="596" class="net">TAIL</text></g>
-<!-- Two independent AC inputs -->
-<g class="w">
-<path d="M740 450H635V625 M635 695V750 M615 750H655 M622 759H648 M630 768H640 M1120 450H1255V625 M1255 695V865H1180V900"/>
-<circle cx="635" cy="660" r="35"/>
-<path d="M613 660C619 638 628 638 635 660S651 682 657 660"/>
-<circle cx="1255" cy="660" r="35"/>
-<path d="M1233 660C1239 638 1248 638 1255 660S1271 682 1277 660"/>
-</g>
-<g class="t"><text x="649" y="430" class="net">INP</text><text x="1170" y="430" class="net">INN</text><text x="685" y="646">V2 · VIN+</text><text x="685" y="678">10 mV</text><text x="1163" y="730">V3 · VIN−</text><text x="1193" y="761">10 mV</text></g>
-<!-- Q1 diode connection: collector drops from reference node; base loops left -->
-<g class="w">
-<path d="M350 600V710 M350 600H240V750H290"/>
-<circle cx="325" cy="750" r="45"/>
-<path d="M308 723V777 M308 735L350 710 M308 765L350 790 M290 750H308 M350 790V900"/>
-<!-- Shared base wire has no intersection with the input source wiring -->
-<path d="M240 750V835H830V750H888"/>
-<!-- Q2 mirror output collector is connected directly to TAIL -->
-<circle cx="905" cy="750" r="45"/>
-<path d="M888 723V777 M888 735L930 710 M888 765L930 790 M930 790V900"/>
-</g>
-<path d="M344 786L329 783L336 772Z M924 786L909 783L916 772Z" class="dot"/>
-<g class="t"><text x="389" y="728">Q1</text><text x="389" y="758">2N3904</text><text x="389" y="785" class="small">DIODE-CONNECTED</text><text x="977" y="727">Q2</text><text x="977" y="757">2N3904</text><text x="977" y="786" class="small">MIRROR OUTPUT</text><text x="422" y="863" class="net">BBASE</text></g>
-<!-- Electrical junctions -->
-<g class="dot"><circle cx="350" cy="150" r="5"/><circle cx="800" cy="150" r="5"/><circle cx="1060" cy="150" r="5"/><circle cx="350" cy="600" r="5"/><circle cx="240" cy="750" r="5"/><circle cx="930" cy="560" r="5"/><circle cx="350" cy="900" r="5"/><circle cx="690" cy="900" r="5"/><circle cx="930" cy="900" r="5"/></g>
+<desc>A 5 V supply powers a 4.3 kiloohm reference branch and two 2.2 kiloohm collector loads. Diode-connected Q1 shares BBASE with Q2. Q2 sinks the common TAIL current of Q3 and Q4. Separate AC sources drive the two input bases. All transistors are NPN 2N3904.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial;fill:#17212B}.title{font-size:28px;font-weight:700}.subtitle{font-size:16px;fill:#52606D}.ref{font-size:19px;font-weight:700}.value{font-size:18px}.net{font-size:17px;font-weight:700}.note{font-size:15px;fill:#52606D}.role{font-size:15px}.wire{fill:none;stroke:#17212B;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}</style>
+<rect width="1360" height="912" fill="#FFFFFF"/>
+<text class="title" x="60" y="62">Current-Mirror Differential-Pair Bias</text>
+<text class="subtitle" x="60" y="94">2N3904 NPN current mirror biases a loaded differential pair · 1 mA reference · 5 V supply</text>
+<path class="wire" d="M170 638 V190 H1190 M170 695 V800 H1190" stroke-width="2.5"/>
+<text x="184" y="178" class="net" text-anchor="start">VCC · +5 V</text>
+<path class="wire" d="M148 638 H192 M148 656 H192" stroke-width="2.5"/>
+<path d="M159 646 H181 M159 664 H181" stroke="#17212B" stroke-width="5" stroke-linecap="round"/>
+<path class="wire" d="M170 664 V695" stroke-width="2.5"/>
+<text x="134" y="644" class="ref" text-anchor="end">V1</text>
+<text x="134" y="668" class="value" text-anchor="end">5 V</text>
+<text x="201" y="644" class="note" text-anchor="start">+</text>
+<path class="wire" d="M250 800 V822 M230 822 H270 M237 830 H263 M244 838 H256" stroke-width="2.5"/>
+<text x="280" y="836" class="net" text-anchor="start">GND</text>
+<path class="wire" d="M360 190 V280" stroke-width="2.5"/>
+<path class="wire" d="M360 280 v10 l11 5 l-22 10 l22 10 l-22 10 l22 10 l-22 10 l11 5 v10" stroke-width="2.5"/>
+<path class="wire" d="M360 360 V579" stroke-width="2.5"/>
+<text x="330" y="311" class="ref" text-anchor="end">R1 · RREF</text>
+<text x="330" y="335" class="value" text-anchor="end">4.3 kΩ, 1%</text>
+<path class="wire" d="M360 520 H260 V625 H280 M360 560 H460 V625 H480" stroke-width="2.5"/>
+<text x="398" y="546" class="net" text-anchor="start">BBASE</text>
+<circle cx="340" cy="625" r="36" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M280 625 H328 M328 612 L360 593 V579 M328 638 L360 657 V671" stroke-width="2.5"/>
+<path d="M328 601 V649" fill="none" stroke="#17212B" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M352 653 L340 651 L346 641 Z" fill="#17212B"/>
+<path class="wire" d="M360 671 V800" stroke-width="2.5"/>
+<text x="330" y="710" class="ref" text-anchor="end">Q1</text>
+<text x="330" y="734" class="value" text-anchor="end">2N3904</text>
+<text x="330" y="760" class="role" text-anchor="end">DIODE-CONNECTED</text>
+<circle cx="540" cy="625" r="36" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M480 625 H528 M528 612 L560 593 V579 M528 638 L560 657 V671" stroke-width="2.5"/>
+<path d="M528 601 V649" fill="none" stroke="#17212B" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M552 653 L540 651 L546 641 Z" fill="#17212B"/>
+<path class="wire" d="M560 579 V510 H980 V456 M780 456 V510 M560 671 V800" stroke-width="2.5"/>
+<text x="845" y="496" class="net" text-anchor="start">TAIL</text>
+<text x="514" y="710" class="ref" text-anchor="end">Q2</text>
+<text x="514" y="734" class="value" text-anchor="end">2N3904</text>
+<text x="514" y="760" class="role" text-anchor="end">MIRROR OUTPUT</text>
+<path class="wire" d="M780 190 V270" stroke-width="2.5"/>
+<path class="wire" d="M780 270 v10 l11 5 l-22 10 l22 10 l-22 10 l22 10 l-22 10 l11 5 v10" stroke-width="2.5"/>
+<path class="wire" d="M780 350 V364" stroke-width="2.5"/>
+<path class="wire" d="M980 190 V270" stroke-width="2.5"/>
+<path class="wire" d="M980 270 v10 l11 5 l-22 10 l22 10 l-22 10 l22 10 l-22 10 l11 5 v10" stroke-width="2.5"/>
+<path class="wire" d="M980 350 V364" stroke-width="2.5"/>
+<text x="741" y="298" class="ref" text-anchor="end">R2 · RC1</text>
+<text x="741" y="322" class="value" text-anchor="end">2.2 kΩ</text>
+<text x="1019" y="298" class="ref" text-anchor="start">R3 · RC2</text>
+<text x="1019" y="322" class="value" text-anchor="start">2.2 kΩ</text>
+<circle cx="760" cy="410" r="36" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M700 410 H748 M748 397 L780 378 V364 M748 423 L780 442 V456" stroke-width="2.5"/>
+<path d="M748 386 V434" fill="none" stroke="#17212B" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M772 438 L760 436 L766 426 Z" fill="#17212B"/>
+<circle cx="1000" cy="410" r="36" fill="#FFFFFF" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M1060 410 H1012 M1012 397 L980 378 V364 M1012 423 L980 442 V456" stroke-width="2.5"/>
+<path d="M1012 386 V434" fill="none" stroke="#17212B" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M988 438 L1000 436 L994 426 Z" fill="#17212B"/>
+<text x="810" y="392" class="ref" text-anchor="start">Q3</text>
+<text x="810" y="416" class="value" text-anchor="start">2N3904</text>
+<text x="810" y="440" class="role" text-anchor="start">PAIR A</text>
+<text x="1056" y="457" class="ref" text-anchor="start">Q4</text>
+<text x="1056" y="481" class="value" text-anchor="start">2N3904</text>
+<text x="1056" y="505" class="role" text-anchor="start">PAIR B</text>
+<path d="M680 500 C668 500 668 520 680 520" fill="none" stroke="white" stroke-width="7"/>
+<path class="wire" d="M700 410 H680 V500 C668 500 668 520 680 520 V620 M680 680 V800 M1060 410 H1190 V620 M1190 680 V800" stroke-width="2.5"/>
+<text x="684" y="397" class="note" text-anchor="start">INP</text>
+<text x="1125" y="397" class="note" text-anchor="start">INN</text>
+<circle cx="680" cy="650" r="30" fill="white" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M662 650 C668 628 674 628 680 650 S692 672 698 650" stroke-width="2.5"/>
+<text x="728" y="646" class="ref" text-anchor="start">V2 · VIN+</text>
+<text x="728" y="670" class="value" text-anchor="start">10 mV</text>
+<circle cx="1190" cy="650" r="30" fill="white" stroke="#17212B" stroke-width="2.5"/>
+<path class="wire" d="M1172 650 C1178 628 1184 628 1190 650 S1202 672 1208 650" stroke-width="2.5"/>
+<text x="1142" y="646" class="ref" text-anchor="end">V3 · VIN−</text>
+<text x="1142" y="670" class="value" text-anchor="end">10 mV</text>
+<circle cx="360" cy="190" r="5" fill="#17212B"/>
+<circle cx="780" cy="190" r="5" fill="#17212B"/>
+<circle cx="980" cy="190" r="5" fill="#17212B"/>
+<circle cx="360" cy="520" r="5" fill="#17212B"/>
+<circle cx="360" cy="560" r="5" fill="#17212B"/>
+<circle cx="780" cy="510" r="5" fill="#17212B"/>
+<circle cx="360" cy="800" r="5" fill="#17212B"/>
+<circle cx="560" cy="800" r="5" fill="#17212B"/>
+<circle cx="680" cy="800" r="5" fill="#17212B"/>
+<text x="60" y="878" class="note" text-anchor="start">IREF ≈ (5 − 0.7) V / 4.3 kΩ ≈ 1 mA · Q1 and Q2 share BBASE · Q2 sinks the common TAIL current</text>
 </svg>

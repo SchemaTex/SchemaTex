@@ -1,53 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
-  <title>Machine Condition — Markov chain</title>
-  <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#263746"/></marker>
-    <style>
-      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; }
-      .edge { fill:none; stroke:#263746; stroke-width:2.5; stroke-linejoin:round; marker-end:url(#arrow); }
-      .state { fill:white; stroke:#263746; stroke-width:3; }
-      .prob { font-size:24px; font-weight:500; text-anchor:middle; }
-      .name { font-size:27px; font-weight:600; text-anchor:middle; }
-    </style>
-  </defs>
-  <rect width="1200" height="760" fill="white"/>
-  <text x="600" y="60" text-anchor="middle" font-size="34" font-weight="650">Machine Condition</text>
-  <text x="600" y="95" text-anchor="middle" font-size="19">Markov chain · Analysis: stationary, classify</text>
-
-  <!-- Normal self-transition, left of the state. -->
-  <path class="edge" d="M215 328 H115 V422 H215"/>
-  <text class="prob" x="111" y="308">0.80</text>
-
-  <!-- Separate, opposing horizontal transition lanes. -->
-  <path class="edge" d="M391 345 H509"/>
-  <text class="prob" x="450" y="328">0.15</text>
-  <path class="edge" d="M509 405 H391"/>
-  <text class="prob" x="450" y="439">0.30</text>
-
-  <!-- Degraded self-transition, below its state. -->
-  <path class="edge" d="M565 463 V555 H635 V463"/>
-  <text class="prob" x="600" y="588">0.45</text>
-
-  <!-- Failure transitions: upper bypass and direct lane. -->
-  <path class="edge" d="M300 280 V185 H900 V275"/>
-  <text class="prob" x="600" y="170">0.05</text>
-  <path class="edge" d="M695 375 H800"/>
-  <text class="prob" x="747" y="355">0.25</text>
-
-  <!-- Absorbing self-transition, right of Failed. -->
-  <path class="edge" d="M989 329 H1090 V421 H989"/>
-  <text class="prob" x="1090" y="309">1.0</text>
-
-  <circle class="state" cx="300" cy="375" r="95"/>
-  <text class="name" x="300" y="385">Normal</text>
-  <circle class="state" cx="600" cy="375" r="95"/>
-  <text class="name" x="600" y="385">Degraded</text>
-  <circle class="state" cx="900" cy="375" r="100"/>
-  <circle class="state" cx="900" cy="375" r="91"/>
-  <text class="name" x="900" y="371">Failed</text>
-  <text x="900" y="402" text-anchor="middle" font-size="18">absorbing</text>
-
-  <line x1="190" y1="635" x2="1010" y2="635" stroke="#d5dce1" stroke-width="1"/>
-  <text x="600" y="673" text-anchor="middle" font-size="20">Classification: Normal, Degraded — transient; Failed — absorbing</text>
-  <text x="600" y="711" text-anchor="middle" font-size="20">Stationary distribution (Normal, Degraded, Failed): π = (0, 0, 1)</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="960" viewBox="0 0 1040 960" font-family="Helvetica Neue,Helvetica,sans-serif"><title>Machine condition by week</title><desc>One-step transition probabilities · separate arcs preserve direction</desc><rect width="1040" height="960" fill="white"/><text x="40" y="48" font-size="25" fill="#1f2933" text-anchor="start" font-weight="700">Machine condition by week</text>
+<text x="40" y="75" font-size="13" fill="#52606d" text-anchor="start" font-weight="400">One-step transition probabilities · separate arcs preserve direction</text>
+<path d="M40 94L1000 94" fill="none" stroke="#e2e8f0" stroke-width="1" />
+<path d="M225.0922691082381,231.31902970794005C195.3690764329524,152.90007908254688 102.20683073429565,270.46196055942323 185.3430442768112,281.4787658047406" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M185.3430442768112,281.4787658047406L176.97886336586694,283.69923370340416L177.84588373161577,277.1564303527465Z" fill="#475569"/>
+<text x="142.51798657152395" y="211.7123667170567" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.85</text>
+<path d="M284,280Q492.5,280 701,280" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M701,280L693,283.3L693,276.7Z" fill="#475569"/>
+<rect x="468.5" y="283" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="492.5" y="301" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.12</text>
+<path d="M274.0630462700676,309.581724359857Q492.5,475 710.9369537299324,640.418275640143" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M710.9369537299324,640.418275640143L702.5670749432371,638.2193829424361L706.5515521019116,632.9578297713658Z" fill="#475569"/>
+<rect x="458.23695277311083" y="474.5524854406357" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="482.23695277311083" y="492.5524854406357" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.03</text>
+<path d="M799.6789316275499,280.0612563891832C882.4669416086027,266.6767353526608 785.9881286451117,151.82100563421912 758.5146380964604,231.05614504264807" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M758.5146380964604,231.05614504264807L758.0175411184699,222.41653309566382L764.2533307162988,224.5786912979261Z" fill="#475569"/>
+<text x="840.3531740451741" y="209.10333380205375" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.70</text>
+<path d="M750,329Q750,475 750,621" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M750,621L746.7,613L753.3,613Z" fill="#475569"/>
+<rect x="709" y="461" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="733" y="479" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.20</text>
+<path d="M711.5407444888622,310.362570140372Q655,355 598.4592555111378,399.637429859628" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M598.4592555111378,399.637429859628L602.6934914830945,392.0901624247356L606.783143787716,397.27038867725616Z" fill="#475569"/>
+<rect x="620.4660470941567" y="327.65699298593177" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="644.4660470941567" y="345.65699298593177" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.10</text>
+<path d="M719.5855557260875,631.5817546013736Q655,550 590.4144442739125,468.4182453986263" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M590.4144442739125,468.4182453986263L597.9674190495608,472.64229227791407L592.7927166081132,476.7389317107268Z" fill="#475569"/>
+<rect x="644.3287790158499" y="525.4480499457854" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="668.3287790158499" y="543.4480499457854" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">1.0</text>
+<path d="M515.5099901594779,409.4661493043744Q397.5,355 279.49000984052213,300.5338506956256" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M279.49000984052213,300.5338506956256L288.1365769021495,300.89005014646807L285.370792930902,306.8825820841711Z" fill="#475569"/>
+<rect x="380.6239890168497" y="325.5646904634923" width="48" height="23" rx="3" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="404.6239890168497" y="343.5646904634923" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.90</text>
+<path d="M592,392C635,320 485,320 528,392" fill="none" stroke="#475569" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+<path d="M528,392L521.0648782598713,386.8236995402513L526.7312638357124,383.43960815467955Z" fill="#475569"/>
+<text x="560" y="317" font-size="17" fill="#1e40af" text-anchor="middle" font-weight="600">0.10</text>
+<circle cx="235" cy="280" r="49" fill="white" stroke="#1f2933" stroke-width="2" />
+<text x="235" y="285" font-size="16" fill="#1f2933" text-anchor="middle" font-weight="500">Good</text>
+<circle cx="750" cy="280" r="49" fill="white" stroke="#1f2933" stroke-width="2" />
+<text x="750" y="285" font-size="16" fill="#1f2933" text-anchor="middle" font-weight="500">Worn</text>
+<circle cx="750" cy="670" r="49" fill="white" stroke="#1f2933" stroke-width="2" />
+<text x="750" y="675" font-size="16" fill="#1f2933" text-anchor="middle" font-weight="500">Faulty</text>
+<circle cx="560" cy="430" r="49" fill="white" stroke="#1f2933" stroke-width="2" />
+<text x="560" y="425" font-size="16" fill="#1f2933" text-anchor="middle" font-weight="500">Under</text>
+<text x="560" y="445" font-size="16" fill="#1f2933" text-anchor="middle" font-weight="500">repair</text>
+<circle cx="65" cy="914" r="11" fill="white" stroke="#475569" stroke-width="1.8" />
+<text x="85" y="918" font-size="13" fill="#1f2933" text-anchor="start" font-weight="400">State</text>
+<text x="170" y="918" font-size="14" fill="#1e40af" text-anchor="start" font-weight="600">0.25</text>
+<text x="215" y="918" font-size="13" fill="#1f2933" text-anchor="start" font-weight="400">Transition probability</text></svg>

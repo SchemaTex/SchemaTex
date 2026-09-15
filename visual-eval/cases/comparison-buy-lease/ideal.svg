@@ -1,49 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="600" viewBox="0 0 1120 600">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="656" viewBox="0 0 1600 656">
   <title>Buy versus lease a packaging line</title>
-  <rect width="1120" height="600" fill="#ffffff"/>
-  <g font-family="Helvetica, Arial, sans-serif" fill="#172b3a">
-    <text x="56" y="68" font-size="32" font-weight="700">Buy versus lease a packaging line</text>
-    <rect x="56" y="108" width="1008" height="76" fill="#e9eff3"/>
-    <rect x="56" y="184" width="344" height="352" fill="#f5f7f8"/>
-    <g fill="none" stroke="#637583" stroke-width="1.5">
-      <rect x="56" y="108" width="1008" height="428"/>
-      <path d="M400 108V536 M732 108V536 M56 184H1064 M56 272H1064 M56 360H1064 M56 448H1064"/>
+  <rect width="1600" height="656" fill="#FFFFFF"/>
+  <defs>
+    <g id="yes">
+      <circle r="16.5" fill="#E5F1E9" stroke="#2E7A4E" stroke-width="2"/>
+      <path d="M-7 0 L-1.5 5.5 L8 -5.5" fill="none" stroke="#2E7A4E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <g font-size="27" font-weight="700" text-anchor="middle">
-      <text x="566" y="155">Buy</text>
-      <text x="898" y="155">Lease</text>
+    <g id="no">
+      <circle r="16.5" fill="#F7E6E6" stroke="#B03A3A" stroke-width="2"/>
+      <path d="M-5.5 -5.5 L5.5 5.5 M5.5 -5.5 L-5.5 5.5" fill="none" stroke="#B03A3A" stroke-width="3" stroke-linecap="round"/>
     </g>
-    <g font-size="23" font-weight="600" dominant-baseline="middle">
-      <text x="80" y="228">Up-front cash</text>
-      <text x="80" y="316">Maintenance responsibility</text>
-      <text x="80" y="404">Technology upgrade</text>
-      <text x="80" y="492">Asset ownership</text>
+  </defs>
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1B2430">
+    <text x="79" y="96" font-size="37" font-weight="600">Buy versus lease a packaging line</text>
+    <g font-size="24" font-weight="600" text-anchor="middle">
+      <text x="800" y="200">Buy</text>
+      <text x="1280" y="200">Lease</text>
     </g>
-    <g font-size="23" text-anchor="middle" dominant-baseline="middle">
-      <text x="566" y="228">High capital outlay</text>
-      <text x="898" y="228">Lower monthly payments</text>
-      <text x="566" y="316">Internal team</text>
-      <text x="898" y="316">Included service plan</text>
+    <path d="M79 228.5 H1521" stroke="#1B2430" stroke-width="2.5"/>
+    <rect x="79" y="305" width="1442" height="76" fill="#F4F6F9"/>
+    <rect x="79" y="457" width="1442" height="77" fill="#F4F6F9"/>
+    <g font-size="22.5" font-weight="500">
+      <text x="105" y="275">Up-front cash</text>
+      <text x="105" y="351">Maintenance responsibility</text>
+      <text x="105" y="427">Technology upgrade</text>
+      <text x="105" y="503">Asset ownership</text>
     </g>
-    <g stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
-      <g stroke="#a23e3e">
-        <circle cx="532" cy="404" r="17" fill="#fbeeee" stroke-width="1.5"/>
-        <path d="M526 398L538 410 M538 398L526 410"/>
-        <circle cx="864" cy="492" r="17" fill="#fbeeee" stroke-width="1.5"/>
-        <path d="M858 486L870 498 M870 486L858 498"/>
-      </g>
-      <g stroke="#237050">
-        <circle cx="864" cy="404" r="17" fill="#eaf5ee" stroke-width="1.5"/>
-        <path d="M856 404L862 410L873 398"/>
-        <circle cx="532" cy="492" r="17" fill="#eaf5ee" stroke-width="1.5"/>
-        <path d="M524 492L530 498L541 486"/>
-      </g>
+    <g font-size="22.5" font-weight="400" text-anchor="middle">
+      <text x="800" y="275">High capital outlay</text>
+      <text x="1280" y="275">Lower monthly payments</text>
+      <text x="800" y="351">Internal team</text>
+      <text x="1280" y="351">Included service plan</text>
     </g>
-    <g font-size="24" font-weight="600" dominant-baseline="middle">
-      <text x="561" y="404" fill="#a23e3e">No</text>
-      <text x="893" y="404" fill="#237050">Yes</text>
-      <text x="561" y="492" fill="#237050">Yes</text>
-      <text x="893" y="492" fill="#a23e3e">No</text>
+    <use href="#no" x="800" y="419"/>
+    <use href="#yes" x="1280" y="419"/>
+    <use href="#yes" x="800" y="495"/>
+    <use href="#no" x="1280" y="495"/>
+    <path d="M79 534 H1521" fill="none" stroke="#E4E9EE" stroke-width="1.5"/>
+    <g font-size="21" fill="#5F6B7A">
+      <use href="#yes" transform="translate(94.5 583) scale(.9)"/>
+      <text x="119" y="590">Yes</text>
+      <use href="#no" transform="translate(206.5 583) scale(.9)"/>
+      <text x="231" y="590">No</text>
     </g>
   </g>
 </svg>

@@ -1,6 +1,7 @@
 {
   "id": "welding-plug-weld",
   "type": "welding",
+  "variant": "aws",
   "title": "Plug Weld",
   "goal": "A practitioner can read the plug weld artefact at a glance.",
   "rubric": [
@@ -30,5 +31,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Independent redraw using the AWS exemplar visual system and AWS official A2.4 symbol chart. Source dimensions and processes preserved; joint sketch is schematic, not fabrication geometry. PROVISIONAL: len=20 has no defined interpretation for the declared round plug weld; shown as an unresolved source note rather than a slot-length dimension."
+  }
 }

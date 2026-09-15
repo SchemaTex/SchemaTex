@@ -1,6 +1,7 @@
 {
   "id": "venn-product-features",
   "type": "venn",
+  "variant": "venn",
   "title": "Note-taking product feature overlap",
   "goal": "A product team can see unique and shared note-taking capabilities.",
   "rubric": [
@@ -30,5 +31,11 @@
       "must": "All region labels are readable."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/venn/venn/ideal.svg (07e0f59e6164); rendered and visually reviewed. Three equal translucent circles; every exclusive, pairwise and triple region is labelled inside its exact region, with clearance from boundaries. No areas or counts invented."
+  }
 }

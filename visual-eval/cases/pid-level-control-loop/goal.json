@@ -43,7 +43,54 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required connections, instrument identities, signal styles, and fail positions, while the picture violates multiple blockers and major requirements."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents both required functions: a traceable LT-101 → LIC-101 → LV-101 level-control loop and a separate LSHH-202 → XV-202 high-level shutdown path. Equipment, tags, locations, fail positions, and signal types are legible and consistent with the source.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:30:31.492Z",
+      "targetHash": "4d69c9a50e8e",
+      "sourceHash": "5018a3200918",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "outlet-control-path",
+          "verdict": "pass",
+          "evidence": "Solid process piping visibly runs from the bottom of V-101 through actuated valve LV-101 and onward to TK-102."
+        },
+        {
+          "id": "level-loop-connections",
+          "verdict": "pass",
+          "evidence": "A dotted capillary connects V-101 to LT-101, a dashed electrical line connects LT-101 to LIC-101, and a diagonally marked pneumatic line runs from LIC-101 to the LV-101 diaphragm actuator."
+        },
+        {
+          "id": "independent-shutdown",
+          "verdict": "pass",
+          "evidence": "LSHH-202 is connected to V-101 by a dotted sensing line and has its own dashed electrical path to the XV-202 solenoid, separate from LIC-101 and LV-101."
+        },
+        {
+          "id": "signal-line-distinctions",
+          "verdict": "pass",
+          "evidence": "The drawing and legend visibly distinguish heavy solid process piping, dashed electrical signals, diagonal-marked pneumatic signals, and dotted capillary or filled-system lines."
+        },
+        {
+          "id": "instrument-locations",
+          "verdict": "pass",
+          "evidence": "LT-101 and LSHH-202 appear as plain field bubbles, while LIC-101 has a visible horizontal control-room location mark and is positioned above the control-room/field boundary."
+        },
+        {
+          "id": "loop-tag-association",
+          "verdict": "pass",
+          "evidence": "LT-101, LIC-101, and LV-101 are readable as loop 101; LSHH-202 and XV-202 are readable as the separate loop 202."
+        },
+        {
+          "id": "valve-fail-positions",
+          "verdict": "pass",
+          "evidence": "FC is legible beside the XV-202 actuator, and FO is legible beside the LV-101 actuator."
+        }
+      ]
+    }
   }
 }

@@ -35,5 +35,11 @@
       "must": "Narrow numeric score columns remain visually distinct from descriptive failure-analysis columns."
     }
   ],
-  "split": "holdout"
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/fmea/ideal.svg (sha256 656f156ad4fb), source sha256 a9ce58f4ecf9. Independent worksheet with all causes, effects, controls and scores. Adjacent repeated cells merged; AP or RPN follows the source ranking method. AP values checked against the AIAG-VDA 2019 matrix documented by HBK ReliaSoft, https://reliasoftcloud.hbkworld.com/demo/help/content/risk_ranking_logic.htm, not the engine approximation. RPN is multiplied independently; no AP invented for the RPN-only case. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
 }

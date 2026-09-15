@@ -1,0 +1,18 @@
+# Illustrative churn model: the counts are invented but internally consistent.
+decisiontree:ml "Subscriber outcome at renewal"
+classes: renews, downgrades, cancels
+impurity: gini
+
+split "Contract = month-to-month" samples=5000 value=[3280, 770, 950] gini=0.510
+  true split "Tenure <= 12 months" samples=2600 value=[1280, 480, 840] gini=0.619
+    true split "Support calls (90 days) <= 2" samples=1300 value=[500, 160, 640] gini=0.595
+      true leaf samples=780 value=[420, 110, 250] gini=0.587 class=renews
+      false leaf samples=520 value=[80, 50, 390] gini=0.405 class=cancels
+    false split "Monthly charge <= $70" samples=1300 value=[780, 320, 200] gini=0.556
+      true leaf samples=700 value=[560, 70, 70] gini=0.340 class=renews
+      false leaf samples=600 value=[220, 250, 130] gini=0.645 class=downgrades
+  false split "Monthly charge <= $90" samples=2400 value=[2000, 290, 110] gini=0.289
+    true leaf samples=1900 value=[1710, 120, 70] gini=0.185 class=renews
+    false split "Data used per month <= 20 GB" samples=500 value=[290, 170, 40] gini=0.542
+      true leaf samples=220 value=[60, 140, 20] gini=0.512 class=downgrades
+      false leaf samples=280 value=[230, 30, 20] gini=0.309 class=renews

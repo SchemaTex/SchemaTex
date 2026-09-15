@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="452" height="700" viewBox="0 0 452 700" role="img" aria-label="Event-driven process chain" data-diagram-type="epc"><title>Event-driven process chain</title>
-<desc>Event-driven process chain: 5 events, 3 functions, 1 connectors. Well-formed.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="452" height="1340" viewBox="0 0 452 1340" role="img" aria-label="Event-driven process chain" data-diagram-type="epc"><title>Event-driven process chain</title>
+<desc>Event-driven process chain: 7 events, 6 functions, 3 connectors. 1 warning. XOR-split &quot;X1&quot; reconverges at a AND-join, not a XOR-join. Mismatched split/join types can cause a deadlock; verify this is intended.</desc>
 <style>.sx-epc-bg { fill: #ffffff; }
 .sx-epc-event { fill: #f6a5b8; stroke: #1f2937; stroke-width: 2; stroke-linejoin: round; }
 .sx-epc-func { fill: #86d29a; stroke: #1f2937; stroke-width: 2; }
@@ -18,30 +18,52 @@
 .sx-epc-title { fill: #1f2937; font-size: 16px; font-weight: 700; }</style>
 <defs><marker id="sx-epc-arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow"/></marker>
 <marker id="sx-epc-arrowhead-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow-back"/></marker></defs>
-<rect x="0" y="0" width="452" height="700" class="sx-epc-bg"/>
+<rect x="0" y="0" width="452" height="1340" class="sx-epc-bg"/>
 <g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-epc-edge-g" data-from="E1" data-to="F1"><path d="M 206 82 L 206 138" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="F1" data-to="X1"><path d="M 206 202 L 206 258" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="X1" data-to="E2"><path d="M 194.4227850846592 287.4486181885385 L 138.11 348" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="E2" data-to="F2"><path d="M 111.82608695652173 402 L 109.3913043478261 458" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="F2" data-to="E4"><path d="M 109.3913043478261 522 L 111.82608695652173 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 217.5772149153408 287.4486181885385 L 273.89 348" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="E3" data-to="F3"><path d="M 300.17391304347825 402 L 302.60869565217394 458" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
-<g class="sx-epc-edge-g" data-from="F3" data-to="E5"><path d="M 302.60869565217394 522 L 300.17391304347825 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F1" data-to="E2"><path d="M 206 202 L 206 258" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E2" data-to="F2"><path d="M 206 312 L 206 368" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F2" data-to="X1"><path d="M 206 432 L 206 488" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 194.4227850846592 517.4486181885385 L 138.11 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E3" data-to="F3"><path d="M 111.82608695652173 632 L 109.3913043478261 688" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F3" data-to="E5"><path d="M 109.3913043478261 752 L 111.82608695652173 808" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E5" data-to="A1"><path d="M 138.11 862 L 194.4227850846592 922.5513818114615" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E4"><path d="M 217.5772149153408 517.4486181885385 L 273.89 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E4" data-to="F4"><path d="M 300.17391304347825 632 L 302.60869565217394 688" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F4" data-to="E6"><path d="M 302.60869565217394 752 L 300.17391304347825 808" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A1" data-to="F5"><path d="M 194.4005897438798 947.4279395601287 L 137.86666666666667 1008" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F5" data-to="A2"><path d="M 137.86666666666667 1072 L 194.4005897438798 1132.5720604398712" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A1" data-to="F6"><path d="M 217.5994102561202 947.4279395601287 L 274.1333333333333 1008" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F6" data-to="A2"><path d="M 274.1333333333333 1072 L 217.5994102561202 1132.5720604398712" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A2" data-to="E7"><path d="M 206 1162 L 206 1218" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
 <g class="sx-epc-node" data-id="E1" data-kind="event"><polygon points="145,28 267,28 281,55 267,82 145,82 131,55" class="sx-epc-event"/>
-<text x="206" y="55" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Request received</tspan></text></g>
+<text x="206" y="55" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Claim reported</tspan></text></g>
 <g class="sx-epc-node" data-id="F1" data-kind="function"><rect x="126" y="138" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
-<text x="206" y="170" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Assess request</tspan></text></g>
-<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="206" cy="275" r="17" class="sx-epc-conn"/>
-<text x="206" y="275" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
-<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="52,348 174,348 188,375 174,402 52,402 38,375" class="sx-epc-event"/>
-<text x="113" y="375" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Request approved</tspan></text></g>
-<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="238,348 360,348 374,375 360,402 238,402 224,375" class="sx-epc-event"/>
-<text x="299" y="375" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Request rejected</tspan></text></g>
-<g class="sx-epc-node" data-id="F2" data-kind="function"><rect x="28" y="458" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
-<text x="108" y="490" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108" dy="0">Perform service</tspan></text></g>
-<g class="sx-epc-node" data-id="F3" data-kind="function"><rect x="224" y="458" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
-<text x="304" y="490" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="304" dy="0">Notify requester</tspan></text></g>
-<g class="sx-epc-node" data-id="E4" data-kind="event"><polygon points="52,578 174,578 188,605 174,632 52,632 38,605" class="sx-epc-event"/>
-<text x="113" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Service completed</tspan></text></g>
-<g class="sx-epc-node" data-id="E5" data-kind="event"><polygon points="238,578 360,578 374,605 360,632 238,632 224,605" class="sx-epc-event"/>
-<text x="299" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Request closed</tspan></text></g></g></svg>
+<text x="206" y="170" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Register claim</tspan></text></g>
+<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="145,258 267,258 281,285 267,312 145,312 131,285" class="sx-epc-event"/>
+<text x="206" y="285" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Claim registered</tspan></text></g>
+<g class="sx-epc-node" data-id="F2" data-kind="function"><rect x="126" y="368" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="206" y="400" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Assess coverage</tspan></text></g>
+<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="206" cy="505" r="17" class="sx-epc-conn"/>
+<text x="206" y="505" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="52,578 174,578 188,605 174,632 52,632 38,605" class="sx-epc-event"/>
+<text x="113" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Claim covered</tspan></text></g>
+<g class="sx-epc-node" data-id="E4" data-kind="event"><polygon points="238,578 360,578 374,605 360,632 238,632 224,605" class="sx-epc-event"/>
+<text x="299" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Claim not covered</tspan></text></g>
+<g class="sx-epc-node" data-id="F3" data-kind="function"><rect x="28" y="688" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="108" y="720" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108" dy="0">Calculate payout</tspan></text></g>
+<g class="sx-epc-node" data-id="F4" data-kind="function"><rect x="224" y="688" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="304" y="720" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="304" dy="-7">Send rejection</tspan><tspan x="304" dy="14">letter</tspan></text></g>
+<g class="sx-epc-node" data-id="E5" data-kind="event"><polygon points="52,808 174,808 188,835 174,862 52,862 38,835" class="sx-epc-event"/>
+<text x="113" y="835" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Payout approved</tspan></text></g>
+<g class="sx-epc-node" data-id="E6" data-kind="event"><polygon points="238,808 360,808 374,835 360,862 238,862 224,835" class="sx-epc-event"/>
+<text x="299" y="835" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Claimant informed</tspan></text></g>
+<g class="sx-epc-node" data-id="A1" data-kind="connector" data-operator="and"><circle cx="206" cy="935" r="17" class="sx-epc-conn"/>
+<text x="206" y="935" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">∧</text></g>
+<g class="sx-epc-node" data-id="F5" data-kind="function"><rect x="28" y="1008" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="108" y="1040" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108" dy="0">Pay claimant</tspan></text></g>
+<g class="sx-epc-node" data-id="F6" data-kind="function"><rect x="224" y="1008" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="304" y="1040" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="304" dy="0">Release reserve</tspan></text></g>
+<g class="sx-epc-node" data-id="A2" data-kind="connector" data-operator="and"><circle cx="206" cy="1145" r="17" class="sx-epc-conn"/>
+<text x="206" y="1145" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">∧</text></g>
+<g class="sx-epc-node" data-id="E7" data-kind="event"><polygon points="145,1218 267,1218 281,1245 267,1272 145,1272 131,1245" class="sx-epc-event"/>
+<text x="206" y="1245" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Claim settled</tspan></text></g></g></svg>

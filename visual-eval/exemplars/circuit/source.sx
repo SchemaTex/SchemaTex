@@ -1,0 +1,15 @@
+# NE555 astable LED flasher with a transistor driver.
+# Blink rate f = 1.44 / ((R1 + 2*R2) * C1) = 1.44 / (137 kOhm * 10 uF), about 1.05 Hz.
+# LED current (9 V - 2.0 V - 0.2 V) / 330 Ohm, about 21 mA; R3 gives Q1 about 1.4 mA of base drive.
+circuit "555 LED Flasher" netlist
+BT1 VCC GND value="9 V"
+C3 VCC GND value="100 nF"
+U1 GND THR OUT VCC CV THR DIS VCC type=555_timer value="NE555"
+R1 VCC DIS value="1 kΩ"
+R2 DIS THR value="68 kΩ"
+C1 THR GND type=ecap value="10 µF"
+C2 CV GND value="10 nF"
+R3 OUT BASE value="4.7 kΩ"
+Q1 LED_K BASE GND type=npn value="2N3904"
+R4 VCC LED_A value="330 Ω"
+D1 LED_A LED_K type=led value="red LED"

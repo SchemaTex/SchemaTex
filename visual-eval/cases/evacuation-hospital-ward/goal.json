@@ -1,8 +1,9 @@
 {
   "id": "evacuation-hospital-ward",
   "type": "evacuation",
-  "title": "Hospital Ward",
-  "goal": "A practitioner can read the hospital ward artefact at a glance.",
+  "variant": "iso",
+  "title": "Ward 4B escape plan",
+  "goal": "A practitioner can read this escape plan at a glance: Ward 4B escape plan.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -34,7 +35,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG visibly connects the YOU ARE HERE marker to separate exits with differentiated primary and secondary routes, while the picture provides only disconnected corridor arrows."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The Ward 4B plan is readable at a glance. A prominent YOU ARE HERE marker in the Nurse Station connects to clearly differentiated green routes leading west and east through the ward corridor to two marked final exits. Room, safety-equipment, assembly-point, stair, and legend labels are legible and visibly associated with the correct elements.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:32.026Z",
+      "targetHash": "30110b181189",
+      "sourceHash": "ae1c4f151bf1",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "Visible YOU ARE HERE marker, full legend, and two EXIT labels with final-exit symbols are present."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The primary route visibly leads east to Stair East and its exit, while the alternative route leads west to Stair West and its separate exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Green directional arrows make both paths from the Nurse Station marker through the Ward Corridor to the exits easy to follow."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Ward, room, stair, exit, equipment, assembly-point, and route-legend labels are legible and attached to their corresponding visible features."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Route branches, door openings, stair enclosures, and safety symbols are visually distinct and do not imply unintended connections."
+        }
+      ]
+    }
   }
 }

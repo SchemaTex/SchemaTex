@@ -1,0 +1,12 @@
+# Three-set Venn of Q3 customer segments; each count is the users in exactly that region.
+venn "Customer Segments — Q3 2025"
+set email "Email subscribers"
+set paid "Paid users"
+set mobile "Mobile app users"
+email only : 12400
+paid only : 3200
+mobile only : 8700
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650

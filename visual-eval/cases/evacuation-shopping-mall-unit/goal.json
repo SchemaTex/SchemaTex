@@ -1,8 +1,9 @@
 {
   "id": "evacuation-shopping-mall-unit",
   "type": "evacuation",
-  "title": "Shopping Mall Unit",
-  "goal": "A practitioner can read the shopping mall unit artefact at a glance.",
+  "variant": "iso",
+  "title": "Unit 14 escape plan",
+  "goal": "A practitioner can read this escape plan at a glance: Unit 14 escape plan.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +31,48 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a legible Unit 14 escape plan with a YOU ARE HERE marker, two distinct green routes to separate marked exits, correctly labeled rooms, fire extinguisher, assembly point, and a complete legend. No material visible defect or misleading connection is apparent.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:08:27.072Z",
+      "targetHash": "e13c7b8d761f",
+      "sourceHash": "7e2fc956e5a8",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "A blue YOU ARE HERE marker is visible on the Shop Floor, the legend is clearly shown at right, and EXIT symbols are marked at the west concourse exit and east service-corridor exit."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The primary route runs north from the marker through the Shop Floor and west through the Mall Concourse exit; the alternative route runs east through the Stockroom, south into the Service Corridor, and east to the other exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Green route segments and directional arrowheads make both evacuation paths readable from the position marker to their endpoints."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The title, YOU ARE HERE, both EXIT labels, room names, ABC extinguisher marking, ASSEMBLY POINT, instructions, and legend entries are visibly legible and associated with the appropriate elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Route geometry follows visible openings and doors, and the two route branches terminate at distinct exits without visibly implying unintended room or symbol connections."
+        }
+      ]
+    }
+  }
 }

@@ -1,1 +1,41 @@
-{"id":"timeline-historical-period","type":"timeline","title":"Europe: classical to early modern","goal":"Show major European events across four historical eras, including BCE and CE dates.","rubric":[{"id":"four-eras","severity":"blocker","must":"Classical Antiquity, Early Middle Ages, High and Late Middle Ages, and Early Modern Era are visibly labelled sections."},{"id":"bce-to-ce","severity":"blocker","must":"The timeline visibly spans BCE and CE events, beginning with the Roman Republic and continuing to Westphalia."},{"id":"multiple-dated-events","severity":"major","must":"The picture shows multiple distinct dated historical events within the eras."},{"id":"emphasized-turning-points","severity":"major","must":"Roman Republic, fall of Rome, Norman Conquest, Constantinople, and Westphalia are visually emphasized milestones."},{"id":"black-death-range","severity":"minor","must":"The Black Death is visibly shown as a multi-year range rather than a single point."}],"split":"holdout"}
+{
+  "id": "timeline-historical-period",
+  "type": "timeline",
+  "variant": "swimlane",
+  "title": "Europe: classical to early modern",
+  "goal": "Show major European events across four historical eras, including BCE and CE dates.",
+  "rubric": [
+    {
+      "id": "four-eras",
+      "severity": "blocker",
+      "must": "Classical Antiquity, Early Middle Ages, High and Late Middle Ages, and Early Modern Era are visibly labelled sections."
+    },
+    {
+      "id": "bce-to-ce",
+      "severity": "blocker",
+      "must": "The timeline visibly spans BCE and CE events, beginning with the Roman Republic and continuing to Westphalia."
+    },
+    {
+      "id": "multiple-dated-events",
+      "severity": "major",
+      "must": "The picture shows multiple distinct dated historical events within the eras."
+    },
+    {
+      "id": "emphasized-turning-points",
+      "severity": "major",
+      "must": "Roman Republic, fall of Rome, Norman Conquest, Constantinople, and Westphalia are visually emphasized milestones."
+    },
+    {
+      "id": "black-death-range",
+      "severity": "minor",
+      "must": "The Black Death is visibly shown as a multi-year range rather than a single point."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/timeline/swimlane/ideal.svg (7c3470ea58a6); rendered and visually reviewed. Exemplar swimlane palette and proportional calendar. Point events are not converted to invented work spans; crowded dates use extra rows within the same track. Milestones and declared ranges remain distinct."
+  }
+}

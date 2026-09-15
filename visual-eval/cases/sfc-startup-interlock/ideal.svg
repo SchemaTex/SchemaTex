@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="1150" viewBox="0 0 1260 1150" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Compressor start-up interlock</title><desc>Independent reference target. PROVISIONAL: source says any trip returns to idle, but declares Trip returns only from S2 and S4, not S1 or S3. Geometry preserves actual declared transitions. Hand-composed steps, action compartments, transition conditions and correctly ordered branch bars.</desc><rect width="1260" height="1150" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Compressor start-up interlock</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Sequential function chart</text>
+<line x1="48" y1="96" x2="1212" y2="96" stroke="#CBD1D6" stroke-width="1"/>
+<rect x="355" y="140" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<rect x="360" y="145" width="100" height="44" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<text x="410" y="165" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S0</text>
+<line x1="465" y1="167" x2="493" y2="167" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="140" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="140" x2="523" y2="176" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="164" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="535" y="164" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">MotorOff</text>
+<rect x="355" y="305" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="410" y="330" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S1</text>
+<text x="410" y="349" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Check permissives</text>
+<line x1="465" y1="332" x2="493" y2="332" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="305" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="305" x2="523" y2="341" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="329" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">P</text>
+<text x="535" y="329" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">RunChecks</text>
+<rect x="355" y="470" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="410" y="495" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S2</text>
+<text x="410" y="514" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Start lube pump</text>
+<line x1="465" y1="497" x2="493" y2="497" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="470" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="470" x2="523" y2="506" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="494" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="535" y="494" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">LubePump</text>
+<rect x="355" y="660" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="410" y="685" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S3</text>
+<text x="410" y="704" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Start main motor</text>
+<line x1="465" y1="687" x2="493" y2="687" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="660" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="660" x2="523" y2="696" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="684" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="535" y="684" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">LubePump</text>
+<line x1="465" y1="687" x2="493" y2="687" stroke="#20272B" stroke-width="1.5"/>
+<line x1="493" y1="687" x2="493" y2="716" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="698" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="698" x2="523" y2="734" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="722" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="535" y="722" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">MainMotor</text>
+<line x1="465" y1="687" x2="493" y2="687" stroke="#20272B" stroke-width="1.5"/>
+<line x1="493" y1="687" x2="493" y2="754" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="736" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="736" x2="523" y2="772" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="760" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">L</text>
+<text x="535" y="760" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">StartHorn</text>
+<line x1="684" y1="736" x2="684" y2="772" stroke="#20272B" stroke-width="1"/>
+<text x="719" y="760" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#3s</text>
+<rect x="355" y="860" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="410" y="885" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S4</text>
+<text x="410" y="904" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Running</text>
+<line x1="465" y1="887" x2="493" y2="887" stroke="#20272B" stroke-width="1.5"/>
+<rect x="493" y="860" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="860" x2="523" y2="896" stroke="#20272B" stroke-width="1"/>
+<text x="508" y="884" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="535" y="884" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">MainMotor</text>
+<line x1="410" y1="194" x2="410" y2="305" stroke="#20272B" stroke-width="1.5"/>
+<line x1="397" y1="249.5" x2="423" y2="249.5" stroke="#20272B" stroke-width="3"/>
+<text x="434" y="254.5" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">StartBtn</text>
+<line x1="410" y1="359" x2="410" y2="470" stroke="#20272B" stroke-width="1.5"/>
+<line x1="397" y1="414.5" x2="423" y2="414.5" stroke="#20272B" stroke-width="3"/>
+<text x="434" y="419.5" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">PermissivesOK</text>
+<line x1="410" y1="524" x2="410" y2="660" stroke="#20272B" stroke-width="1.5"/>
+<line x1="397" y1="592" x2="423" y2="592" stroke="#20272B" stroke-width="3"/>
+<text x="434" y="597" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">LubePressureOK</text>
+<line x1="410" y1="714" x2="410" y2="860" stroke="#20272B" stroke-width="1.5"/>
+<line x1="397" y1="787" x2="423" y2="787" stroke="#20272B" stroke-width="3"/>
+<text x="434" y="792" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">MotorAtSpeed</text>
+<line x1="410" y1="914" x2="410" y2="970" stroke="#20272B" stroke-width="1.5"/>
+<line x1="397" y1="945" x2="423" y2="945" stroke="#20272B" stroke-width="3"/>
+<text x="434" y="950" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Trip OR StopBtn</text>
+<path d="M410 970 H90 V167 H355" stroke="#20272B" stroke-width="1.5" fill="none"/>
+<path d="M86 259 L90 250 L94 259" stroke="#20272B" stroke-width="1" fill="#20272B"/>
+<path d="M410 555 H180 V167 H355" stroke="#20272B" stroke-width="1.5" fill="none"/>
+<line x1="167" y1="420" x2="193" y2="420" stroke="#20272B" stroke-width="3"/>
+<text x="204" y="425" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Trip</text>
+<text x="156" y="425" font-size="12" font-weight="400" text-anchor="end" fill="#59636B">T_Trip</text>
+<path d="M176 254 L180 245 L184 254" stroke="#20272B" stroke-width="1" fill="#20272B"/>
+<line x1="48" y1="1078" x2="1212" y2="1078" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1102" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Double outline: initial step.  Thick bar: transition.  Single branch bar: alternative; double branch bar: simultaneous.</text>
+<text x="48" y="1122" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Action qualifiers: N = non-stored; P = pulse; D = delayed; L = time-limited.</text></svg>

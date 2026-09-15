@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1310" height="880" viewBox="0 0 1310 880" role="img" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<title>Fulfil customer order — A0</title>
+<desc>IDEF0 A0 decomposition diagram in the FIPS PUB 183 diagram form. Four function boxes step down a diagonal: 1 Allocate stock, 2 Pick items, 3 Pack order, 4 Ship parcel. Inputs I1 Paid order and I2 Stock levels enter box 1 from the left. Controls enter from the top: C1 Allocation rules, C2 Pick route, C3 Packaging standard, C4 Carrier cut-off times. Mechanisms enter from the bottom: M1 Warehouse system, M2 Pickers, M3 Packing station, M4 Parcel carrier. Pick list, Picked items and Packed order flow from box to box. Box 3's Short-pick report returns over the top as a control on box 1, bridging the controls it crosses. Outputs O1 Shipped parcel and O2 Tracking number leave box 4 on the right. Title block: node A0, title Fulfil customer order, number C-1.</desc>
+<rect width="1310" height="880" fill="#FFFFFF"/>
+<text x="44" y="50" font-size="20" font-weight="600" fill="#0F172A">Fulfil customer order</text>
+<text x="44" y="74" font-size="11" fill="#64748B">IDEF0 FUNCTION MODEL · A0 DECOMPOSITION · FIPS PUB 183</text>
+<rect x="44" y="116" width="1222" height="726" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+<line x1="44" y1="790" x2="1266" y2="790" stroke="#1E293B" stroke-width="1.5"/>
+<text x="56" y="808" font-size="9.5" font-weight="600" letter-spacing="0.6" fill="#64748B">NODE</text>
+<text x="56" y="828" font-size="12.5" font-weight="600" fill="#0F172A">A0</text>
+<line x1="250" y1="790" x2="250" y2="842" stroke="#1E293B" stroke-width="1.5"/>
+<text x="262" y="808" font-size="9.5" font-weight="600" letter-spacing="0.6" fill="#64748B">TITLE</text>
+<text x="262" y="828" font-size="12.5" font-weight="600" fill="#0F172A">Fulfil customer order</text>
+<line x1="1080" y1="790" x2="1080" y2="842" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1092" y="808" font-size="9.5" font-weight="600" letter-spacing="0.6" fill="#64748B">NUMBER</text>
+<text x="1092" y="828" font-size="12.5" font-weight="600" fill="#0F172A">C-1</text>
+<rect x="200" y="250" width="180" height="86" fill="#F1F5F9" stroke="#1E293B" stroke-width="1.6"/>
+<text x="290" y="297" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0F172A">Allocate stock</text>
+<text x="371" y="327" font-size="11" font-weight="600" text-anchor="end" fill="#475569">1</text>
+<rect x="440" y="375" width="180" height="86" fill="#F1F5F9" stroke="#1E293B" stroke-width="1.6"/>
+<text x="530" y="422" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0F172A">Pick items</text>
+<text x="611" y="452" font-size="11" font-weight="600" text-anchor="end" fill="#475569">2</text>
+<rect x="680" y="500" width="180" height="86" fill="#F1F5F9" stroke="#1E293B" stroke-width="1.6"/>
+<text x="770" y="547" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0F172A">Pack order</text>
+<text x="851" y="577" font-size="11" font-weight="600" text-anchor="end" fill="#475569">3</text>
+<rect x="920" y="625" width="180" height="86" fill="#F1F5F9" stroke="#1E293B" stroke-width="1.6"/>
+<text x="1010" y="672" font-size="13.5" font-weight="600" text-anchor="middle" fill="#0F172A">Ship parcel</text>
+<text x="1091" y="702" font-size="11" font-weight="600" text-anchor="end" fill="#475569">4</text>
+<path d="M 44 276 H 190" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="200,276 190,280.2 190,271.8" fill="#1E293B"/>
+<text x="54" y="269" font-size="10.5" font-weight="600" fill="#64748B">I1</text>
+<text x="78" y="269" font-size="12" fill="#0F172A">Paid order</text>
+<path d="M 44 310 H 190" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="200,310 190,314.2 190,305.8" fill="#1E293B"/>
+<text x="54" y="303" font-size="10.5" font-weight="600" fill="#64748B">I2</text>
+<text x="78" y="303" font-size="12" fill="#0F172A">Stock levels</text>
+<path d="M 250 116 V 240" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="250,250 245.8,240 254.2,240" fill="#1E293B"/>
+<text x="258" y="136" font-size="10.5" font-weight="600" fill="#64748B">C1</text>
+<text x="258" y="153" font-size="12" fill="#0F172A">Allocation rules</text>
+<path d="M 530 116 V 365" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="530,375 525.8,365 534.2,365" fill="#1E293B"/>
+<text x="538" y="136" font-size="10.5" font-weight="600" fill="#64748B">C2</text>
+<text x="538" y="153" font-size="12" fill="#0F172A">Pick route</text>
+<path d="M 770 116 V 490" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="770,500 765.8,490 774.2,490" fill="#1E293B"/>
+<text x="778" y="136" font-size="10.5" font-weight="600" fill="#64748B">C3</text>
+<text x="778" y="153" font-size="12" fill="#0F172A">Packaging standard</text>
+<path d="M 1010 116 V 615" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="1010,625 1005.8,615 1014.2,615" fill="#1E293B"/>
+<text x="1018" y="136" font-size="10.5" font-weight="600" fill="#64748B">C4</text>
+<text x="1018" y="153" font-size="12" fill="#0F172A">Carrier cut-off times</text>
+<path d="M 290 790 V 346" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="290,336 294.2,346 285.8,346" fill="#1E293B"/>
+<text x="298" y="764" font-size="12" fill="#0F172A">Warehouse system</text>
+<text x="298" y="780" font-size="10.5" font-weight="600" fill="#64748B">M1</text>
+<path d="M 530 790 V 471" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="530,461 534.2,471 525.8,471" fill="#1E293B"/>
+<text x="538" y="764" font-size="12" fill="#0F172A">Pickers</text>
+<text x="538" y="780" font-size="10.5" font-weight="600" fill="#64748B">M2</text>
+<path d="M 770 790 V 596" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="770,586 774.2,596 765.8,596" fill="#1E293B"/>
+<text x="778" y="764" font-size="12" fill="#0F172A">Packing station</text>
+<text x="778" y="780" font-size="10.5" font-weight="600" fill="#64748B">M3</text>
+<path d="M 1010 790 V 721" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="1010,711 1014.2,721 1005.8,721" fill="#1E293B"/>
+<text x="1018" y="764" font-size="12" fill="#0F172A">Parcel carrier</text>
+<text x="1018" y="780" font-size="10.5" font-weight="600" fill="#64748B">M4</text>
+<path d="M 380 293 H 410 V 418 H 430" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="440,418 430,422.2 430,413.8" fill="#1E293B"/>
+<text x="418" y="361" font-size="12" fill="#0F172A">Pick list</text>
+<path d="M 620 418 H 650 V 543 H 670" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="680,543 670,547.2 670,538.8" fill="#1E293B"/>
+<text x="658" y="486" font-size="12" fill="#0F172A">Picked items</text>
+<path d="M 860 555 H 890 V 668 H 910" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="920,668 910,672.2 910,663.8" fill="#1E293B"/>
+<text x="898" y="611" font-size="12" fill="#0F172A">Packed order</text>
+<path d="M 860 520 H 910 V 205 H 776 a 6 6 0 0 0 -12 0 H 536 a 6 6 0 0 0 -12 0 H 336 V 240" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="336,250 331.8,240 340.2,240" fill="#1E293B"/>
+<text x="550" y="197" font-size="12" fill="#0F172A">Short-pick report</text>
+<path d="M 1100 651 H 1256" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="1266,651 1256,655.2 1256,646.8" fill="#1E293B"/>
+<text x="1114" y="644" font-size="12" fill="#0F172A">Shipped parcel</text>
+<text x="1256" y="644" font-size="10.5" font-weight="600" text-anchor="end" fill="#64748B">O1</text>
+<path d="M 1100 685 H 1256" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="1266,685 1256,689.2 1256,680.8" fill="#1E293B"/>
+<text x="1114" y="678" font-size="12" fill="#0F172A">Tracking number</text>
+<text x="1256" y="678" font-size="10.5" font-weight="600" text-anchor="end" fill="#64748B">O2</text>
+</svg>

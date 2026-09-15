@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="870" height="664" viewBox="0 0 870 664" role="img" aria-label="IDEF0 function model" data-diagram-type="idef0"><title>IDEF0 function model</title>
-<desc>IDEF0 function model (node A0): 3 functions on a diagonal staircase. ICOM arrows: 2 control, 4 input, 3 mechanism, 1 output. Boxes: 1. Plan work (A1); 2. Execute work (A2); 3. Verify result (A3). Line 3: unrecognised line: &quot;idef0 &quot;Order Fulfilment&quot;&quot;</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1100" height="794" viewBox="0 0 1100 794" role="img" aria-label="IDEF0 function model" data-diagram-type="idef0"><title>IDEF0 function model</title>
+<desc>IDEF0 function model (node A0): 4 functions on a diagonal staircase. ICOM arrows: 4 input, 4 control, 4 mechanism, 1 output. Boxes: 1. Allocate stock (A1); 2. Pick items (A2); 3. Pack order (A3); 4. Ship parcel (A4). Line 3: unrecognised line: &quot;idef0 &quot;Order Fulfilment&quot;&quot;</desc>
 <style>.sx-idef0-bg { fill: #ffffff; }
 .sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
 .sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
@@ -17,59 +17,73 @@
 .sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
 .sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
 .sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
-<rect x="0" y="0" width="870" height="664" class="sx-idef0-bg"/>
-<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 185 70 L 185 140" class="sx-idef0-arrow"/>
-<polygon points="185,140 180.5,149 189.5,149" class="sx-idef0-head"/>
-<text x="185" y="64" class="sx-idef0-label" text-anchor="middle">.C &quot;Approved procedure&quot;</text>
-<text x="185" y="77" class="sx-idef0-icom" text-anchor="middle">C1</text></g>
-<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 40 180 L 110 180" class="sx-idef0-arrow"/>
+<rect x="0" y="0" width="1100" height="794" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 40 180 L 110 180" class="sx-idef0-arrow"/>
 <polygon points="110,180 119,175.5 119,184.5" class="sx-idef0-head"/>
-<text x="34" y="174" class="sx-idef0-label" text-anchor="end">.I &quot;Customer request&quot;</text>
+<text x="34" y="174" class="sx-idef0-label" text-anchor="end">.I &quot;Paid order&quot;</text>
 <text x="34" y="187" class="sx-idef0-icom" text-anchor="end">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 185 70 L 185 140" class="sx-idef0-arrow"/>
+<polygon points="185,140 180.5,149 189.5,149" class="sx-idef0-head"/>
+<text x="185" y="64" class="sx-idef0-label" text-anchor="middle">.C &quot;Allocation rules&quot;</text>
+<text x="185" y="77" class="sx-idef0-icom" text-anchor="middle">C1</text></g>
 <g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 185 290 L 185 220" class="sx-idef0-arrow"/>
 <polygon points="185,220 180.5,211 189.5,211" class="sx-idef0-head"/>
-<text x="185" y="304" class="sx-idef0-label" text-anchor="middle">.M &quot;Planning team&quot;</text>
+<text x="185" y="304" class="sx-idef0-label" text-anchor="middle">.M &quot;Warehouse system&quot;</text>
 <text x="185" y="317" class="sx-idef0-icom" text-anchor="middle">M1</text></g>
 <g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 260 180 L 300 180 L 300 310 L 340 310" class="sx-idef0-arrow"/>
 <polygon points="340,310 349,305.5 349,314.5" class="sx-idef0-head"/>
-<text x="300" y="174" class="sx-idef0-label" text-anchor="middle">: &quot;Work package&quot;</text></g>
-<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I2"><path d="M 270 310 L 340 310" class="sx-idef0-arrow"/>
-<polygon points="340,310 349,305.5 349,314.5" class="sx-idef0-head"/>
-<text x="264" y="304" class="sx-idef0-label" text-anchor="end">.I &quot;Materials&quot;</text>
-<text x="264" y="317" class="sx-idef0-icom" text-anchor="end">I2</text></g>
+<text x="300" y="174" class="sx-idef0-label" text-anchor="middle">: &quot;Pick list&quot;</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 415 200 L 415 270" class="sx-idef0-arrow"/>
+<polygon points="415,270 410.5,279 419.5,279" class="sx-idef0-head"/>
+<text x="415" y="194" class="sx-idef0-label" text-anchor="middle">.C &quot;Pick route&quot;</text>
+<text x="415" y="207" class="sx-idef0-icom" text-anchor="middle">C2</text></g>
 <g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 415 420 L 415 350" class="sx-idef0-arrow"/>
 <polygon points="415,350 410.5,341 419.5,341" class="sx-idef0-head"/>
-<text x="415" y="434" class="sx-idef0-label" text-anchor="middle">.M &quot;Qualified staff&quot;</text>
+<text x="415" y="434" class="sx-idef0-label" text-anchor="middle">.M &quot;Pickers&quot;</text>
 <text x="415" y="447" class="sx-idef0-icom" text-anchor="middle">M2</text></g>
 <g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 490 310 L 530 310 L 530 440 L 570 440" class="sx-idef0-arrow"/>
 <polygon points="570,440 579,435.5 579,444.5" class="sx-idef0-head"/>
-<text x="530" y="304" class="sx-idef0-label" text-anchor="middle">: &quot;Completed work&quot;</text></g>
-<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 645 330 L 645 400" class="sx-idef0-arrow"/>
+<text x="530" y="304" class="sx-idef0-label" text-anchor="middle">: &quot;Picked items&quot;</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C3"><path d="M 645 330 L 645 400" class="sx-idef0-arrow"/>
 <polygon points="645,400 640.5,409 649.5,409" class="sx-idef0-head"/>
-<text x="645" y="324" class="sx-idef0-label" text-anchor="middle">.C &quot;Acceptance criteria&quot;</text>
-<text x="645" y="337" class="sx-idef0-icom" text-anchor="middle">C2</text></g>
-<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 720 440 L 790 440" class="sx-idef0-arrow"/>
-<polygon points="790,440 781,435.5 781,444.5" class="sx-idef0-head"/>
-<text x="796" y="434" class="sx-idef0-label" text-anchor="start">.O &quot;Accepted deliverable&quot;</text>
-<text x="796" y="447" class="sx-idef0-icom" text-anchor="start">O1</text></g>
+<text x="645" y="324" class="sx-idef0-label" text-anchor="middle">.C &quot;Packaging standard&quot;</text>
+<text x="645" y="337" class="sx-idef0-icom" text-anchor="middle">C3</text></g>
 <g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M3"><path d="M 645 550 L 645 480" class="sx-idef0-arrow"/>
 <polygon points="645,480 640.5,471 649.5,471" class="sx-idef0-head"/>
-<text x="645" y="564" class="sx-idef0-label" text-anchor="middle">.M &quot;Quality inspector&quot;</text>
+<text x="645" y="564" class="sx-idef0-label" text-anchor="middle">.M &quot;Packing station&quot;</text>
 <text x="645" y="577" class="sx-idef0-icom" text-anchor="middle">M3</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 720 440 L 760 440 L 760 570 L 800 570" class="sx-idef0-arrow"/>
+<polygon points="800,570 809,565.5 809,574.5" class="sx-idef0-head"/>
+<text x="760" y="434" class="sx-idef0-label" text-anchor="middle">: &quot;Packed order&quot;</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C4"><path d="M 875 460 L 875 530" class="sx-idef0-arrow"/>
+<polygon points="875,530 870.5,539 879.5,539" class="sx-idef0-head"/>
+<text x="875" y="454" class="sx-idef0-label" text-anchor="middle">.C &quot;Carrier cut-off times&quot;</text>
+<text x="875" y="467" class="sx-idef0-icom" text-anchor="middle">C4</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M4"><path d="M 875 680 L 875 610" class="sx-idef0-arrow"/>
+<polygon points="875,610 870.5,601 879.5,601" class="sx-idef0-head"/>
+<text x="875" y="694" class="sx-idef0-label" text-anchor="middle">.M &quot;Parcel carrier&quot;</text>
+<text x="875" y="707" class="sx-idef0-icom" text-anchor="middle">M4</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 950 570 L 1020 570" class="sx-idef0-arrow"/>
+<polygon points="1020,570 1011,565.5 1011,574.5" class="sx-idef0-head"/>
+<text x="1026" y="564" class="sx-idef0-label" text-anchor="start">.O &quot;Shipped parcel&quot;</text>
+<text x="1026" y="577" class="sx-idef0-icom" text-anchor="start">O1</text></g>
 <g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="110" y="140" width="150" height="80" class="sx-idef0-box"/>
-<text x="185" y="180" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="185" dy="0">Plan work</tspan></text>
+<text x="185" y="180" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="185" dy="0">Allocate stock</tspan></text>
 <text x="254" y="214" class="sx-idef0-box-num" text-anchor="end">1</text></g>
 <g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="340" y="270" width="150" height="80" class="sx-idef0-box"/>
-<text x="415" y="310" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="415" dy="0">Execute work</tspan></text>
+<text x="415" y="310" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="415" dy="0">Pick items</tspan></text>
 <text x="484" y="344" class="sx-idef0-box-num" text-anchor="end">2</text></g>
 <g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="570" y="400" width="150" height="80" class="sx-idef0-box"/>
-<text x="645" y="440" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="645" dy="0">Verify result</tspan></text>
+<text x="645" y="440" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="645" dy="0">Pack order</tspan></text>
 <text x="714" y="474" class="sx-idef0-box-num" text-anchor="end">3</text></g>
-<g class="sx-idef0-titleblock"><rect x="55" y="590" width="720" height="34" class="sx-idef0-tb"/>
-<line x1="213.4" y1="590" x2="213.4" y2="624" class="sx-idef0-tb"/>
-<line x1="616.6" y1="590" x2="616.6" y2="624" class="sx-idef0-tb"/>
-<text x="61" y="603" class="sx-idef0-tb-key">NODE</text>
-<text x="61" y="617" class="sx-idef0-tb-text">A0</text>
-<text x="219.4" y="603" class="sx-idef0-tb-key">TITLE</text>
-<text x="219.4" y="617" class="sx-idef0-tb-text">—</text>
-<text x="622.6" y="603" class="sx-idef0-tb-key">NUMBER</text></g></g></svg>
+<g class="sx-idef0-box-g" data-id="A4" data-number="4" data-node="A4"><rect x="800" y="530" width="150" height="80" class="sx-idef0-box"/>
+<text x="875" y="570" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="875" dy="0">Ship parcel</tspan></text>
+<text x="944" y="604" class="sx-idef0-box-num" text-anchor="end">4</text></g>
+<g class="sx-idef0-titleblock"><rect x="55" y="720" width="950" height="34" class="sx-idef0-tb"/>
+<line x1="264" y1="720" x2="264" y2="754" class="sx-idef0-tb"/>
+<line x1="796" y1="720" x2="796" y2="754" class="sx-idef0-tb"/>
+<text x="61" y="733" class="sx-idef0-tb-key">NODE</text>
+<text x="61" y="747" class="sx-idef0-tb-text">A0</text>
+<text x="270" y="733" class="sx-idef0-tb-key">TITLE</text>
+<text x="270" y="747" class="sx-idef0-tb-text">—</text>
+<text x="802" y="733" class="sx-idef0-tb-key">NUMBER</text></g></g></svg>

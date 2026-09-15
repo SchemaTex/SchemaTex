@@ -1,1 +1,40 @@
-{"id":"usecase-hospital-admissions","type":"usecase","title":"Hospital admissions","goal":"Define admissions responsibilities for patients, registrars, and an insurer.","rubric":[{"id":"boundary","severity":"blocker","must":"Hospital Admission System is visibly drawn as a subject boundary around admission use cases."},{"id":"registration-includes","severity":"blocker","must":"Register Patient has dashed «include» arrows pointing to Record Demographics, Verify Coverage, and Create Admission."},{"id":"coverage-system","severity":"major","must":"Verify Coverage is associated with the external-system actor Insurance Clearinghouse."},{"id":"emergency-extension","severity":"major","must":"Escalate Emergency extends Perform Triage toward the named emergency escalation extension point."},{"id":"patient-generalization","severity":"minor","must":"Emergency Patient generalizes to Patient with a hollow triangle."}],"split":"train"}
+{
+  "id": "usecase-hospital-admissions",
+  "type": "usecase",
+  "title": "Hospital admissions",
+  "goal": "Define admissions responsibilities for patients, registrars, and an insurer.",
+  "rubric": [
+    {
+      "id": "boundary",
+      "severity": "blocker",
+      "must": "Hospital Admission System is visibly drawn as a subject boundary around admission use cases."
+    },
+    {
+      "id": "registration-includes",
+      "severity": "blocker",
+      "must": "Register Patient has dashed «include» arrows pointing to Record Demographics, Verify Coverage, and Create Admission."
+    },
+    {
+      "id": "coverage-system",
+      "severity": "major",
+      "must": "Verify Coverage is associated with the external-system actor Insurance Clearinghouse."
+    },
+    {
+      "id": "emergency-extension",
+      "severity": "major",
+      "must": "Escalate Emergency extends Perform Triage toward the named emergency escalation extension point."
+    },
+    {
+      "id": "patient-generalization",
+      "severity": "minor",
+      "must": "Emergency Patient generalizes to Patient with a hollow triangle."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/usecase/ideal.svg (sha256 7c0fac2f9989). Vision reviewed all six rasterized targets: named subject boundary, external actors, extension-point compartments, include arrows toward included use cases and extend arrows toward bases; long dependencies routed outside unrelated ellipses. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

@@ -1,1 +1,87 @@
-{"id":"erd-university-enrolment","type":"erd","title":"University enrolment","goal":"Show the entities and crow's-foot relationships for university course enrolment.","rubric":[{"id":"enrolment-bridge","severity":"blocker","must":"Enrolment visibly connects Student and Section as the registration bridge."},{"id":"course-section","severity":"blocker","must":"Course visibly has a one-to-many offers relationship to Section."},{"id":"teaching-and-term","severity":"major","must":"Section visibly relates to both an Instructor and a Term."},{"id":"department-ownership","severity":"major","must":"Department visibly relates to its Courses and Instructors."},{"id":"key-fields","severity":"major","must":"The visible entity fields mark primary and foreign keys."},{"id":"seven-entities","severity":"minor","must":"Student, Enrolment, Course, Section, Instructor, Department, and Term are readable entities."}],"split":"holdout"}
+{
+  "id": "erd-university-enrolment",
+  "type": "erd",
+  "title": "University enrolment",
+  "goal": "Show the entities and crow's-foot relationships for university course enrolment.",
+  "rubric": [
+    {
+      "id": "enrolment-bridge",
+      "severity": "blocker",
+      "must": "Enrolment visibly connects Student and Section as the registration bridge."
+    },
+    {
+      "id": "course-section",
+      "severity": "blocker",
+      "must": "Course visibly has a one-to-many offers relationship to Section."
+    },
+    {
+      "id": "teaching-and-term",
+      "severity": "major",
+      "must": "Section visibly relates to both an Instructor and a Term."
+    },
+    {
+      "id": "department-ownership",
+      "severity": "major",
+      "must": "Department visibly relates to its Courses and Instructors."
+    },
+    {
+      "id": "key-fields",
+      "severity": "major",
+      "must": "The visible entity fields mark primary and foreign keys."
+    },
+    {
+      "id": "seven-entities",
+      "severity": "minor",
+      "must": "Student, Enrolment, Course, Section, Instructor, Department, and Term are readable entities."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target faithfully shows all seven university enrolment entities, their listed fields and PK/FK roles, and seven readable, traceable crow's-foot relationships with coherent one-to-zero-or-many cardinalities. No material overlaps or cropping are visible.",
+      "model": "gpt-5.6-sol",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:38:11.722Z",
+      "targetHash": "6e9ce6b6e07a",
+      "sourceHash": "c6fdc3a642b9",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "enrolment-bridge",
+          "verdict": "pass",
+          "evidence": "ENROLMENT visibly bridges STUDENT and SECTION through the labeled relationships “registers” and “receives”; student_id and section_id are marked FK."
+        },
+        {
+          "id": "course-section",
+          "verdict": "pass",
+          "evidence": "COURSE connects to SECTION via the readable “offers” relationship, with exactly one COURSE and zero-or-many SECTIONs."
+        },
+        {
+          "id": "teaching-and-term",
+          "verdict": "pass",
+          "evidence": "SECTION visibly connects to INSTRUCTOR through “teaches” and TERM through “schedules,” with traceable crow's-foot notation."
+        },
+        {
+          "id": "department-ownership",
+          "verdict": "pass",
+          "evidence": "DEPARTMENT visibly connects to COURSE through “owns” and INSTRUCTOR through “employs.”"
+        },
+        {
+          "id": "key-fields",
+          "verdict": "pass",
+          "evidence": "Primary keys have blue PK badges and foreign keys have orange FK badges; the markings match the supplied schema."
+        },
+        {
+          "id": "seven-entities",
+          "verdict": "pass",
+          "evidence": "STUDENT, ENROLMENT, COURSE, SECTION, INSTRUCTOR, DEPARTMENT, and TERM are all present and readable."
+        }
+      ]
+    }
+  }
+}

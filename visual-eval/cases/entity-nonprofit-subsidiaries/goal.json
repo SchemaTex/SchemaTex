@@ -1,8 +1,8 @@
 {
   "id": "entity-nonprofit-subsidiaries",
   "type": "entity",
-  "title": "Nonprofit Subsidiaries",
-  "goal": "A practitioner can read the nonprofit subsidiaries artefact at a glance.",
+  "title": "Riverbend Health system",
+  "goal": "A practitioner can read this ownership chart at a glance: Riverbend Health system.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -30,5 +30,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Refreshed against the September 15 exemplar: semantic pastel fills, restrained outlines and readable labels; original case relationships retained. LLC tax classification is not inferred."
+  }
 }

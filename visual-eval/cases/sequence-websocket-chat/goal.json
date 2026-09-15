@@ -1,1 +1,40 @@
-{"id":"sequence-websocket-chat","type":"sequence","title":"WebSocket chat","goal":"Show persisted chat fan-out and push fallback.","rubric":[{"id":"receipt","severity":"blocker","must":"Gateway receives Accepted before returning Receipt."},{"id":"loop","severity":"blocker","must":"A loop encloses recipient delivery and acknowledgement."},{"id":"opt","severity":"major","must":"An opt frame encloses Push notification."},{"id":"activation","severity":"major","must":"Gateway and Chat have activation bars."},{"id":"note","severity":"minor","must":"A note says Persist before receipt."}],"split":"train"}
+{
+  "id": "sequence-websocket-chat",
+  "type": "sequence",
+  "title": "WebSocket chat",
+  "goal": "Show persisted chat fan-out and push fallback.",
+  "rubric": [
+    {
+      "id": "receipt",
+      "severity": "blocker",
+      "must": "Gateway receives Accepted before returning Receipt."
+    },
+    {
+      "id": "loop",
+      "severity": "blocker",
+      "must": "A loop encloses recipient delivery and acknowledgement."
+    },
+    {
+      "id": "opt",
+      "severity": "major",
+      "must": "An opt frame encloses Push notification."
+    },
+    {
+      "id": "activation",
+      "severity": "major",
+      "must": "Gateway and Chat have activation bars."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Persist before receipt."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/sequence/ideal.svg (sha256 c97704a0e340). Vision reviewed all six rasterized targets: distinct call/reply arrowheads, nested frames and operand separators, activation bars, message labels and notes remain readable. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

@@ -30,5 +30,48 @@
       "must": "Tokens, labels, and arrows remain readable as a one-page Petri net."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the petri exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram shows a readable three-place cycle: Red → ToGreen → Green → ToYellow → Yellow → ToRed → Red. Circles are places, bars are transitions, arrows alternate between them, and the initial token is visible in Red. Labels and connections are traceable without material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:29:10.857Z",
+      "targetHash": "6bc8297581cd",
+      "sourceHash": "09df2a2a3b92",
+      "exemplarHash": "ee1a8c675b71",
+      "items": [
+        {
+          "id": "bipartite-net",
+          "verdict": "pass",
+          "evidence": "Red, Green, and Yellow are circles; ToGreen, ToYellow, and ToRed are bars. Every arrow connects a place to a transition or vice versa."
+        },
+        {
+          "id": "initial-marking",
+          "verdict": "pass",
+          "evidence": "A token is visibly shown inside Red; Green and Yellow have none."
+        },
+        {
+          "id": "enabled-sequence",
+          "verdict": "pass",
+          "evidence": "The arrows form the stated progression from marked Red through ToGreen, ToYellow, and ToRed, returning to Red."
+        },
+        {
+          "id": "domain-control",
+          "verdict": "pass",
+          "evidence": "The three-place loop visibly expresses the traffic-light cycle with one state token circulating among Red, Green, and Yellow."
+        },
+        {
+          "id": "marking-legibility",
+          "verdict": "pass",
+          "evidence": "Place and transition labels, token, and arrowheads are readable, with no material overlaps or cropping."
+        }
+      ]
+    }
+  }
 }

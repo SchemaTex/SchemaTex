@@ -43,7 +43,54 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG matches the required metric dimensions and setbacks and preserves clear access routes, while the picture uses incorrect dimensions and places annotations inside the driveway."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly satisfies the complete site-plan intent: parcel boundaries and dimensions are clear, all four setbacks are dashed and labelled, the building is inside them, and separate vehicle and pedestrian routes connect the street to the building.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:51.540Z",
+      "targetHash": "36907fb25f9d",
+      "sourceHash": "1719e5855a27",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "distinct-property-boundary",
+          "verdict": "pass",
+          "evidence": "The parcel is a closed rectangle drawn with a heavy continuous black line, clearly distinct from the lighter dashed setback rectangle inside."
+        },
+        {
+          "id": "four-labelled-setbacks",
+          "verdict": "pass",
+          "evidence": "All four dashed sides are visible and individually labelled: Rear setback 6 m, Front setback 8 m, West setback 5 m, and East setback 5 m."
+        },
+        {
+          "id": "building-within-setbacks",
+          "verdict": "pass",
+          "evidence": "The closed grey building footprint lies entirely within the dashed setback rectangle, with visible clearance on every side."
+        },
+        {
+          "id": "parcel-dimension-attachment",
+          "verdict": "pass",
+          "evidence": "The 30 m parcel width dimension spans the left and right ends of the top property boundary, while the 40 m parcel depth dimension spans the top and bottom ends of the left property boundary."
+        },
+        {
+          "id": "vehicle-access-visible",
+          "verdict": "pass",
+          "evidence": "A wide, clearly outlined driveway runs continuously from the street across the front property boundary and setback to the building's front edge; its route is unobscured."
+        },
+        {
+          "id": "pedestrian-entrance-access",
+          "verdict": "pass",
+          "evidence": "A narrower 1.2 m pedestrian path runs separately from the street to the visibly marked entrance on the building, remaining distinguishable from the driveway."
+        },
+        {
+          "id": "orientation-and-labels",
+          "verdict": "pass",
+          "evidence": "A legible north arrow points upward toward the parcel rear, a 0–20 m graphic scale is visible, and the street, building, setback, and dimension labels are readable without material overlap."
+        }
+      ]
+    }
   }
 }

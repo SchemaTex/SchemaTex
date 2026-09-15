@@ -1,26 +1,45 @@
-# Closed-loop speed control of a BLDC robot-joint servo drive, as drawn for a design review.
-blockdiagram "BLDC Joint Servo — Closed-Loop Speed Control"
-cmd = block("Motion Command\nSpeed Setpoint") [role: reference]
-pid = block("PID Speed\nController") [role: controller]
-curlim = block("Current Limiter") [role: controller]
-pwm = block("PWM Modulator\n20 kHz") [role: controller]
-gate = block("Gate Driver") [role: actuator]
-inv = block("3-Phase MOSFET\nInverter") [role: actuator]
-motor = block("BLDC Motor") [role: plant]
-load = block("Gearbox + Joint\nLoad") [role: plant]
-joint = block("Joint Speed") [role: output]
-enc = block("Quadrature\nEncoder") [role: sensor]
-filt = block("Speed Estimator\n+ Low-Pass Filter") [role: sensor]
-err = sum(+cmd, -filt)
-cmd -> err ["ω_ref"]
-err -> pid ["error e"]
-pid -> curlim ["T*"]
-curlim -> pwm ["i*"]
-pwm -> gate ["duty d"]
-gate -> inv ["PWM"]
-inv -> motor ["v_abc"]
-motor -> load ["T_m"]
-load -> joint ["ω_out"]
-load -> enc ["θ_m"]
-enc -> filt ["A/B"]
-filt -> err ["ω_fb"]
+# Greenhouse climate telemetry node: power tree, I2C sensor bus, SPI bus, LoRa uplink.
+# Roles reuse the engine palette: disturbance = power, sensor = sensing, controller = compute,
+# output = storage & radio, actuator = actuation. Rails and buses are signal() nodes because the
+# DSL has no bus-trunk or subsystem-frame statement.
+blockdiagram "Greenhouse Climate Telemetry Node"
+bat = block("Li-ion Cell\n3.7 V · 2600 mAh") [role: disturbance]
+buck = block("Buck Regulator\nTPS62840 · 3.3 V") [role: disturbance]
+boost = block("Boost Regulator\nTPS61023 · 5 V") [role: disturbance]
+rh = block("Temp + Humidity\nSHT40") [role: sensor]
+co2 = block("CO2 Sensor\nSCD41") [role: sensor]
+lux = block("Ambient Light\nOPT3001") [role: sensor]
+mcu = block("Microcontroller\nSTM32L4 · Cortex-M4") [role: controller]
+swd = block("SWD Debug Header") [role: input]
+flash = block("SPI NOR Flash\nW25Q128 · 16 MB log") [role: output]
+radio = block("LoRa Transceiver\nSX1262 · 868 MHz") [role: output]
+ant = block("Antenna") [role: output]
+drv = block("Fan Driver\nLow-side MOSFET") [role: actuator]
+fan = block("Vent Fan\n5 V · 40 mm") [role: actuator]
+rail33 = signal("3V3 rail") [discrete]
+rail5 = signal("5V rail") [discrete]
+i2c = signal("I2C bus")
+spi = signal("SPI bus")
+bat -> buck ["VBAT"]
+bat -> boost ["VBAT"]
+buck -> rail33
+rail33 -> rh
+rail33 -> co2
+rail33 -> lux
+rail33 -> mcu
+rail33 -> flash
+rail33 -> radio
+boost -> rail5
+rail5 -> drv
+rh -> i2c
+co2 -> i2c
+lux -> i2c
+i2c -> mcu
+lux -> mcu ["INT"]
+swd -> mcu ["SWD"]
+mcu -> spi
+spi -> flash
+spi -> radio
+radio -> ant ["RF"]
+mcu -> drv ["PWM"]
+drv -> fan

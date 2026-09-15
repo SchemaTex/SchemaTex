@@ -1,0 +1,6 @@
+matrix sipoc "B2B order fulfilment"
+suppliers: "Buyer (customer purchasing team)", "Credit bureau", "Warehouse management system", "Packaging vendor", "Freight carrier"
+inputs: "Purchase order", "Credit report and limit", "Available stock by SKU", "Cartons and shipping labels", "Pickup schedule"
+process: "Receive and enter order", "Check credit and stock", "Pick items", "Pack and label", "Ship with carrier", "Issue invoice"
+outputs: "Order confirmation", "Pick list", "Packed and labelled shipment", "Tracking number and advance ship notice", "Invoice"
+customers: "Buyer", "Warehouse pick team", "Freight carrier", "Buyer's receiving dock", "Buyer's accounts payable"

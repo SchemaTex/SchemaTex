@@ -1,10 +1,14 @@
-# Scenario: Nonprofit Subsidiaries legal entity and ownership structure.
-entity-structure "Nonprofit Subsidiaries"
-entity parent "Parent Holdings, Inc." corp@DE
-entity opco "Operating Company, LLC" llc@DE
-entity ipco "IP Company Ltd" corp@IE
-entity services "Services Company, Inc." corp@DE
-parent -> opco : 100%
-parent -> ipco : 100%
-parent -> services : 100%
-
+# Scenario: a nonprofit health system with a charitable hospital, a controlled clinic group and a taxable subsidiary.
+entity-structure "Riverbend Health system"
+entity parent "Riverbend Health Foundation" foundation [note: "Tax-exempt parent"]
+entity endow "Riverbend Endowment Trust" trust@OH
+entity hosp "Riverbend Community Hospital" corp@OH [note: "501(c)(3), sole member: parent"]
+entity clinics "Riverbend Clinics, Inc." corp@OH
+entity ventures "Riverbend Ventures, LLC" llc@OH [note: "Taxable subsidiary"]
+entity pharmacy "Riverbend Pharmacy Services" disregarded@OH
+parent -> hosp
+parent ==> clinics
+parent -> ventures : 100%
+ventures -> pharmacy : 100%
+endow --> parent [label: "Annual distributions"]
+pharmacy -~-> hosp [label: "Pharmacy services contract"]

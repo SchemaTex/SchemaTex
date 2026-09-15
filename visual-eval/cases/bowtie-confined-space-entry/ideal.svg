@@ -3,7 +3,7 @@
 <defs>
  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#435362"/></marker>
  <style>
- text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a;font-size:20px;text-anchor:middle} .heading{font-size:32px;font-weight:700}.group{font-size:17px;font-weight:700;letter-spacing:2px}.small{font-size:17px}.label{font-weight:700}.wire{fill:none;stroke:#435362;stroke-width:2.5;marker-end:url(#arrow)}.box{fill:#f5f7f9;stroke:#435362;stroke-width:2}.prevent{fill:#edf6fb;stroke:#286585;stroke-width:2.5}.mitigate{fill:#edf7f1;stroke:#397653;stroke-width:2.5}.escalate{fill:#fff8e9;stroke:#ad7a20;stroke-width:2}.dash{fill:none;stroke:#ad7a20;stroke-width:2;stroke-dasharray:7 5}
+ text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a;font-size:20px;text-anchor:middle} .heading{font-size:32px;font-weight:700}.group{font-size:17px;font-weight:700;letter-spacing:2px}.small{font-size:17px}.label{font-weight:700}.wire{fill:none;stroke:#435362;stroke-width:2.5;marker-end:url(#arrow)}.box{fill:#f5f7f9;stroke:#435362;stroke-width:2}.prevent{fill:#e5e7eb;stroke:#6b7280;stroke-width:2.5}.mitigate{fill:#e5e7eb;stroke:#6b7280;stroke-width:2.5}.escalate{fill:#fef9c3;stroke:#ad7a20;stroke-width:2}.dash{fill:none;stroke:#ad7a20;stroke-width:2;stroke-dasharray:7 5}
  </style>
 </defs>
 <rect width="1800" height="1050" fill="white"/>
@@ -12,8 +12,8 @@
 <text x="900" y="106" class="group">HAZARD</text>
 <text x="900" y="137">Enclosed vessel with oxygen-deficient</text><text x="900" y="164">or toxic atmosphere</text>
 <path d="M900 187V451" fill="none" stroke="#ab7b26" stroke-width="2"/>
-<text x="150" y="235" class="group">THREATS</text><text x="507" y="235" class="group" fill="#286585">PREVENTIVE BARRIERS</text>
-<text x="1293" y="235" class="group" fill="#397653">MITIGATIVE BARRIERS</text><text x="1650" y="235" class="group">CONSEQUENCES</text>
+<text x="150" y="235" class="group">THREATS</text><text x="507" y="235" class="group" fill="#6b7280">PREVENTIVE BARRIERS</text>
+<text x="1293" y="235" class="group" fill="#6b7280">MITIGATIVE BARRIERS</text><text x="1650" y="235" class="group">CONSEQUENCES</text>
 <!-- Orthogonal paths: three incoming and three outgoing branches. -->
 <path class="wire" d="M265 330H305"/><path class="wire" d="M490 330H525"/><path class="wire" d="M710 330H750V482H799"/>
 <path class="wire" d="M265 530H305"/><path class="wire" d="M490 530H525"/><path class="wire" d="M710 530H785"/>
@@ -22,11 +22,11 @@
 <path class="wire" d="M1015 530H1090"/><path class="wire" d="M1275 530H1310"/><path class="wire" d="M1495 530H1535"/>
 <path class="wire" d="M1001 578H1050V900H1195"/><path class="wire" d="M1390 900H1535"/>
 <!-- Threats -->
-<rect class="box" x="35" y="282" width="230" height="96" rx="4"/>
+<rect fill="#ffedd5" stroke="#ea580c" stroke-width="2" x="35" y="282" width="230" height="96" rx="4"/>
 <text x="150" y="310"><tspan x="150">Incomplete isolation</tspan><tspan x="150" dy="27">of process lines</tspan></text>
-<rect class="box" x="35" y="482" width="230" height="96" rx="4"/>
+<rect fill="#ffedd5" stroke="#ea580c" stroke-width="2" x="35" y="482" width="230" height="96" rx="4"/>
 <text x="150" y="523"><tspan x="150">Residual toxic gas</tspan><tspan x="150" dy="27">in vessel</tspan></text>
-<rect class="box" x="35" y="852" width="230" height="96" rx="4"/>
+<rect fill="#ffedd5" stroke="#ea580c" stroke-width="2" x="35" y="852" width="230" height="96" rx="4"/>
 <text x="150" y="907">Unauthorised entry</text>
 <!-- Preventive barriers, shown as vertical control blocks -->
 <rect class="prevent" x="305" y="270" width="185" height="120"/>
@@ -51,7 +51,7 @@
 <text x="397.5" y="757" class="small label">ESCALATION BARRIER</text>
 <text x="397.5" y="780" class="small"><tspan x="397.5">Calibration and bump-test</tspan><tspan x="397.5" dy="21">programme</tspan></text>
 <!-- Central loss-of-control event -->
-<ellipse cx="900" cy="530" rx="115" ry="100" fill="#fff0ec" stroke="#ae503d" stroke-width="3"/>
+<ellipse cx="900" cy="530" rx="115" ry="100" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/>
 <text x="900" y="484" class="group">TOP EVENT</text>
 <text x="900" y="519" class="label"><tspan x="900">Entrant exposed</tspan><tspan x="900" dy="28">to hazardous</tspan><tspan x="900" dy="28">atmosphere</tspan></text>
 <!-- Mitigative barriers -->
@@ -66,10 +66,10 @@
 <rect class="mitigate" x="1195" y="840" width="195" height="120"/>
 <text x="1292.5" y="880"><tspan x="1292.5">Emergency</tspan><tspan x="1292.5" dy="27">process shutdown</tspan></text>
 <!-- Consequences -->
-<rect class="box" x="1535" y="282" width="230" height="96" rx="4"/>
+<rect fill="#fee2e2" stroke="#dc2626" stroke-width="2" x="1535" y="282" width="230" height="96" rx="4"/>
 <text x="1650" y="323"><tspan x="1650">Entrant loses</tspan><tspan x="1650" dy="27">consciousness</tspan></text>
-<rect class="box" x="1535" y="482" width="230" height="96" rx="4"/>
+<rect fill="#fee2e2" stroke="#dc2626" stroke-width="2" x="1535" y="482" width="230" height="96" rx="4"/>
 <text x="1650" y="523"><tspan x="1650">Multiple-rescuer</tspan><tspan x="1650" dy="27">exposure</tspan></text>
-<rect class="box" x="1535" y="852" width="230" height="96" rx="4"/>
+<rect fill="#fee2e2" stroke="#dc2626" stroke-width="2" x="1535" y="852" width="230" height="96" rx="4"/>
 <text x="1650" y="893"><tspan x="1650">Production release</tspan><tspan x="1650" dy="27">during rescue</tspan></text>
 </svg>

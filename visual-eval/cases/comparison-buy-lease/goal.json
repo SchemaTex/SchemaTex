@@ -35,7 +35,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all criteria with parallel columns, four explicit comparison rows, readable cells, and distinct yes/no markers, while the picture lacks aligned upgrade and ownership comparisons."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/matrix exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a clear Buy/Lease comparison table. All four criteria and their corresponding values are visible, readable, and aligned in parallel columns; yes/no states are distinguished with consistent icons and a legend. No blocking defects are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:03:13.655Z",
+      "targetHash": "d7f84c6e5ea5",
+      "sourceHash": "f8aa6ed4b10d",
+      "exemplarHash": "2d3ee2a53d3e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Buy and Lease appear as parallel option columns."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The table includes Up-front cash, Maintenance responsibility, Technology upgrade, and Asset ownership."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Cash and maintenance differences are stated in text; upgrade and ownership use distinct yes/no icons explained by the legend."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "All comparison cells are readable, with no visible clipping or overlap."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Alternating row shading and aligned columns make each criterion-to-option comparison clear."
+        }
+      ]
+    }
   }
 }

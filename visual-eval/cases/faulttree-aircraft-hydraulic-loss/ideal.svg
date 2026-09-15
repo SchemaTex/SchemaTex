@@ -3,38 +3,38 @@
   <rect width="1800" height="1060" fill="white"/>
   <defs>
     <style>
-      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #172b3a; text-anchor: middle; }
-      .event { fill: #fff; stroke: #263e4d; stroke-width: 2; }
-      .gate { fill: #edf3f6; stroke: #263e4d; stroke-width: 2.2; }
-      .wire { fill: none; stroke: #263e4d; stroke-width: 2.2; stroke-linejoin: round; }
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #334155; text-anchor: middle; }
+      .event { fill: #fff; stroke: #334155; stroke-width: 2; }
+      .gate { fill: #dcfce7; stroke: #059669; stroke-width: 2.2; }
+      .wire { fill: none; stroke: #334155; stroke-width: 2.2; stroke-linejoin: round; }
       .label { font-size: 20px; }
       .basic { font-size: 18px; }
-      .prob { font-size: 18px; fill: #405b6c; }
-      .glabel { font-size: 19px; font-weight: 700; }
-    </style>
+      .prob { font-size: 18px; fill: #2563eb; font-weight: 600; }
+      .glabel { font-size: 19px; fill: #059669; font-weight: 700; }
+     .prob text { fill: #2563eb; } .event:not(g), .box { fill: #eef2f7; }</style>
   </defs>
   <text x="900" y="45" font-size="30" font-weight="700">Total aircraft hydraulic failure</text>
   <text x="900" y="76" font-size="17" fill="#405b6c">FAULT TREE · Combined supply loss and voting-control loss</text>
 
   <!-- Top event and conventional flat-bottom AND gate -->
-  <rect class="event" x="665" y="108" width="470" height="68" rx="3"/>
+  <rect class="event" x="665" y="108" width="470" height="68" rx="7" fill="#eef2f7"/>
   <text class="label" x="900" y="137">Total hydraulic actuation</text>
   <text class="label" x="900" y="162">unavailable</text>
   <path class="wire" d="M900 176 V195"/>
-  <path class="gate" d="M866 263 V229 A34 34 0 0 1 68 0 V263 Z"/>
+  <path class="gate" d="M866 263 V229 a34 34 0 0 1 68 0 V263 Z"/>
   <text class="glabel" x="900" y="246">AND</text>
   <path class="wire" d="M900 263 V290 M555 320 V290 H1420 V320"/>
 
   <!-- Two required intermediate events -->
-  <rect class="event" x="305" y="320" width="500" height="70" rx="3"/>
+  <rect class="event" x="305" y="320" width="500" height="70" rx="7" fill="#eef2f7"/>
   <text class="label" x="555" y="350">All independent hydraulic</text>
   <text class="label" x="555" y="376">systems lost</text>
   <path class="wire" d="M555 390 V414"/>
-  <path class="gate" d="M521 482 V448 A34 34 0 0 1 68 0 V482 Z"/>
+  <path class="gate" d="M521 482 V448 a34 34 0 0 1 68 0 V482 Z"/>
   <text class="glabel" x="555" y="465">AND</text>
   <path class="wire" d="M555 482 V515 M195 550 V515 H915 V550 M555 515 V550"/>
 
-  <rect class="event" x="1190" y="320" width="460" height="70" rx="3"/>
+  <rect class="event" x="1190" y="320" width="460" height="70" rx="7" fill="#eef2f7"/>
   <text class="label" x="1420" y="350">Two of three actuator-control</text>
   <text class="label" x="1420" y="376">channels fail</text>
   <path class="wire" d="M1420 390 V414"/>
@@ -44,7 +44,7 @@
   <path class="wire" d="M1420 482 V730 M1200 784 V730 H1640 V784 M1420 730 V784"/>
 
   <!-- Hydraulic system A -->
-  <rect class="event" x="65" y="550" width="260" height="65" rx="3"/>
+  <rect class="event" x="65" y="550" width="260" height="65" rx="7" fill="#eef2f7"/>
   <text class="label" x="195" y="577">Hydraulic system A</text>
   <text class="label" x="195" y="601">lost</text>
   <path class="wire" d="M195 615 V643"/>
@@ -53,7 +53,7 @@
   <path class="wire" d="M195 704 V746 M105 784 V746 H285 V784"/>
 
   <!-- Hydraulic system B -->
-  <rect class="event" x="425" y="550" width="260" height="65" rx="3"/>
+  <rect class="event" x="425" y="550" width="260" height="65" rx="7" fill="#eef2f7"/>
   <text class="label" x="555" y="577">Hydraulic system B</text>
   <text class="label" x="555" y="601">lost</text>
   <path class="wire" d="M555 615 V643"/>
@@ -62,7 +62,7 @@
   <path class="wire" d="M555 704 V746 M465 784 V746 H645 V784"/>
 
   <!-- Hydraulic system C -->
-  <rect class="event" x="785" y="550" width="260" height="65" rx="3"/>
+  <rect class="event" x="785" y="550" width="260" height="65" rx="7" fill="#eef2f7"/>
   <text class="label" x="915" y="577">Hydraulic system C</text>
   <text class="label" x="915" y="601">lost</text>
   <path class="wire" d="M915 615 V643"/>
@@ -95,6 +95,6 @@
     <text x="1200" y="922">p = 0.002</text><text x="1420" y="922">p = 0.002</text><text x="1640" y="922">p = 0.002</text>
   </g>
   <path d="M55 968 H1745" stroke="#ccd6dc"/>
-  <text x="900" y="999" font-size="17">AND: all inputs required   ·   OR: any input sufficient   ·   2/3: at least two inputs required   ·   ○ Basic event</text>
+  <text x="900" y="999" font-size="17">AND: all inputs required   ·   OR: any input sufficient   ·   2/3: at least two inputs required   ·   Basic event = circle</text>
   <text x="900" y="1030" font-size="16" fill="#405b6c">Assumptions: hydraulic systems are physically independent; voting-channel failures are independent.</text>
 </svg>

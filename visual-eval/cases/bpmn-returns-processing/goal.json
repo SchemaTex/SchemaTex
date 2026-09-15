@@ -1,1 +1,41 @@
-{"id":"bpmn-returns-processing","type":"bpmn","variant":"collaboration","title":"Returns processing","goal":"Show return eligibility and refund.","rubric":[{"id":"pools","severity":"blocker","must":"Customer and Retailer are separate pools with message flows."},{"id":"gateway","severity":"blocker","must":"Eligible? visibly routes to refund or rejection."},{"id":"lanes","severity":"major","must":"Returns and Finance lanes are visible."},{"id":"events","severity":"major","must":"Refunded and Rejected are end events."},{"id":"message","severity":"minor","must":"Refund notice is dashed to Customer."}],"split":"train"}
+{
+  "id": "bpmn-returns-processing",
+  "type": "bpmn",
+  "variant": "collaboration",
+  "title": "Returns processing",
+  "goal": "Show return eligibility and refund.",
+  "rubric": [
+    {
+      "id": "pools",
+      "severity": "blocker",
+      "must": "Customer and Retailer are separate pools with message flows."
+    },
+    {
+      "id": "gateway",
+      "severity": "blocker",
+      "must": "Eligible? visibly routes to refund or rejection."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Returns and Finance lanes are visible."
+    },
+    {
+      "id": "events",
+      "severity": "major",
+      "must": "Refunded and Rejected are end events."
+    },
+    {
+      "id": "message",
+      "severity": "minor",
+      "must": "Refund notice is dashed to Customer."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/bpmn/collaboration/ideal.svg (sha256 8de8bd2f08be). Vision reviewed all six rasterized targets: neutral process palette, event and task markers, swimlanes, separate conditional/default routes and pool-boundary message arrows; fixed wire-body overlaps and gateway caption collisions. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

@@ -39,7 +39,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the required gates, notification loop, approval sequence, and rollback-to-incident path, while the picture omits several required outcomes."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly communicates the requested deployment pipeline. Its branches and feedback loops are traceable, labels are readable, and there are no material overlaps or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:14:00.503Z",
+      "targetHash": "b2daf3165e79",
+      "sourceHash": "adf1c76ae92b",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "quality-gates",
+          "verdict": "pass",
+          "evidence": "Build succeeds?, Tests pass?, and Findings acceptable? each gate the path before Deploy to staging; failed outcomes route to Notify developer."
+        },
+        {
+          "id": "rollback-path",
+          "verdict": "pass",
+          "evidence": "The No branch from Health checks pass? leads to Rollback production, then Incident opened."
+        },
+        {
+          "id": "developer-feedback",
+          "verdict": "pass",
+          "evidence": "No branches from the build, tests, and security decisions reach Notify developer; a dashed loop returns toward Commit merged."
+        },
+        {
+          "id": "approval-gate",
+          "verdict": "pass",
+          "evidence": "Run integration tests leads to Release approved?; its Yes branch leads to Deploy production, while No leads to Hold release."
+        },
+        {
+          "id": "success-terminator",
+          "verdict": "pass",
+          "evidence": "The Yes branch from Health checks pass? reaches the Release complete terminator."
+        },
+        {
+          "id": "emphasised-mainline",
+          "verdict": "pass",
+          "evidence": "The Commit merged-to-Build artifact connector is visibly thicker than ordinary connectors."
+        }
+      ]
+    }
   }
 }

@@ -4,12 +4,42 @@
   "title": "Conveyor start-stop and jog",
   "goal": "A technician can trace the sealed run circuit, momentary jog path, motor output, and run indication.",
   "rubric": [
-    {"id":"seal-in","severity":"blocker","must":"StartPB and the ConveyorRun holding contact form visible parallel paths on the ConveyorRun output rung."},
-    {"id":"jog-path","severity":"blocker","must":"JogPB appears on a separate visible path that energises ConveyorJog, which joins ConveyorRun at ConveyorMotor."},
-    {"id":"stop-overload","severity":"major","must":"Normally closed StopPB and OverloadTrip contacts are visibly ahead of the conveyor motor logic."},
-    {"id":"motor-output","severity":"major","must":"A coil labelled ConveyorMotor is visibly driven by parallel ConveyorRun and ConveyorJog contacts."},
-    {"id":"run-lamp","severity":"major","must":"A ConveyorMotor contact visibly drives the RunLamp coil."},
-    {"id":"overload-indication","severity":"minor","must":"An OverloadTrip contact and OverloadLamp coil are visibly paired on an alarm rung."}
+    {
+      "id": "seal-in",
+      "severity": "blocker",
+      "must": "StartPB and the ConveyorRun holding contact form visible parallel paths on the ConveyorRun output rung."
+    },
+    {
+      "id": "jog-path",
+      "severity": "blocker",
+      "must": "JogPB appears on a separate visible path that energises ConveyorJog, which joins ConveyorRun at ConveyorMotor."
+    },
+    {
+      "id": "stop-overload",
+      "severity": "major",
+      "must": "Normally closed StopPB and OverloadTrip contacts are visibly ahead of the conveyor motor logic."
+    },
+    {
+      "id": "motor-output",
+      "severity": "major",
+      "must": "A coil labelled ConveyorMotor is visibly driven by parallel ConveyorRun and ConveyorJog contacts."
+    },
+    {
+      "id": "run-lamp",
+      "severity": "major",
+      "must": "A ConveyorMotor contact visibly drives the RunLamp coil."
+    },
+    {
+      "id": "overload-indication",
+      "severity": "minor",
+      "must": "An OverloadTrip contact and OverloadLamp coil are visibly paired on an alarm rung."
+    }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/ladder/ideal.svg (sha256 72319743d0eb). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Measured spacious rung bands and consistent AB contact, coil and reset-bracket symbols. All rungs and branch membership preserved."
+  }
 }

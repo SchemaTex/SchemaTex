@@ -1,82 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 650" width="1480" height="650" role="img">
-<title>Embedded Telemetry Node</title>
-<desc>A functional block diagram of Embedded Telemetry Node. 8 blocks carry the forward signal path, folded into 2 rows joined by a labelled channel so the chain stays readable. Every wire is orthogonal, every arrowhead lands on a block edge, signal names are set in italic beside the wire they name, and a legend at the foot states the line codes.</desc>
-<rect x="0" y="0" width="1480" height="650" fill="#ffffff"/>
-<text x="46" y="48" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#16202B">Embedded Telemetry Node</text>
-<text x="46" y="70" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#63707F">Battery-powered telemetry node with signal buses and a separate power distribution path</text>
-<line x1="46" y1="84" x2="1434" y2="84" stroke="#C9D2DC" stroke-width="1"/>
-<path d="M 180 200 L 287 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 465.27 200 L 572.27 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 643.51 215 L 643.51 308 L 1388.07 308 L 1388.07 232" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 705.76 200 L 763.76 200 L 763.76 155 L 812.76 155" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 705.76 200 L 763.76 200 L 763.76 245 L 823.95 245" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 705.76 200 L 735.76 200 L 735.76 334 L 30 334 L 30 423 L 51 423" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 974.66 155 L 1032.66 155 L 1032.66 200 L 1081.66 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 963.48 245 L 1021.48 245 L 1021.48 200 L 1081.66 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 1210.66 200 L 1317.66 200" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 1449.48 200 L 1479.48 200 L 1479.48 352 L 30 352 L 30 505 L 51 505" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 180 505 L 238 505 L 238 423 L 287 423" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 1449.48 200 L 1479.48 200 L 1479.48 370 L 30 370 L 30 423 L 51 423" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 180 423 L 238 423 L 238 513 L 297.67 513" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 46 573.6600000000001 L 65 573.6600000000001" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
-<path d="M 296 200 L 287 203.5 L 287 196.5 Z" fill="#16202B"/>
-<path d="M 581.27 200 L 572.27 203.5 L 572.27 196.5 Z" fill="#16202B"/>
-<path d="M 1388.07 223 L 1391.57 232 L 1384.57 232 Z" fill="#16202B"/>
-<path d="M 821.76 155 L 812.76 158.5 L 812.76 151.5 Z" fill="#16202B"/>
-<path d="M 832.95 245 L 823.95 248.5 L 823.95 241.5 Z" fill="#16202B"/>
-<path d="M 60 423 L 51 426.5 L 51 419.5 Z" fill="#16202B"/>
-<path d="M 1090.66 200 L 1081.66 203.5 L 1081.66 196.5 Z" fill="#16202B"/>
-<path d="M 1090.66 200 L 1081.66 203.5 L 1081.66 196.5 Z" fill="#16202B"/>
-<path d="M 1326.66 200 L 1317.66 203.5 L 1317.66 196.5 Z" fill="#16202B"/>
-<path d="M 60 505 L 51 508.5 L 51 501.5 Z" fill="#16202B"/>
-<path d="M 296 423 L 287 426.5 L 287 419.5 Z" fill="#16202B"/>
-<path d="M 60 423 L 51 426.5 L 51 419.5 Z" fill="#16202B"/>
-<path d="M 306.67 513 L 297.67 516.5 L 297.67 509.5 Z" fill="#16202B"/>
-<rect x="60" y="177" width="120" height="46" rx="4" fill="#EDF3FA" stroke="#16202B" stroke-width="1.5"/>
-<rect x="296" y="177" width="169.27" height="46" rx="4" fill="#E9F5EC" stroke="#16202B" stroke-width="1.5"/>
-<rect x="1326.66" y="177" width="122.82" height="46" rx="4" fill="#E7EFFA" stroke="#16202B" stroke-width="1.5"/>
-<rect x="821.76" y="132" width="152.9" height="46" rx="4" fill="#F3EDF8" stroke="#16202B" stroke-width="1.5"/>
-<rect x="832.95" y="222" width="130.53" height="46" rx="4" fill="#F3EDF8" stroke="#16202B" stroke-width="1.5"/>
-<rect x="60" y="400" width="120" height="46" rx="4" fill="#FBF3E5" stroke="#16202B" stroke-width="1.5"/>
-<rect x="296" y="400" width="141.34" height="46" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-<rect x="306.67" y="490" width="120" height="46" rx="4" fill="#FBF3E5" stroke="#16202B" stroke-width="1.5"/>
-<rect x="581.27" y="185" width="124.49" height="30" rx="15" fill="#EEF2F6" stroke="#63707F" stroke-width="1.2"/>
-<rect x="1090.66" y="185" width="120" height="30" rx="15" fill="#EEF2F6" stroke="#63707F" stroke-width="1.2"/>
-<rect x="60" y="490" width="120" height="30" rx="15" fill="#EEF2F6" stroke="#63707F" stroke-width="1.2"/>
-<path d="M 74 573.66 L 65 577.16 L 65 570.16 Z" fill="#16202B"/>
-<rect x="46" y="591.66" width="26" height="14" rx="3" fill="#EDF3FA" stroke="#16202B" stroke-width="1.2"/>
-<rect x="137.07" y="591.66" width="26" height="14" rx="3" fill="#E7EFFA" stroke="#16202B" stroke-width="1.2"/>
-<rect x="239.13" y="591.66" width="26" height="14" rx="3" fill="#E9F5EC" stroke="#16202B" stroke-width="1.2"/>
-<rect x="347.09" y="591.66" width="26" height="14" rx="3" fill="#F3EDF8" stroke="#16202B" stroke-width="1.2"/>
-<rect x="447.72" y="591.66" width="26" height="14" rx="3" fill="#FBF3E5" stroke="#16202B" stroke-width="1.2"/>
-<text x="238" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">battery power</text>
-<text x="523.27" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">regulated 3.3 V</text>
-<text x="1025.79" y="286" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">3.3 V</text>
-<text x="773.76" y="177.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">3.3 V</text>
-<text x="773.76" y="222.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">3.3 V</text>
-<text x="381.76" y="324" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">3.3 V</text>
-<text x="1042.66" y="155.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">temperature data</text>
-<text x="1011.48" y="200.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="end">pressure data</text>
-<text x="1268.66" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">sensor bus</text>
-<text x="794.04" y="342" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">memory bus</text>
-<text x="248" y="464" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">SPI</text>
-<text x="754.04" y="390" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="middle">telemetry packets</text>
-<text x="228" y="468" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F" text-anchor="end">RF</text>
-<text x="120" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Li-ion Battery</text>
-<text x="380.63" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Power Management IC</text>
-<text x="1388.07" y="204.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Microcontroller</text>
-<text x="898.21" y="159.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Temperature Sensor</text>
-<text x="898.21" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Pressure Sensor</text>
-<text x="120" y="427.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">LoRa Radio</text>
-<text x="366.67" y="427.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">SPI Flash Memory</text>
-<text x="366.67" y="517.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Antenna</text>
-<text x="643.51" y="204" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#63707F" text-anchor="middle">3.3 V power rail</text>
-<text x="1150.66" y="204" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#63707F" text-anchor="middle">I2C bus</text>
-<text x="120" y="509" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#63707F" text-anchor="middle">SPI bus</text>
-<text x="84" y="577.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Forward signal path</text>
-<text x="82" y="603.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Input</text>
-<text x="173.07" y="603.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Control</text>
-<text x="275.13" y="603.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Actuator</text>
-<text x="383.09" y="603.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Sensor</text>
-<text x="483.72" y="603.66" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Output</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1528" height="520" viewBox="0 0 1528 520" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" role="img"><title>Embedded Telemetry Node</title><desc>Eight devices. The 3.3 V rail supplies MCU, both sensors and radio. Two sensors share I2C to MCU. MCU drives SPI flash and LoRa radio; radio feeds antenna. Power, I2C and SPI are named connections, not devices.</desc><defs><marker id="data" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#16202B"/></marker><marker id="power" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#C2410C"/></marker></defs><rect width="1528" height="520" fill="white"/><rect x="28" y="250" width="408" height="118" rx="10" fill="#FFF8F1" stroke="#FBD9B8"/>
+<text x="44" y="272" font-size="11" fill="#63707F" text-anchor="start" font-weight="600">POWER</text>
+<rect x="504" y="180" width="212" height="216" rx="10" fill="#FBF7FF" stroke="#E4D2FA"/>
+<text x="520" y="202" font-size="11" fill="#63707F" text-anchor="start" font-weight="600">SENSING</text>
+<rect x="814" y="200" width="232" height="200" rx="10" fill="#F5F9FF" stroke="#C7DBF7"/>
+<text x="830" y="222" font-size="11" fill="#63707F" text-anchor="start" font-weight="600">COMPUTE</text>
+<rect x="1104" y="180" width="392" height="246" rx="10" fill="#FAFEF2" stroke="#D6EFA6"/>
+<text x="1120" y="202" font-size="11" fill="#63707F" text-anchor="start" font-weight="600">STORAGE &amp; RADIO</text>
+<path d="M190 310 H240" fill="none" stroke="#C2410C" stroke-width="1.5"  marker-end="url(#power)"/>
+<path d="M420 310 H460" fill="none" stroke="#C2410C" stroke-width="1.5"  marker-end="url(#power)"/>
+<path d="M460 150 V350" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" />
+<path d="M460 150 H1310" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" />
+<path d="M460 245 H520" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#power)"/>
+<path d="M460 350 H520" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#power)"/>
+<path d="M930 150 V240" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#power)"/>
+<path d="M1310 150 V350" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#power)"/>
+<circle cx="460" cy="310" r="3" fill="#C2410C"/>
+<circle cx="460" cy="245" r="3" fill="#C2410C"/>
+<circle cx="930" cy="150" r="3" fill="#C2410C"/>
+<path d="M700 225 H780" fill="none" stroke="#16202B" stroke-width="1.5"  />
+<path d="M700 335 H780" fill="none" stroke="#16202B" stroke-width="1.5"  />
+<path d="M780 225 V335" fill="none" stroke="#16202B" stroke-width="3"  />
+<path d="M780 280 H830" fill="none" stroke="#16202B" stroke-width="1.5"  marker-end="url(#data)"/>
+<circle cx="780" cy="280" r="3" fill="#16202B"/>
+<path d="M1030 265 H1080 V240 H1120" fill="none" stroke="#16202B" stroke-width="1.5"  marker-end="url(#data)"/>
+<path d="M1030 340 H1070 V380 H1120" fill="none" stroke="#16202B" stroke-width="1.5"  marker-end="url(#data)"/>
+<path d="M1320 380 H1370" fill="none" stroke="#16202B" stroke-width="1.5"  marker-end="url(#data)"/>
+<rect x="40" y="280" width="150" height="60" rx="4" fill="#FFEDD5" stroke="#16202B" stroke-width="1.5"/>
+<text x="115" y="314" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Li-ion Battery</text>
+<rect x="240" y="280" width="180" height="60" rx="4" fill="#FFEDD5" stroke="#16202B" stroke-width="1.5"/>
+<text x="330" y="314" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Power Management IC</text>
+<rect x="520" y="210" width="180" height="60" rx="4" fill="#F3E8FF" stroke="#16202B" stroke-width="1.5"/>
+<text x="610" y="244" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Temperature Sensor</text>
+<rect x="520" y="320" width="180" height="60" rx="4" fill="#F3E8FF" stroke="#16202B" stroke-width="1.5"/>
+<text x="610" y="354" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Pressure Sensor</text>
+<rect x="830" y="240" width="200" height="140" rx="4" fill="#DBEAFE" stroke="#16202B" stroke-width="1.5"/>
+<text x="930" y="314" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Microcontroller</text>
+<rect x="1120" y="210" width="180" height="60" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/>
+<text x="1210" y="244" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">SPI Flash Memory</text>
+<rect x="1120" y="350" width="200" height="60" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/>
+<text x="1220" y="384" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">LoRa Radio</text>
+<rect x="1370" y="350" width="110" height="60" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/>
+<text x="1425" y="384" font-size="13" fill="#16202B" text-anchor="middle" font-weight="500">Antenna</text>
+<text x="32" y="42" font-size="22" fill="#16202B" text-anchor="start" font-weight="600">Embedded Telemetry Node</text>
+<text x="32" y="66" font-size="12.5" fill="#63707F" text-anchor="start" font-weight="400">Battery-powered telemetry · shared sensor bus, flash storage and independent power distribution</text>
+<path d="M32 88 H1496 M32 464 H1496" stroke="#C9D2DC" fill="none"/>
+<text x="475" y="140" font-size="12" fill="#C2410C" text-anchor="start" font-weight="600">3.3 V power rail</text>
+<text x="780" y="214" font-size="12" fill="#16202B" text-anchor="middle" font-weight="600">I²C</text>
+<text x="750" y="310" font-size="11" fill="#63707F" text-anchor="end" font-weight="400">sensor data</text>
+<text x="1078" y="230" font-size="12" fill="#16202B" text-anchor="middle" font-weight="600">SPI</text>
+<text x="1060" y="328" font-size="11" fill="#63707F" text-anchor="end" font-weight="400">telemetry packets</text>
+<text x="1345" y="369" font-size="11" fill="#63707F" text-anchor="middle" font-weight="400">RF</text>
+<path d="M40 490 H82" fill="none" stroke="#C2410C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#power)"/>
+<text x="94" y="494" font-size="11" fill="#63707F" text-anchor="start" font-weight="400">Power rail (discrete in source)</text>
+<path d="M355 490 H400" fill="none" stroke="#16202B" stroke-width="1.5"  marker-end="url(#data)"/>
+<text x="412" y="494" font-size="11" fill="#63707F" text-anchor="start" font-weight="400">Data / control signal</text>
+<path d="M635 490 H680" fill="none" stroke="#16202B" stroke-width="3"  />
+<text x="695" y="494" font-size="11" fill="#63707F" text-anchor="start" font-weight="400">Shared bus</text></svg>

@@ -30,5 +30,49 @@
       "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "variant": "rectangular",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents the required rooted rectangular phylogram: Alpha and Beta are sisters, BA.1 and BA.2 are sisters within a distinctly highlighted Omicron clade, and Delta is sister to that Omicron clade. Horizontal branch lengths vary, all tip labels are legible, and the substitutions/site scale is shown.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:12.932Z",
+      "targetHash": "86d57aa8a764",
+      "sourceHash": "d7e47be029da",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "The rooted tree visibly groups Alpha with Beta and groups BA.1 with BA.2; Delta branches as the sister lineage to the BA.1/BA.2 clade."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Horizontal branches have visibly different lengths, including unequal Alpha/Beta, Delta, and BA.1/BA.2 terminal branches."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "Alpha, Beta, Delta, BA.1, and BA.2 are clearly legible and aligned with their respective tips."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "The BA.1/BA.2 branches are red and enclosed by a pale red region with a red bracket labeled Omicron."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled 0.001 substitutions/site, and supporting text identifies horizontal distance as substitutions/site."
+        }
+      ]
+    }
+  }
 }

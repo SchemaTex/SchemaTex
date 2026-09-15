@@ -1,1 +1,87 @@
-{"id":"flowchart-loan-approval","type":"flowchart","title":"Loan approval","goal":"Show automated consumer-loan decisioning with a genuine manual-review loop.","rubric":[{"id":"identity-decline","severity":"blocker","must":"The identity-verification diamond has a No branch reaching the Decline application terminator."},{"id":"credit-decline","severity":"blocker","must":"The No branch from the credit-score decision reaches Decline application without passing through Manual underwriting review."},{"id":"manual-review-loop","severity":"major","must":"A request-for-evidence decision visibly routes document collection back into manual underwriting review."},{"id":"approval-offer","severity":"major","must":"Both automated and underwriter-approved paths visibly converge on Generate loan offer and then Offer issued."},{"id":"borderline-review","severity":"major","must":"The borderline credit outcome visibly enters manual underwriting rather than the automatic offer path."},{"id":"branch-labels","severity":"minor","must":"The key decision branches have readable outcome labels."}],"split":"holdout"}
+{
+  "id": "flowchart-loan-approval",
+  "type": "flowchart",
+  "title": "Loan approval",
+  "goal": "Show automated consumer-loan decisioning with a genuine manual-review loop.",
+  "rubric": [
+    {
+      "id": "identity-decline",
+      "severity": "blocker",
+      "must": "The identity-verification diamond has a No branch reaching the Decline application terminator."
+    },
+    {
+      "id": "credit-decline",
+      "severity": "blocker",
+      "must": "The No branch from the credit-score decision reaches Decline application without passing through Manual underwriting review."
+    },
+    {
+      "id": "manual-review-loop",
+      "severity": "major",
+      "must": "A request-for-evidence decision visibly routes document collection back into manual underwriting review."
+    },
+    {
+      "id": "approval-offer",
+      "severity": "major",
+      "must": "Both automated and underwriter-approved paths visibly converge on Generate loan offer and then Offer issued."
+    },
+    {
+      "id": "borderline-review",
+      "severity": "major",
+      "must": "The borderline credit outcome visibly enters manual underwriting rather than the automatic offer path."
+    },
+    {
+      "id": "branch-labels",
+      "severity": "minor",
+      "must": "The key decision branches have readable outcome labels."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All required paths are visible and traceable. The identity and credit-score No branches reach Decline application; the credit No path bypasses manual review. Borderline credit routes to manual underwriting. The evidence request decision sends Yes to document collection, which loops back to manual underwriting. Automated approval and underwriter approval converge on Generate loan offer, followed by Offer issued. Branch labels are readable, and no material overlaps or cropping are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:15:13.940Z",
+      "targetHash": "d67d7b8b299e",
+      "sourceHash": "aec4aa4ce0ca",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "identity-decline",
+          "verdict": "pass",
+          "evidence": "The No branch from Identity verified? runs left to Decline application."
+        },
+        {
+          "id": "credit-decline",
+          "verdict": "pass",
+          "evidence": "The No branch from Credit score meets policy? runs left to Decline application without entering Manual underwriting review."
+        },
+        {
+          "id": "manual-review-loop",
+          "verdict": "pass",
+          "evidence": "Request more evidence? routes Yes to Collect supporting documents, and a dashed loop returns from document collection to Manual underwriting review."
+        },
+        {
+          "id": "approval-offer",
+          "verdict": "pass",
+          "evidence": "The automated Yes branch from Debt-to-income within limit? and the Yes branch from Approved by underwriter? both lead to Generate loan offer, then Offer issued."
+        },
+        {
+          "id": "borderline-review",
+          "verdict": "pass",
+          "evidence": "The Borderline branch from Credit score meets policy? leads to Manual underwriting review."
+        },
+        {
+          "id": "branch-labels",
+          "verdict": "pass",
+          "evidence": "Decision outcomes are visibly labeled No, Yes, and Borderline at the relevant branches."
+        }
+      ]
+    }
+  }
+}

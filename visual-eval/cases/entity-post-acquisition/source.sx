@@ -1,10 +1,16 @@
-# Scenario: Post Acquisition legal entity and ownership structure.
-entity-structure "Post Acquisition"
-entity parent "Parent Holdings, Inc." corp@DE
-entity opco "Operating Company, LLC" llc@DE
-entity ipco "IP Company Ltd" corp@IE
-entity services "Services Company, Inc." corp@DE
-parent -> opco : 100%
-parent -> ipco : 100%
-parent -> services : 100%
-
+# Scenario: a software group just after acquiring a target and its foreign subsidiaries.
+entity-structure "Vantage Software after the Brightline acquisition"
+entity vantage "Vantage Software, Inc." corp@DE [note: "Acquirer"]
+entity vcloud "Vantage Cloud GmbH" corp@DE
+entity bright "Brightline Analytics, Inc." corp@DE [note: "Acquired target"]
+entity brightUK "Brightline UK Ltd" corp@UK
+entity brightIN "Brightline India Pvt Ltd" corp@IN
+entity mergersub "Vantage Merger Sub, Inc." placeholder [note: "Merged into target at closing"]
+entity rollover "Rollover option pool" pool
+vantage -> vcloud : 100%
+vantage -> bright : 100%
+bright -> brightUK : 100%
+bright -> brightIN : 100%
+rollover -.-> vantage : 3%
+mergersub -.-> bright
+bright -~-> vcloud [label: "Intercompany services"]

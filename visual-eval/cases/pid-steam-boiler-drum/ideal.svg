@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+<title>Steam Boiler Drum Three-element Control</title>
+<defs>
+ <style>
+ text{font-family:Arial,Helvetica,sans-serif;fill:#1E293B} .title{font-size:20px;font-weight:600}.tag{font-size:12px;font-weight:600}.secondary{font-size:11.5px;fill:#64748B}.small{font-size:9.5px;letter-spacing:.3px}.letter{font-size:11.5px;font-weight:600}.number{font-size:11.5px}.zone{font-size:10px;letter-spacing:1px;fill:#64748B}.pipe{fill:none;stroke:#1E293B;stroke-width:2.5}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.symbol{fill:white;stroke:#1E293B;stroke-width:1.6}.electric{fill:none;stroke:#1E293B;stroke-width:1.4;stroke-dasharray:7 5}.signal{fill:none;stroke:#1E293B;stroke-width:1.4}.hairline{stroke:#E2E8F0;stroke-width:1}
+ </style>
+ <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#1E293B"/></marker>
+ <pattern id="dots" width="14" height="4" patternUnits="userSpaceOnUse"><circle cx="7" cy="2" r="2" fill="#1E293B"/></pattern>
+ <g id="gate"><path class="symbol" d="M-22-14L22 14V-14L-22 14Z"/></g>
+ <g id="field"><circle class="symbol" r="18"/></g>
+ <g id="shared"><circle class="symbol" r="18"/><path class="signal" d="M0-18L15.6-9V9L0 18L-15.6 9V-9Z M-18 0H18"/></g>
+</defs>
+<rect width="1600" height="985" fill="white"/>
+<text x="47" y="46" class="title">Steam Boiler Drum Three-element Control</text>
+<text x="47" y="70" class="secondary">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text x="1553" y="70" class="secondary" text-anchor="end">solid dot = connection · jumper = crossing, not connected</text>
+<path class="hairline" d="M47 99H1553 M47 860H1553"/>
+<path d="M47 257H1553" fill="none" stroke="#64748B" stroke-width="1" stroke-dasharray="12 4 2 4"/>
+<text x="1553" y="247" class="zone" text-anchor="end">CONTROL ROOM / DCS</text>
+<text x="1553" y="280" class="zone" text-anchor="end">FIELD</text>
+
+<!-- Process connections -->
+<path class="pipe" d="M310 548H415V420H530"/>
+<path class="pipe" d="M850 420H1450" marker-end="url(#arrow)"/>
+<path class="pipe" d="M110 735H740V487"/>
+<path class="minor" d="M690 353V302"/>
+<path class="minor" d="M690 258V195H763" marker-end="url(#arrow)"/>
+
+<!-- Boiler shell and furnace geometry -->
+<rect x="130" y="455" width="180" height="200" rx="3" class="symbol"/>
+<path class="minor" d="M149 475H291 M149 636H291 M149 475V636 M291 475V636"/>
+<path class="minor" d="M166 593V507Q180 494 194 507V593Q208 606 222 593V507Q236 494 250 507V593Q264 606 278 593"/>
+<rect x="169" y="542" width="103" height="41" fill="white"/>
+<text x="220" y="555" text-anchor="middle" class="tag">B-401</text>
+<text x="220" y="576" text-anchor="middle" class="secondary">Steam Boiler</text>
+<g transform="translate(357 488)"><rect x="-35" y="-11" width="70" height="21" fill="white" stroke="#1E293B" stroke-width="1"/><text y="3" class="small" text-anchor="middle">DN250</text></g>
+<text x="330" y="579" class="secondary">Steam-water</text><text x="330" y="595" class="secondary">mixture</text>
+
+<!-- Horizontal drum, elliptical ends -->
+<path class="symbol" d="M565 353H815C862 353 862 487 815 487H565C518 487 518 353 565 353Z"/>
+<path d="M543 420H837" stroke="#64748B" stroke-width="1" stroke-dasharray="7 5"/>
+<text x="690" y="390" class="tag" text-anchor="middle">D-401</text>
+<text x="690" y="409" class="secondary" text-anchor="middle">Steam Drum</text>
+<text x="690" y="454" class="secondary" text-anchor="middle">Normal level 50%</text>
+
+<path class="pipe" d="M740 487V517"/>
+<!-- Safety valve: vertical bowtie and spring -->
+<path class="symbol" d="M677 258L703 302H677L703 258Z"/>
+<path class="minor" d="M690 258L677 244L703 236L677 228L703 220L690 214V195"/>
+<text x="719" y="273" class="tag">PSV-401</text><text x="719" y="294" class="secondary">Set 12 barg</text>
+<text x="774" y="199" class="secondary">TO ATM</text>
+<text x="701" y="331" class="small">DN50</text>
+
+<!-- Flow elements -->
+<g transform="translate(1015 420)"><path class="symbol" d="M-22-17H22V17H-22Z"/><path class="minor" d="M-18 13L18-13 M-18 5L6-13 M-6 13L18-5"/></g>
+<text x="1015" y="470" class="tag" text-anchor="middle">FE-401</text><text x="1015" y="491" class="secondary" text-anchor="middle">Steam Flow Element</text>
+<g transform="translate(1215 420)"><use href="#gate"/></g>
+<text x="1215" y="470" class="tag" text-anchor="middle">XV-401</text><text x="1215" y="491" class="secondary" text-anchor="middle">Main Steam Isolation</text>
+<text x="1450" y="391" class="tag" text-anchor="end">STEAM HEADER</text>
+<g transform="translate(1344 420)"><rect x="-33" y="-11" width="66" height="21" fill="white" stroke="#1E293B" stroke-width="1"/><text y="3" class="small" text-anchor="middle">DN200</text></g>
+<text x="110" y="707" class="tag">FEEDWATER HEADER</text>
+<path class="minor" d="M110 735H151" marker-end="url(#arrow)"/>
+<g transform="translate(245 735)"><rect x="-30" y="-11" width="60" height="21" fill="white" stroke="#1E293B" stroke-width="1"/><text y="3" class="small" text-anchor="middle">DN80</text></g>
+<g transform="translate(360 735)"><path class="symbol" d="M-22-17H22V17H-22Z"/><path class="minor" d="M-18 13L18-13 M-18 5L6-13 M-6 13L18-5"/></g>
+<text x="360" y="790" class="tag" text-anchor="middle">FE-402</text><text x="360" y="811" class="secondary" text-anchor="middle">Feedwater Flow Element</text>
+<g transform="translate(590 735)"><use href="#gate"/><path class="minor" d="M0-14V-36"/><path class="symbol" d="M-20-36A20 14 0 0 1 20-36Z"/></g>
+<text x="620" y="695" class="tag">FC</text>
+<text x="590" y="790" class="tag" text-anchor="middle">LV-401</text><text x="590" y="811" class="secondary" text-anchor="middle">Feedwater Control Valve</text>
+
+<!-- Instrument sensing connections; filled-system dot language -->
+<path class="signal" d="M815 487V548 M1015 403V358 M360 718V666"/>
+<g fill="#1E293B"><circle cx="815" cy="499" r="2"/><circle cx="815" cy="513" r="2"/><circle cx="815" cy="527" r="2"/><circle cx="815" cy="541" r="2"/><circle cx="1015" cy="367" r="2"/><circle cx="1015" cy="381" r="2"/><circle cx="1015" cy="395" r="2"/><circle cx="360" cy="676" r="2"/><circle cx="360" cy="690" r="2"/><circle cx="360" cy="704" r="2"/></g>
+<!-- Independent electric routes -->
+<path class="electric" d="M833 566H900V442Q889 432 900 422V205H858 M1015 322V157H840V187 M342 648H91V205H482"/>
+<!-- Pneumatic command from shared LIC to diaphragm; jumper over mixture pipe -->
+<path class="signal" d="M822 205H590V310H480V411Q462 420 480 429V685H590"/>
+<path class="signal" d="M794 201L802 209 M754 201L762 209 M714 201L722 209 M674 201L682 209 M634 201L642 209 M586 234L594 226 M586 279L594 271 M552 306L560 314 M507 306L515 314 M476 352L484 344 M476 392L484 384 M476 469L484 461 M476 509L484 501 M476 549L484 541 M476 589L484 581 M476 629L484 621 M476 669L484 661 M512 681L520 689 M552 681L560 689"/>
+<g transform="translate(815 566)"><use href="#field"/><text y="-3" text-anchor="middle" class="letter">LT</text><text y="12" text-anchor="middle" class="number">401</text></g>
+<g transform="translate(1015 340)"><use href="#field"/><text y="-3" text-anchor="middle" class="letter">FT</text><text y="12" text-anchor="middle" class="number">401</text></g>
+<g transform="translate(360 648)"><use href="#field"/><text y="-3" text-anchor="middle" class="letter">FT</text><text y="12" text-anchor="middle" class="number">402</text></g>
+<g transform="translate(840 205)"><use href="#shared"/><text y="-3" text-anchor="middle" class="letter">LIC</text><text y="12" text-anchor="middle" class="number">401</text></g>
+<g transform="translate(500 205)"><use href="#shared"/><text y="-3" text-anchor="middle" class="letter">FIC</text><text y="12" text-anchor="middle" class="number">402</text></g>
+
+<!-- Legend -->
+<path class="pipe" d="M47 901H92"/><text x="103" y="905" class="secondary">Process</text>
+<path class="minor" d="M188 901H233"/><text x="244" y="905" class="secondary">Process, minor</text>
+<path class="electric" d="M366 901H411"/><text x="422" y="905" class="secondary">Electric signal</text>
+<path class="signal" d="M538 901H583 M552 897L560 905"/><text x="594" y="905" class="secondary">Pneumatic signal</text>
+<path class="signal" d="M726 901H771"/><g fill="#1E293B"><circle cx="733" cy="901" r="2"/><circle cx="747" cy="901" r="2"/><circle cx="761" cy="901" r="2"/></g><text x="782" y="905" class="secondary">Capillary / filled system</text>
+<text x="47" y="944" class="secondary">Normal drum level: 50%. LT-401, FT-401 and FT-402 provide the three measured elements; LIC-401 commands the fail-closed feedwater valve.</text>
+</svg>

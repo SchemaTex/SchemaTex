@@ -39,7 +39,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture reverses the transistor numbering and omits required node labels, device types, and component values."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the circuit exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: R2/RC1 and R3/RC2 are correctly labelled 2.2 kΩ; Q1 has its collector tied to the shared BASE node, Q2 connects to TAIL, and the two separate signal inputs cross TAIL with a visible non-junction bridge. The first judge’s rejection contradicted its own all-pass rubric and final acceptance sentence.",
+      "model": "gpt-5.6-luna + Codex visual verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T20:59:21.041Z",
+      "targetHash": "20bfff5b70a4",
+      "sourceHash": "c81c5272d65f",
+      "exemplarHash": "13f4de9a1aa1",
+      "items": [
+        {
+          "id": "mirror-base-node",
+          "verdict": "pass",
+          "evidence": "Q1 and Q2 are labeled 2N3904, with both bases connected to the shared node labeled BBASE."
+        },
+        {
+          "id": "diode-connected-reference",
+          "verdict": "pass",
+          "evidence": "Q1’s collector loops back to its BBASE node, and R1 · RREF runs from VCC into that node."
+        },
+        {
+          "id": "tail-current",
+          "verdict": "pass",
+          "evidence": "Q2’s collector joins the TAIL node, which visibly connects to the emitters of Q3 and Q4."
+        },
+        {
+          "id": "differential-inputs",
+          "verdict": "pass",
+          "evidence": "VIN+ connects to Q3’s base and VIN− connects separately to Q4’s base."
+        },
+        {
+          "id": "collector-loads",
+          "verdict": "pass",
+          "evidence": "Q3 and Q4 each have a separate 2.2 kΩ resistor to VCC, labeled R2 · RC1 and R3 · RC2 respectively."
+        },
+        {
+          "id": "supply-and-reference",
+          "verdict": "pass",
+          "evidence": "VCC is labeled +5 V; RREF is labeled 4.3 kΩ, 1%."
+        }
+      ]
+    }
   }
 }

@@ -38,7 +38,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture combines the living and dining spaces and lacks a clearly identifiable kitchen sink."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a complete three-bedroom family flat. The central hall connects the south entry to all labeled rooms, with readable door swings, exterior windows, furnishings, and sanitary/kitchen fixtures.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:14:00.571Z",
+      "targetHash": "9aa8e39e2f1d",
+      "sourceHash": "a265d7492b80",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "three-independent-bedrooms",
+          "verdict": "pass",
+          "evidence": "Bedroom 1, Bedroom 2, and Bedroom 3 are separately labeled and each has its own doorway onto the Central Hall."
+        },
+        {
+          "id": "separate-living-and-dining",
+          "verdict": "pass",
+          "evidence": "Living Room and Dining Room are separately labeled spaces divided by a full interior wall."
+        },
+        {
+          "id": "two-bathrooms-visible",
+          "verdict": "pass",
+          "evidence": "Family Bathroom and Shower Room are separately labeled, and each visibly contains a toilet and sink."
+        },
+        {
+          "id": "kitchen-equipped",
+          "verdict": "pass",
+          "evidence": "The labeled Kitchen visibly contains a counter run, sink, four-burner stove, and refrigerator marked REF."
+        },
+        {
+          "id": "circulation-clear",
+          "verdict": "pass",
+          "evidence": "The unobstructed Central Hall runs from the south entry and provides direct door access to every bedroom, both bathrooms, the kitchen, living room, and dining room."
+        },
+        {
+          "id": "doors-and-windows-readable",
+          "verdict": "pass",
+          "evidence": "Door openings and swing arcs are clearly drawn, and exterior windows are visible on the living and dining west walls, kitchen north wall, Bedrooms 1 and 2 east walls, and Bedroom 3 south wall."
+        }
+      ]
+    }
   }
 }

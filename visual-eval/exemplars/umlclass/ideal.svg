@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1542" height="946" viewBox="0 0 1542 946" role="img" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<title>Online store — ordering and payments</title>
+<desc>UML 2.5.1 class diagram of an online store's ordering and payment domain, in two packages drawn as tabbed folders. Package ordering holds the enumeration OrderStatus (PENDING, PAID, SHIPPED, CANCELLED), Customer, Category, Order, Product and OrderLine. A Customer places zero or more Orders (plain association named places, reading downward, multiplicity 1 at Customer and 0..* at Order). An Order is composed of one or more OrderLines under the role lines (filled diamond at Order). Each OrderLine navigates to exactly one Product under the role product (open arrowhead at Product, 0..* at OrderLine). A Category aggregates zero or more Products under the role products (hollow diamond at Category, 1..* at Category). OrderLine has the static constant MAX_QUANTITY (underlined) and Order the derived attribute /total. An Order is linked to zero or more Payments across the package boundary under the role payments. Package payments holds the abstract class Payment (italic name, {abstract}, italic abstract operation refund), whose subclasses CardPayment, WalletPayment and BankTransfer meet in one shared hollow triangle; the interface PaymentGateway is realised by StripeGateway (dashed line, hollow triangle), and Payment has a «use» dependency on PaymentGateway (dashed line, open arrowhead). Classes are three-compartment boxes with a tinted name compartment; member names are dark and types are grey; a legend along the bottom repeats the seven line ends.</desc>
+<rect width="1542" height="946" fill="#FFFFFF"/>
+<text x="44" y="48" font-size="20" font-weight="600" fill="#0F172A">Online store — ordering and payments</text>
+<text x="44" y="72" font-size="11" fill="#64748B" letter-spacing="0.6">UML 2.5.1 CLASS DIAGRAM · 12 CLASSIFIERS · 10 RELATIONSHIPS · 2 PACKAGES</text>
+<line x1="44" y1="88" x2="1498" y2="88" stroke="#94A3B8" stroke-width="1"/>
+<rect x="44" y="112" width="71" height="24" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.25"/>
+<rect x="44" y="136" width="596" height="712" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.25"/>
+<text x="55" y="128.5" font-size="12" font-weight="600" fill="#334155">ordering</text>
+<rect x="704" y="112" width="78" height="24" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.25"/>
+<rect x="704" y="136" width="794" height="712" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.25"/>
+<text x="715" y="128.5" font-size="12" font-weight="600" fill="#334155">payments</text>
+<g class="classifier" data-id="OrderStatus">
+<rect x="74" y="166" width="160" height="150" fill="#FFFFFF"/>
+<rect x="74" y="166" width="160" height="50" fill="#EEF2F7"/>
+<text x="154" y="185" font-size="11" fill="#2563EB" text-anchor="middle">«enumeration»</text>
+<text x="154" y="203" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">OrderStatus</text>
+<text x="86" y="236.5" font-size="12" xml:space="preserve"><tspan fill="#0F172A">PENDING</tspan></text>
+<text x="86" y="255.5" font-size="12" xml:space="preserve"><tspan fill="#0F172A">PAID</tspan></text>
+<text x="86" y="274.5" font-size="12" xml:space="preserve"><tspan fill="#0F172A">SHIPPED</tspan></text>
+<text x="86" y="293.5" font-size="12" xml:space="preserve"><tspan fill="#0F172A">CANCELLED</tspan></text>
+<line x1="74" y1="216" x2="234" y2="216" stroke="#334155" stroke-width="1"/>
+<line x1="74" y1="306" x2="234" y2="306" stroke="#334155" stroke-width="1"/>
+<rect x="74" y="166" width="160" height="150" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="Customer">
+<rect x="362" y="166" width="248" height="119" fill="#FFFFFF"/>
+<rect x="362" y="166" width="248" height="34" fill="#EEF2F7"/>
+<text x="486" y="188" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">Customer</text>
+<text x="374" y="220.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">id</tspan><tspan fill="#475569">: UUID</tspan></text>
+<text x="374" y="239.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">email</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="374" y="272.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">placeOrder()</tspan><tspan fill="#475569">: Order</tspan></text>
+<line x1="362" y1="200" x2="610" y2="200" stroke="#334155" stroke-width="1"/>
+<line x1="362" y1="252" x2="610" y2="252" stroke="#334155" stroke-width="1"/>
+<rect x="362" y="166" width="248" height="119" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="Category">
+<rect x="74" y="404" width="160" height="96" fill="#FFFFFF"/>
+<rect x="74" y="404" width="160" height="34" fill="#EEF2F7"/>
+<text x="154" y="426" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">Category</text>
+<text x="86" y="458.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">name</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="86" y="477.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">slug</tspan><tspan fill="#475569">: String</tspan></text>
+<line x1="74" y1="438" x2="234" y2="438" stroke="#334155" stroke-width="1"/>
+<line x1="74" y1="490" x2="234" y2="490" stroke="#334155" stroke-width="1"/>
+<rect x="74" y="404" width="160" height="96" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="Order">
+<rect x="362" y="404" width="248" height="176" fill="#FFFFFF"/>
+<rect x="362" y="404" width="248" height="34" fill="#EEF2F7"/>
+<text x="486" y="426" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">Order</text>
+<text x="374" y="458.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">id</tspan><tspan fill="#475569">: UUID</tspan></text>
+<text x="374" y="477.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">placedAt</tspan><tspan fill="#475569">: Instant</tspan></text>
+<text x="374" y="496.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">status</tspan><tspan fill="#475569">: OrderStatus</tspan></text>
+<text x="374" y="515.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">/total</tspan><tspan fill="#475569">: Money</tspan></text>
+<text x="374" y="548.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">addLine(product</tspan><tspan fill="#475569">: Product</tspan><tspan fill="#0F172A">, qty</tspan><tspan fill="#475569">: int</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: void</tspan></text>
+<text x="374" y="567.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">checkout()</tspan><tspan fill="#475569">: Payment</tspan></text>
+<line x1="362" y1="438" x2="610" y2="438" stroke="#334155" stroke-width="1"/>
+<line x1="362" y1="528" x2="610" y2="528" stroke="#334155" stroke-width="1"/>
+<rect x="362" y="404" width="248" height="176" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="Product">
+<rect x="74" y="680" width="160" height="138" fill="#FFFFFF"/>
+<rect x="74" y="680" width="160" height="34" fill="#EEF2F7"/>
+<text x="154" y="702" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">Product</text>
+<text x="86" y="734.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">sku</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="86" y="753.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">name</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="86" y="772.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">price</tspan><tspan fill="#475569">: Money</tspan></text>
+<text x="86" y="805.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">isAvailable()</tspan><tspan fill="#475569">: boolean</tspan></text>
+<line x1="74" y1="714" x2="234" y2="714" stroke="#334155" stroke-width="1"/>
+<line x1="74" y1="785" x2="234" y2="785" stroke="#334155" stroke-width="1"/>
+<rect x="74" y="680" width="160" height="138" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="OrderLine">
+<rect x="362" y="680" width="248" height="138" fill="#FFFFFF"/>
+<rect x="362" y="680" width="248" height="34" fill="#EEF2F7"/>
+<text x="486" y="702" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">OrderLine</text>
+<text x="374" y="734.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">MAX_QUANTITY</tspan><tspan fill="#475569">: int </tspan><tspan fill="#0F172A">= 99</tspan></text>
+<line x1="384.54" y1="737" x2="520.88" y2="737" stroke="#0F172A" stroke-width="0.9"/>
+<text x="374" y="753.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">quantity</tspan><tspan fill="#475569">: int</tspan></text>
+<text x="374" y="772.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">unitPrice</tspan><tspan fill="#475569">: Money</tspan></text>
+<text x="374" y="805.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">subtotal()</tspan><tspan fill="#475569">: Money</tspan></text>
+<line x1="362" y1="714" x2="610" y2="714" stroke="#334155" stroke-width="1"/>
+<line x1="362" y1="785" x2="610" y2="785" stroke="#334155" stroke-width="1"/>
+<rect x="362" y="680" width="248" height="138" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="PaymentGateway">
+<rect x="1228" y="166" width="240" height="112" fill="#FFFFFF"/>
+<rect x="1228" y="166" width="240" height="50" fill="#EEF2F7"/>
+<text x="1348" y="185" font-size="11" fill="#2563EB" text-anchor="middle">«interface»</text>
+<text x="1348" y="203" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">PaymentGateway</text>
+<text x="1240" y="246.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">authorize(amount</tspan><tspan fill="#475569">: Money</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: AuthResult</tspan></text>
+<text x="1240" y="265.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">capture(authId</tspan><tspan fill="#475569">: String</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: void</tspan></text>
+<line x1="1228" y1="216" x2="1468" y2="216" stroke="#334155" stroke-width="1"/>
+<line x1="1228" y1="226" x2="1468" y2="226" stroke="#334155" stroke-width="1"/>
+<rect x="1228" y="166" width="240" height="112" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="Payment">
+<rect x="864" y="404" width="280" height="154" fill="#FFFFFF"/>
+<rect x="864" y="404" width="280" height="50" fill="#EEF2F7"/>
+<text x="1004" y="427" font-size="13.5" font-weight="600" font-style="italic" fill="#0F172A" text-anchor="middle">Payment</text>
+<text x="1004" y="444" font-size="11" fill="#64748B" text-anchor="middle">{abstract}</text>
+<text x="876" y="474.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">amount</tspan><tspan fill="#475569">: Money</tspan></text>
+<text x="876" y="493.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">paidAt</tspan><tspan fill="#475569">: Instant </tspan><tspan fill="#475569">[0..1]</tspan></text>
+<text x="876" y="526.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">process(gateway</tspan><tspan fill="#475569">: PaymentGateway</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: boolean</tspan></text>
+<text x="876" y="545.5" font-size="12" font-style="italic" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">refund()</tspan><tspan fill="#475569">: void</tspan></text>
+<line x1="864" y1="454" x2="1144" y2="454" stroke="#334155" stroke-width="1"/>
+<line x1="864" y1="506" x2="1144" y2="506" stroke="#334155" stroke-width="1"/>
+<rect x="864" y="404" width="280" height="154" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="StripeGateway">
+<rect x="1228" y="404" width="240" height="119" fill="#FFFFFF"/>
+<rect x="1228" y="404" width="240" height="34" fill="#EEF2F7"/>
+<text x="1348" y="426" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">StripeGateway</text>
+<text x="1240" y="458.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">apiKey</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="1240" y="491.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">authorize(amount</tspan><tspan fill="#475569">: Money</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: AuthResult</tspan></text>
+<text x="1240" y="510.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">+ </tspan><tspan fill="#0F172A">capture(authId</tspan><tspan fill="#475569">: String</tspan><tspan fill="#0F172A">)</tspan><tspan fill="#475569">: void</tspan></text>
+<line x1="1228" y1="438" x2="1468" y2="438" stroke="#334155" stroke-width="1"/>
+<line x1="1228" y1="471" x2="1468" y2="471" stroke="#334155" stroke-width="1"/>
+<rect x="1228" y="404" width="240" height="119" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="CardPayment">
+<rect x="734" y="680" width="160" height="96" fill="#FFFFFF"/>
+<rect x="734" y="680" width="160" height="34" fill="#EEF2F7"/>
+<text x="814" y="702" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">CardPayment</text>
+<text x="746" y="734.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">cardLast4</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="746" y="753.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">expiry</tspan><tspan fill="#475569">: YearMonth</tspan></text>
+<line x1="734" y1="714" x2="894" y2="714" stroke="#334155" stroke-width="1"/>
+<line x1="734" y1="766" x2="894" y2="766" stroke="#334155" stroke-width="1"/>
+<rect x="734" y="680" width="160" height="96" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="WalletPayment">
+<rect x="924" y="680" width="160" height="77" fill="#FFFFFF"/>
+<rect x="924" y="680" width="160" height="34" fill="#EEF2F7"/>
+<text x="1004" y="702" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">WalletPayment</text>
+<text x="936" y="734.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">walletId</tspan><tspan fill="#475569">: String</tspan></text>
+<line x1="924" y1="714" x2="1084" y2="714" stroke="#334155" stroke-width="1"/>
+<line x1="924" y1="747" x2="1084" y2="747" stroke="#334155" stroke-width="1"/>
+<rect x="924" y="680" width="160" height="77" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<g class="classifier" data-id="BankTransfer">
+<rect x="1114" y="680" width="160" height="96" fill="#FFFFFF"/>
+<rect x="1114" y="680" width="160" height="34" fill="#EEF2F7"/>
+<text x="1194" y="702" font-size="13.5" font-weight="600" fill="#0F172A" text-anchor="middle">BankTransfer</text>
+<text x="1126" y="734.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">iban</tspan><tspan fill="#475569">: String</tspan></text>
+<text x="1126" y="753.5" font-size="12" xml:space="preserve"><tspan fill="#64748B">- </tspan><tspan fill="#0F172A">reference</tspan><tspan fill="#475569">: String</tspan></text>
+<line x1="1114" y1="714" x2="1274" y2="714" stroke="#334155" stroke-width="1"/>
+<line x1="1114" y1="766" x2="1274" y2="766" stroke="#334155" stroke-width="1"/>
+<rect x="1114" y="680" width="160" height="96" fill="none" stroke="#334155" stroke-width="1.5"/>
+</g>
+<polyline points="486,285 486,404" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polygon points="486,580 492.5,592 486,604 479.5,592" fill="#334155" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="486,604 486,680" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="362,732 234,732" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="246,726 234,732 246,738" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polygon points="154,500 160.5,512 154,524 147.5,512" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="154,524 154,680" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="610,478 864,478" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polygon points="1004,558 1013,573 995,573" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="1004,573 1004,642" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="814,642 1194,642" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="814,642 814,680" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="1004,642 1004,680" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="1194,642 1194,680" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polygon points="1348,278 1357,293 1339,293" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<polyline points="1348,293 1348,404" fill="none" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4" stroke-linejoin="miter"/>
+<polyline points="1098,404 1098,191 1228,191" fill="none" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4" stroke-linejoin="miter"/>
+<polyline points="1216,197 1228,191 1216,185" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="44" y1="882" x2="1498" y2="882" stroke="#94A3B8" stroke-width="1"/>
+<line x1="94" y1="903" x2="94" y2="921" stroke="#334155" stroke-width="1.5"/>
+<line x1="44" y1="912" x2="94" y2="912" stroke="#334155" stroke-width="1.4"/>
+<line x1="254.3509521484375" y1="903" x2="254.3509521484375" y2="921" stroke="#334155" stroke-width="1.5"/>
+<line x1="204.3509521484375" y1="912" x2="254.35" y2="912" stroke="#334155" stroke-width="1.4"/>
+<polyline points="242.35,918 254.35,912 242.35,906" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="467.09584045410156" y1="903" x2="467.09584045410156" y2="921" stroke="#334155" stroke-width="1.5"/>
+<polygon points="467.1,912 455.1,918.5 443.1,912 455.1,905.5" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="417.09584045410156" y1="912" x2="443.1" y2="912" stroke="#334155" stroke-width="1.4"/>
+<line x1="630.2182922363281" y1="903" x2="630.2182922363281" y2="921" stroke="#334155" stroke-width="1.5"/>
+<polygon points="630.22,912 618.22,918.5 606.22,912 618.22,905.5" fill="#334155" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="580.2182922363281" y1="912" x2="606.22" y2="912" stroke="#334155" stroke-width="1.4"/>
+<line x1="795.6982421875" y1="903" x2="795.6982421875" y2="921" stroke="#334155" stroke-width="1.5"/>
+<polygon points="795.7,912 780.7,921 780.7,903" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="745.6982421875" y1="912" x2="780.7" y2="912" stroke="#334155" stroke-width="1.4"/>
+<line x1="969.0211639404297" y1="903" x2="969.0211639404297" y2="921" stroke="#334155" stroke-width="1.5"/>
+<polygon points="969.02,912 954.02,921 954.02,903" fill="#FFFFFF" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<line x1="919.0211639404297" y1="912" x2="954.02" y2="912" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4"/>
+<line x1="1122.9665985107422" y1="903" x2="1122.9665985107422" y2="921" stroke="#334155" stroke-width="1.5"/>
+<line x1="1072.9665985107422" y1="912" x2="1122.97" y2="912" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4"/>
+<polyline points="1110.97,918 1122.97,912 1110.97,906" fill="none" stroke="#334155" stroke-width="1.4" stroke-linejoin="miter"/>
+<text x="494" y="302" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1</text>
+<text x="494" y="396" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">0..*</text>
+<text x="460" y="348.5" font-size="12" font-style="italic" fill="#475569" text-anchor="end">places</text>
+<polygon points="465.5,341 474.5,341 470,348.5" fill="#475569"/>
+<text x="499" y="600" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1</text>
+<text x="494" y="672" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1..*</text>
+<text x="478" y="672" font-size="11.5" fill="#475569" text-anchor="end">lines</text>
+<text x="353" y="723" font-size="12" font-weight="500" fill="#0F172A" text-anchor="end">0..*</text>
+<text x="250" y="723" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1</text>
+<text x="250" y="751" font-size="11.5" fill="#475569" text-anchor="start">product</text>
+<text x="167" y="520" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1..*</text>
+<text x="162" y="672" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">0..*</text>
+<text x="146" y="672" font-size="11.5" fill="#475569" text-anchor="end">products</text>
+<text x="619" y="469" font-size="12" font-weight="500" fill="#0F172A" text-anchor="start">1</text>
+<text x="855" y="469" font-size="12" font-weight="500" fill="#0F172A" text-anchor="end">0..*</text>
+<text x="855" y="497" font-size="11.5" fill="#475569" text-anchor="end">payments</text>
+<text x="1163" y="182" font-size="12" fill="#475569" text-anchor="middle">«use»</text>
+<text x="106" y="916" font-size="11.5" fill="#475569" text-anchor="start">association</text>
+<text x="266.35" y="916" font-size="11.5" fill="#475569" text-anchor="start">navigable association</text>
+<text x="479.1" y="916" font-size="11.5" fill="#475569" text-anchor="start">aggregation</text>
+<text x="642.22" y="916" font-size="11.5" fill="#475569" text-anchor="start">composition</text>
+<text x="807.7" y="916" font-size="11.5" fill="#475569" text-anchor="start">generalization</text>
+<text x="981.02" y="916" font-size="11.5" fill="#475569" text-anchor="start">realization</text>
+<text x="1134.97" y="916" font-size="11.5" fill="#475569" text-anchor="start">dependency</text>
+</svg>

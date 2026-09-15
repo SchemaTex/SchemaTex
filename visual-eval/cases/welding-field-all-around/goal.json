@@ -1,6 +1,7 @@
 {
   "id": "welding-field-all-around",
   "type": "welding",
+  "variant": "aws",
   "title": "Field All Around",
   "goal": "A practitioner can read the field all around artefact at a glance.",
   "rubric": [
@@ -30,5 +31,11 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent redraw using the AWS exemplar visual system and AWS official A2.4 symbol chart. Source dimensions and processes preserved; joint sketch is schematic, not fabrication geometry. Rendered and visually inspected against source and AWS exemplar: weld side, dimensions, supplementary marks, contour/finish separation, leader attachment and typography checked."
+  }
 }

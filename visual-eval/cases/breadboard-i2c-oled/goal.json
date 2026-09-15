@@ -7,7 +7,7 @@
     {
       "id": "physical-board",
       "severity": "blocker",
-      "must": "A solderless breadboard with labelled physical components and colored jumper wires is visible."
+      "must": "The Arduino Uno and named module are visible with identifiable connection headers."
     },
     {
       "id": "power-ground",
@@ -22,12 +22,12 @@
     {
       "id": "series-correctness",
       "severity": "major",
-      "must": "The picture visibly places the current-limiting or timing component in the intended circuit path rather than as an unconnected part."
+      "must": "All four declared module connections are visible as separate wires landing on the appropriate pins; no unconnected or invented series component is shown."
     },
     {
       "id": "buildable-layout",
       "severity": "minor",
-      "must": "Parts and wire endpoints visibly land on breadboard tie points without ambiguous floating connections."
+      "must": "Wire endpoints visibly land on controller and module headers without ambiguous floating connections."
     }
   ],
   "split": "train",
@@ -35,6 +35,6 @@
     "file": "ideal.svg",
     "source": "hand-authored",
     "reviewed": true,
-    "notes": "Drawn by `scripts/visual-eval/draw-breadboard-target.mjs`, which draws all eight cases from one kit so the set is one drawing repeated. A breadboard wiring view of I2C OLED Display, on a half-size board of 30 columns with rows a–e above the central trough and f–j below it, and continuous power rails top and bottom. 2 parts are placed at their own tie points: uno (mcu uno), oled (display oled-ssd1306). 4 jumper wires run as smooth arcs in their net colours, each landing exactly on a hole. Off-board modules are drawn as labelled blocks with the pins they actually use on the edge facing the board. Follows `docs/reference/26-BREADBOARD-STANDARD.md`: a board of numbered columns and rows a–e above the central trough and f–j below it, continuous red/blue power rails top and bottom, 0.1 inch hole pitch, stylised Fritzing-recognisable bodies (resistor beige with colour bands, LED as a coloured dome, DIP black with a notch, pushbutton blue, electrolytic capacitor silver with its stripe), and jumper wires as smooth Bézier arcs in solid net colours landing exactly on a hole. Deliberate stylisation, per the doc's own §3.2: an off-board module is drawn as a labelled block with the pins it actually uses on the edge facing the board — a physically exact Uno would put 5V and GND on the far side and force every power wire to loop round, buying accuracy the reader cannot use at the cost of the legibility this view exists for."
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/breadboard/ideal.svg (sha256 c5804491ffdc). Updated physical Arduino/module symbols from the reviewed symbol library, 18 px hole pitch, and dressed rounded jumpers. Wire endpoints and net colours follow source. Unused breadboards are omitted in direct module assemblies. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
   }
 }

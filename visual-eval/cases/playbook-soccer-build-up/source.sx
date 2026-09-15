@@ -1,10 +1,9 @@
-# Scenario: Soccer Build Up coached play with routes and defence.
-playbook "Soccer Build Up" sport football
-field down 2 distance 8 los 35 hash nfl view full
-formation trips right
-defense cover-2
-route X go 18 left
-route Y seam 18
-route Z go 18 right
-route H seam 16
-
+# Scenario: building out from the goalkeeper through a centre-back and the holding midfielder against a high press.
+playbook "Build-up through the pivot" sport soccer
+formation 4-2-3-1
+defense high-press
+pass 1 5
+pass 5 6
+run 2 to 45,8
+pass 6 10
+run 10 to 60,34

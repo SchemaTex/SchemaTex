@@ -43,7 +43,54 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies the seating, head-table, clearance, entrance, and dimension requirements, while the picture omits several required elements."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly satisfies the seating, entrance, clearance, dimension, and circulation requirements. All 36 named seats are readable, and open routes from the service entrance reach every table without crossing the dance floor.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:10:59.178Z",
+      "targetHash": "8be90b0f42a5",
+      "sourceHash": "2f7854ea2c6a",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "named-guest-seats",
+          "verdict": "pass",
+          "evidence": "Tables 1–4 are distinctly numbered round tables; each has eight visible chairs with eight readable ordinary guest names."
+        },
+        {
+          "id": "head-table",
+          "verdict": "pass",
+          "evidence": "The labeled HEAD TABLE has four individually named seats—Anna, Ben, Clara, and David—on its south side, facing north toward the dance floor."
+        },
+        {
+          "id": "dance-floor",
+          "verdict": "pass",
+          "evidence": "A clear rectangular DANCE FLOOR labeled 4.10 × 4.10 m is centered between the round-table groups and contains no tables or chairs."
+        },
+        {
+          "id": "service-circulation",
+          "verdict": "pass",
+          "evidence": "The labeled service entrance opens into unobstructed space. Visible aisles around the east, north, south, and sides of the dance floor connect it to all four round tables and the head table without crossing the dance floor or chairs."
+        },
+        {
+          "id": "chair-clearances",
+          "verdict": "pass",
+          "evidence": "All chairs are inside the exterior walls, with visible space behind them and substantial separation between neighboring table groups, the dance floor, and the head table."
+        },
+        {
+          "id": "entrance-swings",
+          "verdict": "pass",
+          "evidence": "Separate guest and service entrances visibly show door leaves and swing arcs; both swept areas and their dashed keep-clear zones contain no furniture."
+        },
+        {
+          "id": "readable-plan",
+          "verdict": "pass",
+          "evidence": "Exterior dimension strings visibly show 16.00 m horizontally and vertically. Guest names, table labels, room label, and entrance labels are readable and do not overlap."
+        }
+      ]
+    }
   }
 }

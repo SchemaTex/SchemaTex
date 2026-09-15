@@ -3,14 +3,14 @@
   <rect width="1536" height="1024" fill="white"/>
   <style>
     text { font-family: Helvetica, sans-serif; fill: #000; }
-    .wire { fill: none; stroke: #000; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
-    .block { fill: white; stroke: #000; stroke-width: 3; }
+    .wire { fill: none; stroke: #000; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
+    .block { fill: white; stroke: #000; stroke-width: 2; }
     .label { font-size: 29px; }
     .pin { font-size: 24px; }
     .gate { font-size: 38px; font-weight: 700; }
     .note { font-size: 25px; }
   </style>
-  <text x="768" y="109" text-anchor="middle" font-size="62" font-weight="700">MOTOR START STOP</text>
+  <text x="768" y="109" text-anchor="middle" font-size="38" font-weight="700">MOTOR START STOP</text>
   <text x="768" y="158" text-anchor="middle" class="note">IEC 61131-3 FBD · with emergency stop</text>
 
   <text x="90" y="241" font-size="30">Network 0 — Start latch</text>
@@ -39,7 +39,7 @@
   <text x="997.5" y="313" text-anchor="middle" class="label">OR</text>
   <text x="997.5" y="438" text-anchor="middle" class="gate">≥1</text>
   <path class="wire" d="M1110 364 H1320"/>
-  <circle cx="1230" cy="364" r="6" fill="black"/>
+  <circle cx="1230" cy="364" r="6" fill="#20272B"/>
   <text x="1340" y="375" class="label">Latch</text>
 
   <text x="768" y="681" text-anchor="middle" class="note">Inverted inputs: ~Stop and ~EmergencyStop</text>

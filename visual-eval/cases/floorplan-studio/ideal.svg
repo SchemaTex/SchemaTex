@@ -1,90 +1,120 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1040" width="1100" height="1040">
-<title>Compact Studio Apartment — 27.88 square metres</title>
-<rect width="1100" height="1040" fill="white"/>
-<defs>
-<style>
-.wall{fill:white;stroke:#111;stroke-width:2.4}.line{fill:none;stroke:#111;stroke-width:1.5}.fine{fill:none;stroke:#111;stroke-width:1}.furniture{fill:white;stroke:#111;stroke-width:1.5}.label{font-family:'Helvetica Neue',Helvetica,sans-serif;fill:#111;text-anchor:middle}.window{fill:white;stroke:#111;stroke-width:1.3}
-</style>
-</defs>
-<text class="label" x="550" y="53" font-size="30" letter-spacing="1">COMPACT STUDIO APARTMENT</text>
-<text class="label" x="550" y="82" font-size="16">27.88 m² total · dimensions in metres</text>
-<!-- North marker -->
-<g class="line"><path d="M1000 157V113m-7 13 7-13 7 13"/></g><text class="label" x="1000" y="103" font-size="17">N</text>
-<!-- Studio clear dimensions 4.6 x 5.2 m, scale 140 px/m.
-Bathroom sits to the right at the north end, clear dimensions 1.8 x 2.2 m. -->
-<!-- Exterior shell, with actual gaps at doors and windows -->
-<path class="wall" d="M58 138H1055V530H786V950H275V908H744V488H1013V180H100V908H149V950H58Z"/>
-<!-- Close shell portions interrupted above with white opening masks -->
-<!-- Studio north window: width 1.8 m, centered at 45% -->
-<rect x="264" y="136" width="252" height="46" fill="white"/>
-<g class="window"><path d="M264 138H516V180H264Z"/><path d="M264 153H516M264 165H516M390 153V165"/></g>
-<!-- West window: 1.4 m, centered at 48% -->
-<rect x="56" y="431" width="46" height="196" fill="white"/>
-<g class="window"><path d="M58 431H100V627H58Z"/><path d="M73 431V627M85 431V627M73 529H85"/></g>
-<!-- Bathroom east window: 0.8 m -->
-<rect x="1011" y="278" width="46" height="112" fill="white"/>
-<g class="window"><path d="M1013 278H1055V390H1013Z"/><path d="M1028 278V390M1040 278V390M1028 334H1040"/></g>
-<!-- Studio / bathroom partition, 0.12 m; door opens into bath -->
-<path class="wall" d="M744 180H761V266H744Z M744 371H761V488H744Z"/>
-<g class="line"><path d="M761 371H866"/><path d="M761 266A105 105 0 0 1 866 371"/><path d="M748 266H761M748 371H761"/></g>
-<!-- Entry 0.90 m, hinge left, inward swing; unobstructed south aisle -->
-<g class="line"><path d="M149 908V782H155V908"/><path d="M149 782A126 126 0 0 1 275 908"/><path d="M149 908V950M275 908V950"/></g>
-<!-- Double bed: 1.4 x 2.0 m -->
-<rect class="furniture" x="149" y="243" width="196" height="280" rx="8"/>
-<path class="fine" d="M155 250H339V515H155Z M155 319H339 M155 335H339"/>
-<rect class="furniture" x="164" y="258" width="75" height="48" rx="7"/>
-<rect class="furniture" x="254" y="258" width="75" height="48" rx="7"/>
-<!-- Wardrobe 0.55 x 1.3 m -->
-<rect class="furniture" x="121" y="572" width="77" height="182"/>
-<path class="fine" d="M126 577H193V749H126Z M126 663H193 M184 643V654 M184 672V683"/>
-<!-- Sofa 1.9 x .85 m -->
-<rect class="furniture" x="380" y="488" width="266" height="119" rx="9"/>
-<rect class="furniture" x="391" y="493" width="244" height="26" rx="6"/>
-<rect class="furniture" x="398" y="519" width="76" height="81" rx="6"/>
-<rect class="furniture" x="474" y="519" width="76" height="81" rx="6"/>
-<rect class="furniture" x="550" y="519" width="78" height="81" rx="6"/>
-<rect class="furniture" x="380" y="511" width="19" height="90" rx="5"/>
-<rect class="furniture" x="627" y="511" width="19" height="90" rx="5"/>
-<!-- Coffee table .8 x .5 m -->
-<rect class="furniture" x="401" y="621" width="112" height="70"/>
-<rect class="fine" x="405" y="625" width="104" height="62"/>
-<!-- Kitchen counter 2.7 x .6 m; north edge as in reference -->
-<rect class="furniture" x="289" y="789" width="378" height="84"/>
-<path class="fine" d="M294 868H662 M470 789V873 M588 789V873"/>
-<!-- Sink -->
-<rect class="furniture" x="331" y="793" width="112" height="70" rx="5"/>
-<rect class="fine" x="339" y="800" width="96" height="55" rx="8"/>
-<circle class="fine" cx="387" cy="824" r="4"/>
-<path class="furniture" d="M383 803V789Q383 779 390 779Q397 779 397 789V793H392V789Q392 784 389 785V803Z"/>
-<!-- Four-ring stove -->
-<rect class="furniture" x="499" y="789" width="98" height="84"/>
-<g class="line"><circle cx="523" cy="812" r="13"/><circle cx="572" cy="812" r="13"/><circle cx="523" cy="849" r="13"/><circle cx="572" cy="849" r="13"/></g>
-<!-- Fridge -->
-<rect class="furniture" x="639" y="663" width="91" height="105"/>
-<rect class="fine" x="644" y="668" width="81" height="95"/>
-<path class="line" d="M651 699V731"/>
-<!-- Bathroom sink -->
-<rect class="furniture" x="778" y="205" width="65" height="62" rx="3"/>
-<rect class="fine" x="785" y="215" width="51" height="45" rx="10"/>
-<circle class="fine" cx="810" cy="240" r="3"/><path class="line" d="M807 223V209Q807 203 813 203V211"/>
-<!-- Toilet -->
-<rect class="furniture" x="866" y="205" width="62" height="25" rx="4"/>
-<path class="furniture" d="M874 230Q861 249 865 270Q869 295 897 298Q925 295 929 270Q933 249 920 230Z"/>
-<path class="fine" d="M879 239Q868 254 872 271Q877 291 897 291Q917 291 922 271Q926 254 915 239Z"/>
-<circle class="fine" cx="915" cy="216" r="2"/>
-<!-- Shower .8 x .8 m -->
-<rect class="furniture" x="880" y="341" width="112" height="112"/>
-<rect class="fine" x="886" y="347" width="100" height="100"/>
-<path class="fine" d="M886 347L986 447M986 347L886 447"/>
-<circle class="furniture" cx="936" cy="397" r="5"/>
-<path class="line" d="M983 383V411M983 397H971"/><circle class="furniture" cx="968" cy="397" r="4"/>
-<!-- Clear, readable room and functional labels -->
-<text class="label" x="478" y="356" font-size="24">STUDIO</text>
-<text class="label" x="478" y="382" font-size="17">Living / Sleep / Cook</text>
-<text class="label" x="478" y="408" font-size="18">23.92 m²</text>
-<text class="label" x="247" y="552" font-size="16">SLEEPING</text>
-<text class="label" x="483" y="724" font-size="16">LIVING</text>
-<text class="label" x="477" y="902" font-size="16">KITCHEN</text>
-<text class="label" x="882" y="317" font-size="17">BATHROOM · 3.96 m²</text>
-<text class="label" x="550" y="1000" font-size="15">Studio 4.60 × 5.20 m     ·     Bathroom 1.80 × 2.20 m</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="730" viewBox="0 0 720 730"><title>Compact Studio Apartment — Floor Plan</title><desc>An open studio with sleeping, living and cooking furniture, and a separate enclosed bathroom. Total room area 27.9 square metres. North is up.</desc><style>text{font-family:Inter,'Helvetica Neue',Arial,sans-serif} .title{font-size:20px;font-weight:600;fill:#1F2328}.sub{font-size:12px;fill:#6E7782}.name{font-size:12px;font-weight:600;letter-spacing:.7px;fill:#1F2328}.area{font-size:11px;fill:#6E7782}.dim{font-size:11px;fill:#55606C}.tag{font-size:8.5px;font-weight:600;fill:#55606C}.outline{fill:white;stroke:#55606C;stroke-width:1.1}.detail{fill:none;stroke:#55606C;stroke-width:.8}.fixed{fill:#EDEFF2;stroke:#55606C;stroke-width:1.1}.pencil{fill:none;stroke:#A3ABB4;stroke-width:.85}.door{fill:none;stroke:#1F2328;stroke-width:1.6}</style><rect width="720" height="730" fill="#FFFFFF"/><text x="38" y="47" class="title">Compact Studio Apartment</text><text x="38" y="69" class="sub">Studio apartment · 2 rooms · 27.9 m² · dimensions in metres to wall centre-lines</text><path d="M38 85H682" stroke="#A3ABB4" stroke-width=".8"/>
+<path d="M110 170H622V346H478V586H110Z" fill="none" stroke="#1F2328" stroke-width="24" stroke-linejoin="miter"/>
+<path d="M478.0 170L478.0 346.0" class="detail"/>
+<path d="M478 170V346" stroke="#1F2328" stroke-width="9.6"/>
+<style>.glass{fill:none;stroke:#4F86B0;stroke-width:1.8}</style>
+<rect x="203.6" y="158.0" width="144.0" height="24.0" rx="0" class="outline"/>
+<path d="M203.6 170L347.59999999999997 170" class="glass"/>
+<rect x="98.0" y="313.68" width="24.0" height="112.0" rx="0" class="outline"/>
+<path d="M110 313.68L110 425.67999999999995" class="glass"/>
+<rect x="610.0" y="226.0" width="24.0" height="64.0" rx="0" class="outline"/>
+<path d="M622.0 226.0L622.0 290.0" class="glass"/>
+<rect x="138.0" y="574.0" width="72.0" height="24.0" rx="0" class="erase"/>
+<style>.erase{fill:white;stroke:none}</style>
+<path d="M138.0 598.0L210.0 598.0" class="detail"/>
+<path d="M138.0 586.0L138.0 514.0" class="door"/>
+<path d="M138.0 514.0A72 72 0 0 1 210.0 586.0" class="pencil"/>
+<rect x="473.2" y="219.20000000000002" width="9.6" height="60.0" rx="0" class="erase"/>
+<path d="M478.0 279.20000000000005L538.0 279.20000000000005" class="door"/>
+<path d="M478.0 219.20000000000002A60 60 0 0 1 538.0 279.20000000000005" class="pencil"/>
+<rect x="138.0" y="206.0" width="112.0" height="160" rx="3" class="outline"/>
+<rect x="145.2" y="213.2" width="45.599999999999994" height="25.6" rx="3" class="outline"/>
+<rect x="197.2" y="213.2" width="45.599999999999994" height="25.6" rx="3" class="outline"/>
+<path d="M138.0 254.8L250.0 254.8" class="detail"/>
+<path d="M138.0 279.6L250.0 266.0" class="detail"/>
+<rect x="122.0" y="394.0" width="44.0" height="104.0" rx="0" class="outline"/>
+<path d="M144.0 398.79999999999995L144.0 493.2" class="detail"/>
+<path d="M131.6 406.8L155.6 402.0" class="detail"/>
+<path d="M131.6 418.0L155.6 413.2" class="detail"/>
+<path d="M131.6 429.20000000000005L155.6 424.4" class="detail"/>
+<path d="M131.6 440.4L155.6 435.59999999999997" class="detail"/>
+<path d="M131.6 451.6L155.6 446.8" class="detail"/>
+<path d="M131.6 462.8L155.6 458.0" class="detail"/>
+<path d="M131.6 474.0L155.6 469.20000000000005" class="detail"/>
+<path d="M131.6 485.2L155.6 480.4" class="detail"/>
+<rect x="270" y="346.0" width="152.0" height="68.0" rx="4" class="outline"/>
+<rect x="282.0" y="346.0" width="128.0" height="52.800000000000004" rx="0" class="outline"/>
+<path d="M324.4 346.0L324.4 398.79999999999995" class="detail"/>
+<path d="M367.6 346.0L367.6 398.79999999999995" class="detail"/>
+<rect x="282.0" y="422.0" width="64.0" height="40.0" rx="3" class="outline"/>
+<rect x="218.0" y="518.0" width="216.0" height="48.0" rx="0" class="fixed"/>
+<rect x="242.0" y="520.4" width="64.0" height="40.0" rx="1" class="outline"/>
+<rect x="246.0" y="524.4" width="25.6" height="32.0" rx="3" class="outline"/>
+<rect x="276.4" y="524.4" width="25.6" height="32.0" rx="3" class="outline"/>
+<ellipse cx="274.0" cy="523.6" rx="1.7599999999999998" ry="1.7599999999999998" class="detail"/>
+<rect x="338.0" y="518.0" width="56.0" height="48.0" rx="0" class="outline"/>
+<ellipse cx="350" cy="530.0" rx="6.800000000000001" ry="6.800000000000001" class="detail"/>
+<ellipse cx="378.8" cy="530.0" rx="8.4" ry="8.4" class="detail"/>
+<ellipse cx="350" cy="552.4000000000001" rx="8.4" ry="8.4" class="detail"/>
+<ellipse cx="378.8" cy="552.4000000000001" rx="6.800000000000001" ry="6.800000000000001" class="detail"/>
+<rect x="418.0" y="446.0" width="52.0" height="60.0" rx="0" class="outline"/>
+<text x="444.0" y="479.20000000000005" class="tag" text-anchor="middle">REF</text>
+<rect x="487.59999999999997" y="184.4" width="36.800000000000004" height="32.0" rx="0" class="fixed"/>
+<ellipse cx="506.0" cy="201.6" rx="12.8" ry="9.200000000000001" class="outline"/>
+<ellipse cx="506.0" cy="188.8" rx="1.44" ry="1.44" class="detail"/>
+<rect x="538.0" y="184.4" width="37.599999999999994" height="12.8" rx="2" class="outline"/>
+<ellipse cx="556.8" cy="212.8" rx="16.4" ry="20.4" class="outline"/>
+<ellipse cx="556.8" cy="214.0" rx="11.6" ry="14.399999999999999" class="detail"/>
+<rect x="538.0" y="184.4" width="37.599999999999994" height="12.8" rx="2" class="outline"/>
+<rect x="546.0" y="262.0" width="64.0" height="64.0" rx="0" class="fixed"/>
+<path d="M546.0 262.0L610.0 326.0" class="pencil"/>
+<path d="M610.0 262.0L546.0 326.0" class="pencil"/>
+<ellipse cx="578.0" cy="294.0" rx="3.2" ry="3.2" class="outline"/>
+<text x="359.6" y="225.2" class="name" text-anchor="middle">STUDIO</text>
+<text x="359.6" y="242.8" class="name" text-anchor="middle">LIVING / SLEEP / COOK</text>
+<text x="359.6" y="261.2" class="area" text-anchor="middle">23.9 m²</text>
+<text x="574" y="246" class="name" style="font-size:10px;letter-spacing:.4px" text-anchor="middle">BATHROOM</text>
+<text x="574" y="259" class="area" text-anchor="middle">4.0 m²</text>
+<path d="M110 153V106" class="pencil"/>
+<path d="M478 153V106" class="pencil"/>
+<path d="M622 153V106" class="pencil"/>
+<path d="M110 108L622 108" class="pencil"/>
+<path d="M106 112L114 104" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M618 112L626 104" stroke="#1F2328" stroke-width="1.1"/>
+<text x="366.0" y="103" class="dim" text-anchor="middle">6.40</text>
+<path d="M110 136L478 136" class="pencil"/>
+<path d="M106 140L114 132" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M474 140L482 132" stroke="#1F2328" stroke-width="1.1"/>
+<text x="294.0" y="131" class="dim" text-anchor="middle">4.60</text>
+<path d="M478 136L622 136" class="pencil"/>
+<path d="M474 140L482 132" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M618 140L626 132" stroke="#1F2328" stroke-width="1.1"/>
+<text x="550.0" y="131" class="dim" text-anchor="middle">1.80</text>
+<path d="M94 170H40" class="pencil"/>
+<path d="M94 346H40" class="pencil"/>
+<path d="M94 586H40" class="pencil"/>
+<path d="M42 170L42 586" class="pencil"/>
+<path d="M38 174L46 166" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M38 590L46 582" stroke="#1F2328" stroke-width="1.1"/>
+<text x="35" y="378.0" class="dim" text-anchor="middle" transform="rotate(-90 35 378.0)">5.20</text>
+<path d="M70 170L70 346" class="pencil"/>
+<path d="M66 174L74 166" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M66 350L74 342" stroke="#1F2328" stroke-width="1.1"/>
+<text x="63" y="258.0" class="dim" text-anchor="middle" transform="rotate(-90 63 258.0)">2.20</text>
+<path d="M70 346L70 586" class="pencil"/>
+<path d="M66 350L74 342" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M66 590L74 582" stroke="#1F2328" stroke-width="1.1"/>
+<text x="63" y="466.0" class="dim" text-anchor="middle" transform="rotate(-90 63 466.0)">3.00</text>
+<path d="M110 602V630" class="pencil"/>
+<path d="M478 602V630" class="pencil"/>
+<path d="M622 362V630" class="pencil"/>
+<path d="M110 626L478 626" class="pencil"/>
+<path d="M106 630L114 622" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M474 630L482 622" stroke="#1F2328" stroke-width="1.1"/>
+<text x="294.0" y="621" class="dim" text-anchor="middle">4.60</text>
+<path d="M478 626L622 626" class="pencil"/>
+<path d="M474 630L482 622" stroke="#1F2328" stroke-width="1.1"/>
+<path d="M618 630L626 622" stroke="#1F2328" stroke-width="1.1"/>
+<text x="550.0" y="621" class="dim" text-anchor="middle">1.80</text>
+<rect x="110" y="682" width="80" height="6" fill="#1F2328" stroke="#1F2328" stroke-width=".8"/>
+<rect x="190" y="682" width="80" height="6" fill="white" stroke="#1F2328" stroke-width=".8"/>
+<rect x="270" y="682" width="80" height="6" fill="#1F2328" stroke="#1F2328" stroke-width=".8"/>
+<rect x="350" y="682" width="80" height="6" fill="white" stroke="#1F2328" stroke-width=".8"/>
+<rect x="430" y="682" width="80" height="6" fill="#1F2328" stroke="#1F2328" stroke-width=".8"/>
+<text x="110" y="677" text-anchor="middle" font-size="10" fill="#6E7782">0</text>
+<text x="190" y="677" text-anchor="middle" font-size="10" fill="#6E7782">1</text>
+<text x="270" y="677" text-anchor="middle" font-size="10" fill="#6E7782">2</text>
+<text x="350" y="677" text-anchor="middle" font-size="10" fill="#6E7782">3</text>
+<text x="430" y="677" text-anchor="middle" font-size="10" fill="#6E7782">4</text>
+<text x="510" y="677" text-anchor="middle" font-size="10" fill="#6E7782">5</text>
+<text x="522" y="688" font-size="10" fill="#6E7782">m</text><text x="110" y="707" font-size="9" font-weight="600" letter-spacing="1.2" fill="#6E7782">GRAPHIC SCALE</text><g transform="translate(620 685)"><circle r="17" class="pencil"/><path d="M0 -13L-6 9L0 5Z" fill="#1F2328"/><path d="M0 -13L6 9L0 5Z" fill="white" stroke="#1F2328" stroke-width=".9"/><text y="-24" text-anchor="middle" class="name">N</text></g></svg>

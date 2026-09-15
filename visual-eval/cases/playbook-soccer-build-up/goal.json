@@ -1,9 +1,9 @@
 {
   "id": "playbook-soccer-build-up",
   "type": "playbook",
-  "variant": "football",
-  "title": "Soccer Build Up",
-  "goal": "A practitioner can read the soccer build up artefact at a glance.",
+  "variant": "soccer",
+  "title": "Build-up through the pivot",
+  "goal": "A practitioner can read this play at a glance: Build-up through the pivot.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -31,5 +31,48 @@
       "must": "Lines and symbols do not visually imply unintended connections."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/soccer exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents the named soccer build-up and visibly matches the specified sequence: passes 1→5→6→10, plus dashed forward runs by 2 and 10. The pitch, players, opponents, ball, arrows, title, formation, and high-press context are all readable, with no material ambiguous or unintended connections.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:18.749Z",
+      "targetHash": "b73fe8817080",
+      "sourceHash": "423f9dd89840",
+      "exemplarHash": "3525b0607bf2",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "“Build-up through the pivot” is prominently titled, and the goalkeeper-to-centre-back-to-holding-midfielder progression is clearly shown."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The image uses a standard soccer pitch with numbered team markers, opponent markers, a ball, solid pass arrows, dashed run arrows, and a legend."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The principal flow is easy to trace from 1 to 5, 5 to 6, and 6 to 10; the forward runs from 2 and 10 are separately distinguished with dashed arrows."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The title, scenario subtitle, player numbers, and legend labels are visibly legible and associated with the correct elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Arrowheads and line styles clearly distinguish the three connected passes from the two player runs, without visibly implying extra connections."
+        }
+      ]
+    }
+  }
 }

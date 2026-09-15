@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="800" viewBox="0 0 1060 800" role="img" aria-labelledby="title desc">
+<title id="title">Consumer products portfolio — BCG review</title>
+<desc id="desc">Market share increases leftward and market growth increases upward. Sparkling Water is a Star, Protein Bars a Question Mark, Laundry Pods a Cash Cow, and DVD Rentals a Dog. Bubble areas represent revenues of 9, 5, 10, and 2 respectively.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#1e293b} .title{font-size:22px;font-weight:600}.subtitle{font-size:13px;fill:#475569}.quadrant{font-size:13px;font-weight:600;fill:#475569}.action{font-size:11px;fill:#64748b}.product{font-size:12px;font-weight:500}.value{font-size:10.5px;fill:#475569}.axis{font-size:12px;font-weight:600}.end{font-size:11px;fill:#475569}.head{font-size:11px;font-weight:600;letter-spacing:.55px;fill:#475569}.key{font-size:12px}.rule{stroke:#e2e8f0;stroke-width:1;fill:none}
+</style>
+<rect width="1060" height="800" fill="#ffffff"/>
+<text x="48" y="46" class="title">Consumer products portfolio — BCG review</text>
+<text x="48" y="74" class="subtitle">Bubble area = revenue. Market share increases to the left, per the Boston Consulting Group convention.</text>
+<!-- A 600 × 600 plot; coordinates map x to decreasing share and y to increasing growth. -->
+<rect x="132" y="124" width="300" height="300" fill="#E6E9ED"/>
+<rect x="432" y="124" width="300" height="300" fill="#F6F5F4"/>
+<rect x="132" y="424" width="300" height="300" fill="#F1F3F6"/>
+<rect x="432" y="424" width="300" height="300" fill="#FCFBFB"/>
+<rect x="132" y="124" width="600" height="600" class="rule"/>
+<path d="M432 124V724 M132 424H732" stroke="#cbd5e1" stroke-width="1" fill="none"/>
+<text x="148" y="152" class="quadrant">Stars</text>
+<text x="148" y="167" class="action">Invest to hold share</text>
+<text x="716" y="152" text-anchor="end" class="quadrant">Question Marks</text>
+<text x="716" y="167" text-anchor="end" class="action">Fund selectively or exit</text>
+<text x="148" y="690" class="quadrant">Cash Cows</text>
+<text x="148" y="705" class="action">Harvest to fund the Stars</text>
+<text x="716" y="690" text-anchor="end" class="quadrant">Dogs</text>
+<text x="716" y="705" text-anchor="end" class="action">Divest or discontinue</text>
+<!-- Radius = 46 × sqrt(revenue / 10), preserving proportional areas. -->
+<circle cx="264" cy="232" r="43.639" fill="#24618c" fill-opacity=".85" stroke="#194760" stroke-width="1.5"/>
+<text x="319" y="230" class="product">Sparkling Water</text>
+<text x="319" y="244" class="value">9</text>
+<circle cx="540" cy="256" r="32.527" fill="#3f8f7a" fill-opacity=".85" stroke="#2d6657" stroke-width="1.5"/>
+<text x="584" y="254" class="product">Protein Bars</text>
+<text x="584" y="268" class="value">5</text>
+<circle cx="246" cy="556" r="46" fill="#a1543f" fill-opacity=".85" stroke="#713f32" stroke-width="1.5"/>
+<text x="301" y="554" class="product">Laundry Pods</text>
+<text x="301" y="568" class="value">10</text>
+<circle cx="624" cy="628" r="20.572" fill="#c08a2e" fill-opacity=".85" stroke="#8b6423" stroke-width="1.5"/>
+<text x="591" y="626" text-anchor="end" class="product">DVD Rentals</text>
+<text x="591" y="640" text-anchor="end" class="value">2</text>
+<!-- Arrowheads mark the high ends of both axes. -->
+<path d="M132 106V724 M112 724H732" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+<path d="M132 100L127.5 110H136.5Z M108 724L118 719.5V728.5Z" fill="#1e293b"/>
+<text x="104" y="124" class="end" text-anchor="end" transform="rotate(-90 104 124)">High growth</text>
+<text x="104" y="724" class="end" transform="rotate(-90 104 724)">Low growth</text>
+<text x="78" y="424" class="axis" text-anchor="middle" transform="rotate(-90 78 424)">Market growth rate</text>
+<text x="132" y="750" class="end">High market share</text>
+<text x="732" y="750" text-anchor="end" class="end">Low market share</text>
+<text x="432" y="774" text-anchor="middle" class="axis">Relative market share</text>
+<!-- Boxed category, area scale, and portfolio summary in the exemplar's spacing. -->
+<rect x="776" y="124" width="236" height="404" rx="6" class="rule"/>
+<text x="794" y="150" class="head">CATEGORY</text>
+<circle cx="801" cy="168" r="6.5" fill="#24618c" fill-opacity=".85" stroke="#194760" stroke-width="1.5"/>
+<text x="814" y="172" class="key">Beverages</text>
+<circle cx="801" cy="194" r="6.5" fill="#3f8f7a" fill-opacity=".85" stroke="#2d6657" stroke-width="1.5"/>
+<text x="814" y="198" class="key">Snacks</text>
+<circle cx="801" cy="220" r="6.5" fill="#a1543f" fill-opacity=".85" stroke="#713f32" stroke-width="1.5"/>
+<text x="814" y="224" class="key">Home</text>
+<circle cx="801" cy="246" r="6.5" fill="#c08a2e" fill-opacity=".85" stroke="#8b6423" stroke-width="1.5"/>
+<text x="814" y="250" class="key">Legacy</text>
+<path d="M794 278H994" class="rule"/>
+<text x="794" y="306" class="head">REVENUE</text>
+<g fill="none" stroke="#94a3b8" stroke-width="1">
+<circle cx="846" cy="372" r="46"/>
+<circle cx="846" cy="385.473" r="32.527"/>
+<circle cx="846" cy="397.428" r="20.572"/>
+</g>
+<path d="M846 326H912 M846 352.946H912 M846 376.856H912" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2 2"/>
+<text x="918" y="330" class="value">10</text>
+<text x="918" y="357" class="value">5</text>
+<text x="918" y="381" class="value">2</text>
+<path d="M794 442H994" class="rule"/>
+<text x="794" y="470" class="head">PORTFOLIO</text>
+<text x="794" y="492" font-size="13" font-weight="600">26 total revenue</text>
+<text x="794" y="510" class="value">across 4 products in 4 categories</text>
+</svg>

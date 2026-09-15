@@ -1,1 +1,78 @@
-{"id":"orgchart-school-district","type":"orgchart","title":"School district administration","goal":"Show board governance and district school leadership.","rubric":[{"id":"governance","severity":"blocker","must":"The Board of Education visibly sits above and connects to the superintendent."},{"id":"principals","severity":"blocker","must":"Oak, Maple, Valley Middle, and Valley High principals visibly sit under their relevant school executive."},{"id":"academic","severity":"major","must":"Teaching and Learning visibly leads Mathematics and Student Services."},{"id":"hierarchy","severity":"major","must":"The superintendent is the only visible management link between the board and district functions."},{"id":"readable","severity":"minor","must":"School and role labels are readable."}],"split":"train"}
+{
+  "id": "orgchart-school-district",
+  "type": "orgchart",
+  "variant": "tree",
+  "title": "School district administration",
+  "goal": "Show board governance and district school leadership.",
+  "rubric": [
+    {
+      "id": "governance",
+      "severity": "blocker",
+      "must": "The Board of Education visibly sits above and connects to the superintendent."
+    },
+    {
+      "id": "principals",
+      "severity": "blocker",
+      "must": "Oak, Maple, Valley Middle, and Valley High principals visibly sit under their relevant school executive."
+    },
+    {
+      "id": "academic",
+      "severity": "major",
+      "must": "Teaching and Learning visibly leads Mathematics and Student Services."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "major",
+      "must": "The superintendent is the only visible management link between the board and district functions."
+    },
+    {
+      "id": "readable",
+      "severity": "minor",
+      "must": "School and role labels are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The board connects to the superintendent, who is the sole visible link to district functions. Each principal is visibly under the relevant school executive, and Teaching & Learning leads both academic roles. Labels are readable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:44.440Z",
+      "targetHash": "a0ca7ca800a7",
+      "sourceHash": "6afeb3e4bab6",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "governance",
+          "verdict": "pass",
+          "evidence": "Board of Education is positioned above and connected vertically to Dr Elena Park, Superintendent."
+        },
+        {
+          "id": "principals",
+          "verdict": "pass",
+          "evidence": "Sarah Dunn and Tom Nguyen are beneath Mark Ellis; Ken Wallace and Dana Holt are beneath Dr Aisha Bell."
+        },
+        {
+          "id": "academic",
+          "verdict": "pass",
+          "evidence": "Lila Stone, Director, Teaching & Learning, is connected above Ravi Mehta and Jo Grant."
+        },
+        {
+          "id": "hierarchy",
+          "verdict": "pass",
+          "evidence": "The only visible path from the board to district functions runs through the superintendent."
+        },
+        {
+          "id": "readable",
+          "verdict": "pass",
+          "evidence": "School and role labels are legible, with no material overlap or cropping."
+        }
+      ]
+    }
+  }
+}

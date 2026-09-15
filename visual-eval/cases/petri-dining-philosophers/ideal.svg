@@ -1,54 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" width="1600" height="1100">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067">
 <title>Two Dining Philosophers</title>
-<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L10 4L0 8Z" fill="#111"/></marker></defs>
-<rect width="1600" height="1100" fill="white"/>
-<g font-family="Georgia, 'Times New Roman', serif" fill="#111" text-anchor="middle">
-<text x="800" y="70" font-size="52" font-weight="bold">Two Dining Philosophers</text>
+<rect width="1600" height="1067" fill="white"/>
+<defs><marker id="arrow" markerWidth="4" markerHeight="4" refX="3.6" refY="2" orient="auto" markerUnits="strokeWidth"><path d="M0 0L4 2L0 4Z" fill="black"/></marker></defs>
+<g fill="none" stroke="black" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)">
+<!-- Philosopher state cycles; returns occupy the outside channels. -->
+<path d="M347 318V418"/>
+<path d="M347 441V566"/>
+<path d="M347 668V785"/>
+<path d="M347 808V890H174V267H296"/>
+<path d="M1253 318V418"/>
+<path d="M1253 441V566"/>
+<path d="M1253 668V785"/>
+<path d="M1253 808V890H1425V267H1304"/>
+<!-- Both forks are required by both start transitions. -->
+<path d="M740 300H540V424H411"/>
+<path d="M860 300H1060V424H1189"/>
+<path d="M740 640H620V435H411"/>
+<path d="M860 640H980V435H1189"/>
+<!-- Both finish transitions restore both forks in separate return lanes. -->
+<path d="M411 791H500V350H765V349"/>
+<path d="M1189 791H1100V350H835V349"/>
+<path d="M411 802H580V690H765V689"/>
+<path d="M1189 802H1020V690H835V689"/>
 </g>
-<!-- All arcs join a place and a transition. Separate orthogonal lanes keep shared resources legible. -->
-<g fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)">
-<!-- Philosopher 1 state cycle -->
-<path d="M310 234V350"/>
-<path d="M310 426V601"/>
-<path d="M310 689V850"/>
-<path d="M294 904H65V190H266"/>
-<!-- Philosopher 2 state cycle -->
-<path d="M1290 234V350"/>
-<path d="M1290 426V601"/>
-<path d="M1290 689V850"/>
-<path d="M1306 904H1535V190H1334"/>
-<!-- Fork 1 is consumed by either start -->
-<path d="M756 260H480V372H326"/>
-<path d="M844 260H1120V372H1274"/>
-<!-- Fork 2 is consumed by either start -->
-<path d="M756 500H560V405H326"/>
-<path d="M844 500H1040V405H1274"/>
-<!-- Both forks are returned by either finish -->
-<path d="M326 870H650V320H780V299"/>
-<path d="M1274 870H950V320H820V299"/>
-<path d="M326 904H710V570H780V539"/>
-<path d="M1274 904H890V570H820V539"/>
+<g fill="white" stroke="black" stroke-width="3.3">
+<circle cx="347" cy="267" r="51"/><circle cx="1253" cy="267" r="51"/>
+<circle cx="347" cy="617" r="51"/><circle cx="1253" cy="617" r="51"/>
+<circle cx="800" cy="300" r="60"/><circle cx="800" cy="640" r="60"/>
 </g>
-<!-- Places -->
-<g fill="white" stroke="#111" stroke-width="2.5">
-<circle cx="310" cy="190" r="44"/>
-<circle cx="1290" cy="190" r="44"/>
-<circle cx="800" cy="260" r="44"/>
-<circle cx="800" cy="500" r="44"/>
-<circle cx="310" cy="645" r="44"/>
-<circle cx="1290" cy="645" r="44"/>
-<!-- Transitions -->
-<rect x="294" y="350" width="32" height="76"/>
-<rect x="1274" y="350" width="32" height="76"/>
-<rect x="294" y="850" width="32" height="76"/>
-<rect x="1274" y="850" width="32" height="76"/>
+<g fill="black">
+<circle cx="347" cy="267" r="13.5"/><circle cx="1253" cy="267" r="13.5"/>
+<circle cx="800" cy="300" r="13.5"/><circle cx="800" cy="640" r="13.5"/>
+<rect x="301" y="418" width="110" height="23"/><rect x="1189" y="418" width="110" height="23"/>
+<rect x="308" y="785" width="103" height="23"/><rect x="1189" y="785" width="103" height="23"/>
 </g>
-<!-- Initial marking -->
-<g fill="#111"><circle cx="310" cy="190" r="10"/><circle cx="1290" cy="190" r="10"/><circle cx="800" cy="260" r="10"/><circle cx="800" cy="500" r="10"/></g>
-<g fill="#111" font-family="Georgia, 'Times New Roman', serif" font-size="30">
-<g text-anchor="middle"><text x="310" y="126">Think1</text><text x="1290" y="126">Think2</text><text x="800" y="195">Fork1</text><text x="800" y="435">Fork2</text></g>
-<g text-anchor="end"><text x="278" y="330">P1 takes forks</text><text x="246" y="655">Eat1</text><text x="278" y="830">P1 releases forks</text></g>
-<g text-anchor="start"><text x="1322" y="330">P2 takes forks</text><text x="1354" y="655">Eat2</text><text x="1322" y="830">P2 releases forks</text></g>
+<g fill="black" font-family="Times New Roman, Times, serif" font-size="36">
+<text x="800" y="70" text-anchor="middle" font-size="60">Two Dining Philosophers</text>
+<text x="347" y="192" text-anchor="middle">Think1</text><text x="1253" y="192" text-anchor="middle">Think2</text>
+<text x="800" y="210" text-anchor="middle">Fork1</text><text x="800" y="550" text-anchor="middle">Fork2</text>
+<text x="411" y="629">Eat1</text><text x="1189" y="629" text-anchor="end">Eat2</text>
+<text x="155" y="424" text-anchor="end" font-size="28"><tspan x="155">P1 takes</tspan><tspan x="155" dy="32">forks</tspan></text>
+<text x="1445" y="424" font-size="28"><tspan x="1445">P2 takes</tspan><tspan x="1445" dy="32">forks</tspan></text>
+<text x="155" y="791" text-anchor="end" font-size="28"><tspan x="155">P1 releases</tspan><tspan x="155" dy="32">forks</tspan></text>
+<text x="1445" y="791" font-size="28"><tspan x="1445">P2 releases</tspan><tspan x="1445" dy="32">forks</tspan></text>
 </g>
-<g font-family="Georgia, 'Times New Roman', serif" fill="#111" text-anchor="middle"><text x="800" y="1005" font-size="25">Initial marking: Think1, Think2, Fork1, Fork2</text><text x="800" y="1048" font-size="25">Firing sequence: Start1 → Finish1</text></g>
+<text x="800" y="982" text-anchor="middle" fill="black" font-family="Arial, Helvetica, sans-serif" font-size="32" font-style="italic">Firing sequence: Start1 → Finish1</text>
 </svg>

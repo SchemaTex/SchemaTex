@@ -1,19 +1,24 @@
-# Scenario: Car Wash IEC 61131-3 sequential control chart.
-sfc "Car Wash"
-var Start: bool
-var Ready: bool
-var Complete: bool
-var Reset: bool
+# Scenario: IEC 61131-3 car wash: pre-soak, then brushes and wheel wash run together, then rinse and dry.
+sfc "Car wash cycle"
+var CarInBay: bool
+var SoakDone: bool
+var BrushDone: bool
+var WheelDone: bool
+var DryDone: bool
 step S0 [initial]
-  N Idle
-step S1 [label: "Prepare"]
-  N PrepareOutput
-step S2 [label: "Operate"]
-  D RunOutput T#10s
-step S3 [label: "Complete"]
-  N CompleteOutput
-transition from: S0 to: S1: Start
-transition from: S1 to: S2: Ready
-transition from: S2 to: S3: Complete
-transition from: S3 to: S0: Reset
-
+  N EntryLightGreen
+step S1 [label: "Pre-soak"]
+  D SoapPump T#20s
+sim from: S1: SoakDone
+  branch:
+    step S2 [label: "Brush body"]
+      N BrushMotors
+  branch:
+    step S3 [label: "Wash wheels"]
+      L WheelJets T#30s
+merge_to: S4: BrushDone AND WheelDone
+step S4 [label: "Rinse and dry"]
+  N RinseArch
+  D Blowers T#5s
+transition from: S0 to: S1: CarInBay
+transition from: S4 to: S0: DryDone

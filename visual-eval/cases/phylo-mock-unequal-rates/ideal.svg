@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="873" viewBox="0 0 1140 622" role="img" aria-labelledby="title desc">
+  <title id="title">Unequal evolutionary rates (mock)</title>
+  <desc id="desc">Illustrative slanted phylogram with three separate sister pairs: Slow A and Fast B, Medium C and Medium D, Slow E and Fast F. Horizontal branch displacement represents substitutions per site at 2000 SVG units per substitution per site. Internal branches have lengths 0.05, 0.04 and 0.08 respectively. Terminal branch lengths are 0.01, 0.30, 0.12, 0.15, 0.03 and 0.25. Dashed label guides carry no evolutionary distance. Mock data, not an inferred analysis.</desc>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size: 28px; font-weight: 700; }
+    .subtitle { font-size: 13px; fill: #64748b; letter-spacing: .3px; }
+    .heading { font-size: 12px; fill: #64748b; letter-spacing: 1px; }
+    .taxon { font-size: 16px; font-style: italic; }
+    .note { font-size: 11px; fill: #64748b; }
+    .scale { font-size: 12px; }
+    .branch { fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .guide { fill: none; stroke: #64748b; stroke-opacity: .45; stroke-width: 1; stroke-dasharray: 2.5 4.5; }
+  </style>
+  <rect width="1140" height="622" fill="#ffffff"/>
+  <text class="title" x="48" y="48">Unequal evolutionary rates (mock)</text>
+  <text class="subtitle" x="48" y="76">Slanted phylogram · unequal terminal branch distances</text>
+  <path d="M48 99H1092" stroke="#64748b" stroke-opacity=".22"/>
+  <text class="heading" x="80" y="133">PHYLOGENY</text>
+  <text class="heading" x="854" y="133">TAXON</text>
+
+  <rect x="838" y="148" width="254" height="88" rx="3" fill="#0f766e" fill-opacity=".045"/>
+  <rect x="838" y="268" width="254" height="88" rx="3" fill="#2563eb" fill-opacity=".045"/>
+  <rect x="838" y="388" width="254" height="88" rx="3" fill="#a16207" fill-opacity=".045"/>
+
+  <g class="guide">
+    <path d="M200 170H840"/>
+    <path d="M780 214H840"/>
+    <path d="M400 290H840"/>
+    <path d="M460 334H840"/>
+    <path d="M300 410H840"/>
+    <path d="M740 454H840"/>
+  </g>
+  <g class="branch" stroke="#0f766e">
+    <path d="M80 312L180 192L200 170"/>
+    <path d="M180 192L780 214"/>
+  </g>
+  <g class="branch" stroke="#2563eb">
+    <path d="M80 312L160 312L400 290"/>
+    <path d="M160 312L460 334"/>
+  </g>
+  <g class="branch" stroke="#a16207">
+    <path d="M80 312L240 432L300 410"/>
+    <path d="M240 432L740 454"/>
+  </g>
+  <g class="taxon" dominant-baseline="middle">
+    <text x="854" y="170">Slow A</text>
+    <text x="854" y="214">Fast B</text>
+    <text x="854" y="290">Medium C</text>
+    <text x="854" y="334">Medium D</text>
+    <text x="854" y="410">Slow E</text>
+    <text x="854" y="454">Fast F</text>
+  </g>
+
+  <path d="M80 515V525M80 520H180M180 515V525" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text class="scale" x="80" y="545">0.05 substitutions/site</text>
+  <text class="note" x="466" y="521">Horizontal distance: substitutions/site</text>
+  <text class="note" x="466" y="544">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 568H1092" stroke="#64748b" stroke-opacity=".22"/>
+  <text class="note" x="48" y="593">Mock dataset · topology and branch distances are authored examples, not an inferred analysis.</text>
+</svg>

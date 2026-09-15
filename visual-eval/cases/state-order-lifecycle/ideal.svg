@@ -1,72 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1130" viewBox="0 0 1500 1130">
-  <title>E-commerce order lifecycle with payment, fulfillment, and terminal outcomes</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1214" viewBox="0 0 1160 880" role="img" aria-labelledby="title desc">
+  <title id="title">E-commerce Order Lifecycle</title>
+  <desc id="desc">A UML state machine: an initial marker enters Draft; submit with cartValid enters Submitted. Inventory reservation with stockAvailable enters Payment Pending. Customer cancellation enters Cancelled. Payment approval enters Paid, then Fulfillment, Shipped, Delivered and a final marker. Payment decline enters Payment Failed, which retries with fewer than three retries or cancels with three or more retries. Cancelled also enters a final marker.</desc>
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#334155" stroke-width="1.8"/></marker>
+    <marker id="arrow" markerWidth="9" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L8 5 L0 10" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
     <style>
-      .state{fill:#f8fafc;stroke:#334155;stroke-width:2}
-      .edge{fill:none;stroke:#334155;stroke-width:2;marker-end:url(#arrow);stroke-linejoin:round}
-      .name{font-family:Helvetica,Arial,sans-serif;font-size:24px;fill:#172b43;text-anchor:middle;dominant-baseline:middle}
-      .label{font-family:Helvetica,Arial,sans-serif;font-size:20px;fill:#334155}
-      .guard{font-family:Helvetica,Arial,sans-serif;font-size:19px;fill:#334155}
+      text { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+      .title { font-size:19px; font-weight:600; fill:#16202E; }
+      .subtitle { font-size:11.5px; fill:#64708A; }
+      .state { fill:#FFFFFF; stroke:#16202E; stroke-width:1.5; }
+      .name { font-size:13px; font-weight:500; fill:#16202E; text-anchor:middle; dominant-baseline:middle; }
+      .edge { fill:none; stroke:#4A5568; stroke-width:1.25; stroke-linejoin:round; marker-end:url(#arrow); }
+      .label { font-size:11px; fill:#64708A; paint-order:stroke; stroke:#FFFFFF; stroke-width:5; stroke-linejoin:round; }
+      .legend { font-size:10.5px; fill:#64708A; }
+      .exception { stroke:#A4442F; }
+      .exception-name { fill:#A4442F; }
     </style>
   </defs>
-  <rect width="1500" height="1130" fill="white"/>
+  <rect width="1160" height="880" fill="#FFFFFF"/>
+  <text class="title" x="40" y="46">E-commerce Order Lifecycle</text>
+  <text class="subtitle" x="40" y="68">UML 2.5 state machine · transition labels read event [guard] / action</text>
 
-  <!-- Initial state and guarded submission -->
-  <circle cx="475" cy="42" r="12" fill="#172b43"/>
-  <path class="edge" d="M475 54 V90"/>
-  <rect class="state" x="370" y="90" width="210" height="60" rx="12"/>
-  <text class="name" x="475" y="120">Draft</text>
-  <path class="edge" d="M475 150 V230"/>
-  <text class="label" x="490" y="184">submit [cartValid]</text>
-  <rect class="state" x="370" y="230" width="210" height="60" rx="12"/>
-  <text class="name" x="475" y="260">Submitted</text>
+  <!-- Every edge terminates exactly on its target boundary. -->
+  <g class="edge">
+    <path d="M180 106 V137"/>
+    <path d="M180 183 V287"/>
+    <path d="M260 310 H470"/>
+    <path d="M180 333 V647"/>
+    <path d="M630 310 H860"/>
+    <path d="M550 333 V467"/>
+    <path d="M630 490 H700 Q710 490 710 480 V390 Q710 380 700 380 H610 V333"/>
+    <path d="M470 490 H360 Q350 490 350 500 V660 Q350 670 340 670 H260"/>
+    <path d="M940 333 V427"/>
+    <path d="M940 473 V567"/>
+    <path d="M940 613 V687"/>
+    <path d="M1020 710 H1080"/>
+    <path d="M180 693 V750"/>
+  </g>
 
-  <!-- Reservation and direct customer cancellation -->
-  <path class="edge" d="M475 290 V390"/>
-  <text class="label" x="490" y="326">reserveInventory</text>
-  <text class="guard" x="490" y="353">[stockAvailable]</text>
-  <path class="edge" d="M580 260 H1310 V870 H1230"/>
-  <text class="label" x="865" y="243" text-anchor="middle">cancel [customerRequest]</text>
-  <rect class="state" x="355" y="390" width="240" height="70" rx="12"/>
-  <text class="name" x="475" y="425">Payment Pending</text>
+  <g class="label">
+    <text x="196" y="235">submit [cartValid]</text>
+    <text x="365" y="284" text-anchor="middle">reserveInventory</text>
+    <text x="365" y="299" text-anchor="middle">[stockAvailable]</text>
+    <text x="196" y="548">cancel</text>
+    <text x="196" y="563">[customerRequest]</text>
+    <text x="745" y="299" text-anchor="middle">paymentApproved</text>
+    <text x="430" y="409">paymentDeclined</text>
+    <text x="726" y="431">retry [retries &lt; 3]</text>
+    <text x="366" y="590">cancel [retries &gt;= 3]</text>
+    <text x="956" y="386">releaseToWarehouse</text>
+    <text x="956" y="526">carrierCollected</text>
+    <text x="956" y="656">deliveryConfirmed</text>
+  </g>
 
-  <!-- Payment approval, decline, and bounded retry loop -->
-  <path class="edge" d="M475 460 V555"/>
-  <text class="label" x="490" y="512">paymentApproved</text>
-  <path class="edge" d="M595 425 H930"/>
-  <text class="label" x="762" y="409" text-anchor="middle">paymentDeclined</text>
-  <rect class="state" x="930" y="390" width="240" height="70" rx="12"/>
-  <text class="name" x="1050" y="425">Payment Failed</text>
-  <path class="edge" d="M1050 390 V335 H755 V365 H550 V390"/>
-  <text class="label" x="1040" y="318" text-anchor="end">retry [retries &lt; 3]</text>
-  <path class="edge" d="M1050 460 V840"/>
-  <text class="label" x="1068" y="627">cancel</text>
-  <text class="guard" x="1068" y="655">[retries &gt;= 3]</text>
+  <g>
+    <circle cx="180" cy="100" r="6" fill="#16202E"/>
+    <rect class="state" x="100" y="137" width="160" height="46" rx="10"/>
+    <text class="name" x="180" y="160">Draft</text>
+    <rect class="state" x="100" y="287" width="160" height="46" rx="10"/>
+    <text class="name" x="180" y="310">Submitted</text>
+    <rect class="state" x="470" y="287" width="160" height="46" rx="10"/>
+    <text class="name" x="550" y="310">Payment Pending</text>
+    <rect class="state" x="860" y="287" width="160" height="46" rx="10"/>
+    <text class="name" x="940" y="310">Paid</text>
+    <rect class="state" x="470" y="467" width="160" height="46" rx="10"/>
+    <text class="name" x="550" y="490">Payment Failed</text>
+    <rect class="state exception" x="100" y="647" width="160" height="46" rx="10"/>
+    <text class="name exception-name" x="180" y="670">Cancelled</text>
+    <rect class="state" x="860" y="427" width="160" height="46" rx="10"/>
+    <text class="name" x="940" y="450">Fulfillment</text>
+    <rect class="state" x="860" y="567" width="160" height="46" rx="10"/>
+    <text class="name" x="940" y="590">Shipped</text>
+    <rect class="state" x="860" y="687" width="160" height="46" rx="10"/>
+    <text class="name" x="940" y="710">Delivered</text>
+    <circle class="state" cx="1090" cy="710" r="10"/>
+    <circle cx="1090" cy="710" r="5" fill="#16202E"/>
+    <circle class="state" cx="180" cy="760" r="10"/>
+    <circle cx="180" cy="760" r="5" fill="#16202E"/>
+  </g>
 
-  <!-- Successful fulfillment chain -->
-  <rect class="state" x="370" y="555" width="210" height="60" rx="12"/>
-  <text class="name" x="475" y="585">Paid</text>
-  <path class="edge" d="M475 615 V690"/>
-  <text class="label" x="490" y="656">releaseToWarehouse</text>
-  <rect class="state" x="370" y="690" width="210" height="60" rx="12"/>
-  <text class="name" x="475" y="720">Fulfillment</text>
-  <path class="edge" d="M475 750 V825"/>
-  <text class="label" x="490" y="791">carrierCollected</text>
-  <rect class="state" x="370" y="825" width="210" height="60" rx="12"/>
-  <text class="name" x="475" y="855">Shipped</text>
-  <path class="edge" d="M475 885 V960"/>
-  <text class="label" x="490" y="926">deliveryConfirmed</text>
-  <rect x="370" y="960" width="210" height="60" rx="12" fill="#e7f4ec" stroke="#28754b" stroke-width="2.5"/>
-  <text class="name" x="475" y="990">Delivered</text>
-  <path class="edge" d="M475 1020 V1070"/>
-  <circle cx="475" cy="1086" r="16" fill="white" stroke="#28754b" stroke-width="2.5"/>
-  <circle cx="475" cy="1086" r="10" fill="#28754b"/>
-
-  <!-- Cancellation terminal -->
-  <rect x="990" y="840" width="240" height="60" rx="12" fill="#fcebea" stroke="#a74440" stroke-width="2.5"/>
-  <text class="name" x="1110" y="870">Cancelled</text>
-  <path class="edge" d="M1110 900 V950"/>
-  <circle cx="1110" cy="966" r="16" fill="white" stroke="#a74440" stroke-width="2.5"/>
-  <circle cx="1110" cy="966" r="10" fill="#a74440"/>
+  <!-- Bottom legend, following the exemplar's baseline and open spacing. -->
+  <path d="M40 792 H1120" fill="none" stroke="#EEF2F7" stroke-width="1.25"/>
+  <g transform="translate(0 824)">
+    <circle cx="46" cy="0" r="6" fill="#16202E"/>
+    <text class="legend" x="61" y="4">initial pseudo-state</text>
+    <circle class="state" cx="220" cy="0" r="10"/>
+    <circle cx="220" cy="0" r="5" fill="#16202E"/>
+    <text class="legend" x="239" y="4">final state</text>
+    <path class="edge" d="M340 0 H376"/>
+    <text class="legend" x="389" y="4">event [guard] / action</text>
+    <rect class="state" x="610" y="-10" width="26" height="20" rx="6"/>
+    <text class="legend" x="645" y="4">order state</text>
+    <rect class="state exception" x="852" y="-10" width="26" height="20" rx="6"/>
+    <text class="legend" x="887" y="4">cancellation branch</text>
+  </g>
 </svg>

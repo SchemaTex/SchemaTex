@@ -4,12 +4,42 @@
   "title": "Two-motor duty alternation",
   "goal": "An operator can see which motor is lead and how reset transfers the next duty assignment.",
   "rubric": [
-    {"id":"lead-selectors","severity":"blocker","must":"Separate set coils labelled LeadA and LeadB are visibly driven by reset paths using the opposite lead-selector contact."},
-    {"id":"selected-motor-paths","severity":"blocker","must":"The MotorA rung contains LeadA and the MotorB rung contains LeadB, each with StartDemand."},
-    {"id":"transfer-to-b","severity":"major","must":"ResetPB with LeadA visibly sets LeadB and resets LeadA on adjacent transfer rungs."},
-    {"id":"transfer-to-a","severity":"major","must":"ResetPB with LeadB visibly sets LeadA and resets LeadB on adjacent transfer rungs."},
-    {"id":"overload-per-motor","severity":"major","must":"MotorAOverload and MotorBOverload normally closed contacts are visible on their respective motor rungs."},
-    {"id":"status-lamps","severity":"minor","must":"MotorALamp and MotorBLamp coils are visibly driven from their respective motor contacts."}
+    {
+      "id": "lead-selectors",
+      "severity": "blocker",
+      "must": "Separate set coils labelled LeadA and LeadB are visibly driven by reset paths using the opposite lead-selector contact."
+    },
+    {
+      "id": "selected-motor-paths",
+      "severity": "blocker",
+      "must": "The MotorA rung contains LeadA and the MotorB rung contains LeadB, each with StartDemand."
+    },
+    {
+      "id": "transfer-to-b",
+      "severity": "major",
+      "must": "ResetPB with LeadA visibly sets LeadB and resets LeadA on adjacent transfer rungs."
+    },
+    {
+      "id": "transfer-to-a",
+      "severity": "major",
+      "must": "ResetPB with LeadB visibly sets LeadA and resets LeadB on adjacent transfer rungs."
+    },
+    {
+      "id": "overload-per-motor",
+      "severity": "major",
+      "must": "MotorAOverload and MotorBOverload normally closed contacts are visible on their respective motor rungs."
+    },
+    {
+      "id": "status-lamps",
+      "severity": "minor",
+      "must": "MotorALamp and MotorBLamp coils are visibly driven from their respective motor contacts."
+    }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/ladder/ideal.svg (sha256 72319743d0eb). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Measured spacious rung bands and consistent AB contact, coil and reset-bracket symbols. All rungs and branch membership preserved. PROVISIONAL: scan-ordered set/reset rungs can transfer A to B and immediately B to A on the same ResetPB scan; no initial lead is declared."
+  }
 }

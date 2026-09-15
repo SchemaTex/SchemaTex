@@ -1,0 +1,465 @@
+{
+  "type": "breadboard",
+  "variant": null,
+  "exemplar": "breadboard",
+  "style": "True scale, 0.1 in = 18 units, so 1 mm = 7.09 units. Parts that lie flat, straddle the trough or are boards are seen from above; tall upright parts (electrolytic can, ceramic disc) are seen from the front, and any part whose body would hide its legs stands over the rows beyond them. Leads are grey #8E8E8E, 2 units, round-capped, each ending in a #5C5C5C dot on a hole centre; header posts are gold #C9A23F squares on 0.1 in. Bodies are flat fills with a darker hairline and one soft white highlight: resistor beige #DCC39A, LED red #E23B30 on #B8261F, button and header plastic #2B2D31, chips #232529 with #B9BEC4 shoulders and #8E949B marking, trimmer blue #2E64AE, module boards blue #1F4E96, Uno teal #1A8A8F with #E9F6F6 type. Wires are a 4.2-unit core over a 6.4-unit darker edge with a dark cap and pale #D4D7DB tip at each end. Type is the exemplar's Inter stack; pin names 7–8 px.",
+  "symbols": [
+    {
+      "id": "resistor",
+      "label": "Resistor, 10 kΩ",
+      "file": "resistor.svg",
+      "engine": null,
+      "dsl": [
+        "r1: resistor 10k @13c..17c"
+      ],
+      "standard": "IEC 60062 four-band colour code (brown 1, black 0, orange ×1000, gold ±5 %, gap before the tolerance band); 1/4 W carbon-film body about 6.3 × 2.4 mm; Fritzing breadboard-view resistor",
+      "sourceUrl": "https://www.te.com/en/products/passive-components/resistors/intersection/resistor-color-codes.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 245,
+      "notes": "The first band sits on the left bulge and a wider gap precedes the gold tolerance band, so the code reads in the right direction; grey leads run the full 0.4 in to dark lead ends on 13c and 17c. The body is 46 × 15 px, 6.5 × 2.1 mm, within the tolerance of a 1/4 W part, so it keeps the exemplar's size. The engine draws a flat 31 × 8 px bar with four evenly spaced 2 px bands and no tolerance gap, on its smaller 14 px pitch, with thin slate leads and no visible lead ends.",
+      "source": "breadboard\nboard: half\nparts\n  r1: resistor 10k @13c..17c\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "dip-ic",
+      "label": "DIP-8 IC (NE555)",
+      "file": "dip-ic.svg",
+      "engine": null,
+      "dsl": [
+        "u1: dip pins=8 NE555 @14e",
+        "pins=14 and pins=16 draw the longer packages; the part number is the value"
+      ],
+      "standard": "JEDEC MS-001 plastic DIP: 0.1 in pin pitch, rows 0.3 in apart, 8-lead body about 9.4 × 6.35 mm; pin 1 beside the notch, pins numbered anticlockwise seen from above (TI NE555 datasheet, P package)",
+      "sourceUrl": "https://www.ti.com/lit/ds/symlink/ne555.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 180,
+      "notes": "Copies the exemplar's ATmega328P: a black body with a half-round notch, pale leg shoulders and a grey part number. The body is 67 × 45 px, true size, so its long edges stop 4.5 px short of rows e and f and the shoulders run out to the lead ends. With the notch on the left, pin 1 is the lower-left leg (14f, marked with a dot) and the count runs anticlockwise: 1–4 along row f, 5–8 back along row e. The engine numbers the other way round — pin 1 at 14e, pins 1–4 along row e — which is the chip seen from below, while its own pin-1 dot is at the lower left. Its lower pins also land in row g, one row past the trough's edge, because it spaces the two rows three holes apart without counting the trough. It also ignores the part number and prints IC8 on a 42 × 34 px body.",
+      "source": "breadboard\nboard: half\nparts\n  u1: dip pins=8 NE555 @14e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "led",
+      "label": "LED, 5 mm red",
+      "file": "led.svg",
+      "engine": null,
+      "dsl": [
+        "led1: led red @26f..26e",
+        "anode hole first, cathode hole second"
+      ],
+      "standard": "5 mm through-hole LED: 5.0 mm dome on a 5.8 mm flange; the flat on the flange and the shorter leg mark the cathode (SparkFun LED and Polarity tutorials)",
+      "sourceUrl": "https://learn.sparkfun.com/tutorials/polarity/all",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 177,
+      "notes": "Now at true size: a 35 px red dome on a 41 px darker flange, straddling the trough with the anode in f and the cathode in e. The flat is cut where the dome meets the flange, so the dark ring runs all the way round except on the cathode side, which reads from a distance. The two dark marks inside the dome in the sample were removed because they read as a pause sign. From above both legs look the same length, so the flat stays the only polarity mark. The engine draws a 12 px disc lying along the row across two columns instead of across the trough, with a thin black bar for the cathode.",
+      "source": "breadboard\nboard: half\nparts\n  led1: led red @26f..26e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "male-header",
+      "label": "Male pin header, 1 × 4",
+      "file": "male-header.svg",
+      "engine": null,
+      "dsl": [
+        "j1: header pins=4 @10c",
+        "pins= sets the count; posts run to the right of the anchor"
+      ],
+      "standard": "Break-away 0.1 in male header: 2.54 mm plastic per post, 2.5 mm wide, 0.64 mm square posts (SparkFun Break Away Headers - Straight, PRT-00116)",
+      "sourceUrl": "https://www.sparkfun.com/products/116",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 164,
+      "notes": "A 72 × 18 px black strip with a V notch between posts where it snaps apart, and a 4.6 px gold post on each hole centre. A header has no legs to show: the posts go straight down, so the post itself marks the hole. The engine draws a 48 px black bar with yellow dots on the holes, but the bar starts 3 px before the first dot and stops at the edge of the last one, and the points wires attach to sit half a hole above the row the dots are drawn on.",
+      "source": "breadboard\nboard: half\nparts\n  j1: header pins=4 @10c\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "arduino-uno",
+      "label": "Arduino Uno R3",
+      "file": "arduino-uno.svg",
+      "engine": null,
+      "dsl": [
+        "uno: mcu uno @above",
+        "also @below, @beside-left, @beside-right"
+      ],
+      "standard": "Arduino UNO R3 board outline 68.6 × 53.4 mm with headers on 0.1 in and the 0.16 in gap between pins 7 and 8 (Arduino UNO R3 documentation and board files)",
+      "sourceUrl": "https://docs.arduino.cc/hardware/uno-rev3/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 153,
+      "notes": "Lifted from the exemplar unchanged, except that every pin name is at the unused weight: a diagram turns the pins it wires bold white, as the exemplar does for 5V, GND, A0, 2 and 3. Its headers share the breadboard's 0.1 in pitch, so power wires can drop straight into the rails. The engine draws a 110 × 200 px teal card standing on end, with 25 of the Uno's 32 header pins as dots down its two long sides at 12 px spacing and a caption, so no pin sits where it is on the board.",
+      "source": "breadboard\nboard: half\nparts\n  uno: mcu uno @above\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "esp32-devkit",
+      "label": "ESP32 DevKit V1 (30-pin)",
+      "file": "esp32-devkit.svg",
+      "engine": null,
+      "dsl": [
+        "esp: mcu esp32 @beside-left",
+        "esp32, esp32-devkit, esp32-c3 and esp32-s3 all draw this board"
+      ],
+      "standard": "DOIT ESP32 DevKit V1, 30 pins: 51.8 × 28.2 mm, 15 pins per side on 0.1 in, rows 0.9 in apart; ESP32-WROOM-32 module 18 × 25.5 mm (Espressif datasheet; Mischianti DevKit V1 pinout)",
+      "sourceUrl": "https://mischianti.org/doit-esp32-dev-kit-v1-high-resolution-pinout-and-specs/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 118,
+      "notes": "Drawn as it sits across a breadboard, pins along the rows: with the rows 0.9 in apart the two headers land in rows b and i and leave one free hole per strip on each side. The pin names are the silkscreen names in board order (VIN and 3V3 at the USB end, EN beside the antenna). They sit outside the board, rotated like the Uno's, because the 2.7 mm between a pin and the board edge or the module cannot hold 7.5 px type. The engine draws a 110 × 180 px slate card standing on end with 31 dots and a mix of DevKitC and DevKit V1 pin names, so neither board's pin order matches.",
+      "source": "breadboard\nboard: half\nparts\n  esp: mcu esp32 @beside-left\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "pushbutton",
+      "label": "Pushbutton, 6 mm tactile",
+      "file": "pushbutton.svg",
+      "engine": null,
+      "dsl": [
+        "sw1: button @17e",
+        "names the top-left leg; the others follow at 19e, 17f and 19f"
+      ],
+      "standard": "6 mm four-leg tactile switch, 6 × 6 mm body with a 3.5 mm cap: the legs across the trough are joined inside, pressing joins the two legs on the same side (Makeability Lab, Using buttons; Arduino Button example)",
+      "sourceUrl": "https://makeabilitylab.github.io/physcomp/arduino/buttons.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 111,
+      "notes": "Now at true size, a 42.5 px body and a 25 px cap (the sample was 40 and 22). The black body sits over the trough with short legs to 17e, 19e, 17f and 19f: the legs across the trough are always connected and pressing joins column 17 to column 19. The engine draws an 18 px grey square with no legs over rows f and g below the trough, between holes and away from the four it names.",
+      "source": "breadboard\nboard: half\nparts\n  sw1: button @17e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "capacitor-electrolytic",
+      "label": "Electrolytic capacitor, 100 µF",
+      "file": "capacitor-electrolytic.svg",
+      "engine": null,
+      "dsl": [
+        "c1: cap-elec 100uF @12e",
+        "c1: cap 100uF @12e",
+        "positive leg at the anchor, negative leg one column to the right"
+      ],
+      "standard": "Radial aluminium electrolytic, 5 mm × 11 mm can: the sleeve stripe with minus signs marks the negative lead, which is also the shorter one (SparkFun Polarity tutorial; Fritzing core electrolytic capacitor)",
+      "sourceUrl": "https://learn.sparkfun.com/tutorials/polarity/all",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 72,
+      "notes": "From above a standing can hides both legs and shows only its top, so the can is drawn from the front, standing over the rows above its legs, as the trimmer stands over rows b–d. The 35 × 78 px can is true size; the stripe and its minus marks face the negative hole, and a groove near the bottom marks the rubber seal. The engine draws a 14 px grey-blue circle just above row e, between the two holes, with a pale arc and a small white minus sign.",
+      "source": "breadboard\nboard: half\nparts\n  c1: cap-elec 100uF @12e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "relay-module",
+      "label": "Relay module, 1 channel, 5 V",
+      "file": "relay-module.svg",
+      "engine": null,
+      "dsl": [
+        "k1: module relay @3a",
+        "relay-1ch and 1ch-relay are the same part"
+      ],
+      "standard": "Common 5 V one-channel relay module: VCC/GND/IN header, SRD-05VDC-SL-C relay 19.2 × 15.6 mm, NO/COM/NC screw terminal on 5.0 mm (Songle SRD datasheet; Components101 5V single-channel relay module)",
+      "sourceUrl": "https://components101.com/switches/5v-single-channel-relay-module-pinout-features-applications-working-datasheet",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 53,
+      "notes": "Low-voltage side on the left, mains side on the right, as on the real board, so the reader sees that COM, NO and NC are screw terminals and not header pins. The small parts that matter to a learner are there without traces: the power LED, the driver transistor and the flyback diode. The engine draws a 126 × 76 px card with all six connections — VCC, GND, IN, COM, NO, NC — as header pins in one row along its lower edge.",
+      "source": "breadboard\nboard: half\nparts\n  k1: module relay @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "capacitor-ceramic",
+      "label": "Ceramic disc capacitor, 100 nF (104)",
+      "file": "capacitor-ceramic.svg",
+      "engine": null,
+      "dsl": [
+        "c2: cap-ceramic 104 @20e",
+        "the value is the three-digit code or a value such as 100nF"
+      ],
+      "standard": "Ceramic disc capacitor with the EIA three-digit code: 104 = 10 × 10⁴ pF = 100 nF; non-polarised (SparkFun Capacitors tutorial; Fritzing core ceramic capacitor)",
+      "sourceUrl": "https://learn.sparkfun.com/tutorials/capacitors/all",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 48,
+      "notes": "Seen from above a disc stands edge-on as a thin sliver, so it is drawn face on, standing over the rows above its legs like the electrolytic can, with the dipped coating running down into a neck. The 35 px disc is true size and carries its code, because 104 is what a learner looks for in a kit. The engine draws a 12 px yellow circle in row e between the two holes, with no marking.",
+      "source": "breadboard\nboard: half\nparts\n  c2: cap-ceramic 104 @20e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "trimmer",
+      "label": "Trimmer potentiometer, 10 kΩ",
+      "file": "trimmer.svg",
+      "engine": null,
+      "dsl": [
+        "pot1: potentiometer 10k @7e",
+        "pot1: pot 10k @7e"
+      ],
+      "standard": "Single-turn top-adjust trimmer the size of a Bourns 3362P, 6.99 × 6.60 mm, three pins in line on 0.1 in, wiper in the middle (Bourns 3362 datasheet; Arduino AnalogInput example)",
+      "sourceUrl": "https://www.bourns.com/docs/product-datasheets/3362.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 47,
+      "notes": "A blue body with a cream rotor stands over rows b to d, and three short legs drop into 7e, 8e and 9e with the wiper in the middle. The body is 49.5 × 47 px, the true size of a 3362P, the common in-line breadboard trimmer; the sample's reference, Adafruit #356, is a 9.5 mm part that would cover row a as well and leave the strips no free hole. The engine draws a 54 × 46 px yellow module card labelled POT with numbered header pins 19 px apart, so on its 14 px grid the wiper and far pin miss their holes.",
+      "source": "breadboard\nboard: half\nparts\n  pot1: potentiometer 10k @7e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "hc-sr04",
+      "label": "HC-SR04 ultrasonic sensor",
+      "file": "hc-sr04.svg",
+      "engine": null,
+      "dsl": [
+        "us1: sensor hcsr04 @10a",
+        "us1: sensor hc-sr04 @10a"
+      ],
+      "standard": "HC-SR04 module: 45 × 20 mm board, two 16 mm transducers (T transmits, R receives), pins Vcc, Trig, Echo, Gnd on 0.1 in (Handsontec HC-SR04 user guide)",
+      "sourceUrl": "https://www.handsontec.com/dataspecs/HC-SR04-Ultrasonic.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 43,
+      "notes": "The two mesh-faced cans are what everyone recognises, so the board is drawn face on with its pins pointing down out of the lower edge, the way it plugs into a breadboard row. The pin names are the board's own, in its order. The engine draws a 100 × 60 px card with no transducers and the four pins spread 28 px apart, which is not a breadboard pitch; their names run into one another.",
+      "source": "breadboard\nboard: half\nparts\n  us1: sensor hcsr04 @10a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "lcd-1602-i2c",
+      "label": "LCD 1602 with I2C backpack",
+      "file": "lcd-1602-i2c.svg",
+      "engine": null,
+      "dsl": [
+        "lcd1: display lcd-1602-i2c @3a",
+        "lcd1: display lcd @3a"
+      ],
+      "standard": "1602A character LCD: 80 × 36 mm board, 71.2 × 24.2 mm bezel, 64.5 × 16 mm viewing area, 16 characters × 2 lines of 5 × 8 dots; PCF8574 backpack header GND, VCC, SDA, SCL (Handsontec I2C 1602 LCD datasheet)",
+      "sourceUrl": "https://handsontec.com/dataspecs/module/I2C_1602_LCD.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 41,
+      "notes": "The backpack is soldered behind the display, so from the front only its four pins show, out of the left edge; their names sit beside the pin tips because the printing is on the back. The character cells are drawn at their true 2.95 × 4.35 mm size with a line of text, which is what makes a 1602 read as a 1602. The engine draws a 130 × 60 px green card labelled LCD 1602 I²C with its four pins 38 px apart along the lower edge.",
+      "source": "breadboard\nboard: half\nparts\n  lcd1: display lcd-1602-i2c @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "diode",
+      "label": "Rectifier diode, 1N4007",
+      "file": "diode.svg",
+      "engine": null,
+      "dsl": [
+        "d1: diode @10c..14c",
+        "anode hole first, cathode hole second"
+      ],
+      "standard": "1N4001–1N4007 in DO-41: body 5.2 mm long, 2.7 mm diameter, band at the cathode (Vishay 1N4001 datasheet)",
+      "sourceUrl": "https://www.vishay.com/docs/88503/1n4001.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 41,
+      "notes": "Drawn like the resistor: grey leads the full span to dark lead ends, a 37 × 19 px black body with rounded ends and a grey band on the cathode side, true size. The band matches the bar of the schematic symbol, which is how a learner checks direction. The engine draws a 31 × 8 px bar with a thin light stripe near the cathode end.",
+      "source": "breadboard\nboard: half\nparts\n  d1: diode @10c..14c\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "jumper-wire",
+      "label": "Jumper wire, rail to strip (red)",
+      "file": "jumper-wire.svg",
+      "engine": null,
+      "dsl": [
+        "@+t7 --red-- @7a",
+        "in the wires section; colours red, black, blue, yellow, orange, green, white, purple, brown, grey"
+      ],
+      "standard": "Pre-cut breadboard jumper; red for +5 V and black for ground, + rail marked red and − rail blue (SparkFun How to Use a Breadboard; Arduino Button example)",
+      "sourceUrl": "https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard/all",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A straight red run from +t7 to 7a, like a pre-cut jumper, with a 4.2 px core over a 6.4 px darker edge and a dark cap with a pale pin tip at each end, so it reads as plugged in. The engine draws a 2.4 px line that bows sideways as a Bézier arc between two 1.8 px dots.",
+      "source": "breadboard\nboard: half\nparts\nwires\n  @+t7 --red-- @7a\n",
+      "previewGroup": "lt-bb-wires"
+    },
+    {
+      "id": "servo-sg90",
+      "label": "Micro servo, SG90",
+      "file": "servo-sg90.svg",
+      "engine": null,
+      "dsl": [
+        "p1: actuator servo-sg90 @3a"
+      ],
+      "standard": "TowerPro SG90 convention: 22.2 × 11.8 mm case footprint; brown ground, red supply, orange signal.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 39,
+      "notes": "Top view with mounting ears, output horn and a short three-wire cable ending in a female connector; cable length is illustrative. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: actuator servo-sg90 @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "oled-ssd1306",
+      "label": "OLED 0.96 in, SSD1306 I2C",
+      "file": "oled-ssd1306.svg",
+      "engine": null,
+      "dsl": [
+        "p1: display oled-ssd1306 @3a"
+      ],
+      "standard": "SSD1306 128 × 64 OLED; common four-pin 27 × 27 mm breakout with 21.7 × 10.85 mm active area.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 34,
+      "notes": "Four-pin I2C variant, GND/VCC/SCL/SDA order. Nominal breakout dimensions; module variants differ. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: display oled-ssd1306 @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "arduino-nano",
+      "label": "Arduino Nano",
+      "file": "arduino-nano.svg",
+      "engine": null,
+      "dsl": [
+        "p1: mcu nano @above"
+      ],
+      "standard": "Arduino Nano classic documentation: 45 × 18 mm board; 15 pins per row, 0.6 in row spacing.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 34,
+      "notes": "USB left, all 30 header names outside the board; top view includes mini-USB, ATmega328P and reset switch. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: mcu nano @above\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "l298n",
+      "label": "L298N motor driver module",
+      "file": "l298n.svg",
+      "engine": null,
+      "dsl": [
+        "p1: module l298n @3a"
+      ],
+      "standard": "Common red L298N module convention; nominal 43 × 43 mm PCB, ST L298 dual H-bridge, 5 mm screw-terminal pitch.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 30,
+      "notes": "Top view with finned heatsink, two electrolytic tops, motor and power screw terminals, and six logic posts. ENA/ENB jumpers removed; control header names outside. Board variants differ. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: module l298n @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "dht11",
+      "label": "DHT11 temperature and humidity sensor",
+      "file": "dht11.svg",
+      "engine": null,
+      "dsl": [
+        "p1: sensor dht11 @12e"
+      ],
+      "standard": "Aosong DHT11 package convention: 12 × 5.5 mm top footprint, four leads on 2.54 mm pitch.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 22,
+      "notes": "Bare four-pin sensor, top vents in blue housing; body shifted above the legs so VCC, DATA, NC and GND lead ends remain visible. Engine instead draws a module card. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: sensor dht11 @12e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "raspberry-pi-pico",
+      "label": "Raspberry Pi Pico",
+      "file": "raspberry-pi-pico.svg",
+      "engine": null,
+      "dsl": [
+        "p1: mcu pico @above"
+      ],
+      "standard": "Raspberry Pi Pico datasheet convention: 51 × 21 mm PCB, 20 pins per row on 0.1 in, rows 0.7 in apart.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 11,
+      "notes": "Original Pico with micro-USB, RP2040, BOOTSEL and all 40 physical header pins, including every ground. Engine card exposes a reduced pin list. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: mcu pico @above\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "tm1637",
+      "label": "TM1637 four-digit display",
+      "file": "tm1637.svg",
+      "engine": null,
+      "dsl": [
+        "p1: display tm1637 @3a"
+      ],
+      "standard": "Common 0.36 in four-digit TM1637 module convention; nominal 42 × 24 mm board and 36 × 14 mm display package.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 11,
+      "notes": "Top view, red seven-segment test pattern 88:88, driver underneath, CLK/DIO/VCC/GND header along the left edge. Module variants differ. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: display tm1637 @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "rtc-ds3231",
+      "label": "DS3231 real-time clock",
+      "file": "rtc-ds3231.svg",
+      "engine": null,
+      "dsl": [
+        "p1: module rtc-ds3231 @3a"
+      ],
+      "standard": "ZS-042 DS3231 module convention: nominal 38 × 22 mm board, DS3231 SO-16 and AT24C32 EEPROM; Analog Devices DS3231 package.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 11,
+      "notes": "Component-side top view. CR2032 holder is on the underside and deliberately hidden; no battery circle superimposed on the chips. Six-pin order 32K/SQW/SCL/SDA/VCC/GND. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: module rtc-ds3231 @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "dht22",
+      "label": "DHT22 temperature and humidity sensor",
+      "file": "dht22.svg",
+      "engine": null,
+      "dsl": [
+        "p1: sensor dht22 @12e"
+      ],
+      "standard": "Aosong AM2302/DHT22 package convention: 15.1 × 7.7 mm top footprint, four leads on 2.54 mm pitch.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 10,
+      "notes": "Bare four-pin white sensor viewed from above, body shifted beyond the legs; pin 3 is NC. Vented top and four visible grey leads distinguish it from a breakout. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: sensor dht22 @12e\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "rotary-ky040",
+      "label": "Rotary encoder module, KY-040",
+      "file": "rotary-ky040.svg",
+      "engine": null,
+      "dsl": [
+        "p1: module rotary-ky040 @3a"
+      ],
+      "standard": "KY-040 module convention: nominal 26 × 19 mm board, 12 mm encoder body, 6 mm shaft and five posts on 0.1 in.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 5,
+      "notes": "Top view of metal encoder can and D-flat shaft; header order CLK/DT/SW/+/GND runs down the right edge. Push-switch is integrated in the shaft. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: module rotary-ky040 @3a\n",
+      "previewGroup": "lt-bb-parts"
+    },
+    {
+      "id": "vl53l0x",
+      "label": "Time-of-flight distance sensor, VL53L0X",
+      "file": "vl53l0x.svg",
+      "engine": null,
+      "dsl": [
+        "p1: sensor vl53l0x @3a"
+      ],
+      "standard": "ST VL53L0X 4.4 × 2.4 mm optical package; Adafruit-style 25.4 × 17.8 mm seven-pin breakout convention.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 4,
+      "notes": "Two optical windows, regulator and mounting holes; VIN/2V8/GND/SDA/SCL/XSHUT/GPIO posts at 0.1 in. Nominal breakout geometry, not a vendor artwork trace. Original artwork from package conventions; no downloaded or traced graphics. Engine comparison is rendered from the minimal DSL and cropped to its part.",
+      "source": "breadboard\nboard: half\nparts\n  p1: sensor vl53l0x @3a\n",
+      "previewGroup": "lt-bb-parts"
+    }
+  ]
+}

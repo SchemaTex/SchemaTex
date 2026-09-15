@@ -39,7 +39,49 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG meets all six rules, while the picture replaces the required Address entity and shipping-address relationship with Shipment."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly shows all six entities, readable attributes and key markers, plus all six required crow’s-foot relationships with cardinalities consistent with the source.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:06:48.279Z",
+      "targetHash": "7846116f2ac2",
+      "sourceHash": "7374d4ad12bc",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "customer-orders",
+          "verdict": "pass",
+          "evidence": "CUSTOMER connects to ORDER through “places,” with exactly one at CUSTOMER and zero-or-many at ORDER."
+        },
+        {
+          "id": "order-lines-products",
+          "verdict": "pass",
+          "evidence": "ORDER “contains” one-or-many LINE_ITEM records; PRODUCT “appears_in” zero-or-many LINE_ITEM records."
+        },
+        {
+          "id": "payment-address",
+          "verdict": "pass",
+          "evidence": "ORDER connects to zero-or-many PAYMENT records through “has” and to exactly one ADDRESS through “ships_to”; an ADDRESS can serve zero-or-many orders."
+        },
+        {
+          "id": "entity-attributes",
+          "verdict": "pass",
+          "evidence": "CUSTOMER, ORDER, LINE_ITEM, PRODUCT, PAYMENT, and ADDRESS are all labelled and contain readable fields matching the source data."
+        },
+        {
+          "id": "key-fields",
+          "verdict": "pass",
+          "evidence": "Primary keys have visible blue PK badges and foreign keys have visible orange FK badges in the appropriate entity tables."
+        },
+        {
+          "id": "crows-foot",
+          "verdict": "pass",
+          "evidence": "Relationship endpoints visibly use bars, circles, and crow’s feet to express exactly-one, zero-or-one, one-or-many, and zero-or-many cardinalities."
+        }
+      ]
+    }
   }
 }

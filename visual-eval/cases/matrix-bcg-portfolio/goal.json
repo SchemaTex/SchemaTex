@@ -1,6 +1,7 @@
 {
   "id": "matrix-bcg-portfolio",
   "type": "matrix",
+  "variant": "quadrant",
   "title": "BCG growth-share portfolio",
   "goal": "A portfolio manager can distinguish Stars, Cash Cows, Question Marks and Dogs while reading market positions and revenue bubbles.",
   "rubric": [
@@ -30,5 +31,48 @@
       "must": "Quadrant background or dividing lines make the four strategic regions clear."
     }
   ],
-  "split": "train"
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents a four-region BCG matrix with all four products positioned in the intended quadrants. Axes explicitly indicate that market share increases to the left and growth increases upward. Bubble areas visibly follow revenues 10, 9, 5, and 2, and all product labels are readable.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:32.901Z",
+      "targetHash": "5926ab2e9033",
+      "sourceHash": "b7b858cc0871",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Stars, Cash Cows, Question Marks, and Dogs are labeled, and bubbles for Sparkling Water, Protein Bars, Laundry Pods, and DVD Rentals are visible."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The horizontal axis is labeled Relative market share with high share on the left and low share on the right; the vertical axis is labeled Market growth rate with high growth at the top and low growth at the bottom."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Laundry Pods is visibly the largest bubble, Sparkling Water slightly smaller, Protein Bars smaller again, and DVD Rentals the smallest, matching revenues 10, 9, 5, and 2."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "All four product names and revenue values are readable and do not overlap bubbles or one another."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Distinct quadrant shading and clear horizontal and vertical divider lines make all four strategic regions easy to distinguish."
+        }
+      ]
+    }
+  }
 }

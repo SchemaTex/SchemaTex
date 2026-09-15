@@ -13,9 +13,11 @@ captions, so secondary text recedes. `#CBD5E1` hairline for the rule under the t
 `#0D9488` teal, used once only, for the index person's second outline. `#B91C1C` red, reserved
 for the two negative emotional lines (conflict, cutoff) — nothing else in the drawing is red.
 The sex fills stay as the engine has them: `#DBEAFE` for male squares, `#FCE7F3` for female
-circles. Conditions are half-fills in the standard's category hues, lightened so a black
-numeral still reads on top: `#FCD34D` amber for alcohol use disorder, `#A5B4FC` indigo for
-depression. Both appear in the legend at the foot.
+circles. A condition's position follows McGoldrick's symbol handout (Multicultural Family
+Institute, 2017): the bottom half for alcohol or drug abuse, the left half for physical or
+psychological illness. Its colour is a category tint, lightened so a black numeral still reads
+on top: `#FCD34D` amber for substance use (Harold's and Daniel's alcohol use disorder),
+`#A5B4FC` indigo for illness (Chloe's depression). Both appear in the legend at the foot.
 
 **Type scale.** 22px semibold title / 14px semibold names and in-shape ages / 12px subtitle /
 11.5px slate for years, marriage dates, captions and legend text / 10px letterspaced uppercase

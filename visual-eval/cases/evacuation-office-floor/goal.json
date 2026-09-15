@@ -1,6 +1,7 @@
 {
   "id": "evacuation-office-floor",
   "type": "evacuation",
+  "variant": "iso",
   "title": "Office Floor",
   "goal": "A practitioner can read the office floor artefact at a glance.",
   "rubric": [
@@ -34,7 +35,44 @@
   "ideal": {
     "file": "ideal.svg",
     "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 clearly distinguishes primary and alternative routes from the location marker to separate exits, while Image 2 leaves its marker disconnected from the evacuation route."
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents a legible office escape plan with a YOU ARE HERE marker, distinct eastbound primary and westbound alternative routes, two final exits, and a complete legend. No material visible ambiguity or missing source requirement is apparent.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:46.784Z",
+      "targetHash": "c3e4022c64f8",
+      "sourceHash": "ad52b985cee8",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "A prominent YOU ARE HERE marker is visible in the Open Office, the legend is visible at right, and final-exit symbols and labels appear at both West Stair and East Stair."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The routes share the initial descent from the marker into the corridor, then visibly separate: the primary route runs east to the East Stair exit while the alternative route runs west to the West Stair exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Green route bands and directional arrowheads make the movement from the Open Office through the corridor to each exit easy to follow at a glance."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Open Office, Corridor, West Stair, East Stair, YOU ARE HERE, FINAL EXIT, extinguisher class ABC, and ASSEMBLY POINT labels are legible and positioned with their corresponding elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Route geometry and arrow directions consistently indicate the intended corridor split, with no visible line or symbol suggesting an unintended destination or connection."
+        }
+      ]
+    }
   }
 }

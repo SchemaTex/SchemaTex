@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067">
+  <title>Producer Consumer Buffer</title>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L12 5 L0 10 Z" fill="#000"/></marker>
+  </defs>
+  <rect width="1600" height="1067" fill="#fff"/>
+  <text x="800" y="71" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="60">Producer Consumer Buffer</text>
+  <!-- Orthogonal flow and separate return channels. -->
+  <g fill="none" stroke="#000" stroke-width="3.3" stroke-linejoin="round" marker-end="url(#arrow)">
+    <path d="M272 530 H429"/>
+    <path d="M452 514 V375 H220 V478"/>
+    <path d="M748 245 H440 V514"/>
+    <path d="M452 530 H748"/>
+    <path d="M852 530 H1139"/>
+    <path d="M1150 514 V245 H852"/>
+    <path d="M1402 530 H1480 V740 H1150 V624"/>
+    <path d="M1162 530 H1298"/>
+    <path d="M1162 570 H1220 V840 H1202"/>
+  </g>
+  <!-- Places -->
+  <g fill="#fff" stroke="#000" stroke-width="3.3">
+    <circle cx="220" cy="530" r="52"/>
+    <circle cx="800" cy="245" r="52"/>
+    <circle cx="800" cy="530" r="52"/>
+    <circle cx="1350" cy="530" r="52"/>
+    <circle cx="1150" cy="840" r="52"/>
+  </g>
+  <!-- Initial marking: two empty slots, one ready producer, one ready consumer. -->
+  <g fill="#000">
+    <circle cx="220" cy="530" r="13.5"/>
+    <circle cx="780" cy="245" r="13.5"/>
+    <circle cx="820" cy="245" r="13.5"/>
+    <circle cx="1350" cy="530" r="13.5"/>
+    <rect x="429" y="514" width="23" height="110"/>
+    <rect x="1139" y="514" width="23" height="110"/>
+  </g>
+  <g fill="#000" font-family="Times New Roman, Times, serif" font-size="36" text-anchor="middle">
+    <text x="800" y="145">Empty</text>
+    <text x="220" y="620">Ready</text>
+    <text x="800" y="620">Item</text>
+    <text x="1350" y="620">Consumer</text>
+    <text x="1150" y="930">Done</text>
+    <text x="440" y="680">Produce</text>
+    <text x="1025" y="589">Consume</text>
+  </g>
+  <g fill="#000" font-family="Times New Roman, Times, serif" font-size="27" text-anchor="middle">
+    <text x="800" y="180">empty slots · capacity: 2</text>
+    <text x="220" y="657">producer ready</text>
+    <text x="1350" y="657">consumer ready</text>
+    <text x="440" y="717">produce item</text>
+    <text x="1025" y="626">consume item</text>
+  </g>
+  <text x="800" y="982" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="32" font-style="italic">Firing sequence: Produce → Consume</text>
+</svg>

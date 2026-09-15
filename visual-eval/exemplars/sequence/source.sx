@@ -1,0 +1,27 @@
+sequence "Checkout with a saved card"
+  actor Shopper
+  boundary Web as "Web Store"
+  control Checkout as "Checkout Service"
+  control Payments as "Payment Gateway"
+  database DB as "Orders DB"
+  queue Bus as "Event Bus"
+
+  Shopper -> Web : Place order
+  Web ->+ Checkout : POST /checkout
+  Checkout ->+ Payments : authorize(card, total)
+  Payments -->- Checkout : authorization result
+  alt [approved]
+    Checkout -> *Order : «create»
+    loop [for each cart line]
+      Order -> DB : INSERT order_line
+      DB --> Order : ok
+    end
+    opt [receipt requested]
+      Checkout ->> Bus : OrderPlaced
+    end
+    Checkout --> Web : 201 Created
+  else [declined]
+    Checkout --> Web : 402 Payment Required
+  end
+  deactivate Checkout
+  Web --> Shopper : Show confirmation

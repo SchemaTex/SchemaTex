@@ -38,8 +38,8 @@
   "split": "holdout",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG is the better target because it includes the initiating frequency and complementary branch probabilities while clearly tracing paths to safe and emergency outcomes."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/eventtree/ideal.svg (sha256 064a513719ee). Exemplar safety-function columns, success-upper branching, blue probabilities and aligned outcome-frequency table. Path frequencies independently calculated and checked to sum to the initiating frequency. No unprovided severity categories invented. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
   }
 }

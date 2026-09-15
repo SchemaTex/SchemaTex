@@ -1,0 +1,17 @@
+%% Illustrative laboratory spill triage; always follow your institution's EHS procedure.
+decisiontree "Laboratory chemical spill response"
+classes: emergency, urgent, routine
+
+q "Has the chemical touched anyone?"
+  yes: q "Unconscious, struggling to breathe, or badly burned?"
+    yes: a "Call 911 and use the safety shower" class=emergency
+    no: q "Did it get in the eyes?"
+      yes: a "Flush eyes for 15 min, then occupational health" class=urgent
+      no: a "Rinse skin for 15 min and tell your supervisor" class=routine
+  no: q "Over 1 litre, or toxic, flammable or reactive?"
+    yes: q "Is there a fire, or vapour spreading?"
+      yes: a "Pull the fire alarm and evacuate" class=emergency
+      no: a "Leave, close the lab, call the EHS spill line" class=urgent
+    no: q "Trained, with a spill kit to hand?"
+      yes: a "Clean up with the spill kit and log it" class=routine
+      no: a "Keep people away and fetch your supervisor" class=urgent

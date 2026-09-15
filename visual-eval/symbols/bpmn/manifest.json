@@ -1,0 +1,1338 @@
+{
+  "type": "bpmn",
+  "variant": "collaboration",
+  "exemplar": "bpmn/collaboration",
+  "style": "OMG BPMN 2.0.2 notation in ink #263238 on white. Flow-object outlines 1.6, flows 1.5, glyphs and markers 1.2. Events are r = 18 circles: start thin, intermediate with a second ring at r = 14, end at 3.2, non-interrupting dashed; trigger glyphs hollow for catching and filled for throwing. Tasks are 130 x 84 with 10-unit corners, type markers at top-left and loop / multi-instance markers at bottom centre. Gateways are diamonds of half-diagonal 24 with the X at 2.4 and the plus at 3. Sequence flows end in filled 10 x 9 arrowheads; message flows are dashed 7 / 5 with a hollow r = 4 source circle and hollow arrowhead; associations are dotted. Pools and lanes use rule #A8B1B5 at 1 with a #F0F3F4 name band.",
+  "symbols": [
+    {
+      "id": "start-event-outline",
+      "label": "Start event (None)",
+      "file": "start-event-outline.svg",
+      "engine": null,
+      "dsl": [
+        "start",
+        "start none"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.2, Fig. 10.70 — start event: single thin circle",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: an r = 18 circle at the 1.6 outline weight, empty for a None trigger."
+    },
+    {
+      "id": "end-event-outline",
+      "label": "End event (None)",
+      "file": "end-event-outline.svg",
+      "engine": null,
+      "dsl": [
+        "end",
+        "end none"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.3, Fig. 10.71 — end event: single thick circle",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the same r = 18 circle at 3.2, twice the start weight, so start and end are told apart by outline alone."
+    },
+    {
+      "id": "intermediate-message-catch",
+      "label": "Intermediate message event (catching)",
+      "file": "intermediate-message-catch.svg",
+      "engine": null,
+      "dsl": [
+        "intermediate message"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.4 Fig. 10.72 double circle; §10.5.5 Fig. 10.88 hollow envelope for catching",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Built from the exemplar's parts: the r = 18 outline with the inner r = 14 ring at 1.2, and the 20 x 14 envelope hollow because the event catches. The exemplar only draws the throwing form, with a filled envelope."
+    },
+    {
+      "id": "task",
+      "label": "Task",
+      "file": "task.svg",
+      "engine": null,
+      "dsl": [
+        "task \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.8 — task: rounded rectangle",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 130 x 84 rectangle with 10-unit corners at 1.6. Labels are centred inside and wrap; the task keeps its height so markers have fixed places."
+    },
+    {
+      "id": "exclusive-gateway",
+      "label": "Exclusive gateway",
+      "file": "exclusive-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "gateway xor"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.2, Fig. 10.106 — diamond with X marker",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a diamond of half-diagonal 24 at 1.6 with a 14 x 16 X at 2.4. The marker is drawn, not omitted, so exclusive and unmarked gateways never look alike."
+    },
+    {
+      "id": "parallel-gateway",
+      "label": "Parallel gateway",
+      "file": "parallel-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "gateway and"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.4, Fig. 10.110 — diamond with plus marker",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the same diamond with an 18-unit plus at 3, heavier than the X so the two read apart at a glance."
+    },
+    {
+      "id": "sequence-flow",
+      "label": "Sequence flow",
+      "file": "sequence-flow.svg",
+      "engine": null,
+      "dsl": [
+        "A --> B"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.13, Fig. 8.32 — solid line with solid arrowhead",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 1.5 solid line ending in a filled 10 x 9 arrowhead whose tip touches the target."
+    },
+    {
+      "id": "message-flow",
+      "label": "Message flow",
+      "file": "message-flow.svg",
+      "engine": null,
+      "dsl": [
+        "A ~~> B"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.4, Fig. 9.11 — dashed line, hollow circle at the source, hollow arrowhead at the target",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 1.5 line dashed 7 / 5, an r = 4 hollow circle at the source and a hollow 10 x 9 arrowhead at the target. The engine paints the hollow source circle after the flow objects, keeping the full circle visible."
+    },
+    {
+      "id": "default-flow-marker",
+      "label": "Default-flow slash",
+      "file": "default-flow-marker.svg",
+      "engine": null,
+      "dsl": [
+        "A --* \"…\" --> B",
+        "A --*--> B"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.13, Fig. 8.34",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A complete slash sits 11 units beyond the source gateway on a 120-unit sequence flow, identifying its default branch. The engine draws the complete slash beyond the source boundary and paints it after the flow objects."
+    },
+    {
+      "id": "pool",
+      "label": "Pool",
+      "file": "pool.svg",
+      "engine": null,
+      "dsl": [
+        "pool \"…\" { … }",
+        "direction: LR",
+        "direction: TB"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.3, Fig. 9.2",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The participant frame retains the exemplar's 38-unit name band and contains a short process at full event scale. The shortened container represents a white-box pool whose process is visible."
+    },
+    {
+      "id": "black-box-pool",
+      "label": "Black-box pool",
+      "file": "black-box-pool.svg",
+      "engine": null,
+      "dsl": [
+        "pool \"…\" blackbox"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.3, Fig. 9.3",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A 64-unit-high participant rectangle contains its name and no visible process, as in the exemplar's laboratory pool. Its absence of internal flow objects identifies the black-box presentation."
+    },
+    {
+      "id": "lane",
+      "label": "Lane",
+      "file": "lane.svg",
+      "engine": null,
+      "dsl": [
+        "lane \"…\" { … }"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.8, Figs. 10.123–10.124",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Two named subdivisions sit inside one participant frame, with the exemplar's 38-unit bands and structural rules. The internal sequence flow crosses the lane divider within the same pool."
+    },
+    {
+      "id": "intermediate-event-outline",
+      "label": "Intermediate event outline",
+      "file": "intermediate-event-outline.svg",
+      "engine": null,
+      "dsl": [
+        "intermediate",
+        "intermediate none"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.4, Fig. 10.72; Table 10.89",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Two thin concentric rings distinguish an intermediate event from start and end events. With no trigger this is the None intermediate throwing form in Table 10.89."
+    },
+    {
+      "id": "interrupting-boundary-event",
+      "label": "Interrupting boundary event",
+      "file": "interrupting-boundary-event.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.4, Table 10.90",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Solid double rings attach a timer to the activity boundary, using the exemplar's 16-unit boundary radius. Solid rings mean the activity is interrupted when the timer fires. The engine cannot express boundary attachment or this event form."
+    },
+    {
+      "id": "non-interrupting-boundary-event",
+      "label": "Non-interrupting boundary event",
+      "file": "non-interrupting-boundary-event.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.4, Table 10.90",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Dashed double rings attach a timer to the activity boundary, using the exemplar's 16-unit boundary radius. Dashes mean the activity continues when the timer fires. The engine cannot express boundary attachment or this event form."
+    },
+    {
+      "id": "message-catch-marker",
+      "label": "Message catch glyph",
+      "file": "message-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "start message",
+        "intermediate message"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.88",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's hollow envelope is shown in a thin start ring, identifying receipt of a message that starts the process. The accepted intermediate-message-catch seed shows the same trigger in an intermediate ring."
+    },
+    {
+      "id": "message-throw-marker",
+      "label": "Message throw glyph",
+      "file": "message-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "end message"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.88",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A filled envelope in a thick end ring identifies a Message End event; the white flap line preserves the exemplar's envelope detail. The engine accepts this as end message."
+    },
+    {
+      "id": "intermediate-message-throw",
+      "label": "Intermediate message throw",
+      "file": "intermediate-message-throw.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.4, Table 10.89",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's double ring encloses a filled envelope, identifying a message sent midway through the process. The renderer can fill the glyph but the parser forces intermediate message events to catch."
+    },
+    {
+      "id": "timer-marker",
+      "label": "Timer glyph",
+      "file": "timer-marker.svg",
+      "engine": null,
+      "dsl": [
+        "start timer",
+        "intermediate timer"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.96",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A clock with twelve ticks and hands sits in a double ring, identifying a catching intermediate Timer event. The clock follows the exemplar's boundary-timer geometry at the same scale."
+    },
+    {
+      "id": "error-catch-marker",
+      "label": "Error catch glyph",
+      "file": "error-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.79",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A hollow lightning bolt identifies the catching Error trigger. It is attached as an interrupting boundary event, since an Error catch is not an ordinary intermediate wait. The engine cannot express this trigger."
+    },
+    {
+      "id": "error-throw-marker",
+      "label": "Error throw glyph",
+      "file": "error-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.79",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A filled lightning bolt identifies the throwing Error trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "signal-catch-marker",
+      "label": "Signal catch glyph",
+      "file": "signal-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.94",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A hollow triangle identifies the catching Signal trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "signal-throw-marker",
+      "label": "Signal throw glyph",
+      "file": "signal-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.94",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A filled triangle identifies the throwing Signal trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "conditional-event-marker",
+      "label": "Conditional event glyph",
+      "file": "conditional-event-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.77",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A small lined document identifies a condition becoming true, shown in a catching intermediate ring. The engine has no Conditional event trigger."
+    },
+    {
+      "id": "terminate-marker",
+      "label": "Terminate end glyph",
+      "file": "terminate-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.95",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's solid disk inside a thick end ring identifies termination of all remaining work in the scope. The engine only draws an empty None End and cannot express Terminate."
+    },
+    {
+      "id": "user-task-marker",
+      "label": "User task marker",
+      "file": "user-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task user \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.17",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's person marker occupies the task's upper-left slot, distinguishing work performed by a user with software support. The task body keeps the accepted 130 by 84 geometry."
+    },
+    {
+      "id": "service-task-marker",
+      "label": "Service task marker",
+      "file": "service-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task service \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.11",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Two toothed gears copy the exemplar's Service task emblem at its original size and upper-left position. The engine draws two toothed gears with hollow hubs."
+    },
+    {
+      "id": "send-task-marker",
+      "label": "Send task marker",
+      "file": "send-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task send \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.13",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A filled envelope in the upper-left task slot identifies a Send task. The 20 by 14 envelope and task body copy the exemplar."
+    },
+    {
+      "id": "receive-task-marker",
+      "label": "Receive task marker",
+      "file": "receive-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task receive \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.15",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A hollow envelope in the upper-left task slot identifies a Receive task. The 20 by 14 envelope and task body copy the exemplar."
+    },
+    {
+      "id": "manual-task-marker",
+      "label": "Manual task marker",
+      "file": "manual-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task manual \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.18",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An outlined hand with thumb and separate finger lines sits in the upper-left slot, identifying work done without software execution. It uses the same marker weight and footprint as the other task types."
+    },
+    {
+      "id": "business-rule-task-marker",
+      "label": "Business Rule task marker",
+      "file": "business-rule-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.19",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's ruled table with a dark header identifies Business Rule execution. The engine has no Business Rule task keyword."
+    },
+    {
+      "id": "script-task-marker",
+      "label": "Script task marker",
+      "file": "script-task-marker.svg",
+      "engine": null,
+      "dsl": [
+        "task script \"…\""
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.20",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's curled scroll and three writing lines occupy the upper-left slot, distinguishing an executed Script task. The accepted task body and glyph weight are retained."
+    },
+    {
+      "id": "collapsed-subprocess-marker",
+      "label": "Collapsed subprocess marker",
+      "file": "collapsed-subprocess-marker.svg",
+      "engine": null,
+      "dsl": [
+        "subprocess \"…\"",
+        "subprocess \"…\" collapsed"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Fig. 10.25",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A 14-unit boxed plus sits at the bottom centre of the activity, exactly as in the exemplar. It indicates subprocess content that is hidden in this view."
+    },
+    {
+      "id": "expanded-subprocess",
+      "label": "Expanded subprocess",
+      "file": "expanded-subprocess.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Fig. 10.26",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An enlarged rounded container encloses a start, a full-size task and an end with sequence flows, so the internal process is visible. There is no collapsed plus, and the engine cannot express the nested process."
+    },
+    {
+      "id": "call-activity-border",
+      "label": "Call Activity border",
+      "file": "call-activity-border.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.6, Figs. 10.39–10.41",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A thick rounded border distinguishes invocation of reusable work from an ordinary activity. It reuses the exemplar's 3.2 end-event weight; the engine has no Call Activity form."
+    },
+    {
+      "id": "standard-loop-marker",
+      "label": "Standard loop marker",
+      "file": "standard-loop-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.8, Figs. 10.46–10.47",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A circular arrow at the bottom centre marks a standard loop on the activity. The engine ignores trailing repetition keywords and cannot express this marker."
+    },
+    {
+      "id": "parallel-multi-instance-marker",
+      "label": "Parallel multi-instance marker",
+      "file": "parallel-multi-instance-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.8, Fig. 10.48",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Three vertical bars at the bottom centre mark parallel multi-instance work, using the exemplar's bar spacing and weight. The engine cannot express this marker."
+    },
+    {
+      "id": "sequential-multi-instance-marker",
+      "label": "Sequential multi-instance marker",
+      "file": "sequential-multi-instance-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.8, Fig. 10.49",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Three horizontal bars at the bottom centre mark sequential multi-instance work. Their orientation distinguishes them from parallel instances, and the engine cannot express this marker."
+    },
+    {
+      "id": "inclusive-gateway",
+      "label": "Inclusive gateway",
+      "file": "inclusive-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "gateway or"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.3, Fig. 10.108",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A circle inside the accepted gateway diamond marks inclusive branching or merging. Its 2.4 outline matches the exemplar's exclusive marker weight."
+    },
+    {
+      "id": "event-based-gateway",
+      "label": "Ordinary event-based gateway",
+      "file": "event-based-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "gateway event"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.6, Fig. 10.115",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A pentagon inside two concentric circles identifies the ordinary event-based gateway. The engine draws a pentagon inside two concentric circles."
+    },
+    {
+      "id": "conditional-flow-marker",
+      "label": "Conditional-flow marker",
+      "file": "conditional-flow-marker.svg",
+      "engine": null,
+      "dsl": [
+        "A --? \"…\" --> B",
+        "A --?--> B"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.13, Fig. 8.33",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A hollow diamond touches the activity boundary at the start of a 120-unit sequence flow. The engine paints the hollow diamond after the activity so it remains visible, and omits it on gateway-origin flows."
+    },
+    {
+      "id": "association",
+      "label": "Undirected association",
+      "file": "association.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.1, Fig. 8.9",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A 120-unit dotted sample represents an undirected association, using the exemplar's round dots. The engine cannot express association lines."
+    },
+    {
+      "id": "directed-association",
+      "label": "Directed association / Data Association",
+      "file": "directed-association.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.1, Fig. 8.11; §10.4.1, Fig. 10.65",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An open V head terminates the exemplar's dotted association line, identifying direction without the filled head of a sequence flow. The same graphic covers Data Association; neither form is expressible in the engine."
+    },
+    {
+      "id": "data-object",
+      "label": "Data Object",
+      "file": "data-object.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.4.1, Fig. 10.52",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A 42 by 54 document with a 12-unit folded corner copies the exemplar's Data Object. The engine has no data-object declaration."
+    },
+    {
+      "id": "data-collection-marker",
+      "label": "Data collection marker",
+      "file": "data-collection-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.4.1, Fig. 10.53",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Three vertical bars at the bottom of the exemplar's folded document identify a collection of data items. Placement on a data shape distinguishes this from activity multi-instance, and the engine cannot express it."
+    },
+    {
+      "id": "data-input-marker",
+      "label": "Data Input marker",
+      "file": "data-input-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.4.1, Fig. 10.58",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A hollow arrow at the top left of a Data Object identifies Data Input. The engine cannot express this data marker."
+    },
+    {
+      "id": "data-output-marker",
+      "label": "Data Output marker",
+      "file": "data-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.4.1, Fig. 10.60",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A filled arrow at the top left of a Data Object identifies Data Output. The engine cannot express this data marker."
+    },
+    {
+      "id": "data-store",
+      "label": "Data Store",
+      "file": "data-store.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.4.1, Fig. 10.54",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The exemplar's 58-unit cylinder has three stacked top rims, identifying persistent storage beyond a process instance. The engine cannot express Data Stores."
+    },
+    {
+      "id": "text-annotation",
+      "label": "Text Annotation",
+      "file": "text-annotation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.1, Fig. 8.16",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An open left bracket accompanies explanatory text, retaining the exemplar's 64-unit bracket height and 14-unit annotation type. The engine has no Text Annotation declaration."
+    },
+    {
+      "id": "group",
+      "label": "Group",
+      "file": "group.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.1, Fig. 8.13",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A transparent rounded dash-dot enclosure groups the task without changing process flow or ownership. The engine cannot express Group artifacts."
+    },
+    {
+      "id": "non-interrupting-start-outline",
+      "label": "Non-interrupting event-subprocess start outline",
+      "file": "non-interrupting-start-outline.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.2, Table 10.86",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dashed single start ring marks a non-interrupting event-subprocess start; the message trigger gives a legal example rather than an unsupported None start. The engine cannot express this outline or event-subprocess ownership."
+    },
+    {
+      "id": "interrupting-event-subprocess-start",
+      "label": "Interrupting event-subprocess start",
+      "file": "interrupting-event-subprocess-start.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.2, Table 10.86",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A solid single Message Start ring appears inside a dotted expanded event subprocess, showing an interrupting handler in its required scope. The engine cannot express event subprocesses or this containment."
+    },
+    {
+      "id": "escalation-catch-marker",
+      "label": "Escalation catch glyph",
+      "file": "escalation-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.81",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow upward notched arrowhead identifies the catching Escalation trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "escalation-throw-marker",
+      "label": "Escalation throw glyph",
+      "file": "escalation-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.81",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled upward notched arrowhead identifies the throwing Escalation trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "cancel-catch-marker",
+      "label": "Cancel catch glyph",
+      "file": "cancel-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.74",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow X identifies the catching Cancel trigger. The catch is attached to a double-bordered transaction, the scope required for Cancel. The engine cannot express this trigger."
+    },
+    {
+      "id": "cancel-throw-marker",
+      "label": "Cancel throw glyph",
+      "file": "cancel-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.74",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled X identifies the throwing Cancel trigger. The End event is inside a double-bordered transaction, the scope required for Cancel. The engine cannot express this trigger."
+    },
+    {
+      "id": "compensation-catch-marker",
+      "label": "Compensation catch glyph",
+      "file": "compensation-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.75",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow pair of rewind triangles identifies the catching Compensation trigger. It is attached as a boundary catch rather than an ordinary in-flow wait. The engine cannot express this trigger."
+    },
+    {
+      "id": "compensation-throw-marker",
+      "label": "Compensation throw glyph",
+      "file": "compensation-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.75",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled pair of rewind triangles identifies the throwing Compensation trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "link-catch-marker",
+      "label": "Link catch glyph",
+      "file": "link-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.83",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow right-pointing arrow identifies the catching Link trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "link-throw-marker",
+      "label": "Link throw glyph",
+      "file": "link-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.83",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled right-pointing arrow identifies the throwing Link trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "multiple-catch-marker",
+      "label": "Multiple catch glyph",
+      "file": "multiple-catch-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.90",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow pentagon identifies the catching Multiple trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "multiple-throw-marker",
+      "label": "Multiple throw glyph",
+      "file": "multiple-throw-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.90",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled pentagon identifies the throwing Multiple trigger. The engine cannot express this trigger."
+    },
+    {
+      "id": "parallel-multiple-marker",
+      "label": "Parallel Multiple catch glyph",
+      "file": "parallel-multiple-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.5.5, Fig. 10.92 (draft cited Table 10.93)",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An outlined plus in a catching intermediate ring identifies Parallel Multiple, which waits for every configured trigger. The engine cannot express it; the draft's Table 10.93 reference is corrected to the notation in Figure 10.92."
+    },
+    {
+      "id": "event-subprocess-border",
+      "label": "Event subprocess border",
+      "file": "event-subprocess-border.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Figs. 10.30–10.31",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dotted rounded border and bottom boxed plus show a collapsed event subprocess. This border-only sample leaves the trigger slot to event-subprocess-trigger-adornment; the engine cannot express either part."
+    },
+    {
+      "id": "event-subprocess-trigger-adornment",
+      "label": "Collapsed event-subprocess trigger adornment",
+      "file": "event-subprocess-trigger-adornment.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Fig. 10.30",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A miniature Message Start event occupies the upper-left slot of a collapsed dotted event subprocess. Its single solid ring indicates an interrupting trigger, and the engine cannot express the adornment."
+    },
+    {
+      "id": "transaction-border",
+      "label": "Transaction border",
+      "file": "transaction-border.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Figs. 10.33–10.34",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two rounded outlines enclose a collapsed subprocess, distinguishing a transaction from an ordinary subprocess or thick-bordered Call Activity. The engine cannot express this border."
+    },
+    {
+      "id": "ad-hoc-marker",
+      "label": "Ad-hoc subprocess marker",
+      "file": "ad-hoc-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.5, Figs. 10.35–10.36",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A tilde sits beside the bottom boxed plus of a collapsed subprocess, identifying ad-hoc ordering of its work. The engine cannot express the tilde marker."
+    },
+    {
+      "id": "compensation-activity-marker",
+      "label": "Compensation activity marker",
+      "file": "compensation-activity-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.9; §10.7.1, Fig. 10.121",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Hollow rewind triangles at the bottom centre identify a compensation activity, rather than a catching event. The engine cannot express this activity marker."
+    },
+    {
+      "id": "instantiating-receive-marker",
+      "label": "Instantiating Receive task marker",
+      "file": "instantiating-receive-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.3.3, Fig. 10.16",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow envelope enclosed by a circle in the task's upper-left slot identifies a Receive task that instantiates the process. The engine has no instantiating Receive form."
+    },
+    {
+      "id": "exclusive-gateway-unmarked",
+      "label": "Exclusive gateway without X",
+      "file": "exclusive-gateway-unmarked.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.2, Fig. 10.105",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The accepted gateway diamond is left empty, the standard's permitted alternative to an X-marked exclusive gateway. The engine always draws the X and cannot request this presentation."
+    },
+    {
+      "id": "complex-gateway",
+      "label": "Complex gateway",
+      "file": "complex-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.5, Fig. 10.113",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An eight-spoke asterisk distinguishes the Complex gateway within the accepted diamond. It uses the exemplar's 2.4 gateway-marker weight; the engine has no Complex gateway form."
+    },
+    {
+      "id": "instantiating-exclusive-event-gateway",
+      "label": "Instantiating exclusive event-based gateway",
+      "file": "instantiating-exclusive-event-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "gateway event"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.6, Fig. 10.118",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A single circle surrounding a pentagon identifies the instantiating exclusive event-based gateway. The engine has no instantiating exclusive gateway selection; gateway event draws the ordinary double-circle form."
+    },
+    {
+      "id": "instantiating-parallel-event-gateway",
+      "label": "Instantiating parallel event-based gateway",
+      "file": "instantiating-parallel-event-gateway.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.6.6, Fig. 10.119",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A single circle surrounding a plus identifies the instantiating parallel event-based gateway. The engine cannot express this gateway form."
+    },
+    {
+      "id": "bidirectional-association",
+      "label": "Bidirectional association",
+      "file": "bidirectional-association.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.1, Table 8.20, `associationDirection=Both`",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Open V heads at both ends of a dotted line show associationDirection Both. The engine cannot express bidirectional associations."
+    },
+    {
+      "id": "nested-lane",
+      "label": "Nested lane subdivision",
+      "file": "nested-lane.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §10.8, Fig. 10.125",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Lane B is subdivided into B1 and B2 while Lane A stays whole, using the exemplar's structural rules and name-band widths. The engine cannot express nested lanes."
+    },
+    {
+      "id": "participant-multiplicity-marker",
+      "label": "Participant multiplicity marker",
+      "file": "participant-multiplicity-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.3.1, Fig. 9.8",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Three vertical bars sit at the bottom centre of a black-box pool, indicating multiple instances of that participant. The engine cannot express participant multiplicity."
+    },
+    {
+      "id": "initiating-message",
+      "label": "Initiating Message",
+      "file": "initiating-message.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.11, Fig. 8.26; §9.4, Fig. 9.12",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An unshaded envelope decorates a message-flow sample, identifying the initiating message. The message-flow context distinguishes it from a catching event trigger. The engine cannot express attached Message envelopes."
+    },
+    {
+      "id": "non-initiating-message",
+      "label": "Non-initiating Message",
+      "file": "non-initiating-message.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §8.4.11, Figs. 8.27–8.28",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A lightly shaded envelope decorates a message-flow sample, identifying the non-initiating reply. The fill uses the exemplar's Band colour, distinct from the solid ink of a throwing event. The engine cannot express attached Message envelopes."
+    },
+    {
+      "id": "conversation",
+      "label": "Conversation",
+      "file": "conversation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.2, Fig. 9.23",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A thin-bordered hexagon identifies a Conversation. The engine cannot express Conversation nodes."
+    },
+    {
+      "id": "sub-conversation",
+      "label": "Sub-Conversation",
+      "file": "sub-conversation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.3, Fig. 9.24",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A thin-bordered hexagon with a boxed plus identifies a collapsed Sub-Conversation. The engine cannot express Conversation nodes."
+    },
+    {
+      "id": "call-conversation",
+      "label": "Call Conversation",
+      "file": "call-conversation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.4, Fig. 9.25",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A thick-bordered hexagon identifies a Call Conversation invoking a Global Conversation. The engine cannot express Conversation nodes."
+    },
+    {
+      "id": "call-collaboration",
+      "label": "Call Conversation invoking Collaboration",
+      "file": "call-collaboration.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.4, Fig. 9.26",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A thick-bordered hexagon with a boxed plus identifies a Call Conversation invoking a Collaboration. The engine cannot express Conversation nodes."
+    },
+    {
+      "id": "conversation-link",
+      "label": "Conversation Link",
+      "file": "conversation-link.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.6, Fig. 9.27",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two thin parallel lines without arrowheads connect a Conversation hexagon to a participant rectangle. The engine cannot express Conversation Links."
+    },
+    {
+      "id": "call-conversation-link",
+      "label": "Call Conversation Link",
+      "file": "call-conversation-link.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §9.5.6, Fig. 9.30",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Branched double lines connect a Call Collaboration to participant rectangles, with names identifying participants in the called collaboration as in Figure 9.30. The engine cannot express these mapped Conversation Links."
+    },
+    {
+      "id": "choreography-task",
+      "label": "Choreography Task",
+      "file": "choreography-task.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §7.3.2, Table 7.2",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The activity has an unshaded initiating participant band above and a Band-colour non-initiating participant band below, identifying a Choreography Task. Merged ids initiating-participant-band and non-initiating-participant-band are shown together here because separate contextual samples would duplicate this drawing. The engine cannot express Choreography activities or participant bands."
+    },
+    {
+      "id": "collapsed-sub-choreography",
+      "label": "Collapsed Sub-Choreography",
+      "file": "collapsed-sub-choreography.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §7.3.2, Table 7.2",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Participant bands and a boxed plus in the central activity region identify a collapsed Sub-Choreography. The engine cannot express this form."
+    },
+    {
+      "id": "expanded-sub-choreography",
+      "label": "Expanded Sub-Choreography",
+      "file": "expanded-sub-choreography.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §7.3.2, Table 7.2",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An enlarged participant-banded container encloses a full-size Choreography Task with no collapsed plus. The engine cannot express nested Choreography content."
+    },
+    {
+      "id": "call-choreography-border",
+      "label": "Call Choreography border",
+      "file": "call-choreography-border.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "OMG BPMN 2.0.2 §7.3.2, Table 7.2",
+      "sourceUrl": "https://www.omg.org/spec/BPMN/2.0.2/PDF",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A thick outer activity border surrounds participant bands and a collapsed plus, identifying a Call Choreography invoking reusable choreography. It reuses the exemplar's 3.2 weight, and the engine cannot express this form."
+    }
+  ]
+}

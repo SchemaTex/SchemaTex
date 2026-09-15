@@ -1,19 +1,26 @@
-# Scenario: Startup Interlock IEC 61131-3 sequential control chart.
-sfc "Startup Interlock"
-var Start: bool
-var Ready: bool
-var Complete: bool
-var Reset: bool
+# Scenario: IEC 61131-3 compressor start-up: permissives, lube pump, warning horn, main motor; any trip returns to idle.
+sfc "Compressor start-up interlock"
+var StartBtn: bool
+var PermissivesOK: bool
+var LubePressureOK: bool
+var MotorAtSpeed: bool
+var Trip: bool
+var StopBtn: bool
 step S0 [initial]
-  N Idle
-step S1 [label: "Prepare"]
-  N PrepareOutput
-step S2 [label: "Operate"]
-  D RunOutput T#10s
-step S3 [label: "Complete"]
-  N CompleteOutput
-transition from: S0 to: S1: Start
-transition from: S1 to: S2: Ready
-transition from: S2 to: S3: Complete
-transition from: S3 to: S0: Reset
-
+  N MotorOff
+step S1 [label: "Check permissives"]
+  P RunChecks
+step S2 [label: "Start lube pump"]
+  N LubePump
+step S3 [label: "Start main motor"]
+  N LubePump
+  N MainMotor
+  L StartHorn T#3s
+step S4 [label: "Running"]
+  N MainMotor
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: PermissivesOK
+transition from: S2 to: S3: LubePressureOK
+transition from: S3 to: S4: MotorAtSpeed
+transition T_Trip from: S2 to: S0: Trip
+transition from: S4 to: S0: Trip OR StopBtn

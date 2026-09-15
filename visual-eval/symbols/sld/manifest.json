@@ -1,0 +1,623 @@
+{
+  "type": "sld",
+  "variant": "ansi",
+  "exemplar": "sld/ansi",
+  "style": "Every conductor and symbol outline is #1e293b at 1.5 (square-capped conductors), the bus 3, contact arms 2.2 with round caps, the breaker arc hook 1.6, transformer core lines 1.2, and delta / wye / ground glyphs, gap triangles and light arrows 1.3 with round caps; relay circles are a lighter 1.3, and control stubs (CT secondary, dashed 5/4 trip) are 1.2. Bodies are filled paper white #ffffff; terminal dots (r = 2.8), ATS contacts (r = 2.6) and bus junctions (r = 3) are solid #1e293b. All lettering that belongs to a symbol is bold #0f172a in the Inter / Helvetica Neue / Helvetica / Arial stack (52, VFD 11 px; G, M 13 px; Wh 10 px semibold; CT 8 px; relay numbers 9.5 px; ATS N / E 9 px), with no accent colour. Each symbol is drawn 1:1 with the exemplar (30 x 30 breaker square, r = 17 sources, r = 6 coil humps on 44 px core lines), every single-throw device shares one arm with 38 px between terminals, connection glyphs sit 4 px clear of their body, power flows top to bottom, and every connection has a 12 px stub.",
+  "symbols": [
+    {
+      "id": "breaker-lv",
+      "label": "Low-voltage circuit breaker",
+      "file": "breaker-lv.svg",
+      "engine": "breaker",
+      "dsl": [
+        "breaker",
+        "mcb",
+        "mccb",
+        "miniature_circuit_breaker",
+        "pia",
+        "iga"
+      ],
+      "standard": "IEEE 315-1975 §9.4.2 air circuit breaker (AC 1500 V and below); IEEE C37.2 device 52",
+      "sourceUrl": "https://industrialmonitordirect.com/blogs/knowledgebase/circuit-breaker-vs-disconnect-symbol-on-one-line-diagrams",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1976,
+      "notes": "The shared 2.2 contact arm hinged on the lower terminal, terminal dots at both ends 38 px apart, and the arc hook at the arm tip. The hook now stays below the upper terminal and clear of its dot; in the exemplar it rose 3 px above the terminal. Drawn open, the IEEE 315 §4.6 position with no operating force applied. The engine's version is shorter, has a dot only at the hinge, and its hook floats above the arm without joining it."
+    },
+    {
+      "id": "utility",
+      "label": "Utility source",
+      "file": "utility.svg",
+      "engine": "utility",
+      "dsl": [
+        "utility"
+      ],
+      "standard": "IEEE 315-1975 §2.7 generalized alternating-current source (circle with sine wave)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1929,
+      "notes": "An r = 17 circle with a 1.3 sine wave and a single conductor leaving downward, because nothing feeds a source from above. The engine draws a lead into the top as well, and uses a heavier outline than its conductors."
+    },
+    {
+      "id": "bus",
+      "label": "Bus",
+      "file": "bus.svg",
+      "engine": "bus",
+      "dsl": [
+        "bus"
+      ],
+      "standard": "IEEE 315-1975 §3.1 conductor, drawn heavy for emphasis (§A4.3)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1927,
+      "notes": "A 3 px bar with square caps. The incoming conductor lands from above and each feeder taps down from it, every connection marked with an r = 3 junction dot, as the exemplar's switchboard bus does. The engine's catalog entry for bus is empty."
+    },
+    {
+      "id": "load",
+      "label": "Load",
+      "file": "load.svg",
+      "engine": "load",
+      "dsl": [
+        "load"
+      ],
+      "standard": "One-line convention: open arrowhead pointing in the direction of power flow (IEEE 315-1975 §1.7)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 1917,
+      "notes": "A white 28 x 26 down-pointing triangle at the end of a feeder, the terminal-load idiom of the reviewed sld case targets. The engine draws a plain rectangle, which cannot be told from a panel or any other boxed equipment."
+    },
+    {
+      "id": "generator",
+      "label": "Generator (grounded wye)",
+      "file": "generator.svg",
+      "engine": "generator",
+      "dsl": [
+        "generator"
+      ],
+      "standard": "IEEE 315-1975 §13.1.2 generator (circle with G and AC sine); §13.3.4 grounded-wye winding connection",
+      "sourceUrl": "https://industrialmonitordirect.com/blogs/knowledgebase/electrical-schematic-symbols-complete-ansiieee-reference",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 943,
+      "notes": "An r = 17 circle with a bold G over a sine wave and a single conductor leaving downward. The grounded-wye glyph (the grounding: attribute) now sits 4 px clear of the circle, centred 26.5 px left of it instead of 32. The engine draws a light-weight G, adds a lead into the top and shows no grounding."
+    },
+    {
+      "id": "ats",
+      "label": "Automatic transfer switch",
+      "file": "ats.svg",
+      "engine": "ats",
+      "dsl": [
+        "ats"
+      ],
+      "standard": "IEEE 315-1975 §4.6.2 double-throw switch, drawn resting on its normal (N) source; NEC 700 / 702 transfer equipment",
+      "sourceUrl": "https://schematex.js.org/research/sld-ats-generator-symbol-chain",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 864,
+      "notes": "Two source leads 44 px apart end in contact dots lettered N and E. A solid arm runs from the common pivot to N and a dashed arm to E, and the load leaves the pivot downward. N and E are now bold #0f172a symbol lettering rather than grey notes. In the engine's version the blade touches neither contact and there are no N / E letters, so it cannot show which source feeds the load."
+    },
+    {
+      "id": "watthour-meter",
+      "label": "Watthour meter",
+      "file": "watthour-meter.svg",
+      "engine": "watthour_meter",
+      "dsl": [
+        "watthour_meter"
+      ],
+      "standard": "IEEE 315-1975 §12.1 meter (circle with letter combination WH)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 829,
+      "notes": "An r = 13 circle on the conductor lettered Wh at 10 px semibold. The engine's circle is slightly smaller, with regular-weight lettering and an outline heavier than the conductor."
+    },
+    {
+      "id": "switch",
+      "label": "Disconnect switch (89)",
+      "file": "switch.svg",
+      "engine": "switch",
+      "dsl": [
+        "switch"
+      ],
+      "standard": "IEEE 315-1975 §4.6.1 single-throw switch; IEEE C37.2 device 89",
+      "sourceUrl": "https://industrialmonitordirect.com/blogs/knowledgebase/circuit-breaker-vs-disconnect-symbol-on-one-line-diagrams",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 684,
+      "notes": "The breaker's arm with no hook: the same 2.2 arm, hinge and 38 px terminal span, so a breaker and a disconnect in one column line up, and the only difference is the arc mark. The engine's arm is shorter, its dots are r = 1.8 and the upper dot sits on a stub away from the conductor end."
+    },
+    {
+      "id": "switch-load",
+      "label": "Load-interrupter switch",
+      "file": "switch-load.svg",
+      "engine": "switch_load",
+      "dsl": [
+        "switch_load",
+        "isolator",
+        "disconnector",
+        "main_switch"
+      ],
+      "standard": "IEEE 315-1975 §4.6.1 single-throw switch with an interrupter drawn around the fixed contact (a buildup per §A3.1; IEEE 315 has no load-break symbol of its own)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 577,
+      "notes": "The disconnect's arm, with a 9 x 12 white box drawn at 1.3 around the fixed contact to mark the interrupter that lets the switch break load current. A mark on the fixed contact was chosen over a horn or hook near the arm tip, which at diagram size reads as a breaker. The engine puts a small square on a stub above the arm, detached from the conductor."
+    },
+    {
+      "id": "vfd",
+      "label": "Variable-frequency drive",
+      "file": "vfd.svg",
+      "engine": "vfd",
+      "dsl": [
+        "vfd"
+      ],
+      "standard": "IEEE 315-1975 §16.1 circuit element (rectangle lettered with the apparatus type)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 488,
+      "notes": "A white 60 x 32 rectangle, the proportion of the exemplar's panel, lettered VFD in 11 px bold, with conductors in and out. The engine's box is narrower, with regular-weight lettering, a sine wave and an outline heavier than its conductors."
+    },
+    {
+      "id": "surge-arrester",
+      "label": "Surge arrester",
+      "file": "surge-arrester.svg",
+      "engine": "surge_arrester",
+      "dsl": [
+        "surge_arrester"
+      ],
+      "standard": "IEEE 315-1975 §9.3.5 protective gap (two open triangles) in an arrester body, connected to §3.9.1 ground",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 464,
+      "notes": "A shunt device: the tap from the protected conductor enters a white 20 x 28 body holding the gap's two open triangles, and the lower lead runs to the same three-bar ground the connection glyphs use. The engine's body is smaller, with a small arc instead of the gap, and a ground bar pressed against the body."
+    },
+    {
+      "id": "transformer",
+      "label": "Two-winding transformer",
+      "file": "transformer.svg",
+      "engine": "transformer",
+      "dsl": [
+        "transformer"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 magnetic-core transformer (coil windings, two core lines)",
+      "sourceUrl": "https://industrialmonitordirect.com/blogs/knowledgebase/electrical-schematic-symbols-complete-ansiieee-reference",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 430,
+      "notes": "The exemplar's transformer body without connection glyphs: two windings of three r = 6 humps bulging away from two centred 44 px core lines, the conductor meeting the middle hump of each. The engine has small r = 4 humps, polarity dots, and core lines pushed toward the primary."
+    },
+    {
+      "id": "solar",
+      "label": "Photovoltaic array",
+      "file": "solar.svg",
+      "engine": "solar",
+      "dsl": [
+        "solar"
+      ],
+      "standard": "IEEE 315-1975 §8.7.3 photovoltaic cell (incident-light arrows) on a module grid",
+      "sourceUrl": "https://www.surgepv.com/blog/solar-single-line-diagram",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 393,
+      "notes": "A white 38 x 24 module with a 1 px cell grid and a single DC conductor leaving downward, with IEEE 315's two incident-light arrows at its upper-left corner so it cannot be mistaken for a panel schedule or a filter grid. The engine draws the grid only, with heavy cell lines."
+    },
+    {
+      "id": "motor",
+      "label": "Motor",
+      "file": "motor.svg",
+      "engine": "motor",
+      "dsl": [
+        "motor"
+      ],
+      "standard": "IEEE 315-1975 §13.1.3 motor (circle with M)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 391,
+      "notes": "An r = 15 circle lettered M in 13 px bold, fed from above; a motor is a terminal load, so nothing leaves it. The engine adds three phase dots around the lower edge, which a one-line (one line for all three phases) does not need."
+    },
+    {
+      "id": "ct",
+      "label": "Current transformer",
+      "file": "ct.svg",
+      "engine": "ct",
+      "dsl": [
+        "ct"
+      ],
+      "standard": "One-line CT bubble on the conductor (IEEE 315-1975 §6.4.18 gives the coil form); ratio and accuracy class in the rating",
+      "sourceUrl": "https://smartsld.com/blog/single-line-diagram-symbols/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 284,
+      "notes": "An r = 9 circle on the conductor lettered CT in 8 px bold, with its secondary leaving to the left as a 12 px stub at the 1.2 control weight, where the exemplar runs it to the relays. The engine's bubble is smaller, with regular lettering and no secondary."
+    },
+    {
+      "id": "fuse",
+      "label": "Fuse",
+      "file": "fuse.svg",
+      "engine": "fuse",
+      "dsl": [
+        "fuse"
+      ],
+      "standard": "IEEE 315-1975 §9.1.1 fuse (rectangle form)",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 249,
+      "notes": "A white 12 x 30 rectangle on the conductor, the fuse of the reviewed sld case targets. The engine's fuse is a smaller 10 x 20 box with an outline heavier than its conductors."
+    },
+    {
+      "id": "relay",
+      "label": "Protective relay",
+      "file": "relay.svg",
+      "engine": "relay",
+      "dsl": [
+        "relay"
+      ],
+      "standard": "IEEE 315-1975 §9.5.1 device-function number in a circle; IEEE C37.2 device numbers (50/51 shown)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/ANSI_device_numbers",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 205,
+      "notes": "An r = 19 circle with the lighter 1.3 outline of equipment off the power path, lettered with its device number in 9.5 px bold. A solid 1.2 stub on the right takes the CT secondary and a dashed 5/4 stub on top is the trip output, as in the exemplar. The engine draws a small r = 11 circle, lettered R when no device number is given, with no connections."
+    },
+    {
+      "id": "transformer-dy",
+      "label": "Two-winding transformer, delta / grounded wye",
+      "file": "transformer-dy.svg",
+      "engine": "transformer_dy",
+      "dsl": [
+        "transformer_dy"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 magnetic-core transformer; §6.4.15.1 connection glyphs beside the symbol, with §3.9.1 ground",
+      "sourceUrl": "https://industrialmonitordirect.com/blogs/knowledgebase/electrical-schematic-symbols-complete-ansiieee-reference",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 196,
+      "notes": "The two-winding transformer with a drawn delta beside the primary and a grounded wye beside the secondary. The glyphs now sit 4 px clear of the core lines, centred 33 px left of the transformer instead of 42. The engine has small humps with polarity dots and Δ and Y typed as font characters, with no ground."
+    },
+    {
+      "id": "panel",
+      "label": "Panelboard",
+      "file": "panel.svg",
+      "engine": null,
+      "dsl": [
+        "panel",
+        "panelboard",
+        "consumer_unit",
+        "distribution_board",
+        "db",
+        "cu"
+      ],
+      "standard": "IEEE 315-1975 §16.1 circuit element (rectangle); NEC 408 panelboard",
+      "sourceUrl": "https://ieeexplore.ieee.org/document/985670",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "An 80 x 32 white rectangle with a 1 px hairline 10 px below its top edge, fed from above. The parser maps panel to consumer_unit, which has no entry in the engine's symbol catalog, so there is no engine drawing to compare; the usage query did not count it."
+    },
+    {
+      "id": "breaker-mv",
+      "label": "Medium-voltage circuit breaker (52)",
+      "file": "breaker-mv.svg",
+      "engine": "breaker_vacuum",
+      "dsl": [
+        "breaker_vacuum"
+      ],
+      "standard": "IEEE 315-1975 §9.4.4 circuit breaker (square, Note 9.4.4A); IEEE C37.2 device 52, AC circuit breaker",
+      "sourceUrl": "https://jlcpcb.com/blog/circuit-breaker-symbols-explained",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 60,
+      "notes": "A plain 30 x 30 square on the conductor with the device number 52 inside, the way North American one-lines draw breakers above 1500 V. The engine instead draws the low-voltage arm-and-hook inside a rounded outline, with no 52."
+    },
+    {
+      "id": "ground-fault",
+      "label": "Ground-fault relay, devices 50G / 51G",
+      "file": "ground-fault.svg",
+      "engine": "ground_fault",
+      "dsl": [
+        "ground_fault [device: \"50G/51G\"]"
+      ],
+      "standard": "IEEE 315-1975 §9.5.10 relay with attached ground; IEEE C37.2 50G / 51G",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 379,
+      "notes": "The accepted r = 19 relay circle and its solid CT input / dashed trip stubs, with an attached three-bar ground 4 px below the circle ink. The 50/51 lettering plus attached ground identifies ground overcurrent; the engine instead draws a power-path GFI meter-like circle without a ground."
+    },
+    {
+      "id": "ups",
+      "label": "Uninterruptible power supply",
+      "file": "ups.svg",
+      "engine": "ups",
+      "dsl": [
+        "ups"
+      ],
+      "standard": "IEEE 315-1975 §16.1 lettered circuit-element rectangle",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 318,
+      "notes": "The accepted 60 x 32 VFD equipment rectangle, lettered UPS, with 12 px input and output stubs. The engine has a narrower box and no stubs. Usage is inflated by matches in ordinary label text."
+    },
+    {
+      "id": "pt",
+      "label": "Potential (voltage) transformer",
+      "file": "pt.svg",
+      "engine": "pt",
+      "dsl": [
+        "pt"
+      ],
+      "standard": "One-line PT bubble; IEEE 315-1975 §6.4.20 gives the voltage-transformer coil form",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 126,
+      "notes": "Uses the accepted r = 9 instrument-transformer bubble, PT lettering and 12 px control secondary stub. Connect the primary as a voltage-sensing shunt in a complete diagram. The engine bubble is smaller and omits the secondary lead."
+    },
+    {
+      "id": "capacitor-bank",
+      "label": "Capacitor bank",
+      "file": "capacitor-bank.svg",
+      "engine": "capacitor_bank",
+      "dsl": [
+        "capacitor_bank"
+      ],
+      "standard": "IEEE 315-1975 §2.2 capacitor, nonpolarized",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 93,
+      "notes": "One pair of equal parallel plates represents the bank in a one-line; voltage and kvar belong in the rating. Both leads are 12 px. The engine draws four unconnected plates with heavier strokes."
+    },
+    {
+      "id": "ground-switch",
+      "label": "Grounding switch, device 89",
+      "file": "ground-switch.svg",
+      "engine": "ground_switch",
+      "dsl": [
+        "ground_switch"
+      ],
+      "standard": "IEEE 315-1975 §4.6.1 switch to §3.9.1 ground; IEEE C37.2 device 89",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 85,
+      "notes": "The accepted open disconnect, with the lower hinged terminal connected through its 12 px stub to the accepted ground bars. No outgoing power terminal. The engine shortens the arm and lower lead."
+    },
+    {
+      "id": "bus-tie",
+      "label": "Bus-tie circuit breaker, device 52",
+      "file": "bus-tie.svg",
+      "engine": "bus_tie",
+      "dsl": [
+        "bus_tie"
+      ],
+      "standard": "IEEE 315-1975 §9.4.2 air circuit breaker; IEEE C37.2 device 52",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 47,
+      "notes": "The accepted LV breaker rotated minus 90 degrees for a lateral bus tie, including its corrected hook, two dots and 12 px stubs. This is the intentional horizontal-run exception to vertical feeder power flow. The engine rotates its shorter breaker and floating hook."
+    },
+    {
+      "id": "fuse-cl",
+      "label": "Current-limiting fuse",
+      "file": "fuse-cl.svg",
+      "engine": "fuse_cl",
+      "dsl": [
+        "fuse_cl"
+      ],
+      "standard": "IEEE 315-1975 §9.1.1 fuse; CL is a rating qualifier",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 42,
+      "notes": "The accepted 12 x 30 fuse with bold CL beside it; current limitation is an equipment characteristic, not an invented extra plate. The engine adds a transverse line inside a shorter fuse body."
+    },
+    {
+      "id": "transformer-yd",
+      "label": "Transformer, grounded-wye primary / delta secondary",
+      "file": "transformer-yd.svg",
+      "engine": "transformer_yd",
+      "dsl": [
+        "transformer_yd [grounding: \"primary grounded wye\"]"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 transformer; §6.4.15.1 winding connections; §3.9.1 ground",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 31,
+      "notes": "The accepted transformer coils and core with grounded-wye beside the upper winding and delta beside the lower winding, both stacked on the left at the accepted 33 px offset. The primary glyph moves up 12 px and the secondary down 1 px from the delta-wye layout, leaving 4.7 px of ink clearance between the ground mark and delta. The engine uses smaller coils, text Y / delta, and no attached ground."
+    },
+    {
+      "id": "demand-meter",
+      "label": "Demand meter",
+      "file": "demand-meter.svg",
+      "engine": "demand_meter",
+      "dsl": [
+        "demand_meter"
+      ],
+      "standard": "IEEE 315-1975 §12.1 meter, letters DM",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 29,
+      "notes": "The accepted r = 13 meter circle and 12 px stubs, with bold DM at 10 px. The engine uses a smaller circle and only the letter D."
+    },
+    {
+      "id": "recloser",
+      "label": "Circuit breaker with automatic reclosing, devices 52 / 79",
+      "file": "recloser.svg",
+      "engine": "recloser",
+      "dsl": [
+        "recloser [device: \"52/79\"]"
+      ],
+      "standard": "IEEE 315-1975 §9.4.4 breaker and §9.5.1 relay; IEEE C37.2 52 breaker / 79 AC reclosing relay",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 5,
+      "notes": "Accepted 30 x 30 device-52 breaker plus an accepted device-79 relay circle, joined by a 12 px dashed control link. This explicitly distinguishes the interrupting device from its reclosing function; the engine uses an unnumbered curved arrow beside its contact."
+    },
+    {
+      "id": "contactor",
+      "label": "Electromagnetic contactor / motor starter",
+      "file": "contactor.svg",
+      "engine": null,
+      "dsl": [
+        "contactor"
+      ],
+      "standard": "IEEE 315-1975 §4.29 contactor; §4.6 normal contact position",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted open switch contact with a dashed mechanical link to an electromagnetic actuator rectangle. Shown de-energized; overload protection is not implied. The parser and renderer accept contactor, but getSymbolCatalog omits it; the renderer uses a shorter blade and smaller actuator."
+    },
+    {
+      "id": "transformer-yy",
+      "label": "Transformer, wye / wye",
+      "file": "transformer-yy.svg",
+      "engine": "transformer_yy",
+      "dsl": [
+        "transformer_yy"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 transformer; §6.4.15.2 winding connections",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 2,
+      "notes": "The accepted two-winding transformer with two ungrounded wye glyphs at the accepted 33 px offset; no grounding is assumed. The engine uses smaller coils and font characters instead of drawn connection glyphs."
+    },
+    {
+      "id": "transformer-dd",
+      "label": "Transformer, delta / delta",
+      "file": "transformer-dd.svg",
+      "engine": "transformer_dd",
+      "dsl": [
+        "transformer_dd"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 transformer; §6.4.15.1 winding connections",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The accepted two-winding transformer with two drawn delta glyphs at the accepted 33 px offset. The engine uses smaller coils and font characters instead of drawn connection glyphs."
+    },
+    {
+      "id": "hub",
+      "label": "Synchronizing hub (functional block)",
+      "file": "hub.svg",
+      "engine": "hub",
+      "dsl": [
+        "hub [label: \"Synchronizing hub\"]"
+      ],
+      "standard": "No IEEE 315 apparatus symbol; §16.1 lettered circuit-element rectangle used as a functional block",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 58,
+      "notes": "Uses the accepted equipment rectangle lettered HUB; it denotes an application-defined functional block, not standardized power apparatus or a device-25 relay. Vertical 12 px stubs. The engine uses a wider rounded box with additional lateral ports."
+    },
+    {
+      "id": "wind",
+      "label": "Wind-driven AC generator",
+      "file": "wind.svg",
+      "engine": "wind",
+      "dsl": [
+        "wind [label: \"Wind generator\"]"
+      ],
+      "standard": "No IEEE 315 wind-turbine apparatus symbol; §13.1.2 AC generator with prime-mover label (not §21.1 map symbol)",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 19,
+      "notes": "Reuses the accepted generator circle, G and sine wave, with bold WIND identifying the prime mover and one downward 12 px output. Grounding is unspecified. The engine draws a turbine pictogram rather than an electrical generator."
+    },
+    {
+      "id": "harmonic-filter",
+      "label": "Harmonic filter, series LC branch",
+      "file": "harmonic-filter.svg",
+      "engine": "harmonic_filter",
+      "dsl": [
+        "harmonic_filter"
+      ],
+      "standard": "IEEE 315-1975 §6.2 inductor with §2.2 capacitor",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 16,
+      "notes": "A continuous series LC branch built from three r = 6 coil humps rotated into vertical flow, then two capacitor plates. External stubs are 12 px. Branch topology / tuning belong in the diagram and rating. The engine's horizontal coil and offset plates do not form a connected LC path."
+    },
+    {
+      "id": "autotransformer",
+      "label": "Autotransformer, single tapped winding",
+      "file": "autotransformer.svg",
+      "engine": "autotransformer",
+      "dsl": [
+        "autotransformer"
+      ],
+      "standard": "IEEE 315-1975 §6.4.8 autotransformer",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 16,
+      "notes": "One electrically continuous winding with four r = 6 humps and a connected midpoint tap, not isolated primary and secondary coils. Input at top, common and tapped output below, each with 12 px terminal stub. The engine uses compressed humps and a short lateral tap without a junction dot."
+    },
+    {
+      "id": "transformer-3winding",
+      "label": "Three-winding transformer",
+      "file": "transformer-3winding.svg",
+      "engine": "transformer_3winding",
+      "dsl": [
+        "transformer_3winding"
+      ],
+      "standard": "IEEE 315-1975 §6.4.17 three-winding transformer",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 9,
+      "notes": "Three separate accepted three-hump windings at r = 6: primary above, two secondary windings below with independent 12 px output stubs. The shared core lines extend to span both secondaries at the accepted 1.2 weight. No electrical junction between windings. The engine shrinks the humps to r = 3 and uses only one core line."
+    },
+    {
+      "id": "sectionalizer",
+      "label": "Automatic line sectionalizer",
+      "file": "sectionalizer.svg",
+      "engine": "sectionalizer",
+      "dsl": [
+        "sectionalizer [label: \"Sectionalizer\"]"
+      ],
+      "standard": "IEEE 315-1975 §4.6.1 switch in its normal contact position; S is a utility sectionalizer qualifier, not a dedicated IEEE 315 symbol",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 5,
+      "notes": "The accepted open disconnect with bold S beside the contact, retaining the 2.2 px arm, r = 2.8 terminal dots and vertical 12 px stubs. A sectionalizer opens during the upstream recloser's dead interval; no breaker hook or device-79 reclosing relay is implied. The engine uses a shorter contact and smaller qualifier."
+    },
+    {
+      "id": "rcd",
+      "label": "Residual-current protective device",
+      "file": "rcd.svg",
+      "engine": null,
+      "dsl": [
+        "rcd [sensitivity: \"30 mA\"]",
+        "rcbo",
+        "rccb"
+      ],
+      "standard": "IEEE 315-1975 §9.4.2 air circuit breaker with residual-current qualifier IΔn; ANSI-style buildup, not a dedicated IEEE 315 RCD symbol",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The accepted LV breaker, including its open arm and corrected arc hook, with bold IΔn identifying residual-current operation. Vertical 12 px stubs; sensitivity and any overcurrent function belong in the equipment rating. The parser accepts rcd / rcbo / rccb, but getSymbolCatalog omits rcd; the engine draws a rounded RCD box. This requested ANSI-style buildup does not claim a standalone ANSI RCD symbol."
+    }
+  ]
+}

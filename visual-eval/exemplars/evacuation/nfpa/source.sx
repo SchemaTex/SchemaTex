@@ -1,0 +1,52 @@
+# Scenario: Harborview Supply Store 214 — posted NFPA 170 Ch.11 evacuation diagram.
+evacuation "Harborview Supply — Store 214 Evacuation Plan" unit ft
+compliance nfpa
+sheet tabloid landscape
+show furniture
+
+room receiving "Receiving" at 0,0 size 24x18
+room stockroom "Stockroom" at 24,0 size 40x18
+room stair "Stair 1" at 64,0 size 10x18
+room lift "Elevator" at 74,0 size 10x18
+room breakroom "Break Room" at 84,0 size 18x18
+room restrooms "Restrooms" at 102,0 size 14x18
+room office "Store Office" at 116,0 size 16x18
+room corridor "Service Corridor" at 0,18 size 132x8
+room sales "Sales Floor" at 0,26 size 132x26
+
+door between receiving corridor at 50% width 4 type double
+door between stockroom corridor at 50% width 4 type double
+door between stair corridor at 50% width 3.5
+door between lift corridor at 50% width 3.5
+door between breakroom corridor at 50% width 3
+door between restrooms corridor at 50% width 3
+door between office corridor at 50% width 3
+opening between corridor sales at 50% width 4
+opening between corridor sales at 12% width 4
+door receiving north at 50% width 6
+door sales south at 82% width 8 type double
+door sales east at 54% width 6
+fire-door between stair corridor rating "45 min"
+
+furniture stairs s1 in stair at 1.5,3.5 size 7x10
+furniture elevator e1 in lift at 1.5,5 size 7x8
+
+here in sales at 66,14 "YOU ARE HERE"
+exit-final exitMain in sales at 112,23.2 hand right "MAIN EXIT"
+exit-final exitRear in receiving at 12,3.4 hand left "EXIT — RECEIVING"
+exit-final exitSide in sales at 128,9.6 hand right "SIDE EXIT"
+exit-direction dRear in corridor at 40,3.2 hand left
+exit-direction dSide in sales at 96,4 hand right
+refuge ref1 in stair at 5,12.5
+no-elevator noLift in lift at 5,12.5
+not-an-exit nx1 in corridor at 124,3.5
+extinguisher f1 in sales at 30,3.5 class "ABC"
+extinguisher f2 in breakroom at 14,4 class "K"
+call-point cp1 in sales at 114,3.5
+first-aid fa1 in breakroom at 4,4
+assembly muster outside at 146,50 "ASSEMBLY POINT"
+
+route primary here -> sales -> exitMain -> muster
+route secondary here -> sales -> corridor -> receiving -> exitRear
+route accessible here -> sales -> exitSide -> muster
+legend auto

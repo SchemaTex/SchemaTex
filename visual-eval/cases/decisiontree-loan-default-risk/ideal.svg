@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="766" viewBox="0 0 1100 766">
+<title>Loan Default Risk — classification tree</title>
+<desc>Income is the root. Lower income splits by credit score at 620, then employment at two years. Higher income splits by credit score at 700. Every node shows samples, Gini impurity, and low-risk, elevated-risk, high-risk counts in that order.</desc>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#3E4C59"/></marker></defs>
+<style>text{font-family:Inter, 'Helvetica Neue', Helvetica, Arial;fill:#1F2933} .title{font-size:20px;font-weight:600}.subtitle{font-size:12px;fill:#52606D}.rule{font-size:13px;font-weight:600}.stats{font-size:11px;fill:#52606D}.count{font-size:10.5px;font-weight:500}.share{font-size:12.5px;font-weight:600}.branch{font-size:11px;font-weight:600}.legend{font-size:11.5px;fill:#52606D}.header{font-size:10px;font-weight:700;letter-spacing:1px}</style>
+<rect width="1100" height="766" fill="#FFFFFF"/>
+<text class="title" x="40" y="50">Loan Default Risk</text>
+<text class="subtitle" x="40" y="74">Classification tree · 1,000 training samples · Gini impurity · depth 3</text>
+<rect x="642" y="40" width="22" height="12" rx="3" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.2"/><text class="legend" x="672" y="50">Split rule</text>
+<rect x="740" y="40" width="12" height="12" rx="3" fill="#1D64A8"/><text class="legend" x="760" y="50">Low-risk</text>
+<rect x="840" y="40" width="12" height="12" rx="3" fill="#F2B233"/><text class="legend" x="860" y="50">Elevated-risk</text>
+<rect x="968" y="40" width="12" height="12" rx="3" fill="#B42318"/><text class="legend" x="988" y="50">High-risk</text>
+<clipPath id="legendbar"><rect x="740" y="66" width="40" height="8" rx="4"/></clipPath><g clip-path="url(#legendbar)"><rect x="740" y="66" width="26" height="8" fill="#1D64A8"/><rect x="766" y="66" width="7" height="8" fill="#F2B233"/><rect x="773" y="66" width="7" height="8" fill="#B42318"/></g><text class="legend" x="788" y="74">Bar: class mix of training samples</text>
+<path d="M 550.75 203 V 225 Q 550.75 231 544.75 231 H 280.5 Q 274.5 231 274.5 237 V 283" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="267.5" y="254" text-anchor="end">≤ 45</text>
+<path d="M 550.75 203 V 225 Q 550.75 231 556.75 231 H 821 Q 827 231 827 237 V 283" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="834" y="254" text-anchor="start">> 45</text>
+<path d="M 274.5 371 V 393 Q 274.5 399 268.5 399 H 132 Q 126 399 126 405 V 619" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="119" y="422" text-anchor="end">≤ 620</text>
+<path d="M 274.5 371 V 393 Q 274.5 399 280.5 399 H 417 Q 423 399 423 405 V 451" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="430" y="422" text-anchor="start">> 620</text>
+<path d="M 423 539 V 561 Q 423 567 417 567 H 334 Q 328 567 328 573 V 619" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="321" y="590" text-anchor="end">≤ 2</text>
+<path d="M 423 539 V 561 Q 423 567 429 567 H 512 Q 518 567 518 573 V 619" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="525" y="590" text-anchor="start">> 2</text>
+<path d="M 827 371 V 393 Q 827 399 821 399 H 738 Q 732 399 732 405 V 619" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="725" y="422" text-anchor="end">≤ 700</text>
+<path d="M 827 371 V 393 Q 827 399 833 399 H 916 Q 922 399 922 405 V 619" fill="none" stroke="#3E4C59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text class="branch" x="929" y="422" text-anchor="start">> 700</text>
+<rect x="446.75" y="115" width="208" height="88" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text class="rule" x="550.75" y="138" text-anchor="middle">Income ≤ 45k</text>
+<text class="stats" x="550.75" y="157" text-anchor="middle">1,000 samples · gini 0.66</text>
+<clipPath id="barroot"><rect x="460.75" y="167" width="180" height="8" rx="4"/></clipPath>
+<rect x="460.75" y="167" width="180" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#barroot)">
+<rect x="460.75" y="167" width="68.4" height="8" fill="#1D64A8"/>
+<rect x="529.15" y="167" width="64.8" height="8" fill="#F2B233"/>
+<rect x="593.9499999999999" y="167" width="46.8" height="8" fill="#B42318"/>
+</g>
+<rect x="493.75" y="183" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="505.75" y="191">380</text>
+<rect x="535.75" y="183" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="547.75" y="191">360</text>
+<rect x="577.75" y="183" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="589.75" y="191">260</text>
+<rect x="170.5" y="283" width="208" height="88" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text class="rule" x="274.5" y="306" text-anchor="middle">Credit score ≤ 620</text>
+<text class="stats" x="274.5" y="325" text-anchor="middle">410 samples · 41% of all · gini 0.61</text>
+<clipPath id="barleft"><rect x="184.5" y="335" width="180" height="8" rx="4"/></clipPath>
+<rect x="184.5" y="335" width="180" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#barleft)">
+<rect x="184.5" y="335" width="26.341463414634145" height="8" fill="#1D64A8"/>
+<rect x="210.84146341463415" y="335" width="65.85365853658537" height="8" fill="#F2B233"/>
+<rect x="276.6951219512195" y="335" width="87.8048780487805" height="8" fill="#B42318"/>
+</g>
+<rect x="220.5" y="351" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="232.5" y="359">60</text>
+<rect x="256.5" y="351" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="268.5" y="359">150</text>
+<rect x="298.5" y="351" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="310.5" y="359">200</text>
+<rect x="723.0" y="283" width="208" height="88" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text class="rule" x="827" y="306" text-anchor="middle">Credit score ≤ 700</text>
+<text class="stats" x="827" y="325" text-anchor="middle">590 samples · 59% of all · gini 0.56</text>
+<clipPath id="barright"><rect x="737.0" y="335" width="180" height="8" rx="4"/></clipPath>
+<rect x="737.0" y="335" width="180" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#barright)">
+<rect x="737.0" y="335" width="97.62711864406779" height="8" fill="#1D64A8"/>
+<rect x="834.6271186440678" y="335" width="64.0677966101695" height="8" fill="#F2B233"/>
+<rect x="898.6949152542372" y="335" width="18.305084745762713" height="8" fill="#B42318"/>
+</g>
+<rect x="773.0" y="351" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="785.0" y="359">320</text>
+<rect x="815.0" y="351" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="827.0" y="359">210</text>
+<rect x="857.0" y="351" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="869.0" y="359">60</text>
+<rect x="319.0" y="451" width="208" height="88" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text class="rule" x="423" y="474" text-anchor="middle">Employment ≤ 2 years</text>
+<text class="stats" x="423" y="493" text-anchor="middle">230 samples · 23% of all · gini 0.63</text>
+<clipPath id="baremployment"><rect x="333.0" y="503" width="180" height="8" rx="4"/></clipPath>
+<rect x="333.0" y="503" width="180" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#baremployment)">
+<rect x="333.0" y="503" width="39.130434782608695" height="8" fill="#1D64A8"/>
+<rect x="372.1304347826087" y="503" width="86.08695652173913" height="8" fill="#F2B233"/>
+<rect x="458.2173913043478" y="503" width="54.78260869565217" height="8" fill="#B42318"/>
+</g>
+<rect x="372.0" y="519" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="384.0" y="527">50</text>
+<rect x="408.0" y="519" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="420.0" y="527">110</text>
+<rect x="450.0" y="519" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="462.0" y="527">70</text>
+<rect x="40" y="619" width="172" height="108" rx="6" fill="#FDECEA" stroke="#B42318" stroke-width="1.5"/>
+<path d="M46 619H206Q212 619 212 625V641H40V625Q40 619 46 619Z" fill="#B42318"/>
+<text class="header" x="126.0" y="634" text-anchor="middle" style="fill:#FFFFFF">HIGH-RISK</text>
+<text class="share" x="126.0" y="663" text-anchor="middle">72% of 180 samples</text><text class="stats" x="126.0" y="682" text-anchor="middle">18% of all samples · gini 0.43</text>
+<clipPath id="bara"><rect x="54" y="692" width="144" height="8" rx="4"/></clipPath>
+<rect x="54" y="692" width="144" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#bara)">
+<rect x="54" y="692" width="8.0" height="8" fill="#1D64A8"/>
+<rect x="62.0" y="692" width="32.0" height="8" fill="#F2B233"/>
+<rect x="94.0" y="692" width="104.0" height="8" fill="#B42318"/>
+</g>
+<rect x="75.0" y="708" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="87.0" y="716">10</text>
+<rect x="111.0" y="708" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="123.0" y="716">40</text>
+<rect x="147.0" y="708" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="159.0" y="716">130</text>
+<rect x="242" y="619" width="172" height="108" rx="6" fill="#FFF6DD" stroke="#C98A0E" stroke-width="1.5"/>
+<path d="M248 619H408Q414 619 414 625V641H242V625Q242 619 248 619Z" fill="#F2B233"/>
+<text class="header" x="328.0" y="634" text-anchor="middle" style="fill:#1F2933">ELEVATED-RISK</text>
+<text class="share" x="328.0" y="663" text-anchor="middle">45% of 100 samples</text><text class="stats" x="328.0" y="682" text-anchor="middle">10% of all samples · gini 0.59</text>
+<clipPath id="barb"><rect x="256" y="692" width="144" height="8" rx="4"/></clipPath>
+<rect x="256" y="692" width="144" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#barb)">
+<rect x="256" y="692" width="14.4" height="8" fill="#1D64A8"/>
+<rect x="270.4" y="692" width="64.8" height="8" fill="#F2B233"/>
+<rect x="335.2" y="692" width="64.8" height="8" fill="#B42318"/>
+</g>
+<rect x="280.0" y="708" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="292.0" y="716">10</text>
+<rect x="316.0" y="708" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="328.0" y="716">45</text>
+<rect x="352.0" y="708" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="364.0" y="716">45</text>
+<rect x="432" y="619" width="172" height="108" rx="6" fill="#FFF6DD" stroke="#C98A0E" stroke-width="1.5"/>
+<path d="M438 619H598Q604 619 604 625V641H432V625Q432 619 438 619Z" fill="#F2B233"/>
+<text class="header" x="518.0" y="634" text-anchor="middle" style="fill:#1F2933">ELEVATED-RISK</text>
+<text class="share" x="518.0" y="663" text-anchor="middle">50% of 130 samples</text><text class="stats" x="518.0" y="682" text-anchor="middle">13% of all samples · gini 0.62</text>
+<clipPath id="barc"><rect x="446" y="692" width="144" height="8" rx="4"/></clipPath>
+<rect x="446" y="692" width="144" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#barc)">
+<rect x="446" y="692" width="44.30769230769231" height="8" fill="#1D64A8"/>
+<rect x="490.3076923076923" y="692" width="72.0" height="8" fill="#F2B233"/>
+<rect x="562.3076923076924" y="692" width="27.692307692307693" height="8" fill="#B42318"/>
+</g>
+<rect x="470.0" y="708" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="482.0" y="716">40</text>
+<rect x="506.0" y="708" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="518.0" y="716">65</text>
+<rect x="542.0" y="708" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="554.0" y="716">25</text>
+<rect x="646" y="619" width="172" height="108" rx="6" fill="#FFF6DD" stroke="#C98A0E" stroke-width="1.5"/>
+<path d="M652 619H812Q818 619 818 625V641H646V625Q646 619 652 619Z" fill="#F2B233"/>
+<text class="header" x="732.0" y="634" text-anchor="middle" style="fill:#1F2933">ELEVATED-RISK</text>
+<text class="share" x="732.0" y="663" text-anchor="middle">50% of 260 samples</text><text class="stats" x="732.0" y="682" text-anchor="middle">26% of all samples · gini 0.60</text>
+<clipPath id="bard"><rect x="660" y="692" width="144" height="8" rx="4"/></clipPath>
+<rect x="660" y="692" width="144" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#bard)">
+<rect x="660" y="692" width="55.38461538461539" height="8" fill="#1D64A8"/>
+<rect x="715.3846153846154" y="692" width="72.0" height="8" fill="#F2B233"/>
+<rect x="787.3846153846154" y="692" width="16.615384615384617" height="8" fill="#B42318"/>
+</g>
+<rect x="678.0" y="708" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="690.0" y="716">100</text>
+<rect x="720.0" y="708" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="732.0" y="716">130</text>
+<rect x="762.0" y="708" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="774.0" y="716">30</text>
+<rect x="836" y="619" width="172" height="108" rx="6" fill="#E7F1F9" stroke="#1D64A8" stroke-width="1.5"/>
+<path d="M842 619H1002Q1008 619 1008 625V641H836V625Q836 619 842 619Z" fill="#1D64A8"/>
+<text class="header" x="922.0" y="634" text-anchor="middle" style="fill:#FFFFFF">LOW-RISK</text>
+<text class="share" x="922.0" y="663" text-anchor="middle">67% of 330 samples</text><text class="stats" x="922.0" y="682" text-anchor="middle">33% of all samples · gini 0.49</text>
+<clipPath id="bare"><rect x="850" y="692" width="144" height="8" rx="4"/></clipPath>
+<rect x="850" y="692" width="144" height="8" rx="4" fill="#D9E2EC"/><g clip-path="url(#bare)">
+<rect x="850" y="692" width="96.0" height="8" fill="#1D64A8"/>
+<rect x="946.0" y="692" width="34.90909090909091" height="8" fill="#F2B233"/>
+<rect x="980.9090909090909" y="692" width="13.090909090909092" height="8" fill="#B42318"/>
+</g>
+<rect x="871.0" y="708" width="8" height="8" rx="2" fill="#1D64A8"/><text class="count" x="883.0" y="716">220</text>
+<rect x="913.0" y="708" width="8" height="8" rx="2" fill="#F2B233" stroke="#C98A0E" stroke-width="0.6"/><text class="count" x="925.0" y="716">80</text>
+<rect x="949.0" y="708" width="8" height="8" rx="2" fill="#B42318"/><text class="count" x="961.0" y="716">30</text>
+</svg>

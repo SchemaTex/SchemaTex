@@ -1,14 +1,21 @@
-# Scenario: Queue Birth Death Markov chain; every state's outgoing probabilities total one.
-markov "Queue Birth Death"
-  analysis: stationary, classify
-  state Normal
-  state Degraded
-  state Failed absorbing
-  Normal -> Normal : 0.80
-  Normal -> Degraded : 0.15
-  Normal -> Failed : 0.05
-  Degraded -> Normal : 0.30
-  Degraded -> Degraded : 0.45
-  Degraded -> Failed : 0.25
-  Failed -> Failed : 1.0
-
+# Scenario: a service desk queue that holds at most four customers; each minute one arrives or one leaves.
+markov "Service desk queue length"
+  analysis: stationary
+  state Q0 "Empty"
+  state Q1 "1 waiting"
+  state Q2 "2 waiting"
+  state Q3 "3 waiting"
+  state Q4 "Full"
+  Q0 -> Q0 : 0.6
+  Q0 -> Q1 : 0.4
+  Q1 -> Q0 : 0.3
+  Q1 -> Q1 : 0.3
+  Q1 -> Q2 : 0.4
+  Q2 -> Q1 : 0.3
+  Q2 -> Q2 : 0.3
+  Q2 -> Q3 : 0.4
+  Q3 -> Q2 : 0.3
+  Q3 -> Q3 : 0.3
+  Q3 -> Q4 : 0.4
+  Q4 -> Q3 : 0.3
+  Q4 -> Q4 : 0.7

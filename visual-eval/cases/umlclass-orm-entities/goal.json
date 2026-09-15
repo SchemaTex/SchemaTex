@@ -1,1 +1,77 @@
-{"id":"umlclass-orm-entities","type":"umlclass","title":"Clinical ORM entities","goal":"Show persistent clinical entities and their appointment relationships.","rubric":[{"id":"base-inheritance","severity":"blocker","must":"Patient, Practitioner, Appointment, and Clinic have generalization arrows pointing to abstract BaseEntity."},{"id":"note-ownership","severity":"blocker","must":"Appointment has a filled composition diamond to AppointmentNote."},{"id":"clinical-links","severity":"major","must":"Appointment has directed associations to both Patient and Practitioner with visible multiplicities."},{"id":"repository","severity":"major","must":"AppointmentRepository is visibly an interface with a dashed dependency to Appointment."},{"id":"enum","severity":"minor","must":"AppointmentStatus visibly lists scheduled, cancelled, and completed states."}],"split":"train"}
+{
+  "id": "umlclass-orm-entities",
+  "type": "umlclass",
+  "title": "Clinical ORM entities",
+  "goal": "Show persistent clinical entities and their appointment relationships.",
+  "rubric": [
+    {
+      "id": "base-inheritance",
+      "severity": "blocker",
+      "must": "Patient, Practitioner, Appointment, and Clinic have generalization arrows pointing to abstract BaseEntity."
+    },
+    {
+      "id": "note-ownership",
+      "severity": "blocker",
+      "must": "Appointment has a filled composition diamond to AppointmentNote."
+    },
+    {
+      "id": "clinical-links",
+      "severity": "major",
+      "must": "Appointment has directed associations to both Patient and Practitioner with visible multiplicities."
+    },
+    {
+      "id": "repository",
+      "severity": "major",
+      "must": "AppointmentRepository is visibly an interface with a dashed dependency to Appointment."
+    },
+    {
+      "id": "enum",
+      "severity": "minor",
+      "must": "AppointmentStatus visibly lists scheduled, cancelled, and completed states."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly shows the required inheritance, appointment relationships, note composition, repository dependency, and status values. Connections are traceable and labels readable, with no material overlaps or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:59.640Z",
+      "targetHash": "d893eed2724a",
+      "sourceHash": "5912ed7c3c76",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "base-inheritance",
+          "verdict": "pass",
+          "evidence": "Patient, Practitioner, Appointment, and Clinic connect through generalization lines to the abstract BaseEntity; the hollow triangle points to BaseEntity."
+        },
+        {
+          "id": "note-ownership",
+          "verdict": "pass",
+          "evidence": "A filled diamond at Appointment connects to AppointmentNote, labeled notes, with multiplicity 0..* at the note end."
+        },
+        {
+          "id": "clinical-links",
+          "verdict": "pass",
+          "evidence": "Appointment has directed associations to Patient and Practitioner, labeled patient and clinician; both show 0..* at the Appointment end and 1 at the person end."
+        },
+        {
+          "id": "repository",
+          "verdict": "pass",
+          "evidence": "AppointmentRepository is marked «interface» and has a dashed dependency labeled persists pointing to Appointment."
+        },
+        {
+          "id": "enum",
+          "verdict": "pass",
+          "evidence": "AppointmentStatus is marked «enumeration» and lists SCHEDULED, CANCELLED, and COMPLETED."
+        }
+      ]
+    }
+  }
+}

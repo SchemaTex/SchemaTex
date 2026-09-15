@@ -1,0 +1,26 @@
+# Euler diagram of animal groups: nesting shows subsets, separation shows disjoint
+# groups, and powered flight partly overlaps vertebrates, mammals and birds.
+venn "Animals, vertebrate classes and powered flight"
+layout euler
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+set flight "Powered flight"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+flight subset animals
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish
+flight overlap vertebrates
+flight overlap mammals
+flight overlap birds
+flight disjoint fish
+region flight & mammals : "Bats"
+region birds & flight : "Most birds"
+region birds only : "Penguins, ostriches"
+region flight only : "Insects"

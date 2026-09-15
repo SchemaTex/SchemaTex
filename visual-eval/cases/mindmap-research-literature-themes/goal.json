@@ -1,1 +1,88 @@
-{"id":"mindmap-research-literature-themes","type":"mindmap","title":"Trustworthy AI literature themes","goal":"Show major research themes for a literature review on trustworthy AI.","rubric":[{"id":"central-root","severity":"blocker","must":"Trustworthy AI Literature Themes is visibly the central root topic."},{"id":"four-themes","severity":"blocker","must":"Fairness, Transparency, Safety, and Governance visibly branch from the root."},{"id":"fairness-transparency","severity":"major","must":"Fairness and Transparency visibly expand to measurement or mitigation and interpretability or documentation leaves."},{"id":"safety-governance","severity":"major","must":"Safety and Governance visibly expand to robustness or evaluation and accountability or regulation leaves."},{"id":"detailed-leaves","severity":"major","must":"Concrete leaves such as group metrics, model cards, red-team testing, and risk classification are readable."},{"id":"hierarchy","severity":"minor","must":"At least three visual hierarchy levels are distinguishable."}],"split":"train"}
+{
+  "id": "mindmap-research-literature-themes",
+  "type": "mindmap",
+  "variant": "map",
+  "title": "Trustworthy AI literature themes",
+  "goal": "Show major research themes for a literature review on trustworthy AI.",
+  "rubric": [
+    {
+      "id": "central-root",
+      "severity": "blocker",
+      "must": "Trustworthy AI Literature Themes is visibly the central root topic."
+    },
+    {
+      "id": "four-themes",
+      "severity": "blocker",
+      "must": "Fairness, Transparency, Safety, and Governance visibly branch from the root."
+    },
+    {
+      "id": "fairness-transparency",
+      "severity": "major",
+      "must": "Fairness and Transparency visibly expand to measurement or mitigation and interpretability or documentation leaves."
+    },
+    {
+      "id": "safety-governance",
+      "severity": "major",
+      "must": "Safety and Governance visibly expand to robustness or evaluation and accountability or regulation leaves."
+    },
+    {
+      "id": "detailed-leaves",
+      "severity": "major",
+      "must": "Concrete leaves such as group metrics, model cards, red-team testing, and risk classification are readable."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "At least three visual hierarchy levels are distinguishable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the mindmap/map exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows “Trustworthy AI Literature Themes” as the central root, with all four themes and their subtopics and concrete leaves visibly connected. Labels are readable, the three-level hierarchy is clear, and no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:04.016Z",
+      "targetHash": "3967b9d9edb7",
+      "sourceHash": "aab0bd240e03",
+      "exemplarHash": "0bc04312aae8",
+      "items": [
+        {
+          "id": "central-root",
+          "verdict": "pass",
+          "evidence": "“Trustworthy AI Literature Themes” is visibly centered in the root node."
+        },
+        {
+          "id": "four-themes",
+          "verdict": "pass",
+          "evidence": "Fairness, Transparency, Safety, and Governance each visibly branch from the root."
+        },
+        {
+          "id": "fairness-transparency",
+          "verdict": "pass",
+          "evidence": "Fairness branches to Measurement and Mitigation, with “Group and individual metrics” and “Pre-processing and constraints”; Transparency branches to Interpretability and Documentation, with “Feature attribution” and “Model cards and data sheets.”"
+        },
+        {
+          "id": "safety-governance",
+          "verdict": "pass",
+          "evidence": "Safety branches to Robustness and Evaluation, with “Distribution shift” and “Red-team testing”; Governance branches to Accountability and Regulation, with “Human oversight” and “Risk classification.”"
+        },
+        {
+          "id": "detailed-leaves",
+          "verdict": "pass",
+          "evidence": "Concrete leaf labels including “Group and individual metrics,” “Model cards and data sheets,” “Red-team testing,” and “Risk classification” are readable."
+        },
+        {
+          "id": "hierarchy",
+          "verdict": "pass",
+          "evidence": "The root, colored theme nodes, intermediate topic labels, and concrete leaf labels are visually distinguishable as successive hierarchy levels."
+        }
+      ]
+    }
+  }
+}

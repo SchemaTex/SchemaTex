@@ -1,0 +1,14 @@
+A House of Quality for a drip coffee maker, the central matrix of Quality Function Deployment as Yoji Akao defined it (*Quality Function Deployment*, 1990) and as Hauser & Clausing popularised it in the West ([“The House of Quality”, *Harvard Business Review*, May–June 1988](https://hbr.org/1988/05/the-house-of-quality)). Customer requirements with importance weights form the rows, technical characteristics with a direction of improvement form the columns, the body records relationship strength on the 9 / 3 / 1 scale, the triangular roof records whether two characteristics support or conflict with each other (++ to −−), and the foot of the house carries the computed technical importance (Σ weight × strength per column) and its relative share ([ASQ, What is QFD?](https://asq.org/quality-resources/qfd-quality-function-deployment)). Here the totals are 60 / 45 / 55 / 31 / 36 / 23 out of 250, so heater power (24.0%) and carafe heat loss (22.0%) are the priorities; the customer-rating panel on the right is Hauser & Clausing's competitive assessment.
+
+Why it works as the exemplar for this type:
+
+- The house shape is literal: a 45° lattice of diamond cells sits exactly over the characteristic columns, each diamond at the meeting point of its two columns, holding a bold ++ / + in the accent blue or − / −− in brick red; empty diamonds mean no correlation.
+- Relationship strength is carried by the three standard symbols — filled circle, open circle, open triangle — centred in square-ish cells, never by numbers, and a legend in the empty corner beside the roof gives each symbol its 9 / 3 / 1 value.
+- Each characteristic has its unit in the header and a drawn up or down arrow in a dedicated row above it, labelled "Direction of improvement".
+- The computed rows are visually separate from the input body (heavier rule, merged label cell with the formula in a caption line) and show the raw sum, the percentage and the rank; the top-ranked column is shaded through all three rows.
+- The competitive assessment shares the body's row grid, uses a 1–5 scale with dotted guides, and gives our model, competitor A and competitor B distinct marker shapes on offset lines so equal scores never overlap; a faint line joins our own ratings.
+- Header labels wrap horizontally inside 96 px columns instead of being rotated, and a footnote states the arithmetic in words.
+
+The DSL cannot express the competitive assessment, and it has no separate percentage and raw-sum display at once (`normalize: true` switches between them); ideal.svg shows both because the standard house shows both.
+
+Palette: ink #1e293b, slate #475569, grid rule #e2e8f0, section rule #cbd5e1, header band #F1F3F6, top-priority shade #E6E9ED, positive correlation and our model #24618c, negative correlation #a1543f, paper #ffffff.

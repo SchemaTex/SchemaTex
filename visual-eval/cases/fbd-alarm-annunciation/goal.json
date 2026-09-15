@@ -1,8 +1,8 @@
 {
   "id": "fbd-alarm-annunciation",
   "type": "fbd",
-  "title": "Alarm Annunciation",
-  "goal": "A practitioner can read the alarm annunciation artefact at a glance.",
+  "title": "Pressure alarm annunciation",
+  "goal": "A practitioner can read this function block program at a glance: Pressure alarm annunciation.",
   "rubric": [
     {
       "id": "primary-subject-visible",
@@ -33,8 +33,8 @@
   "split": "holdout",
   "ideal": {
     "file": "ideal.svg",
-    "source": "model-svg (imagegen-guided)",
-    "reviewed": false,
-    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the picture: Image 2 clearly depicts alarm qualification, acknowledgement, and connected horn/lamp logic, while Image 1 labels a generic start/stop latch as alarm annunciation without showing the named scenario’s primary functions."
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/fbd/ideal.svg (sha256 ece5543b92c9). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Independent IEC network composition, full source expressions and literal values retained."
   }
 }

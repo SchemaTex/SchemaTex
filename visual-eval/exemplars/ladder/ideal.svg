@@ -1,0 +1,267 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1358" viewBox="0 0 1320 1358" role="img" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" stroke-linecap="butt" stroke-linejoin="miter">
+<title>Drill station · spindle control &amp; tool life</title>
+<desc>Offline ladder drawing for a drilling station, read top to bottom and left to right. Eight numbered and commented rungs: guarded fault reset, three-second spindle speed proving timer, drive-trip or timeout fault latch, edge-triggered start with seal-in and healthy-high stop/safety permissives, a 500-part tool-life counter, a stopped/idle tool-change counter reset, drilling feed permission, and a GEQ comparison that lights an advance tool warning at 450 parts. Allen-Bradley L and U coils, inline ONS and RES brackets, TON EN/DN and CTU CU/DN status terminals. All wires are orthogonal and terminate at the exact contact blade, coil arc, instruction boundary or power rail. Safety STO and drilling motion are handled outside this control routine.</desc>
+<rect width="1320" height="1358" fill="#FFFFFF"/>
+<text x="36" y="47" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Drill station · spindle control &amp; tool life</text>
+<text x="36" y="73" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">MainTask (10 ms)  /  DrillStation  /  SpindleAndToolLife</text>
+<text x="1284" y="45" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">D01 · LD-01</text>
+<text x="1284" y="72" font-size="12" font-weight="400" text-anchor="end" fill="#59636B">OFFLINE / 1 OF 1</text>
+<line x1="36" y1="94" x2="1284" y2="94" stroke="#CBD1D6" stroke-width="1"/>
+<text x="36" y="116" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3 LD  ·  Allen-Bradley instruction notation</text>
+<line x1="80" y1="164" x2="80" y2="1236" stroke="#20272B" stroke-width="3"/>
+<line x1="1240" y1="164" x2="1240" y2="1236" stroke="#20272B" stroke-width="3"/>
+<g id="rung-0" data-rung="0">
+<text x="63" y="189" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">000</text>
+<text x="96" y="140" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Acknowledge spindle fault only with the run command off and the drive healthy.</text>
+<line x1="203" y1="170" x2="203" y2="198" stroke="#20272B" stroke-width="2"/>
+<line x1="217" y1="170" x2="217" y2="198" stroke="#20272B" stroke-width="2"/>
+<text x="210" y="159" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">FaultResetPB</text>
+<line x1="80" y1="184" x2="203" y2="184" stroke="#20272B" stroke-width="1.5"/>
+<line x1="423" y1="170" x2="423" y2="198" stroke="#20272B" stroke-width="2"/>
+<line x1="437" y1="170" x2="437" y2="198" stroke="#20272B" stroke-width="2"/>
+<line x1="423" y1="195" x2="437" y2="173" stroke="#20272B" stroke-width="2"/>
+<text x="430" y="159" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="217" y1="184" x2="423" y2="184" stroke="#20272B" stroke-width="1.5"/>
+<line x1="643" y1="170" x2="643" y2="198" stroke="#20272B" stroke-width="2"/>
+<line x1="657" y1="170" x2="657" y2="198" stroke="#20272B" stroke-width="2"/>
+<line x1="643" y1="195" x2="657" y2="173" stroke="#20272B" stroke-width="2"/>
+<text x="650" y="159" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">DriveFault</text>
+<line x1="437" y1="184" x2="643" y2="184" stroke="#20272B" stroke-width="1.5"/>
+<path d="M 1122 168 A 8 16 0 0 0 1122 200" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1150 168 A 8 16 0 0 1 1150 200" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="189" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">U</text>
+<text x="1136" y="157" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleFault</text>
+<line x1="657" y1="184" x2="1114" y2="184" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1158" y1="184" x2="1240" y2="184" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-1" data-rung="1">
+<text x="63" y="301" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">001</text>
+<text x="96" y="252" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Allow 3 s to prove spindle speed; also detect sustained loss of speed while running.</text>
+<line x1="203" y1="282" x2="203" y2="310" stroke="#20272B" stroke-width="2"/>
+<line x1="217" y1="282" x2="217" y2="310" stroke="#20272B" stroke-width="2"/>
+<text x="210" y="271" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="80" y1="296" x2="203" y2="296" stroke="#20272B" stroke-width="1.5"/>
+<line x1="423" y1="282" x2="423" y2="310" stroke="#20272B" stroke-width="2"/>
+<line x1="437" y1="282" x2="437" y2="310" stroke="#20272B" stroke-width="2"/>
+<line x1="423" y1="307" x2="437" y2="285" stroke="#20272B" stroke-width="2"/>
+<text x="430" y="271" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AtSpeed</text>
+<line x1="217" y1="296" x2="423" y2="296" stroke="#20272B" stroke-width="1.5"/>
+<rect x="884" y="276" width="244" height="116" fill="#FFFFFF"/>
+<line x1="884" y1="276" x2="1128" y2="276" stroke="#20272B" stroke-width="2"/>
+<line x1="1128" y1="276" x2="1128" y2="392" stroke="#20272B" stroke-width="2"/>
+<line x1="1128" y1="392" x2="884" y2="392" stroke="#20272B" stroke-width="2"/>
+<line x1="884" y1="392" x2="884" y2="276" stroke="#20272B" stroke-width="2"/>
+<text x="896" y="301" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">TON</text>
+<text x="1116" y="301" font-size="12" font-weight="400" text-anchor="end" fill="#59636B">ON DELAY</text>
+<line x1="884" y1="312" x2="1128" y2="312" stroke="#CBD1D6" stroke-width="1"/>
+<text x="896" y="332" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Timer</text>
+<text x="1116" y="332" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">SpeedProof</text>
+<text x="896" y="355" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Preset</text>
+<text x="1116" y="355" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">3000</text>
+<text x="896" y="378" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Accum</text>
+<text x="1116" y="378" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">0</text>
+<path d="M 1160 280 A 8 16 0 0 0 1160 312" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1188 280 A 8 16 0 0 1 1188 312" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1174" y="301" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">EN</text>
+<path d="M 1160 322 A 8 16 0 0 0 1160 354" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1188 322 A 8 16 0 0 1 1188 354" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1174" y="343" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">DN</text>
+<line x1="1128" y1="296" x2="1152" y2="296" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1128" y1="338" x2="1152" y2="338" stroke="#20272B" stroke-width="1.5"/>
+<line x1="437" y1="296" x2="884" y2="296" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1196" y1="296" x2="1240" y2="296" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-2" data-rung="2">
+<text x="63" y="461" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">002</text>
+<text x="96" y="412" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Latch a drive trip or speed timeout. Set follows reset, so an active fault wins.</text>
+<line x1="140" y1="456" x2="140" y2="522" stroke="#20272B" stroke-width="1.5"/>
+<line x1="502" y1="456" x2="502" y2="522" stroke="#20272B" stroke-width="1.5"/>
+<line x1="313" y1="442" x2="313" y2="470" stroke="#20272B" stroke-width="2"/>
+<line x1="327" y1="442" x2="327" y2="470" stroke="#20272B" stroke-width="2"/>
+<text x="320" y="431" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">DriveFault</text>
+<line x1="140" y1="456" x2="313" y2="456" stroke="#20272B" stroke-width="1.5"/>
+<line x1="327" y1="456" x2="502" y2="456" stroke="#20272B" stroke-width="1.5"/>
+<line x1="313" y1="508" x2="313" y2="536" stroke="#20272B" stroke-width="2"/>
+<line x1="327" y1="508" x2="327" y2="536" stroke="#20272B" stroke-width="2"/>
+<text x="320" y="497" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpeedProof.DN</text>
+<line x1="140" y1="522" x2="313" y2="522" stroke="#20272B" stroke-width="1.5"/>
+<line x1="327" y1="522" x2="502" y2="522" stroke="#20272B" stroke-width="1.5"/>
+<line x1="80" y1="456" x2="140" y2="456" stroke="#20272B" stroke-width="1.5"/>
+<path d="M 1122 440 A 8 16 0 0 0 1122 472" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1150 440 A 8 16 0 0 1 1150 472" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="461" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">L</text>
+<text x="1136" y="429" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleFault</text>
+<line x1="502" y1="456" x2="1114" y2="456" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1158" y1="456" x2="1240" y2="456" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-3" data-rung="3">
+<text x="63" y="615" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">003</text>
+<text x="96" y="566" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">A fresh Start edge seals in the spindle; Stop or loss of any permissive drops the command.</text>
+<line x1="136" y1="610" x2="136" y2="676" stroke="#20272B" stroke-width="1.5"/>
+<line x1="440" y1="610" x2="440" y2="676" stroke="#20272B" stroke-width="1.5"/>
+<line x1="211" y1="596" x2="211" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="225" y1="596" x2="225" y2="624" stroke="#20272B" stroke-width="2"/>
+<text x="218" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">StartPB</text>
+<line x1="136" y1="610" x2="211" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="341" y1="596" x2="335" y2="596" stroke="#20272B" stroke-width="2"/>
+<line x1="335" y1="596" x2="335" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="335" y1="624" x2="341" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="387" y1="596" x2="393" y2="596" stroke="#20272B" stroke-width="2"/>
+<line x1="393" y1="596" x2="393" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="393" y1="624" x2="387" y2="624" stroke="#20272B" stroke-width="2"/>
+<text x="364" y="615" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">ONS</text>
+<text x="364" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">Start_OS</text>
+<line x1="225" y1="610" x2="335" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="393" y1="610" x2="440" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="281" y1="662" x2="281" y2="690" stroke="#20272B" stroke-width="2"/>
+<line x1="295" y1="662" x2="295" y2="690" stroke="#20272B" stroke-width="2"/>
+<text x="288" y="651" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="136" y1="676" x2="281" y2="676" stroke="#20272B" stroke-width="1.5"/>
+<line x1="295" y1="676" x2="440" y2="676" stroke="#20272B" stroke-width="1.5"/>
+<line x1="80" y1="610" x2="136" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="525" y1="596" x2="525" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="539" y1="596" x2="539" y2="624" stroke="#20272B" stroke-width="2"/>
+<text x="532" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">StopOK</text>
+<line x1="440" y1="610" x2="525" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="667" y1="596" x2="667" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="681" y1="596" x2="681" y2="624" stroke="#20272B" stroke-width="2"/>
+<text x="674" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SafetyOK</text>
+<line x1="539" y1="610" x2="667" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="809" y1="596" x2="809" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="823" y1="596" x2="823" y2="624" stroke="#20272B" stroke-width="2"/>
+<text x="816" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">DriveReady</text>
+<line x1="681" y1="610" x2="809" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="951" y1="596" x2="951" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="965" y1="596" x2="965" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="951" y1="621" x2="965" y2="599" stroke="#20272B" stroke-width="2"/>
+<text x="958" y="585" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleFault</text>
+<line x1="823" y1="610" x2="951" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<path d="M 1122 594 A 8 16 0 0 0 1122 626" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1150 594 A 8 16 0 0 1 1150 626" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="583" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="965" y1="610" x2="1114" y2="610" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1158" y1="610" x2="1240" y2="610" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-4" data-rung="4">
+<text x="63" y="779" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">004</text>
+<text x="96" y="730" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Count each completed part once. CTU detects the rising edge; tool life is 500 parts.</text>
+<line x1="203" y1="760" x2="203" y2="788" stroke="#20272B" stroke-width="2"/>
+<line x1="217" y1="760" x2="217" y2="788" stroke="#20272B" stroke-width="2"/>
+<text x="210" y="749" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">CycleDone</text>
+<text x="210" y="809" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">From drill sequencer</text>
+<line x1="80" y1="774" x2="203" y2="774" stroke="#20272B" stroke-width="1.5"/>
+<rect x="884" y="754" width="244" height="116" fill="#FFFFFF"/>
+<line x1="884" y1="754" x2="1128" y2="754" stroke="#20272B" stroke-width="2"/>
+<line x1="1128" y1="754" x2="1128" y2="870" stroke="#20272B" stroke-width="2"/>
+<line x1="1128" y1="870" x2="884" y2="870" stroke="#20272B" stroke-width="2"/>
+<line x1="884" y1="870" x2="884" y2="754" stroke="#20272B" stroke-width="2"/>
+<text x="896" y="779" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">CTU</text>
+<text x="1116" y="779" font-size="12" font-weight="400" text-anchor="end" fill="#59636B">COUNT UP</text>
+<line x1="884" y1="790" x2="1128" y2="790" stroke="#CBD1D6" stroke-width="1"/>
+<text x="896" y="810" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Counter</text>
+<text x="1116" y="810" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">ToolLife</text>
+<text x="896" y="833" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Preset</text>
+<text x="1116" y="833" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">500</text>
+<text x="896" y="856" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Accum</text>
+<text x="1116" y="856" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">0</text>
+<path d="M 1160 758 A 8 16 0 0 0 1160 790" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1188 758 A 8 16 0 0 1 1188 790" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1174" y="779" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">CU</text>
+<path d="M 1160 800 A 8 16 0 0 0 1160 832" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1188 800 A 8 16 0 0 1 1188 832" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1174" y="821" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">DN</text>
+<line x1="1128" y1="774" x2="1152" y2="774" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1128" y1="816" x2="1152" y2="816" stroke="#20272B" stroke-width="1.5"/>
+<line x1="217" y1="774" x2="884" y2="774" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1196" y1="774" x2="1240" y2="774" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-5" data-rung="5">
+<text x="63" y="939" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">005</text>
+<text x="96" y="890" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">After replacing the tool, reset its count only with the spindle stopped and the cycle idle.</text>
+<line x1="203" y1="920" x2="203" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="217" y1="920" x2="217" y2="948" stroke="#20272B" stroke-width="2"/>
+<text x="210" y="909" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">ToolResetPB</text>
+<line x1="80" y1="934" x2="203" y2="934" stroke="#20272B" stroke-width="1.5"/>
+<line x1="423" y1="920" x2="423" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="437" y1="920" x2="437" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="423" y1="945" x2="437" y2="923" stroke="#20272B" stroke-width="2"/>
+<text x="430" y="909" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="217" y1="934" x2="423" y2="934" stroke="#20272B" stroke-width="1.5"/>
+<line x1="643" y1="920" x2="643" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="657" y1="920" x2="657" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="643" y1="945" x2="657" y2="923" stroke="#20272B" stroke-width="2"/>
+<text x="650" y="909" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AtSpeed</text>
+<line x1="437" y1="934" x2="643" y2="934" stroke="#20272B" stroke-width="1.5"/>
+<line x1="863" y1="920" x2="863" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="877" y1="920" x2="877" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="863" y1="945" x2="877" y2="923" stroke="#20272B" stroke-width="2"/>
+<text x="870" y="909" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">CycleActive</text>
+<line x1="657" y1="934" x2="863" y2="934" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1113" y1="920" x2="1107" y2="920" stroke="#20272B" stroke-width="2"/>
+<line x1="1107" y1="920" x2="1107" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="1107" y1="948" x2="1113" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="1159" y1="920" x2="1165" y2="920" stroke="#20272B" stroke-width="2"/>
+<line x1="1165" y1="920" x2="1165" y2="948" stroke="#20272B" stroke-width="2"/>
+<line x1="1165" y1="948" x2="1159" y2="948" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="939" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RES</text>
+<text x="1136" y="909" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">ToolLife</text>
+<line x1="877" y1="934" x2="1107" y2="934" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1165" y1="934" x2="1240" y2="934" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-6" data-rung="6">
+<text x="63" y="1051" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">006</text>
+<text x="96" y="1002" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Permit a new drilling cycle only at speed and below the tool-life limit.</text>
+<line x1="203" y1="1032" x2="203" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="217" y1="1032" x2="217" y2="1060" stroke="#20272B" stroke-width="2"/>
+<text x="210" y="1021" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleRun</text>
+<line x1="80" y1="1046" x2="203" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+<line x1="423" y1="1032" x2="423" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="437" y1="1032" x2="437" y2="1060" stroke="#20272B" stroke-width="2"/>
+<text x="430" y="1021" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AtSpeed</text>
+<line x1="217" y1="1046" x2="423" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+<line x1="643" y1="1032" x2="643" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="657" y1="1032" x2="657" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="643" y1="1057" x2="657" y2="1035" stroke="#20272B" stroke-width="2"/>
+<text x="650" y="1021" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">SpindleFault</text>
+<line x1="437" y1="1046" x2="643" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+<line x1="863" y1="1032" x2="863" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="877" y1="1032" x2="877" y2="1060" stroke="#20272B" stroke-width="2"/>
+<line x1="863" y1="1057" x2="877" y2="1035" stroke="#20272B" stroke-width="2"/>
+<text x="870" y="1021" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">ToolLife.DN</text>
+<line x1="657" y1="1046" x2="863" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+<path d="M 1122 1030 A 8 16 0 0 0 1122 1062" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1150 1030 A 8 16 0 0 1 1150 1062" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="1019" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">FeedPermit</text>
+<line x1="877" y1="1046" x2="1114" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1158" y1="1046" x2="1240" y2="1046" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<g id="rung-7" data-rung="7">
+<text x="63" y="1163" font-size="13" font-weight="600" text-anchor="end" fill="#59636B">007</text>
+<text x="96" y="1114" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Warn at 450 parts so the operator can prepare a tool; the cycle inhibit takes effect at 500.</text>
+<rect x="170" y="1138" width="244" height="93" fill="#FFFFFF"/>
+<line x1="170" y1="1138" x2="414" y2="1138" stroke="#20272B" stroke-width="2"/>
+<line x1="414" y1="1138" x2="414" y2="1231" stroke="#20272B" stroke-width="2"/>
+<line x1="414" y1="1231" x2="170" y2="1231" stroke="#20272B" stroke-width="2"/>
+<line x1="170" y1="1231" x2="170" y2="1138" stroke="#20272B" stroke-width="2"/>
+<text x="182" y="1163" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">GEQ</text>
+<text x="402" y="1163" font-size="12" font-weight="400" text-anchor="end" fill="#59636B">A ≥ B</text>
+<line x1="170" y1="1174" x2="414" y2="1174" stroke="#CBD1D6" stroke-width="1"/>
+<text x="182" y="1194" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Source A</text>
+<text x="402" y="1194" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">ToolLife.ACC</text>
+<text x="182" y="1217" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Source B</text>
+<text x="402" y="1217" font-size="13" font-weight="600" text-anchor="end" fill="#20272B">450</text>
+<line x1="80" y1="1158" x2="170" y2="1158" stroke="#20272B" stroke-width="1.5"/>
+<path d="M 1122 1142 A 8 16 0 0 0 1122 1174" fill="none" stroke="#20272B" stroke-width="2"/>
+<path d="M 1150 1142 A 8 16 0 0 1 1150 1174" fill="none" stroke="#20272B" stroke-width="2"/>
+<text x="1136" y="1131" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">ToolWarnLamp</text>
+<line x1="414" y1="1158" x2="1114" y2="1158" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1158" y1="1158" x2="1240" y2="1158" stroke="#20272B" stroke-width="1.5"/>
+</g>
+<line x1="36" y1="1256" x2="1284" y2="1256" stroke="#CBD1D6" stroke-width="1"/>
+<text x="36" y="1282" font-size="12" font-weight="600" text-anchor="start" fill="#20272B">I/O CONVENTION</text>
+<text x="180" y="1282" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">StopOK and SafetyOK = healthy-high. Safety relay operates the drive STO independently.</text>
+<text x="36" y="1307" font-size="12" font-weight="600" text-anchor="start" fill="#20272B">READING NOTES</text>
+<text x="180" y="1307" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Timer preset in ms; counter preset in parts. Accum = offline initial value. EN / CU / DN are status terminals.</text>
+<text x="36" y="1332" font-size="12" font-weight="600" text-anchor="start" fill="#20272B">SCOPE</text>
+<text x="180" y="1332" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">FeedPermit authorizes the next cycle; clamp, feed motion and safe standstill are handled by the station sequencer.</text>
+</svg>

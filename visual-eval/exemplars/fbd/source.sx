@@ -1,0 +1,23 @@
+# Scenario: packaging line — debounce the bottle photo-eye, count one bottle per rising edge, and close the case at 24.
+fbd "Bottle counter"
+
+var BottleSensor: bool
+var CaseReset: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+var RunCmd: bool
+var InfeedRun: bool
+
+network 1 "Debounce the photo-eye: the beam must stay broken for 50 ms":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 2 "Count one bottle on each rising edge; clear on case reset":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: CaseReset, PV: 24)
+
+network 3 "Case full: report batch done":
+  BatchDone = MOVE(BatchSize.Q)
+
+network 4 "Run the infeed conveyor until the case is full":
+  InfeedRun = AND(RunCmd, ~BatchDone)

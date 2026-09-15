@@ -1,0 +1,27 @@
+sociogram "Year 5 seating choices"
+  config: sizing = in-degree
+  config: highlight = stars, isolates
+  ava [label: "Ava"]
+  ben [label: "Ben"]
+  chloe [label: "Chloe"]
+  diego [label: "Diego"]
+  emma [label: "Emma"]
+  finn [label: "Finn"]
+  gia [label: "Gia"]
+  hana [label: "Hana"]
+  ivan [label: "Ivan"]
+  jade [label: "Jade"]
+  ava <-> ben
+  ava <-> chloe
+  ben <-> diego
+  emma <-> hana
+  diego -> ava
+  emma -> ava
+  finn -> ava
+  hana -> ava
+  chloe -> emma
+  finn -> hana
+  ivan -> finn
+  jade -> chloe
+  diego -x> ivan
+  hana -x> ivan

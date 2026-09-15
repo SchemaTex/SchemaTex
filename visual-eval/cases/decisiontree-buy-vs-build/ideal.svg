@@ -1,76 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1180" width="1800" height="1180">
-  <title>Buy vs Build Decision</title>
-  <rect width="1800" height="1180" fill="white"/>
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L10 5L0 10Z" fill="#334155"/></marker>
-    <style>
-      text{font-family:Verdana, Geneva, sans-serif;fill:#172b42;text-anchor:middle;font-size:22px}
-      .decision{fill:#eef5fa;stroke:#334155;stroke-width:2.5}
-      .outcome{fill:#f5f8f6;stroke:#334155;stroke-width:2.5}
-      .line{fill:none;stroke:#334155;stroke-width:2.5;marker-end:url(#arrow)}
-      .label{font-size:21px;font-weight:bold;paint-order:stroke;stroke:white;stroke-width:9px;stroke-linejoin:round}
-    </style>
-  </defs>
-  <text x="900" y="53" style="font-size:34px;font-weight:bold">Buy vs Build Decision</text>
-
-  <!-- Orthogonal branches -->
-  <g class="line">
-    <path d="M620 180H440V290"/>
-    <path d="M1180 180H1360V290"/>
-    <path d="M440 490V630"/>
-    <path d="M180 390H155V530"/>
-    <path d="M1360 490V630"/>
-    <path d="M1620 390H1645V530"/>
-    <path d="M195 730H150V985"/>
-    <path d="M440 830V900H650V985"/>
-    <path d="M1360 830V900H1150V985"/>
-    <path d="M1605 730H1650V985"/>
-  </g>
-
-  <!-- Root -->
-  <path class="decision" d="M900 85L1180 180L900 275L620 180Z"/>
-  <text x="900" y="172"><tspan x="900">Does a product meet</tspan><tspan x="900" dy="29">critical requirements?</tspan></text>
-
-  <!-- Vendor path -->
-  <path class="decision" d="M440 290L700 390L440 490L180 390Z"/>
-  <text x="440" y="368"><tspan x="440">Can vendor pass security</tspan><tspan x="440" dy="29">and compliance review?</tspan></text>
-
-  <rect class="outcome" x="25" y="530" width="290" height="100" rx="5"/>
-  <text x="170" y="561"><tspan x="170">Build internally or use</tspan><tspan x="170" dy="29">a compliant platform</tspan></text>
-
-  <path class="decision" d="M440 630L685 730L440 830L195 730Z"/>
-  <text x="440" y="708"><tspan x="440">Is total cost within</tspan><tspan x="440" dy="29">the approved budget?</tspan></text>
-
-  <!-- Internal build path -->
-  <path class="decision" d="M1360 290L1620 390L1360 490L1100 390Z"/>
-  <text x="1360" y="354"><tspan x="1360">Can the team build a safe</tspan><tspan x="1360" dy="29">MVP before the deadline?</tspan></text>
-
-  <rect class="outcome" x="1495" y="530" width="280" height="120" rx="5"/>
-  <text x="1635" y="563"><tspan x="1635">Buy adjacent capability</tspan><tspan x="1635" dy="29">and defer custom</tspan><tspan x="1635" dy="29">features</tspan></text>
-
-  <path class="decision" d="M1360 630L1605 730L1360 830L1115 730Z"/>
-  <text x="1360" y="708"><tspan x="1360">Is long-term ownership</tspan><tspan x="1360" dy="29">capacity funded?</tspan></text>
-
-  <!-- Terminal outcomes -->
-  <rect class="outcome" x="25" y="985" width="280" height="105" rx="5"/>
-  <text x="165" y="1045">Buy and integrate</text>
-  <rect class="outcome" x="480" y="985" width="340" height="105" rx="5"/>
-  <text x="650" y="1030"><tspan x="650">Negotiate or seek</tspan><tspan x="650" dy="29">another vendor</tspan></text>
-  <rect class="outcome" x="1010" y="985" width="280" height="105" rx="5"/>
-  <text x="1150" y="1045">Build in-house</text>
-  <rect class="outcome" x="1480" y="985" width="295" height="105" rx="5"/>
-  <text x="1627.5" y="1030"><tspan x="1627.5">Reduce scope or use</tspan><tspan x="1627.5" dy="29">a managed service</tspan></text>
-
-  <g class="label">
-    <text x="523" y="165">Yes</text>
-    <text x="1274" y="165">No</text>
-    <text x="467" y="554">Yes</text>
-    <text x="128" y="472">No</text>
-    <text x="1388" y="554">Yes</text>
-    <text x="1672" y="472">No</text>
-    <text x="124" y="884">Yes</text>
-    <text x="547" y="885">No</text>
-    <text x="1247" y="885">Yes</text>
-    <text x="1678" y="884">No</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1226" height="632" viewBox="0 0 1226 632">
+<title>Buy vs Build Decision</title>
+<desc>Question tree: 5 yes/no questions lead to 6 actions, each colour-coded by urgency ().</desc>
+<rect x="0" y="0" width="1226" height="632" fill="#FFFFFF"/>
+<text x="40" y="50" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" fill="#1F2933" text-anchor="start">Buy vs Build Decision</text>
+<text x="1186" y="50" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#52606D" text-anchor="end">Question</text>
+<polygon points="1115.51,40 1127.51,40 1132.51,46 1127.51,52 1115.51,52 1110.51,46" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.2"/>
+<path d="M659.5,148 V170 Q659.5,176 653.5,176 H368.5 Q362.5,176 362.5,182 V220" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="362.5,228 358,220 367,220" fill="#3E4C59"/>
+<text x="355.5" y="199" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M659.5,148 V170 Q659.5,176 665.5,176 H950.5 Q956.5,176 956.5,182 V220" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="956.5,228 952,220 961,220" fill="#3E4C59"/>
+<text x="963.5" y="199" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M362.5,284 V306 Q362.5,312 356.5,312 H223 Q217,312 217,318 V356" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="217,364 212.5,356 221.5,356" fill="#3E4C59"/>
+<text x="210" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M362.5,284 V306 Q362.5,312 368.5,312 H502 Q508,312 508,318 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="508,500 503.5,492 512.5,492" fill="#3E4C59"/>
+<text x="515" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M217,420 V442 Q217,448 211,448 H130 Q124,448 124,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="124,500 119.5,492 128.5,492" fill="#3E4C59"/>
+<text x="117" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M217,420 V442 Q217,448 223,448 H304 Q310,448 310,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="310,500 305.5,492 314.5,492" fill="#3E4C59"/>
+<text x="317" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M956.5,284 V306 Q956.5,312 950.5,312 H817 Q811,312 811,318 V356" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="811,364 806.5,356 815.5,356" fill="#3E4C59"/>
+<text x="804" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M956.5,284 V306 Q956.5,312 962.5,312 H1096 Q1102,312 1102,318 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="1102,500 1097.5,492 1106.5,492" fill="#3E4C59"/>
+<text x="1109" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<path d="M811,420 V442 Q811,448 805,448 H724 Q718,448 718,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="718,500 713.5,492 722.5,492" fill="#3E4C59"/>
+<text x="711" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="end">Yes</text>
+<path d="M811,420 V442 Q811,448 817,448 H898 Q904,448 904,454 V492" fill="none" stroke="#3E4C59" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="904,500 899.5,492 908.5,492" fill="#3E4C59"/>
+<text x="911" y="471" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#1F2933" text-anchor="start">No</text>
+<polygon points="583.56,92 735.44,92 753.44,120 735.44,148 583.56,148 565.56,120" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="659.5" y="116" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Does a product meet</text>
+<text x="659.5" y="133" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">critical requirements?</text>
+<circle cx="565.56" cy="120" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="565.56" y="123.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<polygon points="274.63,228 450.37,228 468.37,256 450.37,284 274.63,284 256.63,256" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="362.5" y="252" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Can vendor pass security</text>
+<text x="362.5" y="269" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">and compliance review?</text>
+<circle cx="256.63" cy="256" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="256.63" y="259.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<polygon points="84.36,364 349.64,364 367.64,392 349.64,420 84.36,420 66.36,392" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="217" y="396.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Is total cost within the approved budget?</text>
+<circle cx="66.36" cy="392" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="66.36" y="395.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<polygon points="867.68,228 1045.32,228 1063.32,256 1045.32,284 867.68,284 849.68,256" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="956.5" y="252" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Can the team build a safe</text>
+<text x="956.5" y="269" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">MVP before the deadline?</text>
+<circle cx="849.68" cy="256" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="849.68" y="259.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<polygon points="678.36,364 943.64,364 961.64,392 943.64,420 678.36,420 660.36,392" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="811" y="396.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#1F2933" text-anchor="middle">Is long-term ownership capacity funded?</text>
+<circle cx="660.36" cy="392" r="9" fill="#3E4C59" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="660.36" y="395.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<rect x="40" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="124" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Buy and integrate</text>
+<rect x="226" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="310" y="542.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Negotiate or seek</text>
+<text x="310" y="558.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">another vendor</text>
+<rect x="424" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="508" y="542.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Build internally or use</text>
+<text x="508" y="558.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">a compliant platform</text>
+<rect x="634" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="718" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Build in-house</text>
+<rect x="820" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="904" y="542.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Reduce scope or use</text>
+<text x="904" y="558.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">a managed service</text>
+<rect x="1018" y="500" width="168" height="92" rx="6" fill="#F0F4F8" stroke="#3E4C59" stroke-width="1.5"/>
+<text x="1102" y="534.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">Buy adjacent capability</text>
+<text x="1102" y="550.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">and defer custom</text>
+<text x="1102" y="566.3" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#1F2933" text-anchor="middle">features</text>
 </svg>

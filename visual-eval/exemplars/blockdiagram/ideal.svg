@@ -1,81 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1364 638" width="1364" height="638" role="img">
-  <title>BLDC Joint Servo — Closed-Loop Speed Control</title>
-  <desc>Functional block diagram of a robot-joint servo drive. A motion command enters a summing junction where the measured joint speed is subtracted; the resulting error runs left to right through the digital control subsystem (PID speed controller, current limiter, PWM modulator), folds down into the power stage (gate driver and three-phase MOSFET inverter), then drives the BLDC motor, the gearbox and joint load, and finally the joint-speed output. A pickoff on the output feeds the lower return path — quadrature encoder into a speed estimator and low-pass filter — which returns to the negative input of the summing junction. Forward signals are drawn in black; the feedback path is drawn in a single accent colour. Two dashed frames mark the control-electronics and power-stage subsystems.</desc>
-  <defs>
-    <marker id="ah" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202B"/></marker>
-    <marker id="ahf" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#B4462A"/></marker>
-  </defs>
-  <rect x="0" y="0" width="1364" height="638" fill="#FFFFFF"/>
-  <text x="58" y="48" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#16202B">BLDC Joint Servo — Closed-Loop Speed Control</text>
-  <text x="58" y="68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#63707F">Functional block diagram · 20 kHz current loop, 2 kHz speed loop · negative-feedback speed regulation</text>
-  <line x1="58" y1="84" x2="1306" y2="84" stroke="#C9D2DC" stroke-width="1"/>
-  <rect x="372" y="97" width="578" height="108" rx="10" fill="#FAFBFC" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
-  <text x="386" y="115" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.6" fill="#63707F">DIGITAL CONTROL — MCU</text>
-  <rect x="331" y="277" width="364" height="108" rx="10" fill="#FAFBFC" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
-  <text x="345" y="295" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.6" fill="#63707F">POWER STAGE — 48 V DC BUS</text>
-  <path d="M192 158 L272 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="221.43725" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">ref</tspan></text>
-  <path d="M306 158 L386 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="323.8625" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">error e</text>
-  <path d="M508 158 L588 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="541.675" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">T*</text>
-  <path d="M729 158 L809 158" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="762.675" y="147" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">i*</text>
-  <path d="M936 158 L966 158 L966 248 L315 248 L315 338 L345 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="621.525" y="238" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">duty d</text>
-  <path d="M467 338 L547 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="497.5125" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">PWM</text>
-  <path d="M681 338 L761 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="710.43725" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">v<tspan font-size="9.0" dy="2.6">abc</tspan></text>
-  <path d="M883 338 L963 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="917.37075" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">T<tspan font-size="9.0" dy="2.6">m</tspan></text>
-  <path d="M1104 338 L1184 338" fill="none" stroke="#16202B" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ah)"/>
-  <text x="1133.43725" y="327" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">out</tspan></text>
-  <path d="M1144 338 L1144 500 L994 500" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
-  <text x="1063.37075" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">θ<tspan font-size="9.0" dy="2.6">m</tspan></text>
-  <path d="M872 500 L507 500" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
-  <text x="680.0125" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">A/B</text>
-  <path d="M351 500 L289 500 L289 175" fill="none" stroke="#B4462A" stroke-width="1.5" stroke-linejoin="miter" marker-end="url(#ahf)"/>
-  <text x="311.904" y="489" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" font-style="italic" fill="#63707F">ω<tspan font-size="9.0" dy="2.6">fb</tspan></text>
-  <circle cx="1144" cy="338" r="3.5" fill="#16202B"/>
-  <rect x="58" y="127" width="134" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="125" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Motion Command</text>
-  <text x="125" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Speed Setpoint</text>
-  <rect x="386" y="127" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="447" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">PID Speed</text>
-  <text x="447" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Controller</text>
-  <rect x="588" y="127" width="141" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="658.5" y="162.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Current Limiter</text>
-  <rect x="809" y="127" width="127" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="872.5" y="155" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">PWM Modulator</text>
-  <text x="872.5" y="172" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">20 kHz</text>
-  <rect x="345" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="406" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Gate Driver</text>
-  <rect x="547" y="307" width="134" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="614" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">3-Phase MOSFET</text>
-  <text x="614" y="352" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Inverter</text>
-  <rect x="761" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="822" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">BLDC Motor</text>
-  <rect x="963" y="307" width="141" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="1033.5" y="335" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Gearbox + Joint</text>
-  <text x="1033.5" y="352" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Load</text>
-  <rect x="1184" y="307" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="1245" y="342.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Joint Speed</text>
-  <rect x="872" y="469" width="122" height="62" rx="4" fill="#FFFFFF" stroke="#B4462A" stroke-width="1.5"/>
-  <text x="933" y="497" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Quadrature</text>
-  <text x="933" y="514" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Encoder</text>
-  <rect x="351" y="469" width="156" height="62" rx="4" fill="#FFFFFF" stroke="#B4462A" stroke-width="1.5"/>
-  <text x="429" y="497" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">Speed Estimator</text>
-  <text x="429" y="514" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202B" text-anchor="middle">+ Low-Pass Filter</text>
-  <circle cx="289" cy="158" r="17" fill="#FFFFFF" stroke="#16202B" stroke-width="1.5"/>
-  <text x="263" y="150" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#16202B" text-anchor="middle">+</text>
-  <text x="275" y="190" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#B4462A" text-anchor="middle">−</text>
-  <path d="M58 570 L88 570" fill="none" stroke="#16202B" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="98" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Forward signal path</text>
-  <path d="M258.95 570 L288.95 570" fill="none" stroke="#B4462A" stroke-width="1.5" marker-end="url(#ahf)"/>
-  <text x="298.95" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Feedback / measured path</text>
-  <circle cx="505.15" cy="570" r="3.5" fill="#16202B"/>
-  <text x="530.15" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Pickoff (branch) point</text>
-  <rect x="709.25" y="561" width="30" height="18" rx="5" fill="none" stroke="#C9D2DC" stroke-width="1.1" stroke-dasharray="7 5"/>
-  <text x="749.25" y="574" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#63707F">Subsystem boundary</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="556" viewBox="0 0 1320 556" role="img" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" stroke-linecap="butt" stroke-linejoin="miter">
+<title>Greenhouse Climate Telemetry Node</title>
+<desc>Hardware block diagram of a battery-powered greenhouse telemetry node, read left to right. A Li-ion cell feeds a VBAT branch to a 3.3 V buck and a 5 V boost regulator. The 3V3 rail rises to one top trunk and taps down into the three sensors, the microcontroller, the SPI flash and the LoRa transceiver; the 5V rail runs in a channel just below the sensing and compute frames to the fan driver. Temperature/humidity, CO2 and ambient-light sensors share one I2C bus trunk into the microcontroller; the light sensor also raises an interrupt. The microcontroller drives one SPI trunk shared by the flash log and the LoRa transceiver, which feeds the antenna, and a PWM line to the fan driver and vent fan. An SWD debug header and the fan PWM line leave the bottom of the microcontroller. Power lines are orange, data lines ink, the interrupt dashed; junction dots mark every branch.</desc>
+<rect width="1320" height="556" fill="#FFFFFF"/>
+<g id="frames"><line x1="32" y1="88" x2="1288" y2="88" stroke="#C9D2DC" stroke-width="1"/><rect x="32" y="148" width="328" height="268" rx="10" fill="#FFF8F1" stroke="#FBD9B8" stroke-width="1"/><rect x="396" y="148" width="216" height="268" rx="10" fill="#FBF7FF" stroke="#E4D2FA" stroke-width="1"/><rect x="648" y="148" width="244" height="316" rx="10" fill="#F5F9FF" stroke="#C7DBF7" stroke-width="1"/><rect x="940" y="148" width="348" height="188" rx="10" fill="#FAFEF2" stroke="#D6EFA6" stroke-width="1"/><rect x="940" y="352" width="348" height="112" rx="10" fill="#F4FDF7" stroke="#BDEBCB" stroke-width="1"/><line x1="32" y1="508" x2="1288" y2="508" stroke="#C9D2DC" stroke-width="1"/><rect x="821" y="516" width="30" height="16" rx="4" fill="#FBF7FF" stroke="#E4D2FA"/></g>
+<g id="wires"><path d="M 152 292 L 196 292" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 196 292 L 196 212 L 216 212" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 196 292 L 196 372 L 216 372" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 344 200 L 380 200" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 380 128 L 380 386" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 380 128 L 1144 128" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 380 226 L 412 226" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 380 306 L 412 306" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 380 386 L 412 386" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 776 128 L 776 176" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 1096 128 L 1096 176" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 1144 128 L 1144 256" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 284 400 L 284 488 L 1044 488 L 1044 456" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 636 200 L 636 360" fill="none" stroke="#16202B" stroke-width="3"/><path d="M 588 200 L 636 200" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 588 280 L 636 280" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 588 360 L 636 360" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 636 224 L 676 224" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 588 386 L 664 386 L 664 304 L 676 304" fill="none" stroke="#63707F" stroke-width="1.5" stroke-dasharray="5 4"/><path d="M 916 212 L 916 292" fill="none" stroke="#16202B" stroke-width="3"/><path d="M 868 264 L 916 264" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 916 212 L 956 212" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 916 292 L 956 292" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 1164 292 L 1192 292" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 820 344 L 820 420 L 956 420" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 1124 420 L 1160 420" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 732 392 L 732 352" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 32 524 L 60 524" fill="none" stroke="#C2410C" stroke-width="2.5"/><path d="M 167 524 L 195 524" fill="none" stroke="#16202B" stroke-width="1.5"/><path d="M 351 524 L 387 524" fill="none" stroke="#16202B" stroke-width="3"/><path d="M 522 524 L 550 524" fill="none" stroke="#63707F" stroke-width="1.5" stroke-dasharray="5 4"/></g>
+<g id="blocks"><rect x="224" y="184" width="120" height="56" rx="4" fill="#FFEDD5" stroke="#16202B" stroke-width="1.5"/><rect x="40" y="264" width="112" height="56" rx="4" fill="#FFEDD5" stroke="#16202B" stroke-width="1.5"/><rect x="224" y="344" width="120" height="56" rx="4" fill="#FFEDD5" stroke="#16202B" stroke-width="1.5"/><rect x="420" y="184" width="168" height="56" rx="4" fill="#F3E8FF" stroke="#16202B" stroke-width="1.5"/><rect x="420" y="264" width="168" height="56" rx="4" fill="#F3E8FF" stroke="#16202B" stroke-width="1.5"/><rect x="420" y="344" width="168" height="56" rx="4" fill="#F3E8FF" stroke="#16202B" stroke-width="1.5"/><rect x="684" y="184" width="184" height="160" rx="4" fill="#DBEAFE" stroke="#16202B" stroke-width="1.5"/><rect x="676" y="392" width="112" height="56" rx="4" fill="#DBEAFE" stroke="#16202B" stroke-width="1.5"/><rect x="964" y="184" width="160" height="56" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/><rect x="964" y="264" width="200" height="56" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/><rect x="1200" y="264" width="72" height="56" rx="4" fill="#ECFCCB" stroke="#16202B" stroke-width="1.5"/><rect x="964" y="392" width="160" height="56" rx="4" fill="#DCFCE7" stroke="#16202B" stroke-width="1.5"/><rect x="1168" y="392" width="104" height="56" rx="4" fill="#DCFCE7" stroke="#16202B" stroke-width="1.5"/></g>
+<g id="marks"><path d="M 224 212 L 215 215.5 L 215 208.5 Z" fill="#C2410C"/><path d="M 224 372 L 215 375.5 L 215 368.5 Z" fill="#C2410C"/><circle cx="196" cy="292" r="3.5" fill="#C2410C"/><circle cx="380" cy="200" r="3.5" fill="#C2410C"/><path d="M 420 226 L 411 229.5 L 411 222.5 Z" fill="#C2410C"/><circle cx="380" cy="226" r="3.5" fill="#C2410C"/><path d="M 420 306 L 411 309.5 L 411 302.5 Z" fill="#C2410C"/><circle cx="380" cy="306" r="3.5" fill="#C2410C"/><path d="M 420 386 L 411 389.5 L 411 382.5 Z" fill="#C2410C"/><path d="M 776 184 L 772.5 175 L 779.5 175 Z" fill="#C2410C"/><circle cx="776" cy="128" r="3.5" fill="#C2410C"/><path d="M 1096 184 L 1092.5 175 L 1099.5 175 Z" fill="#C2410C"/><circle cx="1096" cy="128" r="3.5" fill="#C2410C"/><path d="M 1144 264 L 1140.5 255 L 1147.5 255 Z" fill="#C2410C"/><path d="M 1044 448 L 1047.5 457 L 1040.5 457 Z" fill="#C2410C"/><circle cx="636" cy="280" r="4" fill="#16202B"/><path d="M 684 224 L 675 227.5 L 675 220.5 Z" fill="#16202B"/><circle cx="636" cy="224" r="4" fill="#16202B"/><path d="M 684 304 L 675 307.5 L 675 300.5 Z" fill="#63707F"/><circle cx="916" cy="264" r="4" fill="#16202B"/><path d="M 964 212 L 955 215.5 L 955 208.5 Z" fill="#16202B"/><path d="M 964 292 L 955 295.5 L 955 288.5 Z" fill="#16202B"/><path d="M 1200 292 L 1191 295.5 L 1191 288.5 Z" fill="#16202B"/><path d="M 964 420 L 955 423.5 L 955 416.5 Z" fill="#16202B"/><path d="M 1168 420 L 1159 423.5 L 1159 416.5 Z" fill="#16202B"/><path d="M 732 344 L 735.5 353 L 728.5 353 Z" fill="#16202B"/><path d="M 68 524 L 59 527.5 L 59 520.5 Z" fill="#C2410C"/><path d="M 203 524 L 194 527.5 L 194 520.5 Z" fill="#16202B"/><path d="M 558 524 L 549 527.5 L 549 520.5 Z" fill="#63707F"/><circle cx="654" cy="524" r="4" fill="#16202B"/></g>
+<g id="labels"><text x="32" y="44" font-size="22" font-weight="600" text-anchor="start" fill="#16202B">Greenhouse Climate Telemetry Node</text>
+<text x="32" y="68" font-size="12.5" font-weight="400" text-anchor="start" fill="#63707F">Hardware block diagram · battery-powered LoRa sensor node · one MCU hub, two shared buses, two regulated rails</text>
+<text x="48" y="168" font-size="11" font-weight="600" letter-spacing="0.8" text-anchor="start" fill="#63707F">POWER</text>
+<text x="412" y="168" font-size="11" font-weight="600" letter-spacing="0.8" text-anchor="start" fill="#63707F">SENSING</text>
+<text x="664" y="168" font-size="11" font-weight="600" letter-spacing="0.8" text-anchor="start" fill="#63707F">COMPUTE</text>
+<text x="956" y="168" font-size="11" font-weight="600" letter-spacing="0.8" text-anchor="start" fill="#63707F">STORAGE &amp; RADIO</text>
+<text x="956" y="372" font-size="11" font-weight="600" letter-spacing="0.8" text-anchor="start" fill="#63707F">ACTUATION</text>
+<text x="284" y="210" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Buck Regulator</text>
+<text x="284" y="227" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">TPS62840 · 3.3 V</text>
+<text x="96" y="290" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Li-ion Cell</text>
+<text x="96" y="307" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">3.7 V · 2600 mAh</text>
+<text x="284" y="370" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Boost Regulator</text>
+<text x="284" y="387" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">TPS61023 · 5 V</text>
+<text x="504" y="210" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Temp + Humidity</text>
+<text x="504" y="227" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">SHT40</text>
+<text x="504" y="290" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">CO₂ Sensor</text>
+<text x="504" y="307" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">SCD41</text>
+<text x="504" y="370" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Ambient Light</text>
+<text x="504" y="387" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">OPT3001</text>
+<text x="776" y="262" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Microcontroller</text>
+<text x="776" y="279" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">STM32L4 · Cortex-M4</text>
+<text x="732" y="418" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Debug Header</text>
+<text x="732" y="435" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">SWD · TC2030</text>
+<text x="1044" y="210" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">SPI NOR Flash</text>
+<text x="1044" y="227" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">W25Q128 · 16 MB log</text>
+<text x="1064" y="290" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">LoRa Transceiver</text>
+<text x="1064" y="307" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">SX1262 · 868 MHz</text>
+<text x="1236" y="290" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Antenna</text>
+<text x="1236" y="307" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">λ/4 whip</text>
+<text x="1044" y="418" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Fan Driver</text>
+<text x="1044" y="435" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">Low-side MOSFET</text>
+<text x="1220" y="418" font-size="13" font-weight="500" text-anchor="middle" fill="#16202B">Vent Fan</text>
+<text x="1220" y="435" font-size="11" font-weight="400" text-anchor="middle" fill="#63707F">5 V · 40 mm</text>
+<text x="157" y="285" font-size="11.5" font-weight="400" font-style="italic" text-anchor="start" fill="#C2410C">VBAT</text>
+<text x="390" y="120" font-size="11.5" font-weight="600" text-anchor="start" fill="#C2410C">3V3</text>
+<text x="294" y="480" font-size="11.5" font-weight="600" text-anchor="start" fill="#C2410C">5V</text>
+<text x="626" y="191" font-size="11.5" font-weight="600" text-anchor="start" fill="#16202B">I²C</text>
+<text x="594" y="379" font-size="11.5" font-weight="400" font-style="italic" text-anchor="start" fill="#63707F">INT</text>
+<text x="906" y="203" font-size="11.5" font-weight="600" text-anchor="start" fill="#16202B">SPI</text>
+<text x="1173" y="285" font-size="11.5" font-weight="400" font-style="italic" text-anchor="start" fill="#63707F">RF</text>
+<text x="832" y="413" font-size="11.5" font-weight="400" font-style="italic" text-anchor="start" fill="#63707F">PWM</text>
+<text x="742" y="376" font-size="11.5" font-weight="400" font-style="italic" text-anchor="start" fill="#63707F">SWD</text>
+<text x="78" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Power rail</text>
+<text x="213" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Data / control signal</text>
+<text x="397" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Shared bus trunk</text>
+<text x="568" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Interrupt</text>
+<text x="668" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Junction (branch point)</text>
+<text x="863" y="528" font-size="11" font-weight="400" text-anchor="start" fill="#63707F">Tint = functional subsystem</text></g>
 </svg>

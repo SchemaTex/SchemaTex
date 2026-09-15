@@ -1,66 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1600 820">
-  <title>Harbour Group · Subsidiary Structure</title>
-  <defs>
-    <style>
-      text { font-family: Georgia, 'Times New Roman', serif; fill: #172b3a; text-anchor: middle; }
-      .heading { font-size: 30px; font-weight: bold; }
-      .name { font-size: 23px; font-weight: bold; }
-      .detail { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; }
-      .category { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px; fill: #4d6473; }
-      .box { fill: #fff; stroke: #365467; stroke-width: 2; }
-      .line { fill: none; stroke: #365467; stroke-width: 2; stroke-linejoin: miter; }
-    </style>
-  </defs>
-  <rect width="1600" height="820" fill="white"/>
-  <text class="heading" x="800" y="57">Harbour Group · Subsidiary Structure</text>
-
-  <!-- Single parent and common ownership bus. -->
-  <path class="line" d="M800 232 V286 M230 286 H1370 M230 286 V340 M610 286 V340 M990 286 V340 M1370 286 V340"/>
-  <rect x="590" y="108" width="420" height="124" rx="3" fill="#edf3f6" stroke="#365467" stroke-width="2"/>
-  <text class="name" x="800" y="142">Harbour Group plc</text>
-  <text class="detail" x="800" y="172">Parent Company</text>
-  <text class="category" x="800" y="201">Group Office · CEO</text>
-
-  <!-- Subsidiaries. -->
-  <rect class="box" x="55" y="340" width="350" height="124" rx="3"/>
-  <text class="name" x="230" y="376">Harbour Technology Ltd</text>
-  <text class="detail" x="230" y="407">Wholly owned subsidiary · 100%</text>
-  <text class="category" x="230" y="438">Technology</text>
-
-  <rect class="box" x="435" y="340" width="350" height="124" rx="3"/>
-  <text class="name" x="610" y="376">Harbour Retail Ltd</text>
-  <text class="detail" x="610" y="407">Controlled subsidiary · 80%</text>
-  <text class="category" x="610" y="438">Retail</text>
-
-  <rect class="box" x="815" y="340" width="350" height="124" rx="3"/>
-  <text class="name" x="990" y="376">Harbour Property Ltd</text>
-  <text class="detail" x="990" y="407">Wholly owned subsidiary · 100%</text>
-  <text class="category" x="990" y="438">Property</text>
-
-  <rect class="box" x="1195" y="340" width="350" height="124" rx="3"/>
-  <text class="name" x="1370" y="376">Harbour Ventures Ltd</text>
-  <text class="detail" x="1370" y="407">Joint venture interest · 60%</text>
-  <text class="category" x="1370" y="438">Investments</text>
-
-  <!-- Operating divisions: side spine makes both Technology divisions siblings. -->
-  <path class="line" d="M230 464 V500 H60 V714 M60 570 H90 M60 714 H90 M610 464 V516 M990 464 V516"/>
-  <rect class="box" x="90" y="516" width="315" height="108" rx="3"/>
-  <text class="name" x="247.5" y="548">Cloud Services Division</text>
-  <text class="detail" x="247.5" y="577">Operating division</text>
-  <text class="category" x="247.5" y="604">Technology</text>
-
-  <rect class="box" x="90" y="660" width="315" height="108" rx="3"/>
-  <text class="name" x="247.5" y="692">Data Products Division</text>
-  <text class="detail" x="247.5" y="721">Operating division</text>
-  <text class="category" x="247.5" y="748">Technology</text>
-
-  <rect class="box" x="435" y="516" width="350" height="108" rx="3"/>
-  <text class="name" x="610" y="548">Store Operations</text>
-  <text class="detail" x="610" y="577">Operating division</text>
-  <text class="category" x="610" y="604">Retail</text>
-
-  <rect class="box" x="815" y="516" width="350" height="108" rx="3"/>
-  <text class="name" x="990" y="548">Asset Management</text>
-  <text class="detail" x="990" y="577">Operating division</text>
-  <text class="category" x="990" y="604">Property</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="638" viewBox="0 0 1600 638">
+<title>Harbour Group · Subsidiary Structure</title>
+<desc>Harbour Group plc owns Harbour Technology Ltd at 100%, Harbour Retail Ltd at 80%, Harbour Property Ltd at 100%, and a 60% joint venture interest in Harbour Ventures Ltd. Cloud Services and Data Products are Technology divisions, Store Operations is a Retail division, and Asset Management is a Property division.</desc>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#12161C}
+.title{font-size:22px;font-weight:600}.caption{font-size:12px;fill:#8B95A2}
+.name{font-size:14px;font-weight:600}.small{font-size:13px;font-weight:600}
+.role{font-size:11.5px;fill:#5C6672}.dept{font-size:9.5px;font-weight:600;letter-spacing:.7px;fill:#8B95A2}
+.initials{font-size:12px;font-weight:600;fill:white;text-anchor:middle;dominant-baseline:central}
+.key{font-size:11px;fill:#39435A}.keyhead{font-size:9px;font-weight:600;letter-spacing:1px;fill:#8B95A2}
+.connector{fill:none;stroke:#98A3B1;stroke-width:1.5;stroke-linejoin:round}
+</style>
+<rect width="1600" height="638" fill="#FFFFFF"/>
+<text class="title" x="39" y="44">Harbour Group · Subsidiary Structure</text>
+<text class="caption" x="39" y="65">9 entities · three levels · five departments</text>
+<g class="connector">
+<path d="M870 173 V206 M330 248 V206 H1410 V248 M710 206 V248 M1070 206 V248"/>
+<path d="M330 326 V352 M210 379 V352 H450 V379"/>
+<path d="M710 326 V379 M1070 326 V379"/>
+</g>
+<g><rect x="754" y="95" width="232" height="78" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M764 95 H976 Q982 95 984 98 H756 Q758 95 764 95Z" fill="#39435A"/>
+<circle cx="789" cy="134.0" r="17" fill="#39435A"/><text class="initials" x="789" y="134.0">HG</text>
+<text class="name" x="814" y="124">Harbour Group plc</text><text class="role" x="814" y="141">Parent Company</text><text class="dept" x="814" y="156">GROUP OFFICE</text></g>
+<g><rect x="214" y="248" width="232" height="78" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M224 248 H436 Q442 248 444 251 H216 Q218 248 224 248Z" fill="#2D6EA3"/>
+<circle cx="249" cy="287.0" r="17" fill="#2D6EA3"/><text class="initials" x="249" y="287.0">HT</text>
+<text class="name" x="274" y="277">Harbour Technology Ltd</text><text class="role" x="274" y="294">Wholly owned subsidiary · 100%</text><text class="dept" x="274" y="309">TECHNOLOGY</text></g>
+<g><rect x="594" y="248" width="232" height="78" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M604 248 H816 Q822 248 824 251 H596 Q598 248 604 248Z" fill="#613E98"/>
+<circle cx="629" cy="287.0" r="17" fill="#613E98"/><text class="initials" x="629" y="287.0">HR</text>
+<text class="name" x="654" y="277">Harbour Retail Ltd</text><text class="role" x="654" y="294">Controlled subsidiary · 80%</text><text class="dept" x="654" y="309">RETAIL</text></g>
+<g><rect x="954" y="248" width="232" height="78" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M964 248 H1176 Q1182 248 1184 251 H956 Q958 248 964 248Z" fill="#31865E"/>
+<circle cx="989" cy="287.0" r="17" fill="#31865E"/><text class="initials" x="989" y="287.0">HP</text>
+<text class="name" x="1014" y="277">Harbour Property Ltd</text><text class="role" x="1014" y="294">Wholly owned subsidiary · 100%</text><text class="dept" x="1014" y="309">PROPERTY</text></g>
+<g><rect x="1294" y="248" width="232" height="78" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M1304 248 H1516 Q1522 248 1524 251 H1296 Q1298 248 1304 248Z" fill="#B4762F"/>
+<circle cx="1329" cy="287.0" r="17" fill="#B4762F"/><text class="initials" x="1329" y="287.0">HV</text>
+<text class="name" x="1354" y="277">Harbour Ventures Ltd</text><text class="role" x="1354" y="294">Joint venture interest · 60%</text><text class="dept" x="1354" y="309">INVESTMENTS</text></g>
+<g><rect x="105" y="379" width="210" height="66" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M115 379 H305 Q311 379 313 382 H107 Q109 379 115 379Z" fill="#2D6EA3"/>
+<circle cx="140" cy="412.0" r="14" fill="#2D6EA3"/><text class="initials" x="140" y="412.0">CS</text>
+<text class="small" x="165" y="404">Cloud Services Division</text><text class="role" x="165" y="421">Operating division</text><text class="dept" x="165" y="436">TECHNOLOGY</text></g>
+<g><rect x="345" y="379" width="210" height="66" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M355 379 H545 Q551 379 553 382 H347 Q349 379 355 379Z" fill="#2D6EA3"/>
+<circle cx="380" cy="412.0" r="14" fill="#2D6EA3"/><text class="initials" x="380" y="412.0">DP</text>
+<text class="small" x="405" y="404">Data Products Division</text><text class="role" x="405" y="421">Operating division</text><text class="dept" x="405" y="436">TECHNOLOGY</text></g>
+<g><rect x="610" y="379" width="200" height="66" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M620 379 H800 Q806 379 808 382 H612 Q614 379 620 379Z" fill="#613E98"/>
+<circle cx="645" cy="412.0" r="14" fill="#613E98"/><text class="initials" x="645" y="412.0">SO</text>
+<text class="small" x="670" y="404">Store Operations</text><text class="role" x="670" y="421">Operating division</text><text class="dept" x="670" y="436">RETAIL</text></g>
+<g><rect x="970" y="379" width="200" height="66" rx="10" fill="#FFFFFF" stroke="#DDE2E9" stroke-width="1"/>
+<path d="M980 379 H1160 Q1166 379 1168 382 H972 Q974 379 980 379Z" fill="#31865E"/>
+<circle cx="1005" cy="412.0" r="14" fill="#31865E"/><text class="initials" x="1005" y="412.0">AM</text>
+<text class="small" x="1030" y="404">Asset Management</text><text class="role" x="1030" y="421">Operating division</text><text class="dept" x="1030" y="436">PROPERTY</text></g>
+<g><rect x="1141" y="479" width="420" height="141" rx="10" fill="#FFFFFF" stroke="#DDE2E9"/><text class="keyhead" x="1159" y="504">DEPARTMENTS</text><text class="keyhead" x="1357" y="504">NOTATION</text>
+<circle cx="1164" cy="524" r="5" fill="#39435A"/><text class="key" x="1178" y="528">Group Office</text>
+<circle cx="1164" cy="545" r="5" fill="#2D6EA3"/><text class="key" x="1178" y="549">Technology</text>
+<circle cx="1164" cy="566" r="5" fill="#613E98"/><text class="key" x="1178" y="570">Retail</text>
+<circle cx="1164" cy="587" r="5" fill="#31865E"/><text class="key" x="1178" y="591">Property</text>
+<circle cx="1164" cy="608" r="5" fill="#B4762F"/><text class="key" x="1178" y="612">Investments</text>
+<path class="connector" d="M1357 524 H1382"/><text class="key" x="1393" y="528">Ownership / division</text>
+<text class="key" x="1357" y="553">%</text><text class="key" x="1393" y="553">Issued-share interest</text></g></svg>

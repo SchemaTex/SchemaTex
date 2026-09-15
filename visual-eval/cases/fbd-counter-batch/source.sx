@@ -1,12 +1,12 @@
-# Scenario: Counter Batch IEC 61131-3 function block logic.
-fbd "Counter Batch"
-var Start: bool
-var Stop: bool
-var Inhibit: bool
-var Output: bool
-var Latch: bool
-network 0 "Permissive latch":
-  Latch = OR(Start, AND(Latch, ~Stop, ~Inhibit))
-network 1 "Output command":
-  Output = MOVE(Latch)
-
+# Scenario: IEC 61131-3 carton counter that stops the conveyor after every batch of twelve.
+fbd "Carton batch counter"
+var BoxSensor: bool
+var ResetBtn: bool
+var EStop: bool
+var BatchCount: counter
+var ConveyorStop: bool
+network 0 "Count each carton once":
+  Edge = R_TRIG(CLK: BoxSensor)
+  BatchCount = CTU(CU: Edge.Q, R: ResetBtn, PV: 12)
+network 1 "Stop conveyor at a full batch or emergency stop":
+  ConveyorStop = OR(BatchCount.Q, EStop)

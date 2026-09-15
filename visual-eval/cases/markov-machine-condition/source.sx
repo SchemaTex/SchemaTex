@@ -1,14 +1,16 @@
-# Scenario: Machine Condition Markov chain; every state's outgoing probabilities total one.
-markov "Machine Condition"
+# Scenario: weekly machine condition with a repair loop back to good; no absorbing state.
+markov "Machine condition by week"
   analysis: stationary, classify
-  state Normal
-  state Degraded
-  state Failed absorbing
-  Normal -> Normal : 0.80
-  Normal -> Degraded : 0.15
-  Normal -> Failed : 0.05
-  Degraded -> Normal : 0.30
-  Degraded -> Degraded : 0.45
-  Degraded -> Failed : 0.25
-  Failed -> Failed : 1.0
-
+  state Good
+  state Worn
+  state Faulty
+  state Repair "Under repair"
+  Good -> Good : 0.85
+  Good -> Worn : 0.12
+  Good -> Faulty : 0.03
+  Worn -> Worn : 0.70
+  Worn -> Faulty : 0.20
+  Worn -> Repair : 0.10
+  Faulty -> Repair : 1.0
+  Repair -> Good : 0.90
+  Repair -> Repair : 0.10
