@@ -84,7 +84,7 @@ function maxDepth(node: PhyloNode): number {
 
 export function estimateLabelWidth(node: PhyloNode): number {
   const label = (node.label ?? node.id).replaceAll("_", " ");
-  return Math.max(label.length * 7.2, estimateTextWidth(label, FONT_SIZE.label) * 1.1) + 6;
+  return Math.max(label.length * 7.2, estimateTextWidth(label, FONT_SIZE.label)) + 6;
 }
 
 // ─── Clade Membership ───────────────────────────────────────

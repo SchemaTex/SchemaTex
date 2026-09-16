@@ -56,7 +56,7 @@ function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
 
   return `
 .schematex-phylo {${cssCustomProperties(t)}
-  font-family: Verdana, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 .schematex-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
@@ -72,7 +72,7 @@ ${cutColors.join("\n")}
 .schematex-phylo-scale-bar line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: start; }
 .schematex-phylo-scale-tick { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
-.schematex-phylo-title { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
+.schematex-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
 .schematex-phylo-clade-label { font-size: 13px; font-weight: bold; }
 .schematex-phylo-root-marker { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
 ${cladeColors.join("\n")}
