@@ -11,12 +11,15 @@ import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
  * Generated DSL should stay on this smaller surface unless a caller asks for
  * reference syntax to reach an advanced feature.
  */
+/**
+ * Said at the foot of every card, so it earns its place only if it changes what
+ * the model writes. Whether the caller validates before returning is the
+ * caller's policy, not grammar; quote style is the parser's business and every
+ * parser now accepts the seven documented pairs.
+ */
 export const COMMON_GENERATION_RULES = [
   "Generate one diagram document with one selected diagram type.",
-  'Use ASCII double quotes (") for generated labels and titles.',
   "Do not emit DSL comments unless the user explicitly asks for annotated source.",
-  "Prefer explicit IDs and declarations when they make validation less ambiguous.",
-  "Call validateDsl with the explicit selected type, fix reported errors, and validate again before returning DSL.",
 ] as const;
 
 export interface GenerationProfile {
@@ -270,7 +273,13 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · production aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · relay: type=relay (coil_a coil_b common no) or type=relay_spdt (coil_a coil_b common nc no) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · pins="…" · named pin connection: Wlink NET Component.pin`,
+      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · ` +
+      `id prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · ` +
+      `ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type=<name> override · pins="NAME:role,…" with roles input|output|bidirectional|power|return · named pin connection: Wlink NET Component.pin · ` +
+      `group id "Label": C1 C2 · flow groupA -> groupB · bus NET,NET: C1 -> C2 · ` +
+      `relay: type=relay (coil_a coil_b common no), type=relay_spdt (coil_a coil_b common nc no) · ` +
+      `aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · ` +
+      `types: ${CIRCUIT_GENERATION_CAPABILITIES.supportedComponentTypes.join(" ")}`,
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -282,23 +291,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Rload vout 0 1k",
     ],
     prefer: [
-      "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
+      'Always use netlist mode (`circuit "name" netlist`). Each line is one component; there is no cursor state to track.',
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
-      "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
-      "Declare electrical connectivity and pin identity; the engine owns placement, wire routing and label clearance. Do not repair a drawing by adding coordinates, component dimensions or `dir=` overrides to a generated netlist.",
-      'Optional functional structure: `group sense "Sensing": U1 R1` keeps a stage and its supporting parts together. Add groups only for distinct functional stages; leave simple circuits ungrouped. Each component belongs to at most one group.',
-      '`flow sense -> compute -> output` orders declared groups for reading; use separate flow lines for branches. It adds no electrical connections. Without flow, groups follow declaration order. Electrical feedback stays in the netlist, not a cycle in flow.',
-      '`bus A,B: R1 -> U1 -> U2 -> R2` declares physical cable order when that order is known. Every listed component must connect to every listed bus net. Keep the bus in one group or entirely ungrouped; a component or net can belong to only one physical bus.',
-      'Reuse a supported component type and its pin definition before choosing a generic IC. For a custom device, `U1 VP GND IN OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output"` binds nets to pin names in the same order. Available roles are input, output, bidirectional, power and return; annotate every pin when using roles.',
+      "The id's first letter sets the type (R=resistor, C=capacitor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Add `type=` when the prefix is ambiguous or the part is one of the named types above.",
+      "Declare electrical connectivity and pin identity only. Placement, wire routing, bends, spacing and pin sides belong to the engine — never add coordinates, dimensions, `dir=` overrides or route hints, and never change a pin's electrical role to move its drawing.",
+      'Optional functional structure: `group sense "Sensing": U1 R1` keeps a stage and its supporting parts together, `flow sense -> compute` orders groups for reading (it adds no connections), and `bus A,B: R1 -> U1 -> R2` declares physical cable order. A component belongs to at most one group and one bus; electrical feedback stays in the netlist, not in `flow`.',
+      'Reuse a named type and its pin definition before reaching for a generic IC. For a custom device, `U1 VP GND IN OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output"` binds nets to pin names in the same order; annotate every pin when using roles.',
     ],
     avoid: [
-      "Do not switch to positional cursor mode to fix a schematic. Physical cabinet placement is a separate user request; consult the reference syntax only for that task.",
-      "Do not invent coordinates or route hints; use explicit net names and named pin connections for electrical intent.",
-      "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
-      'A `terminal_block` with `pins="1,2"` has two independent terminals, not an internal jumper. Use a shared net or explicit wire when those terminals must be electrically connected.',
+      'A `terminal_block` with `pins="1,2"` has two independent terminals, not an internal jumper. Share a net or draw an explicit wire when they must be connected.',
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
-      "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
-      "Do not change an electrical pin role to move its drawing. A differential input's negative pin is input, not return; return denotes a supply reference. Keep coordinates, bends, spacing and pin-side choices in the engine.",
+      "Don't use `RL1` for a lamp unless it really is a relay or load resistor; use `L1 … type=lamp` or `H1 … type=pilot_light`.",
+      "Don't invent a placeholder part. The type list above is the complete catalog; request `detail: reference` for cabinet placement and specialised household or panel forms.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -1716,9 +1720,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'For a seating chart / plan de table / 席次表 — who sits where, not just where the tables go — add `seats "Alice" "Bob" …` to each table: the names are written onto the chairs in seating order (round tables clockwise from top, head/long tables along the seated edge). Fewer names than chairs is fine (extras stay empty); CJK names quote like any label.',
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
       "Stairs are furniture: `furniture stairs in hall at x,y` (also stairs-l, stairs-u, spiral-stairs) — they draw treads, the UP arrow, and the cut-plane break line automatically; label \"DN\" for a descending run.",
-      "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",
-      "Restaurant kitchens use the real commercial symbols `prep-table`, `range`, `grill`, `fryer`, `walk-in`, and `commercial-sink`; don't substitute a row of household `stove` symbols with text labels. The `oven` → `stove` alias is only for household kitchens.",
-      "For electrical fittings plans, stay in `floorplan` and add overlay furniture: `duplex-outlet`, `switch`, `ceiling-light`, `data-outlet`, `electrical-panel`, `distribution-board`. Set `symbols nec|iec` on the header to select the document-wide electrical symbol convention.",
+      "Retail, warehouse, salon, gym, restaurant-kitchen and site symbols are in the vocabulary above — use the real one rather than a household part with a text label. The `oven` → `stove` alias is for household kitchens only.",
+      "For electrical fittings plans stay in `floorplan` and add the overlay furniture; `symbols nec|iec` on the header picks the document-wide convention.",
       "Give every controlled switch, motion-sensor, and luminaire an instance id, then use `controls SW1 -> L1` or `controls SW2 -> L2, L3` for dashed switch-to-luminaire control lines; multiple switches may control the same luminaire.",
       "Floorplan is rectilinear and placement-focused. Switch-to-luminaire control lines are supported, but conductor runs, home runs to the panel, circuit numbering, and circuit/wiring topology are not; use `sld` for panel internals and report curved room boundaries or plumbing/HVAC routing as unsupported.",
     ],
@@ -1737,6 +1740,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
       "'array overlaps internally …' -> enlarge the `within` bounds, reduce rows/cols, shrink itemsize, or add a truthful gap; one array diagnostic replaces pairwise collision spam.",
       "'door … swing is obstructed by …' -> move the furniture, change hinge/swing, or use the truthful sliding/pocket/bifold door type; do not suppress the warning.",
+      "'unknown furniture type' -> the catalog holds ~99 parts across residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, restaurant-kitchen and site. Request `detail: reference` for the full list rather than inventing a name.",
       "'opening … must be declared before it is referenced' -> move the id-bearing opening earlier, then keep the relative opening on the same wall.",
       "'references room … on floor …' -> move the statement into that room's `floor` section or reference a room declared on the current floor.",
     ],
