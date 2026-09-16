@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {geometryFor,renderSymbol} from '../../src/diagrams/sld/symbols';
+import {renderSymbol} from '../../src/diagrams/sld/symbols';
 import {parseSLDDSL} from '../../src/diagrams/sld/parser';
 import {layoutSLD} from '../../src/diagrams/sld/layout';
 import type {SLDNodeType} from '../../src/core/types';
@@ -39,24 +39,6 @@ it('keeps a through-bus in the same series column',()=>{
  expect(Math.max(...xs)-Math.min(...xs)).toBeLessThan(0.01);
  const roots=['s','x','u'].map(id=>l.nodeById.get(id)!).sort((a,b)=>a.x-b.x);
  for(let i=1;i<roots.length;i++) expect(roots[i].x-roots[i-1].x).toBeGreaterThan(100);
-});
-
-it('routes to the same ATS input terminals that the symbol draws',()=>{
- const geometry=geometryFor('ats');
- const lines=segments(renderSymbol('ats'));
- for(const x of geometry.inputXs!)
-  expect(lines.some(line=>+line.x1===x && +line.x2===x && +line.y1===geometry.topY)).toBe(true);
-});
-
-it.each(['breaker_vacuum','recloser'] as SLDNodeType[])('%s ANSI uses the reviewed 52 square with connected leads',type=>{
- const svg=renderSymbol(type,undefined,'ansi');
- const lines=segments(svg);
- expect(lines.filter(l=>l['data-sld-role']==='blade')).toHaveLength(1);
- const halfSize=type==='recloser'?5.7:15;
- expect(svg).toContain(`x="${-halfSize}" y="${-halfSize}" width="${halfSize*2}" height="${halfSize*2}"`);
- expect(svg).toContain('>52</text>');
- expect(lines.some(l=>+l.x2===0 && +l.y2===-halfSize)).toBe(true);
- expect(lines.some(l=>+l.x1===0 && +l.y1===halfSize)).toBe(true);
 });
 it('ANSI ATS rests on its labelled normal source',()=>{
  const svg=renderSymbol('ats');

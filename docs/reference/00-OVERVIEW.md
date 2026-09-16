@@ -262,7 +262,7 @@ schematex/
 1. **零 runtime dependency** — 无 D3、无 dagre、无外部 parser。手写一切。Bundle 小 + 无供应链风险。
 2. **输出必须是有效语义 SVG** — 可访问性（title/desc）、CSS class 可主题化（通过 `src/core/theme.ts` 统一主题系统）、data-* 属性可交互。
 3. **Strict TypeScript** — 无 `any`，无未注释的 `as` cast。
-4. **Test-first for layout** — 布局算法先写测试再写实现。
+4. **按风险补测试** — 先复用现有覆盖；仅对未覆盖的功能错误新增测试。视觉微调用 vision 验收，不新增文案、固定坐标或图标路径快照。
 5. **标准合规** — Genogram: McGoldrick 2020, Ecomap: Hartman 1978, Pedigree: genetics standard, Sociogram: Moreno 1934 + Brandes 2011, Timing: WaveDrom + IEEE 1497, Logic Gate: IEEE Std 91-1984/91a + IEC 60617-12, Circuit: IEEE 315/ANSI Y32.2 + IEC 60617, Block: Ogata/Franklin control systems convention, Ladder: IEC 61131-3:2013 + NEMA ICS 1, SLD: IEEE Std 315-1975 + ANSI device numbering, State diagram: UML 2.5 + Harel 1987 statechart, P&ID: ISA-5.1-2009 + ISO 10628-1:2014。
 
 ---

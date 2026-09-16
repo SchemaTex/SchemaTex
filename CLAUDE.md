@@ -58,7 +58,7 @@ Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 �
 ### 自主开发流程
 
 1. **读 impl doc** — `../CoCEO/schematex/impl/` 对应文件
-2. **写 tests FIRST** — 尤其 layout
+2. **先检查已有测试覆盖** — 非必要不另加测试；优先修改或合并已有测试。只有未覆盖的解析、计算、连接等实际功能风险才补 regression test。
 3. **实现** — 按 impl doc 步骤
 4. **过 quality gate** — `typecheck → test → lint → build`
 5. **更新 impl doc status** → `Implemented`
@@ -77,7 +77,7 @@ Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 �
 1. **零 runtime dependency** — 无 D3，无 dagre，无 parser generator。手写一切。
 2. **Strict TypeScript** — 无 `any`，无未注释 `as`。
 3. **语义 SVG** — `<title>` + `<desc>`，CSS class 可主题化，`data-*` 可交互。无 inline style。
-4. **Test-first for layout**。
+4. **不为每次改动机械新增测试**。保留语义、计算、连接和实际避障检查；文案、图标细节、固定像素与 SVG 路径外观由 vision 验收，不冻结成测试。
 5. **标准合规** — 详见各 `docs/reference/` 文件。
 6. **用 `src/core/svg.ts` builder** — 不拼接 raw SVG string。
 7. **文件命名** — `src/diagrams/{type}/{module}.ts`，`tests/{type}/{module}.test.ts`

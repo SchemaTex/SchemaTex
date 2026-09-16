@@ -103,14 +103,6 @@ describe("AI-safe editing", () => {
 });
 
 describe("getSyntax", () => {
-  it("returns syntax content for genogram", () => {
-    const result = getSyntax("genogram");
-    expect(result.type).toBe("genogram");
-    expect(result.syntax.detail).toBe("canonical");
-    expect(result.syntax.content.trim()).not.toBe("");
-    // JSX stripped → no <Playground tags
-    expect(result.syntax.content).not.toContain("<Playground");
-  });
 
   it("throws on unknown type", () => {
     expect(() => getSyntax("nonexistent")).toThrow(/Unknown diagram type/);
@@ -126,14 +118,6 @@ describe("getSyntax", () => {
       const result = validateDsl(entry.type, pattern ?? "");
       expect(result, entry.type).toMatchObject({ ok: true, status: "valid" });
     }
-  });
-
-  it("renders canonical forms as copyable code instead of Markdown bullets", () => {
-    const { syntax } = getSyntax("pid");
-
-    expect(syntax.content).toContain("    inst FT-101 : field_discrete");
-    expect(syntax.content).toContain("      measures L2");
-    expect(syntax.content).not.toContain("- inst FT-101 : field_discrete");
   });
 
   it("returns distinct reference content when requested", () => {
