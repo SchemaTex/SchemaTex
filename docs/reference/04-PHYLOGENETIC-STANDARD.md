@@ -741,7 +741,7 @@ root:
 clade Apes = (Human, Chimp, Gorilla) [color: "#1E88E5"]
 scale "substitutions/site"
 ```
-验证：等同于 Newick `((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35);`，DSL 格式更可读。
+验证：等同于 Newick `(((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35);`，DSL 格式更可读。
 
 ### Case 8: Polytomy (Multi-furcation)
 ```

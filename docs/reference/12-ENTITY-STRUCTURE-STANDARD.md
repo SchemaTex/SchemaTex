@@ -270,7 +270,7 @@ parent -> changed : was 50% -> 100%
 1. **Topological sort** — 按所有权方向（parent → child）拓扑排序所有 entity；无环（所有权环由 Cross-ownership 专门处理，见 7.4）
 2. **Tier 分配** — 每个 entity 的 tier = max(所有 parent 的 tier) + 1
 3. **同 tier 水平居中** — 同 tier 内的 entity 按首次出现顺序从左到右排列，居中对齐
-4. **Tier 间垂直间距** — 默认 130px（层间给足空间画 ownership % 标签）
+4. **Tier 间垂直间距** — 由内容决定：下一层的顶边 = 本层最高那个 box 的底边 + 110px。box 变高，整层跟着往下推，ownership % 标签永远有地方放。
 
 ### 7.2 Width Calculation
 

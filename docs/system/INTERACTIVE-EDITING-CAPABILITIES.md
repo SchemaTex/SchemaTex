@@ -60,9 +60,9 @@ Flowchart, Circuit, and Floorplan each have multiple Playground specimens, so th
 
 ## Source-editable only
 
-These 30 engines currently emit no scene or `data-sx-*` edit hooks, even when `scene: true` is requested:
+These 31 engines currently emit no scene or `data-sx-*` edit hooks, even when `scene: true` is requested:
 
-`ecomap`, `pedigree`, `phylo`, `sociogram`, `logic`, `blockdiagram`, `ladder`, `sld`, `entity`, `venn`, `matrix`, `bpmn`, `sfc`, `prisma`, `usecase`, `pert`, `faulttree`, `bowtie`, `eventtree`, `fmea`, `rbd`, `comparison`, `causalloop`, `markov`, `gitgraph`, `epc`, `idef0`, `threatmodel`, `welding`, and `playbook`.
+`ecomap`, `pedigree`, `phylo`, `sociogram`, `logic`, `blockdiagram`, `ladder`, `sld`, `entity`, `venn`, `matrix`, `bpmn`, `sfc`, `prisma`, `usecase`, `pert`, `faulttree`, `bowtie`, `eventtree`, `fmea`, `rbd`, `comparison`, `causalloop`, `markov`, `gitgraph`, `epc`, `idef0`, `threatmodel`, `welding`, `stageplot`, and `playbook`.
 
 This is an implementation backlog, not a claim that their authored text is inherently uneditable. They will move to the table above one engine at a time after their parsers expose exact ranges.
 
@@ -92,12 +92,12 @@ FMEA, Pugh comparison, fault tree, and RBD are especially required to test repea
 
 ## Public APIs
 
-The typed registry is `src/core/interactive-capabilities.ts` and is exported from `schematex`. `getInteractiveCapabilities(type)` returns empty `text` plus `position: "none"` for a source-only engine. `INTERACTIVE_CAPABILITIES` itself contains only the 20 shipped native engines.
+The typed registry is `src/core/interactive-capabilities.ts` and is exported from `schematex`. `getInteractiveCapabilities(type)` returns empty `text` plus `position: "none"` for a source-only engine. `INTERACTIVE_CAPABILITIES` itself contains only the 21 shipped native engines.
 
 The controlled React editor is exported from `schematex/react`; the low-level `attachInteraction()` and `attachViewport()` DOM adapters are available from `schematex/interactive`. AI and MCP callers should use the revision-guarded `inspectDiagram` → `applyDiagramEdits` flow rather than inventing offsets.
 
 ## Related documents
 
 - Implementation specification: `CoCEO/schematex/impl/3.0-interactive-editing.md`
-- First-principles classification and migration order: `docs/design/interactive-capability-audit.md`
+- First-principles classification and migration order: `docs/system/interactive-capability-audit.md`
 - Regression tests: `tests/interactive/`

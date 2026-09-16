@@ -22,7 +22,7 @@ A legend is a small key drawn next to a diagram that explains what a color, line
 
 ## Why it matters
 
-Schematex's positioning is *"diagrams professionals actually use"*. Every published genogram, ecomap, ER fishbone, or org chart in the field includes a legend — without it the diagram is incomplete. Three of our 20 diagram types (`pedigree`, `timeline`, `matrix`) already render legends, each with its own bespoke layout, classes, and behavior. The legend system unifies them and brings the missing 80% along.
+Schematex's positioning is *"diagrams professionals actually use"*. Every published genogram, ecomap, ER fishbone, or org chart in the field includes a legend — without it the diagram is incomplete. The legend system gives every engine one shared way to draw that key, instead of each one growing its own box layout, CSS classes, and on/off switch. Which diagram types get a legend by default, and which deliberately go without one, is the table below.
 
 ---
 

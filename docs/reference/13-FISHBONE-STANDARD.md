@@ -116,11 +116,11 @@ config density = compact | normal | spacious    # default: normal
 ### 2b.5 `causeSide` — 细刺挂向
 
 ```
-config causeSide = head | tail | both    # default: head
+config causeSide = head | tail | both    # default: tail
 ```
 
-- `head`（默认）— 水平 cause branch 向鱼头侧延伸，ASQ 标准
-- `tail` — cause branch 向鱼尾侧延伸；部分欧洲 QMS 教材采用
+- `tail`（默认）— cause branch 向鱼尾侧延伸；部分欧洲 QMS 教材采用。默认取它是因为 label 排在 branch 起点一侧，长 label 不会压到下一根 rib
+- `head` — 水平 cause branch 向鱼头侧延伸，ASQ 标准
 - `both` — 按 slot 奇偶交替（偶 → head 侧，奇 → tail 侧），在 rib 较短、cause 较多时显著提升可读性
 
 注意：`both` 模式会自动增大 `colStep` ≈ 15%，以在 rib 左右两侧预留 label 空间，避免相邻 rib label 串行。

@@ -64,7 +64,8 @@ jordan [intersex, 1990]          # → diamond (UAAB)
 |------|--------|-----|
 | Identical twins | Both child lines meet at a single point on the sibship line, **with a horizontal bar joining them** | `[twin-identical]` |
 | Fraternal twins | Both child lines meet at a single point, **no bar** | `[twin-fraternal]` |
-| Triplets+ | Same pattern with 3+ lines from the single point; the bar again marks identical | `[triplet-identical]` / `[triplet-fraternal]` |
+
+三胞胎及以上没有对应写法。
 
 ### 1.5 SVG Implementation Notes
 
@@ -264,10 +265,11 @@ genogram "Heritage Example" [mode: heritage]
 | Display | 位置 | DSL | 含义 |
 |---------|------|-----|------|
 | Age number | Shape 中心 | `[age: 57]` or auto-calculated from birth year | 当前年龄或去世时年龄 |
-| Initials | Shape 中心 | `[initials: "JG"]` | 名字缩写 |
+
+Shape 中心只放年龄。名字、缩写一律走 shape 下方的 label（`[label: "JG"]`）——写 `initials:` 会被 parser 拒绝并提示改用 `label:` 或 `age:`。
 
 **实现：**
-- Age/initials 作为 `<text>` 渲染在 shape 中心
+- Age 作为 `<text>` 渲染在 shape 中心
 - Font: bold, 12-14px, class="schematex-in-shape-text"
 - 如果同时有 condition fill，text 颜色自动调整为白色（深色 fill 时）或黑色（浅色/无 fill 时）
 - DSL 中 `age` 可以省略——如果有 birth year，renderer 可自动计算
@@ -518,10 +520,9 @@ M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
 | Sibling-of (known relative, unknown ancestry) | Dashed bracket between two same-generation nodes, no parents drawn | `[sibling-of: <id>]` property | 已知亲属、家系未知（标准 pedigree 约定） |
 | Identical twins | Lines meet at a single point, **with a horizontal bar joining them** | `[twin-identical]` | 同卵双胞胎 |
 | Fraternal twins | Lines meet at a single point, **no bar** | `[twin-fraternal]` | 异卵双胞胎 |
-| Triplets+ | 3+ lines from the single point; the bar again marks identical | `[triplet-identical]` | 三胞胎+ |
-| Surrogacy | Dotted line + S label | `[surrogate]` | 代孕 |
-| Donor gamete | Dotted line + D label | `[donor]` | 供体配子 |
 | Step-child | Step-shaped line (two right angles) | `[step]` | 继子女 |
+
+三胞胎、代孕、供体配子目前没有对应写法。
 
 ### 3.4.1 Dual-parent rendering (foster / adoption / guardianship)
 
@@ -715,9 +716,8 @@ fill_position  = "full" | "half-left" | "half-right" | "half-top" | "half-bottom
                | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
 heritage_prop  = "heritage:" IDENTIFIER ("+" IDENTIFIER)*
 color          = "#" HEX{6} | NAMED_COLOR
-child_prop     = "adopted" | "foster" | "guardian" | "surrogate" | "donor" | "step"
+child_prop     = "adopted" | "foster" | "guardian" | "step"
                | "twin-identical" | "twin-fraternal"
-               | "triplet-identical" | "triplet-fraternal"
 kv_prop        = IDENTIFIER ":" VALUE
                | "sibling-of" ":" ID
                | "label" ":" quoted_string
@@ -858,10 +858,10 @@ genogram "Modern Family"
   alex [female, 1985]
   sam [female, 1987]
   alex -- sam
-    child [male, 2015, donor]
+    child [male, 2015, note: "donor conception"]
   donor-d [male, 1980]
 ```
-验证：同性 couple（按年龄排列），child 有 donor marker，donor-d 可选显示。
+验证：同性 couple（按年龄排列），child 下方带 "donor conception" 注记，donor-d 作为独立个体显示、不自动连线。
 
 ### Case 9: Abuse + Control Relationships
 ```

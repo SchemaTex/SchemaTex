@@ -94,25 +94,18 @@ pedigree "Breast/Ovarian Cancer Family"
 | Proband | Arrow (↗) pointing to shape + "P" | 左下方 | `[proband]` |
 | Consultand | Arrow (↗) pointing to shape + "C" | 左下方 | `[consultand]` |
 | Evaluated | "E" above or inside shape | 上方 | `[evaluated]` |
-| No offspring by choice | Crossed out drop line | Couple line 下方 | `[no-children]` |
-| Infertility | Crossed out drop line + "∞" | Couple line 下方 | `[infertile]` |
-| Adopted in | Brackets around shape | `[` shape `]` | `[adopted-in]` |
-| Adopted out | Brackets around shape, dashed line to parents | `[` shape `]` + dashed line | `[adopted-out]` |
+
+这三个是全部的 special marker。方括号里出现 parser 不认识的词，会报 `Unknown property` 并拒绝整张图，不会静默忽略。
 
 ### 2.5 Assisted Reproduction (Bennett 2022)
 
-Current engine scope: `donor-egg`, `donor-sperm`, and `donor-embryo` on a child preserve a donor-assisted-birth annotation. They do not identify a donor or establish genetic parentage. The public lint result emits `PEDIGREE_DONOR_LINK_UNSPECIFIED`; a donor node or connecting line is never invented. Full donor-link / surrogacy notation below remains a design reference, not an implemented inference.
+`donor-egg`、`donor-sperm`、`donor-embryo` 标在孩子身上，记录这是一次借助捐赠配子的生育。它们不指认捐赠者、也不建立遗传亲子关系——引擎不会凭空画出一个捐赠者节点或一条连线。lint 结果里会出现 `PEDIGREE_DONOR_LINK_UNSPECIFIED` 提示这一点。
 
-
-Bennett 2022 增加了辅助生殖的标准符号，这在现代临床中越来越重要：
-
-| Type | Symbol | DSL |
-|------|--------|-----|
-| Donor egg | "D" on connecting line from egg donor | `[donor-egg]` |
-| Donor sperm | "D" on connecting line from sperm donor | `[donor-sperm]` |
-| Donor embryo | "D" on connecting lines from both donors | `[donor-embryo]` |
-| Surrogacy (gestational) | "S" label on surrogate, dashed line to child | `[surrogate]` |
-| IVF | "IVF" label on couple line | couple line 标注 |
+| Type | Meaning | DSL |
+|------|---------|-----|
+| Donor egg | 孩子由捐赠卵子受孕 | `[donor-egg]` |
+| Donor sperm | 孩子由捐赠精子受孕 | `[donor-sperm]` |
+| Donor embryo | 孩子由捐赠胚胎受孕 | `[donor-embryo]` |
 
 ---
 
@@ -131,18 +124,13 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 
 ### 3.2 Parent-Child Lines
 
-Current twin support: matching `twin-mz` / `twin-dz` flags identify exactly one pair within the same family and zygosity, and the layout keeps that birth pair adjacent even if another sibling was declared between them. MZ twins share a fork and crossbar; DZ twins share a fork without a bar. An unmatched flag or more than two members of the same family/zygosity is an error; the engine does not guess among multiple possible pairs. Unknown bare properties (including unsupported multiplet forms) produce a diagnostic instead of disappearing.
-
+同一对父母下，同一 zygosity 的 `twin-mz` / `twin-dz` 必须**正好标两个人**才能配成一对。layout 会把这一对排到相邻位置，即使 DSL 里两人中间还声明了别的兄弟姐妹。只标了一个人、或同一组标了三个以上，都是 error——引擎不会在几种可能的配对里替你猜一个。三胞胎及以上没有对应写法。
 
 | Type | Line | DSL |
 |------|------|-----|
 | Biological | Solid vertical | (default) |
-| Adopted in | Dashed vertical + brackets on child | `[adopted-in]` |
-| Adopted out | Dashed vertical + brackets, line goes to new parents | `[adopted-out]` |
 | Identical twins | Meet at a single point, **with a horizontal bar joining the two sibling lines** | `[twin-mz]` (monozygotic) |
 | Fraternal twins | Meet at a single point, **no bar** | `[twin-dz]` (dizygotic) |
-| Twins (unknown zygosity) | Meet at a single point, question mark between the lines | `[twin-unknown]` |
-| Triplets+ | 3+ lines from point/bar | `[triplet-mz]` etc. |
 
 ---
 
@@ -255,11 +243,8 @@ genetic_prop   = "affected" | "carrier" | "carrier-x" | "obligate-carrier"
                | "affected:" trait_list
 trait_list     = IDENTIFIER ("+" IDENTIFIER)*
 special_prop   = "proband" | "consultand" | "evaluated"
-               | "adopted-in" | "adopted-out"
-               | "donor-egg" | "donor-sperm" | "donor-embryo" | "surrogate"
-               | "no-children" | "infertile"
-               | "twin-mz" | "twin-dz" | "twin-unknown"
-               | "triplet-mz" | "triplet-dz"
+               | "donor-egg" | "donor-sperm" | "donor-embryo"
+               | "twin-mz" | "twin-dz"
 
 couple_def     = ID couple_op ID couple_label? NEWLINE (INDENT child+ DEDENT)?
 couple_op      = "--" | "==" | "-/-" | "~"

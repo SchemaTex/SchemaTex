@@ -391,6 +391,6 @@ A sixth nice-to-have for the gallery: **the original Chen 1976 SPJ example** (Su
 
 ## 10. Implementation Status
 
-Not yet implemented. Tracked as `erd` engine; impl docs land in `../CoCEO/schematex/impl/27.X-erd-*.md`.
+**v0.1 — shipped.** The `erd` engine lives in `src/diagrams/erd/`: parser, layout, and renderer, drawing crow's-foot notation. Chen and Barker notation, and the items in §9, are still deferred. Impl docs: `../CoCEO/schematex/impl/27.X-erd-*.md`.
 
 The engine is **distinct from `entity` (§12)**. The `entity` engine remains for corporate / legal / tax ownership hierarchies; the `erd` engine is for relational data modelling.

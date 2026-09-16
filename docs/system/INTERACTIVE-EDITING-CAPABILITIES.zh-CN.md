@@ -58,9 +58,9 @@ Flowchart、Circuit 和 Floorplan 各有多个 Playground specimen，所以 test
 
 ## 仅源码编辑
 
-以下 30 个 engine 当前即使收到 `scene: true`，也不会输出 scene 或 `data-sx-*` edit hook：
+以下 31 个 engine 当前即使收到 `scene: true`，也不会输出 scene 或 `data-sx-*` edit hook：
 
-`ecomap`、`pedigree`、`phylo`、`sociogram`、`logic`、`blockdiagram`、`ladder`、`sld`、`entity`、`venn`、`matrix`、`bpmn`、`sfc`、`prisma`、`usecase`、`pert`、`faulttree`、`bowtie`、`eventtree`、`fmea`、`rbd`、`comparison`、`causalloop`、`markov`、`gitgraph`、`epc`、`idef0`、`threatmodel`、`welding` 和 `playbook`。
+`ecomap`、`pedigree`、`phylo`、`sociogram`、`logic`、`blockdiagram`、`ladder`、`sld`、`entity`、`venn`、`matrix`、`bpmn`、`sfc`、`prisma`、`usecase`、`pert`、`faulttree`、`bowtie`、`eventtree`、`fmea`、`rbd`、`comparison`、`causalloop`、`markov`、`gitgraph`、`epc`、`idef0`、`threatmodel`、`welding`、`stageplot` 和 `playbook`。
 
 这只是 implementation backlog，不代表这些图的 authored text 天生不可编辑。以后会按 engine 逐个补 parser range，通过安全 gate 后再移入上表。
 
@@ -97,5 +97,5 @@ Typed registry 位于 `src/core/interactive-capabilities.ts`，并从 `schematex
 ## 相关文档
 
 - 实施规格：`CoCEO/schematex/impl/3.0-interactive-editing.md`
-- 第一性原理分类与迁移顺序：`docs/design/interactive-capability-audit.md`
+- 第一性原理分类与迁移顺序：`docs/system/interactive-capability-audit.md`
 - 回归测试：`tests/interactive/`

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseFishboneDSL } from "../../src/diagrams/fishbone/parser";
+import { layoutFishbone } from "../../src/diagrams/fishbone/layout";
 import { renderFishboneAST } from "../../src/diagrams/fishbone/renderer";
 
 const attrs = (source: string): Record<string, string> => Object.fromEntries(
@@ -100,6 +101,30 @@ describe("Fishbone layout — flexibility options", () => {
   });
 
   describe("causeSide", () => {
+    // Which side of the bone a cause hangs from. `head` puts it on the spine
+    // side, `tail` on the far side, `both` alternates. The layout records the
+    // choice per cause, so read it back rather than guessing from coordinates.
+    const sidesOf = (config: string) => {
+      const ast = parseFishboneDSL(`fishbone "T"\neffect "E"\n${config}\n` +
+        `category a "A"\na : "x1"\na : "x2"\na : "x3"\na : "x4"`);
+      return layoutFishbone(ast).ribs.flatMap(rib => rib.causes.map(cause => cause.causeSide));
+    };
+
+    it("hangs every cause on the tail side by default", () => {
+      expect(sidesOf("")).toEqual(["tail", "tail", "tail", "tail"]);
+      expect(sidesOf("config causeSide = tail")).toEqual(sidesOf(""));
+    });
+
+    it("moves every cause to the head side on request", () => {
+      expect(sidesOf("config causeSide = head")).toEqual(["head", "head", "head", "head"]);
+    });
+
+    it("alternates sides when asked for both", () => {
+      const sides = sidesOf("config causeSide = both");
+      expect(new Set(sides)).toEqual(new Set(["head", "tail"]));
+      expect(sides.every((side, index) => index === 0 || side !== sides[index - 1])).toBe(true);
+    });
+
     it.each(["", "config causeSide = tail", "config causeSide = head", "config causeSide = both"])(
       "keeps causes above horizontal ribs and left aligned (%s)", config => {
         const { svg } = build(`${config}\ncategory a "A"\na : "x1"\na : "x2"`);

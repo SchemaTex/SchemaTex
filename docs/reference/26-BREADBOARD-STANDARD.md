@@ -401,4 +401,4 @@ A sixth nice-to-have for the gallery: **classic Arduino "Knight Rider" 8-LED cha
 
 ## 10. Implementation Status
 
-Not yet implemented. Tracked as `breadboard` engine; impl docs land in `../CoCEO/schematex/impl/26.X-breadboard-*.md`.
+**v0.1 — shipped.** The `breadboard` engine lives in `src/diagrams/breadboard/`: parser, Fritzing-style stylized parts catalog, pin aliases, hole-accurate layout, wire routing, and renderer. The deferred items listed in §9 are still deferred. Impl docs: `../CoCEO/schematex/impl/26.X-breadboard-*.md`.
