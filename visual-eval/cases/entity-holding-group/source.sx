@@ -1,0 +1,9 @@
+# Scenario: Corporate holding group with wholly owned subsidiaries.
+entity-structure "Holding Group"
+entity holdco "Northstar Holdings, Inc." corp@DE
+entity ops "Northstar Operations, LLC" llc@DE
+entity ip "Northstar IP Ltd" corp@IE
+entity sales "Northstar Sales GmbH" corp@DE
+holdco -> ops : 100%
+holdco -> ip : 100%
+holdco -> sales : 100%

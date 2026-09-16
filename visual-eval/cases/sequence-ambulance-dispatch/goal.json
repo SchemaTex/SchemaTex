@@ -1,0 +1,40 @@
+{
+  "id": "sequence-ambulance-dispatch",
+  "type": "sequence",
+  "title": "Ambulance dispatch",
+  "goal": "Show dispatch, field response, and handover.",
+  "rubric": [
+    {
+      "id": "dispatch",
+      "severity": "blocker",
+      "must": "Available units visibly return before Ambulance is dispatched."
+    },
+    {
+      "id": "parallel",
+      "severity": "blocker",
+      "must": "A par frame separates pre-alert and patient assessment."
+    },
+    {
+      "id": "transport",
+      "severity": "major",
+      "must": "An opt frame encloses destination confirmation."
+    },
+    {
+      "id": "self",
+      "severity": "major",
+      "must": "Ambulance has a self-message for Assess patient."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Updates recorded."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all five rules, while Image 2 omits the required sequence messages, frames, and note."
+  }
+}

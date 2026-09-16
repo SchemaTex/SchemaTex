@@ -1,0 +1,40 @@
+{
+  "id": "breadboard-shift-register",
+  "type": "breadboard",
+  "title": "74HC595 Eight LED Outputs",
+  "goal": "A practitioner can visually assess the 74HC595 Eight LED Outputs scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "physical-board",
+      "severity": "blocker",
+      "must": "A solderless breadboard with labelled physical components and colored jumper wires is visible."
+    },
+    {
+      "id": "power-ground",
+      "severity": "blocker",
+      "must": "Red positive-supply wiring and black ground-return wiring are visibly distinct."
+    },
+    {
+      "id": "signal-path",
+      "severity": "major",
+      "must": "The visible signal path connects the controller or IC to the named load or module."
+    },
+    {
+      "id": "series-correctness",
+      "severity": "major",
+      "must": "The picture visibly places the current-limiting or timing component in the intended circuit path rather than as an unconnected part."
+    },
+    {
+      "id": "buildable-layout",
+      "severity": "minor",
+      "must": "Parts and wire endpoints visibly land on breadboard tie points without ambiguous floating connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Target review blocked on source data: The source promises eight LED outputs but declares one LED; its two legs land on the same conductive strip (30a/30b). Output-enable and reset wiring are also absent. Do not silently repair the source in a target drawing."
+  }
+}

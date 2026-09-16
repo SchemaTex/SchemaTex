@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Mutual Exclusion — two processes, one resource" width="817" height="176" viewBox="0 0 817 176" data-diagram-type="petri"><title>Petri net — Mutual Exclusion — two processes, one resource</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Mutual Exclusion — two processes, one resource" width="817" height="160" viewBox="0 0 817 160" data-diagram-type="petri"><title>Petri net — Mutual Exclusion — two processes, one resource</title>
 <desc>5 places, 4 transitions, 12 arcs. Marking {idleA:1, idleB:1, mutex:1}. Enabled: enterA, enterB.</desc>
 <style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
 .sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
@@ -19,22 +19,22 @@
 .sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
 .sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
 .sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
-<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
-<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
 <polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
 <text x="408.5" y="22" class="sx-petri-title" text-anchor="middle">Mutual Exclusion — two processes, one resource</text>
-<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="idleA" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 58.6 70 L 128.6 70" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="mutex" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 408.6 88 C 408.6 122 132.6 122 132.6 92" marker-end="url(#sx-petri-head)"/></g>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="idleA" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 58.6 70 L 128.6 66" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="mutex" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 391.0500712252158 66 L 371.0500712252158 66 L 371.0500712252158 106 L 156.6 106 L 156.6 74 L 136.6 74" marker-end="url(#sx-petri-head)"/></g>
 <g class="sx-petri-arc-g" data-from="enterA" data-to="critA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 136.6 70 L 206.6 70" marker-end="url(#sx-petri-head)"/></g>
 <g class="sx-petri-arc-g" data-from="critA" data-to="exitA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 242.6 70 L 312.6 70" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="exitA" data-to="idleA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 316.6 92 C 316.6 122 40.6 122 40.6 88" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="exitA" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320.6 70 L 390.6 70" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="idleB" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 776.6 88 C 776.6 122 500.6 122 500.6 92" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="mutex" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 426.6 70 L 496.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitA" data-to="idleA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 312.6 66 L 292.6 66 L 292.6 106 L 78.6 106 L 78.6 70 L 58.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitA" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320.6 74 L 391.0500712252158 66" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="idleB" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 758.6 70 L 738.6 70 L 738.6 106 L 524.6 106 L 524.6 66 L 504.6 66" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="mutex" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 426.14992877478426 74 L 496.6 74" marker-end="url(#sx-petri-head)"/></g>
 <g class="sx-petri-arc-g" data-from="enterB" data-to="critB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 504.6 70 L 574.6 70" marker-end="url(#sx-petri-head)"/></g>
 <g class="sx-petri-arc-g" data-from="critB" data-to="exitB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 610.6 70 L 680.6 70" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="exitB" data-to="idleB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 688.6 70 L 758.6 70" marker-end="url(#sx-petri-head)"/></g>
-<g class="sx-petri-arc-g" data-from="exitB" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 684.6 92 C 684.6 122 408.6 122 408.6 88" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-arc-g" data-from="exitB" data-to="idleB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 688.6 66 L 758.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitB" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 680.6 74 L 660.6 74 L 660.6 106 L 446.14992877478426 106 L 446.14992877478426 74 L 426.14992877478426 74" marker-end="url(#sx-petri-head)"/></g></g>
 <g class="sx-petri-places"><g class="sx-petri-place-g" data-id="idleA" data-tokens="1"><circle class="sx-petri-place" cx="40.6" cy="70" r="18"/>
 <circle class="sx-petri-token" cx="40.6" cy="70" r="3.5"/>
 <text class="sx-petri-label" x="40.6" y="46" text-anchor="middle">idleA</text>

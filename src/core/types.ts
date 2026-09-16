@@ -146,10 +146,13 @@ export type LegendItemKind =
   | "edge";
 
 export type LegendLinePattern =
+  | "step"
   | "solid"
   | "dashed"
   | "dotted"
   | "double"
+  | "triple"
+  | "cutoff"
   | "wavy"
   | "zigzag"
   | "broken";
@@ -170,7 +173,7 @@ export interface LegendItem {
   strokeWidth?: number;
   /** For kind: "shape" — "square" | "circle" | "diamond" | "triangle" | "concentric-square" | "concentric-circle". */
   shape?: string;
-  /** For kind: "marker" / "edge" — "arrow" | "X" | "dot" | "P" | "C" | "E" | "star" | "slash". */
+  /** For kind: "marker" / "edge" — "arrow" | "diagonal-arrow" | "X" | "dot" | "P" | "C" | "E" | "star" | "slash". */
   marker?: string;
   /** Section group id (e.g. "symbols", "structural", "relationships", "conditions"). */
   section?: string;
@@ -213,6 +216,8 @@ export interface DiagramAST {
   individuals: Individual[];
   relationships: Relationship[];
   metadata?: Record<string, string>;
+  /** Non-blocking parser diagnostics, surfaced by the plugin and SVG. */
+  warnings?: SchematexDiagnostic[];
   /** Exact authored title token, including quotes when present. */
   titleSourceRange?: SourceRange;
   /** Legacy: pedigree-style trait legend. To be migrated into LegendOverrides.added. */
@@ -585,6 +590,7 @@ export type RelationshipType =
   | "parent-child"
   | "adopted"
   | "foster"
+  | "step"
   | "twin-identical"
   | "twin-fraternal"
   // Emotional relationships — Positive/Close (genogram)
@@ -827,6 +833,14 @@ export interface DiagramPlugin {
    * Example: evacuation is a first-class type but reuses the floorplan plugin.
    */
   altTypes?: readonly DiagramType[];
+  /** Recognizes parser-owned %% directives that must survive comment stripping. */
+  isDirective?: (line: string) => boolean;
+  /**
+   * Opening quote characters this grammar has claimed for something other than
+   * quoting, which the shared quote-pair normalization must leave alone. The
+   * UML family reads `«interface»` as a stereotype, so it reserves `«`.
+   */
+  reservedQuotes?: readonly string[];
   detect: (text: string) => boolean;
   render: (text: string, config?: RenderConfig) => string;
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */
@@ -1153,11 +1167,27 @@ export type CircuitComponentType =
 
 export type CircuitDirection = "right" | "left" | "up" | "down";
 
+export type CircuitPinRole = "input" | "output" | "bidirectional" | "power" | "return";
+
+/** Functional membership, not a rectangle or a coordinate constraint. */
+export interface CircuitGroup {
+  id: string;
+  label?: string;
+  components: string[];
+}
+
+/** Physical sequence on a shared conductor; electrical connectivity remains in nets. */
+export interface CircuitBus {
+  nets: string[];
+  components: string[];
+}
+
 export interface CircuitComponent {
   id: string;
   /** True only when the id is explicitly authored and safe to persist in @overrides. */
   stableId?: boolean;
   componentType: CircuitComponentType;
+  pinRoles?: Record<string, CircuitPinRole>;
   direction: CircuitDirection;
   /** Reference to anchor point of previous/named element: e.g. "R1.end", "origin" */
   at?: string;
@@ -1177,10 +1207,16 @@ export interface CircuitNet {
   id: string;
   /** Anchor refs sharing the same node (e.g. ["R2.end", "U1.out", "OUT.start"]) */
   anchors: string[];
+  /** Authored conductor identities and annotations; never placed as components. */
+  conductors?: { id: string; label?: string; value?: string }[];
 }
 
 export interface CircuitAST {
   type: "circuit";
+  groups?: CircuitGroup[];
+  /** Directed functional flow between groups; feedback remains an ordinary net. */
+  flow?: Array<[string, string]>;
+  buses?: CircuitBus[];
   title?: string;
   titleSourceRange?: SourceRange;
   components: CircuitComponent[];
@@ -1353,8 +1389,9 @@ export type SLDNodeType =
   | "breaker_vacuum"    // Vacuum CB (diagonal + "V" inside oval)
   | "switch"            // Disconnect switch (diagonal, no arc, open tip)
   | "switch_load"       // Load interrupter switch
+  | "contactor"         // Electromagnetically operated power contact
   | "ground_switch"     // Grounding disconnect (diagonal + ground symbol)
-  | "ats"               // Automatic transfer switch (two breakers + tie)
+  | "ats"               // Automatic transfer switch (two independent inputs, one common contact)
   | "recloser"          // Auto-reclosing breaker (diagonal + arc + circling arrow)
   | "sectionalizer"     // Sectionalizer (diagonal + "S" designation)
   | "fuse"              // Expulsion fuse cutout (diagonal in oval)
@@ -1707,6 +1744,8 @@ export type VennShape =
   | ({ kind: "ellipse" } & VennEllipse);
 
 export interface VennLabelPosition {
+  /** Measured text lines shared by layout and renderer. */
+  lines?: string[];
   /** Region this label describes (sorted set ids). */
   sets: string[];
   /** Canonical label text (e.g. "A ∩ B", "42", "[a,b,c]"). */

@@ -1,0 +1,54 @@
+# Commercial building on an 11 kV primary service, IEC symbols: revenue metering, an
+# incoming disconnector and vacuum breaker with overcurrent relays, a 1600 kVA Dyn11
+# service transformer, a 2500 A main switchboard with four feeders, and a standby
+# generator through an ATS. Same topology as the ANSI exemplar.
+sld "Distribution Centre · 11 kV Primary Service" [standard: iec]
+
+UTIL = utility [label: "Network infeed", voltage: "11 kV, 3~ 50 Hz", rating: "Sk″ 250 MVA, Ik″ 13.1 kA"]
+MTR = watthour_meter [label: "Revenue meter -P1", rating: "CT 100/1 A, VT 11/0.11 kV"]
+Q0 = switch [label: "Incoming disconnector -Q0", rating: "12 kV, 630 A"]
+Q1 = breaker_vacuum [label: "Main circuit-breaker -Q1", rating: "Vacuum, 12 kV, 630 A, 25 kA"]
+T11 = ct [label: "Current transformer -T11", rating: "200/1 A, 5P20"]
+F11 = relay [device: "I> I>>", label: "Phase overcurrent -F11", ct: "T11"]
+F12 = relay [device: "I0>", label: "Earth fault -F12", ct: "T11"]
+T1 = transformer_dy [label: "Service transformer -T1", rating: "1600 kVA, 11/0.42 kV, Dyn11", impedance: "uk 6 %", grounding: "Star point earthed, 185 mm² Cu"]
+Q2 = breaker [label: "Main circuit-breaker -Q2", rating: "ACB 2500 A, LSIG, 50 kA"]
+MSB = bus [label: "Main switchboard -MSB", voltage: "400/230 V", rating: "2500 A, 50 kA"]
+
+Q3 = breaker [label: "Panel HA feeder -Q3", rating: "MCCB 400 A, 50 kA"]
+HA = panel [label: "Panel HA", rating: "400 A, 400/230 V"]
+Q4 = breaker [label: "Chiller feeder -Q4", rating: "MCCB 630 A, 50 kA"]
+CH1 = motor [label: "Chiller CH-1", rating: "300 kW, 400 V, 3~"]
+Q5 = switch [label: "T-2 feeder -Q5", rating: "Disconnector 250 A"]
+F5 = fuse [label: "Fuse -F5", rating: "gG 160 A"]
+T2 = transformer_dy [label: "Isolation transformer -T2", rating: "100 kVA, 400/400 V, Dyn11", impedance: "uk 4 %", grounding: "Star point earthed, 50 mm² Cu"]
+LA = panel [label: "Panel LA", rating: "160 A, 400/230 V"]
+Q6 = breaker [label: "ATS normal feeder -Q6", rating: "MCCB 1250 A, 50 kA"]
+
+GEN = generator [label: "Standby generator -G1", voltage: "400/230 V", rating: "500 kW / 625 kVA, 0.8 PF", grounding: "Star point earthed, 95 mm² Cu"]
+Q7 = breaker [label: "Generator breaker -Q7", rating: "ACB 1250 A, LSI, 50 kA"]
+ATS = ats [label: "ATS-1", rating: "1250 A, 4-pole, open transition"]
+SDP = panel [label: "Standby panel SDP", rating: "1250 A, 400/230 V"]
+
+UTIL -> MTR
+MTR -> Q0 [cable: "3 × 1C 95 mm² XLPE 12 kV"]
+Q0 -> Q1
+Q1 -> T11
+T11 -> T1
+F11 -> Q1
+F12 -> Q1
+T1 -> Q2 [cable: "6 × 1C 630 mm² Cu per phase"]
+Q2 -> MSB
+MSB -> Q3
+Q3 -> HA [cable: "4×1C 240 mm² + PE 120"]
+MSB -> Q4
+Q4 -> CH1 [cable: "3×1C 300 mm² + PE 150"]
+MSB -> Q5
+Q5 -> F5
+F5 -> T2 [cable: "4×1C 95 mm² + PE 50"]
+T2 -> LA
+MSB -> Q6
+Q6 -> ATS [cable: "3 × 4×1C 240 mm²"]
+GEN -> Q7
+Q7 -> ATS [cable: "3 × 4×1C 240 mm²"]
+ATS -> SDP

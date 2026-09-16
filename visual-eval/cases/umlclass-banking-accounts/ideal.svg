@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Retail bank — accounts, policies and ledger entries</title>
+<desc>UML class diagram with eight classifiers and eight relationships. Three account subclasses generalize Account. Customer owns accounts. Accounts compose ledger entries and statements. SavingsAccount uses InterestPolicy, which has a dependency back to SavingsAccount.</desc>
+<style>
+text { font-family: Helvetica, Arial, sans-serif; fill:#0F172A; }
+.title { font-size:20px; font-weight:600; }
+.subtitle { font-size:11px; letter-spacing:.6px; fill:#64748B; }
+.name { font-size:13.5px; font-weight:600; }
+.member { font-size:12px; }
+.visibility,.annotation { fill:#64748B; }
+.annotation,.keyword { font-size:11px; }
+.keyword { fill:#2563EB; }
+.type,.role,.association,.legend { fill:#475569; }
+.role,.legend { font-size:11.5px; }
+.association { font-size:12px; font-style:italic; }
+.mult { font-size:12px; font-weight:500; }
+.edge { fill:none; stroke:#334155; stroke-width:1.4; stroke-linejoin:miter; }
+</style>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<text x="46" y="50" class="title">Retail bank — accounts, policies and ledger entries</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 8 CLASSIFIERS · 8 RELATIONSHIPS · 0 PACKAGES</text>
+<path d="M46 91H1554 M46 916H1554" fill="none" stroke="#94A3B8" stroke-width="1.25"/>
+
+<path class="edge" d="M370 275H620"/>
+<text x="380" y="266" class="mult" >1</text>
+<text x="592" y="266" class="mult" >0..*</text>
+<text x="480" y="297" class="association" >owns</text>
+<polygon points="517,289 523,293 517,297" fill="#475569" stroke="#334155" stroke-width="1.4"/>
+<polygon points="920,255 932,248.5 944,255 932,261.5" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path class="edge" d="M944 255H1190"/>
+<text x="1158" y="246" class="mult" >0..*</text>
+<text x="1139" y="275" class="role" >entries</text>
+<polygon points="920,335 932,328.5 944,335 932,341.5" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path class="edge" d="M944 335H1045V439H1190"/>
+<text x="1158" y="430" class="mult" >0..*</text>
+<text x="1120" y="459" class="role" >statements</text>
+<path class="edge" d="M430 610V520H1110V610 M770 610V385"/>
+<polygon points="770,370 761,385 779,385" fill="white" stroke="#334155" stroke-width="1.4"/>
+<path class="edge" d="M720 689V790 M714 778L720 790L726 778"/>
+<text x="681" y="738" class="association" >uses</text>
+<polygon points="711,730 707,736 703,730" fill="#475569" stroke="#334155" stroke-width="1.4"/>
+<path class="edge" d="M1000 842H1080V744H825V689" stroke-dasharray="6 4"/>
+<path class="edge" d="M819 701L825 689L831 701"/>
+<text x="921" y="733" class="association" >calculates for</text>
+<rect x="120" y="230" width="250" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="120.75" y="230.75" width="248.5" height="34.25" fill="#EEF2F7"/>
+<text x="245.0" y="253" class="name" text-anchor="middle">Customer</text>
+<path d="M120 265H370 M120 299H370" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="133" y="287" class="member"><tspan class="visibility">+ </tspan><tspan>name</tspan><tspan class="type">: String</tspan></text>
+<rect x="620" y="230" width="300" height="140" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="620.75" y="230.75" width="298.5" height="51.25" fill="#EEF2F7"/>
+<text x="770.0" y="254" class="name" text-anchor="middle" font-style="italic">Account</text>
+<text x="770.0" y="272" class="annotation" text-anchor="middle">{abstract}</text>
+<path d="M620 282H920 M620 336H920" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="633" y="304" class="member"><tspan class="visibility"># </tspan><tspan>number</tspan><tspan class="type">: String</tspan></text>
+<text x="633" y="324" class="member"><tspan class="visibility">- </tspan><tspan>balance</tspan><tspan class="type">: Money</tspan></text>
+<text x="633" y="358" class="member"><tspan class="visibility">+ </tspan><tspan>credit(amount</tspan><tspan class="type">: Money): void</tspan></text>
+<rect x="1190" y="203" width="280" height="99" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="1190.75" y="203.75" width="278.5" height="34.25" fill="#EEF2F7"/>
+<text x="1330.0" y="226" class="name" text-anchor="middle">LedgerEntry</text>
+<path d="M1190 238H1470 M1190 292H1470" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1203" y="260" class="member"><tspan class="visibility">+ </tspan><tspan>postedAt</tspan><tspan class="type">: Instant</tspan></text>
+<text x="1203" y="280" class="member"><tspan class="visibility">+ </tspan><tspan>amount</tspan><tspan class="type">: Money</tspan></text>
+<rect x="1190" y="404" width="280" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="1190.75" y="404.75" width="278.5" height="34.25" fill="#EEF2F7"/>
+<text x="1330.0" y="427" class="name" text-anchor="middle">Statement</text>
+<path d="M1190 439H1470 M1190 473H1470" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1203" y="461" class="member"><tspan class="visibility">+ </tspan><tspan>period</tspan><tspan class="type">: DateRange</tspan></text>
+<rect x="310" y="610" width="240" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="310.75" y="610.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="430.0" y="633" class="name" text-anchor="middle">CheckingAccount</text>
+<path d="M310 645H550 M310 679H550" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="323" y="667" class="member"><tspan class="visibility">+ </tspan><tspan>overdraftLimit</tspan><tspan class="type">: Money</tspan></text>
+<rect x="650" y="610" width="240" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="650.75" y="610.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="770.0" y="633" class="name" text-anchor="middle">SavingsAccount</text>
+<path d="M650 645H890 M650 679H890" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="663" y="667" class="member"><tspan class="visibility">+ </tspan><tspan>interestRate</tspan><tspan class="type">: Percent</tspan></text>
+<rect x="990" y="610" width="240" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="990.75" y="610.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="1110.0" y="633" class="name" text-anchor="middle">BusinessAccount</text>
+<path d="M990 645H1230 M990 679H1230" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1003" y="667" class="member"><tspan class="visibility">+ </tspan><tspan>companyName</tspan><tspan class="type">: String</tspan></text>
+<rect x="630" y="790" width="370" height="96" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="630.75" y="790.75" width="368.5" height="51.25" fill="#EEF2F7"/>
+<text x="815.0" y="810" class="keyword" text-anchor="middle">«interface»</text>
+<text x="815.0" y="829" class="name" text-anchor="middle">InterestPolicy</text>
+<path d="M630 842H1000 M630 852H1000" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="643" y="874" class="member"><tspan class="visibility">+ </tspan><tspan>accrue(account</tspan><tspan class="type">: SavingsAccount): Money</tspan></text>
+<path class="edge" d="M46 947H98 M98 938V956"/>
+<text x="110" y="951" class="legend" >association</text>
+<path class="edge" d="M212 947H264 M252 941L264 947L252 953 M264 938V956"/>
+<text x="276" y="951" class="legend" >navigable association</text>
+<path class="edge" d="M433 947H461 M485 938V956"/>
+<polygon points="461,947 473,940.5 485,947 473,953.5" fill="white" stroke="#334155" stroke-width="1.4"/>
+<text x="497" y="951" class="legend" >aggregation</text>
+<path class="edge" d="M603 947H630 M654 938V956"/>
+<polygon points="630,947 642,940.5 654,947 642,953.5" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="951" class="legend" >composition</text>
+<path class="edge" d="M774 947H810 M826 938V956"/>
+<polygon points="825,947 810,938 810,956" fill="white" stroke="#334155" stroke-width="1.4"/>
+<text x="838" y="951" class="legend" >generalization</text>
+<path class="edge" d="M953 947H990" stroke-dasharray="6 4"/>
+<path class="edge" d="M1006 938V956"/>
+<polygon points="1005,947 990,938 990,956" fill="white" stroke="#334155" stroke-width="1.4"/>
+<text x="1018" y="951" class="legend" >realization</text>
+<path class="edge" d="M1113 947H1165" stroke-dasharray="6 4"/>
+<path class="edge" d="M1153 941L1165 947L1153 953 M1165 938V956"/>
+<text x="1177" y="951" class="legend" >dependency</text>
+</svg>

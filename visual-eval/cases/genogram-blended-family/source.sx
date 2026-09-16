@@ -1,0 +1,16 @@
+genogram "The Bennett Blended Family" [asOf: 2026]
+  george [male, 1944, label: "George Bennett"]
+  helen [female, 1947, label: "Helen Bennett"]
+  laura [female, 1974, label: "Laura Morgan"]
+  emma [female, 1978, label: "Emma Bennett"]
+
+  george -- helen
+    david [male, 1972, label: "David Bennett"]
+
+  david -x- laura [label: "Married 1996; divorced 2004"]
+    sophie [female, 1998, label: "Sophie Bennett", index]
+    oliver [male, 2001, label: "Oliver Bennett"]
+
+  david -- emma [label: "Married 2006"]
+    lucy [female, 2008, label: "Lucy Bennett"]
+    henry [male, 2011, label: "Henry Bennett"]

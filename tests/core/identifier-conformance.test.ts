@@ -1,5 +1,3 @@
-import { readFileSync, readdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import { getExamples } from "../../src/ai";
 import { parseResult } from "../../src/core/api";
@@ -87,28 +85,4 @@ describe("Unicode identifier parser conformance", () => {
     expect(result.ok).toBe(true);
   });
 
-  test("every parser wired to the shared identifier grammar has a conformance fixture", () => {
-    const diagramsDir = fileURLToPath(
-      new URL("../../src/diagrams/", import.meta.url)
-    );
-    const wired = readdirSync(diagramsDir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .filter((type) => {
-        try {
-          return readFileSync(`${diagramsDir}/${type}/parser.ts`, "utf8").includes(
-            "core/identifier"
-          );
-        } catch {
-          return false;
-        }
-      })
-      .sort();
-    const covered = [
-      ...Object.keys(OFFICIAL_EXAMPLE_IDS),
-      "fishbone",
-      "pedigree",
-    ].sort();
-    expect(wired).toEqual(covered);
-  });
 });

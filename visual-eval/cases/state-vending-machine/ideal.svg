@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1040" viewBox="0 0 1100 817">
+<title>Vending machine transaction — coin acceptance, selection, dispensing and refunds</title>
+<defs>
+ <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 0.5 L9 5 L1 9.5" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></marker>
+ <style>
+ text{font-family:Helvetica,Arial,sans-serif} .state{fill:#FFFFFF;stroke:#16202E;stroke-width:1.5} .edge{fill:none;stroke:#4A5568;stroke-width:1.25;marker-end:url(#arrow);stroke-linejoin:round} .name{font-size:13px;font-weight:500;fill:#16202E;text-anchor:middle} .label{font-size:11px;fill:#64708A;paint-order:stroke;stroke:#FFFFFF;stroke-width:5px;stroke-linejoin:round} .inside{stroke:#EEF2F7} .caption{font-size:10.5px;fill:#64708A}
+ </style>
+</defs>
+<rect width="1100" height="817" fill="#FFFFFF"/>
+<text x="40" y="46" fill="#16202E" font-size="19" font-weight="600">Vending Machine Transaction</text>
+<text x="40" y="68" fill="#64708A" font-size="11.5">UML 2.5 state machine · transition labels read event [guard] / action</text>
+<!-- Composite state, with its name compartment. -->
+<rect x="550" y="300" width="490" height="310" rx="10" fill="#EEF2F7" stroke="#16202E" stroke-width="1.5"/>
+<path d="M550 340 H1040" fill="none" stroke="#16202E" stroke-width="1.5"/>
+<text x="566" y="326" fill="#16202E" font-size="13" font-weight="600">Selecting</text>
+<!-- Outer lifecycle. Feedback routes use the top and left margins. -->
+<circle cx="250" cy="110" r="6" fill="#16202E"/>
+<path class="edge" d="M250 116 V150"/>
+<path class="edge" d="M250 196 V300"/>
+<text class="label" x="266" y="251">insert coin</text>
+<path class="edge" d="M300 300 C270 252 335 228 356 267 C370 291 350 315 325 315"/>
+<text class="label" x="373" y="267">insert coin / add credit</text>
+<path class="edge" d="M325 329 H550"/>
+<text class="label" x="435" y="354" text-anchor="middle"><tspan x="435">select item</tspan><tspan x="435" dy="15">[credit &gt;= price]</tspan></text>
+<path class="edge" d="M795 300 V173 H325"/>
+<text class="label" x="550" y="162" text-anchor="middle">transaction complete</text>
+<path class="edge" d="M250 346 V650"/>
+<text class="label" x="266" y="490">cancel</text>
+<path class="edge" d="M175 673 H80 Q70 673 70 663 V183 Q70 173 80 173 H175"/>
+<text class="label" x="90" y="661">return credit</text>
+<!-- Nested state transitions. -->
+<circle cx="675" cy="379" r="6" fill="#16202E"/>
+<path class="edge" d="M675 385 V410"/>
+<path class="edge" d="M740 433 H870"/>
+<text class="label inside" x="805" y="420" text-anchor="middle">item available</text>
+<path class="edge" d="M935 456 V541"/>
+<text class="label inside" x="951" y="504">deliver item</text>
+<path class="edge" d="M675 456 V673 H325"/>
+<text class="label inside" x="691" y="530">item unavailable</text>
+<!-- State boxes are white, with a single uniform corner radius. -->
+<rect class="state" x="175" y="150" width="150" height="46" rx="10"/>
+<text class="name" x="250" y="178">Idle</text>
+<rect class="state" x="175" y="300" width="150" height="46" rx="10"/>
+<text class="name" x="250" y="328">AcceptingCoins</text>
+<rect class="state" x="610" y="410" width="130" height="46" rx="10"/>
+<text class="name" x="675" y="438">CheckStock</text>
+<rect class="state" x="870" y="410" width="130" height="46" rx="10"/>
+<text class="name" x="935" y="438">Dispensing</text>
+<circle cx="935" cy="551" r="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+<circle cx="935" cy="551" r="5" fill="#16202E"/>
+<rect x="175" y="650" width="150" height="46" rx="10" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+<text x="250" y="678" font-size="13" font-weight="500" text-anchor="middle" fill="#A4442F">Refunding</text>
+<!-- Symbol key, in the exemplar's quiet footer style. -->
+<path d="M40 745 H1060" stroke="#EEF2F7" stroke-width="1.5"/>
+<circle cx="46" cy="777" r="6" fill="#16202E"/>
+<text class="caption" x="61" y="781">initial pseudo-state</text>
+<circle cx="245" cy="777" r="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+<circle cx="245" cy="777" r="5" fill="#16202E"/>
+<text class="caption" x="264" y="781">final state</text>
+<rect x="410" y="767" width="26" height="20" rx="6" fill="#EEF2F7" stroke="#16202E" stroke-width="1.5"/>
+<path d="M410 774 H436" stroke="#16202E" stroke-width="1.5"/>
+<text class="caption" x="446" y="781">composite state with substates</text>
+<rect x="740" y="767" width="26" height="20" rx="6" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+<text class="caption" x="776" y="781">refund branch</text>
+</svg>

@@ -7,6 +7,8 @@
  *   - CSS custom properties from resolveBaseTheme
  *   - Arrowhead markers in <defs>
  */
+import { edgeLabelObstacles, labelEdgeAnchor, labelLeader, labelPathPoints, placeLabel, type LabelBox } from "../../core/label-placement";
+import { estimateMaxLineWidth } from "../../core/text-metrics";
 
 import type {
   FlowchartAST,
@@ -27,6 +29,7 @@ import {
   multilineText,
   path as pathEl,
   rect,
+  line,
   title as titleEl,
   desc as descEl,
   defs,
@@ -37,6 +40,9 @@ import { resolveSceneTitle } from "../../core/title-scene";
 import { shapeSVG } from "./shapes";
 import { renderIcon, hasIcon, ICON_SIZE, ICON_GAP } from "./icons";
 import { resolveFlowchartTheme, type ThemeName } from "../../core/theme";
+
+// Cluster title baseline (15px) plus its 3px descender envelope.
+const CLUSTER_LABEL_HEIGHT = 18;
 
 const CSS_TEMPLATE = (themeName: ThemeName): string => {
   const t = resolveFlowchartTheme(themeName);
@@ -228,6 +234,17 @@ function renderEdge(le: FlowchartLayoutEdge, scene?: SceneItem[]): string {
         )
       : "";
 
+  let leaderSvg = "";
+  if (e.label && le.labelAnchor) {
+    const size = edgeLabelSize(e.label);
+    const anchor = le.labelAnchor;
+    const textAnchor = anchor.textAnchor ?? "middle";
+    const box = { x: anchor.x - (textAnchor === "start" ? 0 : textAnchor === "end" ? size.width : size.width / 2),
+      y: anchor.y - size.height / 2, ...size };
+    const leader = labelLeader(box, labelPathPoints(le.path));
+    if (leader) leaderSvg = line({ x1: leader.from.x, y1: leader.from.y, x2: leader.to.x, y2: leader.to.y, class: "sx-fc-edge" });
+  }
+
   const edgeTitle = titleEl(
     e.label ? `${e.from} → ${e.to}: ${e.label}` : `${e.from} → ${e.to}`
   );
@@ -240,7 +257,7 @@ function renderEdge(le: FlowchartLayoutEdge, scene?: SceneItem[]): string {
     editable: { label: false, position: "none" },
   });
   if (scene && e.label && le.labelAnchor) {
-    const labelWidth = Math.max(20, e.label.length * 6.5 + 10);
+    const { width: labelWidth, height: labelHeight } = edgeLabelSize(e.label);
     const textAnchor = le.labelAnchor.textAnchor ?? "middle";
     const x = le.labelAnchor.x - (textAnchor === "start" ? 0 : textAnchor === "end" ? labelWidth : labelWidth / 2);
     scene.push({
@@ -248,7 +265,7 @@ function renderEdge(le: FlowchartLayoutEdge, scene?: SceneItem[]): string {
       kind: "label",
       label: e.label,
       sourceRange: e.labelSourceRange,
-      bbox: { x, y: le.labelAnchor.y - 8, width: labelWidth, height: 16 },
+      bbox: { x, y: le.labelAnchor.y - labelHeight / 2, width: labelWidth, height: labelHeight },
       editable: { label: e.labelSourceRange !== undefined, position: "none" },
     });
   }
@@ -261,8 +278,15 @@ function renderEdge(le: FlowchartLayoutEdge, scene?: SceneItem[]): string {
       "data-to": e.to,
       "data-sx-key": scene ? key : undefined,
     },
-    [p, edgeTitle, labelEl].filter((s) => s.length > 0)
+    [p, edgeTitle, leaderSvg, labelEl].filter((s) => s.length > 0)
   );
+}
+
+function edgeLabelSize(label: string): { width: number; height: number } {
+  const plain = label.replace(/<br\s*\/?>/gi, "\n").replace(/<\/?[bi]>/gi, "");
+  // Reserve bold inline spans conservatively; retain the renderer's 10px pill padding.
+  return { width: Math.max(20, estimateMaxLineWidth(plain, 11, { fontWeight: 600 }) + 10),
+    height: plain.split("\n").length * 14 + 2 };
 }
 
 function renderEdgeLabel(
@@ -272,9 +296,7 @@ function renderEdgeLabel(
   textAnchor: "start" | "middle" | "end",
   sceneKey?: string
 ): string {
-  // Approximate pill size — matches entity diagram edge label style.
-  const w = Math.max(20, label.length * 6.5 + 10);
-  const h = 16;
+  const { width: w, height: h } = edgeLabelSize(label);
   const rx = cx - (textAnchor === "start" ? 0 : textAnchor === "end" ? w : w / 2);
   const ry = cy - h / 2;
   const bg = rect({
@@ -285,7 +307,7 @@ function renderEdgeLabel(
     rx: 3,
     class: "sx-fc-edge-label-bg",
   });
-  const t = textEl(
+  const t = multilineText(
     {
       x: cx,
       y: cy,
@@ -311,6 +333,34 @@ export function renderFlowchartAST(
 ): string {
   const layout: FlowchartLayoutResult = layoutFlowchart(ast, config?.__pins);
   const position = "free" as const;
+
+  const occupied: LabelBox[] = [
+    ...layout.nodes,
+    ...layout.clusters.map((cluster) => ({ x: cluster.x + 12, y: cluster.y,
+      width: estimateMaxLineWidth(cluster.subgraph.label, 11), height: CLUSTER_LABEL_HEIGHT })),
+    ...layout.edges.flatMap((edge) => edgeLabelObstacles(labelPathPoints(edge.path))),
+  ];
+  const labelBoxes: LabelBox[] = [];
+  for (const edge of layout.edges) {
+    if (!edge.edge.label || !edge.labelAnchor) continue;
+    const size = edgeLabelSize(edge.edge.label);
+    const anchor = edge.labelAnchor;
+    const textAnchor = anchor.textAnchor ?? "middle";
+    const centre = { x: anchor.x + (textAnchor === "start" ? size.width / 2 : textAnchor === "end" ? -size.width / 2 : 0), y: anchor.y };
+    const placed = placeLabel(centre, size, occupied, labelEdgeAnchor(anchor, labelPathPoints(edge.path)).direction);
+    anchor.x += placed.x + size.width / 2 - centre.x;
+    anchor.y = placed.y + size.height / 2;
+    occupied.push(placed);
+    const leader = labelLeader(placed, labelPathPoints(edge.path));
+    if (leader) occupied.push(...edgeLabelObstacles([leader.from, leader.to]));
+    labelBoxes.push(placed);
+  }
+  const bounds = layout.viewBox ?? { x: 0, y: 0, width: layout.width, height: layout.height };
+  const left = Math.min(bounds.x, ...labelBoxes.map((box) => box.x - FC_CONST.padding));
+  const top = Math.min(bounds.y, ...labelBoxes.map((box) => box.y - FC_CONST.padding));
+  layout.width = Math.max(bounds.x + bounds.width, ...labelBoxes.map((box) => box.x + box.width + FC_CONST.padding)) - left;
+  layout.height = Math.max(bounds.y + bounds.height, ...labelBoxes.map((box) => box.y + box.height + FC_CONST.padding)) - top;
+  layout.viewBox = { x: left, y: top, width: layout.width, height: layout.height };
 
   const clusterSvg = layout.clusters.map((cluster) => renderCluster(cluster, config?.__scene));
   const nodeSvg = layout.nodes.map((node) => renderNode(node, position, config?.__scene));

@@ -1,0 +1,87 @@
+{
+  "id": "state-vending-machine",
+  "type": "state",
+  "title": "Vending machine transaction",
+  "goal": "Show coin acceptance, guarded selection, dispensing, and refund behavior.",
+  "rubric": [
+    {
+      "id": "idle-to-payment",
+      "severity": "blocker",
+      "must": "The initial marker visibly enters Idle, then coin insertion enters AcceptingCoins."
+    },
+    {
+      "id": "composite-selection",
+      "severity": "blocker",
+      "must": "Selecting is visibly drawn as a composite state containing CheckStock and Dispensing."
+    },
+    {
+      "id": "credit-guard",
+      "severity": "major",
+      "must": "The selection transition visibly carries a credit-at-least-price guard."
+    },
+    {
+      "id": "dispense-path",
+      "severity": "major",
+      "must": "Available stock visibly leads from CheckStock to Dispensing and then completes the transaction."
+    },
+    {
+      "id": "refund-paths",
+      "severity": "major",
+      "must": "Cancel and unavailable-item paths visibly lead to Refunding and then Idle."
+    },
+    {
+      "id": "credit-loop",
+      "severity": "minor",
+      "must": "AcceptingCoins has a visible self-loop for adding credit."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: the item-unavailable line runs downward from CheckStock, visibly continues beyond the Selecting frame, turns left, and ends with an arrow at Refunding. Refunding returns to Idle on the left outer path. The required refund path is present.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:41:52.596724+00:00",
+      "targetHash": "456ef656b1bd",
+      "sourceHash": "45f093499b81",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "idle-to-payment",
+          "verdict": "pass",
+          "evidence": "The initial marker visibly points into Idle, and a downward transition labeled “insert coin” leads from Idle to AcceptingCoins."
+        },
+        {
+          "id": "composite-selection",
+          "verdict": "pass",
+          "evidence": "Selecting is drawn as a composite state containing CheckStock and Dispensing."
+        },
+        {
+          "id": "credit-guard",
+          "verdict": "pass",
+          "evidence": "The transition from AcceptingCoins to Selecting is labeled “select item [credit >= price].”"
+        },
+        {
+          "id": "dispense-path",
+          "verdict": "pass",
+          "evidence": "“item available” leads from CheckStock to Dispensing, and “deliver item” leads from Dispensing to a final marker inside Selecting; “transaction complete” returns from Selecting to Idle."
+        },
+        {
+          "id": "refund-paths",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: the item-unavailable line runs downward from CheckStock, visibly continues beyond the Selecting frame, turns left, and ends with an arrow at Refunding. Refunding returns to Idle on the left outer path. The required refund path is present."
+        },
+        {
+          "id": "credit-loop",
+          "verdict": "pass",
+          "evidence": "AcceptingCoins has a visible self-loop labeled “insert coin / add credit.”"
+        }
+      ]
+    }
+  }
+}

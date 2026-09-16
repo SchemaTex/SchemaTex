@@ -1,0 +1,12 @@
+A PRISMA 2020 flow diagram for a new systematic review of community interventions for heat-health protection that searched bibliographic databases, trial registers and other sources (websites, organisations and citation searching). It is drawn to the official PRISMA 2020 template for new systematic reviews that include searches of databases, registers and other sources (Page MJ et al., BMJ 2021;372:n71, Figure 1 and the downloadable template at prisma-statement.org). The counts reconcile at every step: 1,800 records minus 400 removed leaves 1,400 screened; 50 studies come through the database pipeline and 8 through other methods, for 58 studies in 63 reports.
+
+Why it works as the exemplar for this type:
+
+- Box wording is the template's own wording, word for word: "Records identified from:", "Records removed before screening:", "Records screened", "Records excluded", "Reports sought for retrieval", "Reports not retrieved", "Reports assessed for eligibility", "Reports excluded:", "Studies included in review", "Reports of included studies". Databases and registers are counted separately, with per-source counts in a lighter second line.
+- The other-methods column is a full second pipeline, as in the template: its records skip title-and-abstract screening and go straight to "Reports sought for retrieval", have their own not-retrieved and excluded boxes, and join the review with a single arrow into "Studies included in review". It does not merge into "Records screened".
+- Two coloured headers name the pipelines (gold for databases and registers, grey for other methods), and light-blue rounded bars on the left name the three phases, Identification, Screening (spanning three rows) and Included, with vertical text.
+- Main-flow boxes sit in one column and their exclusion boxes in the column to the right, joined by short horizontal arrows at the box's vertical centre; boxes in the same row share one height, and every arrow is straight or a single right-angle turn.
+- White boxes with a thin grey-blue border and left-aligned text: the box heading in semibold, the counts in regular weight, always written "(n = 1,400)" with thousands separators.
+- A one-line source note under the diagram names the template.
+
+Palette: ink #1F2933, muted text #52606D, box border #616E7C, arrow #3E4C59, databases header gold #F5C84C, other-methods header grey #D5DAE0, phase bar blue #CFE0F1, paper #FFFFFF.

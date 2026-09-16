@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-supported-clades",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Clade support comparison (mock)",
+  "goal": "Mock dataset (not empirical or user data). Read support at internal ancestors while distinguishing two named sample groups.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "topology",
+      "severity": "blocker",
+      "must": "A/B and D/E are sister pairs nested in their respective three-tip groups."
+    },
+    {
+      "id": "support-values",
+      "severity": "major",
+      "must": "Support values 99, 88, 74 and 96 are legible and associated with the correct internal nodes."
+    },
+    {
+      "id": "clades",
+      "severity": "major",
+      "must": "The North and South sample groups are distinguishable without hiding labels or branches."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows both named groups as distinct colored clade panels, with labels and branches visible. The topology and all four support values match the source data; labels and connections are readable without material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:26:24.031Z",
+      "targetHash": "1772d438bcd9",
+      "sourceHash": "334c043e7670",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "topology",
+          "verdict": "pass",
+          "evidence": "Samples A and B join as a sister pair within North, alongside C. Samples D and E join as a sister pair within South, alongside F."
+        },
+        {
+          "id": "support-values",
+          "verdict": "pass",
+          "evidence": "The internal nodes show 99 for the A/B pair, 88 for the North three-tip group, 74 for the D/E pair, and 96 for the South three-tip group."
+        },
+        {
+          "id": "clades",
+          "verdict": "pass",
+          "evidence": "North and South are distinguished by teal and blue branches, brackets, labels, and lightly shaded panels. Sample labels and branch connections remain visible."
+        }
+      ]
+    }
+  }
+}

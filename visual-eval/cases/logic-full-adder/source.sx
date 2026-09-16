@@ -1,0 +1,8 @@
+logic "1-bit Full Adder"
+input A, B, Cin
+output Sum, Cout
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)

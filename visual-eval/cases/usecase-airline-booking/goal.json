@@ -1,0 +1,40 @@
+{
+  "id": "usecase-airline-booking",
+  "type": "usecase",
+  "title": "Airline booking",
+  "goal": "Show the passenger-facing scope of reserving and ticketing a flight.",
+  "rubric": [
+    {
+      "id": "subject",
+      "severity": "blocker",
+      "must": "Airline Reservation System visibly encloses the flight-search and booking use cases."
+    },
+    {
+      "id": "booking-includes",
+      "severity": "blocker",
+      "must": "Book Flight has dashed «include» arrows pointing toward Select Itinerary, Price Itinerary, Collect Payment, and Issue Ticket."
+    },
+    {
+      "id": "systems",
+      "severity": "major",
+      "must": "Collect Payment connects to Payment Processor and Issue Ticket connects to Departure Control as external actors."
+    },
+    {
+      "id": "decline-extension",
+      "severity": "major",
+      "must": "Cancel Booking extends Book Flight toward its payment declined extension point."
+    },
+    {
+      "id": "actor-generalization",
+      "severity": "minor",
+      "must": "Frequent Flyer generalizes to Traveller using a hollow triangle."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture omits required include relationships, external actors, and extension and generalization relationships."
+  }
+}

@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="462.4" height="784" viewBox="0 0 462.4 784"><title>Timed Start and Fault Reset</title>
+<desc>PLC ladder logic diagram with 6 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="231.2" y="20" class="lt-ladder-title" text-anchor="middle">Timed Start and Fault Reset</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="754" class="lt-ladder-rail"/>
+<line x1="432.4" y1="0" x2="432.4" y2="754" class="lt-ladder-rail"/>
+<text x="54" y="152" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Latch start request —</text>
+<text x="54" y="279" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="227" class="lt-ladder-comment">— Five-second on-delay timer —</text>
+<text x="54" y="370" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="334" class="lt-ladder-comment">— Motor energises after timer done —</text>
+<text x="54" y="470" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="434" class="lt-ladder-comment">— Latch overload fault —</text>
+<text x="54" y="570" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="534" class="lt-ladder-comment">— Reset fault and start request —</text>
+<text x="54" y="670" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="634" class="lt-ladder-comment">— Reset timer on fault reset —</text>
+<path d="M 60 149 L 81.3 149" class="lt-ladder-wire"/>
+<path d="M 113.3 149 L 152.1 149" class="lt-ladder-wire"/>
+<path d="M 184.1 149 L 217.6 149" class="lt-ladder-wire"/>
+<path d="M 217.6 101 L 217.6 197" class="lt-ladder-wire"/>
+<path d="M 328.79999999999995 101 L 328.79999999999995 197" class="lt-ladder-wire"/>
+<path d="M 217.6 124 L 257.2 124" class="lt-ladder-wire"/>
+<path d="M 289.2 124 L 328.79999999999995 124" class="lt-ladder-wire"/>
+<path d="M 217.6 179 L 257.19999999999993 179" class="lt-ladder-wire"/>
+<path d="M 289.19999999999993 179 L 328.79999999999995 179" class="lt-ladder-wire"/>
+<path d="M 328.79999999999995 149 L 368.4 149" class="lt-ladder-wire"/>
+<path d="M 60 276 L 99.6 276" class="lt-ladder-wire"/>
+<path d="M 131.6 276 L 188.7 276" class="lt-ladder-wire"/>
+<path d="M 220.7 276 L 257.2 276" class="lt-ladder-wire"/>
+<path d="M 60 367 L 99.6 367" class="lt-ladder-wire"/>
+<path d="M 131.6 367 L 188.7 367" class="lt-ladder-wire"/>
+<path d="M 220.7 367 L 265.59999999999997 367" class="lt-ladder-wire"/>
+<path d="M 60 467 L 99.6 467" class="lt-ladder-wire"/>
+<path d="M 131.6 467 L 188.7 467" class="lt-ladder-wire"/>
+<path d="M 60 567 L 84.35 567" class="lt-ladder-wire"/>
+<path d="M 116.35 567 L 158.2 567" class="lt-ladder-wire"/>
+<path d="M 190.2 567 L 247.29999999999998 567" class="lt-ladder-wire"/>
+<path d="M 60 667 L 84.35 667" class="lt-ladder-wire"/>
+<path d="M 116.35 667 L 158.2 667" class="lt-ladder-wire"/>
+<path d="M 400.4 149 L 432.4 149" class="lt-ladder-wire"/>
+<path d="M 337.2 276 L 432.4 276" class="lt-ladder-wire"/>
+<path d="M 297.59999999999997 367 L 432.4 367" class="lt-ladder-wire"/>
+<path d="M 220.7 467 L 432.4 467" class="lt-ladder-wire"/>
+<path d="M 279.29999999999995 567 L 432.4 567" class="lt-ladder-wire"/>
+<path d="M 190.2 667 L 432.4 667" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="StopPB"><line x1="81.3" y1="149" x2="85.3" y2="149" class="lt-ladder-wire"/>
+<line x1="109.3" y1="149" x2="113.3" y2="149" class="lt-ladder-wire"/>
+<line x1="85.3" y1="137" x2="85.3" y2="161" class="lt-ladder-element"/>
+<line x1="109.3" y1="137" x2="109.3" y2="161" class="lt-ladder-element"/>
+<line x1="87.3" y1="159" x2="107.3" y2="139" class="lt-ladder-element"/>
+<text x="97.3" y="133" class="lt-ladder-tag">StopPB</text></g>
+<g data-element="contact" data-tag="FaultLatch"><line x1="152.1" y1="149" x2="156.1" y2="149" class="lt-ladder-wire"/>
+<line x1="180.1" y1="149" x2="184.1" y2="149" class="lt-ladder-wire"/>
+<line x1="156.1" y1="137" x2="156.1" y2="161" class="lt-ladder-element"/>
+<line x1="180.1" y1="137" x2="180.1" y2="161" class="lt-ladder-element"/>
+<line x1="158.1" y1="159" x2="178.1" y2="139" class="lt-ladder-element"/>
+<text x="168.1" y="133" class="lt-ladder-tag">FaultLatch</text></g>
+<g data-element="contact" data-tag="StartPB"><line x1="257.2" y1="124" x2="261.2" y2="124" class="lt-ladder-wire"/>
+<line x1="285.2" y1="124" x2="289.2" y2="124" class="lt-ladder-wire"/>
+<line x1="261.2" y1="112" x2="261.2" y2="136" class="lt-ladder-element"/>
+<line x1="285.2" y1="112" x2="285.2" y2="136" class="lt-ladder-element"/>
+<text x="273.2" y="108" class="lt-ladder-tag">StartPB</text></g>
+<g data-element="contact" data-tag="StartRequest"><line x1="257.19999999999993" y1="179" x2="261.19999999999993" y2="179" class="lt-ladder-wire"/>
+<line x1="285.19999999999993" y1="179" x2="289.19999999999993" y2="179" class="lt-ladder-wire"/>
+<line x1="261.19999999999993" y1="167" x2="261.19999999999993" y2="191" class="lt-ladder-element"/>
+<line x1="285.19999999999993" y1="167" x2="285.19999999999993" y2="191" class="lt-ladder-element"/>
+<text x="273.19999999999993" y="163" class="lt-ladder-tag">StartRequest</text></g>
+<g data-element="coil" data-tag="StartRequest"><path d="M 374.4 137 A 10 12 0 0 0 374.4 161" class="lt-ladder-coil"/>
+<path d="M 394.4 137 A 10 12 0 0 1 394.4 161" class="lt-ladder-coil"/>
+<line x1="368.4" y1="149" x2="374.4" y2="149" class="lt-ladder-wire"/>
+<line x1="394.4" y1="149" x2="400.4" y2="149" class="lt-ladder-wire"/>
+<text x="384.4" y="152" class="lt-ladder-symbol-label">S</text>
+<text x="384.4" y="133" class="lt-ladder-tag">StartRequest</text></g>
+<g data-element="contact" data-tag="StartRequest"><line x1="99.6" y1="276" x2="103.6" y2="276" class="lt-ladder-wire"/>
+<line x1="127.6" y1="276" x2="131.6" y2="276" class="lt-ladder-wire"/>
+<line x1="103.6" y1="264" x2="103.6" y2="288" class="lt-ladder-element"/>
+<line x1="127.6" y1="264" x2="127.6" y2="288" class="lt-ladder-element"/>
+<text x="115.6" y="260" class="lt-ladder-tag">StartRequest</text></g>
+<g data-element="contact" data-tag="FaultLatch"><line x1="188.7" y1="276" x2="192.7" y2="276" class="lt-ladder-wire"/>
+<line x1="216.7" y1="276" x2="220.7" y2="276" class="lt-ladder-wire"/>
+<line x1="192.7" y1="264" x2="192.7" y2="288" class="lt-ladder-element"/>
+<line x1="216.7" y1="264" x2="216.7" y2="288" class="lt-ladder-element"/>
+<line x1="194.7" y1="286" x2="214.7" y2="266" class="lt-ladder-element"/>
+<text x="204.7" y="260" class="lt-ladder-tag">FaultLatch</text></g>
+<g data-element="function_block" data-tag="StartDelay"><rect x="257.2" y="248" width="80" height="56" class="lt-ladder-fb"/>
+<text x="297.2" y="262" class="lt-ladder-fb-name">TON</text>
+<line x1="251.2" y1="276" x2="257.2" y2="276" class="lt-ladder-wire"/>
+<line x1="337.2" y1="276" x2="343.2" y2="276" class="lt-ladder-wire"/>
+<text x="261.2" y="276" class="lt-ladder-pin">PT=5000</text>
+<text x="297.2" y="244" class="lt-ladder-tag">StartDelay</text></g>
+<g data-element="contact" data-tag="StartDelay.Q"><line x1="99.6" y1="367" x2="103.6" y2="367" class="lt-ladder-wire"/>
+<line x1="127.6" y1="367" x2="131.6" y2="367" class="lt-ladder-wire"/>
+<line x1="103.6" y1="355" x2="103.6" y2="379" class="lt-ladder-element"/>
+<line x1="127.6" y1="355" x2="127.6" y2="379" class="lt-ladder-element"/>
+<text x="115.6" y="351" class="lt-ladder-tag">StartDelay.Q</text></g>
+<g data-element="contact" data-tag="FaultLatch"><line x1="188.7" y1="367" x2="192.7" y2="367" class="lt-ladder-wire"/>
+<line x1="216.7" y1="367" x2="220.7" y2="367" class="lt-ladder-wire"/>
+<line x1="192.7" y1="355" x2="192.7" y2="379" class="lt-ladder-element"/>
+<line x1="216.7" y1="355" x2="216.7" y2="379" class="lt-ladder-element"/>
+<line x1="194.7" y1="377" x2="214.7" y2="357" class="lt-ladder-element"/>
+<text x="204.7" y="351" class="lt-ladder-tag">FaultLatch</text></g>
+<g data-element="coil" data-tag="MotorRun"><path d="M 271.59999999999997 355 A 10 12 0 0 0 271.59999999999997 379" class="lt-ladder-coil"/>
+<path d="M 291.59999999999997 355 A 10 12 0 0 1 291.59999999999997 379" class="lt-ladder-coil"/>
+<line x1="265.59999999999997" y1="367" x2="271.59999999999997" y2="367" class="lt-ladder-wire"/>
+<line x1="291.59999999999997" y1="367" x2="297.59999999999997" y2="367" class="lt-ladder-wire"/>
+<text x="281.59999999999997" y="351" class="lt-ladder-tag">MotorRun</text></g>
+<g data-element="contact" data-tag="OverloadTrip"><line x1="99.6" y1="467" x2="103.6" y2="467" class="lt-ladder-wire"/>
+<line x1="127.6" y1="467" x2="131.6" y2="467" class="lt-ladder-wire"/>
+<line x1="103.6" y1="455" x2="103.6" y2="479" class="lt-ladder-element"/>
+<line x1="127.6" y1="455" x2="127.6" y2="479" class="lt-ladder-element"/>
+<text x="115.6" y="451" class="lt-ladder-tag">OverloadTrip</text></g>
+<g data-element="coil" data-tag="FaultLatch"><path d="M 194.7 455 A 10 12 0 0 0 194.7 479" class="lt-ladder-coil"/>
+<path d="M 214.7 455 A 10 12 0 0 1 214.7 479" class="lt-ladder-coil"/>
+<line x1="188.7" y1="467" x2="194.7" y2="467" class="lt-ladder-wire"/>
+<line x1="214.7" y1="467" x2="220.7" y2="467" class="lt-ladder-wire"/>
+<text x="204.7" y="470" class="lt-ladder-symbol-label">S</text>
+<text x="204.7" y="451" class="lt-ladder-tag">FaultLatch</text></g>
+<g data-element="contact" data-tag="ResetPB"><line x1="84.35" y1="567" x2="88.35" y2="567" class="lt-ladder-wire"/>
+<line x1="112.35" y1="567" x2="116.35" y2="567" class="lt-ladder-wire"/>
+<line x1="88.35" y1="555" x2="88.35" y2="579" class="lt-ladder-element"/>
+<line x1="112.35" y1="555" x2="112.35" y2="579" class="lt-ladder-element"/>
+<text x="100.35" y="551" class="lt-ladder-tag">ResetPB</text></g>
+<g data-element="coil" data-tag="FaultLatch"><path d="M 164.2 555 A 10 12 0 0 0 164.2 579" class="lt-ladder-coil"/>
+<path d="M 184.2 555 A 10 12 0 0 1 184.2 579" class="lt-ladder-coil"/>
+<line x1="158.2" y1="567" x2="164.2" y2="567" class="lt-ladder-wire"/>
+<line x1="184.2" y1="567" x2="190.2" y2="567" class="lt-ladder-wire"/>
+<text x="174.2" y="570" class="lt-ladder-symbol-label">R</text>
+<text x="174.2" y="551" class="lt-ladder-tag">FaultLatch</text></g>
+<g data-element="coil" data-tag="StartRequest"><path d="M 253.29999999999998 555 A 10 12 0 0 0 253.29999999999998 579" class="lt-ladder-coil"/>
+<path d="M 273.29999999999995 555 A 10 12 0 0 1 273.29999999999995 579" class="lt-ladder-coil"/>
+<line x1="247.29999999999998" y1="567" x2="253.29999999999998" y2="567" class="lt-ladder-wire"/>
+<line x1="273.29999999999995" y1="567" x2="279.29999999999995" y2="567" class="lt-ladder-wire"/>
+<text x="263.29999999999995" y="570" class="lt-ladder-symbol-label">R</text>
+<text x="263.29999999999995" y="551" class="lt-ladder-tag">StartRequest</text></g>
+<g data-element="contact" data-tag="ResetPB"><line x1="84.35" y1="667" x2="88.35" y2="667" class="lt-ladder-wire"/>
+<line x1="112.35" y1="667" x2="116.35" y2="667" class="lt-ladder-wire"/>
+<line x1="88.35" y1="655" x2="88.35" y2="679" class="lt-ladder-element"/>
+<line x1="112.35" y1="655" x2="112.35" y2="679" class="lt-ladder-element"/>
+<text x="100.35" y="651" class="lt-ladder-tag">ResetPB</text></g>
+<g data-element="coil" data-tag="StartDelay"><path d="M 164.2 655 A 10 12 0 0 0 164.2 679" class="lt-ladder-coil"/>
+<path d="M 184.2 655 A 10 12 0 0 1 184.2 679" class="lt-ladder-coil"/>
+<line x1="158.2" y1="667" x2="164.2" y2="667" class="lt-ladder-wire"/>
+<line x1="184.2" y1="667" x2="190.2" y2="667" class="lt-ladder-wire"/>
+<text x="174.2" y="670" class="lt-ladder-symbol-label">R</text>
+<text x="174.2" y="651" class="lt-ladder-tag">StartDelay</text></g></g></svg>

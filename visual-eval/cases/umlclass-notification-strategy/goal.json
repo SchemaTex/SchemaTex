@@ -1,0 +1,77 @@
+{
+  "id": "umlclass-notification-strategy",
+  "type": "umlclass",
+  "title": "Notification strategy",
+  "goal": "Show channel implementations behind a notification service.",
+  "rubric": [
+    {
+      "id": "strategy-interface",
+      "severity": "blocker",
+      "must": "EmailChannel, SmsChannel, and PushChannel each have dashed realization arrows pointing to NotificationChannel."
+    },
+    {
+      "id": "selection",
+      "severity": "blocker",
+      "must": "NotificationService has a directed association to NotificationChannel labelled chooses."
+    },
+    {
+      "id": "delivery-composition",
+      "severity": "major",
+      "must": "A filled composition diamond connects NotificationService to Delivery."
+    },
+    {
+      "id": "template-dependency",
+      "severity": "major",
+      "must": "NotificationService has a dashed dependency arrow to Template."
+    },
+    {
+      "id": "status",
+      "severity": "minor",
+      "must": "DeliveryStatus visibly lists QUEUED, SENT, and FAILED."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All five rubric requirements are visibly present, with traceable connections and readable labels; no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:51.527Z",
+      "targetHash": "3c3436d495f6",
+      "sourceHash": "a8ab9e80d083",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "strategy-interface",
+          "verdict": "pass",
+          "evidence": "EmailChannel, SmsChannel, and PushChannel each connect to NotificationChannel with dashed lines ending in hollow triangle arrows."
+        },
+        {
+          "id": "selection",
+          "verdict": "pass",
+          "evidence": "NotificationService has a directed association to NotificationChannel labelled “chooses”."
+        },
+        {
+          "id": "delivery-composition",
+          "verdict": "pass",
+          "evidence": "A solid line with a filled diamond at NotificationService connects it to Delivery."
+        },
+        {
+          "id": "template-dependency",
+          "verdict": "pass",
+          "evidence": "A dashed dependency arrow runs from NotificationService to Template, labelled “renders with”."
+        },
+        {
+          "id": "status",
+          "verdict": "pass",
+          "evidence": "DeliveryStatus visibly lists QUEUED, SENT, and FAILED."
+        }
+      ]
+    }
+  }
+}

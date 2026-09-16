@@ -98,6 +98,9 @@ export function buildEcomapLegend(ast: DiagramAST): LegendSpec {
     items.push(tieItem(t));
   }
 
+  if (ast.relationships.some(r => r.energyFlow && r.energyFlow !== "none")) {
+    items.push({key:"energy",label:"Energy flow",kind:"edge",pattern:"solid",marker:"arrow",section:"ties",strokeWidth:1.5});
+  }
   return {
     mode: "auto",
     title: "Legend",
@@ -118,10 +121,9 @@ function tieItem(t: RelationshipType): LegendItem {
   };
   switch (t) {
     case "strong":
-      // Three parallel lines visualised — represented in legend as a thicker solid bar.
-      return { ...base, strokeWidth: 4 };
+      return { ...base, pattern: "triple", strokeWidth: 1.5 };
     case "moderate":
-      return { ...base, strokeWidth: 3 };
+      return { ...base, pattern: "double", strokeWidth: 1.5 };
     case "weak":
       return { ...base, pattern: "dashed", strokeWidth: 1.5 };
     case "stressful":
@@ -131,7 +133,7 @@ function tieItem(t: RelationshipType): LegendItem {
     case "conflictual":
       return { ...base, kind: "edge", pattern: "wavy", marker: "X", strokeWidth: 2 };
     case "broken":
-      return { ...base, pattern: "broken" };
+      return { ...base, pattern: "cutoff", label: "Cut off", strokeWidth: 1.5 };
     default:
       return base;
   }

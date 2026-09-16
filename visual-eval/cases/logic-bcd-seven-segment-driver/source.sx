@@ -1,0 +1,21 @@
+# Partial BCD-to-seven-segment driver. Assumption: active-high segments; a and b are gate-level equations.
+logic "BCD Seven-Segment Driver"
+input A, B, C, D
+output a, b, c, d, e, f, g
+nA = NOT(A)
+nB = NOT(B)
+nC = NOT(C)
+nD = NOT(D)
+a1 = AND(nA, nB, nC)
+a2 = AND(nA, B, nC, D)
+a3 = AND(A, nB, C, D)
+a = OR(a1, a2, a3)
+b1 = AND(nA, nB, C, D)
+b2 = AND(nA, B, nC, D)
+b3 = AND(A, B, nC, D)
+b = OR(b1, b2, b3)
+c = BUF(A)
+d = BUF(B)
+e = BUF(C)
+f = BUF(D)
+g = OR(A, B)

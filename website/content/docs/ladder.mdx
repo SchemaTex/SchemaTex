@@ -101,9 +101,11 @@ Coils represent output actions — they act on a tag bit when the rung has power
 | `OTL` | Output Latch | Sets bit = 1; **retains** even after rung goes false (latches) |
 | `OTU` | Output Unlatch | Clears bit = 0; retains even after rung goes false |
 | `OTN` | Output Negate | Sets bit = 0 while rung is true; sets to 1 when rung is false |
-| `RES` | Reset | Rockwell / Allen-Bradley counter or timer reset coil |
+| `RES` | Reset | Rockwell / Allen-Bradley counter or timer reset instruction, drawn inline as `[RES]` |
 
 **Syntax:** identical to contacts — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
+
+`OTL` and `OTU` draw Allen-Bradley `(L)` and `(U)` coils. `ONS` draws the bracketed inline instruction `[ONS]`.
 
 `OTL` and `OTU` are used in pairs to build Set/Reset flip-flops. The last rung to write wins.
 
@@ -123,7 +125,7 @@ rung 2 "Reset on stop or fault":
 
 ## 4. Function blocks
 
-Function blocks perform timer, counter, math, and comparison operations. They appear inline in a rung and have keyword parameters after the mandatory tag argument.
+Timer and counter blocks have a ruled header separating the instruction name from its parameters. Function blocks perform timer, counter, math, and comparison operations. They appear inline in a rung and have keyword parameters after the mandatory tag argument.
 
 ### 4.1 Timers
 
@@ -242,7 +244,7 @@ rung 1 "Start from either local or remote":
 
 **Reserved at line start (case-insensitive):** `ladder`, `rung`, `parallel:`, `branch:`.
 
-**Element names** are all uppercase ASCII: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+**Element names** are all uppercase ASCII: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `RES`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
 
 **Tag IDs** — must match `[A-Z][A-Z0-9_]*` (the parser matches `[A-Z][A-Z0-9_]*` for the element name prefix). Lowercase tags are accepted inside the parentheses.
 
@@ -321,7 +323,7 @@ Schematex ladder logic follows **IEC 61131-3:2013** Part 3 for the Ladder Diagra
 What is implemented today:
 
 - ✅ Four contact types: XIC (NO), XIO (NC), ONS (rising edge), OSF (falling edge)
-- ✅ Five coil types: OTE (output), OTL (latch/set), OTU (unlatch/reset), OTN (negate), RES (counter/timer reset)
+- ✅ Four coil drawings: OTE (output), OTL (L, latch), OTU (U, unlatch), OTN (negate), plus the bracketed RES reset instruction
 - ✅ Three timer function blocks: TON, TOFF, TP with millisecond `PT=` parameter
 - ✅ Three counter function blocks: CTU, CTD, CTUD with integer `PV=` parameter
 - ✅ Math function blocks: ADD, SUB, MUL, DIV, MOV

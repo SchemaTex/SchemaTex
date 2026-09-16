@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseFbd } from "./parser";
 import { renderFbd } from "./renderer";
@@ -6,7 +7,7 @@ export const fbd: DiagramPlugin = {
   type: "fbd",
   capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("fbd");
   },
   parse: parseFbd,

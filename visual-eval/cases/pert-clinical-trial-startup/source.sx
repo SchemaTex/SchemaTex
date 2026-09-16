@@ -1,0 +1,18 @@
+%% Context: Clinical trial start-up plan across regulatory, site activation, and recruitment work.
+pert
+title: "Clinical Trial Start-up"
+unit: days
+direction: LR
+layout: network
+
+task A "Protocol finalised" milestone
+task B "Prepare regulatory package" duration: 8 after: A tags: regulatory
+task C "Submit ethics application" duration: 1 after: B tags: regulatory
+task D "Ethics review" duration: 20 after: C tags: regulatory
+task E "Select clinical sites" duration: 10 after: A tags: sites
+task F "Execute site contracts" duration: 12 after: E tags: sites
+task G "Train site staff" duration: 4 after: F, D tags: sites
+task H "Activate sites" milestone after: G tags: sites
+task I "Open recruitment" milestone after: H tags: recruitment
+task J "Screen first participant" duration: 5 after: I tags: recruitment
+task K "Enroll first participant" milestone after: J

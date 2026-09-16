@@ -1,0 +1,64 @@
+---
+title: Revenue growth issue tree (left-to-right logic chart)
+description: A consulting-style issue tree that splits a 30% revenue-growth goal into four levers, each lever into sub-levers, and some sub-levers into first moves — drawn left to right with one column per level.
+diagram: mindmap
+standard: Issue tree (MECE logic chart)
+industry: [strategy, management]
+persona: For the strategy lead building a growth plan
+complexity: 3
+tags: [mindmap, logic-chart, issue-tree, mece, revenue, planning]
+featured: false
+relatedLink:
+  label: Mindmap syntax
+  href: /docs/mindmap
+status: published
+dsl: |
+  %% style: logic-right
+  %% Revenue growth issue tree: four levers, each split into sub-levers and first moves.
+  # Grow Revenue 30% Next Year
+
+  ## Win new customers
+  - More qualified pipeline
+    - Partner referrals
+    - Outbound to freight firms
+  - Higher win rate
+    - Faster security review
+  - Shorter sales cycle
+
+  ## Expand existing accounts
+  - More seats per account
+    - Team-wide rollout offer
+  - Cross-sell add-ons
+    - Analytics module
+    - API access tier
+  - Upgrade to higher plan
+
+  ## Keep the customers we have
+  - Faster onboarding
+    - First value within 14 days
+  - Proactive health checks
+  - Fewer support escalations
+
+  ## Raise price realization
+  - Annual price uplift
+  - Less discounting
+    - Deal desk above 15% off
+  - Usage-based overage
+---
+
+## Scenario
+
+A leadership team breaks the goal "Grow Revenue 30% Next Year" into the four levers that together make up revenue growth: win new customers, expand existing accounts, keep the customers we have, and raise price realization. Each lever splits into three sub-levers, and several of those name one or two first moves. The levers do not overlap, so every item has exactly one place in the tree.
+
+## Annotation key
+
+- `%% style: logic-right` — draw the map as a left-to-right logic chart instead of a radial map
+- Other `%%` lines — comments; they are not drawn
+- `# Grow Revenue 30% Next Year` — the root, on the far left
+- `## Win new customers` — a first-level branch (a lever); each gets its own colour
+- `- More qualified pipeline` — a second-level item under the lever above it
+- Indented `  - Partner referrals` — a third-level item under the bullet above it
+
+## How to read
+
+Read from left to right: each column is a more specific answer to the column before it. The first column is the goal, the second the four levers, the third the sub-levers, the fourth the first moves. Every item keeps its lever's colour, so you can trace any first move — such as "Deal desk above 15% off" — back through "Less discounting" to "Raise price realization".

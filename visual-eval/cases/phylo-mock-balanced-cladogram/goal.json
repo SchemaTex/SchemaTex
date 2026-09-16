@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-balanced-cladogram",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Balanced classification (mock)",
+  "goal": "Mock dataset (not empirical or user data). Trace an eight-tip topology without interpreting branch length as distance.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "four-sister-pairs",
+      "severity": "blocker",
+      "must": "The four sister pairs A/B, C/D, E/F and G/H are preserved."
+    },
+    {
+      "id": "aligned-tips",
+      "severity": "major",
+      "must": "All eight named tips share a right-hand baseline, connected by slanted branches."
+    },
+    {
+      "id": "no-distance",
+      "severity": "major",
+      "must": "No quantitative distance scale is shown for this cladogram."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all eight tips on a shared right-hand baseline, with traceable slanted branches preserving the A/B, C/D, E/F, and G/H sister pairs. It labels the figure as topology only and shows no quantitative distance scale.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:25:40.723Z",
+      "targetHash": "8b634eacfcf6",
+      "sourceHash": "f56f6d0ed4ba",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "four-sister-pairs",
+          "verdict": "pass",
+          "evidence": "The branching visibly pairs Species A with B, C with D, E with F, and G with H."
+        },
+        {
+          "id": "aligned-tips",
+          "verdict": "pass",
+          "evidence": "All eight named tips align at the same right-hand endpoint column and connect to the tree via slanted branches."
+        },
+        {
+          "id": "no-distance",
+          "verdict": "pass",
+          "evidence": "The note says branch lengths do not represent distance; no quantitative distance scale is shown."
+        }
+      ]
+    }
+  }
+}

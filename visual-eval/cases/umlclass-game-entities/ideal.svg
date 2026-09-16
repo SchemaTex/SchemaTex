@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Multiplayer game — entities, components and rendering</title>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0F172A} .title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}.name{font-size:13.5px;font-weight:600}.member{font-size:12px}.muted{fill:#475569}.visibility{fill:#64748B}.keyword{font-size:11px;fill:#2563EB}.abstract{font-size:11px;fill:#64748B}.edge{fill:none;stroke:#334155;stroke-width:1.4}.dash{stroke-dasharray:6 4}.legend{font-size:11.5px;fill:#475569}.multiplicity{font-size:12px;font-weight:500}
+</style>
+<text x="46" y="50" class="title">Multiplayer game — entities, components and rendering</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 9 CLASSIFIERS · 8 RELATIONSHIPS</text>
+<path d="M46 91H1554 M46 916H1554" fill="none" stroke="#94A3B8" stroke-width="1"/>
+
+<path d="M540 410V330H1125V410 M855 330V290" class="edge"/>
+<polygon points="855,275 846,290 864,290" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M410 454H215V266" class="edge dash"/>
+<polygon points="215,251 206,266 224,266" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M480 513V700" class="edge"/>
+<polygon points="480,513 473.5,525 480,537 486.5,525" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path d="M600 513V620H850V700" class="edge"/>
+<polygon points="600,513 593.5,525 600,537 606.5,525" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path d="M1125 550V504" class="edge"/>
+<polygon points="1125,489 1116,504 1134,504" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M980 749H1150" class="edge"/>
+<polygon points="980,749 992,742.5 1004,749 992,755.5" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="1113" y="740" class="multiplicity">0..*</text>
+<path d="M140 700V251" class="edge dash"/>
+<path d="M134 263L140 251L146 263" class="edge"/>
+<text x="125" y="591" text-anchor="end" class="muted" font-size="12" font-style="italic">draws</text>
+<g><rect x="730" y="155" width="250" height="120" fill="#FFFFFF"/><rect x="730" y="155" width="250" height="52" fill="#EEF2F7"/><rect x="730" y="155" width="250" height="120" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="855.0" y="179" text-anchor="middle" class="name" font-style="italic">Entity</text><text x="855.0" y="197" text-anchor="middle" class="abstract">{abstract}</text>
+<path d="M730 207H980 M730 241H980" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="743" y="229" class="member"><tspan class="visibility"># </tspan>position<tspan class="muted">: Vector</tspan></text>
+<text x="743" y="263" class="member"><tspan class="visibility">+ </tspan>update()<tspan class="muted">: void</tspan></text>
+</g>
+<g><rect x="90" y="155" width="250" height="96" fill="#FFFFFF"/><rect x="90" y="155" width="250" height="52" fill="#EEF2F7"/><rect x="90" y="155" width="250" height="96" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="215.0" y="175" text-anchor="middle" class="keyword">«interface»</text><text x="215.0" y="194" text-anchor="middle" class="name">Renderable</text>
+<path d="M90 207H340 M90 217H340" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="103" y="239" class="member"><tspan class="visibility">+ </tspan>draw()<tspan class="muted">: void</tspan></text>
+</g>
+<g><rect x="410" y="410" width="260" height="103" fill="#FFFFFF"/><rect x="410" y="410" width="260" height="35" fill="#EEF2F7"/><rect x="410" y="410" width="260" height="103" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="540.0" y="433" text-anchor="middle" class="name">Player</text>
+<path d="M410 445H670 M410 479H670" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="423" y="467" class="member"><tspan class="visibility">+ </tspan>score<tspan class="muted">: int</tspan></text>
+<text x="423" y="501" class="member"><tspan class="visibility">+ </tspan>move()<tspan class="muted">: void</tspan></text>
+</g>
+<g><rect x="1000" y="410" width="250" height="79" fill="#FFFFFF"/><rect x="1000" y="410" width="250" height="35" fill="#EEF2F7"/><rect x="1000" y="410" width="250" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1125.0" y="433" text-anchor="middle" class="name">NonPlayerCharacter</text>
+<path d="M1000 445H1250 M1000 455H1250" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="1013" y="477" class="member"><tspan class="visibility">+ </tspan>behavior()<tspan class="muted">: void</tspan></text>
+</g>
+<g><rect x="1000" y="550" width="250" height="79" fill="#FFFFFF"/><rect x="1000" y="550" width="250" height="35" fill="#EEF2F7"/><rect x="1000" y="550" width="250" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1125.0" y="573" text-anchor="middle" class="name">Boss</text>
+<path d="M1000 585H1250 M1000 619H1250" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="1013" y="607" class="member"><tspan class="visibility">+ </tspan>phase<tspan class="muted">: int</tspan></text>
+</g>
+<g><rect x="410" y="700" width="260" height="103" fill="#FFFFFF"/><rect x="410" y="700" width="260" height="35" fill="#EEF2F7"/><rect x="410" y="700" width="260" height="103" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="540.0" y="723" text-anchor="middle" class="name">HealthComponent</text>
+<path d="M410 735H670 M410 769H670" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="423" y="757" class="member"><tspan class="visibility">- </tspan>hitPoints<tspan class="muted">: int</tspan></text>
+<text x="423" y="791" class="member"><tspan class="visibility">+ </tspan>damage(amount<tspan class="muted">: int): void</tspan></text>
+</g>
+<g><rect x="720" y="700" width="260" height="79" fill="#FFFFFF"/><rect x="720" y="700" width="260" height="35" fill="#EEF2F7"/><rect x="720" y="700" width="260" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="850.0" y="723" text-anchor="middle" class="name">InventoryComponent</text>
+<path d="M720 735H980 M720 745H980" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="733" y="767" class="member"><tspan class="visibility">+ </tspan>add(item<tspan class="muted">: Item): void</tspan></text>
+</g>
+<g><rect x="1150" y="700" width="250" height="79" fill="#FFFFFF"/><rect x="1150" y="700" width="250" height="35" fill="#EEF2F7"/><rect x="1150" y="700" width="250" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1275.0" y="723" text-anchor="middle" class="name">Item</text>
+<path d="M1150 735H1400 M1150 769H1400" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="1163" y="757" class="member"><tspan class="visibility">+ </tspan>name<tspan class="muted">: String</tspan></text>
+</g>
+<g><rect x="70" y="700" width="285" height="79" fill="#FFFFFF"/><rect x="70" y="700" width="285" height="35" fill="#EEF2F7"/><rect x="70" y="700" width="285" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="212.5" y="723" text-anchor="middle" class="name">Renderer</text>
+<path d="M70 735H355 M70 745H355" stroke="#334155" fill="none" stroke-width="1"/>
+<text x="83" y="767" class="member"><tspan class="visibility">+ </tspan>render(target<tspan class="muted">: Renderable): void</tspan></text>
+</g>
+<path d="M46 947H98" class="edge"/>
+<path d="M98 938V956" class="edge"/>
+<text x="110" y="951" class="legend">association</text>
+<path d="M212 947H264" class="edge"/>
+<path d="M264 938V956" class="edge"/>
+<path d="M252 941L264 947L252 953" class="edge"/>
+<text x="276" y="951" class="legend">navigable association</text>
+<path d="M433 947H485" class="edge"/>
+<path d="M485 938V956" class="edge"/>
+<polygon points="460,947 472,940.5 484,947 472,953.5" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="497" y="951" class="legend">aggregation</text>
+<path d="M602 947H654" class="edge"/>
+<path d="M654 938V956" class="edge"/>
+<polygon points="629,947 641,940.5 653,947 641,953.5" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="951" class="legend">composition</text>
+<path d="M774 947H826" class="edge"/>
+<path d="M826 938V956" class="edge"/>
+<polygon points="825,947 810,938 810,956" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="838" y="951" class="legend">generalization</text>
+<path d="M954 947H1006" class="edge dash"/>
+<path d="M1006 938V956" class="edge"/>
+<polygon points="1005,947 990,938 990,956" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="1018" y="951" class="legend">realization</text>
+<path d="M1114 947H1166" class="edge dash"/>
+<path d="M1166 938V956" class="edge"/>
+<path d="M1154 941L1166 947L1154 953" class="edge"/>
+<text x="1178" y="951" class="legend">dependency</text>
+</svg>

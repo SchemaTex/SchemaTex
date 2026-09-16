@@ -33,6 +33,10 @@ import type {
   CausalPolarity,
   CausalVariable,
 } from "./types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//"];
 
 export class CausalLoopParseError extends Error {
   constructor(
@@ -62,7 +66,7 @@ export function parseCausalLoop(text: string): CausalLoopAst {
   // ── Header ──
   let headerSeen = false;
   for (; i < lines.length; i++) {
-    const t = stripComment(lines[i] ?? "").trim();
+    const t = stripLineComment(lines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") continue;
     const h = /^(causalloop|cld)\b(.*)$/i.exec(t);
     if (h) {
@@ -86,7 +90,7 @@ export function parseCausalLoop(text: string): CausalLoopAst {
 
   // ── Body ──
   for (; i < lines.length; i++) {
-    const t = stripComment(lines[i] ?? "").trim();
+    const t = stripLineComment(lines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") continue;
     const lineNo = i + 1;
 
@@ -306,23 +310,6 @@ function stripLeadingQuoted(s: string): string | undefined {
   } catch {
     return undefined;
   }
-}
-
-function stripComment(line: string): string {
-  let i = 0;
-  while (i < line.length) {
-    const ch = line[i]!;
-    if (isOpenQuote(ch)) {
-      const end = safeQuoteEnd(line, i);
-      if (end < 0) break;
-      i = end;
-      continue;
-    }
-    if (ch === "#") return line.slice(0, i);
-    if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
-    i++;
-  }
-  return line;
 }
 
 function truncate(s: string, n: number): string {

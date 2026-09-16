@@ -51,7 +51,7 @@ function buildCanonicalSyntax(profile: GenerationProfile): string {
     `Start with \`${profile.header}\`.`,
     `Authoring mode: ${profile.mode}.`,
     "",
-    codeSection("Copyable pattern", profile.forms),
+    codeSection("Copyable pattern", copyablePattern(profile)),
     profile.keywords ? ["## Vocabulary", "", profile.keywords, ""].join("\n") : "",
     bulletSection("Rules", profile.prefer),
     bulletSection("Avoid", profile.avoid),
@@ -62,6 +62,18 @@ function buildCanonicalSyntax(profile: GenerationProfile): string {
   ]
     .filter((part) => part !== "")
     .join("\n");
+}
+
+/**
+ * The pattern has to stand on its own: a model pastes it verbatim, and without
+ * the header line the parser cannot tell which diagram it is looking at. Most
+ * families already open their forms with the header; the rest get it here
+ * rather than each profile repeating it.
+ */
+function copyablePattern(profile: GenerationProfile): readonly string[] {
+  const keyword = profile.header.trim().split(/\s+/)[0];
+  const opensWithHeader = profile.forms[0]?.trim().split(/\s+/)[0] === keyword;
+  return opensWithHeader ? profile.forms : [profile.header, ...profile.forms];
 }
 
 function bulletSection(title: string, items: readonly string[]): string {

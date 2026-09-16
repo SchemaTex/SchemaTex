@@ -1,0 +1,41 @@
+# CCTV installation showing powered cameras, recording, viewing, and storage paths.
+network "Warehouse CCTV Installation"
+  layout: tiered
+  direction: tb
+  firewall fw1 "Security Firewall" tier: edge
+  l3switch core "Security Core" tier: core
+  poeswitch poe1 "PoE Switch East" tier: access
+  poeswitch poe2 "PoE Switch West" tier: access
+  nvr nvr1 "NVR-01" ip: 192.168.50.10
+  storage nas1 "Video Storage Array" ip: 192.168.50.11
+  monitor mon1 "Guard Desk Monitor"
+  pc desk1 "Guard Workstation" ip: 192.168.50.20
+  camera cam1 "Lobby Dome" type: dome ip: 192.168.60.11
+  camera cam2 "Loading Bay Bullet" type: bullet ip: 192.168.60.12
+  camera cam3 "Yard PTZ" type: ptz ip: 192.168.60.13
+  camera cam4 "Aisle Dome" type: dome ip: 192.168.60.14
+  subnet video "192.168.60.0/24" {
+    poe1
+    poe2
+    cam1
+    cam2
+    cam3
+    cam4
+  }
+  subnet recording "192.168.50.0/24" {
+    nvr1
+    nas1
+    mon1
+    desk1
+  }
+  fw1 -- core : fiber 10G
+  core -- poe1 : trunk vlan: 60 1G
+  core -- poe2 : trunk vlan: 60 1G
+  core -- nvr1 : access vlan: 50 10G
+  nvr1 -- nas1 : fiber 10G
+  nvr1 -- mon1 : copper 1G
+  nvr1 -- desk1 : copper 1G
+  poe1 -- cam1 : poe "Cat6"
+  poe1 -- cam2 : poe "Cat6A"
+  poe2 -- cam3 : poe "Outdoor Cat6"
+  poe2 -- cam4 : poe "Cat6"

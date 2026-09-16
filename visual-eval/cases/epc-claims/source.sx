@@ -1,0 +1,25 @@
+# Scenario: an insurer's claim handling, with a coverage decision and parallel settlement tasks.
+epc "Insurance claim handling"
+  layout: tb
+  event E1 "Claim reported"
+  function F1 "Register claim"
+  event E2 "Claim registered"
+  function F2 "Assess coverage"
+  xor X1
+  event E3 "Claim covered"
+  event E4 "Claim not covered"
+  function F3 "Calculate payout"
+  function F4 "Send rejection letter"
+  event E5 "Payout approved"
+  event E6 "Claimant informed"
+  and A1
+  function F5 "Pay claimant"
+  function F6 "Release reserve"
+  and A2
+  event E7 "Claim settled"
+  E1 -> F1 -> E2 -> F2 -> X1
+  X1 -> E3 -> F3 -> E5 -> A1
+  X1 -> E4 -> F4 -> E6
+  A1 -> F5 -> A2
+  A1 -> F6 -> A2
+  A2 -> E7

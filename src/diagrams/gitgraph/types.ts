@@ -56,7 +56,7 @@ export interface GitGraphAst {
   showBranches: boolean;
   /** Draw commit ids below dots (Mermaid `showCommitLabel`, default true). */
   showCommitLabel: boolean;
-  /** Rotate commit-id labels ~45° (Mermaid `rotateCommitLabel`, default true). */
+  /** Rotate commit-id labels ~45° (Mermaid `rotateCommitLabel`, default false). */
   rotateCommitLabel: boolean;
   title?: string;
   operations: GitOperation[];
@@ -113,15 +113,12 @@ export interface GitLaidCommit {
   y: number;
   lane: number;
   colorIndex: number;
+  /** Annotation side on the cross axis: -1 above/left, +1 below/right. */
+  labelSide: -1 | 1;
 }
 
 export interface GitLaidBranch {
   info: GitBranchInfo;
-  /** Lane centre line on the cross-axis (y in LR, x in TB/BT). */
-  cross: number;
-  /** Time-axis extent of the lane line. */
-  start: number;
-  end: number;
   /** Pill anchor (the lane head). */
   pillX: number;
   pillY: number;
@@ -136,7 +133,9 @@ export interface GitLaidEdge {
   /** Colour index of the connector (child lane for elbow, merged lane for merge). */
   colorIndex: number;
   /** "straight" within a lane, "elbow" at a fork, "merge" curve into a merge node. */
-  kind: "straight" | "elbow" | "merge";
+  kind: "straight" | "elbow" | "merge" | "cherry-pick";
+  /** Routed in the declared time axis, then mapped to the output orientation. */
+  path: string;
 }
 
 export interface GitGraphLayout {
@@ -147,4 +146,7 @@ export interface GitGraphLayout {
   edges: GitLaidEdge[];
   width: number;
   height: number;
+  /** Shared annotation columns for vertical commit history. */
+  messageX?: number;
+  tagX?: number;
 }

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>E-commerce order domain — ownership, catalog and pricing</title>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<g font-family="Helvetica, Arial, sans-serif">
+
+<text x="46" y="50" font-size="20" fill="#0F172A" font-weight="600">Online store — order ownership and pricing</text>
+<text x="46" y="75" font-size="11" letter-spacing="0.6" fill="#64748B">UML 2.5.1 CLASS DIAGRAM · 7 CLASSIFIERS · 6 RELATIONSHIPS</text>
+<path d="M 46 91 H 1554" fill="none" stroke="#94A3B8" stroke-width="1.25"/>
+<rect x="46" y="141" width="1508" height="739" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.25"/>
+<path d="M 729 251 L 729 419" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="737" y="270" font-size="12" fill="#0F172A" font-weight="500">1</text>
+<text x="737" y="409" font-size="12" fill="#0F172A" font-weight="500">0..*</text>
+<text x="702" y="340" font-size="12" fill="#475569" text-anchor="end" font-style="italic">places</text>
+<path d="M 708 332 L 716 332 L 712 339 Z" fill="#475569" stroke="#475569" stroke-width="0.5"/>
+<path d="M 882 211 H 1150" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 858 211 L 870 204.5 L 882 211 L 870 217.5 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="1139" y="201" font-size="12" fill="#0F172A" font-weight="500" text-anchor="end">0..*</text>
+<text x="1004" y="231" font-size="12" fill="#475569" text-anchor="middle" font-style="italic">saves</text>
+<path d="M 729 566 L 729 706" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 729 542 L 735.5 554 L 729 566 L 722.5 554 Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="742" y="572" font-size="12" fill="#0F172A" font-weight="500">1</text>
+<text x="737" y="698" font-size="12" fill="#0F172A" font-weight="500">1..*</text>
+<text x="717" y="643" font-size="11.5" fill="#475569" text-anchor="end">contains</text>
+<path d="M 600 760 H 360" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 372 754 L 360 760 L 372 766" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="591" y="750" font-size="12" fill="#0F172A" font-weight="500" text-anchor="end">*</text>
+<text x="376" y="750" font-size="12" fill="#0F172A" font-weight="500">1</text>
+<text x="376" y="780" font-size="11.5" fill="#475569">product</text>
+<path d="M 600 470 H 360" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 372 464 L 360 470 L 372 476" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="376" y="490" font-size="11.5" fill="#475569">status</text>
+<path d="M 858 470 H 1150" fill="none" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4"/>
+<path d="M 1138 464 L 1150 470 L 1138 476" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="1004" y="457" font-size="12" fill="#475569" text-anchor="middle" font-style="italic">calculates tax with</text>
+<rect x="600" y="172" width="258" height="83" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="600.75" y="172.75" width="256.5" height="34.25" fill="#EEF2F7"/>
+<text x="729.0" y="195" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">Customer</text>
+<path d="M 600 207 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 600 241 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="613" y="228" font-size="12" fill="#64748B">+</text>
+<text x="623" y="228" font-size="12" fill="#0F172A">email<tspan fill="#475569">: String</tspan></text>
+<rect x="1150" y="172" width="240" height="83" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="1150.75" y="172.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="1270.0" y="195" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">Address</text>
+<path d="M 1150 207 H 1390" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 1150 241 H 1390" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1163" y="228" font-size="12" fill="#64748B">+</text>
+<text x="1173" y="228" font-size="12" fill="#0F172A">city<tspan fill="#475569">: String</tspan></text>
+<rect x="160" y="419" width="200" height="140" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="160.75" y="419.75" width="198.5" height="51.25" fill="#EEF2F7"/>
+<text x="260.0" y="439" font-size="11" fill="#2563EB" text-anchor="middle">«enumeration»</text>
+<text x="260.0" y="459" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">OrderStatus</text>
+<path d="M 160 471 H 360" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 160 545 H 360" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="173" y="492" font-size="12" fill="#0F172A">PENDING</text>
+<text x="173" y="512" font-size="12" fill="#0F172A">PAID</text>
+<text x="173" y="532" font-size="12" fill="#0F172A">SHIPPED</text>
+<rect x="600" y="419" width="258" height="123" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="600.75" y="419.75" width="256.5" height="34.25" fill="#EEF2F7"/>
+<text x="729.0" y="442" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">Order</text>
+<path d="M 600 454 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 600 488 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="613" y="475" font-size="12" fill="#64748B">-</text>
+<text x="623" y="475" font-size="12" fill="#0F172A">id<tspan fill="#475569">: UUID</tspan></text>
+<text x="613" y="509" font-size="12" fill="#64748B">+</text>
+<text x="623" y="509" font-size="12" fill="#0F172A">place()<tspan fill="#475569">: void</tspan></text>
+<text x="613" y="529" font-size="12" fill="#64748B">+</text>
+<text x="623" y="529" font-size="12" fill="#0F172A">total()<tspan fill="#475569">: Money</tspan></text>
+<rect x="1150" y="419" width="240" height="83" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="1150.75" y="419.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="1270.0" y="442" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">TaxPolicy</text>
+<path d="M 1150 454 H 1390" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 1150 468 H 1390" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1163" y="489" font-size="12" fill="#64748B">+</text>
+<text x="1173" y="489" font-size="12" fill="#0F172A">calculate()<tspan fill="#475569">: Money</tspan></text>
+<rect x="600" y="706" width="258" height="103" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="600.75" y="706.75" width="256.5" height="34.25" fill="#EEF2F7"/>
+<text x="729.0" y="729" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">LineItem</text>
+<path d="M 600 741 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 600 775 H 858" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="613" y="762" font-size="12" fill="#64748B">-</text>
+<text x="623" y="762" font-size="12" fill="#0F172A">quantity<tspan fill="#475569">: int</tspan></text>
+<text x="613" y="796" font-size="12" fill="#64748B">+</text>
+<text x="623" y="796" font-size="12" fill="#0F172A">subtotal()<tspan fill="#475569">: Money</tspan></text>
+<rect x="160" y="706" width="200" height="103" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="160.75" y="706.75" width="198.5" height="34.25" fill="#EEF2F7"/>
+<text x="260.0" y="729" font-size="13.5" fill="#0F172A" font-weight="600" text-anchor="middle">Product</text>
+<path d="M 160 741 H 360" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 160 795 H 360" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="173" y="762" font-size="12" fill="#64748B">+</text>
+<text x="183" y="762" font-size="12" fill="#0F172A">sku<tspan fill="#475569">: String</tspan></text>
+<text x="173" y="782" font-size="12" fill="#64748B">+</text>
+<text x="183" y="782" font-size="12" fill="#0F172A">price<tspan fill="#475569">: Money</tspan></text>
+<path d="M 46 915 H 1554" fill="none" stroke="#94A3B8" stroke-width="1.25"/>
+<path d="M 46 947 H 98" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 98 938 L 98 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="110" y="951" font-size="11.5" fill="#475569">association</text>
+<path d="M 212 947 H 264" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 252 941 L 264 947 L 252 953" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 264 938 L 264 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="276" y="951" font-size="11.5" fill="#475569">navigable association</text>
+<path d="M 433 947 H 461" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 461 947 L 473 940.5 L 485 947 L 473 953.5 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M 485 938 L 485 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="497" y="951" font-size="11.5" fill="#475569">aggregation</text>
+<path d="M 602 947 H 630" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 630 947 L 642 940.5 L 654 947 L 642 953.5 Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path d="M 654 938 L 654 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="951" font-size="11.5" fill="#475569">composition</text>
+<path d="M 774 947 H 811" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 811 938 L 826 947 L 811 956 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M 826 938 L 826 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="838" y="951" font-size="11.5" fill="#475569">generalization</text>
+<path d="M 954 947 H 991" fill="none" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4"/>
+<path d="M 991 938 L 1006 947 L 991 956 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M 1006 938 L 1006 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="1018" y="951" font-size="11.5" fill="#475569">realization</text>
+<path d="M 1113 947 H 1165" fill="none" stroke="#334155" stroke-width="1.4" stroke-dasharray="6 4"/>
+<path d="M 1153 941 L 1165 947 L 1153 953" fill="none" stroke="#334155" stroke-width="1.4"/>
+<path d="M 1165 938 L 1165 956" fill="none" stroke="#334155" stroke-width="1.4"/>
+<text x="1177" y="951" font-size="11.5" fill="#475569">dependency</text>
+</g></svg>

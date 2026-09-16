@@ -1,0 +1,28 @@
+# Dual-spine Clos fabric with every leaf uplinked to every spine and separate OOB management.
+network "DC1 Spine-Leaf Fabric"
+  layout: spine-leaf
+  spines: sp1 sp2
+  leaves: lf1 lf2 lf3 lf4
+  switch sp1 "Spine 1"
+  switch sp2 "Spine 2"
+  switch lf1 "Leaf 1"
+  switch lf2 "Leaf 2"
+  switch lf3 "Leaf 3"
+  switch lf4 "Leaf 4"
+  server srv1 "Compute 01"
+  server srv2 "Compute 02"
+  server srv3 "Compute 03"
+  server srv4 "Storage 01"
+  switch oob "OOB Management Switch"
+  router mgmt "Management Gateway"
+  lf1 -- srv1 : 25G
+  lf2 -- srv2 : 25G
+  lf3 -- srv3 : 25G
+  lf4 -- srv4 : 25G
+  mgmt -- oob : copper 1G
+  oob -- sp1 : copper "OOB"
+  oob -- sp2 : copper "OOB"
+  oob -- lf1 : copper "OOB"
+  oob -- lf2 : copper "OOB"
+  oob -- lf3 : copper "OOB"
+  oob -- lf4 : copper "OOB"

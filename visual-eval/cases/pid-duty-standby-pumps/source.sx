@@ -1,0 +1,32 @@
+pid "Duty and Standby Pump Set" [direction: LR, units: metric]
+
+equip TK-101 : tank_atm [tag: "Suction Source"]
+equip XV-101 : valve_gate [tag: "P-101 Suction Isolation"]
+equip P-101 : pump_centrifugal [tag: "Duty Pump 45 m3/h"]
+equip XV-102 : valve_gate [tag: "P-101 Discharge Isolation"]
+equip NRV-101 : valve_check [tag: "P-101 Non-return Valve"]
+equip XV-201 : valve_gate [tag: "P-102 Suction Isolation"]
+equip P-102 : pump_centrifugal [tag: "Standby Pump 45 m3/h"]
+equip XV-202 : valve_gate [tag: "P-102 Discharge Isolation"]
+equip NRV-201 : valve_check [tag: "P-102 Non-return Valve"]
+equip XV-301 : valve_gate [tag: "Minimum-flow Bypass"]
+equip TK-102 : tank_atm [tag: "Discharge Header Destination"]
+
+line suctionDuty from TK-101.right to XV-101.in [type: process, size: "DN100", service: "pump suction"]
+line dutyIn from XV-101.out to P-101.in [type: process, size: "DN100", service: "pump suction"]
+line dutyOut from P-101.out to XV-102.in [type: process, size: "DN80", service: "pump discharge"]
+line dutyCheck from XV-102.out to NRV-101.in [type: process, size: "DN80", service: "pump discharge"]
+line dutyHeader from NRV-101.out to TK-102.left [type: process, size: "DN80", service: "discharge header"]
+
+line suctionStandby from TK-101.bottom to XV-201.in [type: process, size: "DN100", service: "pump suction"]
+line standbyIn from XV-201.out to P-102.in [type: process, size: "DN100", service: "pump suction"]
+line standbyOut from P-102.out to XV-202.in [type: process, size: "DN80", service: "pump discharge"]
+line standbyCheck from XV-202.out to NRV-201.in [type: process, size: "DN80", service: "pump discharge"]
+line standbyHeader from NRV-201.out to TK-102.top [type: process, size: "DN80", service: "discharge header"]
+
+line bypassTakeoff from NRV-101.out to XV-301.in [type: process_minor, size: "DN25", service: "minimum flow bypass"]
+line bypassReturn from XV-301.out to TK-101.top [type: process_minor, size: "DN25", service: "minimum flow bypass"]
+
+inst PI-101 : field_discrete
+  measures TK-102
+line pressureTap from TK-102.left to PI-101 [type: capillary]

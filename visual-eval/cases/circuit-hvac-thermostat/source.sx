@@ -1,0 +1,10 @@
+circuit "24 V HVAC Thermostat Control" netlist
+V1 PRIMARY_L PRIMARY_N type=ac_source value="120 V AC, 60 Hz" label="V1 CONTROL SUPPLY"
+T1 PRIMARY_L PRIMARY_N R C type=transformer value="120 V : 24 V AC, 40 VA" label="T1 CONTROL TRANSFORMER"
+U1 R W Y G C type=generic_ic pins="R,W,Y,G,C" value="24 V AC, Class 2" label="U1 THERMOSTAT"
+K1 W C type=relay_coil value="24 V AC, 0.2 A" label="K1 FURNACE HEAT RELAY"
+K2 G C type=relay_coil value="24 V AC, 0.2 A" label="K2 FURNACE FAN RELAY"
+K3 Y C type=contactor value="24 V AC coil, 30 A contacts" label="K3 COMPRESSOR CONTACTOR"
+U2 Y C type=generic_ic pins="Y,C" value="24 V AC control, 3 ton" label="U2 CONDENSER UNIT"
+U3 W G C type=generic_ic pins="W,G,C" value="24 V AC control, 80 kBtu/h" label="U3 FURNACE"
+W1 C GND type=wire value="18 AWG common return" label="W1 24 V COMMON"

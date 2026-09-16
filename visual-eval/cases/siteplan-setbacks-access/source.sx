@@ -1,0 +1,17 @@
+siteplan "Parcel Setbacks and Access" unit m
+parcel lot points 0,0 30,0 30,40 0,40
+road street "Street" from -5,45 to 35,45 width 6
+setback rear "Rear setback 6 m" from 5,6 to 25,6
+setback front "Front setback 8 m" from 5,32 to 25,32
+setback west "West setback 5 m" from 5,6 to 5,32
+setback east "East setback 5 m" from 25,6 to 25,32
+structure building "Building" points 8,10 22,10 22,28 8,28
+driveway drive "Driveway" points 20,45 20,28 width 3
+walkway walk "Pedestrian path" points 11,45 11,28 width 1.2
+entry entrance at 11,28 size 0.8
+callout "Entrance" at 2,24 to 11,28
+dim "30 m parcel width" from 0,0 to 30,0
+dim "40 m parcel depth" from 0,0 to 0,40
+north
+scale 5
+legend on

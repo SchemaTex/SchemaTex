@@ -1,0 +1,17 @@
+# Assumptions: two core routers and two diverse backbone links are independent; access aggregation is common.
+# Service succeeds when one router and one backbone path remain available.
+rbd "Telecom core network"
+  series {
+    block AGG "Access aggregation switch" R=0.995
+    parallel {
+      series {
+        block CORE_A "Core router A" R=0.999
+        block FIBRE_A "Backbone fibre path A" R=0.997
+      }
+      series {
+        block CORE_B "Core router B" R=0.999
+        block FIBRE_B "Backbone fibre path B" R=0.997
+      }
+    }
+    block PEER "Internet peering edge" R=0.998
+  }

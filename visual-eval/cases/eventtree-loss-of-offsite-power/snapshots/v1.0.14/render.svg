@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="740" height="294" viewBox="0 0 740 294" role="img" aria-label="Event tree" data-diagram-type="eventtree"><title>Event tree</title>
+<desc>Event tree for &quot;Loss of offsite power&quot; (f₀ = 0.05): 2 functions, 3 sequences. Essential power restored by generator: 0.0485. Essential DC power maintained by battery: 0.00147. Loss of essential AC and DC power: 3.000e-5. Dominant sequence: &quot;Essential power restored by generator&quot; [1s] at 0.0485. Line 4: unrecognised line: &quot;eventtree &quot;Loss of offsite power&quot;&quot;</desc>
+<style>.sx-et-bg { fill: #ffffff; }
+.sx-et-title { fill: #334155; font-size: 16px; font-weight: 700; }
+.sx-et-header { fill: #334155; font-size: 12px; font-weight: 700; }
+.sx-et-grid { fill: none; stroke: #475569; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+.sx-et-headrule { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-et-ie { fill: none; stroke: #1e293b; stroke-width: 3; }
+.sx-et-ie-label { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-et-ie-freq { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-et-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-et-edge[data-leg="s"] {}
+.sx-et-leg-label { fill: #334155; font-size: 9px; }
+.sx-et-leg-prob { fill: #2563eb; font-size: 9px; }
+.sx-et-outcome { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-et-freq { fill: #2563eb; font-size: 10px; font-weight: 600; }
+.sx-et-seqid { fill: #334155; font-size: 9px; opacity: 0.7; }
+.sx-et-dot { fill: #334155; stroke: none; }
+.sx-et-edge[data-dominant="true"] { stroke: #dc2626; stroke-width: 3; }
+.sx-et-outcome[data-dominant="true"] { fill: #b91c1c; }
+.sx-et-freq[data-dominant="true"] { fill: #b91c1c; font-weight: 700; }
+.sx-et-dot[data-dominant="true"] { fill: #b91c1c; }</style>
+<rect x="0" y="0" width="740" height="294" class="sx-et-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="60" y="46" class="sx-et-header" text-anchor="middle" data-col="initiating">Initiating Event</text>
+<text x="242" y="46" class="sx-et-header" text-anchor="middle" data-col="function">Emergency diesel generator starts and loads</text>
+<text x="392" y="46" class="sx-et-header" text-anchor="middle" data-col="function">Station battery supports essential DC loads</text>
+<text x="508.8" y="46" class="sx-et-header" text-anchor="middle" data-col="outcome">Outcome</text>
+<text x="628.8" y="46" class="sx-et-header" text-anchor="middle" data-col="frequency">Frequency</text>
+<line x1="28" y1="52" x2="672" y2="52" class="sx-et-headrule"/>
+<line x1="242" y1="58" x2="242" y2="226" class="sx-et-grid"/>
+<line x1="392" y1="58" x2="392" y2="226" class="sx-et-grid"/>
+<g class="sx-et-ie-g" data-id="LOOP"><line x1="28" y1="142" x2="92" y2="142" class="sx-et-ie"/>
+<text x="28" y="132" class="sx-et-ie-label">Loss of offsite power</text>
+<text x="28" y="158" class="sx-et-ie-freq">f₀ = 0.05</text></g>
+<path d="M 92 142 L 242 142 L 242 86" class="sx-et-edge" data-leg="s" data-fn="EDG" data-tag="1s"/>
+<text x="167" y="79" class="sx-et-leg-label" text-anchor="middle">Success (1s)</text>
+<text x="167" y="90" class="sx-et-leg-prob" text-anchor="middle">0.97</text>
+<path d="M 92 142 L 242 142 L 242 170" class="sx-et-edge" data-leg="f" data-fn="EDG" data-tag="1f"/>
+<text x="167" y="163" class="sx-et-leg-label" text-anchor="middle">Failure (1f)</text>
+<text x="167" y="174" class="sx-et-leg-prob" text-anchor="middle">0.03</text>
+<path d="M 242 170 L 392 170 L 392 142" class="sx-et-edge" data-leg="s" data-fn="BAT" data-tag="2s"/>
+<text x="317" y="135" class="sx-et-leg-label" text-anchor="middle">Success (2s)</text>
+<text x="317" y="146" class="sx-et-leg-prob" text-anchor="middle">0.98</text>
+<path d="M 242 170 L 392 170 L 392 198" class="sx-et-edge" data-leg="f" data-fn="BAT" data-tag="2f"/>
+<text x="317" y="191" class="sx-et-leg-label" text-anchor="middle">Failure (2f)</text>
+<text x="317" y="202" class="sx-et-leg-prob" text-anchor="middle">0.02</text>
+<path d="M 242 86 L 432 86" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 392 142 L 432 142" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 392 198 L 432 198" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<g class="sx-et-leaf-g" data-seq="1" data-outcome="Essential power restored by generator" data-frequency="0.0485" data-designator="1s" data-dominant="true"><circle cx="432" cy="86" r="3" class="sx-et-dot" data-dominant="true"/>
+<text x="442" y="82" class="sx-et-outcome" data-dominant="true">Essential power restored by g…</text>
+<text x="442" y="98" class="sx-et-freq" data-dominant="true">0.0485  ·  1s</text></g>
+<g class="sx-et-leaf-g" data-seq="2" data-outcome="Essential DC power maintained by battery" data-frequency="0.00147" data-designator="1f 2s"><circle cx="432" cy="142" r="3" class="sx-et-dot"/>
+<text x="442" y="138" class="sx-et-outcome">Essential DC power maintained…</text>
+<text x="442" y="154" class="sx-et-freq">0.00147  ·  1f 2s</text></g>
+<g class="sx-et-leaf-g" data-seq="3" data-outcome="Loss of essential AC and DC power" data-frequency="0.00003" data-designator="1f 2f"><circle cx="432" cy="198" r="3" class="sx-et-dot"/>
+<text x="442" y="194" class="sx-et-outcome">Loss of essential AC and DC p…</text>
+<text x="442" y="210" class="sx-et-freq">3.000e-5  ·  1f 2f</text></g></g></svg>

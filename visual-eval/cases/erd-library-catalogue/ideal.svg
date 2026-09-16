@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="1305" viewBox="0 0 1056 870" role="img" aria-labelledby="diagram-title">
+<title id="diagram-title">Library lending schema — members, loans, copies, titles, authors, and reservations</title>
+<desc>Seven entities and seven relationships in crow's-foot notation. A member borrows zero or many loans, a copy appears in zero or many loans, and a title has one or many copies. Members and titles each have zero or many reservations. Authors contribute to zero or many title-author records, and titles credit one or many title-author records.</desc>
+<style>
+text { font-family: Arial, Helvetica, sans-serif; fill:#0f172a; }
+.structure { fill:none; stroke:#334155; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.caption { font-size:10.5px; fill:#475569; paint-order:stroke; stroke:white; stroke-width:4; stroke-linejoin:round; }
+.type { font-size:12px; fill:#475569; }
+.field { font-size:12px; }
+.key { font-weight:600; text-decoration:underline; }
+.tag { font-size:10px; font-weight:700; fill:white; }
+</style>
+<rect width="1056" height="870" fill="white"/>
+<text x="44" y="43" font-size="20" font-weight="600">Library lending schema — catalogue to loans</text>
+<text x="44" y="65" font-size="10.5" fill="#475569" style="fill:#475569;letter-spacing:.15px">CROW'S FOOT (IE) NOTATION · 7 TABLES · 7 RELATIONSHIPS</text>
+<path d="M44 76H1012" stroke="#94a3b8" stroke-width="1"/>
+
+<path class="structure" d="M300 168H400"/>
+<path class="structure" d="M311 161.5L311 174.5"/>
+<path class="structure" d="M400 175L388 168L400 161M400 168L388 168"/>
+<circle cx="377" cy="168" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="350" y="158" text-anchor="middle">borrows</text>
+<path class="structure" d="M656 193H756"/>
+<path class="structure" d="M745 199.5L745 186.5"/>
+<path class="structure" d="M656 186L668 193L656 200M656 193L668 193"/>
+<circle cx="679" cy="193" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="706" y="183" text-anchor="middle">is_loaned_on</text>
+<path class="structure" d="M884 242V350"/>
+<path class="structure" d="M891 242L884 254L877 242M884 242L884 254"/>
+<path class="structure" d="M890.5 265L877.5 265"/>
+<path class="structure" d="M877.5 339L890.5 339"/>
+<text class="caption" x="895" y="299" text-anchor="start">has</text>
+<path class="structure" d="M128 217V350"/>
+<path class="structure" d="M134.5 228L121.5 228"/>
+<path class="structure" d="M121 350L128 338L135 350M128 350L128 338"/>
+<circle cx="128" cy="327" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="139" y="286" text-anchor="start">makes</text>
+<path class="structure" d="M300 419H756"/>
+<path class="structure" d="M300 412L312 419L300 426M300 419L312 419"/>
+<circle cx="323" cy="419" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M745 425.5L745 412.5"/>
+<text class="caption" x="528" y="409" text-anchor="middle">is_reserved_for</text>
+<path class="structure" d="M884 467V650H656"/>
+<path class="structure" d="M890.5 478L877.5 478"/>
+<path class="structure" d="M656 643L668 650L656 657M656 650L668 650"/>
+<path class="structure" d="M679 643.5L679 656.5"/>
+<text class="caption" x="770" y="640" text-anchor="middle">credits</text>
+<path class="structure" d="M300 650H400"/>
+<path class="structure" d="M311 643.5L311 656.5"/>
+<path class="structure" d="M400 657L388 650L400 643M400 650L388 650"/>
+<circle cx="377" cy="650" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="350" y="640" text-anchor="middle">contributes</text>
+<g aria-label="MEMBER"><rect x="44" y="100" width="256" height="117" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="172.0" y="121" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">MEMBER</text>
+<path class="structure" d="M44 132H300"/>
+<text x="56" y="154" class="field key">member_id</text>
+<text x="258" y="154" text-anchor="end" class="type">int</text>
+<rect x="266" y="143" width="22" height="15" rx="3" fill="#2563eb"/><text x="277" y="154" class="tag" text-anchor="middle">PK</text>
+<path d="M44 163H300" stroke="#94a3b8" stroke-width="1"/>
+<text x="56" y="179" class="field">name</text>
+<text x="258" y="179" text-anchor="end" class="type">string</text>
+<path d="M56 188H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="204" class="field">email</text>
+<text x="258" y="204" text-anchor="end" class="type">string</text>
+</g>
+<g aria-label="LOAN"><rect x="400" y="100" width="256" height="142" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="528.0" y="121" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">LOAN</text>
+<path class="structure" d="M400 132H656"/>
+<text x="412" y="154" class="field key">loan_id</text>
+<text x="614" y="154" text-anchor="end" class="type">int</text>
+<rect x="622" y="143" width="22" height="15" rx="3" fill="#2563eb"/><text x="633" y="154" class="tag" text-anchor="middle">PK</text>
+<path d="M400 163H656" stroke="#94a3b8" stroke-width="1"/>
+<text x="412" y="179" class="field">member_id</text>
+<text x="614" y="179" text-anchor="end" class="type">int</text>
+<rect x="622" y="168" width="22" height="15" rx="3" fill="#d97706"/><text x="633" y="179" class="tag" text-anchor="middle">FK</text>
+<path d="M412 188H644" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="204" class="field">copy_id</text>
+<text x="614" y="204" text-anchor="end" class="type">int</text>
+<rect x="622" y="193" width="22" height="15" rx="3" fill="#d97706"/><text x="633" y="204" class="tag" text-anchor="middle">FK</text>
+<path d="M412 213H644" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="229" class="field">due_date</text>
+<text x="614" y="229" text-anchor="end" class="type">date</text>
+</g>
+<g aria-label="COPY"><rect x="756" y="100" width="256" height="142" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="884.0" y="121" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">COPY</text>
+<path class="structure" d="M756 132H1012"/>
+<text x="768" y="154" class="field key">copy_id</text>
+<text x="970" y="154" text-anchor="end" class="type">int</text>
+<rect x="978" y="143" width="22" height="15" rx="3" fill="#2563eb"/><text x="989" y="154" class="tag" text-anchor="middle">PK</text>
+<path d="M756 163H1012" stroke="#94a3b8" stroke-width="1"/>
+<text x="768" y="179" class="field">title_id</text>
+<text x="970" y="179" text-anchor="end" class="type">int</text>
+<rect x="978" y="168" width="22" height="15" rx="3" fill="#d97706"/><text x="989" y="179" class="tag" text-anchor="middle">FK</text>
+<path d="M768 188H1000" stroke="#f1f5f9" stroke-width="1"/>
+<text x="768" y="204" class="field">barcode</text>
+<text x="970" y="204" text-anchor="end" class="type">string</text>
+<path d="M768 213H1000" stroke="#f1f5f9" stroke-width="1"/>
+<text x="768" y="229" class="field">condition</text>
+<text x="970" y="229" text-anchor="end" class="type">string</text>
+</g>
+<g aria-label="RESERVATION"><rect x="44" y="350" width="256" height="142" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="172.0" y="371" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">RESERVATION</text>
+<path class="structure" d="M44 382H300"/>
+<text x="56" y="404" class="field key">reservation_id</text>
+<text x="258" y="404" text-anchor="end" class="type">int</text>
+<rect x="266" y="393" width="22" height="15" rx="3" fill="#2563eb"/><text x="277" y="404" class="tag" text-anchor="middle">PK</text>
+<path d="M44 413H300" stroke="#94a3b8" stroke-width="1"/>
+<text x="56" y="429" class="field">member_id</text>
+<text x="258" y="429" text-anchor="end" class="type">int</text>
+<rect x="266" y="418" width="22" height="15" rx="3" fill="#d97706"/><text x="277" y="429" class="tag" text-anchor="middle">FK</text>
+<path d="M56 438H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="454" class="field">title_id</text>
+<text x="258" y="454" text-anchor="end" class="type">int</text>
+<rect x="266" y="443" width="22" height="15" rx="3" fill="#d97706"/><text x="277" y="454" class="tag" text-anchor="middle">FK</text>
+<path d="M56 463H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="479" class="field">requested_at</text>
+<text x="258" y="479" text-anchor="end" class="type">date</text>
+</g>
+<g aria-label="TITLE"><rect x="756" y="350" width="256" height="117" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="884.0" y="371" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">TITLE</text>
+<path class="structure" d="M756 382H1012"/>
+<text x="768" y="404" class="field key">title_id</text>
+<text x="970" y="404" text-anchor="end" class="type">int</text>
+<rect x="978" y="393" width="22" height="15" rx="3" fill="#2563eb"/><text x="989" y="404" class="tag" text-anchor="middle">PK</text>
+<path d="M756 413H1012" stroke="#94a3b8" stroke-width="1"/>
+<text x="768" y="429" class="field">isbn</text>
+<text x="970" y="429" text-anchor="end" class="type">string</text>
+<path d="M768 438H1000" stroke="#f1f5f9" stroke-width="1"/>
+<text x="768" y="454" class="field">title</text>
+<text x="970" y="454" text-anchor="end" class="type">string</text>
+</g>
+<g aria-label="AUTHOR"><rect x="44" y="600" width="256" height="92" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="172.0" y="621" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">AUTHOR</text>
+<path class="structure" d="M44 632H300"/>
+<text x="56" y="654" class="field key">author_id</text>
+<text x="258" y="654" text-anchor="end" class="type">int</text>
+<rect x="266" y="643" width="22" height="15" rx="3" fill="#2563eb"/><text x="277" y="654" class="tag" text-anchor="middle">PK</text>
+<path d="M44 663H300" stroke="#94a3b8" stroke-width="1"/>
+<text x="56" y="679" class="field">name</text>
+<text x="258" y="679" text-anchor="end" class="type">string</text>
+</g>
+<g aria-label="TITLE_AUTHOR"><rect x="400" y="600" width="256" height="92" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="528.0" y="621" text-anchor="middle" font-size="13" font-weight="600" letter-spacing=".35">TITLE_AUTHOR</text>
+<path class="structure" d="M400 632H656"/>
+<text x="412" y="654" class="field key">title_id</text>
+<text x="614" y="654" text-anchor="end" class="type">int</text>
+<rect x="622" y="643" width="22" height="15" rx="3" fill="#2563eb"/><text x="633" y="654" class="tag" text-anchor="middle">PK</text>
+<path d="M412 663H644" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="679" class="field key">author_id</text>
+<text x="614" y="679" text-anchor="end" class="type">int</text>
+<rect x="622" y="668" width="22" height="15" rx="3" fill="#2563eb"/><text x="633" y="679" class="tag" text-anchor="middle">PK</text>
+</g>
+<rect x="796" y="716" width="216" height="110" rx="4" fill="white" stroke="#94a3b8" stroke-width="1"/><text x="810" y="737" font-size="10.5" font-weight="600" style="fill:#475569;letter-spacing:.4px">CARDINALITY</text>
+<path class="structure" d="M855 748V820"/>
+<path class="structure" d="M810 756H855"/>
+<path class="structure" d="M844 762.5L844 749.5"/>
+<text class="caption" x="867" y="759.5" text-anchor="start">exactly one</text>
+<path class="structure" d="M810 774H855"/>
+<circle cx="844" cy="774" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="867" y="777.5" text-anchor="start">zero or one</text>
+<path class="structure" d="M810 792H855"/>
+<path class="structure" d="M855 799L843 792L855 785M855 792L843 792"/>
+<path class="structure" d="M832 798.5L832 785.5"/>
+<text class="caption" x="867" y="795.5" text-anchor="start">one or many</text>
+<path class="structure" d="M810 810H855"/>
+<path class="structure" d="M855 817L843 810L855 803M855 810L843 810"/>
+<circle cx="832" cy="810" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="867" y="813.5" text-anchor="start">zero or many</text>
+</svg>

@@ -1,0 +1,27 @@
+# Online bookstore: what shoppers, members, the payment provider and warehouse staff do with the store.
+usecase
+title: "Online Bookstore"
+system: "Bookstore System"
+actor: Customer
+actor: Member
+actor: "Payment Provider" as PP (external)
+actor: "Warehouse Staff" as WH
+usecase: "Browse Catalog" as Browse
+usecase: "Check Out" as Checkout {
+  extension point: discount code
+}
+usecase: "Apply Discount Code" as Discount
+usecase: "Track Order" as Track
+usecase: "Process Payment" as Pay
+usecase: "Sign In" as SignIn
+usecase: "Ship Order" as Ship
+Member --|> Customer
+Customer -- Browse
+Customer -- Checkout
+Member -- Track
+Checkout ..> Pay : «include»
+Checkout ..> SignIn : «include»
+Track ..> SignIn : «include»
+Discount ..> Checkout : «extend» [code entered] (extension point: discount code)
+Pay -- PP
+Ship -- WH

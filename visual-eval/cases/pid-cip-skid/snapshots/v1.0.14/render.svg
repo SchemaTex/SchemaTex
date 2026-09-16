@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="716.6" height="515" viewBox="0 0 716.6 515" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Clean-in-Place Skid</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="358.3" y="22" class="lt-pid-title" text-anchor="middle">Clean-in-Place Skid</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="causticSuction"><path d="M 115 174 L 115 273 L 253 273" class="lt-pid-process lt-pid-line-path" data-line-id="causticSuction" data-service="caustic"/></g>
+<g class="lt-pid-line" data-id="causticToPump"><path d="M 289 273 L 353 273 L 353 345 L 417 345" class="lt-pid-process lt-pid-line-path" data-line-id="causticToPump" data-service="caustic"/></g>
+<g class="lt-pid-line" data-id="rinseSuction"><path d="M 115 318 L 115 417 L 253 417" class="lt-pid-process lt-pid-line-path" data-line-id="rinseSuction" data-service="rinse water"/></g>
+<g class="lt-pid-line" data-id="rinseToPump"><path d="M 289 417 L 353 417 L 353 345 L 417 345" class="lt-pid-process lt-pid-line-path" data-line-id="rinseToPump" data-service="rinse water"/></g>
+<g class="lt-pid-line" data-id="supplyDischarge"><path d="M 475 323 L 533.5 323 L 533.5 285 L 592 285" class="lt-pid-process lt-pid-line-path" data-line-id="supplyDischarge" data-service="cip supply"/></g>
+<g class="lt-pid-line" data-id="returnToPump"><path d="M 133 429 L 187 429 L 187 129 L 241 129" class="lt-pid-process lt-pid-line-path" data-line-id="returnToPump" data-service="cip return"/></g>
+<g class="lt-pid-line" data-id="returnToTank"><path d="M 299 107 L 340.5 107 L 340.5 201 L 382 201" class="lt-pid-process lt-pid-line-path" data-line-id="returnToTank" data-service="cip return"/></g></g>
+<g class="lt-pid-junctions"><circle cx="417" cy="345" r="3.6" class="lt-pid-junction"/></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="TK-501" data-type="tank_atm" transform="translate(115 129)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">TK-501 Caustic Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-502" data-type="tank_atm" transform="translate(115 273)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">TK-502 Rinse Water Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="DV-502" data-type="valve_control" transform="translate(115 417)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="solenoid" data-fail="FC"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<rect x="-12" y="-30" width="24" height="22" class="lt-pid-equip"/>
+<text x="0" y="-15" text-anchor="middle" class="lt-pid-actuator-letter">S</text>
+<line x1="0" y1="-34" x2="0" y2="-30" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FC</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">DV-502 Return Diverter</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-502" data-type="pump_centrifugal" transform="translate(271 129)"><g><line x1="-30" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<polygon points="8.8,-19.8 28,-19.8 8.8,0" class="lt-pid-equip"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">P-502 CIP Return Pump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-501" data-type="valve_gate" transform="translate(271 273)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">XV-501 Caustic Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-502" data-type="valve_gate" transform="translate(271 417)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">XV-502 Rinse Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-503" data-type="vessel_h" transform="translate(447 201)"><g><path d="M -51 -35
+              L 51 -35
+              A 14 35 0 0 1 51 35
+              L -51 35
+              A 14 35 0 0 1 -51 -35
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">TK-503 CIP Return Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-501" data-type="pump_centrifugal" transform="translate(447 345)"><g><line x1="-30" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<polygon points="8.8,-19.8 28,-19.8 8.8,0" class="lt-pid-equip"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">P-501 CIP Supply Pump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="DV-501" data-type="valve_control" transform="translate(610 273)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="solenoid" data-fail="FC"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<rect x="-12" y="-30" width="24" height="22" class="lt-pid-equip"/>
+<text x="0" y="-15" text-anchor="middle" class="lt-pid-actuator-letter">S</text>
+<line x1="0" y1="-34" x2="0" y2="-30" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FC</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">DV-501 Supply Diverter</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="conductivitySignal"><path d="M 447 437 L 528.5 437 L 528.5 70 L 610 70" class="lt-pid-electric lt-pid-line-path" data-line-id="conductivitySignal" data-service=""/></g>
+<g class="lt-pid-line" data-id="temperatureSignal"><path d="M 487 437 L 568.5 437 L 568.5 70 L 650 70" class="lt-pid-electric lt-pid-line-path" data-line-id="temperatureSignal" data-service=""/></g>
+<g class="lt-pid-line" data-id="supplyDiverterCommand"><path d="M 610 70 L 610 70 L 610 239" class="lt-pid-electric lt-pid-line-path" data-line-id="supplyDiverterCommand" data-service=""/></g>
+<g class="lt-pid-line" data-id="returnDiverterCommand"><path d="M 650 70 L 115 70 L 115 383" class="lt-pid-electric lt-pid-line-path" data-line-id="returnDiverterCommand" data-service=""/></g>
+<g><path d="M 447 437 L 447 383 L 447 383 L 447 375" class="lt-pid-electric"/></g>
+<g><path d="M 610 84 L 610 84 L 610 235" class="lt-pid-pneumatic"/></g>
+<g><path d="M 487 437 L 487 383 L 447 383 L 447 375" class="lt-pid-electric"/></g>
+<g><path d="M 650 84 L 610 84 L 610 235" class="lt-pid-pneumatic"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="AT-501" data-category="field_discrete" transform="translate(447 437)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">AT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">501</text></g></g>
+<g class="lt-inst" data-tag="AIC-501" data-category="cr_shared" transform="translate(610 70)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<polygon points="7.347880794884119e-16,-12 10.392304845413264,-6 10.392304845413264,5.999999999999998 7.347880794884119e-16,12 -10.392304845413262,6.0000000000000036 -10.392304845413268,-5.999999999999993" class="lt-inst-body" fill="none"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">AIC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">501</text></g></g>
+<g class="lt-inst" data-tag="TT-501" data-category="field_discrete" transform="translate(487 437)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">501</text></g></g>
+<g class="lt-inst" data-tag="TIC-501" data-category="cr_shared" transform="translate(650 70)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<polygon points="7.347880794884119e-16,-12 10.392304845413264,-6 10.392304845413264,5.999999999999998 7.347880794884119e-16,12 -10.392304845413262,6.0000000000000036 -10.392304845413268,-5.999999999999993" class="lt-inst-body" fill="none"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TIC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">501</text></g></g></g></svg>

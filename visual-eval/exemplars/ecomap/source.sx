@@ -1,0 +1,27 @@
+# Social-work ecomap: two-parent household raising a child with additional needs.
+# Center is a mini-genogram of the household (Hartman 1978 family-center form).
+ecomap "The Okafor Household"
+  center: family [label: "Okafor Household"]
+      daniel [male, 1986]
+      amara [female, 1988]
+      daniel -- amara
+        chidi [male, 2016]
+        zora [female, 2020]
+  grandparents [label: "Grandparents", category: family, importance: major]
+  school [label: "School", category: education]
+  pediatrics [label: "Developmental Pediatrics", category: health]
+  therapy [label: "Speech + OT Therapy", category: health]
+  employer [label: "Amara's Employer", category: work]
+  benefits [label: "Disability Benefits", category: government]
+  housing [label: "Housing Authority", category: government]
+  church [label: "Parish Community", category: community]
+  parentgroup [label: "Parent Support Group", category: community]
+  family === grandparents [label: "childcare 3 days a week"]
+  family --- school [label: "IEP + classroom aide"]
+  pediatrics <-> family [label: "shared care plan"]
+  therapy --> family [label: "twice weekly, in home"]
+  family - - employer [label: "shifts cut, no leave"]
+  family ~~~ benefits [label: "appeal pending 6 months"]
+  family ~~~ housing [label: "waitlist, unit unsafe"]
+  family == church [label: "meals, respite care"]
+  family == parentgroup [label: "monthly meet-up"]

@@ -83,12 +83,15 @@ network "Home"
 
 Pick the kind that matches the box; the icon follows the Cisco-convention silhouette.
 
-- **Infrastructure** — `router`, `switch`, `l3switch`, `firewall`, `loadbalancer`, `ap`, `wlc`, `gateway`, `modem`, `ids`, `proxy`, `vpngw`
-- **Endpoints** — `server`, `serverfarm` (`count: n`), `pc`, `laptop`, `mobile`, `ipphone`, `printer`, `storage`
-- **CCTV / security** — `camera` (with `type: fixed | bullet | dome | ptz | turret`), `nvr`, `dvr`, `poeswitch`, `encoder`, `monitor`
+- **Infrastructure** — `router`, `switch`, `l3switch`, `firewall`, `loadbalancer`, `ap`, `wlc`, `gateway`, `modem`, `ids`, `proxy`, `vpngw`, `wireless-bridge`, `cellular-router`, `satellite-terminal`, `olt`, `ont`, `pbx`, `media-converter`, `patch-panel`
+- **Endpoints** — `server`, `serverfarm` (`count: n`), `pc`, `laptop`, `mobile`, `ipphone`, `printer`, `storage`, `database`, `hypervisor`, `nas`, `san`, `container`, `tablet`, `display`, `pos-terminal`
+- **CCTV / security** — `camera` (with `type: fixed | bullet | dome | ptz | turret`), `nvr`, `dvr`, `poeswitch`, `encoder`, `monitor`, `access-control`
+- **Industrial / IoT** — `iot-sensor`, `plc`, `ups`, `hmi`
 - **Clouds** — `internet`, `wan`, `pstn`, `cloud`, plus `lan` (a bus bar)
 
-Aliases are accepted: `multilayer`→`l3switch`, `workstation`→`pc`, `wifi`→`ap`, `nas`/`san`→`storage`, `voip`→`ipphone`.
+`nas` (desktop storage enclosure) and `san` (connected storage arrays) are independent kinds with their own icons. `storage` remains the generic storage kind.
+
+Aliases are accepted: `multilayer`→`l3switch`, `workstation`→`pc`, `wifi`→`ap`, `db`/`dbserver`→`database`, `voip`→`ipphone`.
 
 ```
 camera cam1 type: dome ip: 192.168.20.11

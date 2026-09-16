@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1120" width="1600" height="1120">
+<title>Three-Phase Distribution Board — 400/230 V TN-S</title>
+<defs>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#172630;font-size:18px} .title{font-size:32px;font-weight:700}.sub{font-size:19px;fill:#52606a}.head{font-size:20px;font-weight:700}.small{font-size:15px}.wire{fill:none;stroke:#24343d;stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter}.neutral{fill:none;stroke:#2475aa;stroke-width:3}.earth{fill:none;stroke:#398153;stroke-width:3}.box{fill:white;stroke:#24343d;stroke-width:2}.ntext{fill:#2475aa}.petext{fill:#398153}.dot{fill:#24343d}
+</style>
+</defs>
+<rect width="1600" height="1120" fill="white"/>
+<text x="55" y="57" class="title">Three-Phase Distribution Board</text>
+<text x="55" y="89" class="sub">400/230 V · TN-S · 63 A three-pole incomer · Four RCBO final circuits</text>
+<path d="M55 111H1545" stroke="#cbd2d6"/>
+<!-- Three source symbols. The left terminal of each source is the common N. -->
+<path d="M70 190V1015" class="neutral"/>
+<text x="59" y="171" class="head ntext">N</text>
+<g class="wire">
+<path d="M70 220H139 M201 220H320 M70 330H139 M201 330H320 M70 440H139 M201 440H320"/>
+<circle cx="170" cy="220" r="31" fill="white"/><circle cx="170" cy="330" r="31" fill="white"/><circle cx="170" cy="440" r="31" fill="white"/>
+<path d="M149 220C156 198 163 198 170 220S184 242 191 220 M149 330C156 308 163 308 170 330S184 352 191 330 M149 440C156 418 163 418 170 440S184 462 191 440"/>
+</g>
+<g text-anchor="middle"><text x="176" y="163" class="head">V1 · SUPPLY L1</text><text x="176" y="184" class="small">230 V AC L1-N</text><text x="176" y="273" class="head">V2 · SUPPLY L2</text><text x="176" y="294" class="small">230 V AC L2-N</text><text x="176" y="383" class="head">V3 · SUPPLY L3</text><text x="176" y="404" class="small">230 V AC L3-N</text></g>
+<!-- Grouped mechanically linked disconnect switch poles -->
+<rect x="320" y="155" width="245" height="338" rx="4" fill="#f7f9fa" stroke="#24343d" stroke-width="2"/>
+<text x="442" y="133" class="head" text-anchor="middle">QF1 · MAIN · 63 A, 3-pole</text>
+<path d="M426 201V421" stroke="#74818a" stroke-width="1.5" stroke-dasharray="6 5"/>
+<g class="wire"><path d="M320 220H390 M396 216L449 190 M460 220H630 M320 330H390 M396 326L449 300 M460 330H680 M320 440H390 M396 436L449 410 M460 440H730"/>
+<circle cx="394" cy="220" r="4" fill="white"/><circle cx="456" cy="220" r="4" fill="white"/><circle cx="394" cy="330" r="4" fill="white"/><circle cx="456" cy="330" r="4" fill="white"/><circle cx="394" cy="440" r="4" fill="white"/><circle cx="456" cy="440" r="4" fill="white"/>
+</g>
+<text x="337" y="182" class="small">S1 · QF1 MAIN L1</text><text x="337" y="292" class="small">S2 · QF1 MAIN L2</text><text x="337" y="402" class="small">S3 · QF1 MAIN L3</text>
+<text x="337" y="479" class="small">Dashed link: common operation</text>
+<!-- Phase distribution rails: B3 ends at RCBO3; B2 at RCBO2; B1 supplies RCBO1 and RCBO4. -->
+<path d="M630 220V895H800 M630 280H800 M680 330V485H800 M730 440V690H800" class="wire"/>
+<text x="599" y="198" class="head">B1 / L1</text><text x="648" y="309" class="head">B2 / L2</text><text x="699" y="419" class="head">B3 / L3</text>
+<circle cx="630" cy="280" r="5" class="dot"/>
+<!-- Shared neutral and protective earth, independent throughout -->
+<path d="M780 245V1015 M70 1015H1430 M1090 310V1015 M1430 300V1015" class="neutral"/>
+<path d="M1510 350V1070H1360" class="earth"/>
+<!-- Four individual RCBOs with all four declared pins -->
+<g>
+<rect x="800" y="250" width="240" height="130" class="box"/>
+<rect x="800" y="455" width="240" height="130" class="box"/>
+<rect x="800" y="660" width="240" height="130" class="box"/>
+<rect x="800" y="865" width="240" height="130" class="box"/>
+</g>
+<g text-anchor="middle">
+<text x="920" y="224" class="head">U1 · RCBO1 · L1 LIGHTING</text>
+<text x="920" y="429" class="head">U2 · RCBO2 · L2 SOCKETS</text>
+<text x="920" y="634" class="head">U3 · RCBO3 · L3 HVAC</text>
+<text x="920" y="839" class="head">U4 · RCBO4 · L1 KITCHEN</text>
+<text x="920" y="320" class="head">C16 · 30 mA</text><text x="920" y="525" class="head">C16 · 30 mA</text><text x="920" y="730" class="head">C16 · 30 mA</text><text x="920" y="935" class="head">C16 · 30 mA</text>
+</g>
+<g class="small">
+<text x="811" y="285">LINE</text><text x="988" y="285">LOAD</text><text x="811" y="355" class="ntext">N</text><text x="1014" y="355" class="ntext">N</text>
+<text x="811" y="490">LINE</text><text x="988" y="490">LOAD</text><text x="811" y="560" class="ntext">N</text><text x="1014" y="560" class="ntext">N</text>
+<text x="811" y="695">LINE</text><text x="988" y="695">LOAD</text><text x="811" y="765" class="ntext">N</text><text x="1014" y="765" class="ntext">N</text>
+<text x="811" y="900">LINE</text><text x="988" y="900">LOAD</text><text x="811" y="970" class="ntext">N</text><text x="1014" y="970" class="ntext">N</text>
+</g>
+<path d="M780 350H800 M780 555H800 M780 760H800 M780 965H800 M1040 350H1090 M1040 555H1090 M1040 760H1090 M1040 965H1090" class="neutral"/>
+<!-- Phase wires bridge the vertical N return without joining it. -->
+<path d="M1040 280H1170 M1040 485H1082 M1098 485H1170 M1040 690H1082 M1098 690H1170 M1040 895H1082 M1098 895H1170" class="wire"/>
+<path d="M1082 485Q1090 469 1098 485 M1082 690Q1090 674 1098 690 M1082 895Q1090 879 1098 895" fill="none" stroke="white" stroke-width="7"/>
+<path d="M1082 485Q1090 469 1098 485 M1082 690Q1090 674 1098 690 M1082 895Q1090 879 1098 895" class="wire"/>
+<g class="small"><text x="1120" y="268">C1</text><text x="1120" y="473">C2</text><text x="1120" y="678">C3</text><text x="1120" y="883">C4</text></g>
+<!-- Final circuit load blocks with L, N and PE terminals -->
+<g><rect x="1170" y="250" width="220" height="130" class="box"/><rect x="1170" y="455" width="220" height="130" class="box"/><rect x="1170" y="660" width="220" height="130" class="box"/><rect x="1170" y="865" width="220" height="130" class="box"/></g>
+<g text-anchor="middle"><text x="1280" y="224" class="head">U5 · LIGHTING CIRCUIT</text><text x="1280" y="429" class="head">U6 · SOCKET CIRCUIT</text><text x="1280" y="634" class="head">U7 · HVAC CIRCUIT</text><text x="1280" y="839" class="head">U8 · KITCHEN CIRCUIT</text><text x="1280" y="325">230 V, 60 W</text><text x="1280" y="530">230 V, 2 kW</text><text x="1280" y="735">230 V, 1.5 kW</text><text x="1280" y="940">230 V, 2.5 kW</text></g>
+<g class="small"><text x="1181" y="285">L</text><text x="1365" y="305" class="ntext">N</text><text x="1354" y="355" class="petext">PE</text><text x="1181" y="490">L</text><text x="1365" y="510" class="ntext">N</text><text x="1354" y="560" class="petext">PE</text><text x="1181" y="695">L</text><text x="1365" y="715" class="ntext">N</text><text x="1354" y="765" class="petext">PE</text><text x="1181" y="900">L</text><text x="1365" y="920" class="ntext">N</text><text x="1354" y="970" class="petext">PE</text></g>
+<path d="M1390 300H1430 M1390 505H1430 M1390 710H1430 M1390 915H1430" class="neutral"/>
+<path d="M1390 350H1422 M1438 350H1510 M1390 555H1422 M1438 555H1510 M1390 760H1422 M1438 760H1510 M1390 965H1422 M1438 965H1510" class="earth"/>
+<path d="M1422 350Q1430 334 1438 350 M1422 555Q1430 539 1438 555 M1422 760Q1430 744 1438 760 M1422 965Q1430 949 1438 965" fill="none" stroke="white" stroke-width="7"/>
+<path d="M1422 350Q1430 334 1438 350 M1422 555Q1430 539 1438 555 M1422 760Q1430 744 1438 760 M1422 965Q1430 949 1438 965" class="earth"/>
+<!-- Terminal blocks -->
+<rect x="1180" y="1003" width="110" height="24" fill="#eaf3f9" stroke="#2475aa" stroke-width="2"/>
+<circle cx="1235" cy="1015" r="6" fill="white" stroke="#2475aa" stroke-width="2"/>
+<text x="1110" y="1048" class="head ntext">T1 · NEUTRAL BAR · N · 100 A</text>
+<rect x="1180" y="1058" width="180" height="24" fill="#eef6ef" stroke="#398153" stroke-width="2"/>
+<g fill="white" stroke="#398153" stroke-width="2"><circle cx="1200" cy="1070" r="6"/><circle cx="1245" cy="1070" r="6"/><circle cx="1290" cy="1070" r="6"/><circle cx="1335" cy="1070" r="6"/></g>
+<text x="1110" y="1108" class="head petext">T2 · EARTH BAR · PE1–PE4 · 100 A</text>
+<text x="55" y="1060" class="small">Connection dots indicate joined conductors; wire bridges indicate no connection.</text>
+<text x="55" y="1086" class="small">N and PE remain separate. Phase assignment: L1 / L2 / L3 / L1.</text>
+<g fill="#2475aa"><circle cx="70" cy="220" r="4"/><circle cx="70" cy="330" r="4"/><circle cx="70" cy="440" r="4"/><circle cx="780" cy="350" r="4"/><circle cx="780" cy="555" r="4"/><circle cx="780" cy="760" r="4"/><circle cx="780" cy="965" r="4"/><circle cx="780" cy="1015" r="4"/><circle cx="1090" cy="350" r="4"/><circle cx="1090" cy="555" r="4"/><circle cx="1090" cy="760" r="4"/><circle cx="1090" cy="965" r="4"/><circle cx="1090" cy="1015" r="4"/><circle cx="1430" cy="505" r="4"/><circle cx="1430" cy="710" r="4"/><circle cx="1430" cy="915" r="4"/></g>
+<g fill="#398153"><circle cx="1510" cy="555" r="4"/><circle cx="1510" cy="760" r="4"/><circle cx="1510" cy="965" r="4"/></g>
+<path d="M771 280H789" stroke="white" stroke-width="7"/><path d="M771 280Q780 262 789 280" class="wire"/>
+<path d="M771 485H789" stroke="white" stroke-width="7"/><path d="M771 485Q780 467 789 485" class="wire"/>
+<path d="M771 690H789" stroke="white" stroke-width="7"/><path d="M771 690Q780 672 789 690" class="wire"/>
+<path d="M771 895H789" stroke="white" stroke-width="7"/><path d="M771 895Q780 877 789 895" class="wire"/>
+<path d="M621 330H639" stroke="white" stroke-width="7"/><path d="M621 330Q630 312 639 330" class="wire"/>
+<path d="M621 440H639" stroke="white" stroke-width="7"/><path d="M621 440Q630 422 639 440" class="wire"/>
+<path d="M671 440H689" stroke="white" stroke-width="7"/><path d="M671 440Q680 422 689 440" class="wire"/>
+</svg>

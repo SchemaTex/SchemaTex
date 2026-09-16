@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1220" viewBox="0 0 1600 1220">
+<title>Direct-On-Line Motor Starter — power and control schematic</title>
+<defs>
+<style>
+text{font-family:'Helvetica Neue',Helvetica,sans-serif;fill:#17212b;font-size:19px} .wire{fill:none;stroke:#17212b;stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter}.link{fill:none;stroke:#66717c;stroke-width:1.5;stroke-dasharray:7 6}.label{font-size:21px;font-weight:600}.small{font-size:16px}.node{fill:#17212b}.panel{fill:none;stroke:#ccd2d8;stroke-width:1.5}
+</style>
+<g id="ground" class="wire"><path d="M0 0v10m-14 0h28m-10 6h20m-15 6h10"/></g>
+<g id="no" class="wire"><circle cy="-22" r="3" fill="white"/><circle cy="22" r="3" fill="white"/><path d="M0 19L-18-15"/></g>
+<g id="lamp" class="wire"><circle r="23"/><path d="M-16-16l32 32m0-32l-32 32"/></g>
+</defs>
+<rect width="1600" height="1220" fill="white"/>
+<text x="55" y="58" font-size="32" font-weight="700">DIRECT-ON-LINE MOTOR STARTER</text>
+<text x="55" y="89" fill="#66717c">Three-phase power circuit • 230 VAC contactor control</text>
+<rect class="panel" x="35" y="119" width="700" height="1050" rx="2"/>
+<rect class="panel" x="760" y="119" width="805" height="1050" rx="2"/>
+<text class="label" x="60" y="154">01  POWER CIRCUIT</text>
+<text class="label" x="785" y="154">02  START–STOP CONTROL</text>
+<!-- Sources, one per phase -->
+<g text-anchor="middle"><text class="label" x="195" y="204">V1 L1</text><text class="label" x="375" y="204">V2 L2</text><text class="label" x="555" y="204">V3 L3</text><text class="small" x="195" y="230">230 V AC phase L1</text><text class="small" x="375" y="230">230 V AC phase L2</text><text class="small" x="555" y="230">230 V AC phase L3</text></g>
+<g class="wire"><circle cx="195" cy="281" r="27"/><circle cx="375" cy="281" r="27"/><circle cx="555" cy="281" r="27"/>
+<path d="M175 281q10-22 20 0t20 0m140 0q10-22 20 0t20 0m140 0q10-22 20 0t20 0"/>
+<path d="M195 254v-10h-62v75m242-65v-10h-62v75m242-65v-10h-62v75M195 308v95m180-95v95m180-95v95"/></g>
+<use href="#ground" x="133" y="319"/><use href="#ground" x="313" y="319"/><use href="#ground" x="493" y="319"/>
+<g class="small"><text x="211" y="353">L1</text><text x="391" y="353">L2</text><text x="571" y="353">L3</text></g>
+<!-- Three mechanically linked breaker poles -->
+<text class="label" x="60" y="384">QF1 BREAKER</text><text class="small" x="485" y="384">16 A, 3-pole</text>
+<use href="#no" x="195" y="425"/><use href="#no" x="375" y="425"/><use href="#no" x="555" y="425"/>
+<path class="link" d="M177 425H537"/>
+<path class="wire" d="M185 395h20m160 0h20m160 0h20M195 447v112m180-112v112m180-112v112"/>
+<g class="small" text-anchor="middle"><text x="195" y="477">QF1 · L1</text><text x="375" y="477">QF2 · L2</text><text x="555" y="477">QF3 · L3</text></g>
+<text x="210" y="516">B1</text><text x="390" y="516">B2</text><text x="570" y="516">B3</text>
+<!-- Main contactor -->
+<text class="label" x="60" y="546">KM1 MAIN</text><text class="small" x="485" y="546">18 A main poles</text>
+<use href="#no" x="195" y="581"/><use href="#no" x="375" y="581"/><use href="#no" x="555" y="581"/>
+<path class="link" d="M177 581H537"/>
+<path class="wire" d="M195 603v108m180-108v108m180-108v108"/>
+<g class="small" text-anchor="middle"><text x="195" y="633">KM1A · L1</text><text x="375" y="633">KM1B · L2</text><text x="555" y="633">KM1C · L3</text></g>
+<text x="210" y="675">OL1</text><text x="390" y="675">OL2</text><text x="570" y="675">OL3</text>
+<!-- Overload heater elements -->
+<text class="label" x="60" y="700">F1 OVERLOAD</text><text class="small" x="510" y="700">9–13 A</text>
+<g class="wire"><rect x="178" y="711" width="34" height="69"/><rect x="358" y="711" width="34" height="69"/><rect x="538" y="711" width="34" height="69"/><path d="M195 711v18h-9v31h9v20m180-69v18h-9v31h9v20m180-69v18h-9v31h9v20"/></g>
+<path class="link" d="M212 746h146m34 0h146"/>
+<g class="small" text-anchor="middle"><text x="195" y="810">F1A · L1</text><text x="375" y="810">F1B · L2</text><text x="555" y="810">F1C · L3</text></g>
+<path class="wire" d="M195 780v100h134v45m46-145v133m180-133v91"/>
+<use href="#ground" x="555" y="871"/><text class="small" x="578" y="867">GND</text>
+<text x="291" y="870">U</text><text x="388" y="870">V</text>
+<circle class="wire" cx="354" cy="977" r="65"/><text x="354" y="980" text-anchor="middle" font-size="40">M</text><text x="354" y="1011" text-anchor="middle" font-size="24">3~</text>
+<text class="label" x="354" y="1080" text-anchor="middle">M1 3-PH MOTOR</text><text x="354" y="1111" text-anchor="middle" font-size="24">400 V · 5.5 kW</text>
+<!-- Control series chain -->
+<text class="label" x="826" y="204">L1</text><text class="small" x="899" y="204">From supply V1</text>
+<path class="wire" d="M850 213v67m-10 0h20M850 280l-17 47m17 0h10M850 327v111"/>
+<!-- NC stop pushbutton actuator -->
+<path class="wire" d="M805 293h24m-24-11v22m24-11v15m0 0h13"/>
+<text class="label" x="904" y="291">S0 STOP</text><text x="904" y="319">STOP NC</text><text class="small" x="863" y="373">STOP</text>
+<!-- NC overload auxiliary -->
+<path class="wire" d="M840 438h20m-10 0l-17 47m17 0h10M850 485v80m-40-118h18v27h-18"/>
+<text class="label" x="904" y="448">F1 AUX NC</text><text x="904" y="476">F1X · 95–96 NC</text>
+<text class="small" x="864" y="543">OL</text>
+<!-- OL bus splits to start, seal-in, red lamp -->
+<path class="wire" d="M850 565h565M850 565v108m250-108v108m315-108v322"/>
+<circle class="node" cx="850" cy="565" r="4"/><circle class="node" cx="1100" cy="565" r="4"/>
+<use href="#no" x="850" y="695"/><use href="#no" x="1100" y="695"/>
+<path class="wire" d="M805 679h23m-23-11v22m23-11v13h12"/>
+<text class="label" x="790" y="618">S1 START</text><text class="small" x="790" y="644">START NO</text>
+<text class="label" x="1039" y="618">KM1 SEAL-IN</text><text class="small" x="1039" y="644">K1A · aux NO</text>
+<path class="wire" d="M850 717v83h380v87m-130-170v83M850 800v80"/>
+<circle class="node" cx="850" cy="800" r="4"/><circle class="node" cx="1100" cy="800" r="4"/>
+<text class="small" x="862" y="787">START</text>
+<!-- Contactor coil and pilots -->
+<rect class="wire" x="820" y="880" width="60" height="60"/><text x="850" y="919" text-anchor="middle" class="small">KM1</text>
+<text class="small" x="792" y="869">A1</text><text class="small" x="792" y="959">A2</text>
+<circle cx="1230" cy="910" r="23" fill="#cdeedb"/><use href="#lamp" x="1230" y="910"/>
+<circle cx="1415" cy="910" r="23" fill="#f7d2d2"/><use href="#lamp" x="1415" y="910"/>
+<path class="wire" d="M850 940v106h565V933m-185 0v113m-380 0v30"/>
+<circle class="node" cx="1230" cy="1046" r="4"/><use href="#ground" x="850" y="1076"/><text class="small" x="873" y="1098">GND</text>
+<g text-anchor="middle"><text class="label" x="975" y="925">KM1 COIL</text><text x="975" y="952">K1 · 230 VAC</text><text class="label" x="1230" y="983">H1 RUNNING</text><text class="small" x="1230" y="1010">Green · 230 VAC</text><text class="label" x="1415" y="983">H2 TRIPPED</text><text class="small" x="1415" y="1010">Red · 230 VAC</text></g>
+<text class="small" x="785" y="1139">Dashed lines indicate mechanically linked power poles.</text>
+<text class="small" x="55" y="1201">NETLIST AS SPECIFIED: F1C terminates at GND; M1 has U/V terminals. H2 is connected from OL to GND.</text>
+</svg>

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { layoutPid } from "../../src/diagrams/pid/layout";
 import { parsePid } from "../../src/diagrams/pid/parser";
+import { renderInstrument } from "../../src/diagrams/pid/symbols";
 import { renderPid } from "../../src/diagrams/pid/renderer";
 
 const DISTILLATION_DSL = `pid "Distillation Column T-201"
@@ -246,4 +247,14 @@ equip XV-1 : valve_control [actuator: "${actuator}", fail: "${fail}"]`);
     expect(svg).toContain(`data-fail="${fail}"`);
     expect(svg.match(/lt-pid-valve-body/g)).toHaveLength(2); // stylesheet + one body
   });
+});
+
+// The enclosing shape distinguishes shared controls from computer functions.
+test("shared-control instruments use the ISA circle-in-square in every location", () => {
+  for (const category of ["field_shared", "cr_shared", "local_shared"]) {
+    const svg = renderInstrument(category, "LIC", "101");
+    expect(svg).toContain("<rect");
+    expect(svg).toContain("<circle");
+    expect(svg).not.toContain("<polygon");
+  }
 });

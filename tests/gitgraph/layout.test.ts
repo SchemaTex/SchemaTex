@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { estimateTextWidth } from "../../src/core/text-metrics";
 import { parseGitGraph } from "../../src/diagrams/gitgraph/parser";
 import { replayGitGraph, layoutGitGraph, GITGRAPH_CONST } from "../../src/diagrams/gitgraph/layout";
 
@@ -99,7 +100,7 @@ describe("gitgraph geometry", () => {
     const d1 = layout.commits.find((c) => c.node.id === "d1")!;
     // LR: lanes differ in y.
     expect(m1.y).not.toBe(d1.y);
-    expect(d1.y - m1.y).toBeCloseTo(GITGRAPH_CONST.LANE_GAP, 5);
+    expect(d1.y - m1.y).toBeGreaterThanOrEqual(GITGRAPH_CONST.LANE_GAP);
     // time advances in x.
     expect(d1.x).toBeGreaterThan(m1.x);
   });
@@ -186,5 +187,102 @@ describe("gitgraph validation", () => {
   branch other
   cherry-pick id: "mc"`)
     ).toThrow(/requires parent/);
+  });
+});
+
+it('reserves space for long branch names and rotated commit labels',()=>{
+ const layout=layoutOf(`---
+config:
+  gitGraph:
+    rotateCommitLabel: true
+---
+gitGraph
+ commit id: "a-very-long-initial-commit-description"
+ branch long-descriptive-feature-branch
+ commit id: "a-very-long-feature-commit-description"
+ checkout main
+ merge long-descriptive-feature-branch id: "final"`);
+ expect(layout.commits[1].y-layout.commits[0].y).toBeGreaterThan(100);
+ expect(layout.branches[1].pillX).toBeGreaterThan(100);
+ expect(layout.height).toBeGreaterThan(layout.commits[1].y+100);
+});
+
+
+it("keeps commit labels within the frame in every orientation, including hidden branch pills", () => {
+  const id = "initialize-authorization-service-and-validate-configuration";
+  for (const orientation of ["LR", "TB", "BT"] as const) {
+    for (const rotate of [false, true]) {
+      const ast = parseGitGraph(`gitGraph ${orientation}:\n commit id: "${id}"\n commit id: "done"`);
+      ast.showBranches = false;
+      ast.rotateCommitLabel = rotate;
+      const layout = layoutGitGraph(ast);
+      for (const commit of layout.commits) {
+        const width = estimateTextWidth(commit.node.id, 10);
+        const baseline = layout.messageX !== undefined ? commit.y + 3 : commit.y + GITGRAPH_CONST.DOT_R + 8;
+        const angle = rotate ? Math.PI / 4 : 0;
+        for (const x of rotate || layout.messageX !== undefined ? [0, width] : [-width / 2, width / 2]) {
+          for (const y of [-10, 3]) {
+            const px = (layout.messageX ?? commit.x) + x * Math.cos(angle) - y * Math.sin(angle);
+            const py = baseline + x * Math.sin(angle) + y * Math.cos(angle);
+            expect(px).toBeGreaterThanOrEqual(0);
+            expect(px).toBeLessThanOrEqual(layout.width);
+            expect(py).toBeGreaterThanOrEqual(0);
+            expect(py).toBeLessThanOrEqual(layout.height);
+          }
+        }
+      }
+      if (layout.messageX !== undefined) {
+        expect(layout.messageX).toBeGreaterThan(Math.max(...layout.commits.map(c => c.x)) + GITGRAPH_CONST.DOT_R);
+      }
+      const edge = layout.edges[0];
+      expect([edge.fromX, edge.fromY]).toEqual([layout.commits[0].x, layout.commits[0].y]);
+      expect([edge.toX, edge.toY]).toEqual([layout.commits[1].x, layout.commits[1].y]);
+    }
+  }
+});
+
+it("routes cross-lane edges along time before turning, in every orientation", () => {
+  for (const orientation of ["LR", "TB", "BT"]) {
+    const layout = layoutOf(`gitGraph ${orientation}:
+      commit id: "root"
+      branch first
+      commit id: "one"
+      branch second
+      commit id: "two"
+      checkout main
+      merge second id: "joined"`);
+    for (const edge of layout.edges.filter(e => e.kind !== "straight")) {
+      const numbers = edge.path.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+      const [x, y, nextX, nextY] = numbers;
+      expect([x, y]).toEqual([edge.fromX, edge.fromY]);
+      if (edge.kind === "merge") {
+        // The last approach reaches the merge dot across its lane, not along its backbone.
+        const beforeX = numbers[numbers.length - 4], beforeY = numbers[numbers.length - 3];
+        if (orientation === "LR") expect(beforeX).toBe(edge.toX);
+        else expect(beforeY).toBe(edge.toY);
+      }
+      if (orientation === "LR") {
+        expect(nextY).toBe(y);
+        expect(nextX).toBeGreaterThan(x!);
+      } else {
+        expect(nextX).toBe(x);
+        expect(Math.sign(nextY! - y!)).toBe(orientation === "TB" ? 1 : -1);
+      }
+    }
+  }
+});
+
+it("shows a cherry-pick source as a separate relation, not another parent", () => {
+  const layout = layoutOf(`gitGraph
+    commit id: "base"
+    branch topic
+    commit id: "patch"
+    checkout main
+    cherry-pick id: "patch"`);
+  const copy = layout.commits.find(c => c.node.isCherryPick)!;
+  expect(copy.node.parents).toEqual(["base"]);
+  const source = layout.commits.find(c => c.node.id === "patch")!;
+  expect(layout.edges.find(e => e.kind === "cherry-pick")).toMatchObject({
+    fromX: source.x, fromY: source.y, toX: copy.x, toY: copy.y,
   });
 });

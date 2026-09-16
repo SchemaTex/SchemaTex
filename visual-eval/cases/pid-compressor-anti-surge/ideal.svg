@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+<title>Compressor Anti-surge Recycle</title>
+<rect width="1600" height="985" fill="white"/>
+<style>text{font-family:Helvetica,Arial,sans-serif;fill:#1E293B} .title{font-size:20px;font-weight:600}.tag{font-size:12px;font-weight:600}.secondary{font-size:11.5px;fill:#64748B}.tiny{font-size:9.5px;letter-spacing:.3px}.zone{font-size:10px;letter-spacing:1px;fill:#64748B}.sym{fill:white;stroke:#1E293B;stroke-width:1.6;stroke-linejoin:round}.pipe{fill:none;stroke:#1E293B;stroke-width:2.5}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.signal{fill:none;stroke:#1E293B;stroke-width:1.4}.electric{fill:none;stroke:#1E293B;stroke-width:1.4;stroke-dasharray:7 5}.inst{font-size:11.5px;text-anchor:middle}.hair{stroke:#E2E8F0;stroke-width:1}</style>
+<defs><marker id="arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#1E293B"/></marker></defs>
+
+<text x="47" y="46" class="title" text-anchor="start">Compressor Anti-surge Recycle</text>
+<text x="47" y="70" class="secondary" text-anchor="start">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text x="1553" y="70" class="secondary" text-anchor="end">solid dot = connection · jumper = crossing, not connected</text>
+<path d="M47 99H1553" class="hair" />
+<path d="M47 257H1553" class="signal" stroke-dasharray="12 4 2 4" stroke="#64748B"/>
+<text x="1553" y="247" class="zone" text-anchor="end">CONTROL ROOM / DCS</text>
+<text x="1553" y="279" class="zone" text-anchor="end">FIELD</text>
+<path d="M345 630H470 M570 630H754 M786 630H1060 M1190 630H1510" class="pipe" />
+<path d="M900 630V390H742 M698 390H670C670 378 650 378 650 390H245V565" class="minor" />
+<circle cx="900" cy="630" r="3" fill="#1E293B"/>
+<path d="M610 630V473" class="minor" />
+<circle cx="610" cy="630" r="3" fill="#1E293B"/>
+<path d="M660 630V493" class="minor" />
+<circle cx="660" cy="630" r="3" fill="#1E293B"/>
+<path d="M647 493L673 449H647L673 493Z" class="sym" />
+<path d="M660 449L647 437L673 429L647 421L673 413L660 405V315H695" class="minor" marker-end="url(#arrow)"/>
+<text x="707" y="319" class="secondary" text-anchor="start">TO ATM</text>
+<text x="682" y="466" class="tag" text-anchor="start">PSV-301</text>
+<text x="682" y="487" class="secondary" text-anchor="start">Set 10 barg</text>
+<path d="M602 500L610 492L618 500L610 508Z" class="sym" />
+<text x="588" y="504" class="tag" text-anchor="end">PE-301</text>
+<path d="M610 492V473" class="signal" />
+<circle cx="610" cy="455" r="18" class="sym"/>
+<text x="610" y="452" class="inst" text-anchor="middle">PT</text>
+<text x="610" y="467" class="inst" text-anchor="middle">301</text>
+<text x="630" y="458" class="secondary" text-anchor="start">8 barg</text>
+<path d="M770 630V553" class="signal" />
+<circle cx="770" cy="535" r="18" class="sym"/>
+<text x="770" y="532" class="inst" text-anchor="middle">FT</text>
+<text x="770" y="547" class="inst" text-anchor="middle">301</text>
+<path d="M788 535H955V205H992" class="electric" />
+<path d="M610 437V415" class="electric" />
+<path d="M610 415V400 M610 380V205H522" class="electric" />
+<path d="M610 400V398C622 398 622 382 610 382V380" class="electric" />
+<circle cx="504" cy="205" r="18" class="sym"/>
+<path d="M488 196L504 187L520 196V214L504 223L488 214Z M486 205H522" class="signal" />
+<text x="504" y="202" class="inst" text-anchor="middle">PIC</text>
+<text x="504" y="217" class="inst" text-anchor="middle">301</text>
+<circle cx="1010" cy="205" r="18" class="sym"/>
+<path d="M994 196L1010 187L1026 196V214L1010 223L994 214Z M992 205H1028" class="signal" />
+<text x="1010" y="202" class="inst" text-anchor="middle">FIC</text>
+<text x="1010" y="217" class="inst" text-anchor="middle">301</text>
+<path d="M992 205H720V340" class="signal" />
+<path d="M751 201l8 8" class="signal" />
+<path d="M786 201l8 8" class="signal" />
+<path d="M821 201l8 8" class="signal" />
+<path d="M856 201l8 8" class="signal" />
+<path d="M891 201l8 8" class="signal" />
+<path d="M926 201l8 8" class="signal" />
+<path d="M961 201l8 8" class="signal" />
+<path d="M716 237l8 -8" class="signal" />
+<path d="M716 272l8 -8" class="signal" />
+<path d="M716 307l8 -8" class="signal" />
+<path d="M698 376L742 404V376L698 404Z" class="sym" />
+<path d="M720 376V354" class="minor" />
+<path d="M700 354C700 335 740 335 740 354Z" class="sym" />
+<text x="750" y="350" class="tag" text-anchor="start">FO</text>
+<text x="820" y="366" class="tag" text-anchor="middle">FV-301</text>
+<text x="820" y="387" class="secondary" text-anchor="middle">Anti-surge Recycle Valve</text>
+<rect x="357.0" y="380" width="170" height="20" rx="1" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="442" y="393.5" class="tiny" text-anchor="middle">DN100 · ANTI-SURGE RECYCLE</text>
+<path d="M548 390H520" class="minor" marker-end="url(#arrow)"/>
+<path d="M180 565H310C357 565 357 695 310 695H180C133 695 133 565 180 565Z" class="sym" />
+<path d="M180 565C210 565 210 695 180 695 M310 565C280 565 280 695 310 695" class="minor" />
+<text x="245" y="623" class="tag" text-anchor="middle">V-301</text>
+<text x="245" y="644" class="secondary" text-anchor="middle">Suction Scrubber</text>
+<circle cx="520" cy="630" r="50" class="sym"/>
+<path d="M490 600L551 630L490 660Z" class="sym" />
+<text x="520" y="718" class="tag" text-anchor="middle">K-301</text>
+<text x="520" y="739" class="secondary" text-anchor="middle">Centrifugal Compressor</text>
+<path d="M754 615H786V645H754Z" class="sym" />
+<path d="M766 615V625 M774 635V645 M766 625L774 635" class="minor" />
+<text x="770" y="686" class="tag" text-anchor="middle">FE-301</text>
+<text x="770" y="707" class="secondary" text-anchor="middle">Flow Element</text>
+<rect x="1060" y="585" width="130" height="90" class="sym"/>
+<path d="M1060 630H1075L1085 607L1100 653L1115 607L1130 653L1145 607L1160 653L1175 630H1190" class="minor" />
+<circle cx="1125" cy="548" r="24" class="sym"/>
+<path d="M1125 548C1094 523 1121 516 1125 548 M1125 548C1162 536 1149 565 1125 548 M1125 548C1114 584 1098 560 1125 548" class="sym" />
+<path d="M1125 572V585" class="minor" />
+<text x="1125" y="718" class="tag" text-anchor="middle">E-301</text>
+<text x="1125" y="739" class="secondary" text-anchor="middle">Aftercooler</text>
+<path d="M1283 616L1327 644V616L1283 644Z" class="sym" />
+<path d="M1309 644L1321 613 M1310 617L1321 613" class="signal" />
+<text x="1305" y="718" class="tag" text-anchor="middle">NRV-301</text>
+<text x="1305" y="739" class="secondary" text-anchor="middle">Discharge Check</text>
+<path d="M1470 630H1515" class="pipe" marker-end="url(#arrow)"/>
+<text x="1515" y="599" class="tag" text-anchor="end">DISCHARGE HEADER</text>
+<rect x="370.0" y="620" width="64" height="20" rx="1" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="402" y="633.5" class="tiny" text-anchor="middle">DN250</text>
+<rect x="934.0" y="620" width="64" height="20" rx="1" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="966" y="633.5" class="tiny" text-anchor="middle">DN200</text>
+<rect x="1388.0" y="620" width="64" height="20" rx="1" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="1420" y="633.5" class="tiny" text-anchor="middle">DN200</text>
+<text x="397" y="667" class="secondary" text-anchor="middle">Compressor suction</text>
+<text x="975" y="667" class="secondary" text-anchor="middle">Compressed gas</text>
+<path d="M47 860H1553" class="hair" />
+<path d="M47 901H92" class="pipe" />
+<text x="102" y="905" class="secondary" text-anchor="start">Process</text>
+<path d="M188 901H233" class="minor" />
+<text x="243" y="905" class="secondary" text-anchor="start">Process, minor</text>
+<path d="M366 901H411" class="electric" />
+<text x="421" y="905" class="secondary" text-anchor="start">Electric signal</text>
+<path d="M538 901H583 M551 897l8 8" class="signal" />
+<text x="593" y="905" class="secondary" text-anchor="start">Pneumatic signal</text>
+<path d="M726 901H771" class="signal" />
+<circle cx="733" cy="901" r="1.8" fill="#1E293B"/>
+<circle cx="748" cy="901" r="1.8" fill="#1E293B"/>
+<circle cx="763" cy="901" r="1.8" fill="#1E293B"/>
+<text x="781" y="905" class="secondary" text-anchor="start">Capillary / filled system</text>
+<text x="47" y="944" class="secondary" text-anchor="start">Low corrected flow opens FV-301 to recycle discharge gas to V-301. FV-301 fails open on loss of instrument air; discharge pressure is 8 barg.</text>
+</svg>

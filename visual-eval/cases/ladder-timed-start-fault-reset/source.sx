@@ -1,0 +1,34 @@
+ladder "Timed Start and Fault Reset"
+
+rung 0 "Latch start request":
+  XIO(StopPB)
+  XIO(FaultLatch)
+  parallel:
+    branch:
+      XIC(StartPB)
+    branch:
+      XIC(StartRequest)
+  OTL(StartRequest)
+
+rung 1 "Five-second on-delay timer":
+  XIC(StartRequest)
+  XIO(FaultLatch)
+  TON(StartDelay, PT=5000)
+
+rung 2 "Motor energises after timer done":
+  XIC(StartDelay.Q)
+  XIO(FaultLatch)
+  OTE(MotorRun)
+
+rung 3 "Latch overload fault":
+  XIC(OverloadTrip)
+  OTL(FaultLatch)
+
+rung 4 "Reset fault and start request":
+  XIC(ResetPB)
+  OTU(FaultLatch)
+  OTU(StartRequest)
+
+rung 5 "Reset timer on fault reset":
+  XIC(ResetPB)
+  RES(StartDelay)

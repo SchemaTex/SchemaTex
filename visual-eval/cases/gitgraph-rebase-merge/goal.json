@@ -1,0 +1,41 @@
+{
+  "id": "gitgraph-rebase-merge",
+  "type": "gitgraph",
+  "variant": "horizontal",
+  "title": "Rebasing a feature onto main",
+  "goal": "A practitioner can read this branch history at a glance: Rebasing a feature onto main.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Independently authored using visual-eval/exemplars/gitgraph/horizontal/ideal.svg (2c8962e3f5d3); rendered and visually reviewed. Provisional naming mismatch: the case title says rebase but source performs cherry-picks. The actual declared cherry-pick history is drawn. Exemplar branch colours and horizontal lanes; every commit, branch fork, merge parent and tag follows the DSL. Cherry-picks are copies with dashed provenance, not merge ancestry."
+  }
+}

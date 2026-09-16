@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1132" height="644" viewBox="0 0 1132 644" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 8 class; 2 composition, 1 aggregation, 1 association, 2 directed, 1 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="1132" height="644" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Document" data-kind="class"><rect x="137.02157178879997" y="249" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="137.02157178879997" y="279" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="137.02157178879997" y="249" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="137.02157178879997" y1="279" x2="297.0215717888" y2="279" class="sx-umlclass-divider"/>
+<line x1="137.02157178879997" y1="317" x2="297.0215717888" y2="317" class="sx-umlclass-divider"/>
+<text x="217.02157178879997" y="270" class="sx-umlclass-classname" text-anchor="middle">Document</text>
+<text x="151.02157178879997" y="303" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>id</tspan>: <tspan>UUID</tspan></text>
+<text x="151.02157178879997" y="341" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>publish</tspan>(): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Page" data-kind="class"><rect x="32" y="466" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="496" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="466" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="496" x2="192" y2="496" class="sx-umlclass-divider"/>
+<line x1="32" y1="534" x2="192" y2="534" class="sx-umlclass-divider"/>
+<text x="112" y="487" class="sx-umlclass-classname" text-anchor="middle">Page</text>
+<text x="46" y="520" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>number</tspan>: <tspan>int</tspan></text>
+<text x="46" y="558" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>render</tspan>(): <tspan>Image</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Version" data-kind="class"><rect x="246" y="466" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="246" y="496" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="246" y="466" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="246" y1="496" x2="406" y2="496" class="sx-umlclass-divider"/>
+<line x1="246" y1="534" x2="406" y2="534" class="sx-umlclass-divider"/>
+<text x="326" y="487" class="sx-umlclass-classname" text-anchor="middle">Version</text>
+<text x="260" y="520" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>number</tspan>: <tspan>int</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Folder" data-kind="class"><rect x="137.02157178879997" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="137.02157178879997" y="62" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="137.02157178879997" y="32" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="137.02157178879997" y1="62" x2="297.0215717888" y2="62" class="sx-umlclass-divider"/>
+<line x1="137.02157178879997" y1="100" x2="297.0215717888" y2="100" class="sx-umlclass-divider"/>
+<text x="217.02157178879997" y="53" class="sx-umlclass-classname" text-anchor="middle">Folder</text>
+<text x="151.02157178879997" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>name</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="User" data-kind="class"><rect x="892.0215717888002" y="32" width="167" height="30" class="sx-umlclass-header-fill"/>
+<rect x="892.0215717888002" y="62" width="167" height="76" class="sx-umlclass-box-fill"/>
+<rect x="892.0215717888002" y="32" width="167" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="892.0215717888002" y1="62" x2="1059.0215717888002" y2="62" class="sx-umlclass-divider"/>
+<line x1="892.0215717888002" y1="100" x2="1059.0215717888002" y2="100" class="sx-umlclass-divider"/>
+<text x="975.5215717888002" y="53" class="sx-umlclass-classname" text-anchor="middle">User</text>
+<text x="906.0215717888002" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>displayName</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Permission" data-kind="class"><rect x="401.7026196480001" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="401.7026196480001" y="246" width="160" height="142" class="sx-umlclass-box-fill"/>
+<rect x="401.7026196480001" y="216" width="160" height="172" class="sx-umlclass-box-stroke"/>
+<line x1="401.7026196480001" y1="246" x2="561.7026196480001" y2="246" class="sx-umlclass-divider"/>
+<line x1="401.7026196480001" y1="350" x2="561.7026196480001" y2="350" class="sx-umlclass-divider"/>
+<text x="481.7026196480001" y="237" class="sx-umlclass-classname" text-anchor="middle">Permission</text>
+<text x="415.7026196480001" y="270" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;enumeration&gt;&gt;</tspan></text>
+<text x="415.7026196480001" y="292" class="sx-umlclass-member" data-visibility="public"><tspan>READ</tspan></text>
+<text x="415.7026196480001" y="314" class="sx-umlclass-member" data-visibility="public"><tspan>WRITE</tspan></text>
+<text x="415.7026196480001" y="336" class="sx-umlclass-member" data-visibility="public"><tspan>ADMIN</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="AccessGrant" data-kind="class"><rect x="651.0215717888" y="32" width="187" height="30" class="sx-umlclass-header-fill"/>
+<rect x="651.0215717888" y="62" width="187" height="76" class="sx-umlclass-box-fill"/>
+<rect x="651.0215717888" y="32" width="187" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="651.0215717888" y1="62" x2="838.0215717888" y2="62" class="sx-umlclass-divider"/>
+<line x1="651.0215717888" y1="100" x2="838.0215717888" y2="100" class="sx-umlclass-divider"/>
+<text x="744.5215717888" y="53" class="sx-umlclass-classname" text-anchor="middle">AccessGrant</text>
+<text x="665.0215717888" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>permission</tspan>: <tspan>Permission</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="SearchIndex" data-kind="class"><rect x="351.0215717888" y="32" width="246" height="30" class="sx-umlclass-header-fill"/>
+<rect x="351.0215717888" y="62" width="246" height="76" class="sx-umlclass-box-fill"/>
+<rect x="351.0215717888" y="32" width="246" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="351.0215717888" y1="62" x2="597.0215717888" y2="62" class="sx-umlclass-divider"/>
+<line x1="351.0215717888" y1="100" x2="597.0215717888" y2="100" class="sx-umlclass-divider"/>
+<text x="474.0215717888" y="53" class="sx-umlclass-classname" text-anchor="middle">SearchIndex</text>
+<text x="365.0215717888" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>index</tspan>(document: Document): <tspan>void</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Document" data-to="Page" data-kind="composition" data-source-mult="1" data-target-mult="1..*" data-name="pages"><path d="M 191.4 375 L 137.7 466" class="sx-umlclass-rel-line"/>
+
+<polygon points="191.3711418127336,355 197.3711418127336,365 191.3711418127336,375 185.3711418127336,365" class="sx-umlclass-diamond-filled"/>
+<text x="191.3711418127336" y="372" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="137.65042997606636" y="457" class="sx-umlclass-edge-label" text-anchor="middle">1..*</text>
+<text x="164.5107858944" y="415.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">pages</text>
+<text x="164.5107858944" y="415.5" class="sx-umlclass-edge-name" text-anchor="middle">pages</text></g>
+<g class="sx-umlclass-rel" data-from="Document" data-to="Version" data-kind="composition" data-source-mult="1" data-target-mult="1..*" data-name="versions"><path d="M 243.6 375 L 299.4 466" class="sx-umlclass-rel-line"/>
+
+<polygon points="243.63842291872442,355 249.63842291872442,365 243.63842291872442,375 237.63842291872442,365" class="sx-umlclass-diamond-filled"/>
+<text x="243.63842291872442" y="372" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="299.38314887007556" y="457" class="sx-umlclass-edge-label" text-anchor="middle">1..*</text>
+<text x="271.5107858944" y="415.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">versions</text>
+<text x="271.5107858944" y="415.5" class="sx-umlclass-edge-name" text-anchor="middle">versions</text></g>
+<g class="sx-umlclass-rel" data-from="Folder" data-to="Document" data-kind="aggregation" data-target-mult="0..*" data-name="contains"><path d="M 217 158 L 217 249" class="sx-umlclass-rel-line"/>
+
+<polygon points="217.02157178879997,138 223.02157178879997,148 217.02157178879997,158 211.02157178879997,148" class="sx-umlclass-diamond-hollow"/>
+<text x="217.02157178879997" y="240" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="217.02157178879997" y="198.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">contains</text>
+<text x="217.02157178879997" y="198.5" class="sx-umlclass-edge-name" text-anchor="middle">contains</text></g>
+<g class="sx-umlclass-rel" data-from="User" data-to="AccessGrant" data-kind="association" data-source-mult="1" data-target-mult="0..*" data-name="receives"><path d="M 975.5 32 L 975.5 6 L 744.5 6 L 744.5 32" class="sx-umlclass-rel-line"/>
+
+<text x="975.5215717888002" y="23" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="744.5215717888" y="23" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="860.0215717888001" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">receives</text>
+<text x="860.0215717888001" y="1" class="sx-umlclass-edge-name" text-anchor="middle">receives</text></g>
+<g class="sx-umlclass-rel" data-from="AccessGrant" data-to="Permission" data-kind="directed"><path d="M 680.3 138 L 572.7 235.9" class="sx-umlclass-rel-line"/>
+<path d="M 572.7026196480001 230.44692483706527 L 561.7026196480001 235.94692483706527 L 572.7026196480001 241.44692483706527" class="sx-umlclass-arrowhead"/></g>
+<g class="sx-umlclass-rel" data-from="AccessGrant" data-to="Document" data-kind="directed" data-name="grants access to"><path d="M 651 123.5 L 308 269.1" class="sx-umlclass-rel-line"/>
+<path d="M 308.0215717888 263.5900473933649 L 297.0215717888 269.0900473933649 L 308.0215717888 274.5900473933649" class="sx-umlclass-arrowhead"/>
+<text x="479.5215717888" y="191.27677725118482" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">grants access to</text>
+<text x="479.5215717888" y="191.27677725118482" class="sx-umlclass-edge-name" text-anchor="middle">grants access to</text></g>
+<g class="sx-umlclass-rel" data-from="SearchIndex" data-to="Document" data-kind="dependency" data-name="indexes"><path d="M 411.3 138 L 279.8 238" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 274.2911570422562 238 L 279.7911570422562 249 L 285.2911570422562 238" class="sx-umlclass-arrowhead"/>
+<text x="345.5215717888" y="183" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">indexes</text>
+<text x="345.5215717888" y="183" class="sx-umlclass-edge-name" text-anchor="middle">indexes</text></g></g></svg>

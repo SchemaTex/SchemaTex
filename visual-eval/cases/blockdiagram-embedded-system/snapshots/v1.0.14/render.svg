@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 1343 518" width="1343" height="518" role="img" data-diagram-type="blockdiagram"><title>Embedded Telemetry Node</title>
+<desc>Block diagram with 8 blocks, 0 summing junctions, 10 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #334155; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #0f172a; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #64748b; }
+.schematex-bd-sum { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #334155; }
+.schematex-bd-signal { stroke: #334155; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #334155; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #334155; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #0f172a; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: #0f172a; }
+.schematex-bd-branch { fill: #334155; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#334155"/></marker></defs>
+<text x="671.5" y="18" text-anchor="middle" class="schematex-bd-title">Embedded Telemetry Node</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 573 188 L 710.75 188 L 710.75 59 L 848.5 59" class="schematex-bd-signal-discrete" marker-end="url(#lt-bd-arrow)" data-from="pmic" data-to="mcu"/>
+<rect x="731.625" y="43" width="96" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="779.625" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="779.625" dy="0">regulated 3.3 V</tspan></text>
+<path d="M 573 198 L 702 198 L 702 155 L 831 155" class="schematex-bd-signal-discrete" marker-end="url(#lt-bd-arrow)" data-from="pmic" data-to="temp"/>
+<rect x="718.5" y="139" width="96" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="766.5" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="766.5" dy="0">regulated 3.3 V</tspan></text>
+<path d="M 573 208 L 707.75 208 L 707.75 251 L 842.5 251" class="schematex-bd-signal-discrete" marker-end="url(#lt-bd-arrow)" data-from="pmic" data-to="press"/>
+<rect x="727.125" y="235" width="96" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="775.125" y="247" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="775.125" dy="0">regulated 3.3 V</tspan></text>
+<path d="M 573 218 L 713.5 218 L 713.5 356 L 854 356" class="schematex-bd-signal-discrete" marker-end="url(#lt-bd-arrow)" data-from="pmic" data-to="radio"/>
+<rect x="735.75" y="340" width="96" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="783.75" y="352" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="783.75" dy="0">regulated 3.3 V</tspan></text>
+<path d="M 917 182 L 917 408 L 917 408 L 917 86" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="temp" data-to="mcu"/>
+<rect x="865.8" y="392" width="102.4" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="917" y="404" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="917" dy="0">temperature data</tspan></text>
+<path d="M 917 278 L 917 436 L 917 436 L 917 86" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="press" data-to="mcu"/>
+<rect x="875.4" y="420" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="917" y="432" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="917" dy="0">pressure data</tspan></text>
+<path d="M 985.5 50 L 1042.3333333333333 50 L 1042.3333333333333 155 L 1156 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="mcu" data-to="flash"/>
+<rect x="1067.1666666666665" y="139" width="64" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1099.1666666666665" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1099.1666666666665" dy="0">memory bus</tspan></text>
+<path d="M 162 203 L 396 203" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="battery" data-to="pmic"/>
+<rect x="237.4" y="187" width="83.2" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="279" y="199" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="279" dy="0">battery power</tspan></text>
+<path d="M 917 86 L 917 464 L 917 464 L 917 374" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="mcu" data-to="radio"/>
+<rect x="862.6" y="448" width="108.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="917" y="460" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="917" dy="0">telemetry packets</tspan></text>
+<path d="M 980 347 L 1106.3333333333333 347 L 1106.3333333333333 251 L 1169.5 251" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="radio" data-to="antenna"/>
+<rect x="1127.9166666666665" y="235" width="20" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1137.9166666666665" y="247" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1137.9166666666665" dy="0">RF</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(34, 176)" data-block-id="battery" data-block-role="input"><rect width="128" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="2"/>
+<text x="64" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="64" dy="0">Li-ion Battery</tspan></text></g>
+<g transform="translate(396, 176)" data-block-id="pmic" data-block-role="actuator"><rect width="177" height="54" fill="#dcfce7" class="schematex-bd-block" rx="2"/>
+<text x="88.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="88.5" dy="0">Power Management IC</tspan></text></g>
+<g transform="translate(848.5, 32)" data-block-id="mcu" data-block-role="controller"><rect width="137" height="54" fill="#dbeafe" class="schematex-bd-block" rx="2"/>
+<text x="68.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="68.5" dy="0">Microcontroller</tspan></text></g>
+<g transform="translate(831, 128)" data-block-id="temp" data-block-role="sensor"><rect width="172" height="54" fill="#f3e8ff" class="schematex-bd-block" rx="2"/>
+<text x="86" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="86" dy="0">Temperature Sensor</tspan></text></g>
+<g transform="translate(842.5, 224)" data-block-id="press" data-block-role="sensor"><rect width="149" height="54" fill="#f3e8ff" class="schematex-bd-block" rx="2"/>
+<text x="74.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="74.5" dy="0">Pressure Sensor</tspan></text></g>
+<g transform="translate(854, 320)" data-block-id="radio" data-block-role="output"><rect width="126" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">LoRa Radio</tspan></text></g>
+<g transform="translate(1156, 128)" data-block-id="flash" data-block-role="generic"><rect width="153" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="76.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="76.5" dy="0">SPI Flash Memory</tspan></text></g>
+<g transform="translate(1169.5, 224)" data-block-id="antenna" data-block-role="output"><rect width="126" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Antenna</tspan></text></g></g>
+<g class="schematex-bd-branches"><circle cx="573" cy="203" r="3.5" class="schematex-bd-branch"/>
+<circle cx="985.5" cy="59" r="3.5" class="schematex-bd-branch"/></g></g></svg>

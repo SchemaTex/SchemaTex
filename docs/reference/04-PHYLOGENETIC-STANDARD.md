@@ -130,7 +130,7 @@ phylo "Gene expression clusters" [mode: dendrogram]
 
 ## 4. Layout Types
 
-### 4.1 Rectangular Layout（默认）
+### 4.1 Rectangular Layout
 
 最标准的布局：branches 走 L 形路径（先水平再垂直转弯）。
 
@@ -154,7 +154,7 @@ Root ─┬── Taxon_A
 - 垂直连接线：`<line>` from 最上子节点到最下子节点
 - 分支为 step path：`M x1,y H x2 V y2`（先水平走 branch length，再垂直连到子节点）
 
-### 4.2 Slanted (Diagonal) Layout
+### 4.2 Slanted (Diagonal) Layout — default
 
 与 rectangular 相同拓扑，但用斜线代替 L 形：
 
@@ -171,7 +171,9 @@ Root ──── Taxon_A
 - 分支是直线（从 parent 斜向 child）
 - `<line>` or `<path d="M x1,y1 L x2,y2">`
 - 视觉更紧凑
-- 用 `[layout: slanted]` 激活
+- 默认使用 `slanted`；`[layout: rectangular]` 显式选择直角分支。
+- Layout 与 mode 独立：phylogram 的**水平位移**表示距离，不是斜线的欧氏长度；`mode: cladogram` 才忽略距离、对齐 tips。
+- Dendrogram 始终用直角连接，以保留 merge height 的读法。
 
 ### 4.3 Circular (Fan) Layout
 
@@ -286,6 +288,7 @@ Clade 高亮是 phylogenetic tree 的核心视觉特性——用颜色块标记 
 - Clade 内所有 branch 染同一色
 - 继承到 tip labels
 - 最简洁的视觉方式
+- Clade 名称仍显示在 tips 右侧的括号旁；嵌套或重叠范围自动分列，不需要重复写 label 或指定位置。
 
 **DSL:**
 ```
@@ -738,7 +741,7 @@ root:
 clade Apes = (Human, Chimp, Gorilla) [color: "#1E88E5"]
 scale "substitutions/site"
 ```
-验证：等同于 Newick `((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35);`，DSL 格式更可读。
+验证：等同于 Newick `(((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35);`，DSL 格式更可读。
 
 ### Case 8: Polytomy (Multi-furcation)
 ```

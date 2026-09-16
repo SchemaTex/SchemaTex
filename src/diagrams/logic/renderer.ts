@@ -1,5 +1,6 @@
 import type { LogicGateAST, LogicGateStyle, RenderConfig } from "../../core/types";
 import { layoutLogic } from "./layout";
+import { curvedBackX, getGatePaths, OUTPUT_BUBBLE_R } from "./symbols";
 import {
   svgRoot,
   defs,
@@ -24,6 +25,7 @@ function renderGateBody(
   const out: string[] = [];
   if (!n.geometry) return out;
   const g = n.geometry;
+  const bodyWidth = g.width - (g.outputBubble ? 8 : 0);
 
   if (style === "iec") {
     // Rectangle
@@ -31,7 +33,7 @@ function renderGateBody(
       el("rect", {
         x: 0,
         y: 0,
-        width: g.width,
+        width: bodyWidth,
         height: g.height,
         class: "schematex-logic-gate-body",
       })
@@ -40,7 +42,7 @@ function renderGateBody(
       out.push(
         text(
           {
-            x: g.width / 2,
+            x: bodyWidth / 2,
             y: g.height / 2 + 4,
             class: "schematex-logic-gate-iec-label",
             "text-anchor": "middle",
@@ -50,9 +52,36 @@ function renderGateBody(
       );
     }
   } else {
+    const artwork = getGatePaths(n.gateType ?? "unknown", g.width, g.height, g.bodyScaleY);
+    if (artwork.xorGap) {
+      out.push(pathEl({ d: artwork.xorGap, class: "schematex-logic-xor-gap" }));
+    }
     out.push(
-      el("path", { d: g.ansiPath, class: "schematex-logic-gate-body" })
+      pathEl({ d: artwork.body, class: "schematex-logic-gate-body" })
     );
+    if (artwork.xorArc) {
+      out.push(pathEl({ d: artwork.xorArc, class: "schematex-logic-xor-arc" }));
+    }
+
+    for (const pin of g.inputPins) {
+      const backX = curvedBackX(n.gateType ?? "unknown", pin.y, g.height, Boolean(artwork.xorArc));
+      // The frozen anchor may stop short of the curved back. Extend only
+      // the visible shortfall; the body/gap masks any excess routed wire.
+      if (backX !== null && pin.x < backX) {
+        out.push(el("line", { x1: pin.x, y1: pin.y, x2: backX, y2: pin.y, class: "schematex-logic-wire" }));
+      }
+    }
+
+    if (n.gateType === "TRISTATE_BUF" || n.gateType === "TRISTATE_INV") {
+      const enable = g.inputPins.find(pin => pin.id === "en");
+      if (enable) {
+        out.push(el("line", {
+          x1: enable.x, y1: enable.y,
+          x2: enable.x, y2: (55 - 25 * (enable.x - 10) / (bodyWidth - 10)) * (g.bodyScaleY ?? 1),
+          class: "schematex-logic-enable-pin",
+        }));
+      }
+    }
   }
 
   // Unrecognised gate: stamp a centred "?" so the ANSI box reads as a flagged
@@ -76,9 +105,9 @@ function renderGateBody(
     const op = g.outputPins[0];
     out.push(
       circle({
-        cx: op.x - 4,
+        cx: op.x - OUTPUT_BUBBLE_R,
         cy: op.y,
-        r: 4,
+        r: OUTPUT_BUBBLE_R,
         class: "schematex-logic-bubble",
       })
     );
@@ -210,6 +239,7 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
     } else if (n.kind === "input") {
       // Label + short stub line; no rectangle.
       const cy = PORT_H / 2;
+      const portWidth = n.portWidth ?? PORT_SIZE;
       portSvgs.push(
         group({ transform: `translate(${n.x}, ${n.y})`, "data-port": "input" }, [
           text(
@@ -222,15 +252,15 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
             n.label
           ),
           el("line", {
-            x1: PORT_SIZE - 12,
+            x1: portWidth - 12,
             y1: cy,
-            x2: n.isActiveLow ? PORT_SIZE - 8 : PORT_SIZE,
+            x2: n.isActiveLow ? portWidth - 8 : portWidth,
             y2: cy,
             class: "schematex-logic-wire",
           }),
           n.isActiveLow
             ? circle({
-                cx: PORT_SIZE - 4,
+                cx: portWidth - 4,
                 cy,
                 r: 4,
                 class: "schematex-logic-bubble",
@@ -263,10 +293,10 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
     }
   }
 
+  const inputBubbles: string[] = [];
   const wireSvgs = layout.wires.map((w) => {
-    const extras: string[] = [];
     if (w.isActiveLow) {
-      extras.push(
+      inputBubbles.push(
         circle({
           cx: w.toX - 4,
           cy: w.toY,
@@ -276,22 +306,51 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
       );
     }
     return [
+      pathEl({ d: w.path, class: "schematex-logic-wire-clearance" }),
       pathEl({
         d: w.path,
         class: "schematex-logic-wire",
         "data-from": w.fromNode,
         "data-to": w.toNode,
       }),
-      ...extras,
     ].join("");
   });
 
+  // A junction requires three distinct rays belonging to the SAME source net.
+  // A geometric crossing between different sources never receives a dot.
+  const junctions: string[] = [];
+  for (const net of new Set(layout.wires.map(w => w.fromNode))) {
+    const routes = layout.wires.filter(w => w.fromNode === net).map(w =>
+      [...w.path.matchAll(/[ML] ([\d.-]+),([\d.-]+)/g)].map(m => ({ x: +m[1]!, y: +m[2]! })));
+    const vertices = new Map(routes.flat().map(p => [`${p.x},${p.y}`, p]));
+    for (const p of vertices.values()) {
+      const rays = new Set<string>();
+      for (const points of routes) for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1]!, b = points[i]!;
+        if (a.x === p.x && b.x === p.x && p.y >= Math.min(a.y,b.y) && p.y <= Math.max(a.y,b.y)) {
+          if (Math.min(a.y,b.y) < p.y) rays.add("up");
+          if (Math.max(a.y,b.y) > p.y) rays.add("down");
+        }
+        if (a.y === p.y && b.y === p.y && p.x >= Math.min(a.x,b.x) && p.x <= Math.max(a.x,b.x)) {
+          if (Math.min(a.x,b.x) < p.x) rays.add("left");
+          if (Math.max(a.x,b.x) > p.x) rays.add("right");
+        }
+      }
+      if (rays.size >= 3) junctions.push(circle({ cx: p.x, cy: p.y, r: 2.5, class: "schematex-logic-junction", "data-net": net }));
+    }
+  }
+
   const css = `
 .schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-logic-gate-body { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-gate-body { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-arc { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-gap { fill: ${t.bg}; stroke: none; }
+.schematex-logic-enable-pin { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linecap: square; }
 .schematex-logic-bubble { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.5; }
 .schematex-logic-clock-tri { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linejoin: round; }
 .schematex-logic-wire { stroke: ${t.strokeHeavy}; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-wire-clearance { stroke: ${t.bg}; stroke-width: 5; fill: none; }
+.schematex-logic-junction { fill: ${t.strokeHeavy}; }
 .schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: ${t.text}; }
 .schematex-logic-pin-label { font: 9px sans-serif; fill: ${t.stroke}; }
 .schematex-logic-gate-type { font: 10px sans-serif; fill: ${t.textMuted}; }
@@ -335,7 +394,9 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
         [
           group({ class: "schematex-logic-modules" }, moduleSvgs),
           group({ class: "schematex-logic-wires" }, wireSvgs),
+          group({ class: "schematex-logic-junctions" }, junctions),
           group({ class: "schematex-logic-gates" }, gateSvgs),
+          group({ class: "schematex-logic-input-bubbles" }, inputBubbles),
           group({ class: "schematex-logic-ports" }, portSvgs),
         ]
       ),

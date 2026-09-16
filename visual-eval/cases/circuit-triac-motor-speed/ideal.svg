@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1050" viewBox="0 0 1400 1050">
+<title>TRIAC AC Motor Speed Controller — complete netlist schematic</title>
+<rect width="1400" height="1050" fill="white"/>
+<style>
+.w{fill:none;stroke:#18232c;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.s{fill:white;stroke:#18232c;stroke-width:3;stroke-linejoin:round}.n{fill:#18232c}.t{font-family:Helvetica,Arial,sans-serif;font-size:21px;fill:#18232c}.b{font-weight:bold}.small{font-size:17px}.head{font-size:32px;font-weight:bold}.muted{fill:#536471}
+</style>
+<g class="t">
+<text x="65" y="60" class="head">TRIAC AC Motor Speed Controller</text>
+<text x="65" y="94" class="muted">230 V AC · 50 Hz   /   Phase-angle control</text>
+</g>
+<!-- Main circuit: LIVE — F1 — Q1 — M1 — NEUTRAL -->
+<g class="w">
+<path d="M130 560V300H275 M345 300H850 M910 300H1190V540 M1190 630V890H130V650"/>
+</g>
+<!-- AC source -->
+<circle cx="130" cy="605" r="45" class="s"/>
+<path d="M100 605C110 575 120 575 130 605S150 635 160 605" class="w"/>
+<g class="t"><text x="200" y="718" class="b">V1 MAINS</text><text x="200" y="748">230 V AC, 50 Hz</text><text x="65" y="278" class="b">LIVE</text><text x="65" y="927" class="b">NEUTRAL</text><text x="65" y="955" class="small muted">GND net · mains return</text></g>
+<!-- Fuse -->
+<rect x="275" y="287" width="70" height="26" class="s"/>
+<path d="M282 300H338" class="w"/>
+<g class="t" text-anchor="middle"><text x="310" y="240" class="b">F1</text><text x="310" y="268">2 A slow-blow</text></g>
+<!-- TRIAC: two antiparallel thyristor paths -->
+<g class="w"><path d="M850 300V275H858 M850 300V325H858 M902 275H910V325H902"/></g>
+<path d="M858 260L889 275L858 290Z" class="s"/>
+<path d="M902 310L871 325L902 340Z" class="s"/>
+<g class="w"><path d="M890 258V292 M870 308V342 M870 340L835 375V660"/></g>
+<g class="t"><text x="880" y="217" text-anchor="middle" class="b">Q1</text><text x="880" y="245" text-anchor="middle">BT136-600</text><text x="799" y="287" class="small">MT2</text><text x="924" y="287" class="small">MT1</text><text x="849" y="385" class="small">GATE</text><text x="447" y="282" class="small muted">FUSED</text><text x="1080" y="282" class="small muted">LOAD</text></g>
+<!-- Motor -->
+<circle cx="1190" cy="585" r="45" class="s"/>
+<g class="t" text-anchor="middle"><text x="1190" y="590" font-size="32">M</text><text x="1190" y="615">~</text><text x="1115" y="679" text-anchor="end" class="b">M1</text><text x="1115" y="708" text-anchor="end">230 V AC, 150 W</text></g>
+<!-- Snubber between fused and load nodes -->
+<g class="w"><path d="M680 300V155H735 M805 155H975 M975 132V178 M988 132V178 M988 155H1060V300"/></g>
+<rect x="735" y="142" width="70" height="26" class="s"/>
+<g class="t" text-anchor="middle"><text x="770" y="106" class="b">R3</text><text x="770" y="132" class="small">100 Ω, 1 W</text><text x="1090" y="111" class="b">C2</text><text x="1090" y="138" class="small">47 nF, X2 275 VAC</text><text x="875" y="190" class="small muted">TRIAC snubber</text></g>
+<!-- Trigger: R1 then rheostat P1 with wiper tied to PHASE -->
+<g class="w"><path d="M440 300V410 M440 480V545 M440 625V890"/></g>
+<rect x="426" y="410" width="28" height="70" class="s"/>
+<g class="t"><text x="476" y="437" class="b">R1</text><text x="476" y="466">220 kΩ, 0.5 W</text></g>
+<rect x="426" y="545" width="28" height="80" class="s"/>
+<path d="M440 510H365V585H419 M407 578L419 585L407 592" class="w"/>
+<g class="t"><text x="477" y="568" class="b">P1 SPEED</text><text x="477" y="599">470 kΩ</text><text x="280" y="526" class="small muted">PHASE</text></g>
+<!-- C1 interrupts vertical timing branch -->
+<rect x="419" y="749" width="42" height="38" fill="white"/>
+<path d="M440 749V754 M440 777V787 M415 754H465 M415 777H465" class="w"/>
+<g class="t"><text x="480" y="759" class="b">C1</text><text x="480" y="790">100 nF, X2 275 VAC</text></g>
+<!-- DIAC -->
+<path d="M440 660H650 M700 660H735 M795 660H835" class="w"/>
+<path d="M650 645L675 660L650 675Z M700 645L675 660L700 675Z" class="s"/>
+<path d="M650 640V680 M700 640V680" class="w"/>
+<g class="t" text-anchor="middle"><text x="675" y="703" class="b">D1</text><text x="675" y="730">DB3, 32 V</text></g>
+<text x="448" y="649" class="t small muted">DIAC_A</text>
+<!-- R2 in series from DIAC output to TRIAC gate -->
+<rect x="735" y="647" width="60" height="26" class="s"/>
+<g class="t" text-anchor="middle"><text x="765" y="599" class="b">R2</text><text x="765" y="628">180 Ω</text></g>
+<!-- Junction dots -->
+<g class="n"><circle cx="440" cy="300" r="5"/><circle cx="680" cy="300" r="5"/><circle cx="1060" cy="300" r="5"/><circle cx="440" cy="510" r="5"/><circle cx="440" cy="660" r="5"/><circle cx="440" cy="890" r="5"/></g>
+<g class="t small muted"><text x="65" y="1005">DIAC firing path: timing network → D1 → R2 → TRIAC gate.</text></g>
+</svg>

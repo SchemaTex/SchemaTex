@@ -1,0 +1,17 @@
+# Scenario: public agency compares workplace-policy characteristics for hybrid planning.
+comparison "Remote-first versus office-first policy"
+mode: matrix
+option "Remote-first"
+option "Office-first"
+criterion "Commute burden"
+  Remote-first: "Low"
+  Office-first: "High"
+criterion "Informal collaboration"
+  Remote-first: partial
+  Office-first: yes
+criterion "Geographic hiring"
+  Remote-first: yes
+  Office-first: no
+criterion "Workspace cost"
+  Remote-first: "Lower"
+  Office-first: "Higher"

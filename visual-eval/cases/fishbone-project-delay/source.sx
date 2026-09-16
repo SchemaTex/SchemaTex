@@ -1,0 +1,34 @@
+# Scenario: software programme office analyses a delayed regulatory reporting release.
+fishbone "Regulatory reporting release delay"
+
+effect "Release missed the statutory deadline"
+
+category people "People"
+category process "Process"
+category platform "Platform"
+category partners "Partners"
+
+people: "Two analysts reassigned"
+  - "Backfill approved after code freeze"
+people: "One expert owns the reporting rules"
+people: "QA lead on leave through UAT"
+people: "Team split across three workstreams"
+
+process: "Requirements changed after build started"
+  - "Approval gate skipped"
+process: "Scope added mid-sprint without trade-off"
+process: "Estimates never revised after discovery"
+process: "Defects triaged weekly, not daily"
+process: "Regulatory sign-off queued behind an audit"
+
+platform: "Test environment unstable"
+  - "Masked production data unavailable"
+platform: "Deploy pipeline shared with another release"
+platform: "Report times out on the full dataset"
+platform: "Schema migration blocked by a legacy job"
+
+partners: "Vendor interface specification arrived late"
+  - "Two revisions after the freeze"
+partners: "Vendor test window limited to weekdays"
+partners: "Change order took six weeks to sign"
+partners: "Regulator clarification still pending"

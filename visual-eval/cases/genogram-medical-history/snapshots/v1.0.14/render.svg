@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 940.4 572" class="schematex-diagram schematex-genogram" width="940.4" height="572"><title>Genogram</title>
+<desc>Genogram diagram with 12 individuals across 3 generations</desc>
+<defs><clipPath id="schematex-genogram-clip-half-left-rect" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-left-circle" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-rect" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-circle" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="robert" data-to="helen"><path d="M 339.8 60 L 419.8 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert" data-to="helen"><path d="M 379.8 60 L 379.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert" data-to="helen"><path d="M 139.8 141 L 619.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert+helen" data-to="david"><path d="M 139.8 141 L 139.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert+helen" data-to="linda"><path d="M 379.8 141 L 379.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert+helen" data-to="@medical: &quot;type 2 diabetes&quot;"><path d="M 499.8 141 L 499.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="robert+helen" data-to="@medical: &quot;asthma&quot;"><path d="M 619.8 141 L 619.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="david" data-to="susan"><path d="M 159.8 226 L 239.8 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="susan"><path d="M 199.8 226 L 199.8 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="susan"><path d="M 79.8 307 L 319.8 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+susan" data-to="emma"><path d="M 79.8 307 L 79.8 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+susan" data-to="james"><path d="M 199.8 307 L 199.8 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+susan" data-to="@medical: &quot;major depressive disorder; asthma&quot;"><path d="M 319.8 307 L 319.8 372" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="robert" transform="translate(319.8, 60)"><title>Robert Wilson (1940-2018)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" clip-path="url(#schematex-genogram-clip-half-left-rect)" fill="#E53935" class="schematex-genogram-condition-fill schematex-genogram-condition-heart-disease"/>
+<rect x="-20" y="-20" width="40" height="40" clip-path="url(#schematex-genogram-clip-half-right-rect)" fill="#FB8C00" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">78</text></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="helen" transform="translate(439.8, 60)"><title>Helen Wilson (1943)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<circle cx="0" cy="0" r="20" fill="#5C6BC0" class="schematex-genogram-condition-fill schematex-genogram-condition-depression"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;coronary artery disease; type 2 diabetes&quot;" transform="translate(599.8, 60)"><title>@medical: &quot;Coronary artery disease; type 2 diabetes&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;major depressive disorder&quot;" transform="translate(759.8, 60)"><title>@medical: &quot;Major depressive disorder&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="david" transform="translate(139.8, 226)"><title>David Wilson (1966)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" fill="#FB8C00" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="susan" transform="translate(259.8, 226)"><title>Susan Wilson (1968)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<circle cx="0" cy="0" r="20" fill="#5C6BC0" class="schematex-genogram-condition-fill schematex-genogram-condition-depression"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="linda" transform="translate(379.8, 226)"><title>Linda Wilson (1969)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<circle cx="0" cy="0" r="20" fill="#42A5F5" class="schematex-genogram-condition-fill schematex-genogram-condition-asthma"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;type 2 diabetes&quot;" transform="translate(499.8, 226)"><title>@medical: &quot;Type 2 diabetes&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;asthma&quot;" transform="translate(619.8, 226)"><title>@medical: &quot;Asthma&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-female schematex-genogram-index-person" data-individual-id="emma" transform="translate(79.8, 392)"><title>Emma Wilson (1994)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<circle cx="0" cy="0" r="20" clip-path="url(#schematex-genogram-clip-half-left-circle)" fill="#5C6BC0" class="schematex-genogram-condition-fill schematex-genogram-condition-depression"/>
+<circle cx="0" cy="0" r="20" clip-path="url(#schematex-genogram-clip-half-right-circle)" fill="#42A5F5" class="schematex-genogram-condition-fill schematex-genogram-condition-asthma"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="james" transform="translate(199.8, 392)"><title>James Wilson (1997)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-unknown" data-individual-id="@medical: &quot;major depressive disorder; asthma&quot;" transform="translate(319.8, 392)"><title>@medical: &quot;Major depressive disorder; asthma&quot;</title>
+<polygon points="0,-20 20,0 0,20 -20,0" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="319.8" y="98" class="schematex-genogram-label" data-individual-id="robert">Robert Wilson (1940–2018)</text>
+<text x="439.8" y="98" class="schematex-genogram-label" data-individual-id="helen">Helen Wilson (b. 1943)</text>
+<text x="599.8" y="98" class="schematex-genogram-label" data-individual-id="@medical: &quot;coronary artery disease; type 2 diabetes&quot;">@medical: &quot;Coronary artery disease; type 2 diabetes&quot;</text>
+<text x="759.8" y="98" class="schematex-genogram-label" data-individual-id="@medical: &quot;major depressive disorder&quot;">@medical: &quot;Major depressive disorder&quot;</text>
+<text x="139.8" y="264" class="schematex-genogram-label" data-individual-id="david">David Wilson (b. 1966)</text>
+<text x="259.8" y="264" class="schematex-genogram-label" data-individual-id="susan">Susan Wilson (b. 1968)</text>
+<text x="379.8" y="264" class="schematex-genogram-label" data-individual-id="linda">Linda Wilson (b. 1969)</text>
+<text x="499.8" y="264" class="schematex-genogram-label" data-individual-id="@medical: &quot;type 2 diabetes&quot;">@medical: &quot;Type 2 diabetes&quot;</text>
+<text x="619.8" y="264" class="schematex-genogram-label" data-individual-id="@medical: &quot;asthma&quot;">@medical: &quot;Asthma&quot;</text>
+<text x="79.8" y="430" class="schematex-genogram-label" data-individual-id="emma">Emma Wilson (b. 1994)</text>
+<text x="199.8" y="430" class="schematex-genogram-label" data-individual-id="james">James Wilson (b. 1997)</text>
+<text x="319.8" y="430" class="schematex-genogram-label" data-individual-id="@medical: &quot;major depressive disorder; asthma&quot;">@medical: &quot;Major depressive disorder; asthma&quot;</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="514.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.unknown" data-legend-section="symbols"><polygon points="117.5,506 122.5,511 117.5,516 112.5,511" fill="#f5f5f5" stroke="#334155"/>
+<text x="136.5" y="514.5" class="schematex-legend-label">Unknown</text></g>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="208.5" y1="507" x2="216.5" y2="515" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="216.5" y1="507" x2="208.5" y2="515" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="231.5" y="514.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="532.5" class="schematex-legend-section">CONDITIONS</text>
+<g class="schematex-legend-row" data-legend-key="heart-disease" data-legend-section="conditions"><rect x="107.5" y="524" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="107.5" y="524" width="10" height="10" fill="#E53935"/>
+<text x="136.5" y="532.5" class="schematex-legend-label">Heart Disease</text></g>
+<g class="schematex-legend-row" data-legend-key="diabetes" data-legend-section="conditions"><rect x="241.5" y="524" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="251.5" y="524" width="10" height="10" fill="#FB8C00"/>
+<text x="270.5" y="532.5" class="schematex-legend-label">Diabetes</text></g>
+<g class="schematex-legend-row" data-legend-key="depression" data-legend-section="conditions"><rect x="342.5" y="524" width="20" height="10" fill="#5C6BC0" stroke="#334155"/>
+<text x="371.5" y="532.5" class="schematex-legend-label">Depression</text></g>
+<g class="schematex-legend-row" data-legend-key="asthma" data-legend-section="conditions"><rect x="456.5" y="524" width="20" height="10" fill="#42A5F5" stroke="#334155"/>
+<text x="485.5" y="532.5" class="schematex-legend-label">Asthma</text></g>
+<text x="16" y="550.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="109.5" y="544" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="107.5" y="542" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="136.5" y="550.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

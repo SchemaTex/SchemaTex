@@ -1,0 +1,78 @@
+{
+  "id": "comparison-buy-lease",
+  "type": "comparison",
+  "variant": "matrix",
+  "title": "Buy versus lease packaging line",
+  "goal": "A factory team can compare the trade-offs of buying or leasing a packaging line.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Buy and Lease are visible as parallel option columns."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The table visibly compares cash, maintenance, upgrade, and ownership criteria."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Yes/no and text differences are visually distinguishable."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "All comparison cells are readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The grid structure makes row-to-column comparison clear."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/matrix exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a clear Buy/Lease comparison table. All four criteria and their corresponding values are visible, readable, and aligned in parallel columns; yes/no states are distinguished with consistent icons and a legend. No blocking defects are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:03:13.655Z",
+      "targetHash": "d7f84c6e5ea5",
+      "sourceHash": "f8aa6ed4b10d",
+      "exemplarHash": "2d3ee2a53d3e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Buy and Lease appear as parallel option columns."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The table includes Up-front cash, Maintenance responsibility, Technology upgrade, and Asset ownership."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Cash and maintenance differences are stated in text; upgrade and ownership use distinct yes/no icons explained by the legend."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "All comparison cells are readable, with no visible clipping or overlap."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Alternating row shading and aligned columns make each criterion-to-option comparison clear."
+        }
+      ]
+    }
+  }
+}

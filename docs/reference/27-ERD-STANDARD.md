@@ -303,7 +303,7 @@ Three presets: `default` (academic blue-grey), `monochrome` (BW / textbook), `da
 
 - Entities laid out with **layered orthogonal layout** — same Sugiyama primitives as `flowchart` (§14): cycle removal → layering → barycenter ordering → Brandes-Köpf x-coordinate.
 - Tabular boxes: header bar 24px, attribute row 18px. Width fits the longest attribute string + 32px padding.
-- Relationship lines: orthogonal (Manhattan), right-angle bends, snap 10px.
+- Relationship lines: orthogonal (Manhattan), routed around measured table bounds with 20px clearance. Terminal escapes reserve space for cardinality glyphs; routing reuses the existing geometry router. No authored coordinates or bend controls are required.
 - Endpoint glyphs (crow's foot, bar, circle) drawn at line endpoints, offset 14px from entity edge.
 - FK arrows from many-side to one-side; conventionally many-side is below/right of one-side.
 - M:N pre-resolved to two 1:N via associative entity at parse time (warning emitted suggesting the explicit associative form).
@@ -325,9 +325,11 @@ Three presets: `default` (academic blue-grey), `monochrome` (BW / textbook), `da
 
 ### 6.4 Routing details
 
-- Self-referential (recursive) relationships: rendered as a **C-shaped loop** exiting the right side of the entity, looping back to the bottom side.
+- Self-referential relationships route outside their own table, using distinct terminal sides. Explicit field references stay attached to their attribute row.
 - Multi-arity relationships (Chen ternary): the diamond is the geometric center; participating entities radiate at angles equidistant.
-- Edge labels: rendered near the cardinality glyph (crow's foot) or near the diamond (Chen) with a 4px halo background.
+- Tabular relationship labels sit above a horizontal segment where space permits, otherwise beside a vertical segment or below a horizontal one. Candidate positions account for tables, all wires including their own, and previously placed labels. Text has no opaque background that could hide a connection.
+- Ordinary table relationships use separate available terminals. Routing discourages overlapping strokes and crossings, while preserving the requested relationship and cardinality.
+- Horizontal corridors grow with measured label width; bounds include outside detours and labels. This is geometric spacing, not a schema-specific layout template.
 
 ---
 
@@ -389,6 +391,6 @@ A sixth nice-to-have for the gallery: **the original Chen 1976 SPJ example** (Su
 
 ## 10. Implementation Status
 
-Not yet implemented. Tracked as `erd` engine; impl docs land in `../CoCEO/schematex/impl/27.X-erd-*.md`.
+**v0.1 — shipped.** The `erd` engine lives in `src/diagrams/erd/`: parser, layout, and renderer, drawing crow's-foot notation. Chen and Barker notation, and the items in §9, are still deferred. Impl docs: `../CoCEO/schematex/impl/27.X-erd-*.md`.
 
 The engine is **distinct from `entity` (§12)**. The `entity` engine remains for corporate / legal / tax ownership hierarchies; the `erd` engine is for relational data modelling.

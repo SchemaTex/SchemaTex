@@ -1,0 +1,49 @@
+{
+  "id": "circuit-4-20ma-loop",
+  "type": "circuit",
+  "title": "4-20 mA pressure loop",
+  "goal": "Show one unbroken two-wire 4-20 mA series loop from supply through transmitter, sense resistor, PLC input, and return.",
+  "rubric": [
+    {
+      "id": "24v-loop-supply",
+      "severity": "blocker",
+      "must": "A 24 VDC loop supply rated 100 mA is visible."
+    },
+    {
+      "id": "series-loop-path",
+      "severity": "blocker",
+      "must": "One continuous series path runs from the loop supply through the transmitter, sense resistor, PLC input, and back to the supply."
+    },
+    {
+      "id": "pressure-transmitter",
+      "severity": "blocker",
+      "must": "A labelled two-wire pressure transmitter with a 4-20 mA rating is visible."
+    },
+    {
+      "id": "field-terminals",
+      "severity": "major",
+      "must": "Numbered field-out and field-return terminal blocks are visibly placed in the loop wiring."
+    },
+    {
+      "id": "sense-resistor",
+      "severity": "blocker",
+      "must": "A clearly labelled 250 ohm sense resistor is visible in series before the PLC analogue input."
+    },
+    {
+      "id": "handheld-meter-points",
+      "severity": "major",
+      "must": "Two labelled test points and a hand-held 4-20 mA meter connection are shown across the sense point."
+    },
+    {
+      "id": "readable-instrument-labels",
+      "severity": "minor",
+      "must": "Reference designators and ratings remain legible beside their corresponding instrument parts."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. One series loop: supply + through TB1 to the transmitter, transmitter - through TB2 to the 250 ohm sense resistor, then into the PLC analogue input and back to the supply -; the hand-held meter hangs across the sense resistor at TP1/TP2 and does not bypass it."
+  }
+}

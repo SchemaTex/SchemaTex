@@ -11,6 +11,9 @@
  * tokens), <title>/<desc>, data-* for interactivity, svg.ts builder only.
  */
 
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
+
 import type { RenderConfig } from "../../core/types";
 import {
   group,
@@ -72,7 +75,7 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
 .sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: ${theme.accent}; }
 .sx-idef0-label { fill: ${theme.text}; font-size: ${FONT_SIZE.small + 1}px; }
 .sx-idef0-icom { fill: ${theme.textMuted}; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
-.sx-idef0-title { fill: ${theme.text}; font-size: ${FONT_SIZE.title}px; font-weight: 700; }
+.sx-idef0-title { fill: ${theme.text}; font-size: ${TITLE.size}px; font-weight: ${TITLE.weight}; }
 .sx-idef0-meta { fill: ${theme.textMuted}; font-size: ${FONT_SIZE.small + 1}px; }
 .sx-idef0-tb { fill: none; stroke: ${theme.stroke}; stroke-width: ${STROKE_WIDTH.thin}; }
 .sx-idef0-tb-text { fill: ${theme.text}; font-size: ${FONT_SIZE.small + 1}px; }
@@ -91,10 +94,18 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
 
   // Title.
   if (ast.title) {
+    const title = resolveSceneTitle(ast.title, undefined, layout.width / 2, TITLE.y, config);
     inner.push(
-      svgText({ x: layout.width / 2, y: 24, class: "sx-idef0-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
+      svgText({ x: title.x, y: title.y, ...title.attrs, class: "sx-idef0-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
     );
   }
+
+  inner.push(rect({
+    x: C.MARGIN / 3, y: TITLE.bandH + C.MARGIN / 3,
+    width: layout.width - C.MARGIN * 2 / 3,
+    height: layout.height - C.TITLEBLOCK_H - TITLE.bandH - C.MARGIN / 3,
+    class: "sx-idef0-frame",
+  }));
 
   // Arrows (under boxes so heads sit cleanly at the edge).
   for (const a of layout.arrows) {
@@ -179,7 +190,12 @@ function renderArrow(a: Idef0LayoutArrow): string {
       ...(a.margin ? { "data-margin": "true" } : {}),
       ...(a.arrow.tunneled ? { "data-tunneled": "true" } : {}),
     }),
-    arrowHead(a.head.x, a.head.y, a.head.dir, a.margin),
+    arrowHead(a.head.x, a.head.y,
+      a.arrow.to.kind === "boundary" ? a.head.dir
+        : a.head.dir === "left" ? "right"
+        : a.head.dir === "top" ? "bottom"
+        : a.head.dir === "bottom" ? "top" : "left",
+      a.margin),
   ];
 
   // Label at the open end.
@@ -253,8 +269,8 @@ function arrowHead(x: number, y: number, dir: BoxSide, margin: boolean): string 
 function renderTitleBlock(width: number, height: number, node: string, title: string): string {
   const h = C.TITLEBLOCK_H;
   const y = height - h;
-  const x0 = C.MARGIN / 2;
-  const x1 = width - C.MARGIN / 2;
+  const x0 = C.MARGIN / 3;
+  const x1 = width - C.MARGIN / 3;
   const w = x1 - x0;
   const c1 = x0 + w * 0.22;
   const c2 = x0 + w * 0.78;
@@ -266,8 +282,9 @@ function renderTitleBlock(width: number, height: number, node: string, title: st
     svgText({ x: x0 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "NODE"),
     svgText({ x: x0 + 6, y: y + 27, class: "sx-idef0-tb-text" }, node),
     svgText({ x: c1 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "TITLE"),
-    svgText({ x: c1 + 6, y: y + 27, class: "sx-idef0-tb-text" }, clip(title || "—", 60)),
+    svgText({ x: c1 + 6, y: y + 27, class: "sx-idef0-tb-text" }, clip(title, 60)),
     svgText({ x: c2 + 6, y: y + 13, class: "sx-idef0-tb-key" }, "NUMBER"),
+    svgText({ x: c2 + 6, y: y + 27, class: "sx-idef0-tb-text" }, node),
   ]);
 }
 

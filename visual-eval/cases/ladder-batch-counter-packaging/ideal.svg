@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="990" viewBox="0 0 1400 990">
+  <title>Batch Counter Packaging — Ladder Diagram</title>
+  <rect width="1400" height="990" fill="white"/>
+  <style>
+    text { font-family: 'DejaVu Sans', sans-serif; fill: #17212b; }
+    .wire { fill: none; stroke: #17212b; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    .label { font-size: 22px; text-anchor: middle; }
+    .comment { font-size: 21px; }
+    .number { font-size: 20px; text-anchor: middle; }
+    .instruction { font-size: 22px; font-weight: 600; text-anchor: middle; }
+  </style>
+  <text x="70" y="57" font-size="32" font-weight="600">Batch Counter Packaging</text>
+  <text x="70" y="91" font-size="18">Product count • Full-package divert • Guarded reset</text>
+  <!-- Power rails -->
+  <path class="wire" d="M120 132V929 M1280 132V929"/>
+  <!-- Rung 0 -->
+  <text class="number" x="72" y="218">0</text>
+  <text class="comment" x="145" y="152">Count product photoeye pulses</text>
+  <text class="label" x="300" y="188">PackageRun</text>
+  <path class="wire" d="M120 222H287 M287 202V242 M313 202V242 M313 222H555"/>
+  <text class="label" x="600" y="188">ProductPhotoeye</text>
+  <rect class="wire" x="555" y="200" width="90" height="44"/>
+  <text class="instruction" x="600" y="230">ONS</text>
+  <path class="wire" d="M645 222H1000 M1215 222H1280"/>
+  <rect class="wire" x="1000" y="172" width="215" height="105"/>
+  <text class="instruction" x="1107.5" y="199">CTU</text>
+  <text class="label" x="1107.5" y="229">PackageCounter</text>
+  <text class="label" x="1107.5" y="259">PV = 12</text>
+  <!-- Rung 1 -->
+  <text class="number" x="72" y="358">1</text>
+  <text class="comment" x="145" y="303">Divert full package at preset</text>
+  <text class="label" x="380" y="338">PackageCounter.Q</text>
+  <text class="label" x="1108" y="338">DivertGate</text>
+  <path class="wire" d="M120 372H367 M367 352V392 M393 352V392 M393 372H1086 M1086 352C1067 362 1067 382 1086 392 M1130 352C1149 362 1149 382 1130 392 M1130 372H1280"/>
+  <!-- Rung 2 -->
+  <text class="number" x="72" y="493">2</text>
+  <text class="comment" x="145" y="438">Full package lamp</text>
+  <text class="label" x="380" y="473">PackageCounter.Q</text>
+  <text class="label" x="1108" y="473">BatchFullLamp</text>
+  <path class="wire" d="M120 507H367 M367 487V527 M393 487V527 M393 507H1086 M1086 487C1067 497 1067 517 1086 527 M1130 487C1149 497 1149 517 1130 527 M1130 507H1280"/>
+  <!-- Rung 3: normally closed contact -->
+  <text class="number" x="72" y="628">3</text>
+  <text class="comment" x="145" y="573">Inhibit conveyor while diverting</text>
+  <text class="label" x="380" y="608">PackageCounter.Q</text>
+  <text class="label" x="1108" y="608">PackageRun</text>
+  <path class="wire" d="M120 642H367 M367 622V662 M393 622V662 M361 665L399 619 M393 642H1086 M1086 622C1067 632 1067 652 1086 662 M1130 622C1149 632 1149 652 1130 662 M1130 642H1280"/>
+  <!-- Rung 4 -->
+  <text class="number" x="72" y="763">4</text>
+  <text class="comment" x="145" y="708">Reset counter after discharge</text>
+  <text class="label" x="300" y="743">ResetPB</text>
+  <text class="label" x="600" y="743">PackageClear</text>
+  <text class="label" x="1108" y="743">PackageCounter</text>
+  <path class="wire" d="M120 777H287 M287 757V797 M313 757V797 M313 777H587 M587 757V797 M613 757V797 M613 777H1063 M1063 754C1044 766 1044 788 1063 800 M1153 754C1172 766 1172 788 1153 800 M1153 777H1280"/>
+  <text class="instruction" x="1108" y="785">RES</text>
+  <!-- Rung 5 -->
+  <text class="number" x="72" y="898">5</text>
+  <text class="comment" x="145" y="843">Reset full indication</text>
+  <text class="label" x="300" y="878">ResetPB</text>
+  <text class="label" x="600" y="878">PackageClear</text>
+  <text class="label" x="1108" y="878">ResetAccepted</text>
+  <path class="wire" d="M120 912H287 M287 892V932 M313 892V932 M313 912H587 M587 892V932 M613 892V932 M613 912H1086 M1086 892C1067 902 1067 922 1086 932 M1130 892C1149 902 1149 922 1130 932 M1130 912H1280"/>
+</svg>

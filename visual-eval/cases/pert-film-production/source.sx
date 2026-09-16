@@ -1,0 +1,18 @@
+# Feature-film production schedule in days; principal photography drives the critical finish chain.
+pert
+title: "Feature Film Production"
+unit: days
+direction: LR
+layout: network
+task A "Greenlight" milestone
+task B "Lock screenplay" duration: 10 after: A tags: development
+task C "Cast leads" duration: 12 after: B tags: production
+task D "Scout locations" duration: 10 after: B tags: production
+task E "Build sets" duration: 15 after: D tags: art
+task F "Principal photography" duration: 30 after: C, E tags: production
+task G "Edit picture" duration: 20 after: F tags: post
+task H "Sound design and mix" duration: 12 after: G tags: post
+task I "Visual effects" duration: 18 after: G tags: post
+task J "Final colour grade" duration: 6 after: H, I tags: post
+task K "Festival delivery" milestone after: J
+task L "Marketing trailer" duration: 8 after: F tags: marketing

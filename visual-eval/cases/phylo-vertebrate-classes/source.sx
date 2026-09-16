@@ -1,0 +1,5 @@
+# Vertebrate phylogeny: mammals and birds are amniotes; ray-finned fish remain outside tetrapods.
+phylo "Vertebrate Classes" [layout: rectangular, mode: phylogram]
+  newick: "((Mammalia:0.20,Aves:0.19):0.15,(Reptilia:0.18,Amphibia:0.24):0.10,Actinopterygii:0.42):0.30;"
+  clade Amniotes = (Mammalia, Aves, Reptilia) [color: "#8E24AA"]
+  scale "relative divergence"

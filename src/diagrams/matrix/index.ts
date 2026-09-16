@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import { parseMatrix } from "./parser";
 import { renderMatrix } from "./renderer";
@@ -5,7 +6,7 @@ import { renderMatrix } from "./renderer";
 export const matrix: DiagramPlugin = {
   type: "matrix",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("matrix");
   },
   parse: parseMatrix,

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<title>Terminal Block Control Panel — 24 VDC fused selector and relay circuit</title>
+<defs>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#17232d;font-size:18px} .wire{fill:none;stroke:#17232d;stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter}.symbol{fill:white;stroke:#17232d;stroke-width:2.5}.terminal{fill:white;stroke:#17232d;stroke-width:2}.small{font-size:15px}.label{font-size:20px;font-weight:bold}.heading{font-size:30px;font-weight:bold}.muted{fill:#53616c}.dot{fill:#17232d}.field{fill:none;stroke:#17232d;stroke-width:2.5}.green{fill:#20834b}
+</style>
+</defs>
+<rect width="1400" height="1000" fill="white"/>
+<text x="45" y="52" class="heading">TERMINAL BLOCK CONTROL PANEL</text>
+<text x="45" y="82" class="muted">24 V DC • Fused control supply • HAND–OFF–AUTO selection</text>
+<path d="M45 102H1355" stroke="#17232d" stroke-width="1"/>
+<!-- Edge terminal blocks: terminal numbers are printed in every cell. -->
+<text x="48" y="147" class="label">TB1 FIELD IN</text>
+<text x="48" y="173" class="small">T1 · 6-way, 600 V</text>
+<rect x="185" y="202" width="75" height="623" rx="0" fill="#f3f5f6" stroke="#17232d" stroke-width="2.5"/>
+<path d="M185 290H260M185 390H260M185 490H260M185 590H260M185 700H260" stroke="#17232d" stroke-width="1.5"/>
+<g class="terminal"><circle cx="222" cy="240" r="14"/><circle cx="222" cy="340" r="14"/><circle cx="222" cy="440" r="14"/><circle cx="222" cy="540" r="14"/><circle cx="222" cy="650" r="14"/><circle cx="222" cy="770" r="14"/></g>
+<g text-anchor="middle" font-weight="bold"><text x="222" y="281">1</text><text x="222" y="381">2</text><text x="222" y="481">3</text><text x="222" y="581">4</text><text x="222" y="691">5</text><text x="222" y="811">6</text></g>
+<g class="small"><text x="272" y="227">FIELD_L</text><text x="272" y="327">FIELD_N</text><text x="272" y="427">SELECT</text><text x="272" y="527">COM</text><text x="272" y="637">OUT_L</text><text x="272" y="757">OUT_N</text></g>
+<!-- Incoming field wires W1 / W2. -->
+<path class="field" d="M35 240H208M35 340H208"/>
+<path d="M160 234L172 240L160 246M160 334L172 340L160 346" class="wire"/>
+<text x="35" y="214" class="small">W1 · Field wire 1</text><text x="35" y="314" class="small">W2 · Field wire 2</text>
+<text x="40" y="378" class="small muted">FIELD ENTRY →</text>
+<!-- Power supply and fused rail. -->
+<path class="wire" d="M236 240H570V180M420 180H520M570 180H705M800 180H1010V240H1184"/>
+<circle cx="420" cy="350" r="43" class="symbol"/>
+<path class="wire" d="M420 180V307M420 393V850H1080"/>
+<text x="420" y="339" text-anchor="middle" font-size="25">+</text><text x="420" y="380" text-anchor="middle" font-size="27">−</text>
+<text x="472" y="336" class="label">V1 / PS1 24 VDC</text><text x="472" y="363">24 V DC</text>
+<text x="430" y="164" class="small">L24 (+)</text>
+<!-- IEC fuse rectangle with internal conductor. -->
+<rect x="520" y="168" width="50" height="24" class="symbol"/><path d="M522 180H568" class="wire"/>
+<text x="545" y="132" class="label" text-anchor="middle">F1 · 1 A</text><text x="579" y="164" class="small">FUSED</text>
+<circle cx="570" cy="180" r="4.5" class="dot"/>
+<!-- Three-position selector, shown in OFF. -->
+<circle cx="710" cy="180" r="5" class="symbol"/><circle cx="800" cy="180" r="5" class="symbol"/>
+<path class="wire" d="M715 176L774 148M752 148V132M743 132H761"/>
+<path d="M735 136L729 125M769 136L775 125" stroke="#17232d" stroke-width="1.5"/>
+<text x="760" y="223" class="label" text-anchor="middle">S1 SELECTOR</text>
+<text x="760" y="250" text-anchor="middle">HAND–OFF–AUTO</text>
+<text x="760" y="273" class="small muted" text-anchor="middle">Shown OFF</text>
+<text x="910" y="164" class="small">SELECT</text>
+<!-- Common rail and TB1 internal terminals. -->
+<path class="wire" d="M236 340H350V850H420M236 440H880V180M236 540H350M236 650H960V310H1184M236 770H1080V850M1080 390H1184M1080 390V770"/>
+<circle cx="350" cy="540" r="4.5" class="dot"/><circle cx="350" cy="850" r="4.5" class="dot"/><circle cx="420" cy="850" r="4.5" class="dot"/>
+<circle cx="880" cy="180" r="4.5" class="dot"/>
+<!-- Relay and pilot light connected in parallel between SELECT and COM. -->
+<path class="wire" d="M620 440V580M620 640V850M800 440V575M800 645V850"/>
+<rect x="592" y="580" width="56" height="60" class="symbol"/>
+<text x="605" y="566" class="small">A1</text><text x="605" y="664" class="small">A2</text>
+<text x="571" y="590" class="label" text-anchor="end">K1</text><text x="571" y="617" text-anchor="end">CONTROL RELAY</text><text x="571" y="644" text-anchor="end">24 VDC</text>
+<circle cx="800" cy="610" r="35" fill="#e0f2e6" stroke="#17232d" stroke-width="2.5"/>
+<path d="M775 585L825 635M825 585L775 635" stroke="#20834b" stroke-width="2.5"/>
+<text x="800" y="704" class="label" text-anchor="middle">H1 RUN</text><text x="800" y="731" text-anchor="middle" class="green">Green · 24 VDC</text>
+<g class="dot"><circle cx="620" cy="440" r="4.5"/><circle cx="800" cy="440" r="4.5"/><circle cx="620" cy="850" r="4.5"/><circle cx="800" cy="850" r="4.5"/></g>
+<text x="451" y="880" class="label">COM / 0 V DC (−)</text>
+<!-- Switched output and return links, W3 and W4. -->
+<path class="wire" d="M1010 240V310M1080 850V470H1184"/>
+<circle cx="1010" cy="310" r="4.5" class="dot"/>
+<text x="995" y="287" class="small" text-anchor="end">W3</text>
+<text x="1067" y="505" class="small" text-anchor="end">W4</text>
+<!-- Output terminal block on opposite drawing edge. -->
+<text x="1128" y="147" class="label">TB2 FIELD OUT</text>
+<text x="1128" y="173" class="small">T2 · 4-way, 600 V</text>
+<rect x="1170" y="202" width="65" height="308" fill="#f3f5f6" stroke="#17232d" stroke-width="2.5"/>
+<path d="M1170 275H1235M1170 355H1235M1170 435H1235" stroke="#17232d" stroke-width="1.5"/>
+<g class="terminal"><circle cx="1198" cy="240" r="14"/><circle cx="1198" cy="310" r="14"/><circle cx="1198" cy="390" r="14"/><circle cx="1198" cy="470" r="14"/></g>
+<g class="small" text-anchor="middle" font-weight="bold"><text x="1198" y="270">9</text><text x="1198" y="344">7</text><text x="1198" y="424">8</text><text x="1198" y="504">10</text></g>
+<path class="field" d="M1212 310H1360M1212 390H1360"/>
+<path class="wire" d="M1346 304L1358 310L1346 316M1346 384L1358 390L1346 396"/>
+<text x="1247" y="294" class="small">OUT_L</text><text x="1247" y="374" class="small">OUT_N</text>
+<text x="1100" y="227" class="small">SELECT</text><text x="1100" y="457" class="small">COM</text>
+<text x="1115" y="550" class="small">FIELD EXIT →</text>
+<text x="1115" y="578" class="small">W3 · Switched</text><text x="1154" y="599" class="small">field output</text><text x="1115" y="628" class="small">W4 · Field return</text>
+<path d="M45 924H1355" stroke="#17232d" stroke-width="1"/>
+<text x="45" y="954" class="small muted">Terminal numbers identify connection points. Solid dots indicate electrical junctions; unmarked crossings do not connect.</text>
+<text x="1355" y="982" text-anchor="end" class="small muted">CONTROL SCHEMATIC · 01</text>
+</svg>

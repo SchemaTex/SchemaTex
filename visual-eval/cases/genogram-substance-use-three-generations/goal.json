@@ -1,0 +1,40 @@
+{
+  "id": "genogram-substance-use-three-generations",
+  "type": "genogram",
+  "title": "Morris substance-use pattern",
+  "goal": "Trace substance-use history and emotional patterns through three generations.",
+  "rubric": [
+    {
+      "id": "generations",
+      "severity": "blocker",
+      "must": "Arthur and Joan, Peter and Susan, and Caleb and Emily form three visibly ordered generations."
+    },
+    {
+      "id": "conditions",
+      "severity": "blocker",
+      "must": "Alcohol-use and opioid-use condition fills are visibly distinct and associated with Arthur, Peter, and Caleb."
+    },
+    {
+      "id": "index",
+      "severity": "major",
+      "must": "Caleb alone has the visible index-person double outline."
+    },
+    {
+      "id": "emotional",
+      "severity": "blocker",
+      "must": "Caleb–Peter cutoff, Caleb–Susan close, and Peter–Susan conflict overlays are visibly distinct."
+    },
+    {
+      "id": "dates",
+      "severity": "minor",
+      "must": "Names and years remain readable, including Arthur's deceased marker."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Three Morris generations show alcohol-use, opioid-use, and depression fills, Arthur’s deceased cross, and Caleb’s index outline. Curved gutter ties distinguish Caleb–Peter cutoff, Caleb–Susan closeness, and Peter–Susan conflict, with the no-contact label in the cutoff break."
+  }
+}

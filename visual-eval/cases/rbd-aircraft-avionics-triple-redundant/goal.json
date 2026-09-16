@@ -1,0 +1,45 @@
+{
+  "id": "rbd-aircraft-avionics-triple-redundant",
+  "type": "rbd",
+  "title": "Triple-redundant aircraft avionics",
+  "goal": "Show majority-voted triple-redundant flight computers in a series avionics path.",
+  "rubric": [
+    {
+      "id": "path",
+      "severity": "blocker",
+      "must": "A left-to-right reliability path visibly represents aircraft avionics success path."
+    },
+    {
+      "id": "redundancy",
+      "severity": "blocker",
+      "must": "The drawing visibly shows three flight-control computers in a visibly labelled 2/3 group."
+    },
+    {
+      "id": "series",
+      "severity": "blocker",
+      "must": "The drawing visibly shows power distribution and actuator interface as series blocks."
+    },
+    {
+      "id": "reliabilities",
+      "severity": "major",
+      "must": "Every component block visibly displays its reliability value."
+    },
+    {
+      "id": "terminals",
+      "severity": "major",
+      "must": "Input and output terminals visibly bracket the success path."
+    },
+    {
+      "id": "summary",
+      "severity": "minor",
+      "must": "A computed system-reliability summary is visible on the drawing."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/rbd/ideal.svg (sha256 1f4f1225b103). Exemplar pale block fills and blue numerical emphasis. Voting groups and reliability values retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -1,0 +1,27 @@
+# Haemophilia A (factor VIII deficiency) — X-linked recessive.
+# Every daughter of an affected man inherits his X, so II-2 and II-3 are obligate
+# carriers by deduction; III-3 was confirmed by factor VIII assay.
+# III-2 and III-3 are first cousins: their mothers are sisters.
+pedigree "Haemophilia A — Four-Generation Family"
+  I-1 [male, affected, deceased]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-2 [female, obligate-carrier]
+    II-3 [female, obligate-carrier]
+
+  II-1 [male, unaffected]
+  II-4 [male, unaffected]
+
+  II-1 -- II-2
+    III-1 [male, affected]
+    III-2 [male, unaffected]
+
+  II-3 -- II-4
+    III-3 [female, carrier-x]
+    III-4 [male, unaffected]
+
+  III-2 == III-3
+    IV-1 [male, affected, proband]
+    IV-2 [unknown, sab]
+    IV-3 [female, carrier-x, twin-mz]
+    IV-4 [female, carrier-x, twin-mz]

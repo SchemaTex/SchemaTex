@@ -1,0 +1,41 @@
+{
+  "id": "prisma-ai-scoping",
+  "type": "prisma",
+  "variant": "single",
+  "title": "AI formative-assessment scoping review",
+  "goal": "A scoping-review reader can trace evidence selection from 2,100 records to 72 sources.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The four-row PRISMA flow is visibly present using scoping-review vocabulary."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The 2,100 identified, 420 duplicates removed, and 1,680 screened counts visibly reconcile."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Visible exclusion boxes account for screening and full-text exclusions."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The final box visibly reports 72 sources of evidence/reports."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Arrows make the flow unambiguous."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 satisfies all five criteria, while Image 2 fails the required counts despite having a clear flow."
+  }
+}

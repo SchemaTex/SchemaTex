@@ -19,10 +19,18 @@ export const genogram: DiagramPlugin = {
   },
 
   parse: parseGenogram,
+  lint(text) {
+    try {
+      return parseGenogram(text).warnings ?? [];
+    } catch {
+      return [];
+    }
+  },
 
   render(text: string, config?: RenderConfig): string {
     const ast = parseGenogram(text);
     const layoutConfig = {
+      fontSize: config?.fontSize ?? 12,
       nodeSpacingX: 80,
       nodeSpacingY: 100,
       nodeWidth: 40,

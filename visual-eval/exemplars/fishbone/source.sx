@@ -1,0 +1,50 @@
+# Scenario: SMT process-engineering team investigates solder bridging on a fine-pitch line.
+fishbone "SMT solder-bridge defect analysis"
+
+effect "Solder bridging on SMT line 3 at 1,850 DPPM"
+
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category measurement "Measurement"
+category environment "Mother Nature"
+
+man: "Night shift trained on old recipe"
+man: "Stencil wipe skipped when late"
+  - "Cycle-time target rewards output"
+man: "Squeegee pressure changed mid-run"
+  - "Pressure set by feel, not spec"
+  - "Never logged on the setup sheet"
+
+machine: "Printer camera misaligns the board"
+machine: "Reflow zone 4 runs hot"
+  - "Peak 8 degrees above profile"
+machine: "Stencil apertures worn on U12"
+  - "Stencil past 40,000-print life"
+  - "No aperture check at changeover"
+
+material: "Paste tub past its open life"
+material: "PCB pad finish varies between lots"
+  - "Second supplier released untried"
+material: "Type-3 paste replaced type-4"
+  - "Coarser powder bridges fine pitch"
+
+method: "Snap-off gap set from memory"
+method: "Reflow profile never re-validated"
+  - "No owner after the handover"
+method: "Print speed raised for takt time"
+  - "Separation speed left unchanged"
+  - "No print study after the change"
+
+measurement: "AOI threshold masks small bridges"
+measurement: "Bridges not trended by feeder"
+  - "All defects share one code"
+measurement: "SPI window wider than paste spec"
+  - "Window opened to cut false calls"
+
+environment: "Paste fridge sits two rooms away"
+environment: "Dock draught chills the printer"
+  - "Dock door open through unload"
+environment: "Line humidity above 60 percent RH"
+  - "Dehumidifier down since June"

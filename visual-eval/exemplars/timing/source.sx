@@ -1,0 +1,8 @@
+# Scenario: I2C register read — write the register address, repeated start, read two bytes, master NACKs the last byte and stops.
+timing "I2C register read burst" [hscale: 2]
+[Control]
+SCL:   pppppppppppp
+[Bus]
+SDA:   x==========x  data: ["S 0x50 W","ACK","Reg 0x10","ACK","Sr 0x50 R","ACK","Data 0","ACK","Data 1","NACK","P"]
+[Status]
+BUSY:  111111111110

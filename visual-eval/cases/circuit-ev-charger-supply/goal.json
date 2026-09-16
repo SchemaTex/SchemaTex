@@ -1,0 +1,44 @@
+{
+  "id": "circuit-ev-charger-supply",
+  "type": "circuit",
+  "title": "EV charge point supply",
+  "goal": "Show the dedicated protected supply, load-management sensing, isolation, and protective-earth connection for an EV charge point.",
+  "rubric": [
+    {
+      "id": "dedicated-main-breaker",
+      "severity": "blocker",
+      "must": "A QF1 EV MAIN BREAKER rated 40 A, C-curve, 10 kA is visible."
+    },
+    {
+      "id": "type-b-rcd",
+      "severity": "blocker",
+      "must": "A Q1 TYPE B RCD rated 40 A, 30 mA, Type B is visible."
+    },
+    {
+      "id": "isolator-before-charge-point",
+      "severity": "major",
+      "must": "An S1 EV ISOLATOR is visibly placed between the RCD and the EV charge point."
+    },
+    {
+      "id": "charge-point-rating",
+      "severity": "major",
+      "must": "U1 EV CHARGE POINT is visibly rated 230 V, 32 A, 7.4 kW."
+    },
+    {
+      "id": "incomer-current-transformer",
+      "severity": "major",
+      "must": "CT1 LOAD MANAGEMENT CT is visible on the incomer and carries a 100 A : 50 mA rating."
+    },
+    {
+      "id": "protective-earth",
+      "severity": "major",
+      "must": "A W1 PROTECTIVE EARTH conductor and a T2 MAIN EARTH TERMINAL are visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Incomer through the current transformer, main breaker, Type B residual current device and local isolator to the charge point, with the transformer's secondary feeding the load manager and a green protective earth of stated cross-section back to the main earth terminal. The supply path is written out along the bottom."
+  }
+}

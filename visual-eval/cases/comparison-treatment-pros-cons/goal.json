@@ -1,0 +1,78 @@
+{
+  "id": "comparison-treatment-pros-cons",
+  "type": "comparison",
+  "variant": "pros-cons",
+  "title": "Anticoagulation pros and cons",
+  "goal": "A clinician and patient can discuss benefits and risks of treatment in balanced columns.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A clearly separated Pros and Cons layout is visible."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "At least three benefit statements and three risk statements are visibly listed."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Positive and negative sides are visually distinguishable."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The treatment question is visibly titled."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "All statements are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/pros-cons exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly presents the treatment question above distinct Pros and Cons columns, with three readable benefit statements and three readable risk statements. Green checks distinguish benefits from red crosses for risks; no material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:04:40.937Z",
+      "targetHash": "f93fc1ba7873",
+      "sourceHash": "8d75cb2a68e4",
+      "exemplarHash": "f28bca4f55ae",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Pros and Cons are shown in separate side-by-side columns with distinct colored divider lines."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Three benefit statements and three risk statements are visibly listed."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Green check icons mark the Pros and red cross icons mark the Cons."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "The title reads “Start direct oral anticoagulation?”"
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "All six statements and the title are readable, with no visible cropping or overlap."
+        }
+      ]
+    }
+  }
+}

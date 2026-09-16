@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+<title>Dual Channel E Stop Safety Relay — dual channel inputs and monitored contactor feedback</title>
+<rect width="1600" height="1100" fill="white"/>
+<defs>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#18242d;font-size:19px} .title{font-size:32px;font-weight:bold}.sub{font-size:17px;fill:#51606b}.label{font-size:20px;font-weight:bold}.small{font-size:16px}.pin{font-size:19px;font-weight:bold}.wire{fill:none;stroke:#263c4b;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}.symbol{fill:white;stroke:#18242d;stroke-width:2.6}.dash{fill:none;stroke:#18242d;stroke-width:2;stroke-dasharray:6 5}.dot{fill:#263c4b}.section{font-size:16px;font-weight:bold;letter-spacing:2px;fill:#51606b}
+</style>
+</defs>
+<text x="65" y="60" class="title">DUAL CHANNEL E STOP SAFETY RELAY</text>
+<text x="65" y="91" class="sub">24 VDC control circuit · Independent NC stop channels · Manual reset · Contactor mirror feedback</text>
+<path d="M65 112H1535" stroke="#aeb8be"/>
+<!-- Supply and fuse -->
+<text x="65" y="152" class="section">SAFETY SUPPLY</text>
+<path class="wire" d="M140 225V185H275M335 185H550V735M140 305V315H40V1000H1480"/>
+<circle class="symbol" cx="140" cy="265" r="40"/>
+<path class="wire" d="M130 247H150M140 237V257M130 284H150"/>
+<text x="65" y="340" class="label">PS1 SAFETY SUPPLY</text>
+<text x="65" y="369">24 VDC, 5 A</text>
+<text x="157" y="215" class="small">L24</text>
+<rect class="symbol" x="275" y="173" width="60" height="24"/>
+<path class="wire" d="M281 185H329"/>
+<text x="270" y="146" class="label">F1 SAFETY FUSE</text>
+<text x="270" y="225">1 A, 250 VDC</text>
+<text x="458" y="171" class="pin">SAFE24</text>
+<!-- Central relay -->
+<rect x="855" y="245" width="320" height="645" rx="3" fill="#f4f7f8" stroke="#18242d" stroke-width="3"/>
+<text x="1015" y="283" text-anchor="middle" class="label">SR1 SAFETY RELAY</text>
+<text x="1015" y="314" text-anchor="middle">24 VDC · SIL3/PLe</text>
+<path d="M875 333H1155" stroke="#aeb8be"/>
+<text x="875" y="366" class="pin">A1</text><text x="935" y="366" class="small">Supply +24 V</text>
+<text x="875" y="446" class="pin">S11-S12</text><text x="875" y="471" class="small">Channel A input</text>
+<text x="875" y="566" class="pin">S21-S22</text><text x="875" y="591" class="small">Channel B input</text>
+<text x="875" y="686" class="pin">Y1-Y2</text><text x="875" y="711" class="small">Manual reset input</text>
+<text x="1086" y="426" class="pin">13-14</text><text x="1065" y="455" class="small">K1OUT</text>
+<text x="1086" y="546" class="pin">23-24</text><text x="1065" y="575" class="small">K2OUT</text>
+<text x="920" y="800" text-anchor="middle" class="pin">EDM1</text>
+<text x="1050" y="800" text-anchor="middle" class="pin">EDM2</text>
+<text x="985" y="766" text-anchor="middle" class="small">External device monitoring</text>
+<text x="1125" y="853" text-anchor="middle" class="pin">A2</text>
+<!-- Input rows: mushroom actuator and NC contacts -->
+<text x="595" y="270" class="section">INDEPENDENT STOP CHANNELS</text>
+<path class="wire" d="M550 355H855M550 435H650M710 435H855M550 555H650M710 555H855M550 675H650M710 675H855"/>
+<circle class="dot" cx="550" cy="355" r="5"/><circle class="dot" cx="550" cy="435" r="5"/><circle class="dot" cx="550" cy="555" r="5"/><circle class="dot" cx="550" cy="675" r="5"/>
+<text x="595" y="390" class="label">S1 E-STOP CH A</text>
+<circle class="symbol" cx="650" cy="435" r="4"/><circle class="symbol" cx="710" cy="435" r="4"/>
+<path class="wire" d="M650 435L710 417M710 412V440"/>
+<path class="dash" d="M680 423V410"/>
+<path class="symbol" d="M663 410V405Q680 395 697 405V410Z"/>
+<text x="595" y="480" class="small">24 VDC, 1 A · NC</text><text x="784" y="423" class="small">CH1</text>
+<text x="595" y="510" class="label">S2 E-STOP CH B</text>
+<circle class="symbol" cx="650" cy="555" r="4"/><circle class="symbol" cx="710" cy="555" r="4"/>
+<path class="wire" d="M650 555L710 537M710 532V560"/>
+<path class="dash" d="M680 543V530"/>
+<path class="symbol" d="M663 530V525Q680 515 697 525V530Z"/>
+<text x="595" y="600" class="small">24 VDC, 1 A · NC</text><text x="784" y="543" class="small">CH2</text>
+<text x="595" y="632" class="label">S3 MANUAL RESET</text>
+<circle class="symbol" cx="650" cy="675" r="4"/><circle class="symbol" cx="710" cy="675" r="4"/>
+<path class="wire" d="M650 659H710M680 659V645M667 645H693"/>
+<text x="595" y="720" class="small">24 VDC, 1 A · NO</text><text x="779" y="663" class="small">RESET</text>
+<!-- Contactor coils, separately wired -->
+<text x="1235" y="270" class="section">SAFETY CONTACTORS</text>
+<path class="wire" d="M1175 435H1320M1390 435H1480V1000M1175 555H1320M1390 555H1480"/>
+<rect class="symbol" x="1320" y="412" width="70" height="46"/>
+<path class="wire" d="M1327 451L1383 419"/>
+<text x="1240" y="382" class="label">KM1 SAFETY CONTACTOR</text>
+<text x="1240" y="489">24 VDC, 9 A AC-3</text>
+<rect class="symbol" x="1320" y="532" width="70" height="46"/>
+<path class="wire" d="M1327 571L1383 539"/>
+<text x="1240" y="522" class="label">KM2 SAFETY CONTACTOR</text>
+<text x="1240" y="609">24 VDC, 9 A AC-3</text>
+<text x="1290" y="431" class="small">A1</text><text x="1398" y="431" class="small">A2</text>
+<text x="1290" y="551" class="small">A1</text><text x="1398" y="551" class="small">A2</text>
+<circle class="dot" cx="1480" cy="555" r="5"/>
+<!-- EDM series contacts with intermediate tap FB1 and return FB2 -->
+<text x="225" y="795" class="section">EDM · NORMALLY CLOSED MIRROR CONTACTS</text>
+<path class="wire" d="M550 735H195V900H310M370 900H565M625 900H760V940H1050V815M480 900V835H920V815M1125 890V1000M760 940V1000"/>
+<circle class="dot" cx="480" cy="900" r="5"/>
+<circle class="dot" cx="760" cy="940" r="5"/>
+<circle class="dot" cx="760" cy="1000" r="5"/><circle class="dot" cx="1125" cy="1000" r="5"/>
+<text x="224" y="864" class="label">KM1 MIRROR NC</text>
+<circle class="symbol" cx="310" cy="900" r="4"/><circle class="symbol" cx="370" cy="900" r="4"/>
+<path class="wire" d="M310 900L370 882M370 877V905"/>
+<text x="233" y="931" class="small">21-22 NC · 24 VDC, 1 A</text>
+<text x="515" y="864" class="label">KM2 MIRROR NC</text>
+<circle class="symbol" cx="565" cy="900" r="4"/><circle class="symbol" cx="625" cy="900" r="4"/>
+<path class="wire" d="M565 900L625 882M625 877V905"/>
+<text x="518" y="931" class="small">21-22 NC · 24 VDC, 1 A</text>
+<text x="491" y="824" class="pin">FB1</text><text x="784" y="926" class="pin">FB2</text>
+<text x="780" y="965" class="label">W1 EDM RETURN</text>
+<text x="780" y="989" class="small">0.75 mm², 24 VDC</text>
+<text x="153" y="1030" class="pin">COM / 0 V</text>
+<text x="65" y="1070" class="sub">Connection dots indicate joined conductors. Terminal group names and net connections follow the supplied netlist.</text>
+</svg>

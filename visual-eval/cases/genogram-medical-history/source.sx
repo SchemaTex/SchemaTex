@@ -1,0 +1,18 @@
+genogram "The Wilson Family Medical History" [asOf: 2026]
+  robert [male, 1940, deceased, death: 2018, label: "Robert Wilson", conditions: heart-disease(half-left, #E53935) + diabetes(half-right, #FB8C00)]
+    @medical: "Coronary artery disease; type 2 diabetes"
+  helen [female, 1943, label: "Helen Wilson", conditions: depression(full, #5C6BC0)]
+    @medical: "Major depressive disorder"
+
+  robert -- helen
+    david [male, 1966, label: "David Wilson", conditions: diabetes(full, #FB8C00)]
+      @medical: "Type 2 diabetes"
+    linda [female, 1969, label: "Linda Wilson", conditions: asthma(full, #42A5F5)]
+      @medical: "Asthma"
+
+  susan [female, 1968, label: "Susan Wilson", conditions: depression(full, #5C6BC0)]
+    @medical: "Major depressive disorder"
+  david -- susan
+    emma [female, 1994, label: "Emma Wilson", index, conditions: depression(half-left, #5C6BC0) + asthma(half-right, #42A5F5)]
+      @medical: "Major depressive disorder; asthma"
+    james [male, 1997, label: "James Wilson"]

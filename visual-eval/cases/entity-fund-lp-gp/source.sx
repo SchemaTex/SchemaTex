@@ -1,0 +1,16 @@
+# Scenario: private equity fund with a general partner, an offshore feeder and portfolio companies.
+entity-structure "Summit Capital Fund III structure"
+entity gp "Summit Capital GP III, LLC" llc@DE [role: "General partner"]
+entity mgr "Summit Capital Management, LLC" llc@DE [role: "Investment manager"]
+entity lps "US institutional investors" pool
+entity feeder "Summit Fund III Offshore, L.P." lp@KY [note: "Non-US investors"]
+entity fund "Summit Capital Fund III, L.P." lp@DE
+entity portA "Harbor Logistics, Inc." corp@DE
+entity portB "Keystone Dental Group, LLC" llc@PA
+gp -> fund : 1%
+lps -> fund : 69%
+feeder -> fund : 30%
+gp ==> fund
+mgr -~-> fund [label: "Management agreement · 2% fee"]
+fund -> portA : 72%
+fund -> portB : 55%

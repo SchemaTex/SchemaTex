@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="786" viewBox="0 0 1140 560" role="img" aria-labelledby="title desc">
+  <title id="title">Bacterial 16S rRNA Tree</title>
+  <desc id="desc">Rooted rectangular phylogram with a root stem of 0.18 substitutions per site. Escherichia coli and Pseudomonas aeruginosa are sisters within Proteobacteria, with terminal lengths 0.08 and 0.09 and a shared branch of 0.12. Bacillus subtilis and Staphylococcus aureus are sisters, with terminal lengths 0.13 and 0.14 and a shared branch of 0.11. Mycobacterium tuberculosis branches directly from the root with length 0.25. Horizontal distances use 1200 SVG units per substitution per site. Dashed guides do not contribute branch length.</desc>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size: 28px; font-weight: 700; }
+    .subtitle { font-size: 13px; fill: #64748b; letter-spacing: .2px; }
+    .heading { font-size: 12px; fill: #64748b; letter-spacing: 1px; }
+    .taxon { font-size: 16px; font-style: italic; }
+    .note { font-size: 11px; fill: #64748b; letter-spacing: .1px; }
+    .clade { font-size: 12px; font-weight: 700; fill: #1565C0; }
+    .branch { fill: none; stroke: #1e293b; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .guide { fill: none; stroke: #94a3b8; stroke-opacity: .7; stroke-width: .9; stroke-dasharray: 2.5 4.5; }
+  </style>
+  <rect width="1140" height="560" fill="#ffffff"/>
+  <text x="48" y="48" class="title">Bacterial 16S rRNA Tree</text>
+  <text x="48" y="76" class="subtitle">Rectangular phylogram · branch distances and clade relationships</text>
+  <path d="M48 99H1092" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="80" y="133" class="heading">PHYLOGENY</text>
+  <text x="654" y="133" class="heading">TAXON</text>
+  <text x="968" y="133" class="heading">CLADE</text>
+
+  <rect x="638" y="148" width="454" height="88" rx="3" fill="#1565C0" fill-opacity=".045"/>
+  <rect x="638" y="268" width="454" height="88" rx="3" fill="#64748b" fill-opacity=".045"/>
+  <rect x="638" y="388" width="454" height="44" rx="3" fill="#64748b" fill-opacity=".045"/>
+
+  <path class="guide" d="M536 170H641 M548 214H641 M584 290H641 M596 334H641 M596 410H641"/>
+  <!-- Each horizontal segment is its Newick length multiplied by 1200. -->
+  <path class="branch" d="M80 301H296 M296 192V410 M296 312H428 M428 290V334 M428 290H584 M428 334H596 M296 410H596"/>
+  <path d="M296 192H440 M440 170V214 M440 170H536 M440 214H548" fill="none" stroke="#1565C0" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <g class="taxon" dominant-baseline="middle">
+    <text x="654" y="170">Escherichia coli</text>
+    <text x="654" y="214">Pseudomonas aeruginosa</text>
+    <text x="654" y="290">Bacillus subtilis</text>
+    <text x="654" y="334">Staphylococcus aureus</text>
+    <text x="654" y="410">Mycobacterium tuberculosis</text>
+  </g>
+  <path d="M946 158H953V226H946" fill="none" stroke="#1565C0" stroke-width="1.4"/>
+  <text x="968" y="192" class="clade" dominant-baseline="middle">Proteobacteria</text>
+
+  <path d="M80 473H140 M80 468V478 M140 468V478" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="498" font-size="12">0.05 substitutions/site</text>
+  <text x="466" y="474" class="note">Horizontal distance: substitutions/site</text>
+  <text x="466" y="497" class="note">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 520H1092" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="48" y="545" class="note">Representative 16S rRNA tree · topology and branch distances from the supplied Newick; no support values supplied.</text>
+</svg>

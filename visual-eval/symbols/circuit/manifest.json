@@ -1,0 +1,1613 @@
+{
+  "type": "circuit",
+  "variant": null,
+  "exemplar": "circuit",
+  "style": "Ink #17212B with round caps and joins; muted #52606D only for polarity marks (+, −) at Helvetica Neue 17 px and pin or terminal numbers at 14 px; white #FFFFFF inside closed bodies (transistor envelopes, source, lamp and motor circles, IC, op-amp, coil, fuse, buzzer, terminal strip, contact circles); solid ink fills only for diode triangles and arrowheads. Leads, outlines, zigzags, coil loops, switch blades and transformer cores are 2.5 px; capacitor plates 3.5; battery short plates 5; diode cathode bars 3; LED emission arrows and relay linkage dashes 2; transistor base bars and MOSFET channel segments 4.5, the channel segments butt-capped so their gaps stay open. Every pin is the engine's anchor doubled and ends a lead: resistor, inductor, switch, coil, source and motor 80 px pin to pin, potentiometer 100, diode family and fuse 60, battery 48, capacitor 40; transistor envelopes r 30 with the base or gate pin 80 px left of the other two; op-amp inputs 100 px left of the output.",
+  "symbols": [
+    {
+      "id": "resistor",
+      "label": "Resistor",
+      "file": "resistor.svg",
+      "engine": "resistor",
+      "dsl": [
+        "R1 <net> <net> (netlist, R prefix)",
+        "R1: resistor down",
+        "type=resistor",
+        "pullup"
+      ],
+      "standard": "IEEE 315-1975 §2.1.1 resistor, general (zigzag form)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 2296,
+      "notes": "Three zigzag cycles (six corners, amplitude 11) across the middle 60 px of an 80 px pin pitch, with 10 px straight leads, all at the 2.5 px wire weight. The engine packs seven corners with a taller swing (16 px at this scale) into the same span, so it reads busier. Users: the R designator count, since the resistor is what a bare R draws."
+    },
+    {
+      "id": "potentiometer",
+      "label": "Potentiometer",
+      "file": "potentiometer.svg",
+      "engine": "potentiometer",
+      "dsl": [
+        "R1 <a> <wiper> <b> type=pot (netlist; pins start, wiper, end)",
+        "type=potentiometer",
+        "pot"
+      ],
+      "standard": "IEEE 315-1975 §2.1.3 resistor with adjustable contact",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 189,
+      "notes": "The resistor's zigzag (60 px, amplitude 11) on a 100 px pitch, so the leads are 20 px, with the wiper pin 44 px to the side at mid-length and a solid 13 px arrowhead stopping just short of the zigzag. The engine draws the same parts with the arrow coming down onto the zigzag from above. Users: word count for pot / potentiometer."
+    },
+    {
+      "id": "voltage_source",
+      "label": "DC voltage source",
+      "file": "voltage_source.svg",
+      "engine": "voltage_source",
+      "dsl": [
+        "V1 <+net> <−net> (netlist, V prefix)",
+        "type=voltage_source",
+        "vsource",
+        "dc_supply"
+      ],
+      "standard": "Independent DC voltage source, circle with + and − (circuit-analysis and SPICE convention; IEEE 315-1975 §2.5.1 would draw a single battery cell)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 1826,
+      "notes": "An upright 48 px paper-filled circle with muted 17 px + above − inside, 16 px leads and the + pin on top, 80 px pin to pin, standing the way the battery stands. IEEE 315 draws a generalized DC source as one battery cell, which would make a V source indistinguishable from a one-cell battery; the circle keeps the distinction the netlist makes. The engine draws the same circle half the size with the + and − set off-centre. Users: the V designator count, since the DC source is what a bare V draws."
+    },
+    {
+      "id": "ac_source",
+      "label": "AC voltage source",
+      "file": "ac_source.svg",
+      "engine": "ac_source",
+      "dsl": [
+        "V1 <net> <net> type=ac (netlist)",
+        "type=ac_source",
+        "ac",
+        "acsource"
+      ],
+      "standard": "IEEE 315-1975 §2.7 oscillator, generalized alternating-current source",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 17,
+      "notes": "The DC source's circle and leads with one full sine cycle (28 px wide, 2.5 px) inside, kept horizontal whatever way the leads run. The engine's sine is a smaller pair of quadratic humps. Users: word count; most AC sources are written as a bare V, so this undercounts."
+    },
+    {
+      "id": "npn",
+      "label": "NPN bipolar transistor",
+      "file": "npn.svg",
+      "engine": "npn",
+      "dsl": [
+        "Q1 <c> <b> <e> (netlist, Q prefix)",
+        "Q1: npn",
+        "type=npn",
+        "transistor",
+        "bjt_npn"
+      ],
+      "standard": "IEEE 315-1975 §8.6.2 NPN transistor, with envelope (Introduction A4.11; emitter and collector per §8.2.4–8.2.5)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1461,
+      "notes": "Revised from the exemplar's Q1 so the collector and emitter leads run 16 px beyond the envelope to their pins, as IEEE 315 draws them: the envelope shrinks from r 36 to r 30 and sits 48 px right of the base pin; the pins stay on the engine's anchors (base 80 px left of collector and emitter, which are 32 px above and below it). Base bar ±22 at 4.5 px; collector and emitter meet the bar at about 60°; the solid emitter arrow sits halfway along the emitter inside the envelope and points outward. The engine's leads cross its smaller envelope the same way, but its base bar is no heavier than the leads and its arrowhead is small. Users: the Q designator count, since NPN is what a bare Q draws."
+    },
+    {
+      "id": "pnp",
+      "label": "PNP bipolar transistor",
+      "file": "pnp.svg",
+      "engine": "pnp",
+      "dsl": [
+        "Q1 <c> <b> <e> pnp (netlist, Q prefix + model token)",
+        "type=pnp",
+        "bjt_pnp"
+      ],
+      "standard": "IEEE 315-1975 §8.6.1 PNP transistor, with envelope",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 66,
+      "notes": "The NPN drawing with the emitter on top, where the engine puts it, and the emitter arrow pointing in toward the base bar. The engine's inward arrow sits on the bar itself, where it reads as a blob. Users: word count for pnp / bjt_pnp."
+    },
+    {
+      "id": "capacitor",
+      "label": "Capacitor",
+      "file": "capacitor.svg",
+      "engine": "capacitor",
+      "dsl": [
+        "C1 <net> <net> (netlist, C prefix)",
+        "C1: capacitor down",
+        "type=capacitor"
+      ],
+      "standard": "IEEE 315-1975 §2.2.1 capacitor, general, style 1 (Note 2.2C)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1455,
+      "notes": "Exactly C3 in the exemplar: two straight 40 px plates at 3.5 px, 8 px apart, 16 px leads, 40 px pin to pin. The engine draws the plates at lead weight. Users: the C designator count, since the plain capacitor is what a bare C draws."
+    },
+    {
+      "id": "electrolytic_cap",
+      "label": "Polarized electrolytic capacitor",
+      "file": "electrolytic_cap.svg",
+      "engine": "electrolytic_cap",
+      "dsl": [
+        "C1 <+net> <−net> type=ecap (netlist)",
+        "C1: electrolytic_cap down",
+        "type=electrolytic_cap",
+        "ecap"
+      ],
+      "standard": "IEEE 315-1975 §2.2.2 polarized capacitor, style 2 (Notes 2.2A, 2.2C)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 1,
+      "notes": "A straight positive plate and a curved negative plate, both 40 px wide at 3.5 px, 8 px apart (the 1:5 minimum of Note 2.2C), with the curve's ends turned away from the straight plate and one muted + beside it. The engine bows its curve the other way, ends pointing back at the straight plate, draws both plates at lead weight and prints both + and −. Users: word count; most electrolytics are written as a bare C with a value, so the real number is far higher."
+    },
+    {
+      "id": "generic_ic",
+      "label": "Integrated circuit (generic block)",
+      "file": "generic_ic.svg",
+      "engine": "generic_ic",
+      "dsl": [
+        "U1 <net> <net> … pins=\"VCC,GND,OUT,…\" (netlist, U or X prefix)",
+        "type=ic",
+        "ic",
+        "mcu"
+      ],
+      "standard": "IEEE 315-1975 §16.1 circuit element (rectangle); pin names inside and numbers outside per the exemplar's U1 and Horowitz & Hill",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 1264,
+      "notes": "The exemplar's U1 idiom for the engine's default 8-pin block: a 160 × 160 paper-filled rectangle, 16 px pin leads on a 32 px pitch, pins 1–4 down the left and 8–5 down the right, and muted 14 px pin numbers outside the body above each lead. Pin names, when a netlist gives them, go inside at 15 px as on U1; the part name is a designator and stays off the symbol. The engine prints its labels inside at a small size with no numbers outside. Users: the U designator count (X adds 192 more), since a generic block is what a bare U or X draws."
+    },
+    {
+      "id": "opamp",
+      "label": "Operational amplifier",
+      "file": "opamp.svg",
+      "engine": "opamp",
+      "dsl": [
+        "U1 <+in> <−in> <out> type=opamp (netlist)",
+        "type=opamp"
+      ],
+      "standard": "IEEE 315-1975 §16.2.3 amplifier with two inputs (triangle pointing in the direction of transmission); input polarity marks as op-amp datasheets draw them",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 196,
+      "notes": "A 68 × 80 paper-filled triangle whose base sits 16 px inside the input pins and whose tip stops 16 px short of the output pin, so every pin ends a lead; muted 17 px + and − just inside the base beside their inputs, + on top where the engine puts the non-inverting pin. The engine's inputs sit on the triangle's base with no lead and its output pin is the bare tip. IEEE 315 §17.1 also shows a teardrop op-amp outline that is almost never used, so the triangle is kept. Users: word count."
+    },
+    {
+      "id": "diode",
+      "label": "Diode",
+      "file": "diode.svg",
+      "engine": "diode",
+      "dsl": [
+        "D1 <anode> <cathode> (netlist, D prefix)",
+        "type=diode"
+      ],
+      "standard": "IEEE 315-1975 §8.5.1 semiconductor diode (envelope omitted, §8.2.2 filled triangle touching the bar)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 1048,
+      "notes": "The LED's body without the emission arrows: a filled triangle 32 px wide and 28 px tall pointing from anode to cathode, a 3 px cathode bar, 16 px leads, 60 px pin to pin. The engine draws the same shape smaller with its bar at lead weight. Users: the D designator count, since the plain diode is what a bare D draws."
+    },
+    {
+      "id": "led",
+      "label": "Light-emitting diode",
+      "file": "led.svg",
+      "engine": "led",
+      "dsl": [
+        "D1 <anode> <cathode> led (netlist, D prefix + model token)",
+        "D1: led down",
+        "type=led"
+      ],
+      "standard": "IEEE 315-1975 §8.5.1 semiconductor diode with §1.3.1 radiation arrows pointing away (Note 1.3B)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 691,
+      "notes": "A filled triangle pointing from anode to cathode, a 3 px cathode bar, 60 px between pins, and two parallel emission arrows with solid heads leaving the junction. The engine's arrowheads are open corners no wider than the shaft, so its emission arrows read as short double strokes above the triangle. Users: word count."
+    },
+    {
+      "id": "zener",
+      "label": "Zener diode",
+      "file": "zener.svg",
+      "engine": "zener",
+      "dsl": [
+        "D1 <anode> <cathode> zener (netlist, D prefix + model token)",
+        "type=zener"
+      ],
+      "standard": "IEEE 315-1975 §8.5.6.1 breakdown diode, unidirectional (voltage regulator), style 2",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 137,
+      "notes": "The diode with the cathode bar's ends bent 7 px in opposite directions, one toward the anode and one away, into a Z, at the bar's 3 px weight. The engine's bends are the same form at lead weight. Users: word count."
+    },
+    {
+      "id": "schottky",
+      "label": "Schottky diode",
+      "file": "schottky.svg",
+      "engine": "schottky",
+      "dsl": [
+        "D1 <anode> <cathode> schottky (netlist, D prefix + model token)",
+        "type=schottky"
+      ],
+      "standard": "Schottky barrier diode: §8.5.1 diode with S-hooked cathode bar (industry practice; not in the 1975 edition)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 120,
+      "notes": "The diode with each end of the cathode bar bent 7 px and turned 5 px back, one toward the anode and one away, into an S. The hooks stop clear of the triangle; the engine's hooks nearly touch it. Users: word count."
+    },
+    {
+      "id": "fuse",
+      "label": "Fuse",
+      "file": "fuse.svg",
+      "engine": "fuse",
+      "dsl": [
+        "F1 <net> <net> (netlist, F prefix)",
+        "type=fuse"
+      ],
+      "standard": "IEEE 315-1975 §9.1.1 fuse, general (rectangle with the conductor through it)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 816,
+      "notes": "An 18 × 36 paper-filled rectangle with the 2.5 px lead running straight through it, 60 px pin to pin. IEEE 315 also allows the S-curve form; the rectangle stays legible at small sizes and cannot be misread as a resistor on a sheet that uses zigzag resistors. The engine draws a rounded capsule. Users: the F designator count, since the fuse is what a bare F draws."
+    },
+    {
+      "id": "switch_spst",
+      "label": "Switch, single-pole single-throw",
+      "file": "switch_spst.svg",
+      "engine": "switch_spst",
+      "dsl": [
+        "S1 <net> <net> (netlist, S prefix)",
+        "type=switch_spst",
+        "switch",
+        "switch_no"
+      ],
+      "standard": "IEEE 315-1975 §4.6.1 switch, single-throw, with §5.1.1 terminals (Introduction A4.7)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 746,
+      "notes": "Two open terminal circles (r 4.5) 40 px apart on an 80 px pin pitch, 15.5 px leads, and a 2.5 px blade leaving the upper contact about 30° off the conductor line and ending beside the lower one, shown open. The engine draws filled dots, which on a schematic mean junctions. Users: the S designator count (SW adds 236 more), since the SPST switch is what a bare S draws."
+    },
+    {
+      "id": "switch_spdt",
+      "label": "Switch, single-pole double-throw",
+      "file": "switch_spdt.svg",
+      "engine": "switch_spdt",
+      "dsl": [
+        "S1 <common> <nc> <no> type=switch_spdt (netlist)",
+        "type=switch_spdt"
+      ],
+      "standard": "IEEE 315-1975 §4.6.2 switch, double-throw; §4.3.3 transfer contact, blade form",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 62,
+      "notes": "The common contact on top and the two throw contacts 48 px apart below it, all open terminal circles with leads to the engine's pins; the blade rests against the normally closed contact. The engine draws filled dots and leaves the blade short of both contacts, so neither position is shown. Users: word count."
+    },
+    {
+      "id": "nmos",
+      "label": "N-channel MOSFET (enhancement)",
+      "file": "nmos.svg",
+      "engine": "nmos",
+      "dsl": [
+        "M1 <d> <g> <s> (netlist, M prefix)",
+        "type=nmos",
+        "mosfet_n"
+      ],
+      "standard": "IEEE 315-1975 §8.6.10 N-channel insulated-gate FET: §8.2.3 enhancement channel, §8.2.8 insulated gate, bulk tied to source as in §8.6.10.3",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 656,
+      "notes": "The transistor envelope (r 30), a 2.5 px gate line parallel to a channel of three butt-capped 4.5 px segments (outer segments 14 px, gaps 5 px, centre 6 px), drain and source leaving the outer segments and turning to their pins, and the bulk leaving the centre segment and tying to the source. The N-channel bulk arrow points at the channel. The gate lead meets the gate line in the middle because the engine's gate pin is level with the channel centre; IEEE 315 attaches it at the source end. The engine's arrow points away from the channel, which is the P-channel sign, and it has no envelope or bulk tie. Users: the M designator count, since the N-channel MOSFET is what a bare M draws."
+    },
+    {
+      "id": "pmos",
+      "label": "P-channel MOSFET (enhancement)",
+      "file": "pmos.svg",
+      "engine": "pmos",
+      "dsl": [
+        "M1 <d> <g> <s> pmos (netlist, M prefix + model token)",
+        "type=pmos",
+        "mosfet_p"
+      ],
+      "standard": "IEEE 315-1975 §8.6.11 P-channel insulated-gate FET: §8.2.3 enhancement channel, §8.2.8 insulated gate, bulk tied to source",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 96,
+      "notes": "The N-channel drawing with the source on top, where the engine puts it, and the bulk arrow pointing away from the channel. The engine's arrow points at the channel, which is the N-channel sign, so its P and N symbols are swapped. Users: word count."
+    },
+    {
+      "id": "transformer",
+      "label": "Transformer (magnetic core)",
+      "file": "transformer.svg",
+      "engine": "transformer",
+      "dsl": [
+        "T1 <p1> <p2> <s1> <s2> type=transformer (netlist; a bare T draws a terminal block)",
+        "type=transformer",
+        "xfmr"
+      ],
+      "standard": "IEEE 315-1975 §6.4.2.1 magnetic-core transformer, nonsaturating",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 262,
+      "notes": "Two windings of four loops (r 10, 2.5 px) facing a core of two 2.5 px lines 8 px apart, with 30 px leads out to the engine's four pins 80 px apart on each side, 120 px across. The loops are the inductor's loops. The engine's windings sit at the pins with long gaps to the core. Users: word count; the T designator count (615) is not used because a bare T draws a terminal block."
+    },
+    {
+      "id": "inductor",
+      "label": "Inductor",
+      "file": "inductor.svg",
+      "engine": "inductor",
+      "dsl": [
+        "L1 <net> <net> (netlist, L prefix)",
+        "type=inductor"
+      ],
+      "standard": "IEEE 315-1975 §6.2.1 inductor, winding (loop form)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 591,
+      "notes": "Three loops (r 10) across the middle 60 px of an 80 px pitch with 10 px leads, the resistor's proportions, at 2.5 px; the loops match the transformer's. The engine draws the same three loops half the size. Users: the L designator count, since the inductor is what a bare L draws."
+    },
+    {
+      "id": "relay_coil",
+      "label": "Relay coil",
+      "file": "relay_coil.svg",
+      "engine": "relay_coil",
+      "dsl": [
+        "K1 <net> <net> (netlist, K prefix)",
+        "type=relay_coil",
+        "coil"
+      ],
+      "standard": "IEEE 315-1975 §4.5 operating coil, relay coil (rectangle form)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 491,
+      "notes": "A 44 × 24 paper-filled rectangle across the conductor with 28 px leads, 80 px pin to pin. The engine adds a diagonal stroke through the rectangle, which IEEE 315 §4.5 does not have. Users: the K designator count, since the coil is what a bare K draws."
+    },
+    {
+      "id": "relay_no",
+      "label": "Relay contact, normally open",
+      "file": "relay_no.svg",
+      "engine": "relay_no",
+      "dsl": [
+        "K1 <net> <net> type=relay_no (netlist)",
+        "type=relay_no"
+      ],
+      "standard": "IEEE 315-1975 §4.3.2 open contact (make), blade form, with §14.1.1 mechanical linkage",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 32,
+      "notes": "The SPST switch drawing with a short dashed linkage (2 px, 5 on 4 off) leaving the blade's midpoint, which marks the contact as worked by a coil drawn elsewhere. The engine floats its dashes above the blade without touching it. Users: word count; the composite relay (coil and contact in one symbol) has 510 more."
+    },
+    {
+      "id": "vcc",
+      "label": "Supply connection (power flag)",
+      "file": "vcc.svg",
+      "engine": "vcc",
+      "dsl": [
+        "PWR1 <rail> type=vcc (netlist)",
+        "type=vcc"
+      ],
+      "standard": "IEEE 315-1975 §3.9.3.1 common connection at a specific potential (the rail name replaces the asterisk)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 1983,
+      "notes": "The ground symbol turned up: a 22 px stem and one 40 px bar at 2.5 px, the pin at the stem's foot. The rail name (+9 V, VCC) is diagram text set beside the bar, not part of the symbol. The engine draws a short bar floating beside a wire stub. Users: word count, but vcc is mostly a net name, so this measures how often a named supply rail exists, not how often the symbol is drawn."
+    },
+    {
+      "id": "motor",
+      "label": "Motor",
+      "file": "motor.svg",
+      "engine": "motor",
+      "dsl": [
+        "M1 <net> <net> type=motor (netlist; a bare M draws a MOSFET)",
+        "type=motor",
+        "dc_motor"
+      ],
+      "standard": "IEEE 315-1975 §13.1.3 motor, general",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 476,
+      "notes": "An upright 48 px paper-filled circle with an ink M at 18 px, 16 px leads, 80 px pin to pin. The engine draws the same thing half the size. Users: word count."
+    },
+    {
+      "id": "battery",
+      "label": "Battery (multicell)",
+      "file": "battery.svg",
+      "engine": "battery",
+      "dsl": [
+        "BT1 <+net> <−net> (netlist, B prefix)",
+        "B1: battery up",
+        "type=battery"
+      ],
+      "standard": "IEEE 315-1975 §2.5 battery, §2.5.3 multicell: the long line is always positive",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 433,
+      "notes": "Two cells, each a long thin plate (44 px at 2.5 px) toward the + pin and a short heavy plate (22 px at 5 px) toward the − pin, pins 48 px apart, with a muted + at the positive end. Revised from the exemplar's BT1: the plates move 1 px toward the + pin so both leads are 11 px (the exemplar has 12 and 10). The engine puts a long plate next to its minus pin, so it draws the polarity backwards, and draws long and short plates at one weight. Users: word count; the BT designator alone has 12."
+    },
+    {
+      "id": "lamp",
+      "label": "Lamp (incandescent)",
+      "file": "lamp.svg",
+      "engine": "lamp",
+      "dsl": [
+        "L1 <net> <net> type=lamp (netlist; a bare L draws an inductor)",
+        "type=lamp",
+        "light",
+        "bulb"
+      ],
+      "standard": "IEEE 315-1975 §11.1.4 incandescent lamp (filament loop inside a circle), leads brought in from opposite sides",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 431,
+      "notes": "An upright 48 px paper-filled circle; both leads run into it and are joined by a filament loop (r 12) bulging to one side. IEEE 315 brings both leads in from one side; the engine's pins are at opposite ends, so the leads enter top and bottom. The engine draws a circle with an X, the IEC signal-lamp symbol, which is not in IEEE 315. Users: word count for lamp / light / bulb."
+    },
+    {
+      "id": "ground",
+      "label": "Ground",
+      "file": "ground.svg",
+      "engine": "ground",
+      "dsl": [
+        "0 or GND as a net name (a ground symbol is added automatically)",
+        "GND1 <net> type=ground",
+        "gnd"
+      ],
+      "standard": "IEEE 315-1975 §3.9.1 ground, general",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 274,
+      "notes": "Exactly the exemplar's ground: a 22 px stem hanging from the pin and three bars 40, 26 and 12 px long, 8 px apart, all at 2.5 px. The engine draws a small sideways version. Users: word count; nearly every netlist references ground through a 0 or GND net, so the symbol appears far more often than this."
+    },
+    {
+      "id": "buzzer",
+      "label": "Buzzer",
+      "file": "buzzer.svg",
+      "engine": "buzzer",
+      "dsl": [
+        "BZ1 <net> <net> type=buzzer (netlist)",
+        "type=buzzer"
+      ],
+      "standard": "IEEE 315-1975 §10.1.2 buzzer",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 178,
+      "notes": "A 28 px paper-filled square on the conductor with 26 px leads and a 2.5 px reed line slanting away from one top corner, as §10.1.2 draws it. The engine draws a dome, which is the §10.1.1 bell. Users: word count."
+    },
+    {
+      "id": "terminal_block",
+      "label": "Terminal block (4 terminals)",
+      "file": "terminal_block.svg",
+      "engine": "terminal_block",
+      "dsl": [
+        "T1 <net> <net> <net> <net> (netlist, T prefix; pins=\"1,2,3,4\")",
+        "type=terminal_block",
+        "terminal",
+        "tb"
+      ],
+      "standard": "IEEE 315-1975 §5.1.1.1 terminal board or terminal strip, with terminals shown",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 42,
+      "notes": "A 64 px wide paper-filled strip of 36 px cells, one per terminal, each with an open terminal circle (r 4.5, the switch contacts' size), a lead from its pin to the circle and the terminal number in muted 14 px. Pins sit on the engine's anchors. The engine draws a 160 px box with the wire running through a numbered circle and out the far side. Users: word count; a bare T (615 users) also draws a terminal block, though many of those users meant a transformer."
+    },
+    {
+      "id": "relay",
+      "label": "Relay, coil and normally open contact",
+      "file": "relay.svg",
+      "engine": "relay",
+      "dsl": [
+        "K1 CA CB COM NO type=relay"
+      ],
+      "standard": "IEEE 315-1975 §4.30.2 relay assembly, using §4.5 coil and §4.3.2 make contact",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 510,
+      "notes": "The accepted 44 × 24 plain rectangular coil mechanically links to an open blade and hollow terminals. Separate coil leads enter opposite coil faces. The engine adds nonstandard coil slashes and uses filled contacts."
+    },
+    {
+      "id": "contactor",
+      "label": "Contactor, single pole, double break",
+      "file": "contactor.svg",
+      "engine": "contactor",
+      "dsl": [
+        "S1 A B type=contactor"
+      ],
+      "standard": "IEEE 315-1975 §4.29 contactor; §4.3.2 make contacts and §14.1.1 mechanical linkage",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 148,
+      "notes": "A normally open double-break bridge moves toward two fixed contacts together. Hollow terminals, 2.5 px contacts and a dashed actuator link reuse the switch idiom. The engine draws parallel diagonal blades without a distinct double-break bridge."
+    },
+    {
+      "id": "pilot_light",
+      "label": "Pilot light, green incandescent",
+      "file": "pilot_light.svg",
+      "engine": "pilot_light",
+      "dsl": [
+        "DS1 A B type=pilot_light"
+      ],
+      "standard": "IEEE 315-1975 §11.1.1 lamp, §11.1.1B colour letter G and §11.1.4 incandescent filament",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 93,
+      "notes": "The accepted filament lamp on the engine's compact 44 px pitch, with a 16 px radius envelope, 8 px filament loop and ink G qualifier for green. Leads reach both pins. The engine draws concentric panel-face circles with no electrical leads."
+    },
+    {
+      "id": "speaker",
+      "label": "Loudspeaker",
+      "file": "speaker.svg",
+      "engine": "speaker",
+      "dsl": [
+        "LS1 A B type=speaker"
+      ],
+      "standard": "IEEE 315-1975 §10.1.3 loudspeaker",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 89,
+      "notes": "A rectangular driver and flared cone, paper filled with 2.5 px outlines. Both leads enter the driver; the return routes below the cone to the opposite engine anchor. The engine omits the lead to its end anchor and draws two leads on the left."
+    },
+    {
+      "id": "fan",
+      "label": "Fan motor",
+      "file": "fan.svg",
+      "engine": "fan",
+      "dsl": [
+        "M1 A B type=fan"
+      ],
+      "standard": "IEEE 315-1975 §13.1.3 motor, with FAN application qualifier",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 73,
+      "notes": "The accepted 48 px motor circle and 18 px M on the engine's 88 px pitch, with FAN identifying the driven load. IEEE 315 has no separate fan impeller primitive; the engine's filled IEC impeller is replaced by the motor and functional qualifier."
+    },
+    {
+      "id": "comparator",
+      "label": "Comparator",
+      "file": "comparator.svg",
+      "engine": "comparator",
+      "dsl": [
+        "U1 INP INM OUT type=comparator"
+      ],
+      "standard": "IEEE 315-1975 §16.2.3 amplifier with two inputs, used as comparator",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 66,
+      "notes": "Exactly the accepted op-amp triangle, lead lengths and muted input polarity marks. There is no inversion bubble: the minus input already identifies inversion. The engine places an unwarranted output bubble and leaves pins on the triangle."
+    },
+    {
+      "id": "switch_nc",
+      "label": "Switch, normally closed",
+      "file": "switch_nc.svg",
+      "engine": "switch_nc",
+      "dsl": [
+        "S1 A B type=switch_nc"
+      ],
+      "standard": "IEEE 315-1975 §4.3.1 closed contact, blade form",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 64,
+      "notes": "Hollow contact circles and a straight blade touching both contacts show the normal closed state, with leads terminating at the 80 px engine pitch. The engine uses filled contacts and adds an actuator not needed for a plain contact."
+    },
+    {
+      "id": "relay_spdt",
+      "label": "Relay with changeover contact",
+      "file": "relay_spdt.svg",
+      "engine": "relay_spdt",
+      "dsl": [
+        "K1 CA CB COM NC NO type=relay_spdt"
+      ],
+      "standard": "IEEE 315-1975 §4.30.2 relay with transfer contacts; §4.3.3 transfer contact",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 55,
+      "notes": "The accepted coil, hollow terminals and 2.5 px blade, with the blade touching NC and a mechanical link from coil to blade. All five leads end on live anchors. The engine adds coil slashes and leaves the blade short of NC."
+    },
+    {
+      "id": "ldr",
+      "label": "Light-dependent resistor",
+      "file": "ldr.svg",
+      "engine": "ldr",
+      "dsl": [
+        "R1 A B type=ldr"
+      ],
+      "standard": "IEEE 315-1975 §2.1.13 symmetrical photoconductive transducer; §1.3.1 radiation",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 45,
+      "notes": "The exact accepted resistor zigzag, with leads extended to the 100 px engine pitch and two solid-head radiation arrows pointing inward. Envelope omitted so the resistor does not protrude through a circle. The engine uses open arrow corners and an envelope too small for its zigzag."
+    },
+    {
+      "id": "antenna",
+      "label": "Antenna",
+      "file": "antenna.svg",
+      "engine": "antenna",
+      "dsl": [
+        "ANT1 FEED FEED type=antenna"
+      ],
+      "standard": "IEEE 315-1975 §2.3 antenna",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 42,
+      "notes": "A vertical feed stem and symmetric antenna arms at the established 2.5 px lead weight. Both engine anchors lie on one continuous feed conductor and the DSL assigns them the same net. The engine paints only its start anchor and leaves the separate end anchor unconnected; no second electrical antenna terminal is implied."
+    },
+    {
+      "id": "voltmeter",
+      "label": "Voltmeter",
+      "file": "voltmeter.svg",
+      "engine": "voltmeter",
+      "dsl": [
+        "VM1 A B type=voltmeter"
+      ],
+      "standard": "IEEE 315-1975 §12.1 indicating instrument, voltage",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 42,
+      "notes": "The accepted 48 px source/motor envelope with 16 px leads and a centred ink V at 18 px. The engine uses the same instrument form at half size; explicit attributes replace its CSS-dependent label."
+    },
+    {
+      "id": "crystal",
+      "label": "Piezoelectric crystal",
+      "file": "crystal.svg",
+      "engine": "crystal",
+      "dsl": [
+        "Y1 A B type=crystal"
+      ],
+      "standard": "IEEE 315-1975 §2.10 piezoelectric crystal unit",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 40,
+      "notes": "Two 3.5 px capacitor electrodes flank a paper-filled 28 × 24 resonator rectangle, with equal 8 px clearances and 20 px leads on the 80 px engine pitch. The engine draws all electrodes at outline weight."
+    },
+    {
+      "id": "optocoupler",
+      "label": "Optocoupler, LED and NPN phototransistor",
+      "file": "optocoupler.svg",
+      "engine": "optocoupler",
+      "dsl": [
+        "U1 ANODE CATHODE COL EMIT type=optocoupler"
+      ],
+      "standard": "IEEE 315-1975 §8.10 optoelectronic device; §8.5.1 diode, §8.6.16 phototransistor and §1.3.1 radiation",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 40,
+      "notes": "The accepted 32 × 28 filled diode and 3 px cathode bar emit two arrows toward a 4.5 px transistor base. The NPN emitter arrow points outward; r 30 envelope and leads extend to all four engine anchors. The engine's LED leads miss its triangle; these join both diode electrodes, with no electrical connection across the optical gap."
+    },
+    {
+      "id": "voltage_regulator",
+      "label": "Voltage regulator",
+      "file": "voltage_regulator.svg",
+      "engine": "voltage_regulator",
+      "dsl": [
+        "U1 INPUT GND OUTPUT type=voltage_regulator"
+      ],
+      "standard": "IEEE 315-1975 §16.1 circuit element, functional rectangle",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 37,
+      "notes": "A paper-filled functional block with ink REG qualifier, input/output leads of 16 px and a 16 px ground lead. This follows the accepted IC idiom; the engine has only a 10 px ground stub at this scale and uses model text as its body label."
+    },
+    {
+      "id": "emergency_stop",
+      "label": "Emergency-stop contact, normally closed",
+      "file": "emergency_stop.svg",
+      "engine": "emergency_stop",
+      "dsl": [
+        "S1 A B type=emergency_stop"
+      ],
+      "standard": "IEEE 315-1975 §4.7.2 normally closed pushbutton contact; emergency-stop function is application practice, not a dedicated IEEE 315 symbol",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 26,
+      "notes": "A closed blade between hollow terminals on the 60 px engine pitch, with a mechanically linked mushroom-head manual actuator shown released. This represents the electrical NC contact, not a complete safety function. The engine draws an E inside a coloured panel-face circle with no contact leads."
+    },
+    {
+      "id": "switch_spdt_center_off",
+      "label": "SPDT switch, centre off",
+      "file": "switch_spdt_center_off.svg",
+      "engine": "switch_spdt_center_off",
+      "dsl": [
+        "S1 COM LEFT RIGHT type=switch_spdt_center_off"
+      ],
+      "standard": "IEEE 315-1975 §4.6.2 double-throw switch, centre-off position",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 24,
+      "notes": "The accepted SPDT hollow contacts and blade, with the blade centred in the open gap between both throws. Leads meet the 108 px common-to-throw pitch and 52 px throw separation. The engine uses filled contacts and an OFF word; blade position alone conveys the state here."
+    },
+    {
+      "id": "ammeter",
+      "label": "Ammeter",
+      "file": "ammeter.svg",
+      "engine": "ammeter",
+      "dsl": [
+        "AM1 A B type=ammeter"
+      ],
+      "standard": "IEEE 315-1975 §12.1 indicating instrument, current",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 22,
+      "notes": "The accepted 48 px source/motor envelope with 16 px leads and a centred ink A at 18 px. The engine uses the same instrument form at half size; explicit attributes replace its CSS-dependent label."
+    },
+    {
+      "id": "no_connect",
+      "label": "No-connect mark",
+      "file": "no_connect.svg",
+      "engine": "no_connect",
+      "dsl": [
+        "NC1 UNUSED UNUSED type=no_connect"
+      ],
+      "standard": "IEEE 315-1975 §3.1.12 context only; documented CAD-practice exception (KiCad, Altium, OrCAD pin-end X)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 88,
+      "notes": "Two crossed 12 px strokes at the element weight, centred exactly on the coincident engine anchors, with a 16 px lead ending at the X. The X is the reviewer-approved schematic-capture convention, not a graphic reproduced from IEEE 315. Both layout anchors refer to the same unconnected net."
+    },
+    {
+      "id": "varistor",
+      "label": "Varistor",
+      "file": "varistor.svg",
+      "engine": "varistor",
+      "dsl": [
+        "R1 A B type=varistor"
+      ],
+      "standard": "IEEE 315-1975 §2.1.6 symmetrical varistor; §2.1.5 intrinsic nonlinearity",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 17,
+      "notes": "The exact accepted resistor zigzag on the 80 px engine pitch, crossed by a bent intrinsic-nonlinearity mark. An ink V beside it qualifies voltage dependence; no third wiper terminal is implied."
+    },
+    {
+      "id": "selector_switch",
+      "label": "Selector switch",
+      "file": "selector_switch.svg",
+      "engine": "selector_switch",
+      "dsl": [
+        "S1 A B type=selector_switch"
+      ],
+      "standard": "IEEE 315-1975 §4.13 selector switch; §4.3.2 make contact",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 17,
+      "notes": "A selector-operated contact, shown open, on the two-terminal 52 px engine pitch. Hollow terminals and an angled blade follow the accepted switch; a mechanical link and plain SELECTOR qualifier identify its operation. This is one contact of a selector, since the engine exposes only two terminals, not a multi-throw bank."
+    },
+    {
+      "id": "scr",
+      "label": "Thyristor (SCR)",
+      "file": "scr.svg",
+      "engine": "scr",
+      "dsl": [
+        "D1 ANODE CATHODE GATE type=scr"
+      ],
+      "standard": "IEEE 315-1975 §8.6.12.1 reverse-blocking triode thyristor, N-type gate",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 15,
+      "notes": "The accepted 32 by 28 filled diode triangle and 3 px cathode bar on the 72 px engine pitch, with equal 22 px main leads. The gate joins the cathode-side bar, with its independent lead ending at the live gate anchor."
+    },
+    {
+      "id": "triac",
+      "label": "Triac",
+      "file": "triac.svg",
+      "engine": "triac",
+      "dsl": [
+        "D1 MT1 MT2 GATE type=triac"
+      ],
+      "standard": "IEEE 315-1975 §8.6.15 bidirectional triode thyristor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 15,
+      "notes": "Two opposite filled triangles between shared 3 px bars show the bidirectional device. Triangles are 24 px wide and 32 px long to fit side by side, with 24 px terminal stubs. The gate joins the MT1-side bar and reaches its engine anchor."
+    },
+    {
+      "id": "igbt",
+      "label": "IGBT",
+      "file": "igbt.svg",
+      "engine": "igbt",
+      "dsl": [
+        "Q1 COL GATE EMIT type=igbt"
+      ],
+      "standard": "IEEE 315-1975 §8.2.8 insulated gate and §8.2.4 emitter primitives; IGBT composite is post-1975 industry practice (not a dedicated IEEE 315-1975 symbol)",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 14,
+      "notes": "The accepted r 30 transistor envelope, 4.5 px base bar and outward emitter arrow combine with an isolated 2.5 px gate plate. Collector and emitter leads continue beyond the envelope to the engine pins. This explicitly identified modern composite is absent from the 1975 edition."
+    },
+    {
+      "id": "port",
+      "label": "Terminal (single)",
+      "file": "port.svg",
+      "engine": "port",
+      "dsl": [
+        "P1 NET NET type=port"
+      ],
+      "standard": "IEEE 315-1975 §5.1.1 terminal",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 13,
+      "notes": "One hollow terminal, r 4.5, with leads reaching both 32 px-spaced layout anchors. Both anchors belong to the same net; they do not imply two independent electrical terminals."
+    },
+    {
+      "id": "photodiode",
+      "label": "Photodiode",
+      "file": "photodiode.svg",
+      "engine": "photodiode",
+      "dsl": [
+        "D1 ANODE CATHODE type=photodiode"
+      ],
+      "standard": "IEEE 315-1975 §8.5.4.1 photosensitive diode with §1.3.1 radiation",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 12,
+      "notes": "Exactly the accepted diode triangle and bar, with two 2 px radiation arrows pointing inward toward the junction, opposite the LED emission arrows. Both main leads end at the 60 px engine pitch."
+    },
+    {
+      "id": "microphone",
+      "label": "Microphone",
+      "file": "microphone.svg",
+      "engine": "microphone",
+      "dsl": [
+        "MIC1 A B type=microphone"
+      ],
+      "standard": "IEEE 315-1975 §10.2.1 microphone, general",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 12,
+      "notes": "The accepted 48 px paper-filled circle and 16 px leads, with a diaphragm line beside the circle. The leads enter opposite sides to match the engine anchors; the separate diaphragm is an acoustic mark, not an electrical terminal."
+    },
+    {
+      "id": "relay_nc",
+      "label": "Relay contact, normally closed",
+      "file": "relay_nc.svg",
+      "engine": "relay_nc",
+      "dsl": [
+        "K1 A B type=relay_nc"
+      ],
+      "standard": "IEEE 315-1975 §4.3.1 closed contact with §14.1.1 mechanical linkage",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 9,
+      "notes": "Exactly the accepted normally closed blade between hollow contacts, with a 2 px dashed link touching the blade midpoint to denote a relay coil drawn elsewhere. Leads end at the 80 px engine anchors."
+    },
+    {
+      "id": "current_source",
+      "label": "Current source",
+      "file": "current_source.svg",
+      "engine": "current_source",
+      "dsl": [
+        "I1 POS 0 type=current_source"
+      ],
+      "standard": "IEEE 315-1975 §2 source context; circle-and-arrow independent current source is circuit-analysis/SPICE convention, not an IEEE 315 graphic",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 8,
+      "notes": "The accepted source circle, r 24, and 16 px leads contain a solid-head arrow. Positive SPICE current points from the first (plus) net to the second (minus) net, downward in this upright drawing; no voltage polarity marks are printed. This convention is identified explicitly, like the accepted circular voltage source."
+    },
+    {
+      "id": "bridge_rectifier",
+      "label": "Bridge rectifier",
+      "file": "bridge_rectifier.svg",
+      "engine": "bridge_rectifier",
+      "dsl": [
+        "D1 AC1 AC2 POS NEG type=bridge_rectifier"
+      ],
+      "standard": "IEEE 315-1975 §16.3 rectifier; four §8.5.1 semiconductor diodes",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 8,
+      "notes": "Four copies of the accepted diode body, reduced proportionally to 24 by 21 px with the 3 px bar retained, form a complete bridge. The compact bodies keep adjacent electrodes clear on the fixed 96 px engine pin span. Both cathodes meet DC+, both anodes meet DC-, and each AC node joins one anode and one cathode. Four 12 px external leads meet the engine diamond anchors. Muted + and minus qualify the DC nodes."
+    },
+    {
+      "id": "rheostat",
+      "label": "Rheostat",
+      "file": "rheostat.svg",
+      "engine": "rheostat",
+      "dsl": [
+        "R1 A B type=rheostat"
+      ],
+      "standard": "IEEE 315-1975 §2.1.4 continuously adjustable resistor, rheostat",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 7,
+      "notes": "The accepted resistor zigzag on the 100 px engine pitch, with 20 px end leads and a diagonal solid-head variability arrow. It has two electrical terminals; the crossing arrow is a qualifier rather than a third wiper lead."
+    },
+    {
+      "id": "555_timer",
+      "label": "555 timer",
+      "file": "555_timer.svg",
+      "engine": "555_timer",
+      "dsl": [
+        "U1 GND TRIG OUT RESET CTRL THRESH DISCH VCC type=555_timer"
+      ],
+      "standard": "IEEE 315-1975 §16.1 functional circuit element, rectangular IC block",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": 3,
+      "notes": "The exemplar U1 body, all eight pin positions, 16 px leads, ink 15 px functional pin names and muted 14 px physical pin numbers are retained. Designator and model/value text are omitted; plain 555 TIMER below the block identifies its function. The engine netlist order remains physical pins 1 through 8."
+    },
+    {
+      "id": "test_point",
+      "label": "Test point",
+      "file": "test_point.svg",
+      "engine": "test_point",
+      "dsl": [
+        "TP1 NET NET type=test_point"
+      ],
+      "standard": "IEEE 315-1975 §1.5 Note 1.5A alternative test-point recognition; §5.1.1 terminal",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 3,
+      "notes": "A hollow terminal and plain TP recognition qualifier, explicitly documented here as the alternative recognition notation allowed by Note 1.5A, rather than a claim to reproduce the general recognition graphic. Both 32 px-spaced layout anchors belong to the same test net."
+    },
+    {
+      "id": "push_no",
+      "label": "Pushbutton, normally open",
+      "file": "push_no.svg",
+      "engine": "push_no",
+      "dsl": [
+        "S1 A B type=push_no"
+      ],
+      "standard": "IEEE 315-1975 §4.7.1 normally open pushbutton",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 1,
+      "notes": "The accepted SPST blade and hollow terminals with a mechanically linked straight pushbutton head, shown released. The 2 px dashed linkage meets the blade midpoint; the button and shaft use the element weight. Both leads match the 80 px pitch."
+    },
+    {
+      "id": "jfet_n",
+      "label": "JFET, N-channel",
+      "file": "jfet_n.svg",
+      "engine": "jfet_n",
+      "dsl": [
+        "J1 DRAIN GATE SOURCE type=jfet_n"
+      ],
+      "standard": "IEEE 315-1975 §8.6.10.1 N-channel junction-gate field-effect transistor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 1,
+      "notes": "The accepted r 30 transistor envelope and 4.5 px continuous channel, with an N-channel gate arrow pointing inward at the channel. The gate is directly connected, not insulated. Drain and source leads continue outside the envelope to the live engine anchors."
+    },
+    {
+      "id": "gnd_chassis",
+      "label": "Chassis ground",
+      "file": "gnd_chassis.svg",
+      "engine": "gnd_chassis",
+      "dsl": [
+        "G1 CHASSIS CHASSIS type=gnd_chassis"
+      ],
+      "standard": "IEEE 315-1975 §3.9.2 chassis or frame connection",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 1,
+      "notes": "The accepted ground stem and 40 px bar with three parallel diagonal chassis strokes at 2.5 px. Both engine layout anchors sit on the same 40 px feed conductor; the DSL gives them one net, as for the accepted antenna feed. No separate second ground terminal is implied."
+    },
+    {
+      "id": "push_nc",
+      "label": "Pushbutton, normally closed",
+      "file": "push_nc.svg",
+      "engine": "push_nc",
+      "dsl": [
+        "S1 A B type=push_nc"
+      ],
+      "standard": "IEEE 315-1975 §4.7.2",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 0,
+      "notes": "The accepted closed blade and hollow contacts on the 80 px pitch, with the straight pushbutton head and dashed linkage from push_no. Shown released and closed."
+    },
+    {
+      "id": "thermistor_ntc",
+      "label": "NTC thermistor",
+      "file": "thermistor_ntc.svg",
+      "engine": "thermistor_ntc",
+      "dsl": [
+        "R1 A B type=thermistor_ntc"
+      ],
+      "standard": "IEEE 315-1975 §2.1.12.1.4",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 0,
+      "notes": "The exact accepted zigzag with 20 px end leads on the 100 px pitch, crossed by the accepted bent intrinsic-nonlinearity mark. Plain ink NTC identifies the negative temperature coefficient; the mark is not a wiper or third terminal."
+    },
+    {
+      "id": "gnd_signal",
+      "label": "Signal ground (common connection)",
+      "file": "gnd_signal.svg",
+      "engine": "gnd_signal",
+      "dsl": [
+        "G1 COMMON COMMON type=gnd_signal"
+      ],
+      "standard": "IEEE 315-1975 §3.9.3.2",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 0,
+      "notes": "A 22 px ground stem and hollow downward common-connection triangle, 40 px wide, at the accepted element weight. Both 40 px-spaced layout anchors share one feed and one net. The engine solid triangle is replaced by the open IEEE common-connection mark."
+    },
+    {
+      "id": "plc",
+      "label": "PLC module",
+      "file": "plc.svg",
+      "engine": "plc",
+      "dsl": [
+        "U1 INPUT OUTPUT type=plc"
+      ],
+      "standard": "IEEE 315-1975 §16.1 functional circuit block; PLC function is modern application practice",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 50,
+      "notes": "The accepted paper-filled IC rectangle with 16 px leads at all four engine anchors and a plain PLC qualifier beside it. The two-terminal netlist exposes start/end; pwr/out are additional named layout anchors, not extra positional netlist pins. No panel lamps or model text."
+    },
+    {
+      "id": "enclosure",
+      "label": "Enclosure",
+      "file": "enclosure.svg",
+      "engine": "enclosure",
+      "dsl": [
+        "E1 LEFT RIGHT type=enclosure"
+      ],
+      "standard": "IEEE 315-1975 §1.10 grouping context; panel-layout enclosure convention",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 23,
+      "notes": "Panel-layout aid: a paper-filled enclosure outline at the default doubled engine height, with 16 px guide stubs ending at the 480 px-spaced start/end anchors. These are placement guides, not electrical enclosure terminals. IEEE 315 section 1.10 is grouping context, not a dedicated cabinet graphic; internal furniture is omitted."
+    },
+    {
+      "id": "din_rail",
+      "label": "DIN rail",
+      "file": "din_rail.svg",
+      "engine": "din_rail",
+      "dsl": [
+        "DR1 LEFT RIGHT type=din_rail"
+      ],
+      "standard": "No dedicated IEEE 315 section; panel-layout convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 20,
+      "notes": "Panel-layout aid, not an IEEE 315 schematic primitive. An outlined rail and hollow mounting slots use only paper fill and 2.5 px strokes. The 16 px end guide stubs meet the default 360 px engine span; they are layout anchors, not electrical terminals."
+    },
+    {
+      "id": "wire_duct",
+      "label": "Wire duct",
+      "file": "wire_duct.svg",
+      "engine": "wire_duct",
+      "dsl": [
+        "WD1 LEFT RIGHT type=wire_duct"
+      ],
+      "standard": "No dedicated IEEE 315 section; panel-layout convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 18,
+      "notes": "Panel-layout aid, not an IEEE 315 schematic primitive. A paper-filled 44 px duct with open slot strokes and a plain WIRE DUCT qualifier. The 16 px end guide stubs meet the default 360 px engine span; no electrical connection through the duct is implied."
+    },
+    {
+      "id": "dc_dc_converter",
+      "label": "DC-DC converter",
+      "file": "dc_dc_converter.svg",
+      "engine": "dc_dc_converter",
+      "dsl": [
+        "U1 VIN GIN VOUT GOUT type=dc_dc_converter"
+      ],
+      "standard": "IEEE 315-1975 §16.1",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 16,
+      "notes": "The accepted functional rectangle and 16 px leads at all four live anchors, with a diagonal division and plain ink DC qualifiers identifying both sides. Input and output returns remain distinct, matching the four-terminal engine device."
+    },
+    {
+      "id": "ferrite_bead",
+      "label": "Ferrite bead",
+      "file": "ferrite_bead.svg",
+      "engine": "ferrite_bead",
+      "dsl": [
+        "L1 A B type=ferrite_bead"
+      ],
+      "standard": "IEEE 315-1975 §15.18",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 12,
+      "notes": "A conductor through an outlined slanted ferrite sleeve with a plain FERRITE qualifier. The 60 px conductor ends match both anchors. Paper fill replaces the engine solid block to obey the binding style; the sleeve denotes the magnetic material, not an additional winding."
+    },
+    {
+      "id": "automotive_flasher_3pin",
+      "label": "Automotive flasher, 3-pin",
+      "file": "automotive_flasher_3pin.svg",
+      "engine": "automotive_flasher_3pin",
+      "dsl": [
+        "K1 BAT LOAD PILOT type=automotive_flasher_3pin"
+      ],
+      "standard": "IEEE 315-1975 §4.22 interrupter context; §16.1 functional assembly block",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 10,
+      "notes": "A functional rectangle for the flasher assembly, with 16 px leads, plain B/L/P terminal functions and FLASHER beside the body. IEEE 315 section 4.22 is interrupter context; this section 16.1 block does not claim to reproduce the mechanical interrupter graphic. All three pins including optional pilot are represented."
+    },
+    {
+      "id": "triode",
+      "label": "Triode (vacuum tube)",
+      "file": "triode.svg",
+      "engine": "triode",
+      "dsl": [
+        "U1 PLATE GRID CATHODE type=triode"
+      ],
+      "standard": "IEEE 315-1975 §7.3",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 10,
+      "notes": "The accepted r 30 envelope contains a plate, interrupted control grid and bent cathode. Grid segments use the 2.5 px element weight rather than mechanical-link dashes. Plate and cathode leads route beyond the envelope to the three doubled engine anchors. Heater terminals are omitted because the engine exposes only plate, grid and cathode."
+    },
+    {
+      "id": "diac",
+      "label": "Diac",
+      "file": "diac.svg",
+      "engine": "diac",
+      "dsl": [
+        "D1 A B type=diac"
+      ],
+      "standard": "IEEE 315-1975 §8.5.9",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 8,
+      "notes": "The accepted triac pair of opposed filled triangles between shared 3 px bars, with the gate omitted. Equal 20 px main leads meet the 72 px engine span. This is a bidirectional two-terminal trigger device, not two series rectifiers."
+    },
+    {
+      "id": "oscilloscope",
+      "label": "Oscilloscope",
+      "file": "oscilloscope.svg",
+      "engine": "oscilloscope",
+      "dsl": [
+        "VM1 SIGNAL RETURN type=oscilloscope"
+      ],
+      "standard": "IEEE 315-1975 §12.1",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 7,
+      "notes": "The accepted 48 px instrument circle and 16 px leads contain the accepted sine trace. Plain SCOPE beside the circle distinguishes an indicating instrument from an AC source. The two engine terminals represent signal and return."
+    },
+    {
+      "id": "phototransistor",
+      "label": "Phototransistor",
+      "file": "phototransistor.svg",
+      "engine": "phototransistor",
+      "dsl": [
+        "Q1 COL BASE EMIT type=phototransistor"
+      ],
+      "standard": "IEEE 315-1975 §8.6.16",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 5,
+      "notes": "Exactly the accepted NPN envelope, 4.5 px base bar and outward emitter arrow, with two solid-head radiation arrows pointing inward. All three engine pins, including the accessible base, retain the accepted transistor geometry and external lead lengths."
+    },
+    {
+      "id": "solenoid_valve",
+      "label": "Solenoid valve",
+      "file": "solenoid_valve.svg",
+      "engine": "solenoid_valve",
+      "dsl": [
+        "K1 A B type=solenoid_valve"
+      ],
+      "standard": "IEEE 315-1975 §4.5.3",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 4,
+      "notes": "The accepted three coil loops and 10 px extensions to the 100 px engine pitch, with plain VALVE beside the winding. This represents the electrical solenoid actuator; fluid ports and the hydraulic valve body are not electrical netlist terminals."
+    },
+    {
+      "id": "thermal_overload",
+      "label": "Thermal overload",
+      "file": "thermal_overload.svg",
+      "engine": "thermal_overload",
+      "dsl": [
+        "S1 A B type=thermal_overload"
+      ],
+      "standard": "IEEE 315-1975 §4.30.5 thermal relay context; §4.3.1 normally closed trip contact",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 3,
+      "notes": "The accepted normally closed blade and hollow terminals with a dashed mechanical link to a bent thermal-actuator mark and plain THERMAL qualifier. This represents the two-terminal overload trip contact, not a complete heater-and-contact assembly; both leads meet the 80 px engine anchors."
+    },
+    {
+      "id": "varactor",
+      "label": "Varactor",
+      "file": "varactor.svg",
+      "engine": "varactor",
+      "dsl": [
+        "D1 ANODE CATHODE type=varactor"
+      ],
+      "standard": "IEEE 315-1975 §8.5.2",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 3,
+      "notes": "The accepted filled 32 by 28 diode triangle, 3 px cathode bar and a second 3.5 px capacitor plate with an 8 px gap. The end lead joins the second plate without bridging that gap; main terminals match the 64 px engine pitch."
+    },
+    {
+      "id": "wattmeter",
+      "label": "Wattmeter",
+      "file": "wattmeter.svg",
+      "engine": "wattmeter",
+      "dsl": [
+        "WM1 A B type=wattmeter"
+      ],
+      "standard": "IEEE 315-1975 §12.1",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 3,
+      "notes": "Exactly the accepted 48 px meter circle, 16 px leads and centred ink W at 18 px. This is the engine two-terminal indicating-instrument abstraction, not a four-terminal current-and-voltage-coil wattmeter connection diagram."
+    },
+    {
+      "id": "solar_cell",
+      "label": "Solar cell",
+      "file": "solar_cell.svg",
+      "engine": "solar_cell",
+      "dsl": [
+        "B1 POS NEG type=solar_cell"
+      ],
+      "standard": "IEEE 315-1975 §8.7 photovoltaic cell; §1.3.1 radiation",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 2,
+      "notes": "Single cell using the accepted long positive plate and short 5 px negative plate, with inward photovoltaic arrows. The long plate faces plus; both leads end on the 72 px engine pitch."
+    },
+    {
+      "id": "switch_dpdt",
+      "label": "DPDT switch",
+      "file": "switch_dpdt.svg",
+      "engine": "switch_dpdt",
+      "dsl": [
+        "S1 P1 NC1 NO1 P2 NC2 NO2 type=switch_dpdt"
+      ],
+      "standard": "IEEE 315-1975 §4.6.2.1 double-pole double-throw switch",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 2,
+      "notes": "Two accepted SPDT blades rest on NC contacts. All six terminals are hollow and the blade midpoints are joined by a 2 px dashed mechanical link. Each lead reaches its own live engine anchor."
+    },
+    {
+      "id": "fuse_slow",
+      "label": "Slow-blow fuse",
+      "file": "fuse_slow.svg",
+      "engine": "fuse_slow",
+      "dsl": [
+        "F1 A B type=fuse_slow"
+      ],
+      "standard": "IEEE 315-1975 §9.1.1 fuse with IEC time-delay qualifier T",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 1,
+      "notes": "Exactly the accepted fuse rectangle and through conductor on a 60 px pitch, with plain T beside the body for the IEC slow-blow qualifier."
+    },
+    {
+      "id": "tvs_diode",
+      "label": "TVS diode",
+      "file": "tvs_diode.svg",
+      "engine": "tvs_diode",
+      "dsl": [
+        "D1 A B type=tvs_diode"
+      ],
+      "standard": "IEEE 315-1975 §8.5.6.2 bidirectional breakdown diode",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 1,
+      "notes": "Two opposed filled diode triangles and connected back-to-back Z cathode bars denote a bidirectional TVS. Triangles shorten to 20 px to keep two breakdown elements and 12 px external leads within the 72 px engine pitch; bars retain 3 px weight."
+    },
+    {
+      "id": "proximity_sensor",
+      "label": "Proximity sensor",
+      "file": "proximity_sensor.svg",
+      "engine": "proximity_sensor",
+      "dsl": [
+        "U1 A B type=proximity_sensor"
+      ],
+      "standard": "No dedicated IEEE 315 section; IEC 60617 part 7 proximity-detector convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 1,
+      "notes": "The accepted two-terminal proximity convention: paper-filled sensing block, two non-contact field curves and plain PROX beside it. No invented supply or third output terminal; 16 px leads meet both 108 px-spaced anchors."
+    },
+    {
+      "id": "darlington_npn",
+      "label": "Darlington, NPN",
+      "file": "darlington_npn.svg",
+      "engine": "darlington_npn",
+      "dsl": [
+        "Q1 COL BASE EMIT type=darlington_npn"
+      ],
+      "standard": "IEEE 315-1975 §8.6.17 Darlington connection, NPN",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "Two separated bipolar transistors share the accepted r 30 envelope, with 4.5 px base bars and two outward 8 px emitter arrows. A stepped orthogonal first-emitter-to-second-base run and a separate top collector bus keep the cascade legible; external leads meet the unchanged engine pins."
+    },
+    {
+      "id": "darlington_pnp",
+      "label": "Darlington, PNP",
+      "file": "darlington_pnp.svg",
+      "engine": "darlington_pnp",
+      "dsl": [
+        "Q1 COL BASE EMIT type=darlington_pnp"
+      ],
+      "standard": "IEEE 315-1975 §8.6.17 Darlington connection, PNP form",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The same separated Darlington cascade with both 8 px emitter arrows reversed inward. Two 4.5 px base bars, an orthogonal collector bus and stepped first-emitter-to-second-base wiring share one r 30 envelope. External leads preserve the engine's collector-above-emitter pins."
+    },
+    {
+      "id": "nmos_depletion",
+      "label": "N-channel depletion MOSFET",
+      "file": "nmos_depletion.svg",
+      "engine": "nmos_depletion",
+      "dsl": [
+        "M1 DRAIN GATE SOURCE type=nmos_depletion"
+      ],
+      "standard": "IEEE 315-1975 §8.6.10.3 N-channel depletion insulated-gate FET",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted N-channel MOSFET envelope, gate, inward bulk arrow and source tie, with a continuous butt-capped 4.5 px channel instead of the enhancement segments. All three external leads end at the doubled engine anchors."
+    },
+    {
+      "id": "jfet_p",
+      "label": "JFET, P-channel",
+      "file": "jfet_p.svg",
+      "engine": "jfet_p",
+      "dsl": [
+        "J1 DRAIN GATE SOURCE type=jfet_p"
+      ],
+      "standard": "IEEE 315-1975 §8.6.11.1 P-channel junction-gate FET",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "Exactly the accepted N-channel JFET envelope, continuous channel and external leads, with the gate arrow reversed to point away from the channel."
+    },
+    {
+      "id": "gnd_digital",
+      "label": "Digital ground",
+      "file": "gnd_digital.svg",
+      "engine": "gnd_digital",
+      "dsl": [
+        "G1 DGND DGND type=gnd_digital"
+      ],
+      "standard": "IEEE 315-1975 §3.9.3.2 common connection, digital qualifier",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted hollow common-connection triangle and stem, with DIGITAL beside it. Both layout anchors share one feed and the same net; digital identifies the common without implying protective earth."
+    },
+    {
+      "id": "thermistor_ptc",
+      "label": "PTC thermistor",
+      "file": "thermistor_ptc.svg",
+      "engine": "thermistor_ptc",
+      "dsl": [
+        "R1 A B type=thermistor_ptc"
+      ],
+      "standard": "IEEE 315-1975 §2.1.12.1.3 positive-temperature-coefficient thermistor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "Exactly the accepted NTC resistor zigzag, bent intrinsic-nonlinearity mark and 100 px lead pitch, with plain PTC replacing NTC. The crossing mark is not a third terminal."
+    },
+    {
+      "id": "variable_cap",
+      "label": "Variable capacitor",
+      "file": "variable_cap.svg",
+      "engine": "variable_cap",
+      "dsl": [
+        "C1 A B type=variable_cap"
+      ],
+      "standard": "IEEE 315-1975 §2.2.4 variable capacitor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted 40 px capacitor plates at 3.5 px with an 8 px gap, centred on the 48 px engine pitch. A diagonal solid-head variability arrow crosses both plates; it is a qualifier, not an electrical terminal."
+    },
+    {
+      "id": "inductor_iron",
+      "label": "Iron-core inductor",
+      "file": "inductor_iron.svg",
+      "engine": "inductor_iron",
+      "dsl": [
+        "L1 A B type=inductor_iron"
+      ],
+      "standard": "IEEE 315-1975 §6.2.2 magnetic-core inductor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "Exactly the accepted three r 10 coil loops and 80 px pitch, with two parallel 2.5 px core bars, 8 px apart, beside the winding."
+    },
+    {
+      "id": "inductor_ferrite",
+      "label": "Ferrite-core inductor",
+      "file": "inductor_ferrite.svg",
+      "engine": "inductor_ferrite",
+      "dsl": [
+        "L1 A B type=inductor_ferrite"
+      ],
+      "standard": "IEEE 315-1975 §6.2.2 magnetic-core inductor, ferrite qualifier",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted coil loops and 80 px pitch with one 2.5 px core bar and plain FERRITE beside it. The material qualifier distinguishes this catalog variant without introducing a nonstandard heavy fill."
+    },
+    {
+      "id": "variable_inductor",
+      "label": "Variable inductor",
+      "file": "variable_inductor.svg",
+      "engine": "variable_inductor",
+      "dsl": [
+        "L1 A B type=variable_inductor"
+      ],
+      "standard": "IEEE 315-1975 §6.2.5 variable inductor",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "Exactly the accepted three coil loops on the 80 px engine pitch, crossed by the accepted diagonal solid-head variability arrow. Only the winding ends are electrical terminals."
+    },
+    {
+      "id": "instrumentation_amp",
+      "label": "Instrumentation amplifier",
+      "file": "instrumentation_amp.svg",
+      "engine": "instrumentation_amp",
+      "dsl": [
+        "U1 INP INM OUT type=instrumentation_amp"
+      ],
+      "standard": "IEEE 315-1975 §16.2 amplifier; instrumentation function qualifier",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted 68 by 80 amplifier triangle with a doubled left input edge, matching the engine's instrumentation distinction, plus muted input polarities and plain INA beside the body. Inputs retain 48 px separation and all three engine pins have 16 px leads."
+    },
+    {
+      "id": "schmitt_buffer",
+      "label": "Schmitt-trigger buffer",
+      "file": "schmitt_buffer.svg",
+      "engine": "schmitt_buffer",
+      "dsl": [
+        "U1 INPUT OUTPUT type=schmitt_buffer"
+      ],
+      "standard": "IEEE 91 logic convention; IEEE 315-1975 §16.2 triangle context only",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted paper-filled amplifier triangle adapted to the 88 px buffer span, with 16 px input/output leads and an internal hysteresis glyph. This is the IEEE 91 logic convention, not a dedicated IEEE 315-1975 buffer symbol."
+    },
+    {
+      "id": "tri_state_buffer",
+      "label": "Tri-state buffer",
+      "file": "tri_state_buffer.svg",
+      "engine": "tri_state_buffer",
+      "dsl": [
+        "U1 INPUT OUTPUT ENABLE type=tri_state_buffer"
+      ],
+      "standard": "IEEE 91 three-state logic convention; IEEE 315-1975 §16.2 triangle context only",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The same buffer triangle and 16 px main leads with a separate active-high enable lead ending exactly at the engine en anchor. The enable meets the sloping triangle edge; no inversion bubble or invented power pin."
+    },
+    {
+      "id": "mains_socket",
+      "label": "Mains socket",
+      "file": "mains_socket.svg",
+      "engine": "mains_socket",
+      "dsl": [
+        "P1 LINE NEUTRAL type=mains_socket"
+      ],
+      "standard": "IEC 60617-11 socket-outlet convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The engine's installation-style socket convention: an open semicircle intersected by the conductor and a transverse bar. Accepted 2.5 px strokes, equal 16 px terminal stubs on the 80 px engine pitch, and plain SOCKET beside the body."
+    },
+    {
+      "id": "disconnect_switch",
+      "label": "Disconnect switch",
+      "file": "disconnect_switch.svg",
+      "engine": "disconnect_switch",
+      "dsl": [
+        "S1 A B type=disconnect_switch"
+      ],
+      "standard": "IEEE 315-1975 §4.6.3 disconnect switch",
+      "sourceUrl": "https://standards.ieee.org/ieee/315_/6396/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 0,
+      "notes": "The accepted open switch blade and hollow terminals, centred on the 96 px engine pitch with equal lead extensions. Plain ISOLATOR beside the symbol identifies the disconnect function; the visible open blade shows separation."
+    }
+  ]
+}

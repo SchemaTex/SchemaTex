@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { parsePedigree } from "../../src/diagrams/pedigree/parser";
-import { layoutPedigree } from "../../src/diagrams/pedigree/layout";
+import { layoutPedigree, findPedigreeTopologyIssues } from "../../src/diagrams/pedigree/layout";
 
 const config = { nodeSpacingX: 80, nodeSpacingY: 100, nodeWidth: 40, nodeHeight: 40 };
 
@@ -93,4 +93,36 @@ describe("pedigree layout", () => {
       expect(node.x).toBeGreaterThanOrEqual(50);
     }
   });
+});
+
+test("twins share a fork and only identical twins have a connecting bar", () => {
+  const ast = parsePedigree(`pedigree
+p [male]
+q [female]
+p -- q
+  a [female, twin-mz]
+  b [female, twin-mz]
+  c [male, twin-dz]
+  d [female, twin-dz]`);
+  const result = layoutPedigree(ast, config);
+  const child = (id: string) => result.edges.find(e => e.to === id && e.relationship.type === "parent-child")!;
+  const start = (id: string) => child(id).path.match(/^M [\d.-]+ [\d.-]+/)?.[0];
+  expect(start("a")).toBe(start("b"));
+  expect(start("c")).toBe(start("d"));
+  expect(start("a")).not.toBe(start("c"));
+  expect(result.edges.filter(e => e.relationship.type === "twin-identical")).toHaveLength(1);
+  expect(findPedigreeTopologyIssues(result)).toEqual([]);
+});
+
+test("twin kinship orders the pair together when another sibling is declared between them", () => {
+  const result = layoutPedigree(parsePedigree(`pedigree
+p [male]
+q [female]
+p -- q
+  younger [female, twin-mz]
+  other [male]
+  older [female, twin-mz]`), config);
+  const children = result.nodes.filter(n => n.generation === 1).sort((a, b) => a.x - b.x);
+  expect(Math.abs(children.findIndex(n => n.id === "younger") - children.findIndex(n => n.id === "older"))).toBe(1);
+  expect(findPedigreeTopologyIssues(result)).toEqual([]);
 });

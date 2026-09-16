@@ -1,0 +1,46 @@
+# Closest supported DSL. See notes.md for explicitly documented losses.
+bpmn
+direction: LR
+title: "Food lot release"
+pool "Contract laboratory" blackbox
+pool "Food manufacturer" {
+  lane "Quality assurance" {
+    logged: start message "Sample logged"
+    request: task send "Request testing"
+    report: task receive "Await lab report"
+    ack: task send "Acknowledge report receipt"
+    fork: gateway and ""
+    review: task user "Review batch records"
+    join: gateway and ""
+    approve: subprocess "Approve lot disposition" collapsed
+    released: gateway xor "Release approved?"
+    release: task service "Release lot in ERP"
+    done: end "Released"
+    block: task service "Block lot in ERP"
+    rejected: end "Rejected"
+    overdue: intermediate timer "48 hours - once only"
+    flag: task service "Flag overdue report"
+    flagged: end "Overdue flag recorded"
+  }
+  lane "Quality systems" {
+    validate: subprocess "Validate laboratory results" collapsed
+    mappingValid: gateway xor "Unit mapping valid?"
+    repair: task user "Repair unit mapping"
+  }
+}
+flows
+"Contract laboratory" ~~> logged : "Sample registration"
+logged --> request --> report --> ack --> fork
+request ~~> "Contract laboratory" : "Test order"
+"Contract laboratory" ~~> report : "Test report"
+ack ~~> "Contract laboratory" : "Receipt confirmation"
+fork --> review --> join
+fork --> validate --> mappingValid
+mappingValid --? "Yes" --> join
+join --> approve --> released
+released --? "Yes" --> release --> done
+released --* "Otherwise" --> block --> rejected
+# Approximation only: timer is a free-standing side branch, not an attached boundary.
+request --> overdue --> flag --> flagged
+# Approximation only: branch label records an exception the parser cannot model.
+mappingValid --* "UNIT_MAPPING_ERROR" --> repair --> validate

@@ -1,0 +1,10 @@
+# Scenario: clinical unit burnout has a reinforcing staffing-loss loop and a balancing recovery loop.
+causalloop "Nurse burnout dynamics"
+"Workload" -> "Overtime" : +
+"Overtime" -> "Burnout" : +
+"Burnout" -> "Absenteeism" : +
+"Absenteeism" -> "Workload" : +
+"Burnout" -> "Recovery time" : -
+"Recovery time" -> "Burnout" : -
+loop R1 "Staffing pressure"
+loop B1 "Recovery response"

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 940" width="1220" height="940" role="img">
+<title>Healthcare Records STRIDE</title>
+<desc>A STRIDE threat model of Healthcare Records STRIDE, drawn as a data-flow diagram over 3 trust zones: Public, Hospital DMZ, Clinical Network. 2 external entities are drawn as rectangles, 2 processes as circles, and 2 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 5 data flows, 3 cross a trust boundary — Patient Portal User to Patient Portal, Patient Portal to Clinical EHR Service, Clinical EHR Service to Insurance Payer — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite.</desc>
+<rect x="0" y="0" width="1220" height="940" fill="#ffffff"/>
+<text x="46" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">Healthcare Records STRIDE</text>
+<text x="46" y="65" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="1.3">STRIDE THREAT MODEL · DATA-FLOW DIAGRAM</text>
+<line x1="46" y1="78" x2="1174" y2="78" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="152" width="220" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="494" y="152" width="165.24" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="873.24" y="152" width="242.17" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M 254 302 L 510 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 633.24 302 L 907.58 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 994.32 378.74 L 994.32 462" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1071.07 302 L 1099.41 302 L 1099.41 694 L 1088.32 694" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 994.32 378.74 L 994.32 788 L 170 788 L 170 542" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 899.24 472 L 1089.41 472" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 899.24 524 L 1089.41 524" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 910.32 668 L 1078.32 668" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 910.32 720 L 1078.32 720" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<rect x="347.87" y="281.76" width="78.25" height="13.2" fill="#ffffff"/>
+<path d="M 520 302 L 510 305.6 L 510 298.4 Z" fill="#b02a37"/>
+<rect x="716.82" y="281.76" width="117.18" height="13.2" fill="#ffffff"/>
+<path d="M 917.58 302 L 907.58 305.6 L 907.58 298.4 Z" fill="#b02a37"/>
+<path d="M 994.32 472 L 990.72 462 L 997.92 462 Z" fill="#1e293b"/>
+<rect x="1078.07" y="415.13" width="72.35" height="13.2" fill="#ffffff"/>
+<path d="M 1078.32 694 L 1088.32 690.4 L 1088.32 697.6 Z" fill="#1e293b"/>
+<rect x="1104.41" y="375.16" width="74.58" height="13.2" fill="#ffffff"/>
+<path d="M 170 532 L 173.6 542 L 166.4 542 Z" fill="#b02a37"/>
+<rect x="534.67" y="772.76" width="94.97" height="13.2" fill="#ffffff"/>
+<rect x="86" y="268" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="237" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="86" y="464" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="433" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="576.62" cy="302" r="56.62" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="534.32" y="214.38" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="994.32" cy="302" r="76.74" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="952.02" y="194.26" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="899.24" y="472" width="190.17" height="52" fill="#ffffff" stroke="none"/>
+<rect x="962.26" y="441" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="910.32" y="668" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="962.26" y="637" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="170" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">PUBLIC</text>
+<text x="576.62" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">HOSPITAL DMZ</text>
+<text x="994.32" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">CLINICAL NETWORK</text>
+<text x="387" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">portal request</text>
+<text x="775.41" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">authenticated request</text>
+<text x="1083.07" y="424.37" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">record query</text>
+<text x="1109.41" y="384.4" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">access event</text>
+<text x="582.16" y="782" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">claim submission</text>
+<text x="170" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Patient Portal User</text>
+<text x="170" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="170" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Insurance Payer</text>
+<text x="170" y="445.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="576.62" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Patient Portal</text>
+<text x="576.62" y="226.88" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="994.32" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Clinical EHR Service</text>
+<text x="994.32" y="206.76" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="994.32" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Protected Health Records</text>
+<text x="994.32" y="453.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="994.32" y="698.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Access Audit Log</text>
+<text x="994.32" y="649.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="46" y="834" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#b02a37">3 of 5 flows cross a trust boundary</text>
+<text x="46" y="852" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#475569">Patient Portal User → Patient Portal   ·   Patient Portal → Clinical EHR Service   ·   Clinical EHR Service → Insurance Payer</text>
+<text x="46" y="876" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Rectangle = external entity (S·R)  —  Circle = process (S·T·R·I·D·E)  —  Parallel lines = data store (T·R?·I·D)  —  Every data flow carries T·I·D</text>
+<text x="46" y="894" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Trust boundaries are drawn neutral; red is reserved for the flows that cross one, which is where spoofing, tampering and disclosure bite.</text>
+</svg>

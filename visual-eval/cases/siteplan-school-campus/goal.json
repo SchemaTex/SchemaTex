@@ -1,0 +1,77 @@
+{
+  "id": "siteplan-school-campus",
+  "type": "siteplan",
+  "title": "Meadowbrook school campus",
+  "goal": "Show campus buildings, parking, play space, and fire access.",
+  "rubric": [
+    {
+      "id": "buildings",
+      "severity": "blocker",
+      "must": "Administration, Primary Building, Gymnasium, and Middle School are visibly separate labelled footprints."
+    },
+    {
+      "id": "parking-play",
+      "severity": "major",
+      "must": "Staff Parking and Play Fields are visibly labelled areas."
+    },
+    {
+      "id": "fire",
+      "severity": "blocker",
+      "must": "A continuous labelled fire access route visibly serves the academic buildings."
+    },
+    {
+      "id": "access",
+      "severity": "blocker",
+      "must": "School Drive and the main entry are visibly connected to the campus circulation."
+    },
+    {
+      "id": "orientation",
+      "severity": "minor",
+      "must": "Hydrant, north arrow, scale, and legend are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all four buildings as separate, labelled footprints; labelled staff parking and play fields; a continuous, labelled fire access route around the academic buildings; and School Drive connected to the campus circulation and main entry. The hydrant, north arrow, scale, and legend are visible. Labels are readable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:31:48.290Z",
+      "targetHash": "50856101523c",
+      "sourceHash": "7bdc118c399a",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "buildings",
+          "verdict": "pass",
+          "evidence": "Administration, Primary Building, Gymnasium, and Middle School appear as separate labelled footprints."
+        },
+        {
+          "id": "parking-play",
+          "verdict": "pass",
+          "evidence": "Staff Parking and Play Fields are visibly labelled areas."
+        },
+        {
+          "id": "fire",
+          "verdict": "pass",
+          "evidence": "The labelled Fire Access Route forms a continuous route beside the academic buildings."
+        },
+        {
+          "id": "access",
+          "verdict": "pass",
+          "evidence": "School Drive connects to the campus circulation; the marked Main entry connects the drive to the campus."
+        },
+        {
+          "id": "orientation",
+          "verdict": "pass",
+          "evidence": "The hydrant, north arrow, graphic scale, and legend are visible."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1000" viewBox="0 0 1900 1000">
+<title>Production incident response — on-call, engineering and communications workflow</title>
+<desc>An alert is acknowledged and assessed for customer impact. No impact leads to investigation and closure. Otherwise severity determines whether to create an incident channel or page an incident commander. Engineering assigns an owner, mitigates, and escalates to a specialist until service is restored. Communications publishes status and resolution updates. Resolved incidents lead to a postmortem.</desc>
+<defs>
+ <marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#1B2430"/></marker>
+ <style>
+  text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1B2430;font-size:13px}
+  .title{font-size:21px;font-weight:600}.subtitle{font-size:12px;fill:#5F6B7A}
+  .frame{fill:#5F6B7A;fill-opacity:.055;stroke:#5F6B7A;stroke-width:1.2}
+  .tab{fill:#5F6B7A;fill-opacity:.12;stroke:#5F6B7A;stroke-width:1.2}
+  .group-title{font-size:11px;font-weight:600;letter-spacing:1px;fill:#5F6B7A}
+  .edge{fill:none;stroke:#1B2430;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .node{fill:#FFFFFF;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round}
+  .decision{fill:#FBEDCE;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round}
+  .terminal{fill:#DFEBE0;stroke:#1B2430;stroke-width:1.5}
+  .label rect{fill:#FFFFFF;stroke:#D6DEEA;stroke-width:1;rx:5}
+  .label text{font-size:11px;font-weight:500;text-anchor:middle}
+  .legend text{font-size:11px;fill:#5F6B7A}
+ </style>
+</defs>
+<rect width="1900" height="1000" fill="#FFFFFF"/>
+<text class="title" x="55" y="51">Production incident response</text>
+<text class="subtitle" x="55" y="73">Operations runbook · On-call, Engineering, Communications · assess, mitigate, resolve</text>
+<path d="M55 87H1845" stroke="#D6DEEA" stroke-width="1"/>
+<!-- Team frames and folder tabs -->
+<rect class="frame" x="430" y="210" width="550" height="390" rx="12"/>
+<path class="tab" d="M430 210V192Q430 185 437 185H513Q520 185 520 192V210Z"/>
+<text class="group-title" x="441" y="202">ON-CALL</text>
+<rect class="frame" x="1010" y="210" width="570" height="390" rx="12"/>
+<path class="tab" d="M1010 210V192Q1010 185 1017 185H1141Q1148 185 1148 192V210Z"/>
+<text class="group-title" x="1021" y="202">ENGINEERING</text>
+<rect class="frame" x="620" y="680" width="1010" height="155" rx="12"/>
+<path class="tab" d="M620 680V662Q620 655 627 655H791Q798 655 798 662V680Z"/>
+<text class="group-title" x="631" y="672">COMMUNICATIONS</text>
+<!-- Orthogonal connections, with four-pixel bends -->
+<g class="edge" marker-end="url(#arrow)">
+ <path d="M190 380H230"/>
+ <path d="M410 380H450"/>
+ <path d="M530 334V292"/>
+ <path d="M610 380H655"/>
+ <path d="M730 334V270Q730 266 734 266H800"/>
+ <path d="M730 426V510"/>
+ <path d="M970 266H991Q995 266 995 270V380" marker-end="none"/>
+ <path d="M842 536H991Q995 536 995 532V380" marker-end="none"/>
+ <path d="M995 380H1030"/>
+ <path d="M1200 380H1230"/>
+ <path d="M1370 380H1405"/>
+ <path d="M1480 426V510"/>
+ <path d="M1370 536H1304Q1300 536 1300 532V406" stroke-dasharray="6 5"/>
+ <path d="M730 562V735"/>
+ <path d="M1555 380H1640"/>
+ <path d="M1590 380V711Q1590 715 1586 715H1474Q1470 715 1470 719V735"/>
+ <path d="M1715 402V510"/>
+ <path d="M440 266H414Q410 266 410 262V154Q410 150 414 150H1711Q1715 150 1715 154V358"/>
+</g>
+<!-- An undirected association from the resolution update to the resolved incident -->
+<path class="edge" d="M1570 761H1816Q1820 761 1820 757V384Q1820 380 1816 380H1790"/>
+<!-- Alert and acknowledgement -->
+<rect class="terminal" x="60" y="358" width="130" height="44" rx="22"/>
+<text x="125" y="385" text-anchor="middle">Alert fired</text>
+<rect class="node" x="230" y="354" width="180" height="52" rx="4"/>
+<text x="320" y="385" text-anchor="middle">On-call acknowledges</text>
+<!-- On-call -->
+<path class="decision" d="M530 334 610 380 530 426 450 380Z"/>
+<text text-anchor="middle" x="530" y="376"><tspan x="530">Customer</tspan><tspan x="530" dy="17">impact?</tspan></text>
+<rect class="node" x="440" y="240" width="180" height="52" rx="4"/>
+<text x="530" y="271" text-anchor="middle">Investigate and close</text>
+<path class="decision" d="M730 334 805 380 730 426 655 380Z"/>
+<text text-anchor="middle" x="730" y="376"><tspan x="730">Severity</tspan><tspan x="730" dy="17">1 or 2?</tspan></text>
+<rect class="node" x="800" y="240" width="170" height="52" rx="4"/>
+<text x="885" y="271" text-anchor="middle">Create incident channel</text>
+<rect class="node" x="618" y="510" width="224" height="52" rx="4"/>
+<path class="edge" d="M629 510V562M831 510V562"/>
+<text x="730" y="541" text-anchor="middle">Page incident commander</text>
+<!-- Engineering -->
+<rect class="node" x="1030" y="354" width="170" height="52" rx="4"/>
+<text x="1115" y="385" text-anchor="middle">Assign service owner</text>
+<rect class="node" x="1230" y="354" width="140" height="52" rx="4"/>
+<text x="1300" y="385" text-anchor="middle">Mitigate service</text>
+<path class="decision" d="M1480 334 1555 380 1480 426 1405 380Z"/>
+<text text-anchor="middle" x="1480" y="376"><tspan x="1480">Service</tspan><tspan x="1480" dy="17">restored?</tspan></text>
+<rect class="node" x="1370" y="510" width="180" height="52" rx="4"/>
+<text x="1460" y="541" text-anchor="middle">Escalate specialist</text>
+<!-- Communications -->
+<rect class="node" x="630" y="735" width="200" height="52" rx="4"/>
+<text x="730" y="766" text-anchor="middle">Publish status update</text>
+<rect class="node" x="1370" y="735" width="200" height="52" rx="4"/>
+<text x="1470" y="766" text-anchor="middle">Send resolution update</text>
+<!-- Resolution and follow-up -->
+<rect class="terminal" x="1640" y="358" width="150" height="44" rx="22"/>
+<text x="1715" y="385" text-anchor="middle">Resolve incident</text>
+<rect class="node" x="1625" y="510" width="180" height="52" rx="4"/>
+<text x="1715" y="541" text-anchor="middle">Schedule postmortem</text>
+<!-- Edge labels offset from their exit edges -->
+<g class="label">
+ <g transform="translate(542 304)"><rect width="28" height="19"/><text x="14" y="13.5">No</text></g>
+ <g transform="translate(615 352)"><rect width="34" height="19"/><text x="17" y="13.5">Yes</text></g>
+ <g transform="translate(742 304)"><rect width="28" height="19"/><text x="14" y="13.5">No</text></g>
+ <g transform="translate(742 446)"><rect width="34" height="19"/><text x="17" y="13.5">Yes</text></g>
+ <g transform="translate(1492 446)"><rect width="28" height="19"/><text x="14" y="13.5">No</text></g>
+ <g transform="translate(1596 352)"><rect width="34" height="19"/><text x="17" y="13.5">Yes</text></g>
+ <g transform="translate(1544 687)"><rect width="34" height="19"/><text x="17" y="13.5">Yes</text></g>
+</g>
+<!-- Shape vocabulary, styled as in the exemplar -->
+<g class="legend" transform="translate(55 700)">
+ <text class="group-title" x="0" y="0" style="font-weight:600;letter-spacing:1px">LEGEND</text>
+ <rect class="terminal" x="0" y="23" width="34" height="15" rx="7.5"/><text x="46" y="35">Start / end</text>
+ <rect class="node" x="0" y="49" width="34" height="15" rx="3"/><text x="46" y="61">Process step</text>
+ <path class="decision" d="M17 75 34 82.5 17 90 0 82.5Z"/><text x="46" y="87">Decision</text>
+ <rect class="node" x="0" y="101" width="34" height="15" rx="3"/><path class="edge" d="M5 101V116M29 101V116"/><text x="46" y="113">Predefined process</text>
+ <path class="edge" d="M0 135H34" stroke-dasharray="6 5"/><text x="46" y="139">Rework loop</text>
+</g>
+</svg>

@@ -1,0 +1,40 @@
+{
+  "id": "markov-queue-birth-death",
+  "type": "markov",
+  "title": "Service desk queue length",
+  "goal": "A practitioner can read this Markov chain at a glance: Service desk queue length.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/markov/ideal.svg (382d9af422f8); rendered and visually reviewed. All source probabilities retained; opposite transitions use separate curves, self-loops point into open space, absorbing states have a double ring. Every outgoing row sums to one."
+  }
+}

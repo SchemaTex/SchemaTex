@@ -26,6 +26,7 @@ import type {
   FmeaRow,
 } from "./types";
 import { analyseFmea } from "./analysis";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 export const FMEA_CONST = {
   CANVAS_PAD: 16,
@@ -41,7 +42,7 @@ export const FMEA_CONST = {
   CJK_W: 12,
   NUM_COL_W: 26,
   RPN_COL_W: 38,
-  AP_COL_W: 46,
+  AP_COL_W: Math.ceil(estimateTextWidth("Medium", 12, { fontWeight: 600 })) + 12,
 } as const;
 
 interface ColSpec {

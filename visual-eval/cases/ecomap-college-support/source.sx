@@ -1,0 +1,15 @@
+# Social-work ecomap: a college student balancing peer support, advising, family, employment, and counseling.
+ecomap "Nia's College Support Network"
+  center: nia [female, age: 19, label: "Nia"]
+  roommates [label: "Roommates", category: friends, importance: major]
+  advisor [label: "Academic Advisor", category: education]
+  family [label: "Family", category: family]
+  counselor [label: "Campus Counseling", category: mental-health]
+  job [label: "Campus Job", category: work]
+  club [label: "Cultural Student Club", category: community]
+  nia === roommates
+  advisor --> nia
+  nia == family
+  counselor <-> nia
+  nia --- job
+  nia === club

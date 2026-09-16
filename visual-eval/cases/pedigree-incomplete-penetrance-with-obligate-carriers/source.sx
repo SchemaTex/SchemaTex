@@ -1,0 +1,12 @@
+# Assumptions: the family has an autosomal dominant variant with incomplete penetrance.
+# Unaffected II-1 is an obligate carrier because their affected child inherited the variant through them.
+pedigree "Incomplete penetrance with obligate carriers"
+  I-1 [male, affected]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [female, obligate-carrier]
+    II-2 [male, affected]
+  II-3 [male, unaffected]
+  II-1 -- II-3
+    III-1 [male, affected, proband]
+    III-2 [female, unaffected]

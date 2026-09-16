@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+<title>Extensible analytics platform — plugins and host dependencies</title>
+<defs><style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0F172A} .title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}.name{font-size:13.5px;font-weight:600}.member{font-size:12px}.type,.role{fill:#475569}.visibility,.abstract{fill:#64748B}.abstract,.keyword{font-size:11px}.keyword{fill:#2563EB}.role{font-size:11.5px}.mult{font-size:12px;font-weight:500}.edge{fill:none;stroke:#334155;stroke-width:1.4}.dash{stroke-dasharray:6 4}.symbol{fill:#FFFFFF;stroke:#334155;stroke-width:1.4}.caption{font-size:11.5px;fill:#475569}
+</style></defs><rect width="1500" height="900" fill="#FFFFFF"/>
+<text x="46" y="50" class="title">Extensible analytics platform — plugins and host dependencies</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 8 CLASSIFIERS · 8 RELATIONSHIPS</text>
+<path d="M46 91H1454" stroke="#94A3B8" stroke-width="1.25"/>
+
+<path d="M356 192H470" class="edge"/>
+<path d="M458 186L470 192L458 198" class="edge"/>
+<text x="409" y="181" class="role" text-anchor="middle">resolves</text>
+<path d="M650 259V330" class="edge"/>
+<path d="M650 235L643.5 247L650 259L656.5 247Z" class="symbol"/>
+<text x="658" y="320" class="mult" >0..*</text>
+<text x="638" y="288" class="role" text-anchor="end">registered plugins</text>
+<path d="M520 382H316" class="edge dash"/>
+<path d="M328 376L316 382L328 388" class="edge"/>
+<text x="418" y="370" class="role" text-anchor="middle">executes in</text>
+<path d="M520 438H400V590H316" class="edge"/>
+<path d="M328 584L316 590L328 596" class="edge"/>
+<text x="388" y="535" class="role" text-anchor="end">produces</text>
+<path d="M580 487V755H740M580 585H740" class="edge"/>
+<path d="M580 472L571 487H589Z" class="symbol"/>
+<path d="M1190 442V755H1020M1190 585H1020" class="edge dash"/>
+<path d="M1190 427L1181 442H1199Z" class="symbol"/>
+<rect x="76" y="150" width="280" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="76.75" y="150.75" width="278.5" height="34.25" fill="#EEF2F7"/>
+<text x="216.0" y="173" class="name" text-anchor="middle">AnalyticsHost</text>
+<path d="M76 185H356" stroke="#334155" stroke-width="1"/>
+<path d="M76 195H356" stroke="#334155" stroke-width="1"/>
+<text x="89" y="217" class="member"><tspan class="visibility">+ </tspan><tspan>run(plugin: Plugin)</tspan><tspan class="type">: Result</tspan></text>
+<rect x="470" y="150" width="300" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="470.75" y="150.75" width="298.5" height="34.25" fill="#EEF2F7"/>
+<text x="620.0" y="173" class="name" text-anchor="middle">PluginRegistry</text>
+<path d="M470 185H770" stroke="#334155" stroke-width="1"/>
+<path d="M470 195H770" stroke="#334155" stroke-width="1"/>
+<text x="483" y="217" class="member"><tspan class="visibility">+ </tspan><tspan>register(plugin: Plugin)</tspan><tspan class="type">: void</tspan></text>
+<rect x="520" y="330" width="280" height="142" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="520.75" y="330.75" width="278.5" height="51.25" fill="#EEF2F7"/>
+<text x="660.0" y="353" class="name" text-anchor="middle" font-style="italic">Plugin</text>
+<text x="660.0" y="371" class="abstract" text-anchor="middle">{abstract}</text>
+<path d="M520 382H800" stroke="#334155" stroke-width="1"/>
+<path d="M520 417H800" stroke="#334155" stroke-width="1"/>
+<text x="533" y="404" class="member"><tspan class="visibility"># </tspan><tspan>name</tspan><tspan class="type">: String</tspan></text>
+<text x="533" y="439" class="member"><tspan class="visibility">+ </tspan><tspan>initialize()</tspan><tspan class="type">: void</tspan></text>
+<text x="533" y="459" class="member"><tspan class="visibility">+ </tspan><tspan>execute()</tspan><tspan class="type">: Result</tspan></text>
+<rect x="1020" y="330" width="340" height="97" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="1020.75" y="330.75" width="338.5" height="51.25" fill="#EEF2F7"/>
+<text x="1190.0" y="350" class="keyword" text-anchor="middle">«interface»</text>
+<text x="1190.0" y="368" class="name" text-anchor="middle">Configurable</text>
+<path d="M1020 382H1360" stroke="#334155" stroke-width="1"/>
+<path d="M1020 392H1360" stroke="#334155" stroke-width="1"/>
+<text x="1033" y="414" class="member"><tspan class="visibility">+ </tspan><tspan>configure(context: PluginContext)</tspan><tspan class="type">: void</tspan></text>
+<rect x="76" y="350" width="240" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="76.75" y="350.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="196.0" y="373" class="name" text-anchor="middle">PluginContext</text>
+<path d="M76 385H316" stroke="#334155" stroke-width="1"/>
+<path d="M76 420H316" stroke="#334155" stroke-width="1"/>
+<text x="89" y="407" class="member"><tspan class="visibility">+ </tspan><tspan>tenantId</tspan><tspan class="type">: UUID</tspan></text>
+<rect x="76" y="550" width="240" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="76.75" y="550.75" width="238.5" height="34.25" fill="#EEF2F7"/>
+<text x="196.0" y="573" class="name" text-anchor="middle">Result</text>
+<path d="M76 585H316" stroke="#334155" stroke-width="1"/>
+<path d="M76 620H316" stroke="#334155" stroke-width="1"/>
+<text x="89" y="607" class="member"><tspan class="visibility">+ </tspan><tspan>success</tspan><tspan class="type">: boolean</tspan></text>
+<rect x="740" y="540" width="280" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="740.75" y="540.75" width="278.5" height="34.25" fill="#EEF2F7"/>
+<text x="880.0" y="563" class="name" text-anchor="middle">ExportPlugin</text>
+<path d="M740 575H1020" stroke="#334155" stroke-width="1"/>
+<path d="M740 585H1020" stroke="#334155" stroke-width="1"/>
+<text x="753" y="607" class="member"><tspan class="visibility">+ </tspan><tspan>execute()</tspan><tspan class="type">: Result</tspan></text>
+<rect x="740" y="710" width="280" height="80" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<rect x="740.75" y="710.75" width="278.5" height="34.25" fill="#EEF2F7"/>
+<text x="880.0" y="733" class="name" text-anchor="middle">ValidationPlugin</text>
+<path d="M740 745H1020" stroke="#334155" stroke-width="1"/>
+<path d="M740 755H1020" stroke="#334155" stroke-width="1"/>
+<text x="753" y="777" class="member"><tspan class="visibility">+ </tspan><tspan>execute()</tspan><tspan class="type">: Result</tspan></text>
+<path d="M46 835H1454" stroke="#94A3B8" stroke-width="1.25"/>
+<path d="M46 867H98" class="edge"/>
+<path d="M98 858V876" class="edge"/>
+<text x="110" y="871" class="caption" >association</text>
+<path d="M212 867H264" class="edge"/>
+<path d="M264 858V876" class="edge"/>
+<path d="M252 861L264 867L252 873" class="edge"/>
+<text x="276" y="871" class="caption" >navigable association</text>
+<path d="M433 867H485" class="edge"/>
+<path d="M485 858V876" class="edge"/>
+<path d="M459 867L471 860.5L483 867L471 873.5Z" class="symbol"/>
+<text x="497" y="871" class="caption" >aggregation</text>
+<path d="M602 867H654" class="edge"/>
+<path d="M654 858V876" class="edge"/>
+<path d="M628 867L640 860.5L652 867L640 873.5Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="871" class="caption" >composition</text>
+<path d="M774 867H826" class="edge"/>
+<path d="M826 858V876" class="edge"/>
+<path d="M825 867L810 858V876Z" class="symbol"/>
+<text x="838" y="871" class="caption" >generalization</text>
+<path d="M954 867H1006" class="edge dash"/>
+<path d="M1006 858V876" class="edge"/>
+<path d="M1005 867L990 858V876Z" class="symbol"/>
+<text x="1018" y="871" class="caption" >realization</text>
+<path d="M1114 867H1166" class="edge dash"/>
+<path d="M1166 858V876" class="edge"/>
+<path d="M1154 861L1166 867L1154 873" class="edge"/>
+<text x="1178" y="871" class="caption" >dependency</text>
+</svg>

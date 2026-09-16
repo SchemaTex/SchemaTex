@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="452" height="375" viewBox="0 0 452 375" role="img" aria-label="Causal loop diagram" data-diagram-type="causalloop"><title>Causal loop diagram</title>
+<desc>Causal loop diagram: 5 variables, 6 causal links. 2 feedback loops: 2 reinforcing (R), 0 balancing (B). R1 &quot;Debt spiral&quot; (reinforcing, 0 negative links): Delivery pressure → Shortcutting → Technical debt → Development effort → Delivery pressure. R2 (reinforcing, 0 negative links): Delivery pressure → Shortcutting → Technical debt → Defect rate → Development effort → Delivery pressure. Line 3: unrecognised line: &quot;causalloop &quot;Technical-debt spiral&quot;&quot;</desc>
+<style>.sx-cld-bg { fill: #ffffff; }
+.sx-cld-link { fill: none; stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-arrow { fill: #1a1a1a; stroke: none; }
+.sx-cld-var { fill: #1a1a1a; font-size: 13px; font-weight: 600; }
+.sx-cld-polarity { fill: #1a1a1a; font-size: 14px; font-weight: 700; }
+.sx-cld-link-label { fill: #1a1a1a; font-size: 9px; }
+.sx-cld-delay { stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-glyph { fill: none; stroke: #1d6fd6; stroke-width: 2; }
+.sx-cld-glyph-head { fill: #1d6fd6; stroke: none; }
+.sx-cld-glyph-label { fill: #1d6fd6; font-size: 12px; font-weight: 700; }
+.sx-cld-glyph-phrase { fill: #1d6fd6; font-size: 10px; font-style: italic; }
+.sx-cld-title { fill: #1a1a1a; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="452" height="375" class="sx-cld-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-cld-link-g" data-from="Delivery pressure" data-to="Shortcutting" data-polarity="+"><path d="M 236.89 67 Q 294.31 70.35 315.23 123.92" class="sx-cld-link"/>
+<polygon points="315.23,123.92 307.77,117.17 316.15,113.9" class="sx-cld-arrow"/>
+<text x="318.5643023728741" y="113.30775080366506" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Shortcutting" data-to="Technical debt" data-polarity="+"><path d="M 328.9 149.92 Q 340.85 213.59 293.76 258.08" class="sx-cld-link"/>
+<polygon points="293.76,258.08 297.21,248.63 303.39,255.17" class="sx-cld-arrow"/>
+<text x="308.3568032869843" y="260.3647433144381" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Technical debt" data-to="Development effort" data-polarity="+"><path d="M 271.64 258.08 Q 167.69 244.63 122.77 149.92" class="sx-cld-link"/>
+<polygon points="122.77,149.92 130.69,156.12 122.56,159.98" class="sx-cld-arrow"/>
+<text x="119.88820783667742" y="168.33274411616296" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Development effort" data-to="Delivery pressure" data-polarity="+"><path d="M 122.77 123.92 Q 143.69 70.35 201.11 67" class="sx-cld-link"/>
+<polygon points="201.11,67 192.38,72.02 191.86,63.03" class="sx-cld-arrow"/>
+<text x="188.24107631433972" y="63.31771703189055" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Technical debt" data-to="Defect rate" data-polarity="+"><path d="M 236.53 271.08 Q 212.07 302.07 190.97 271.08" class="sx-cld-link"/>
+<polygon points="190.97,271.08 199.75,275.99 192.31,281.05" class="sx-cld-arrow"/>
+<text x="194.3664561875979" y="290.85286733645677" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Defect rate" data-to="Development effort" data-polarity="+"><path d="M 144.24 258.08 Q 97.15 213.59 109.1 149.92" class="sx-cld-link"/>
+<polygon points="109.1,149.92 111.86,159.59 103.02,157.93" class="sx-cld-arrow"/>
+<text x="98.29604614872875" y="163.88813408537828" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-glyph-g" data-loop="R1" data-kind="R" data-vars="Delivery pressure,Shortcutting,Technical debt,Development effort" data-negatives="0" data-circulation="cw"><path d="M 236.63 133.73 A 16 16 0 1 1 222.78 141.73" class="sx-cld-glyph"/>
+<polygon points="222.78,141.73 222.31,149.54 216.25,146.04" class="sx-cld-glyph-head"/>
+<text x="236.6335575687742" y="154.7294901687516" class="sx-cld-glyph-label" text-anchor="middle">R1</text>
+<text x="236.6335575687742" y="178.7294901687516" class="sx-cld-glyph-phrase" text-anchor="middle">Debt spiral</text></g>
+<g class="sx-cld-glyph-g" data-loop="R2" data-kind="R" data-vars="Delivery pressure,Shortcutting,Technical debt,Defect rate,Development effort" data-negatives="0" data-circulation="cw"><path d="M 219 158 A 16 16 0 1 1 205.14 166" class="sx-cld-glyph"/>
+<polygon points="205.14,166 204.67,173.81 198.61,170.31" class="sx-cld-glyph-head"/>
+<text x="219" y="179" class="sx-cld-glyph-label" text-anchor="middle">R2</text></g>
+<g class="sx-cld-var-g" data-id="Delivery pressure"><text x="219" y="58" class="sx-cld-var" text-anchor="middle">Delivery pressure</text></g>
+<g class="sx-cld-var-g" data-id="Shortcutting"><text x="333.12678195541844" y="140.91796067500633" class="sx-cld-var" text-anchor="middle">Shortcutting</text></g>
+<g class="sx-cld-var-g" data-id="Technical debt"><text x="289.5342302750968" y="275.08203932499373" class="sx-cld-var" text-anchor="middle">Technical debt</text></g>
+<g class="sx-cld-var-g" data-id="Development effort"><text x="104.87321804458156" y="140.91796067500633" class="sx-cld-var" text-anchor="middle">Development effort</text></g>
+<g class="sx-cld-var-g" data-id="Defect rate"><text x="148.46576972490323" y="275.08203932499373" class="sx-cld-var" text-anchor="middle">Defect rate</text></g></g></svg>

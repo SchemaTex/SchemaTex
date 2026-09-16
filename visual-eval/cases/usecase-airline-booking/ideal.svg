@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000">
+  <title>Airline Booking — Airline Reservation System use case diagram</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#263445" stroke-width="1.8"/></marker>
+    <marker id="generalization" viewBox="0 0 20 18" refX="19" refY="9" markerWidth="20" markerHeight="18" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L19 9 L1 17 Z" fill="white" stroke="#263445" stroke-width="1.8"/></marker>
+    <g id="actor" fill="none" stroke="#263445" stroke-width="2.2" stroke-linecap="round"><circle cy="-34" r="13"/><path d="M0 -21 V22 M-27 -4 H27 M0 22 L-24 56 M0 22 L24 56"/></g>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #182536; font-size: 21px; }
+      .edge { fill: none; stroke: #263445; stroke-width: 1.8; stroke-linejoin: round; }
+      .dependency { stroke-dasharray: 8 6; marker-end: url(#arrow); }
+      .oval { fill: white; stroke: #263445; stroke-width: 2; }
+      .label { font-size: 19px; }
+      .small { font-size: 18px; }
+    </style>
+  </defs>
+  <rect width="1500" height="1000" fill="white"/>
+  <text x="750" y="54" text-anchor="middle" font-size="32" font-weight="600">Airline Booking</text>
+  <rect x="300" y="96" width="880" height="850" fill="white" stroke="#263445" stroke-width="2"/>
+  <text x="740" y="133" text-anchor="middle" font-size="25" font-weight="600">Airline Reservation System</text>
+
+  <!-- Actor associations: solid, undirected. -->
+  <path class="edge" d="M167 316 H245 V220 H380"/>
+  <path class="edge" d="M167 316 H245 V470 H365"/>
+  <path class="edge" d="M167 316 H215 V830 H380"/>
+  <path class="edge" d="M167 626 H270 V490 H367"/>
+  <path class="edge" d="M920 600 H1265 V576 H1323"/>
+  <path class="edge" d="M920 745 H1295 V756 H1323"/>
+
+  <!-- Frequent Flyer is a specialization of Traveller. -->
+  <path class="edge" d="M140 241 V273" marker-end="url(#generalization)"/>
+
+  <!-- Four include dependencies, all directed out of Book Flight. -->
+  <path class="edge dependency" d="M575 410 V290 H920"/>
+  <path class="edge dependency" d="M635 448 H755 V435 H920"/>
+  <path class="edge dependency" d="M635 492 H755 V600 H920"/>
+  <path class="edge dependency" d="M575 530 V745 H920"/>
+
+  <!-- Cancel Booking extends the named extension point of Book Flight. -->
+  <path class="edge dependency" d="M405 665 H330 V515 H393"/>
+
+  <!-- Use cases inside the system boundary. -->
+  <ellipse class="oval" cx="500" cy="220" rx="120" ry="43"/>
+  <text x="500" y="227" text-anchor="middle">Search Flights</text>
+
+  <ellipse class="oval" cx="500" cy="470" rx="140" ry="70"/>
+  <path class="edge" d="M370 445 H630"/>
+  <text x="500" y="434" text-anchor="middle" font-weight="600">Book Flight</text>
+  <text x="500" y="475" text-anchor="middle" class="small" font-style="italic">extension point</text>
+  <text x="500" y="503" text-anchor="middle" class="small">payment declined</text>
+
+  <ellipse class="oval" cx="1040" cy="290" rx="120" ry="43"/>
+  <text x="1040" y="297" text-anchor="middle">Select Itinerary</text>
+  <ellipse class="oval" cx="1040" cy="435" rx="120" ry="43"/>
+  <text x="1040" y="442" text-anchor="middle">Price Itinerary</text>
+  <ellipse class="oval" cx="1040" cy="600" rx="120" ry="43"/>
+  <text x="1040" y="607" text-anchor="middle">Collect Payment</text>
+  <ellipse class="oval" cx="1040" cy="745" rx="120" ry="43"/>
+  <text x="1040" y="752" text-anchor="middle">Issue Ticket</text>
+  <!-- External associations emerge from right edge of use-case ellipses. -->
+  <path class="edge" d="M1160 600 H1265"/>
+  <path class="edge" d="M1160 745 H1295"/>
+
+  <ellipse class="oval" cx="525" cy="665" rx="120" ry="43"/>
+  <text x="525" y="672" text-anchor="middle">Cancel Booking</text>
+  <ellipse class="oval" cx="530" cy="830" rx="150" ry="43"/>
+  <text x="530" y="837" text-anchor="middle">Notify Schedule Change</text>
+
+  <!-- Dependency labels remain clear of the orthogonal paths. -->
+  <text x="735" y="276" text-anchor="middle" class="label">«include»</text>
+  <text x="831" y="420" text-anchor="middle" class="label">«include»</text>
+  <text x="831" y="585" text-anchor="middle" class="label">«include»</text>
+  <text x="735" y="731" text-anchor="middle" class="label">«include»</text>
+  <text x="345" y="574" class="label">«extend»</text>
+  <text x="345" y="599" class="small">[payment declined]</text>
+
+  <!-- Human and external-system actors. -->
+  <use href="#actor" x="140" y="320"/>
+  <text x="140" y="409" text-anchor="middle">Traveller</text>
+  <use href="#actor" x="140" y="185"/>
+  <text x="140" y="116" text-anchor="middle">Frequent Flyer</text>
+  <use href="#actor" x="140" y="630"/>
+  <text x="140" y="719" text-anchor="middle">Agent</text>
+  <text x="140" y="744" text-anchor="middle" class="small">«business»</text>
+  <use href="#actor" x="1350" y="580"/>
+  <text x="1350" y="662" text-anchor="middle">Payment Processor</text>
+  <text x="1350" y="687" text-anchor="middle" class="small">«external»</text>
+  <use href="#actor" x="1350" y="760"/>
+  <text x="1350" y="842" text-anchor="middle">Departure Control</text>
+  <text x="1350" y="867" text-anchor="middle" class="small">«external»</text>
+</svg>

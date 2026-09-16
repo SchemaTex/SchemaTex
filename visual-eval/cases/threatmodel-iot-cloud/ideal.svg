@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1243 940" width="1243" height="940" role="img">
+<title>IoT Cloud Backend STRIDE</title>
+<desc>A STRIDE threat model of IoT Cloud Backend STRIDE, drawn as a data-flow diagram over 3 trust zones: Home Internet, Cloud Edge, Cloud Internal. 2 external entities are drawn as rectangles, 2 processes as circles, and 2 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 6 data flows, 5 cross a trust boundary — Smart Thermostat to IoT Cloud Gateway, Homeowner App to IoT Cloud Gateway, IoT Cloud Gateway to Device Control Service, Device Control Service to Smart Thermostat, IoT Cloud Gateway to Telemetry Store — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite.</desc>
+<rect x="0" y="0" width="1243" height="940" fill="#ffffff"/>
+<text x="46" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">IoT Cloud Backend STRIDE</text>
+<text x="46" y="65" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="1.3">STRIDE THREAT MODEL · DATA-FLOW DIAGRAM</text>
+<line x1="46" y1="78" x2="1197" y2="78" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="152" width="220" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="494" y="152" width="197.16" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="905.16" y="152" width="220" height="614" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M 254 302 L 510 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 254 498 L 379 498 L 379 302 L 510 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 665.16 302 L 945.06 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1015.16 362.1 L 1015.16 788 L 66 788 L 66 372 L 170 372 L 170 346" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 665.16 302 L 790.16 302 L 790.16 498 L 921.16 498" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1075.26 302 L 1109.16 302 L 1109.16 694 L 1109.16 694" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 931.16 472 L 1099.16 472" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 931.16 524 L 1099.16 524" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 931.16 668 L 1099.16 668" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 931.16 720 L 1099.16 720" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<rect x="342.37" y="281.76" width="89.27" height="13.2" fill="#ffffff"/>
+<path d="M 520 302 L 510 305.6 L 510 298.4 Z" fill="#b02a37"/>
+<rect x="337.02" y="394.76" width="83.96" height="13.2" fill="#ffffff"/>
+<path d="M 520 302 L 510 305.6 L 510 298.4 Z" fill="#b02a37"/>
+<rect x="745.2" y="281.76" width="129.83" height="13.2" fill="#ffffff"/>
+<path d="M 955.06 302 L 945.06 305.6 L 945.06 298.4 Z" fill="#b02a37"/>
+<path d="M 170 336 L 173.6 346 L 166.4 346 Z" fill="#b02a37"/>
+<rect x="545.19" y="772.76" width="94.78" height="13.2" fill="#ffffff"/>
+<rect x="764.08" y="394.76" width="52.17" height="13.2" fill="#ffffff"/>
+<path d="M 931.16 498 L 921.16 501.6 L 921.16 494.4 Z" fill="#b02a37"/>
+<path d="M 1099.16 694 L 1109.16 690.4 L 1109.16 697.6 Z" fill="#1e293b"/>
+<rect x="1114.16" y="414.36" width="87.04" height="13.2" fill="#ffffff"/>
+<rect x="86" y="268" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="237" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="86" y="464" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="433" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="592.58" cy="302" r="72.58" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="550.28" y="198.42" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="1015.16" cy="302" r="60.1" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="972.86" y="210.9" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="931.16" y="472" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="983.1" y="441" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="931.16" y="668" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="983.1" y="637" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="170" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">HOME INTERNET</text>
+<text x="592.58" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">CLOUD EDGE</text>
+<text x="1015.16" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">CLOUD INTERNAL</text>
+<text x="387" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">MQTT telemetry</text>
+<text x="379" y="404" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">control request</text>
+<text x="810.11" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">authenticated command</text>
+<text x="592.58" y="782" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">device command</text>
+<text x="790.16" y="404" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">readings</text>
+<text x="1119.16" y="423.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">command audit</text>
+<text x="170" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Smart Thermostat</text>
+<text x="170" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="170" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Homeowner App</text>
+<text x="170" y="445.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="592.58" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">IoT Cloud Gateway</text>
+<text x="592.58" y="210.92" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="1015.16" y="298.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Device Control</text>
+<text x="1015.16" y="314.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Service</text>
+<text x="1015.16" y="223.4" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="1015.16" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Telemetry Store</text>
+<text x="1015.16" y="453.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="1015.16" y="698.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Device Audit Log</text>
+<text x="1015.16" y="649.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="46" y="834" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#b02a37">5 of 6 flows cross a trust boundary</text>
+<text x="46" y="852" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#475569">Smart Thermostat → IoT Cloud Gateway   ·   Homeowner App → IoT Cloud Gateway   ·   IoT Cloud Gateway → Device Control Service   ·   Device Control Service → Smart Thermostat   ·   IoT Cloud Gateway → Telemetry Store</text>
+<text x="46" y="876" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Rectangle = external entity (S·R)  —  Circle = process (S·T·R·I·D·E)  —  Parallel lines = data store (T·R?·I·D)  —  Every data flow carries T·I·D</text>
+<text x="46" y="894" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Trust boundaries are drawn neutral; red is reserved for the flows that cross one, which is where spoofing, tampering and disclosure bite.</text>
+</svg>

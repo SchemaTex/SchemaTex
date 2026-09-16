@@ -27,7 +27,14 @@ Ecomap 由三层组成：
 |---------|-------|-----|
 | Central person | Large circle (r=50) or square (50×50) | `<circle>` / `<rect>` with class="schematex-center" |
 | Name label | Text inside shape | `<text>` centered |
-| Optional details | Age, sex symbol | Smaller text below name |
+| Optional details | Age (`Age 15`) | Smaller, regular-weight text below name; no enclosing glyph |
+
+**Individual centre policy (2026-09-10):** Render the name as primary text and an
+optional `Age N` line as secondary text, vertically centred together. Without an
+age, centre the name alone. An explicit age of zero must still be shown. Declared
+sex remains in the AST but does not create a nested person glyph for a single
+individual. This is a product presentation choice, not a universal clinical rule.
+The DSL requires no positioning or styling fields for this treatment.
 
 ### 2.2 Family Center (Embedded Genogram)
 在临床实践中，ecomap 的中心通常是一个**迷你 genogram**，包含核心家庭成员：

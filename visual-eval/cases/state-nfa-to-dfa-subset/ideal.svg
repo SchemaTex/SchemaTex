@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1103" viewBox="0 0 1160 800" role="img" aria-labelledby="title desc">
+  <title id="title">Total DFA — accepts exactly ab and ba</title>
+  <desc id="desc">An initial marker enters Start. Start goes to SeenA on a and SeenB on b. SeenA goes to Accept on b and Dead on a. SeenB goes to Accept on a and Dead on b. Accept is double outlined and goes to Dead on either a or b. Dead has separate self-transitions for a and b.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L8 5 L0 10" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; }
+      .title { font-size:19px; font-weight:600; fill:#16202E; }
+      .subtitle { font-size:11.5px; fill:#64708A; }
+      .state { fill:#FFFFFF; stroke:#16202E; stroke-width:1.5; }
+      .name { font-size:13px; font-weight:500; fill:#16202E; text-anchor:middle; dominant-baseline:middle; }
+      .edge { fill:none; stroke:#4A5568; stroke-width:1.25; stroke-linecap:round; stroke-linejoin:round; marker-end:url(#arrow); }
+      .label { font-size:11px; fill:#64708A; text-anchor:middle; paint-order:stroke; stroke:#FFFFFF; stroke-width:5; stroke-linejoin:round; }
+      .legend { font-size:10.5px; fill:#64708A; }
+    </style>
+  </defs>
+  <rect width="1160" height="800" fill="#FFFFFF"/>
+  <text class="title" x="40" y="46">Two-word DFA</text>
+  <text class="subtitle" x="40" y="68">Total over {a, b} · accepts exactly ab and ba · transition labels read input symbol</text>
+
+  <!-- Initial transition. -->
+  <circle cx="70" cy="400" r="6" fill="#16202E"/>
+  <path class="edge" d="M76 400 H120"/>
+
+  <!-- Start branches: the two accepting paths are symmetric. -->
+  <path class="edge" d="M190 377 V243 Q190 233 200 233 H400"/>
+  <text class="label" x="295" y="224">a</text>
+  <path class="edge" d="M190 423 V553 Q190 563 200 563 H400"/>
+  <text class="label" x="295" y="554">b</text>
+
+  <path class="edge" d="M540 233 H745 Q755 233 755 243 V370"/>
+  <text class="label" x="640" y="224">b</text>
+  <path class="edge" d="M540 563 H745 Q755 563 755 553 V430"/>
+  <text class="label" x="640" y="554">a</text>
+
+  <!-- Repeated first symbols go directly to Dead around the outside. -->
+  <path class="edge" d="M470 210 V160 Q470 150 480 150 H995 Q1005 150 1005 160 V377"/>
+  <text class="label" x="740" y="141">a</text>
+  <path class="edge" d="M470 586 V640 Q470 650 480 650 H995 Q1005 650 1005 640 V423"/>
+  <text class="label" x="740" y="673">b</text>
+
+  <!-- Both inputs leave the accepting state. -->
+  <path class="edge" d="M830 389 H940"/>
+  <text class="label" x="885" y="380">a</text>
+  <path class="edge" d="M830 411 H940"/>
+  <text class="label" x="885" y="433">b</text>
+
+  <!-- Dead absorbs both symbols, with two distinct circular self-loops. -->
+  <path class="edge" d="M1040 377 A30 30 0 1 1 1070 390"/>
+  <text class="label" x="1096" y="317">a</text>
+  <path class="edge" d="M1040 423 A30 30 0 1 0 1070 410"/>
+  <text class="label" x="1096" y="492">b</text>
+
+  <g aria-label="Start">
+    <rect class="state" x="120" y="377" width="140" height="46" rx="10"/>
+    <text class="name" x="190" y="401">Start</text>
+  </g>
+  <g aria-label="SeenA">
+    <rect class="state" x="400" y="210" width="140" height="46" rx="10"/>
+    <text class="name" x="470" y="234">SeenA</text>
+  </g>
+  <g aria-label="SeenB">
+    <rect class="state" x="400" y="540" width="140" height="46" rx="10"/>
+    <text class="name" x="470" y="564">SeenB</text>
+  </g>
+  <g aria-label="Accept, accepting state">
+    <rect class="state" x="680" y="370" width="150" height="60" rx="10"/>
+    <rect class="state" x="685" y="375" width="140" height="50" rx="10"/>
+    <text class="name" x="755" y="401">Accept</text>
+  </g>
+  <g aria-label="Dead">
+    <rect class="state" x="940" y="377" width="130" height="46" rx="10"/>
+    <text class="name" x="1005" y="401">Dead</text>
+  </g>
+
+  <!-- Reference-style symbol key. -->
+  <path d="M40 720 H1120" stroke="#EEF2F7" stroke-width="1.5"/>
+  <circle cx="46" cy="752" r="6" fill="#16202E"/>
+  <text class="legend" x="61" y="756">initial pseudo-state</text>
+  <rect class="state" x="275" y="742" width="30" height="20" rx="7"/>
+  <rect class="state" x="279" y="746" width="22" height="12" rx="4"/>
+  <text class="legend" x="315" y="756">accepting state</text>
+  <path class="edge" d="M505 752 H545"/>
+  <text class="label" x="525" y="742">a</text>
+  <text class="legend" x="558" y="756">transition — consumes one symbol</text>
+  <text class="legend" x="860" y="756">Dead absorbs all other prefixes</text>
+</svg>

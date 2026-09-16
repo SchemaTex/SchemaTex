@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="890" height="406" viewBox="0 0 890 406" role="img" aria-label="Event tree" data-diagram-type="eventtree"><title>Event tree</title>
+<desc>Event tree for &quot;Fire in process area&quot; (f₀ = 0.01): 3 functions, 5 sequences. Controlled fire; personnel safe: 0.008195. Escalated fire; personnel safe: 0.001117. Late-detected fire; major damage: 4.000e-4. Controlled fire; personnel injury: 2.534e-4. Escalated fire; personnel injury: 3.456e-5. Dominant sequence: &quot;Controlled fire; personnel safe&quot; [1s 2s 3s] at 0.008195. Line 4: unrecognised line: &quot;eventtree &quot;Fire in process area&quot;&quot;</desc>
+<style>.sx-et-bg { fill: #ffffff; }
+.sx-et-title { fill: #334155; font-size: 16px; font-weight: 700; }
+.sx-et-header { fill: #334155; font-size: 12px; font-weight: 700; }
+.sx-et-grid { fill: none; stroke: #475569; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+.sx-et-headrule { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-et-ie { fill: none; stroke: #1e293b; stroke-width: 3; }
+.sx-et-ie-label { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-et-ie-freq { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-et-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-et-edge[data-leg="s"] {}
+.sx-et-leg-label { fill: #334155; font-size: 9px; }
+.sx-et-leg-prob { fill: #2563eb; font-size: 9px; }
+.sx-et-outcome { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-et-freq { fill: #2563eb; font-size: 10px; font-weight: 600; }
+.sx-et-seqid { fill: #334155; font-size: 9px; opacity: 0.7; }
+.sx-et-dot { fill: #334155; stroke: none; }
+.sx-et-edge[data-dominant="true"] { stroke: #dc2626; stroke-width: 3; }
+.sx-et-outcome[data-dominant="true"] { fill: #b91c1c; }
+.sx-et-freq[data-dominant="true"] { fill: #b91c1c; font-weight: 700; }
+.sx-et-dot[data-dominant="true"] { fill: #b91c1c; }</style>
+<rect x="0" y="0" width="890" height="406" class="sx-et-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="60" y="46" class="sx-et-header" text-anchor="middle" data-col="initiating">Initiating Event</text>
+<text x="242" y="46" class="sx-et-header" text-anchor="middle" data-col="function">Fire detection and alarm</text>
+<text x="392" y="46" class="sx-et-header" text-anchor="middle" data-col="function">Automatic fire suppression</text>
+<text x="542" y="46" class="sx-et-header" text-anchor="middle" data-col="function">Personnel evacuation</text>
+<text x="658.8" y="46" class="sx-et-header" text-anchor="middle" data-col="outcome">Outcome</text>
+<text x="778.8" y="46" class="sx-et-header" text-anchor="middle" data-col="frequency">Frequency</text>
+<line x1="28" y1="52" x2="822" y2="52" class="sx-et-headrule"/>
+<line x1="242" y1="58" x2="242" y2="338" class="sx-et-grid"/>
+<line x1="392" y1="58" x2="392" y2="338" class="sx-et-grid"/>
+<line x1="542" y1="58" x2="542" y2="338" class="sx-et-grid"/>
+<g class="sx-et-ie-g" data-id="FIRE"><line x1="28" y1="198" x2="92" y2="198" class="sx-et-ie"/>
+<text x="28" y="188" class="sx-et-ie-label">Fire in process area</text>
+<text x="28" y="214" class="sx-et-ie-freq">f₀ = 0.01</text></g>
+<path d="M 92 198 L 242 198 L 242 170" class="sx-et-edge" data-leg="s" data-fn="DET" data-tag="1s"/>
+<text x="167" y="163" class="sx-et-leg-label" text-anchor="middle">Success (1s)</text>
+<text x="167" y="174" class="sx-et-leg-prob" text-anchor="middle">0.96</text>
+<path d="M 242 170 L 392 170 L 392 114" class="sx-et-edge" data-leg="s" data-fn="SUP" data-tag="2s"/>
+<text x="317" y="107" class="sx-et-leg-label" text-anchor="middle">Success (2s)</text>
+<text x="317" y="118" class="sx-et-leg-prob" text-anchor="middle">0.88</text>
+<path d="M 392 114 L 542 114 L 542 86" class="sx-et-edge" data-leg="s" data-fn="EVAC" data-tag="3s"/>
+<text x="467" y="79" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="90" class="sx-et-leg-prob" text-anchor="middle">0.97</text>
+<path d="M 392 114 L 542 114 L 542 142" class="sx-et-edge" data-leg="f" data-fn="EVAC" data-tag="3f"/>
+<text x="467" y="135" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="146" class="sx-et-leg-prob" text-anchor="middle">0.03</text>
+<path d="M 242 170 L 392 170 L 392 226" class="sx-et-edge" data-leg="f" data-fn="SUP" data-tag="2f"/>
+<text x="317" y="219" class="sx-et-leg-label" text-anchor="middle">Failure (2f)</text>
+<text x="317" y="230" class="sx-et-leg-prob" text-anchor="middle">0.12</text>
+<path d="M 392 226 L 542 226 L 542 198" class="sx-et-edge" data-leg="s" data-fn="EVAC" data-tag="3s"/>
+<text x="467" y="191" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="202" class="sx-et-leg-prob" text-anchor="middle">0.97</text>
+<path d="M 392 226 L 542 226 L 542 254" class="sx-et-edge" data-leg="f" data-fn="EVAC" data-tag="3f"/>
+<text x="467" y="247" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="258" class="sx-et-leg-prob" text-anchor="middle">0.03</text>
+<path d="M 92 198 L 242 198 L 242 310" class="sx-et-edge" data-leg="f" data-fn="DET" data-tag="1f"/>
+<text x="167" y="303" class="sx-et-leg-label" text-anchor="middle">Failure (1f)</text>
+<text x="167" y="314" class="sx-et-leg-prob" text-anchor="middle">0.04</text>
+<path d="M 542 86 L 582 86" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 542 142 L 582 142" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 542 198 L 582 198" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 542 254 L 582 254" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 242 310 L 582 310" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<g class="sx-et-leaf-g" data-seq="1" data-outcome="Controlled fire; personnel safe" data-frequency="0.00819456" data-designator="1s 2s 3s" data-dominant="true"><circle cx="582" cy="86" r="3" class="sx-et-dot" data-dominant="true"/>
+<text x="592" y="82" class="sx-et-outcome" data-dominant="true">Controlled fire; personnel sa…</text>
+<text x="592" y="98" class="sx-et-freq" data-dominant="true">0.008195  ·  1s 2s 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="2" data-outcome="Controlled fire; personnel injury" data-frequency="0.00025344" data-designator="1s 2s 3f"><circle cx="582" cy="142" r="3" class="sx-et-dot"/>
+<text x="592" y="138" class="sx-et-outcome">Controlled fire; personnel in…</text>
+<text x="592" y="154" class="sx-et-freq">2.534e-4  ·  1s 2s 3f</text></g>
+<g class="sx-et-leaf-g" data-seq="3" data-outcome="Escalated fire; personnel safe" data-frequency="0.00111744" data-designator="1s 2f 3s"><circle cx="582" cy="198" r="3" class="sx-et-dot"/>
+<text x="592" y="194" class="sx-et-outcome">Escalated fire; personnel safe</text>
+<text x="592" y="210" class="sx-et-freq">0.001117  ·  1s 2f 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="4" data-outcome="Escalated fire; personnel injury" data-frequency="0.00003456" data-designator="1s 2f 3f"><circle cx="582" cy="254" r="3" class="sx-et-dot"/>
+<text x="592" y="250" class="sx-et-outcome">Escalated fire; personnel inj…</text>
+<text x="592" y="266" class="sx-et-freq">3.456e-5  ·  1s 2f 3f</text></g>
+<g class="sx-et-leaf-g" data-seq="5" data-outcome="Late-detected fire; major damage" data-frequency="0.0004" data-designator="1f"><circle cx="582" cy="310" r="3" class="sx-et-dot"/>
+<text x="592" y="306" class="sx-et-outcome">Late-detected fire; major dam…</text>
+<text x="592" y="322" class="sx-et-freq">4.000e-4  ·  1f</text></g></g></svg>

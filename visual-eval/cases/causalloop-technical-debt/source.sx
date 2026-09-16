@@ -1,0 +1,9 @@
+# Scenario: delivery pressure and technical debt form a reinforcing software-product loop.
+causalloop "Technical-debt spiral"
+"Delivery pressure" -> "Shortcutting" : +
+"Shortcutting" -> "Technical debt" : +
+"Technical debt" -> "Development effort" : +
+"Development effort" -> "Delivery pressure" : +
+"Technical debt" -> "Defect rate" : +
+"Defect rate" -> "Development effort" : +
+loop R1 "Debt spiral"

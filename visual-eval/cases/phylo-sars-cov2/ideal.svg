@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1140 584">
+  <title>SARS-CoV-2 Variant Tree</title>
+  <rect width="1140" height="584" fill="#ffffff"/>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size: 28px; font-weight: 700; }
+    .subtitle { font-size: 13px; fill: #64748b; letter-spacing: .25px; }
+    .heading { font-size: 12px; fill: #64748b; letter-spacing: 1px; }
+    .taxon { font-size: 16px; }
+    .note { font-size: 11px; fill: #64748b; letter-spacing: .1px; }
+    .branch { fill: none; stroke: #1e293b; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .guide { fill: none; stroke: #b5c1d2; stroke-width: 1; stroke-dasharray: 2.5 4.5; }
+  </style>
+  <text x="48" y="48" class="title">SARS-CoV-2 Variant Tree</text>
+  <text x="48" y="76" class="subtitle">Rectangular phylogram · branch distances</text>
+  <path d="M48 98H1092" stroke="#dbe1e9" stroke-width="1"/>
+  <text x="80" y="132" class="heading">PHYLOGENY</text>
+  <text x="654" y="132" class="heading">TAXON</text>
+  <text x="968" y="132" class="heading">CLADE</text>
+
+  <!-- Horizontal scale: 150000 SVG units per substitution/site.
+       Root x=80; internal nodes x=200,215,380.
+       Tip distances from root: .0026,.0029,.0034,.0032,.0034. -->
+  <rect x="638" y="322" width="454" height="88" rx="3" fill="#E53935" fill-opacity=".045"/>
+  <g class="guide">
+    <path d="M470 170H641"/>
+    <path d="M515 214H641"/>
+    <path d="M590 290H641"/>
+    <path d="M560 344H641"/>
+    <path d="M590 388H641"/>
+  </g>
+  <g class="branch">
+    <path d="M80 192V328"/>
+    <path d="M80 192H200M200 170V214M200 170H470M200 214H515"/>
+    <path d="M80 328H215M215 290V366M215 290H590"/>
+    <path d="M215 366H380M380 344V388M380 344H560M380 388H590" stroke="#E53935"/>
+  </g>
+  <g class="taxon" dominant-baseline="middle">
+    <text x="654" y="170">Alpha</text>
+    <text x="654" y="214">Beta</text>
+    <text x="654" y="290">Delta</text>
+    <text x="654" y="344">BA.1</text>
+    <text x="654" y="388">BA.2</text>
+  </g>
+  <path d="M946 332H953V398H946" fill="none" stroke="#E53935" stroke-width="1.4"/>
+  <text x="968" y="370" style="font-size:13px;font-weight:700;fill:#E53935">Omicron</text>
+
+  <path d="M80 474H230M80 469V479M230 469V479" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="499" style="font-size:12px">0.001 substitutions/site</text>
+  <text x="466" y="475" class="note">Horizontal distance: substitutions/site</text>
+  <text x="466" y="498" class="note">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 522H1092" stroke="#dbe1e9" stroke-width="1"/>
+  <text x="48" y="547" class="note">Topology and branch distances as supplied · rectangular phylogram</text>
+</svg>

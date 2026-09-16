@@ -1,0 +1,2323 @@
+{
+  "type": "floorplan",
+  "variant": null,
+  "exemplar": "floorplan",
+  "style": "Drawn at the exemplar's 64 px per metre on white paper: cut walls are solid graphite #1F2328 poché, door leaves 1.6 px graphite with 0.9 px pencil #A3ABB4 swing arcs, and windows 0.9 px graphite face lines around a 1.8 px glazing-blue #4F86B0 glass line. Furniture and fixtures are 1.1 px slate #55606C outlines filled white, with 0.8 px slate interior detail and 2–3 px corner radii; mist #EDEFF2 is kept for built-in counters and tubs only. Stair treads are 0.9 px slate, solid up to a 1.4 px graphite break line and pencil-dashed beyond, with a graphite arrow and 'UP' in 9.5 px semibold Inter.",
+  "symbols": [
+    {
+      "id": "window-fixed",
+      "label": "Window (fixed)",
+      "file": "window-fixed.svg",
+      "engine": null,
+      "dsl": [
+        "window guest south at 50% width 1.4",
+        "window living north at 40% width 1.2 type fixed"
+      ],
+      "standard": "Window as a wall break with two wall-face lines and a middle glass line (The Blueprint Primer); jamb lines close the wall ends",
+      "sourceUrl": "https://blueprintprimer.com/posts/door-and-window-symbols-on-floor-plans",
+      "inExemplar": true,
+      "notes": "Two graphite wall-face lines, jamb lines and one blue glass line inside a 0.30 m exterior wall, so a window can never be read as a thin partition. The engine has no catalog window; in plans it draws three identical grey lines.",
+      "tier": 1,
+      "usageUsers": 1168,
+      "source": "floorplan\nroom sample \"\" size 3x3\nwindow sample north at 50% width 1.4 type fixed\n",
+      "previewGroup": "sx-fp-openings"
+    },
+    {
+      "id": "door-single",
+      "label": "Single swing door",
+      "file": "door-single.svg",
+      "engine": null,
+      "dsl": [
+        "door between utility kitchen at 40% width 0.8 hinge right",
+        "door hall south at 50% width 0.9 hinge left swing in",
+        "door between guest hall at 50% type single"
+      ],
+      "standard": "Door symbol as a wall break, leaf drawn open at 90° and a quarter-circle swing (The Blueprint Primer; NKBA Kitchen & Bath Drawing ch. 3: wall lines heavier than door lines)",
+      "sourceUrl": "https://blueprintprimer.com/posts/door-and-window-symbols-on-floor-plans",
+      "inExemplar": true,
+      "notes": "Leaf drawn open at 90° from the hinge jamb in 1.6 px graphite, a thin pencil quarter arc to the strike jamb, and 0.12 m partition poché on both sides, so the wall stays the heaviest element. The engine has no catalog door to compare: doors are drawn only as wall openings inside a plan.",
+      "tier": 1,
+      "usageUsers": 153,
+      "source": "floorplan\nroom sample \"\" size 3x3\ndoor sample north at 50% width 0.9 type single hinge right\n",
+      "previewGroup": "sx-fp-openings"
+    },
+    {
+      "id": "door-double",
+      "label": "Double swing door",
+      "file": "door-double.svg",
+      "engine": null,
+      "dsl": [
+        "door between living hall at 50% width 1.4 type double",
+        "door lobby south at 50% width 1.8 type double swing out"
+      ],
+      "standard": "Double (French) doors as two leaves and two quarter arcs that meet at the centre of the opening (RoomSketcher, floor plan symbols)",
+      "sourceUrl": "https://www.roomsketcher.com/blog/floor-plan-symbols/",
+      "inExemplar": true,
+      "notes": "The exemplar's living-room doors: a 1.40 m opening in a 0.12 m partition with two 0.70 m leaves (pairs are typically 1.2–1.8 m), each drawn like the single door and meeting at the centre. Drawn swinging south to match the single door's canonical orientation; the exemplar hangs them the other way. The engine has no catalog door; in plans it draws the same two arcs with heavier, darker swing lines.",
+      "tier": 1,
+      "usageUsers": 658
+    },
+    {
+      "id": "opening",
+      "label": "Cased opening",
+      "file": "opening.svg",
+      "engine": null,
+      "dsl": [
+        "opening between living kitchen at 45% width 1.6",
+        "opening hall east at 50%"
+      ],
+      "standard": "Doorless opening as a gap in the wall line (RoomSketcher); the header above the cut plane drawn as thin dashed lines (US NCS V5 Uniform Drawing System, Module 6: features above)",
+      "sourceUrl": "https://www.nationalcadstandard.org/ncs5/pdfs/ncs5_uds6.pdf",
+      "inExemplar": true,
+      "notes": "The exemplar's living–kitchen opening: a 1.60 m gap in a 0.12 m partition with pencil dashed lines (4 on, 3 off) along both wall faces, marking the header overhead, so an intended opening is not mistaken for a missing piece of wall. The engine has no catalog opening; in plans it leaves a plain gap.",
+      "tier": 1,
+      "usageUsers": 582
+    },
+    {
+      "id": "door-sliding",
+      "label": "Sliding door",
+      "file": "door-sliding.svg",
+      "engine": null,
+      "dsl": [
+        "door kitchen north from start 0.3 width 2.2 type sliding id patio",
+        "door bedroom east at 50% width 1.8 type sliding"
+      ],
+      "standard": "Sliding door as two panels on parallel tracks that overlap in the middle, no swing (RoomSketcher; The Blueprint Primer: bypass door)",
+      "sourceUrl": "https://www.roomsketcher.com/blog/floor-plan-symbols/",
+      "inExemplar": true,
+      "notes": "The exemplar's patio door: a 2.20 m opening in the 0.30 m exterior wall (two-panel patio doors run 1.8–2.4 m), two glazing-blue panels on offset tracks overlapping 0.12 m at the meeting stiles, graphite jamb and meeting stiles, and a thin threshold line on the outside face (north). The panels are blue because this door is glass; an interior bypass closet door drawn with the same DSL words would need solid leaves instead. The engine has no catalog door; in plans it draws two thin offset lines with no stiles.",
+      "tier": 1,
+      "usageUsers": 483
+    },
+    {
+      "id": "stairs",
+      "label": "Straight stair",
+      "file": "stairs.svg",
+      "engine": "stairs",
+      "dsl": [
+        "furniture stairs in hall at 1.4,1.35 size 0.9x3.3",
+        "furniture stairs in hall at 1.4,1.35 size 0.9x3.3 rotate 180"
+      ],
+      "standard": "Straight stair in plan: solid treads below the ~4 ft cut plane, heavy diagonal break line, dashed treads beyond, arrow from the lowest riser labelled UP (Engineer Fix); zigzag straight break and thin dashed 'features above' line (US NCS V5 Uniform Drawing System, Module 6 Symbols)",
+      "sourceUrl": "https://engineerfix.com/how-to-properly-show-stairs-on-a-floor-plan/",
+      "inExemplar": true,
+      "notes": "Treads every 0.275 m, solid below a graphite zigzag break line about seven risers up and pencil-dashed beyond; the arrow starts with an open circle on the first tread, stops short of the break, and UP sits upright outside the first riser. The engine draws dashes as dark as the solid treads, a filled bow-tie mark instead of a cut line, and prints UP across the treads.",
+      "tier": 1,
+      "usageUsers": 234
+    },
+    {
+      "id": "stairs-u",
+      "label": "U-shaped stair (half landing)",
+      "file": "stairs-u.svg",
+      "engine": "stairs-u",
+      "dsl": [
+        "furniture stairs-u in hall at 0.2,0.3 size 1.9x2.9",
+        "furniture stairs-u in hall at 0.2,0.3 size 1.9x2.9 rotate 180"
+      ],
+      "standard": "Switchback stair: two parallel flights joined by a half landing for a 180° turn (RoomSketcher); landing shown solid, arrow following the path of travel, break line and dashed treads beyond the cut (Engineer Fix)",
+      "sourceUrl": "https://engineerfix.com/how-to-properly-show-stairs-on-a-floor-plan/",
+      "inExemplar": false,
+      "notes": "Two 0.95 m flights of seven 0.275 m treads each (0.9 m is the usual minimum flight width) and a 0.975 m half landing, 1.90 × 2.90 m overall. The first flight rises north on the east side as in the engine; the arrow turns across the landing and stops before the break line two treads into the return flight, whose remaining treads are pencil-dashed. Tread, break, arrow and UP rules are the straight stair's. The engine draws the same plan but with dashes as dark as the treads, a filled bow-tie cut mark and UP printed across the treads.",
+      "tier": 1,
+      "usageUsers": 48
+    },
+    {
+      "id": "door-bifold",
+      "label": "Bifold door",
+      "file": "door-bifold.svg",
+      "engine": null,
+      "dsl": [
+        "door between bedroom closet at 50% width 1.2 type bifold",
+        "door hall west at 30% width 0.9 type bifold"
+      ],
+      "standard": "Bifold door as angled panel pairs forming a V or accordion shape in the opening (The Blueprint Primer); four-panel closet bifolds are two pairs meeting at the centre, sold for 48 in (1.22 m) openings",
+      "sourceUrl": "https://blueprintprimer.com/posts/door-and-window-symbols-on-floor-plans",
+      "inExemplar": false,
+      "notes": "A 1.20 m closet opening in a 0.12 m partition with four 0.30 m panels in two pairs, each pair folded to 40° so its knee stands 0.19 m out of the wall face. Panels are 1.6 px graphite like every door leaf; there is no swing arc because a bifold does not sweep a quarter circle. The engine has no catalog door; in plans it draws two shallow tent peaks that span the whole opening, which reads as a closed zigzag rather than folding doors.",
+      "tier": 1,
+      "usageUsers": 36
+    },
+    {
+      "id": "door-pocket",
+      "label": "Pocket door",
+      "file": "door-pocket.svg",
+      "engine": null,
+      "dsl": [
+        "door between bath hall from start 0.3 width 0.8 type pocket",
+        "door between pantry kitchen at 50% width 0.8 type pocket"
+      ],
+      "standard": "Pocket door as a leaf partly withdrawn into a cavity inside the wall thickness, no swing (The Blueprint Primer)",
+      "sourceUrl": "https://blueprintprimer.com/posts/door-and-window-symbols-on-floor-plans",
+      "inExemplar": true,
+      "notes": "The exemplar's bathroom door: a 0.80 m opening in a 0.12 m partition (pocket doors are usually 0.6–0.9 m), a white cavity slot running a door's width into the wall, and a 1.6 px graphite leaf half drawn out of it with a short graphite pull mark at its edge. Turned from the exemplar's north–south wall to run east–west, pocket to the east. The engine has no catalog door; in plans it draws half a thin line in the gap with no cavity, so it cannot be told from a sliding door.",
+      "tier": 1,
+      "usageUsers": 22
+    },
+    {
+      "id": "stairs-l",
+      "label": "L-shaped stair (quarter landing)",
+      "file": "stairs-l.svg",
+      "engine": "stairs-l",
+      "dsl": [
+        "furniture stairs-l in hall at 0.2,0.2 size 3.4x2.3",
+        "furniture stairs-l in hall at 0.2,0.2 size 3.4x2.3 rotate 90"
+      ],
+      "standard": "Quarter-landing stair turning 90° at a landing; the landing usually falls below the ~4 ft cut and is shown solid, the arrow bends with the path of travel, treads beyond the break dashed (Engineer Fix; RoomSketcher)",
+      "sourceUrl": "https://engineerfix.com/how-to-properly-show-stairs-on-a-floor-plan/",
+      "inExemplar": false,
+      "notes": "0.95 m flights: five 0.275 m treads rising north up the west side to a 0.95 m square landing, then nine treads rising east, 3.43 × 2.33 m overall (16 risers at about 180 mm reach a 2.9 m storey). The arrow turns at the landing and stops before the break line three treads into the upper flight; treads beyond are pencil-dashed. Same turn direction as the engine. The engine draws dashes as dark as the treads, a filled bow-tie cut mark and UP printed across the treads.",
+      "tier": 1,
+      "usageUsers": 6
+    },
+    {
+      "id": "counter",
+      "label": "Kitchen counter",
+      "file": "counter.svg",
+      "engine": "counter",
+      "dsl": [
+        "furniture counter in kitchen at 3.55,0.9 size 0.6x3.0",
+        "furniture counter in utility at 0.12,2.35 size 0.65x1.2"
+      ],
+      "standard": "Base cabinets 24 in (0.61 m) deep under a 25 in countertop (NKBA Kitchen Planning Guidelines); built-in surfaces toned apart from loose furniture (RoomSketcher cabinets and countertops)",
+      "sourceUrl": "https://nkba-ps.com/images/downloads/Awards/nkba_kitchen_planning_guidelines_pre_2023.pdf",
+      "inExemplar": true,
+      "notes": "A 1.80 × 0.60 m run, back to the north wall, in mist with a 1.1 px slate outline: the exemplar keeps mist for built-ins only, so a counter never reads as a table. The engine draws it white with a dashed line near the front edge that looks like an overhang or a hidden cabinet.",
+      "tier": 1,
+      "usageUsers": 737
+    },
+    {
+      "id": "desk",
+      "label": "Desk with chair",
+      "file": "desk.svg",
+      "engine": "desk",
+      "dsl": [
+        "furniture desk in office at 0.5,0.2 size 1.2x0.6",
+        "grid desk in classroom rows 3 cols 3 centers 1,1 4,3.5"
+      ],
+      "standard": "Desk drawn to its worktop, 1200–1500 × 600–750 mm, with the task chair pulled up to the front edge (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": false,
+      "notes": "A 1.20 × 0.60 m worktop in the loose-furniture style (white, 1.1 px slate, 2 px corners) with the task chair drawn in front of it, back to the south, because the engine's `desk` word adds a chair on its own. The engine draws a plain box and a grey dining-chair square below it, so a desk and a table for one look alike.",
+      "tier": 1,
+      "usageUsers": 726
+    },
+    {
+      "id": "plant",
+      "label": "Potted plant",
+      "file": "plant.svg",
+      "engine": "plant",
+      "dsl": [
+        "furniture plant in living at 5.2,0.3",
+        "furniture plant in lobby at 0.4,0.4 size 0.6x0.6"
+      ],
+      "standard": "Plant in plan as a pot circle with leaves radiating over it (convention of real-estate marketing plans such as RoomSketcher's furniture library)",
+      "sourceUrl": "https://www.roomsketcher.com/blog/floor-plan-symbols/",
+      "inExemplar": false,
+      "notes": "A 0.40 m pot (a common floor planter size) under seven leaves reaching 0.60 m across, leaves in 0.8 px slate over a 1.1 px pot rim. The engine draws a circle with six spokes, which reads as a ceiling fan or a wheel.",
+      "tier": 1,
+      "usageUsers": 725
+    },
+    {
+      "id": "sink",
+      "label": "Washbasin",
+      "file": "sink.svg",
+      "engine": "sink",
+      "dsl": [
+        "furniture sink in bath at 0.2,0.1",
+        "furniture sink in restroom at 0.3,0.1 size 0.55x0.45 rotate 90"
+      ],
+      "standard": "Wall-hung washbasin drawn to fixture size, typically 500–600 mm wide and 400–500 mm deep, with the bowl and tap at the wall side (House Plans Helper, bathroom dimensions)",
+      "sourceUrl": "https://www.houseplanshelper.com/bathroom-dimensions.html",
+      "inExemplar": false,
+      "notes": "A 0.55 × 0.45 m basin, back to the north wall: white body in 1.1 px slate with 3 px corners, the exemplar vanity's oval bowl and its solid tap dot at the back. The engine's version is close in shape, but its outline is heavier and its bowl thinner, so the sink reads as a box with a mark in it.",
+      "tier": 1,
+      "usageUsers": 704
+    },
+    {
+      "id": "toilet",
+      "label": "Toilet",
+      "file": "toilet.svg",
+      "engine": "toilet",
+      "dsl": [
+        "furniture toilet in bath at 1.57,1.0 size 0.4x0.7",
+        "furniture wc in bath at 1.57,1.0 size 0.4x0.7 rotate 90",
+        "furniture water-closet in bath at 1.57,1.0"
+      ],
+      "standard": "Water closet in plan: tank against the wall and an elongated bowl with seat opening, drawn to fixture size; total depth including tank 66–74 cm (House Plans Helper, bathroom dimensions)",
+      "sourceUrl": "https://www.houseplanshelper.com/bathroom-dimensions.html",
+      "inExemplar": true,
+      "notes": "Tank against the north wall and an elongated bowl with a seat opening, 0.70 m from the wall overall. The exemplar's own toilet is only 0.62 m with a round front, so the bowl is lengthened here; the engine draws a heavy circle hanging off the tank, which reads as a round bowl.",
+      "tier": 1,
+      "usageUsers": 595
+    },
+    {
+      "id": "chair",
+      "label": "Chair",
+      "file": "chair.svg",
+      "engine": "chair",
+      "dsl": [
+        "furniture chair in kitchen at 1.1,1.8",
+        "furniture chair in kitchen at 1.1,3.25 rotate 180"
+      ],
+      "standard": "Side chair drawn to its seat, about 450 × 450 mm, with the backrest as a line along the back edge (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's dining chair: 0.42 × 0.42 m, 3 px corners, white with a 0.8 px backrest line 0.07 m inside the north edge, so the chair faces south. The engine's chair has its backrest on the west edge at rotate 0, a quarter turn from the sofa and armchair, and a grey fill.",
+      "tier": 1,
+      "usageUsers": 561
+    },
+    {
+      "id": "rug",
+      "label": "Rug",
+      "file": "rug.svg",
+      "engine": "rug",
+      "dsl": [
+        "furniture rug in living at 0.9,1.0 size 2.8x2.0"
+      ],
+      "standard": "Area rug as a light outline under the furniture it anchors, standard sizes 1.6 × 2.3 m to 2.4 × 3.0 m (real-estate plan practice, RoomSketcher furniture library)",
+      "sourceUrl": "https://www.roomsketcher.com/blog/floor-plan-symbols/",
+      "inExemplar": true,
+      "notes": "The exemplar's living-room rug, 2.80 × 2.00 m: a 1 px pencil border with a 0.6 px pencil inner border 0.1 m in, no fill, so furniture drawn over it stays in front. The engine draws a dashed grey outline, which reads as a zone or something overhead rather than a rug.",
+      "tier": 1,
+      "usageUsers": 531
+    },
+    {
+      "id": "sofa",
+      "label": "Sofa",
+      "file": "sofa.svg",
+      "engine": "sofa",
+      "dsl": [
+        "furniture sofa in living at 1.2,3.3 size 2.2x0.9 rotate 180",
+        "furniture couch in lounge at 0.3,0.2"
+      ],
+      "standard": "Three-seat sofa 2100–2340 × 890–990 mm, drawn with back, arms and seat cushions (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's sofa, 2.20 × 0.90 m with 4 px corners: 0.18 m arms and back and three seat cushions in 0.8 px lines. Turned so the back is north at rotate 0, as the engine's sofa is. The engine's version matches in layout but its back band and outline are heavier.",
+      "tier": 1,
+      "usageUsers": 520
+    },
+    {
+      "id": "coffee-table",
+      "label": "Coffee table",
+      "file": "coffee-table.svg",
+      "engine": "coffee-table",
+      "dsl": [
+        "furniture coffee-table in living at 1.8,1.9 size 1.0x0.6"
+      ],
+      "standard": "Coffee table 1000 × 500 mm (large) or 750 × 750 mm (small) (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's coffee table: a plain 1.00 × 0.60 m white top with 3 px corners. The engine's is the same shape with a heavier outline.",
+      "tier": 1,
+      "usageUsers": 519
+    },
+    {
+      "id": "fridge",
+      "label": "Refrigerator",
+      "file": "fridge.svg",
+      "engine": "fridge",
+      "dsl": [
+        "furniture fridge in kitchen at 3.45,0.15 size 0.6x0.7",
+        "furniture refrigerator in kitchen at 0.1,0.1"
+      ],
+      "standard": "Refrigerator as a box tagged REF (RoomSketcher); full-size units 600–910 mm wide and about 700 mm deep (NKBA Kitchen Planning Guidelines)",
+      "sourceUrl": "https://www.roomsketcher.com/blog/floor-plan-symbols/",
+      "inExemplar": true,
+      "notes": "The exemplar's refrigerator: 0.60 m wide, 0.70 m deep, back to the north wall, white with 'REF' in 8.5 px semibold slate. The engine adds a door band across the top and sets REF larger and lighter.",
+      "tier": 1,
+      "usageUsers": 513
+    },
+    {
+      "id": "dining-table",
+      "label": "Dining table (4 seats)",
+      "file": "dining-table.svg",
+      "engine": "dining-table",
+      "dsl": [
+        "furniture dining-table in kitchen at 0.9,2.3 size 1.6x0.9",
+        "furniture dining-table in dining at 1,1 size 2.0x0.9 seats \"Ann\" \"Bo\" \"Cy\" \"Di\" \"Ed\" \"Flo\""
+      ],
+      "standard": "Dining table for four 1350 × 750 mm, for six 1500 × 900 mm, with chairs about 450 mm square pulled up to the long sides (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's dining group: a 1.60 × 0.90 m table with two 0.42 m chairs on each long side, 0.05 m off the edge, backs outward; the engine likewise seats the long sides one chair per 0.65 m. The engine's chairs are grey-filled and sit farther from the table.",
+      "tier": 1,
+      "usageUsers": 509
+    },
+    {
+      "id": "kitchen-sink",
+      "label": "Kitchen sink (double bowl)",
+      "file": "kitchen-sink.svg",
+      "engine": "kitchen-sink",
+      "dsl": [
+        "furniture kitchen-sink in kitchen at 3.45,1.29 size 0.8x0.5 rotate 90",
+        "fixture kitchen-sink in kitchen on north at 40%"
+      ],
+      "standard": "Sink bowls set into the countertop, tap at the back (NKBA Kitchen Planning Guidelines: sink in a 24 in deep counter run)",
+      "sourceUrl": "https://nkba-ps.com/images/downloads/Awards/nkba_kitchen_planning_guidelines_pre_2023.pdf",
+      "inExemplar": true,
+      "notes": "The exemplar's double-bowl sink, two 0.36 m bowls with 3 px corners and a solid tap dot at the wall, shown on a 1.10 m piece of mist counter because a sink is always set into one. The counter piece is context, as the wall stubs are for doors. The engine draws its own white box around the bowls, so a sink placed on a counter shows a second outline.",
+      "tier": 1,
+      "usageUsers": 477
+    },
+    {
+      "id": "shelving",
+      "label": "Shelving (gondola run)",
+      "file": "shelving.svg",
+      "engine": "shelving",
+      "dsl": [
+        "furniture shelving in shop at 2,2 size 2.7x0.9",
+        "grid shelving in shop rows 3 cols 1 centers 2.5,1 2.5,4"
+      ],
+      "standard": "Retail gondola in 3 ft or 4 ft sections; double-sided island units 32–48 in (0.8–1.2 m) deep overall (gondola shelving size guides)",
+      "sourceUrl": "https://www.gondola-shelving.com/blogs/blogs/gondola-shelving-size-guide-heights-depths-backs-more",
+      "inExemplar": false,
+      "notes": "A double-sided run of three 0.90 m (3 ft) sections, 2.70 × 0.90 m: white fixture outline in 1.1 px slate, a 0.06 m back-to-back spine and the section joints in 0.8 px lines; at two sections the same drawing read as a table. Wall shelving against a wall is `bookshelf`. The engine draws a 4 × 2 grid of small cells, which reads as lockers or a table.",
+      "tier": 1,
+      "usageUsers": 436
+    },
+    {
+      "id": "stove",
+      "label": "Stove (range)",
+      "file": "stove.svg",
+      "engine": "stove",
+      "dsl": [
+        "furniture stove in kitchen at 3.55,2.95 size 0.6x0.6",
+        "fixture cooktop in kitchen on north at 70%"
+      ],
+      "standard": "Range or cooktop as a box with four burner circles, freestanding ranges 24–30 in (0.61–0.76 m) wide (NKBA Kitchen Planning Guidelines; RoomSketcher ovens and stovetops)",
+      "sourceUrl": "https://nkba-ps.com/images/downloads/Awards/nkba_kitchen_planning_guidelines_pre_2023.pdf",
+      "inExemplar": false,
+      "notes": "A freestanding 0.60 × 0.60 m range, back to the north wall: the exemplar hob's four burners (0.07 and 0.09 m radii on the diagonals) in 0.8 px lines, plus a 0.8 px control-panel line 0.08 m from the back that the built-in hob does not have. The engine's four equal burners are close; its outline is heavier.",
+      "tier": 1,
+      "usageUsers": 434
+    },
+    {
+      "id": "wardrobe",
+      "label": "Wardrobe",
+      "file": "wardrobe.svg",
+      "engine": "wardrobe",
+      "dsl": [
+        "furniture wardrobe in guest at 2.72,2.4 size 0.6x1.8",
+        "furniture closet in bedroom at 0.2,0.1 size 1.8x0.6"
+      ],
+      "standard": "Wardrobe or closet with the hanging rail drawn along its length and hangers across it, 600 mm deep (House Plans Helper; Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.houseplanshelper.com/floor-plan-symbols.html",
+      "inExemplar": true,
+      "notes": "The exemplar's wardrobe, 1.80 × 0.60 m: white, a 0.8 px rail down the middle and slanted 0.8 px hanger marks every 0.15 m. Turned so the back is on the north wall. The engine draws upright ticks through the rail, which reads as a measuring scale.",
+      "tier": 1,
+      "usageUsers": 431
+    },
+    {
+      "id": "armchair",
+      "label": "Armchair",
+      "file": "armchair.svg",
+      "engine": "armchair",
+      "dsl": [
+        "furniture armchair in living at 1.0,0.5 size 0.8x0.8",
+        "furniture lounge-chair in lobby at 2,1 rotate 90"
+      ],
+      "standard": "Armchair about 900 × 950 mm, drawn with back and arms (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's armchair, 0.80 × 0.80 m with 4 px corners, back to the north: 0.14 m arms and a 0.18 m back in 0.8 px lines. The engine's matches in layout with a heavier back band.",
+      "tier": 1,
+      "usageUsers": 429
+    },
+    {
+      "id": "desk-chair",
+      "label": "Office chair",
+      "file": "desk-chair.svg",
+      "engine": "desk-chair",
+      "dsl": [
+        "furniture desk-chair in office at 1.1,1.0",
+        "furniture desk-chair in office at 1.1,1.0 rotate 180"
+      ],
+      "standard": "Task chair about 650 × 650 mm of floor including its five-star base (BIFMA / EN 1335 sizes, office furniture dimension guides)",
+      "sourceUrl": "https://kavela.furniture/en/office-furniture-dimensions-guide/",
+      "inExemplar": false,
+      "notes": "A 0.46 × 0.42 m seat with 4 px corners and a curved backrest to the north, over a five-star base 0.60 m across whose casters show beyond the seat; outlines 1.1 px, base 0.8 px. The engine's `desk-chair` is a desk-sized box with a small chair below it, so it reads as a desk.",
+      "tier": 1,
+      "usageUsers": 399
+    },
+    {
+      "id": "shower",
+      "label": "Shower tray",
+      "file": "shower.svg",
+      "engine": "shower",
+      "dsl": [
+        "furniture shower in bath at 1.2,2.7 size 0.9x0.9"
+      ],
+      "standard": "Shower as a square tray with crossed lines through the centre to the drain (House Plans Helper); recommended size 36 × 36 in, 91 × 91 cm (House Plans Helper, bathroom dimensions)",
+      "sourceUrl": "https://www.houseplanshelper.com/floor-plan-symbols.html",
+      "inExemplar": true,
+      "notes": "The exemplar's shower: a 0.90 × 0.90 m mist tray (built-in) with 0.8 px pencil diagonals and a small drain circle at the crossing. The engine puts a shower-head circle in one corner and draws the diagonals as dark as the outline.",
+      "tier": 1,
+      "usageUsers": 362
+    },
+    {
+      "id": "bookshelf",
+      "label": "Bookshelf",
+      "file": "bookshelf.svg",
+      "engine": "bookshelf",
+      "dsl": [
+        "furniture bookshelf in living at 0.15,3.05 size 0.35x1.2",
+        "furniture bookshelf in study at 0.5,0.1 size 1.2x0.35"
+      ],
+      "standard": "Wall shelving drawn to its footprint, about 300–400 mm deep, with bay divisions (Metric Data: standard furniture sizes, storage units)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's bookshelf, 1.20 × 0.35 m with bay divisions every 0.40 m in 0.8 px lines, back to the north wall. The engine divides it into narrow 0.15 m slots, which reads as a radiator or a grille.",
+      "tier": 1,
+      "usageUsers": 342
+    },
+    {
+      "id": "bed-double",
+      "label": "Double bed",
+      "file": "bed-double.svg",
+      "engine": "bed-double",
+      "dsl": [
+        "furniture bed-double in guest at 0.65,0.15 size 1.4x2.0"
+      ],
+      "standard": "Bed drawn to mattress size (double 1.40 × 2.00 m) with pillows at the head against the wall and the bedding shown turned down (House Plans Helper, floor plan symbols)",
+      "sourceUrl": "https://www.houseplanshelper.com/floor-plan-symbols.html",
+      "inExemplar": true,
+      "notes": "A 1.40 × 2.00 m mattress with two pillows at the head, a fold line and a slanted turned-down sheet edge, in 1.1 px slate outlines with 0.8 px detail on white. The engine uses a stroke about twice as heavy, oversized pillows and no turned-down sheet, so it reads as a generic box.",
+      "tier": 1,
+      "usageUsers": 329
+    },
+    {
+      "id": "nightstand",
+      "label": "Nightstand",
+      "file": "nightstand.svg",
+      "engine": "nightstand",
+      "dsl": [
+        "furniture nightstand in bedroom at 1.2,0.4 size 0.45x0.45"
+      ],
+      "standard": "Bedside table about 450 × 450 mm beside the bed head (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "The exemplar's 0.45 × 0.45 m nightstand, a typical bedside footprint (Metric Data), copied exactly with square corners and its central 0.08 m radius circle; the exemplar has no drawer line. The engine uses the same box-and-circle motif at 0.50 × 0.40 m with different stroke weights.",
+      "tier": 2,
+      "usageUsers": 309
+    },
+    {
+      "id": "tv-stand",
+      "label": "TV stand",
+      "file": "tv-stand.svg",
+      "engine": "tv-stand",
+      "dsl": [
+        "furniture tv-stand in living at 1,0.3 size 1.5x0.45"
+      ],
+      "standard": "Low media cabinet with a thin screen along the wall side; typical 1500 × 450 mm footprint (round-2 size brief)",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.50 × 0.45 m media cabinet (round-2 size brief), white with 2 px corners and a centred 1.20 × 0.06 m graphite screen bar at the north wall side. The engine defaults to 1.60 × 0.45 m and bisects the cabinet with a centre line, without showing a screen at the back.",
+      "tier": 2,
+      "usageUsers": 282
+    },
+    {
+      "id": "whiteboard",
+      "label": "Whiteboard",
+      "file": "whiteboard.svg",
+      "engine": "whiteboard",
+      "dsl": [
+        "furniture whiteboard in classroom at 1,0.2 size 2.4x0.08"
+      ],
+      "standard": "Wall-mounted board shown edge-on in plan, with a pen tray on the room side; typical 2400 × 80 mm footprint (round-2 size brief)",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.40 × 0.08 m wall-mounted board (round-2 size brief), back north, with a 0.8 px pen-tray line inset along the south edge and 2 px corners. The engine defaults to 3.00 × 0.12 m and draws a solid dark frame around a white strip, with no pen tray.",
+      "tier": 2,
+      "usageUsers": 269
+    },
+    {
+      "id": "bar-stool",
+      "label": "Bar stool",
+      "file": "bar-stool.svg",
+      "engine": "bar-stool",
+      "dsl": [
+        "furniture bar-stool in kitchen at 1,2 size 0.38x0.38"
+      ],
+      "standard": "Round stool seat about 380–400 mm across, with the footrest ring visible below (floor-plan inventory; round-2 size brief)",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.38 m diameter seat (round-2 size brief), white in 1.1 px slate, over a 0.48 m diameter footrest ring in 0.8 px slate; the ring sets the overall footprint. The engine draws only a grey-filled 0.35 m seat circle, with no footrest.",
+      "tier": 2,
+      "usageUsers": 251
+    },
+    {
+      "id": "vanity",
+      "label": "Vanity (double basin)",
+      "file": "vanity.svg",
+      "engine": "vanity",
+      "dsl": [
+        "furniture vanity in bath at 0.4,0.2 size 1.2x0.55"
+      ],
+      "standard": "Built-in basin counter toned apart from loose furniture (NKBA bath planning convention); compact double vanity 1200 × 550 mm (accepted exemplar)",
+      "sourceUrl": "https://www.houseplanshelper.com/bathroom-dimensions.html",
+      "inExemplar": true,
+      "notes": "The exemplar's compact 1.20 × 0.55 m double vanity (a typical 1.2 m basin counter), copied exactly: square-cornered mist counter, two white oval basins and solid tap dots to the north. The engine defaults to 1.50 × 0.55 m, fills the counter white and uses thinner basin outlines.",
+      "tier": 2,
+      "usageUsers": 225
+    },
+    {
+      "id": "island",
+      "label": "Kitchen island",
+      "file": "island.svg",
+      "engine": "island",
+      "dsl": [
+        "furniture island in kitchen at 1,1 size 2.1x0.95"
+      ],
+      "standard": "Freestanding built-in kitchen counter (NKBA kitchen planning convention); typical 2100 × 950 mm footprint (round-2 size brief)",
+      "sourceUrl": "https://nkba-ps.com/images/downloads/Awards/nkba_kitchen_planning_guidelines_pre_2023.pdf",
+      "inExemplar": false,
+      "notes": "A typical 2.10 × 0.95 m kitchen island (round-2 size brief), mist with 2 px corners and a dashed base-front line 0.28 m inside the south seating edge, leaving the overhang zone outside the base. The engine defaults to 1.80 × 0.90 m and adds an inset rectangle on a white top.",
+      "tier": 2,
+      "usageUsers": 199
+    },
+    {
+      "id": "side-table",
+      "label": "Side table",
+      "file": "side-table.svg",
+      "engine": "side-table",
+      "dsl": [
+        "furniture side-table in living at 1,1 size 0.5x0.5"
+      ],
+      "standard": "Small square occasional table, typically 500 × 500 mm (round-2 size brief); plain top as in the exemplar's coffee table",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.50 × 0.50 m occasional table (round-2 size brief), a plain white top with the coffee table's 3 px corners and 1.1 px slate outline. The engine has the same footprint and rounded top, with different corner radius and outline styling.",
+      "tier": 2,
+      "usageUsers": 185
+    },
+    {
+      "id": "dresser",
+      "label": "Dresser",
+      "file": "dresser.svg",
+      "engine": "dresser",
+      "dsl": [
+        "furniture dresser in bedroom at 1,0.3 size 1.2x0.5"
+      ],
+      "standard": "Chest of drawers about 500 mm deep (floor-plan inventory), 1200 × 500 mm typical footprint (round-2 size brief); drawer fronts face the room",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.20 × 0.50 m dresser (round-2 size brief), back north, with two drawer-front lines and short pulls along the south edge in 0.8 px slate. The engine uses the same footprint but a line through the middle and two circular marks in the rear half.",
+      "tier": 2,
+      "usageUsers": 183
+    },
+    {
+      "id": "bathtub",
+      "label": "Bathtub",
+      "file": "bathtub.svg",
+      "engine": "bathtub",
+      "dsl": [
+        "furniture bathtub in bath at 0.3,0.3 size 1.7x0.75"
+      ],
+      "standard": "Built-in tub with inner basin and drain, typically 1700 × 750 mm; minimum standard tub about 1530 × 760 mm (House Plans Helper, bathroom dimensions)",
+      "sourceUrl": "https://www.houseplanshelper.com/bathroom-dimensions.html",
+      "inExemplar": true,
+      "notes": "The exemplar's typical 1.70 × 0.75 m built-in tub (House Plans Helper bathroom sizing), copied exactly with a mist surround, white basin with 12 px corners and an open drain circle, rotated 180° to put its wall side north. The engine defaults to 0.80 × 1.70 m with a white surround, rounded outer corners and a solid drain at the north end.",
+      "tier": 2,
+      "usageUsers": 159
+    },
+    {
+      "id": "round-table-4",
+      "label": "Round table (4 seats)",
+      "file": "round-table-4.svg",
+      "engine": "round-table-4",
+      "dsl": [
+        "furniture round-table-4 in dining at 1,1 size 1.84x1.84"
+      ],
+      "standard": "Compact four-seat round dining table about 900 mm diameter (round-2 size brief), with side chairs about 450 mm square (Metric Data: standard furniture sizes)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": false,
+      "notes": "A typical compact 0.90 m diameter top (round-2 size brief) with four exact copies of the 0.42 m chair, 0.05 m from the edge at the cardinal points with backs outward, 1.84 × 1.84 m overall including chairs. The engine's size includes its chair ring and defaults to a 1.52 m top, with grey-filled chairs and different spacing.",
+      "tier": 2,
+      "usageUsers": 155
+    },
+    {
+      "id": "window-sliding",
+      "label": "Sliding window",
+      "file": "window-sliding.svg",
+      "engine": null,
+      "dsl": [
+        "window room north at 50% width 1.4 type sliding"
+      ],
+      "standard": "Two glass panels on offset tracks in the wall (The Blueprint Primer) (floor-plan inventory); typical design size 1.4 × 0.3 m (Schematex catalog).",
+      "sourceUrl": "https://blueprintprimer.com/posts/door-and-window-symbols-on-floor-plans",
+      "inExemplar": false,
+      "notes": "A typical 1.40 m two-panel horizontal slider in a 0.30 m exterior wall (inventory / Blueprint Primer convention), with the fixed window's poché ends, face lines and blue glass on overlapping tracks. Chosen as a horizontal bypass slider; the engine lacks a catalog window and draws simpler offset lines in plans.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "window-casement",
+      "label": "Casement window",
+      "file": "window-casement.svg",
+      "engine": null,
+      "dsl": [
+        "window room north at 50% width 0.7 type casement"
+      ],
+      "standard": "Sash with an outward swing arc (European plan practice) (floor-plan inventory); typical design size 0.7 × 0.3 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.70 m single casement in a 0.30 m exterior wall (European plan convention in the inventory), using the fixed-window frame and an outward pencil quarter arc. Chosen left-hinged and open 90 degrees to the north, with a blue sash; the engine has no catalog window and draws the casement only inside plans.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "window-bay",
+      "label": "Bay window",
+      "file": "window-bay.svg",
+      "engine": null,
+      "dsl": [
+        "window room north at 50% width 1.8 type bay"
+      ],
+      "standard": "Glazing projecting past the wall face on angled sides (floor-plan inventory); typical design size 1.8 × 0.75 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.80 m three-sided bay with about 0.45 m projection beyond a 0.30 m wall (inventory convention, chosen design size), with angled framed blue glazing and a room-side sill line. Chosen as a canted bay rather than a curved bow; the engine has no catalog bay and its in-plan drawing is simpler.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "north-arrow",
+      "label": "North arrow",
+      "file": "north-arrow.svg",
+      "engine": null,
+      "dsl": [
+        "north"
+      ],
+      "standard": "North arrow beside graphic scale (NCS Uniform Drawing System convention); exact 34 px circle from the accepted exemplar.",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "notes": "The exemplar's north arrow copied exactly: a 34 px pencil circle, split graphite-and-white pointer and 12 px semibold N, a fixed sheet notation rather than a physical footprint. The engine has no catalog entry and uses its own compass decoration in plans.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "column",
+      "label": "Column",
+      "file": "column.svg",
+      "engine": "column",
+      "dsl": [
+        "furniture column in room at 2,2 size 0.4x0.4"
+      ],
+      "standard": "Structural column, filled square or circle (floor-plan inventory); typical design size 0.4 × 0.4 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.40 m square structural column (catalog default), drawn as solid graphite cut material. Chosen square rather than circular; the engine has the same footprint but uses its lighter solid furniture colour; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 60
+    },
+    {
+      "id": "elevator",
+      "label": "Elevator",
+      "file": "elevator.svg",
+      "engine": "elevator",
+      "dsl": [
+        "furniture elevator in room at 2,2 size 1.6x1.5"
+      ],
+      "standard": "Car outline with doors; kept in tier 2 as a core element of any multi-storey plan (floor-plan inventory); typical design size 1.6 × 1.5 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.60 × 1.50 m car footprint (catalog default), with the conventional X and a 0.90 m south door opening with partly retracted centre-opening panels. Chosen as the car only, excluding the shaft and clearances; the engine draws a closed X-box without an entrance.",
+      "tier": 2,
+      "usageUsers": 41
+    },
+    {
+      "id": "tv",
+      "label": "TV",
+      "file": "tv.svg",
+      "engine": "tv",
+      "dsl": [
+        "furniture tv in room at 2,2 size 1.2x0.06"
+      ],
+      "standard": "Thin wall-mounted screen in plan (inventory); typical 1.20 × 0.06 m screen from the round-2 brief.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.20 × 0.06 m flat-screen footprint (round-2 screen-bar brief), centred with its back north in graphite. Chosen as a bare wall screen without a cabinet; the engine uses a thicker 1.40 × 0.15 m solid block; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 433
+    },
+    {
+      "id": "bookcase",
+      "label": "Bookcase",
+      "file": "bookcase.svg",
+      "engine": "bookcase",
+      "dsl": [
+        "furniture bookcase in room at 2,2 size 1.2x0.35"
+      ],
+      "standard": "Same plan convention as bookshelf; wall storage 300–400 mm deep (Metric Data).",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": true,
+      "notes": "A typical 1.20 × 0.35 m bookcase (Metric Data storage convention), copying the accepted bookshelf's three 0.40 m bays and exact exemplar geometry, back north. The DSL keeps this as a separate word; the engine uses a 0.90 × 0.30 m box divided into narrow slots.",
+      "tier": 2,
+      "usageUsers": 177
+    },
+    {
+      "id": "bench",
+      "label": "Bench",
+      "file": "bench.svg",
+      "engine": "bench",
+      "dsl": [
+        "furniture bench in room at 2,2 size 1.8x0.55"
+      ],
+      "standard": "Long seat without back (floor-plan inventory); typical design size 1.8 × 0.55 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.80 × 0.55 m backless bench (catalog default), with three seat boards in the accepted white furniture style. Chosen as a freestanding slatted bench; the engine adds cross-support lines over the boards.",
+      "tier": 2,
+      "usageUsers": 151
+    },
+    {
+      "id": "bed-king",
+      "label": "King bed",
+      "file": "bed-king.svg",
+      "engine": "bed-king",
+      "dsl": [
+        "furniture bed-king in room at 2,2 size 1.93x2.03"
+      ],
+      "standard": "Mattress 1.93 × 2.03 m (US King) (inventory mattress convention); scaled accepted double-bed drawing.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A 1.93 × 2.03 m mattress (inventory size), using the accepted double-bed geometry scaled in metres, including its paired pillows and slanted sheet edge, with fixed stroke weights and corner radii. Chosen US sizing for king and queen and metric sizing for single; the engine uses a plain fold line and different pillow proportions.",
+      "tier": 2,
+      "usageUsers": 146
+    },
+    {
+      "id": "sectional",
+      "label": "Sectional sofa",
+      "file": "sectional.svg",
+      "engine": "sectional",
+      "dsl": [
+        "furniture sectional in room at 2,2 size 2.6x2.0"
+      ],
+      "standard": "L-shaped sofa with corner seat (floor-plan inventory); typical design size 2.6 × 2.0 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.60 × 2.00 m L-sofa (catalog default), with 0.90 m deep seating and 0.18 m back/arm bands in the accepted sofa's thin detail style. Chosen with the return on the west and backs north/west; the engine uses heavier separate back bands and a different cushion layout.",
+      "tier": 2,
+      "usageUsers": 125
+    },
+    {
+      "id": "bed-queen",
+      "label": "Queen bed",
+      "file": "bed-queen.svg",
+      "engine": "bed-queen",
+      "dsl": [
+        "furniture bed-queen in room at 2,2 size 1.52x2.03"
+      ],
+      "standard": "Mattress 1.52 × 2.03 m (US Queen) (inventory mattress convention); scaled accepted double-bed drawing.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A 1.52 × 2.03 m mattress (inventory size), using the accepted double-bed geometry scaled in metres, including its paired pillows and slanted sheet edge, with fixed stroke weights and corner radii. Chosen US sizing for king and queen and metric sizing for single; the engine uses a plain fold line and different pillow proportions.",
+      "tier": 2,
+      "usageUsers": 118
+    },
+    {
+      "id": "floor-lamp",
+      "label": "Floor lamp",
+      "file": "floor-lamp.svg",
+      "engine": "floor-lamp",
+      "dsl": [
+        "furniture floor-lamp in room at 2,2 size 0.4x0.4"
+      ],
+      "standard": "Floor lamp as shade and base circles (inventory); typical 400 mm shade, 200 mm base.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.40 m shade over a 0.20 m base (inventory floor-lamp convention, chosen design size), drawn as concentric circles with a stem dot. Chosen as physical furniture rather than an electrical ceiling point; the engine uses a crossed 0.35 m circle that resembles a light notation.",
+      "tier": 2,
+      "usageUsers": 102
+    },
+    {
+      "id": "bed-single",
+      "label": "Single bed",
+      "file": "bed-single.svg",
+      "engine": "bed-single",
+      "dsl": [
+        "furniture bed-single in room at 2,2 size 0.9x2"
+      ],
+      "standard": "Mattress 0.90 × 2.00 m (inventory mattress convention); scaled accepted double-bed drawing.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A 0.90 × 2.00 m mattress (inventory size), using the accepted double-bed geometry scaled in metres, including its paired pillows and slanted sheet edge, with fixed stroke weights and corner radii. Chosen US sizing for king and queen and metric sizing for single; the engine uses a plain fold line and different pillow proportions.",
+      "tier": 2,
+      "usageUsers": 93
+    },
+    {
+      "id": "fireplace",
+      "label": "Fireplace",
+      "file": "fireplace.svg",
+      "engine": "fireplace",
+      "dsl": [
+        "furniture fireplace in room at 2,2 size 1.5x0.5"
+      ],
+      "standard": "Hearth projecting from the wall, firebox recessed (floor-plan inventory); typical design size 1.5 × 0.5 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.50 × 0.50 m fireplace/hearth footprint (catalog default), with mist masonry, a recessed white firebox and a projecting south hearth. Chosen as a built-in masonry fireplace; the engine uses a white surround with angled rear detail.",
+      "tier": 2,
+      "usageUsers": 63
+    },
+    {
+      "id": "loveseat",
+      "label": "Loveseat",
+      "file": "loveseat.svg",
+      "engine": "loveseat",
+      "dsl": [
+        "furniture loveseat in room at 2,2 size 1.5x0.95"
+      ],
+      "standard": "Two-seat sofa 1500 × 950 mm (Metric Data)",
+      "sourceUrl": "https://www.firstinarchitecture.co.uk/metric-data-08-standard-furniture-sizes/",
+      "inExemplar": false,
+      "notes": "A typical 1.50 × 0.95 m two-seat sofa (Metric Data / inventory), with the accepted sofa's 0.18 m back and arms and two cushions, back north. The engine defaults to 0.90 m depth and outlines its back band more heavily.",
+      "tier": 2,
+      "usageUsers": 60
+    },
+    {
+      "id": "range",
+      "label": "Range",
+      "file": "range.svg",
+      "engine": "range",
+      "dsl": [
+        "furniture range in room at 2,2 size 0.9x0.85"
+      ],
+      "standard": "Commercial range with burners and oven (floor-plan inventory); typical design size 0.9 × 0.85 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.90 × 0.85 m commercial range (catalog default), six burners over an oven with its front and pull south, white as a freestanding appliance. Chosen as a six-burner range; the engine crowds its burners into the rear half and has no oven pull.",
+      "tier": 2,
+      "usageUsers": 201
+    },
+    {
+      "id": "wall-cabinet",
+      "label": "Wall cabinet",
+      "file": "wall-cabinet.svg",
+      "engine": "wall-cabinet",
+      "dsl": [
+        "furniture wall-cabinet in room at 2,2 size 0.9x0.35"
+      ],
+      "standard": "Upper cabinet dashed, above the cut plane (NKBA drawing standards) (floor-plan inventory); typical design size 0.9 × 0.35 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.90 × 0.35 m upper kitchen cabinet (catalog default / NKBA convention), with a dashed outline and two-door joint because it is above the cut plane. Chosen as a two-door wall unit, unfilled so the counter can show below; the engine draws an undivided dashed box.",
+      "tier": 2,
+      "usageUsers": 164
+    },
+    {
+      "id": "range-hood",
+      "label": "Range hood",
+      "file": "range-hood.svg",
+      "engine": "range-hood",
+      "dsl": [
+        "furniture range-hood in room at 2,2 size 0.9x0.6"
+      ],
+      "standard": "Hood above cooktop dashed above the cut plane (NKBA drawing convention); typical 900 × 600 mm canopy.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.90 × 0.60 m wall hood (NKBA / inventory convention, chosen to cover the 0.90 m range), dashed above the cut plane with its duct neck north. Chosen as a wall canopy rather than an island hood; the engine has a smaller 0.80 × 0.55 m dashed trapezoid without a neck.",
+      "tier": 2,
+      "usageUsers": 147
+    },
+    {
+      "id": "washer",
+      "label": "Washer",
+      "file": "washer.svg",
+      "engine": "washer",
+      "dsl": [
+        "furniture washer in room at 2,2 size 0.6x0.6"
+      ],
+      "standard": "600 mm box tagged W (RoomSketcher); exact 600 mm square exemplar appliance.",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "notes": "The exemplar's typical 0.60 × 0.60 m washer (RoomSketcher appliance convention), copied exactly with white body, 0.20 m radius drum and centred W in 8.5 px semibold slate. The engine uses a smaller proportional drum and a larger tag.",
+      "tier": 2,
+      "usageUsers": 138
+    },
+    {
+      "id": "dishwasher",
+      "label": "Dishwasher",
+      "file": "dishwasher.svg",
+      "engine": "dishwasher",
+      "dsl": [
+        "furniture dishwasher in room at 2,2 size 0.56x0.44"
+      ],
+      "standard": "Under-counter dishwasher shown hidden and tagged DW (RoomSketcher / accepted exemplar); nominal 600 mm appliance.",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "notes": "The exemplar's 0.44 × 0.56 m hidden appliance outline and 8 px DW tag are copied exactly, rotated from the east run to put the back north; a nominal dishwasher is about 0.60 m wide (RoomSketcher / inventory). Chosen to extract only the hidden appliance and tag, leaving the shared counter to the counter symbol; the engine draws a solid 0.60 m white box with a front band.",
+      "tier": 2,
+      "usageUsers": 115
+    },
+    {
+      "id": "dryer",
+      "label": "Dryer",
+      "file": "dryer.svg",
+      "engine": "dryer",
+      "dsl": [
+        "furniture dryer in room at 2,2 size 0.6x0.6"
+      ],
+      "standard": "600 mm box tagged D (RoomSketcher); exact 600 mm square exemplar appliance.",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "notes": "The exemplar's typical 0.60 × 0.60 m dryer (RoomSketcher appliance convention), copied exactly with white body, 0.20 m radius drum and centred D in 8.5 px semibold slate. The engine uses a smaller proportional drum and a larger tag.",
+      "tier": 2,
+      "usageUsers": 111
+    },
+    {
+      "id": "urinal",
+      "label": "Urinal",
+      "file": "urinal.svg",
+      "engine": "urinal",
+      "dsl": [
+        "furniture urinal in room at 2,2 size 0.4x0.35"
+      ],
+      "standard": "Wall-hung bowl (floor-plan inventory); typical design size 0.4 × 0.35 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.40 × 0.35 m wall-hung urinal (catalog default), with a rounded bowl, inner basin and flush dot at the north wall. Chosen as a compact individual urinal; the engine has a similar outer shape without the bowl detail.",
+      "tier": 2,
+      "usageUsers": 66
+    },
+    {
+      "id": "smartboard",
+      "label": "Smartboard",
+      "file": "smartboard.svg",
+      "engine": "smartboard",
+      "dsl": [
+        "furniture smartboard in room at 2,2 size 2x0.12"
+      ],
+      "standard": "Thin board on the wall (floor-plan inventory); typical design size 2 × 0.12 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.00 × 0.12 m interactive board (catalog default), shown edge-on with a thin tray and a small control dot, wall side north. Chosen as a wall-mounted interactive flat panel; the engine reuses the whiteboard's solid dark frame with no distinguishing control.",
+      "tier": 2,
+      "usageUsers": 144
+    },
+    {
+      "id": "filing-cabinet",
+      "label": "Filing cabinet",
+      "file": "filing-cabinet.svg",
+      "engine": "filing-cabinet",
+      "dsl": [
+        "furniture filing-cabinet in room at 2,2 size 0.5x0.6"
+      ],
+      "standard": "Box with drawer front line (floor-plan inventory); typical design size 0.5 × 0.6 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.50 × 0.60 m filing cabinet (catalog default), with its drawer front and pull south, back north. Chosen as a vertical cabinet seen in plan, so stacked drawers share one front line; the engine draws three horizontal bands across the top as if viewed in elevation.",
+      "tier": 2,
+      "usageUsers": 140
+    },
+    {
+      "id": "teacher-desk",
+      "label": "Teacher desk",
+      "file": "teacher-desk.svg",
+      "engine": "teacher-desk",
+      "dsl": [
+        "furniture teacher-desk in room at 2,2 size 1.4x0.7"
+      ],
+      "standard": "Desk without a chair (floor-plan inventory); typical design size 1.4 × 0.7 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.40 × 0.70 m teacher worktop (catalog default), white with 2 px corners and a thin hidden modesty-panel line below the top, without an automatic chair. Chosen as a plain teaching desk, back north; the engine adds a prominent rectangle and a solid front line on the top.",
+      "tier": 2,
+      "usageUsers": 115
+    },
+    {
+      "id": "cubbies",
+      "label": "Cubbies",
+      "file": "cubbies.svg",
+      "engine": "cubbies",
+      "dsl": [
+        "furniture cubbies in room at 2,2 size 1.8x0.4"
+      ],
+      "standard": "Cubbies as storage cells in plan (inventory); 300 mm bays, 400 mm deep (catalog convention).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.80 × 0.40 m run of six 0.30 m cubbies (catalog bay-spacing convention), a single row of storage cells with its back north. Chosen to show only plan bays, not vertically stacked cubbies as an elevation grid; the engine uses a 2.00 m run with unevenly rounded bay count.",
+      "tier": 2,
+      "usageUsers": 100
+    },
+    {
+      "id": "kidney-table",
+      "label": "Kidney table",
+      "file": "kidney-table.svg",
+      "engine": "kidney-table",
+      "dsl": [
+        "furniture kidney-table in room at 2,2 size 1.8x1.2"
+      ],
+      "standard": "Bean-shaped teaching table (floor-plan inventory); typical design size 1.8 × 1.2 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.80 × 1.20 m kidney teaching table (catalog default), with a continuous white top and a clear concave teacher recess on the south side. Chosen as the table alone without chairs; the engine uses a shallower curved notch and heavier styling.",
+      "tier": 2,
+      "usageUsers": 79
+    },
+    {
+      "id": "conference-table",
+      "label": "Conference table",
+      "file": "conference-table.svg",
+      "engine": "conference-table",
+      "dsl": [
+        "furniture conference-table in room at 2,2 size 2.4x1.2"
+      ],
+      "standard": "Long table with chairs on both sides (floor-plan inventory); typical design size 2.4 × 1.2 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.40 × 1.20 m conference top (catalog default) with eight accepted chairs at 0.60 m pitch, 0.05 m clear of the two long edges, backs outward. Chosen without end chairs, matching the catalog seating rule; the engine uses grey seats with no backrest detail and different spacing.",
+      "tier": 2,
+      "usageUsers": 71
+    },
+    {
+      "id": "bar",
+      "label": "Bar",
+      "file": "bar.svg",
+      "engine": "bar",
+      "dsl": [
+        "furniture bar in room at 2,2 size 3x2.2"
+      ],
+      "standard": "Bar counter with back bar (inventory); chosen 3 m station, 0.7 m front counter, 0.5 m back counter and 1 m staff aisle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 3.00 m bar counter 0.70 m deep, a 0.50 m back bar and a 1.00 m staff aisle (inventory back-bar convention, chosen design dimensions), mist as fixed joinery. Chosen as a complete bar station with customers south; the engine draws only a 3.00 × 0.70 m front counter; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 330
+    },
+    {
+      "id": "stage",
+      "label": "Stage",
+      "file": "stage.svg",
+      "engine": "stage",
+      "dsl": [
+        "furniture stage in room at 2,2 size 4x2"
+      ],
+      "standard": "Raised platform outline (floor-plan inventory); typical design size 4 × 2 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 4.00 × 2.00 m portable stage (catalog default), with a solid platform outline and thin front-edge line on the south audience side. Chosen as a raised modular platform rather than a room; the engine uses a dashed inset rectangle; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 135
+    },
+    {
+      "id": "booth",
+      "label": "Booth",
+      "file": "booth.svg",
+      "engine": "booth",
+      "dsl": [
+        "furniture booth in room at 2,2 size 1.2x1.54"
+      ],
+      "standard": "Restaurant booth as facing benches and central table (inventory); chosen 1.20 m two-person benches, 0.60 m table depth.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical four-person booth with a 1.20 × 0.60 m top and two 1.20 × 0.42 m benches, 1.54 m overall depth (inventory booth convention, chosen compact size). Chosen as facing fixed benches with the accepted chair's depth, 3 px corners and outward backrest line, plus cushion divisions; the engine has a larger 1.40 × 1.60 m group with grey benches and no back detail.",
+      "tier": 2,
+      "usageUsers": 134
+    },
+    {
+      "id": "banquet-table",
+      "label": "Banquet table",
+      "file": "banquet-table.svg",
+      "engine": "banquet-table",
+      "dsl": [
+        "furniture banquet-table in room at 2,2 size 2.44x0.76"
+      ],
+      "standard": "8 ft × 30 in (2.44 × 0.76 m) rectangle with chairs both sides (floor-plan inventory); typical design size 2.44 × 0.76 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A standard 8 ft × 30 in banquet top, 2.44 × 0.76 m (inventory event convention), with eight accepted chairs evenly spaced along the two long sides, backs outward. Chosen four per side with no end chairs, matching the engine's count; the engine uses grey chairs and different seat spacing.",
+      "tier": 2,
+      "usageUsers": 133
+    },
+    {
+      "id": "dance-floor",
+      "label": "Dance floor",
+      "file": "dance-floor.svg",
+      "engine": "dance-floor",
+      "dsl": [
+        "furniture dance-floor in room at 2,2 size 3.6x3.6"
+      ],
+      "standard": "Parquet grid in 0.90 m squares (round-2 brief); 4 × 4 modules form a 3.60 m floor.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical modular 3.60 × 3.60 m dance floor built from sixteen 0.90 m square parquet panels (round-2 brief), white with thin panel joints. Chosen modular parquet rather than diagonal hatch; the engine draws a 4.00 m square with diagonal hatching.",
+      "tier": 2,
+      "usageUsers": 119
+    },
+    {
+      "id": "round-table-6",
+      "label": "Round table for 6",
+      "file": "round-table-6.svg",
+      "engine": "round-table-6",
+      "dsl": [
+        "furniture round-table-6 in room at 2,2 size 2.424x2.424"
+      ],
+      "standard": "60 in round event table with 6 chairs (inventory and Schematex floor-plan standard §2.3); 1.524 m top diameter.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A standard 60 in round top, 1.524 m diameter (inventory / event convention), with 6 accepted chairs evenly spaced clockwise from north, 0.05 m from the table edge and backs outward. Chosen the catalog's event-table diameter, with DSL size including its 0.45 m chair ring; the drawing uses the accepted 0.42 m chair and spacing instead of the engine's grey seats.",
+      "tier": 2,
+      "usageUsers": 112
+    },
+    {
+      "id": "round-table-8",
+      "label": "Round table for 8",
+      "file": "round-table-8.svg",
+      "engine": "round-table-8",
+      "dsl": [
+        "furniture round-table-8 in room at 2,2 size 2.424x2.424"
+      ],
+      "standard": "60 in round event table with 8 chairs (inventory and Schematex floor-plan standard §2.3); 1.524 m top diameter.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A standard 60 in round top, 1.524 m diameter (inventory / event convention), with 8 accepted chairs evenly spaced clockwise from north, 0.05 m from the table edge and backs outward. Chosen the catalog's event-table diameter, with DSL size including its 0.45 m chair ring; the drawing uses the accepted 0.42 m chair and spacing instead of the engine's grey seats.",
+      "tier": 2,
+      "usageUsers": 112
+    },
+    {
+      "id": "dj-booth",
+      "label": "DJ booth",
+      "file": "dj-booth.svg",
+      "engine": "dj-booth",
+      "dsl": [
+        "furniture dj-booth in room at 2,2 size 1.2x0.8"
+      ],
+      "standard": "Table tagged DJ (floor-plan inventory); typical design size 1.2 × 0.8 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.20 × 0.80 m DJ worktop (catalog default), white with the exemplar's small semibold appliance-style DJ tag. Chosen as the booth footprint without individual decks; the engine uses the same simple motif with a larger tag.",
+      "tier": 2,
+      "usageUsers": 105
+    },
+    {
+      "id": "cocktail-table",
+      "label": "Cocktail table",
+      "file": "cocktail-table.svg",
+      "engine": "cocktail-table",
+      "dsl": [
+        "furniture cocktail-table in room at 2,2 size 0.76x0.76"
+      ],
+      "standard": "Small high round table (floor-plan inventory); typical design size 0.76 × 0.76 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 30 in high-top, about 0.76 m diameter (inventory / catalog event convention), shown as a plain round top. Chosen standing service without chairs or a visible pedestal through the opaque top; the engine adds an inner circle for the base.",
+      "tier": 2,
+      "usageUsers": 92
+    },
+    {
+      "id": "podium",
+      "label": "Podium",
+      "file": "podium.svg",
+      "engine": "podium",
+      "dsl": [
+        "furniture podium in room at 2,2 size 0.6x0.5"
+      ],
+      "standard": "Lectern outline (floor-plan inventory); typical design size 0.6 × 0.5 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 0.60 × 0.50 m lectern (catalog default), a tapered top with a thin reading-lip line to the south speaker side. Chosen a lectern rather than an elevated speaking platform; the engine uses the same taper without a lip.",
+      "tier": 2,
+      "usageUsers": 90
+    },
+    {
+      "id": "head-table",
+      "label": "Head table",
+      "file": "head-table.svg",
+      "engine": "head-table",
+      "dsl": [
+        "furniture head-table in room at 2,2 size 3.7x0.76"
+      ],
+      "standard": "Long table seated on one side only (floor-plan inventory); typical design size 3.7 × 0.76 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 3.70 × 0.76 m head table (catalog default), with six accepted chairs evenly spaced on its north side only, facing south toward the room. Chosen chairs behind the table for a dais layout; the engine puts its grey chair row on the south side.",
+      "tier": 2,
+      "usageUsers": 85
+    },
+    {
+      "id": "row-chairs",
+      "label": "Row chairs",
+      "file": "row-chairs.svg",
+      "engine": "row-chairs",
+      "dsl": [
+        "furniture row-chairs in room at 2,2 size 2.2x0.5"
+      ],
+      "standard": "Theatre rows at 0.55 m pitch (floor-plan inventory); typical design size 2.2 × 0.5 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Four accepted 0.42 m chairs at the standard 0.55 m theatre pitch (inventory), backs north, spanning 2.07 × 0.42 m of drawn furniture within a nominal 2.20 × 0.50 m row. Chosen a single short row with no aisle or ganging rail; the engine has grey seats without the backrest line.",
+      "tier": 2,
+      "usageUsers": 70
+    },
+    {
+      "id": "round-table-10",
+      "label": "Round table for 10",
+      "file": "round-table-10.svg",
+      "engine": "round-table-10",
+      "dsl": [
+        "furniture round-table-10 in room at 2,2 size 2.7288x2.7288"
+      ],
+      "standard": "72 in round event table with 10 chairs (inventory and Schematex floor-plan standard §2.3); 1.8288 m top diameter.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A standard 72 in round top, 1.8288 m diameter (inventory / event convention), with 10 accepted chairs evenly spaced clockwise from north, 0.05 m from the table edge and backs outward. Chosen the catalog's event-table diameter, with DSL size including its 0.45 m chair ring; the drawing uses the accepted 0.42 m chair and spacing instead of the engine's grey seats.",
+      "tier": 2,
+      "usageUsers": 58
+    },
+    {
+      "id": "pallet-rack",
+      "label": "Pallet rack",
+      "file": "pallet-rack.svg",
+      "engine": "pallet-rack",
+      "dsl": [
+        "furniture pallet-rack in room at 2,2 size 2.7x1.1"
+      ],
+      "standard": "Rack bays with beam lines (floor-plan inventory); typical design size 2.7 × 1.1 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.70 × 1.10 m pallet rack (catalog default), two 1.35 m bays with paired beam lines and small upright footprints, back north. Chosen a top view of the frame rather than elevation X-bracing; the engine crosses each bay with diagonals.",
+      "tier": 2,
+      "usageUsers": 99
+    },
+    {
+      "id": "walk-in",
+      "label": "Walk-in cooler",
+      "file": "walk-in.svg",
+      "engine": "walk-in",
+      "dsl": [
+        "furniture walk-in in room at 2,2 size 2.4x2"
+      ],
+      "standard": "Insulated box room with door (floor-plan inventory); typical design size 2.4 × 2 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.40 × 2.00 m walk-in cooler (catalog default), 0.12 m insulated walls in mist around a white interior, with a real 0.90 m south door opening and outward swing. Chosen hinged outward-opening cooler access; the engine fills its nominal opening with a dark block and gives the leaf a shorter projection.",
+      "tier": 2,
+      "usageUsers": 92
+    },
+    {
+      "id": "prep-table",
+      "label": "Prep table",
+      "file": "prep-table.svg",
+      "engine": "prep-table",
+      "dsl": [
+        "furniture prep-table in room at 2,2 size 1.5x0.75"
+      ],
+      "standard": "Stainless table with undershelf (floor-plan inventory); typical design size 1.5 × 0.75 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.50 × 0.75 m freestanding stainless prep table (catalog default), white with a thin dashed undershelf inset 0.08 m. Chosen a movable table rather than fixed joinery, so there is no mist fill; the engine has the same outline motif with different stroke weights.",
+      "tier": 2,
+      "usageUsers": 86
+    },
+    {
+      "id": "checkout",
+      "label": "Checkout counter",
+      "file": "checkout.svg",
+      "engine": "checkout",
+      "dsl": [
+        "furniture checkout in room at 2,2 size 1.6x0.7"
+      ],
+      "standard": "Counter with register and belt (floor-plan inventory); typical design size 1.6 × 0.7 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 1.60 × 0.70 m fixed checkout station (catalog default), mist joinery with a white conveyor belt and register at the east end. Chosen a fixed grocery checkout with the cashier to the north; the engine has a white box, a solid register block and one belt line.",
+      "tier": 2,
+      "usageUsers": 65
+    },
+    {
+      "id": "commercial-sink",
+      "label": "Commercial sink",
+      "file": "commercial-sink.svg",
+      "engine": "commercial-sink",
+      "dsl": [
+        "furniture commercial-sink in room at 2,2 size 2.4x0.7"
+      ],
+      "standard": "Three-compartment commercial sink with drainboards (inventory); chosen 2.40 × 0.70 m stainless fixture.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 2.40 × 0.70 m three-compartment sink with end drainboards (inventory convention, chosen commercial fixture size), white stainless steel with three bowls, rear taps and drains. Chosen a freestanding stainless sink rather than a basin cut into joinery; the engine's 1.80 × 0.60 m unit lacks drainboards.",
+      "tier": 2,
+      "usageUsers": 63
+    },
+    {
+      "id": "forklift",
+      "label": "Forklift",
+      "file": "forklift.svg",
+      "engine": "forklift",
+      "dsl": [
+        "furniture forklift in room at 2,2 size 1.2x3.4"
+      ],
+      "standard": "Counterbalance forklift in top view (catalog / inventory); chosen 1.20 × 3.40 m envelope including forks.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical compact counterbalance forklift about 1.20 m wide and 3.40 m long including 1.10 m forks (chosen industrial planning footprint), with forks north, mast, wheels, operator seat and steering wheel. Chosen to include fork length rather than only the chassis; the engine's compact 1.20 × 2.20 m motif has very short forks and a single internal circle.",
+      "tier": 2,
+      "usageUsers": 60
+    },
+    {
+      "id": "tree",
+      "label": "Tree",
+      "file": "tree.svg",
+      "engine": "tree",
+      "dsl": [
+        "furniture tree in room at 2,2 size 2x2"
+      ],
+      "standard": "Canopy circle with trunk centre (floor-plan inventory); typical design size 2 × 2 m (Schematex catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical young tree with a 2.00 m canopy (catalog default), a white canopy outline and a solid trunk centre dot. Chosen a simple deciduous canopy notation without species-specific foliage; the engine adds a second internal canopy circle; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 152
+    },
+    {
+      "id": "car",
+      "label": "Car",
+      "file": "car.svg",
+      "engine": "car",
+      "dsl": [
+        "furniture car in room at 2,2 size 1.8x4.6"
+      ],
+      "standard": "Passenger car top view for site plans (inventory); typical 4.60 × 1.80 m body (round-2 brief).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A typical 4.60 × 1.80 m passenger car (round-2 brief), nose north, with rounded body ends, windshield, rear window and roof lines in the furniture palette. Chosen a generic saloon silhouette without mirrors or parking-clearance envelope; the engine uses a smaller 4.40 m envelope and exposed wheel blocks; the usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 129
+    },
+    {
+      "id": "light",
+      "label": "Light",
+      "file": "light.svg",
+      "engine": "light",
+      "dsl": [
+        "furniture light in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "US ceiling lighting outlet: plain circle (ANSI Y32.9 / NECA residential-plan convention supplied in the review); fixed 17.92 px diameter, not a physical fixture size.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Plain graphite ceiling-outlet circle, with no IEC lamp cross. The engine uses the same lightDraw for light and ceiling-light, at nominal sizes 0.35 m and 0.45 m; parser aliases lamp to light and light-fixture to ceiling-light. Both entries therefore intentionally share identical fixed-size outlet geometry. Optional radial ticks are omitted. Usage count is inflated by label text and may also match longer symbol names.",
+      "tier": 2,
+      "usageUsers": 173
+    },
+    {
+      "id": "ceiling-fan",
+      "label": "Ceiling fan",
+      "file": "ceiling-fan.svg",
+      "engine": "ceiling-fan",
+      "dsl": [
+        "furniture ceiling-fan in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "Circle with blades: ceiling-fan plan notation (inventory); fixed 17.92 px notation, not the physical fan diameter.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A fixed 0.28 m-equivalent circle (17.92 px), with three blades and a hub in graphite, using the inventory's fan-point notation convention rather than physical blade span. Chosen a three-blade ceiling-fan pictogram at the same size as lights; the engine draws a 0.90 m overhead fixture with a dashed sweep circle.",
+      "tier": 2,
+      "usageUsers": 173
+    },
+    {
+      "id": "ceiling-light",
+      "label": "Ceiling light",
+      "file": "ceiling-light.svg",
+      "engine": "ceiling-light",
+      "dsl": [
+        "furniture ceiling-light in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "US ceiling lighting outlet: plain circle (ANSI Y32.9 / NECA residential-plan convention supplied in the review); fixed 17.92 px diameter, not a physical fixture size.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Plain graphite ceiling-outlet circle, with no IEC lamp cross. The engine uses the same lightDraw for light and ceiling-light, at nominal sizes 0.35 m and 0.45 m; parser aliases lamp to light and light-fixture to ceiling-light. Both entries therefore intentionally share identical fixed-size outlet geometry. Optional radial ticks are omitted.",
+      "tier": 2,
+      "usageUsers": 153
+    },
+    {
+      "id": "outlet",
+      "label": "Outlet (NEC)",
+      "file": "outlet.svg",
+      "engine": "outlet",
+      "dsl": [
+        "fixture outlet in room on north at 50%"
+      ],
+      "standard": "Single receptacle: circle with one line through it (ANSI Y32.9 convention supplied in the review); fixed 17.92 px circle at the wall.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Generic outlet is resolved to the single receptacle: one graphite stroke through a 17.92 px circle touching the accepted north wall stub. This visibly distinguishes it from duplex-outlet with two parallel strokes. The engine also distinguishes single and duplex, but its contact-stroke counts differ from the reviewed convention.",
+      "tier": 2,
+      "usageUsers": 81
+    },
+    {
+      "id": "outlet-iec",
+      "label": "Outlet (IEC)",
+      "file": "outlet-iec.svg",
+      "engine": "outlet-iec",
+      "dsl": [
+        "floorplan \"IEC socket\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture outlet in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan socket: wall-side semicircle and one stem (inventory / catalog convention); fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A fixed 0.28 m-equivalent semicircular socket notation (17.92 px wide) touching a short north wall stub, with one stem for a single socket (IEC 60617 installation-plan convention cited in the inventory). Chosen the catalog's semicircle-and-stem family at a uniform graphite notation size; the engine has no wall stub and uses smaller slate geometry.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "electrical-panel",
+      "label": "Electrical panel",
+      "file": "electrical-panel.svg",
+      "engine": "electrical-panel",
+      "dsl": [
+        "fixture electrical-panel in room on north at 50%"
+      ],
+      "standard": "Filled rectangle at the wall for an electrical panel (inventory plan convention); fixed 17.92 × 8.96 px notation.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A fixed 0.28 m-equivalent wide by 0.14 m-equivalent deep panel notation (17.92 × 8.96 px), a filled graphite rectangle touching the north wall stub as in the inventory convention. Chosen an unlabelled panel mark rather than a physical cabinet; the engine uses a 0.55 × 0.24 m outlined box tagged PANEL.",
+      "tier": 2,
+      "usageUsers": 67
+    },
+    {
+      "id": "duplex-outlet",
+      "label": "Duplex outlet (NEC)",
+      "file": "duplex-outlet.svg",
+      "engine": "duplex-outlet",
+      "dsl": [
+        "fixture duplex-outlet in room on north at 50%"
+      ],
+      "standard": "Duplex receptacle: circle with two parallel lines (ANSI Y32.9 convention supplied in the review); fixed 17.92 px circle at the wall.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "The accepted duplex drawing is retained byte-for-byte: two parallel graphite contact strokes in a 17.92 px circle touching the north wall stub. Generic outlet now uses a single stroke, so the two entries are distinct. The engine uses four contact strokes for its duplex entry.",
+      "tier": 2,
+      "usageUsers": 61
+    },
+    {
+      "id": "duplex-outlet-iec",
+      "label": "Duplex outlet (IEC)",
+      "file": "duplex-outlet-iec.svg",
+      "engine": "duplex-outlet-iec",
+      "dsl": [
+        "floorplan \"IEC socket\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture duplex-outlet in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan socket: wall-side semicircle and two stems (inventory / catalog convention); fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A fixed 0.28 m-equivalent semicircular socket notation (17.92 px wide) touching a short north wall stub, with two stems for a double socket (IEC 60617 installation-plan convention cited in the inventory). Chosen the catalog's semicircle-and-stem family at a uniform graphite notation size; the engine has no wall stub and uses smaller slate geometry.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "spiral-stairs",
+      "label": "Spiral stair",
+      "file": "spiral-stairs.svg",
+      "engine": "spiral-stairs",
+      "dsl": [
+        "furniture spiral-stairs in room at 2,2 size 1.8x1.8"
+      ],
+      "standard": "Typical compact spiral stair: 1.80 m outside diameter, 0.24 m centre post, radial treads at 22.5 degrees; plan convention from the inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Clockwise ascent from the south around a centre post. Reuses flight with an angular map, the accepted cut line, dashed upper treads, stairArrow and UP label. The 0.275 m helper pitch is a drawing parameter here, not a uniform radial tread depth; dimensions are illustrative, not a code-compliance claim.",
+      "tier": 3,
+      "usageUsers": 4
+    },
+    {
+      "id": "lockers",
+      "label": "Lockers",
+      "file": "lockers.svg",
+      "engine": "lockers",
+      "dsl": [
+        "furniture lockers in room at 2,2 size 1.8x0.45"
+      ],
+      "standard": "Typical 1.80 × 0.45 m locker bank, six 300 mm bays (catalog dimensions).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Six plan bays with doors and small pulls along the south face; white freestanding metal storage, using the accepted storage outline and detail weights.",
+      "tier": 3,
+      "usageUsers": 57
+    },
+    {
+      "id": "loading-dock",
+      "label": "Loading dock",
+      "file": "loading-dock.svg",
+      "engine": "loading-dock",
+      "dsl": [
+        "furniture loading-dock in room at 2,2 size 3x0.6"
+      ],
+      "standard": "Typical 3.00 m dock bay with a 0.60 m deep edge strip (catalog footprint); dock edge and bumpers per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "A plan crop of a built-in dock edge, with two projecting rubber bumpers toward the truck on the south. The strip includes bumper projection; this is not an overhead-door elevation or a complete dock leveller.",
+      "tier": 3,
+      "usageUsers": 54
+    },
+    {
+      "id": "grill",
+      "label": "Grill (commercial griddle)",
+      "file": "grill.svg",
+      "engine": "grill",
+      "dsl": [
+        "furniture grill in room at 2,2 size 0.9x0.9"
+      ],
+      "standard": "Typical 0.90 × 0.90 m commercial cooking appliance (catalog); flat griddle per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Chosen flat griddle with an uninterrupted cooking plate, rear splash strip, front grease trough and controls to the south. Shares the accepted range palette; white denotes the freestanding stainless appliance.",
+      "tier": 3,
+      "usageUsers": 54
+    },
+    {
+      "id": "switch",
+      "label": "Switch (NEC)",
+      "file": "switch.svg",
+      "engine": "switch",
+      "dsl": [
+        "fixture switch in room on north at 50%"
+      ],
+      "standard": "Single-pole wall switch: S at the wall (ANSI Y32.9 convention supplied in the brief); fixed 15 px letter.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Upright graphite S beside the accepted north wall stub. No subscript for a single-pole switch; 3, 4 and D belong to later variants. Usage count is inflated by label text and may match longer switch names.",
+      "tier": 3,
+      "usageUsers": 52
+    },
+    {
+      "id": "switch-iec",
+      "label": "Switch (IEC)",
+      "file": "switch-iec.svg",
+      "engine": "switch-iec",
+      "dsl": [
+        "floorplan \"IEC switch\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture switch in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan switch family: lever stroke with origin dot, following the engine catalog; fixed-size graphite notation.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Single-pole IEC lever and origin-dot form, beside the same north wall stub as the NEC switch and IEC sockets. This follows the catalog installation-plan convention, not a circuit schematic contact pair.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "distribution-board",
+      "label": "Distribution board",
+      "file": "distribution-board.svg",
+      "engine": "distribution-board",
+      "dsl": [
+        "fixture distribution-board in room on north at 50%"
+      ],
+      "standard": "IEC-practice distribution-board plan notation: rectangle tagged DB with circuit ways (inventory / catalog); fixed 38.4 × 17.92 px mark.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Graphite wall notation using the accepted wall stub and electrical weights; DB compartment at the west, four circuit ways at the east. The size is notation, not a physical cabinet or circuit schedule.",
+      "tier": 3,
+      "usageUsers": 47
+    },
+    {
+      "id": "beanbag",
+      "label": "Beanbag",
+      "file": "beanbag.svg",
+      "engine": "beanbag",
+      "dsl": [
+        "furniture beanbag in room at 2,2 size 1x0.9"
+      ],
+      "standard": "Typical 1.00 × 0.90 m soft seat; simple plan outline per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Simple rounded soft seat with one shallow upholstery seam; no spokes, tuft grid or equipment-like internal marks. White with the accepted furniture outline.",
+      "tier": 3,
+      "usageUsers": 45
+    },
+    {
+      "id": "fryer",
+      "label": "Fryer",
+      "file": "fryer.svg",
+      "engine": "fryer",
+      "dsl": [
+        "furniture fryer in room at 2,2 size 0.4x0.8"
+      ],
+      "standard": "Typical 0.40 × 0.80 m commercial fryer (catalog footprint), two side-by-side baskets.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Two narrow baskets in a white stainless appliance, with handles south and a rear control strip. Basket layout is plan view; the catalog places its two rectangles front-to-back.",
+      "tier": 3,
+      "usageUsers": 43
+    },
+    {
+      "id": "clothing-rack",
+      "label": "Clothing rack",
+      "file": "clothing-rack.svg",
+      "engine": "clothing-rack",
+      "dsl": [
+        "furniture clothing-rack in room at 2,2 size 1.5x0.6"
+      ],
+      "standard": "Typical 1.50 × 0.60 m freestanding garment rail; rail with hangers per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Chosen straight rail rather than the catalog round rack. Reuses the accepted wardrobe slanted hanger marks and thin rail, with two transverse foot bars; no enclosing cabinet.",
+      "tier": 3,
+      "usageUsers": 32
+    },
+    {
+      "id": "easel",
+      "label": "Easel",
+      "file": "easel.svg",
+      "engine": "easel",
+      "dsl": [
+        "furniture easel in room at 2,2 size 0.8x0.75"
+      ],
+      "standard": "Typical 0.80 × 0.75 m A-frame easel stance (catalog footprint), board edge seen in plan.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Three-foot stance with a thin board crossing the front legs, following the catalog plan orientation. Board crosses the cut plane and is solid; the easel is shown in plan rather than as a front-view canvas.",
+      "tier": 3,
+      "usageUsers": 28
+    },
+    {
+      "id": "toy-box",
+      "label": "Toy box",
+      "file": "toy-box.svg",
+      "engine": "toy-box",
+      "dsl": [
+        "furniture toy-box in room at 2,2 size 1x0.5"
+      ],
+      "standard": "Typical 1.00 × 0.50 m lidded toy chest (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "White freestanding chest using the accepted storage outline, with inset lid, two rear hinges and a south pull. Kept as a closed plan outline.",
+      "tier": 3,
+      "usageUsers": 28
+    },
+    {
+      "id": "piano",
+      "label": "Grand piano",
+      "file": "piano.svg",
+      "engine": "piano",
+      "dsl": [
+        "furniture piano in room at 2,2 size 1.5x1.8"
+      ],
+      "standard": "Typical compact grand piano body 1.50 × 1.80 m; curved case and keyboard (inventory).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Closed grand case with straight bass side west, curved treble side east and keyboard south. Reuses planChair for the player seat, 0.05 m clear of the body, facing north. The stated DSL size is the piano body; the chair extends the drawn envelope.",
+      "tier": 3,
+      "usageUsers": 28
+    },
+    {
+      "id": "data-outlet",
+      "label": "Data outlet",
+      "file": "data-outlet.svg",
+      "engine": "data-outlet",
+      "dsl": [
+        "fixture data-outlet in room on north at 50%"
+      ],
+      "standard": "Communications outlet: square tagged D (inventory / catalog convention); fixed 17.92 × 15.36 px mark.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Chosen square-D variant of the inventory triangle-or-square convention. Fixed graphite notation at the accepted north wall stub, distinct from a power receptacle.",
+      "tier": 3,
+      "usageUsers": 27
+    },
+    {
+      "id": "ottoman",
+      "label": "Ottoman",
+      "file": "ottoman.svg",
+      "engine": "ottoman",
+      "dsl": [
+        "furniture ottoman in room at 2,2 size 0.6x0.45"
+      ],
+      "standard": "Typical 0.60 × 0.45 m upholstered footstool (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Simple white upholstered outline with a thin inset seam and the accepted 3 px furniture corners; no backrest, so it remains distinct from chair.",
+      "tier": 3,
+      "usageUsers": 25
+    },
+    {
+      "id": "fountain",
+      "label": "Fountain",
+      "file": "fountain.svg",
+      "engine": "fountain",
+      "dsl": [
+        "furniture fountain in room at 2,2 size 1.8x1.8"
+      ],
+      "standard": "Typical 1.80 m diameter courtyard fountain (catalog); concentric basin rings per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Built-in basin rim in mist around a white basin, with thin water ring and central nozzle. Simple plan rings without decorative spray graphics or an elevation bowl.",
+      "tier": 3,
+      "usageUsers": 24
+    },
+    {
+      "id": "treadmill",
+      "label": "Treadmill",
+      "file": "treadmill.svg",
+      "engine": "treadmill",
+      "dsl": [
+        "furniture treadmill in room at 2,2 size 0.9x2"
+      ],
+      "standard": "Typical 0.90 × 2.00 m treadmill footprint (catalog), belt deck and console.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "White equipment frame with a 0.60 m running belt, side rails and console north; no clearance envelope. Console is selected below the plan cut plane and shown solid.",
+      "tier": 3,
+      "usageUsers": 21
+    },
+    {
+      "id": "yoga-mat",
+      "label": "Yoga mat",
+      "file": "yoga-mat.svg",
+      "engine": "yoga-mat",
+      "dsl": [
+        "furniture yoga-mat in room at 2,2 size 0.6x1.8"
+      ],
+      "standard": "Standard planning mat 0.60 × 1.80 m (inventory / catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Simple solid pencil outline using the accepted rug palette; unfilled, with 3 px corners. No dashes because the mat is on the floor, not above the cut plane.",
+      "tier": 3,
+      "usageUsers": 19
+    },
+    {
+      "id": "desk-l",
+      "label": "L-shaped desk",
+      "file": "desk-l.svg",
+      "engine": "desk-l",
+      "dsl": [
+        "furniture desk-l in room at 2,2 size 1.6x1.6"
+      ],
+      "standard": "Typical 1.60 × 1.60 m corner worktop with 0.70 m deep arms (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "West return, north worktop and the accepted task chair facing north in the recess. White movable furniture, with 2 px worktop corners; the chair uses the accepted desk placement rule.",
+      "tier": 3,
+      "usageUsers": 18
+    },
+    {
+      "id": "weight-bench",
+      "label": "Weight bench",
+      "file": "weight-bench.svg",
+      "engine": "weight-bench",
+      "dsl": [
+        "furniture weight-bench in room at 2,2 size 0.6x1.8"
+      ],
+      "standard": "Typical 0.60 × 1.80 m bench and stand footprint, with a 1.30 m training bar across the rack.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Padded flat bench in the accepted upholstered furniture style, head north, two rack uprights and a short training bar with plates. Bar extends beyond the nominal DSL bench footprint; rack and bar are selected below the cut plane.",
+      "tier": 3,
+      "usageUsers": 18
+    },
+    {
+      "id": "pool-table",
+      "label": "Pool table",
+      "file": "pool-table.svg",
+      "engine": "pool-table",
+      "dsl": [
+        "furniture pool-table in room at 2,2 size 2.54x1.27"
+      ],
+      "standard": "Typical 2.54 × 1.27 m planning footprint (catalog); six-pocket billiard table per inventory.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "White table outline and thin inset cushion boundary; six slate pocket openings at corners and long-side midpoints. Dimensions denote the outside planning footprint, not a regulation playing surface; cue clearance is excluded.",
+      "tier": 3,
+      "usageUsers": 16
+    },
+    {
+      "id": "bidet",
+      "label": "Bidet",
+      "file": "bidet.svg",
+      "engine": "bidet",
+      "dsl": [
+        "furniture bidet in room at 2,2 size 0.4x0.6"
+      ],
+      "standard": "Typical 0.40 × 0.60 m floor-mounted bidet (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Elongated white bowl with a north tap deck, tap dot and drain, following the accepted washbasin and toilet detail weights. No cistern, so it remains distinct from the toilet.",
+      "tier": 3,
+      "usageUsers": 14
+    },
+    {
+      "id": "bunk-bed",
+      "label": "Bunk bed",
+      "file": "bunk-bed.svg",
+      "engine": "bunk-bed",
+      "dsl": [
+        "furniture bunk-bed in room at 2,2 size 0.95x2"
+      ],
+      "standard": "Typical 0.95 × 2.00 m bunk frame around the accepted 0.90 × 2.00 m single mattress.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Lower mattress reuses scaledBed exactly at single-bed size. The wider upper frame, its end rail and side guard are dashed above the cut plane. A short ladder projects east; its visible lower rungs are solid. DSL size excludes the ladder projection.",
+      "tier": 3,
+      "usageUsers": 14
+    },
+    {
+      "id": "power-rack",
+      "label": "Power rack",
+      "file": "power-rack.svg",
+      "engine": "power-rack",
+      "dsl": [
+        "furniture power-rack in room at 2,2 size 1.4x1.4"
+      ],
+      "standard": "Typical 1.40 × 1.40 m four-post rack (catalog), with a 2.20 m barbell.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Four solid-outline post sections, side base rails and dashed overhead ties. The racked bar is selected below the cut plane; its plates extend the envelope beyond the DSL rack footprint. No elevation bracing or clearance zone.",
+      "tier": 3,
+      "usageUsers": 14
+    },
+    {
+      "id": "crib",
+      "label": "Crib",
+      "file": "crib.svg",
+      "engine": "crib",
+      "dsl": [
+        "furniture crib in room at 2,2 size 0.7x1.3"
+      ],
+      "standard": "Typical compact 0.70 × 1.30 m cot footprint (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "White mattress inside a slatted cot frame. Slats run only across the narrow side-rail bands in plan, with no bars across the mattress and no pillow. Furniture outline and interior weights follow the accepted bed family.",
+      "tier": 3,
+      "usageUsers": 13
+    },
+    {
+      "id": "fitting-room",
+      "label": "Fitting room",
+      "file": "fitting-room.svg",
+      "engine": "fitting-room",
+      "dsl": [
+        "furniture fitting-room in room at 2,2 size 1.1x1.1"
+      ],
+      "standard": "Typical compact 1.10 × 1.10 m retail changing cubicle (catalog).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Three fixed partitions in mist, a white rear bench, thin east mirror and a folded curtain across the south entrance. Curtain is solid because fabric crosses the cut plane; its overhead track is dashed. This is the inventory compact cubicle, without a clearance envelope.",
+      "tier": 3,
+      "usageUsers": 10
+    },
+    {
+      "id": "pendant-light",
+      "label": "Pendant light",
+      "file": "pendant-light.svg",
+      "engine": "pendant-light",
+      "dsl": [
+        "furniture pendant-light in room at 2,2 size 0.28x0.42"
+      ],
+      "standard": "Ceiling outlet with drop mark (inventory / ANSI Y32.9 family); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted plain ceiling-outlet circle with a short north drop stem and suspension dot. This is fixed-size electrical notation, not a pendant elevation or a physical shade diameter.",
+      "tier": 3,
+      "usageUsers": 8
+    },
+    {
+      "id": "salon-chair",
+      "label": "Salon chair",
+      "file": "salon-chair.svg",
+      "engine": "salon-chair",
+      "dsl": [
+        "furniture salon-chair in room at 2,2 size 0.7x0.9"
+      ],
+      "standard": "Typical 0.70 × 0.90 m hydraulic styling chair including footrest; inventory chair-and-base convention.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted planChair seat and backrest on a round hydraulic base, with arm pads and a south footrest. Chosen chair alone as the inventory requests; the engine catalog includes a counter and mirror in its larger styling-station footprint.",
+      "tier": 3,
+      "usageUsers": 7
+    },
+    {
+      "id": "piano-upright",
+      "label": "Upright piano",
+      "file": "piano-upright.svg",
+      "engine": "piano-upright",
+      "dsl": [
+        "furniture piano-upright in room at 2,2 size 1.5x0.6"
+      ],
+      "standard": "Typical 1.50 × 0.60 m upright piano case (catalog), with a 0.75 × 0.35 m player bench.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Case back north, keyboard south using the accepted grand-piano key spacing and slate details. White upholstered bench uses the accepted bench outline, 0.15 m clear of the case. DSL size is the case; bench extends the envelope.",
+      "tier": 3,
+      "usageUsers": 7
+    },
+    {
+      "id": "gfci-outlet",
+      "label": "GFCI outlet (NEC)",
+      "file": "gfci-outlet.svg",
+      "engine": "gfci-outlet",
+      "dsl": [
+        "fixture gfci-outlet in room on north at 50%"
+      ],
+      "standard": "GFCI-tagged receptacle (inventory / ANSI Y32.9 family); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted single-receptacle circle and one contact stroke, with a GFCI tag below in the accepted small semibold label style. Chosen single receptacle, matching the catalog entry; protection does not change contact count.",
+      "tier": 3,
+      "usageUsers": 5
+    },
+    {
+      "id": "gfci-outlet-iec",
+      "label": "RCD outlet (IEC)",
+      "file": "gfci-outlet-iec.svg",
+      "engine": "gfci-outlet-iec",
+      "dsl": [
+        "floorplan \"IEC RCD outlet (IEC)\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture gfci-outlet in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan socket family, annotated RCD for residual-current protection; fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted outlet-iec semicircle and one stem, extended only with the catalog RCD tag. Fixed graphite mark on the accepted wall stub; RCD is a protection annotation, not a second socket.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "recessed-light",
+      "label": "Recessed light",
+      "file": "recessed-light.svg",
+      "engine": "recessed-light",
+      "dsl": [
+        "furniture recessed-light in room at 2,2 size 0.36x0.36"
+      ],
+      "standard": "Circle in a square (inventory / ANSI Y32.9 convention); fixed 17.92 px circle inside a 23.04 px square.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Extends the accepted plain US ceiling-outlet circle with a square recess surround. No IEC lamp cross; fixed-size notation rather than a physical luminaire footprint.",
+      "tier": 3,
+      "usageUsers": 4
+    },
+    {
+      "id": "motion-sensor",
+      "label": "Motion sensor",
+      "file": "motion-sensor.svg",
+      "engine": "motion-sensor",
+      "dsl": [
+        "furniture motion-sensor in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "Sensor tagged MS (inventory convention); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Chosen circular MS device tag at the accepted light notation size, in graphite with a small semibold tag. This is a ceiling sensor point, with no wall stub or detection-area wedge; the engine uses sensing-wave marks.",
+      "tier": 3,
+      "usageUsers": 3
+    },
+    {
+      "id": "wall-light",
+      "label": "Wall light",
+      "file": "wall-light.svg",
+      "engine": "wall-light",
+      "dsl": [
+        "fixture wall-light in room on north at 50%"
+      ],
+      "standard": "Half circle at wall (inventory / ANSI Y32.9 convention); fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Plain semicircular wall-light mark touching the accepted north wall stub. No contact stem, distinguishing it from IEC sockets; no IEC lamp cross is added to the US lighting family.",
+      "tier": 3,
+      "usageUsers": 3
+    },
+    {
+      "id": "switch-dimmer",
+      "label": "Dimmer switch (NEC)",
+      "file": "switch-dimmer.svg",
+      "engine": "switch-dimmer",
+      "dsl": [
+        "fixture switch-dimmer in room on north at 50%"
+      ],
+      "standard": "S with D subscript (ANSI Y32.9 convention supplied in the brief); accepted fixed 15 px S.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted switch geometry retained, with a separate 7.5 px D set lower and to the right as a true visual subscript. Uses ordinary D with explicit placement rather than relying on font-specific Unicode subscript support.",
+      "tier": 3,
+      "usageUsers": 3
+    },
+    {
+      "id": "switch-dimmer-iec",
+      "label": "Dimmer switch (IEC)",
+      "file": "switch-dimmer-iec.svg",
+      "engine": "switch-dimmer-iec",
+      "dsl": [
+        "floorplan \"IEC Dimmer switch (IEC)\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture switch-dimmer in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan dimmer family: accepted switch lever with triangular dimmer modifier (catalog convention).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted switch-iec lever and origin dot, extended with the catalog triangular modifier at the free end. Fixed graphite notation beside the accepted wall stub.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "thermostat",
+      "label": "Thermostat",
+      "file": "thermostat.svg",
+      "engine": "thermostat",
+      "dsl": [
+        "fixture thermostat in room on north at 50%"
+      ],
+      "standard": "Wall thermostat: small box tagged T (round-3 brief); fixed 17.92 × 15.36 px notation.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Uses the accepted data-outlet box and label placement on the north wall stub. The box follows the brief instead of the inventory circle; T identifies the wall control.",
+      "tier": 3,
+      "usageUsers": 2
+    },
+    {
+      "id": "outlet-240v",
+      "label": "240 V outlet (NEC)",
+      "file": "outlet-240v.svg",
+      "engine": "outlet-240v",
+      "dsl": [
+        "fixture outlet-240v in room on north at 50%"
+      ],
+      "standard": "ANSI Y32.9 single special-purpose receptacle: triangle inside a circle, annotated 240 V; fixed 17.92 px circle.",
+      "sourceUrl": "https://assets.unilogcorp.com/267/ITEM/DOC/Leviton_617_Catalog.pdf",
+      "inExemplar": false,
+      "notes": "Retains the accepted US receptacle circle and wall stub; the special-purpose triangle replaces its ordinary contact stroke. The 240 V tag identifies service voltage without prescribing amperage or a NEMA configuration.",
+      "tier": 3,
+      "usageUsers": 2
+    },
+    {
+      "id": "outlet-240v-iec",
+      "label": "240 V outlet (IEC)",
+      "file": "outlet-240v-iec.svg",
+      "engine": "outlet-240v-iec",
+      "dsl": [
+        "floorplan \"IEC outlet-240v\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture outlet-240v in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan socket family with a 240 V service annotation; fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted outlet-iec semicircle and single stem, with the voltage tag in the accepted GFCI/RCD label style. Voltage does not imply a second socket or a particular pole count.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "shampoo-bowl",
+      "label": "Shampoo bowl",
+      "file": "shampoo-bowl.svg",
+      "engine": "shampoo-bowl",
+      "dsl": [
+        "furniture shampoo-bowl in room at 2,2 size 0.7x1.5"
+      ],
+      "standard": "Salon backwash basin and chair in plan, chosen 0.70 × 1.50 m envelope; accepted chair and washbasin drawing rules.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Basin north behind the client, with a south neck recess, oval bowl, rear tap dot and drain. Reuses the accepted planChair seat, salon arm pads and footrest; white ceramic and upholstery with slate outlines. DSL size includes chair and footrest.",
+      "tier": 3,
+      "usageUsers": 2
+    },
+    {
+      "id": "emergency-light",
+      "label": "Emergency light",
+      "file": "emergency-light.svg",
+      "engine": "emergency-light",
+      "dsl": [
+        "furniture emergency-light in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "Emergency lighting outlet: accepted US light circle with EM designation (inventory convention); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "The EM tag below the accepted plain light marks emergency service in the existing small uppercase tag style. Chosen a ceiling lighting point, rather than the engine twin-head battery-unit pictogram; no wall stub or IEC lamp cross.",
+      "tier": 3,
+      "usageUsers": 2
+    },
+    {
+      "id": "manicure-table",
+      "label": "Manicure table",
+      "file": "manicure-table.svg",
+      "engine": "manicure-table",
+      "dsl": [
+        "furniture manicure-table in room at 2,2 size 1x0.5"
+      ],
+      "standard": "Typical 1.00 × 0.50 m manicure worktop (catalog), with client and technician seated opposite each other.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Reuses longDining with one accepted 0.42 m chair on each long side, backs outward and 0.05 m clear of the top. White movable furniture; the DSL size denotes the worktop, with a 1.00 × 1.44 m overall seated envelope.",
+      "tier": 3,
+      "usageUsers": 2
+    },
+    {
+      "id": "smoke-detector",
+      "label": "Smoke detector",
+      "file": "smoke-detector.svg",
+      "engine": "smoke-detector",
+      "dsl": [
+        "furniture smoke-detector in room at 2,2 size 0.28x0.28",
+        "furniture smoke-alarm in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "Smoke detector: circle tagged SD (inventory convention); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted motion-sensor circle and 7 px semibold tag placement, with SD replacing MS. Ceiling-mounted device point, without a wall stub.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "switch-3way",
+      "label": "3-way switch (NEC)",
+      "file": "switch-3way.svg",
+      "engine": "switch-3way",
+      "dsl": [
+        "fixture switch-3way in room on north at 50%"
+      ],
+      "standard": "ANSI Y32.9 3-way wall switch: S with 3 subscript; accepted fixed 15 px S.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted switch-dimmer geometry, replacing only D with 3: 7.5 px semibold subscript at dx 8 and dy 9. North wall stub and main S are unchanged.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "switch-3way-iec",
+      "label": "3-way switch (IEC)",
+      "file": "switch-3way-iec.svg",
+      "engine": "switch-3way-iec",
+      "dsl": [
+        "floorplan \"IEC switch-3way\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture switch-3way in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan two-way switch: accepted lever with a branch stroke (catalog convention).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Retains the accepted switch-iec lever and origin dot; the short branch near its free end follows the catalog two-way modifier, scaled to the accepted lever. US three-way corresponds to IEC two-way.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fluorescent-light",
+      "label": "Fluorescent light",
+      "file": "fluorescent-light.svg",
+      "engine": "fluorescent-light",
+      "dsl": [
+        "furniture fluorescent-light in room at 2,2 size 1.2x0.3",
+        "furniture troffer in room at 2,2 size 1.2x0.3"
+      ],
+      "standard": "Linear fluorescent luminaire: long narrow rectangle at its physical 1.20 × 0.30 m fixture size (brief / catalog convention).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Graphite electrical outline with a longitudinal centre line, following the catalog linear fixture form at 64 px/m. This fixture uses real dimensions; it is not reduced to the fixed-size point used for ceiling light outlets.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "tv-outlet",
+      "label": "TV outlet",
+      "file": "tv-outlet.svg",
+      "engine": "tv-outlet",
+      "dsl": [
+        "fixture tv-outlet in room on north at 50%",
+        "fixture coax-outlet in room on north at 50%"
+      ],
+      "standard": "Communications outlet: accepted data-outlet box tagged TV (round-3 brief); fixed 17.92 × 15.36 px mark.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted data-outlet box on the north wall stub, with TV identifying television/coax service. The paired letters use the accepted 8.5 px tag size.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "junction-box",
+      "label": "Junction box",
+      "file": "junction-box.svg",
+      "engine": "junction-box",
+      "dsl": [
+        "furniture junction-box in room at 2,2 size 0.28x0.28"
+      ],
+      "standard": "Junction box: circle tagged J (round-3 brief); fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Uses the accepted circular electrical device notation and small semibold J. Chosen ceiling junction point without a wall stub; circular form follows the brief instead of the inventory square.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "weatherproof-outlet",
+      "label": "Weatherproof outlet (NEC)",
+      "file": "weatherproof-outlet.svg",
+      "engine": "weatherproof-outlet",
+      "dsl": [
+        "fixture weatherproof-outlet in room on north at 50%"
+      ],
+      "standard": "ANSI Y32.9 receptacle family with WP weatherproof designation; fixed 17.92 px circle.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted single US receptacle and wall stub, extended only by WP in the accepted GFCI tag style. Weather protection does not change contact count.",
+      "tier": 3,
+      "usageUsers": 1
+    },
+    {
+      "id": "weatherproof-outlet-iec",
+      "label": "Weatherproof outlet (IEC)",
+      "file": "weatherproof-outlet-iec.svg",
+      "engine": "weatherproof-outlet-iec",
+      "dsl": [
+        "floorplan \"IEC weatherproof-outlet\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture weatherproof-outlet in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan socket family with IP44 enclosure designation (round-3 brief); fixed 17.92 px width.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted IEC semicircle and single stem on the north wall stub. Chosen IP44 tag as the brief permits; this is an illustrative enclosure rating, not a universal rating for every exterior socket.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "floor-outlet",
+      "label": "Floor outlet",
+      "file": "floor-outlet.svg",
+      "engine": "floor-outlet",
+      "dsl": [
+        "furniture floor-outlet in room at 2,2 size 0.36x0.36"
+      ],
+      "standard": "Floor-mounted receptacle: single US receptacle inside a square floor box (brief / ANSI Y32.9 family).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Accepted 17.92 px single-receptacle circle and full contact stroke centred inside a 23.04 px square. No wall bar because the box is floor-mounted; fixed-size electrical notation.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "phone-outlet",
+      "label": "Phone outlet",
+      "file": "phone-outlet.svg",
+      "engine": "phone-outlet",
+      "dsl": [
+        "fixture phone-outlet in room on north at 50%"
+      ],
+      "standard": "Communications outlet: accepted data-outlet box tagged PH (round-3 brief); fixed 17.92 × 15.36 px mark.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted data-outlet box on the north wall stub, with PH identifying telephone service distinctly from the thermostat T; the brief requests the square communications family instead of the inventory triangle.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "switch-4way",
+      "label": "4-way switch (NEC)",
+      "file": "switch-4way.svg",
+      "engine": "switch-4way",
+      "dsl": [
+        "fixture switch-4way in room on north at 50%"
+      ],
+      "standard": "ANSI Y32.9 4-way wall switch: S with 4 subscript; accepted fixed 15 px S.",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Exact accepted switch-dimmer geometry, replacing only D with 4: 7.5 px semibold subscript at dx 8 and dy 9. North wall stub and main S are unchanged.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "switch-4way-iec",
+      "label": "4-way switch (IEC)",
+      "file": "switch-4way-iec.svg",
+      "engine": "switch-4way-iec",
+      "dsl": [
+        "floorplan \"IEC switch-4way\" unit m symbols iec\nroom room at 0,0 size 6x6\nfixture switch-4way in room on north at 50%"
+      ],
+      "standard": "IEC 60617 installation-plan intermediate switch: two crossing levers with origin dots (catalog convention).",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "Retains the accepted switch-iec lever and adds its mirrored crossing lever and second origin dot, as in the catalog intermediate-switch form. US four-way corresponds to IEC intermediate.",
+      "tier": 3,
+      "usageUsers": null
+    }
+  ]
+}

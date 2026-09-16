@@ -1,0 +1,27 @@
+# Hospital admission, triage, and insurance verification scope.
+usecase
+title: "Hospital Admission"
+system: "Hospital Admission System"
+actor: Patient as P
+actor: "Emergency Patient" as EP
+actor: Registrar as R (business)
+actor: "Insurance Clearinghouse" as IC (external)
+usecase: "Register Patient" as Register
+usecase: "Record Demographics" as Demographics
+usecase: "Verify Coverage" as Coverage
+usecase: "Assign Bed" as Bed
+usecase: "Perform Triage" as Triage { 
+  extension point: emergency escalation
+}
+usecase: "Create Admission" as Admit
+usecase: "Escalate Emergency" as Escalate
+EP --|> P
+P -- Register
+R -- Register
+R -- Triage
+Register ..> Demographics : «include»
+Register ..> Coverage : «include»
+Coverage -- IC
+Admit ..> Bed : «include»
+Register ..> Admit : «include»
+Escalate <.. Triage : «extend» [unstable patient] (extension point: emergency escalation)

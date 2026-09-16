@@ -325,9 +325,9 @@ export const BIOLOGY_TOKENS: Record<ThemeName, BiologyTokens> = {
 // ─── Venn Tokens Per Theme ─────────────────────────────────
 
 const DEFAULT_VENN: VennTokens = {
-  vennSetColors: DEFAULT_PALETTE,
+  vennSetColors: ["#2b6cb0", "#c05621", "#2f855a", "#805ad5"],
   vennBlendMode: "multiply",
-  vennSetOpacity: 0.38,
+  vennSetOpacity: 0.14,
   vennSetStroke: "#94a3b8",
   vennLabelColor: "#0f172a",
   vennCountColor: "#0f172a",
@@ -1108,9 +1108,9 @@ export interface NetworkTokens {
 }
 
 const DEFAULT_NETWORK: NetworkTokens = {
-  deviceFill: "#1d6fb8",
-  deviceStroke: "#0f3a5f",
-  deviceAccent: "#bfe0f7",
+  deviceFill: "#f8fafc",
+  deviceStroke: "#334155",
+  deviceAccent: "#256b8a",
   cloudFill: "#ffffff",
   cloudStroke: "#334155",
   label: "#0f172a",
@@ -1157,9 +1157,9 @@ const MONOCHROME_NETWORK: NetworkTokens = {
 };
 
 const DARK_NETWORK: NetworkTokens = {
-  deviceFill: "#6d8fff",
-  deviceStroke: "#0f172a",
-  deviceAccent: "#0f172a",
+  deviceFill: "#172033",
+  deviceStroke: "#cbd5e1",
+  deviceAccent: "#7dd3fc",
   cloudFill: "#172033",
   cloudStroke: "#f8fafc",
   label: "#f8fafc",
@@ -1659,11 +1659,11 @@ export interface BlockTokens {
 }
 
 const DEFAULT_BLOCK: BlockTokens = {
-  blockStroke: "#334155",
-  blockText: "#0f172a",
-  blockName: "#64748b",
+  blockStroke: "#16202b",
+  blockText: "#16202b",
+  blockName: "#63707f",
   sumFill: "#ffffff",
-  signalStroke: "#334155",
+  signalStroke: "#16202b",
   roleFills: {
     plant: "#ffffff",
     controller: "#dbeafe",
@@ -1800,7 +1800,7 @@ const DEFAULT_FLOORPLAN: FloorplanTokens = {
   chairFill: "#f1f5f9",
   doorLeaf: "#334155",
   doorArc: "#94a3b8",
-  windowStroke: "#334155",
+  windowStroke: "#4F86B0",
   rugStroke: "#94a3b8",
   hatchStroke: "#cbd5e1",
   roomName: "#0f172a",
@@ -2004,9 +2004,9 @@ export interface PlaybookTokens {
 }
 
 const DEFAULT_PLAYBOOK: PlaybookTokens = {
-  surface: "#2f8f4e",         // broadcast grass green
-  surfaceAlt: "#2b8549",      // darker mow stripe
-  surround: "#21683a",        // out-of-bounds grass band
+  surface: "#6d9b73",         // muted turf keeps tactical routes in the foreground
+  surfaceAlt: "#67946d",      // subtle mowing stripe
+  surround: "#4f7356",        // out-of-bounds grass band
   courtSurface: "#f1ddba",    // light maple hardwood
   courtLine: "#b07c40",       // warm court-line brown
   courtSurround: "#6b4f2c",   // arena apron (mid wood)
@@ -2077,7 +2077,7 @@ const DARK_PLAYBOOK: PlaybookTokens = {
   gkFill: "#facc15",
   defenseStroke: "#f87171",
   defenseLabel: "#fee2e2",
-  moveStroke: "#0b1f3a",
+  moveStroke: "#e8f3ec",
   motionStroke: "#cbd5e1",
   shotStroke: "#fbbf24",
   zoneStroke: "#fde047",

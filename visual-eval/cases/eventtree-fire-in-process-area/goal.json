@@ -1,0 +1,45 @@
+{
+  "id": "eventtree-fire-in-process-area",
+  "type": "eventtree",
+  "title": "Fire in process area",
+  "goal": "Show fire outcomes through detection, suppression, and evacuation success and failure branches.",
+  "rubric": [
+    {
+      "id": "initiating-event",
+      "severity": "blocker",
+      "must": "A fire-in-process-area initiating event and its frequency are visible at the left."
+    },
+    {
+      "id": "three-functions",
+      "severity": "blocker",
+      "must": "Detection, automatic suppression, and personnel evacuation appear as ordered event-tree function columns."
+    },
+    {
+      "id": "outcomes",
+      "severity": "blocker",
+      "must": "The tree visibly ends in controlled-fire, escalated-fire, and late-detected-fire outcome categories."
+    },
+    {
+      "id": "branch-probabilities",
+      "severity": "major",
+      "must": "Success and failure branch probabilities are visibly shown for the safety functions."
+    },
+    {
+      "id": "pruned-late-path",
+      "severity": "major",
+      "must": "The failed-detection path visibly terminates directly at the late-detected major-damage outcome."
+    },
+    {
+      "id": "injury-distinctions",
+      "severity": "minor",
+      "must": "Evacuation success and failure visibly distinguish personnel-safe from personnel-injury outcomes."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/eventtree/ideal.svg (sha256 064a513719ee). Exemplar safety-function columns, success-upper branching, blue probabilities and aligned outcome-frequency table. Path frequencies independently calculated and checked to sum to the initiating frequency. No unprovided severity categories invented. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

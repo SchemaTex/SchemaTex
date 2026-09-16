@@ -1,0 +1,96 @@
+{
+  "id": "siteplan-existing-and-proposed",
+  "type": "siteplan",
+  "title": "Existing and proposed site plan",
+  "goal": "A planning reviewer can distinguish retained, proposed and demolished work while understanding the revised vehicle access and site dimensions.",
+  "rubric": [
+    {
+      "id": "parcel-and-road-clear",
+      "severity": "blocker",
+      "must": "The parcel boundary and Industrial Avenue frontage are clearly visible as distinct site features."
+    },
+    {
+      "id": "existing-proposed-demolished-distinct",
+      "severity": "blocker",
+      "must": "The retained warehouse, proposed extension and demolished outbuilding use visibly different line or fill treatments."
+    },
+    {
+      "id": "revised-access-readable",
+      "severity": "major",
+      "must": "The removed existing access and the proposed vehicle access are visibly distinguishable and labelled."
+    },
+    {
+      "id": "proposed-extension-attached",
+      "severity": "major",
+      "must": "The proposed extension visibly adjoins the retained warehouse without obscuring either footprint."
+    },
+    {
+      "id": "dimensions-legible",
+      "severity": "major",
+      "must": "The frontage, parcel-depth and extension dimensions are readable and associated with their measured edges."
+    },
+    {
+      "id": "north-and-scale-present",
+      "severity": "minor",
+      "must": "A north arrow and scale bar are visible on the plan."
+    },
+    {
+      "id": "annotations-do-not-obscure",
+      "severity": "minor",
+      "must": "Callouts, setbacks and labels remain legible without covering the building footprints or access routes."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly communicates retained, proposed, and demolished work, revised vehicle access, principal site dimensions, road frontage, setbacks, north orientation, and scale. No material visible defect or missing source requirement is evident.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:32.509Z",
+      "targetHash": "4fe998ee378c",
+      "sourceHash": "cbe2f0104f89",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "parcel-and-road-clear",
+          "verdict": "pass",
+          "evidence": "The dashed property line clearly encloses the parcel, while Industrial Avenue is separately shown and labelled along the southern frontage."
+        },
+        {
+          "id": "existing-proposed-demolished-distinct",
+          "verdict": "pass",
+          "evidence": "The retained warehouse uses a solid grey fill, the proposed extension uses diagonal hatching, and the demolished outbuilding uses a dashed outline with an X."
+        },
+        {
+          "id": "revised-access-readable",
+          "verdict": "pass",
+          "evidence": "The proposed 7 m vehicle access is labelled near the central frontage, and the existing 5 m access to be removed is separately labelled at the eastern frontage."
+        },
+        {
+          "id": "proposed-extension-attached",
+          "verdict": "pass",
+          "evidence": "The hatched extension visibly adjoins the warehouse along its eastern wall, and both footprints remain individually readable."
+        },
+        {
+          "id": "dimensions-legible",
+          "verdict": "pass",
+          "evidence": "The 72 m parcel frontage, 64 m maximum parcel depth, and 17 m proposed-extension dimension are readable and positioned beside their measured edges."
+        },
+        {
+          "id": "north-and-scale-present",
+          "verdict": "pass",
+          "evidence": "A north arrow is visible at bottom right and a 0–40 m graphic scale is visible along the bottom."
+        },
+        {
+          "id": "annotations-do-not-obscure",
+          "verdict": "pass",
+          "evidence": "Building labels, callouts, setback labels, parking, pedestrian route, and access annotations remain legible without materially obscuring the relevant footprints or routes."
+        }
+      ]
+    }
+  }
+}

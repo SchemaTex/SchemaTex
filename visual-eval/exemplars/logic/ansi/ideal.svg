@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="706" viewBox="0 0 1290 706" role="img">
+<title>2-bit Magnitude Comparator</title>
+<desc>A gate-level logic diagram of a 2-bit magnitude comparator drawn with ANSI/IEEE Std 91 distinctive-shape symbols. The four inputs A1, B1, A0 and B0 enter as labelled stubs on the left margin; signal flow runs strictly left to right through five columns of gates ordered by logic depth. Two exclusive-OR gates detect a difference on each bit pair, a NOR gate combines them into the equal output, inverters supply the complemented B bits and the bit-1 equality term, an AND pair and a three-input AND form the greater-than product terms, an OR gate sums them into the greater-than output, and a final NOR gate derives less-than from greater-than and equal. All wires are orthogonal; filled dots mark fan-out junctions and plain crossings mark wires that pass without connecting. The three outputs GT, EQ and LT leave on the right margin.</desc>
+<rect x="0" y="0" width="1290" height="706" fill="#FFFFFF"/>
+<line x1="46" y1="96" x2="1244" y2="96" stroke="#E2E8F0" stroke-width="1"/>
+<line x1="46" y1="636" x2="1244" y2="636" stroke="#E2E8F0" stroke-width="1"/>
+<g fill="none" stroke="#1E293B" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter">
+<polyline points="62,118 186.25,118"/>
+<polyline points="110,118 110,206 380,206"/>
+<polyline points="62,142 186.25,142"/>
+<polyline points="88,142 88,306 190,306"/>
+<polyline points="62,470 186.25,470"/>
+<polyline points="110,470 110,526 490,526 490,482 570,482"/>
+<polyline points="62,494 186.25,494"/>
+<polyline points="88,494 88,570 190,570"/>
+<polyline points="250,130 380,130"/>
+<polyline points="276,130 276,382 575.25,382"/>
+<polyline points="242,306 300,306 300,230 380,230"/>
+<polyline points="250,482 324,482 324,406 575.25,406"/>
+<polyline points="432,130 466,130 466,464 570,464"/>
+<polyline points="242,570 514,570 514,500 570,500"/>
+<polyline points="440,218 668,218 668,294 765.25,294"/>
+<polyline points="630,482 692,482 692,318 765.25,318"/>
+<polyline points="820,306 1150,306"/>
+<polyline points="924,306 924,470 955.25,470"/>
+<polyline points="640,394 1150,394"/>
+<polyline points="852,394 852,494 955.25,494"/>
+<polyline points="1020,482 1150,482"/>
+</g>
+<g fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5" stroke-linejoin="round">
+<path d="M 190,106 Q 204,130 190,154 C 216,152 236,144 250,130 C 236,116 216,108 190,106 Z"/>
+<path d="M 181,106 Q 195,130 181,154" fill="none"/>
+<path d="M 190,284 L 190,328 L 232,306 Z"/>
+<circle cx="237" cy="306" r="5" stroke-width="1.5"/>
+<path d="M 190,458 Q 204,482 190,506 C 216,504 236,496 250,482 C 236,468 216,460 190,458 Z"/>
+<path d="M 181,458 Q 195,482 181,506" fill="none"/>
+<path d="M 190,548 L 190,592 L 232,570 Z"/>
+<circle cx="237" cy="570" r="5" stroke-width="1.5"/>
+<path d="M 380,108 L 380,152 L 422,130 Z"/>
+<circle cx="427" cy="130" r="5" stroke-width="1.5"/>
+<path d="M 380,194 H 416 A 24,24 0 0 1 416,242 H 380 Z"/>
+<path d="M 570,370 Q 584,394 570,418 C 596,416 616,408 630,394 C 616,380 596,372 570,370 Z"/>
+<circle cx="635" cy="394" r="5" stroke-width="1.5"/>
+<path d="M 570,452 H 600 A 30,30 0 0 1 600,512 H 570 Z"/>
+<path d="M 760,282 Q 774,306 760,330 C 786,328 806,320 820,306 C 806,292 786,284 760,282 Z"/>
+<path d="M 950,458 Q 964,482 950,506 C 976,504 996,496 1010,482 C 996,468 976,460 950,458 Z"/>
+<circle cx="1015" cy="482" r="5" stroke-width="1.5"/>
+</g>
+<g fill="#1E293B">
+<circle cx="110" cy="118" r="3.5"/>
+<circle cx="88" cy="142" r="3.5"/>
+<circle cx="110" cy="470" r="3.5"/>
+<circle cx="88" cy="494" r="3.5"/>
+<circle cx="276" cy="130" r="3.5"/>
+<circle cx="924" cy="306" r="3.5"/>
+<circle cx="852" cy="394" r="3.5"/>
+</g>
+<g font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="46" y="56" font-size="20" fill="#1E293B" text-anchor="start" font-weight="600">2-bit Magnitude Comparator</text>
+<text x="46" y="80" font-size="11.5" fill="#64748B" text-anchor="start">ANSI / IEEE Std 91 distinctive-shape gates · signal flow left to right</text>
+<text x="54" y="122.5" font-size="13" fill="#1E293B" text-anchor="end">A1</text>
+<text x="54" y="146.5" font-size="13" fill="#1E293B" text-anchor="end">B1</text>
+<text x="54" y="474.5" font-size="13" fill="#1E293B" text-anchor="end">A0</text>
+<text x="54" y="498.5" font-size="13" fill="#1E293B" text-anchor="end">B0</text>
+<text x="1160" y="310.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">GT</text>
+<text x="1200" y="310.5" font-size="10" fill="#64748B" text-anchor="start">A &gt; B</text>
+<text x="1160" y="398.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">EQ</text>
+<text x="1200" y="398.5" font-size="10" fill="#64748B" text-anchor="start">A = B</text>
+<text x="1160" y="486.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">LT</text>
+<text x="1200" y="486.5" font-size="10" fill="#64748B" text-anchor="start">A &lt; B</text>
+<text x="54" y="168" font-size="10" fill="#64748B" text-anchor="end">MSB</text>
+<text x="54" y="520" font-size="10" fill="#64748B" text-anchor="end">LSB</text>
+<text x="300" y="123" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">d1</text>
+<text x="260" y="299" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">nB1</text>
+<text x="449" y="123" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">e1</text>
+<text x="560" y="211" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">g1</text>
+<text x="287" y="475" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">d0</text>
+<text x="380" y="563" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">nB0</text>
+<text x="661" y="475" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">g0</text>
+<text x="46" y="664" font-size="11.5" fill="#64748B" text-anchor="start">GT = A1·B1′ + (A1 XNOR B1)·A0·B0′</text>
+<text x="340" y="664" font-size="11.5" fill="#64748B" text-anchor="start">EQ = (A1 XNOR B1)·(A0 XNOR B0)</text>
+<text x="620" y="664" font-size="11.5" fill="#64748B" text-anchor="start">LT = (GT + EQ)′</text>
+<text x="1244" y="80" font-size="11.5" fill="#64748B" text-anchor="end">filled dot = junction · plain crossing = no connection</text>
+</g>
+</svg>

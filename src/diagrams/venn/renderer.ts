@@ -21,7 +21,7 @@ import {
   desc as descEl,
   path as pathEl,
 } from "../../core/svg";
-import { resolveVennTheme } from "../../core/theme";
+import { DEFAULT_FONT_FAMILY, resolveVennTheme } from "../../core/theme";
 import { parseVennDSL } from "./parser";
 import { layoutVenn } from "./layout";
 import { createSourceLocator } from "../../core/source-range";
@@ -47,14 +47,14 @@ function idSlug(id: string): string {
 
 function buildCss(tokens: ReturnType<typeof resolveVennTheme>): string {
   return `
-.schematex-venn { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-.schematex-venn-title { font: 600 16px sans-serif; fill: ${tokens.text}; }
-.schematex-venn-set { stroke: ${tokens.vennSetStroke}; stroke-width: 1.25; }
+.schematex-venn { font-family: ${DEFAULT_FONT_FAMILY}; }
+.schematex-venn-title { font-size: 16px; font-weight: 600; fill: ${tokens.text}; }
+.schematex-venn-set { stroke-width: 2; }
 .schematex-venn-blend-multiply { mix-blend-mode: multiply; }
 .schematex-venn-blend-screen { mix-blend-mode: screen; }
-.schematex-venn-setlabel { font: 600 13px sans-serif; fill: ${tokens.text}; }
-.schematex-venn-label { font: 500 12px sans-serif; fill: ${tokens.vennLabelColor}; dominant-baseline: central; text-anchor: middle; }
-.schematex-venn-label-external { font: 500 11px sans-serif; fill: ${tokens.vennLabelColor}; dominant-baseline: central; }
+.schematex-venn-setlabel { font-size: 13px; font-weight: 600; }
+.schematex-venn-label { font-size: 12px; font-weight: 500; fill: ${tokens.vennLabelColor}; dominant-baseline: central; }
+.schematex-venn-label-external { font-size: 12px; font-weight: 500; fill: ${tokens.vennLabelColor}; dominant-baseline: central; }
 .schematex-venn-leader { stroke: ${tokens.vennLeaderColor}; stroke-width: 0.7; fill: none; opacity: 0.8; }
 .schematex-venn-leader-dot { fill: ${tokens.vennLeaderColor}; }
 .schematex-venn-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; vector-effect: non-scaling-stroke; }
@@ -113,6 +113,7 @@ function renderShape(
   index: number,
   color: string,
   opacity: number,
+  stroke: string,
   setLabel: string,
   sceneKey?: string,
 ): string {
@@ -132,6 +133,7 @@ function renderShape(
           r: shape.r,
           class: classes,
           fill: color,
+          stroke,
           "fill-opacity": opacity,
           "data-set-id": idSlug(shape.id),
         }),
@@ -154,6 +156,7 @@ function renderShape(
         transform: `rotate(${shape.rotation} ${shape.cx} ${shape.cy})`,
         class: classes,
         fill: color,
+        stroke,
         "fill-opacity": opacity,
         "data-set-id": idSlug(shape.id),
       }),
@@ -243,13 +246,13 @@ export function renderVennLayout(
         "aria-label": `Resize set ${shape.id}`,
       }));
     }
-    return renderShape(shape, i, color, tokens.vennSetOpacity, ast.sets[i]?.label ?? shape.id, sceneKey);
+    return renderShape(shape, i, color, tokens.vennSetOpacity, options.theme === "monochrome" ? tokens.vennSetStroke : color, ast.sets[i]?.label ?? shape.id, sceneKey);
   });
 
   const shapesGroup = group(
     {
       class: `schematex-venn-shapes ${effectiveBlend !== "none" ? `schematex-venn-blend-${effectiveBlend}` : ""}`.trim(),
-      ...(effectiveBlend !== "none" ? { style: `mix-blend-mode: ${effectiveBlend}` } : {}),
+
     },
     shapeEls
   );
@@ -258,6 +261,7 @@ export function renderVennLayout(
   const setLabelEls = layout.setLabels.map((s) =>
     textEl(
       {
+        fill: ast.sets.find(set => set.id === s.id)?.color ?? colors[ast.sets.findIndex(set => set.id === s.id) % colors.length],
         x: s.x,
         y: s.y,
         class: "schematex-venn-setlabel",
@@ -274,16 +278,17 @@ export function renderVennLayout(
     const cls = label.external
       ? "schematex-venn-label schematex-venn-label-external"
       : "schematex-venn-label";
-    labelEls.push(
+    const lines = label.lines ?? [label.label];
+    for (const [index, line] of lines.entries()) labelEls.push(
       textEl(
         {
           x: label.x,
-          y: label.y,
+          y: label.y + (index - (lines.length - 1) / 2) * 14,
           class: cls,
           "text-anchor": label.anchor ?? "middle",
           "data-region": label.sets.join("-"),
         },
-        label.label
+        line
       )
     );
     if (label.external && label.leader) {

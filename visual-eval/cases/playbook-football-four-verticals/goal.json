@@ -1,0 +1,78 @@
+{
+  "id": "playbook-football-four-verticals",
+  "type": "playbook",
+  "variant": "football",
+  "title": "Four Verticals",
+  "goal": "A practitioner can read this play at a glance: Four Verticals.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/football exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents Four Verticals against a Cover 3 shell on 3rd & 9, with a spread formation, four readable vertical routes, and the RB releasing to the left flat. No material visible defect or misleading connection is present.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:13.874Z",
+      "targetHash": "72d9904ff443",
+      "sourceHash": "e61a60a3abeb",
+      "exemplarHash": "3ef95b8af407",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title visibly identifies “Four Verticals vs Cover 3,” and the field prominently shows the complete offensive and defensive setup."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "A standard football field diagram visibly includes labeled offense and defense symbols, formation alignment, route arrows, yard lines, and three deep coverage zones."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "X and Z run outside go routes, H and Y run inside seams, and the RB’s curved route visibly releases left into the flat."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Player labels, defender labels, deep-third labels, title, situation subtitle, and legend are readable and positioned with their corresponding elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Each route line is visually associated with its intended offensive player, and no line visibly connects to an unintended player or symbol."
+        }
+      ]
+    }
+  }
+}

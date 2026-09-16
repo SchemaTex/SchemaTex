@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-contemporaneous-time-tree",
+  "type": "phylo",
+  "variant": "rectangular",
+  "title": "Contemporaneous samples (mock)",
+  "goal": "Mock dataset (not empirical or user data). Read a time tree whose six samples share the same sampling time, with divergence distances supplied in months.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "time-alignment",
+      "severity": "blocker",
+      "must": "All six tips align because every root-to-tip duration is four months."
+    },
+    {
+      "id": "nested-ancestry",
+      "severity": "blocker",
+      "must": "A/B and D/E are sister pairs; C shares an ancestor with D/E, and F branches at the root."
+    },
+    {
+      "id": "time-scale",
+      "severity": "major",
+      "must": "The scale identifies months, and rectangular branches preserve time differences."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all six samples aligned at the same rightmost position. Its branching matches the source tree: A/B are sisters; C is sister to the D/E pair; and F branches at the root. The scale and subtitle identify months, and the rectangular branch lengths show the nested timing differences. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:25:55.693Z",
+      "targetHash": "49503966e86c",
+      "sourceHash": "07b8544a67db",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "time-alignment",
+          "verdict": "pass",
+          "evidence": "Sample A–F connect to label guides at the same horizontal position, consistent with equal four-month root-to-tip durations."
+        },
+        {
+          "id": "nested-ancestry",
+          "verdict": "pass",
+          "evidence": "A and B join as a pair; D and E join as a pair, with C joining that clade; F branches directly from the root."
+        },
+        {
+          "id": "time-scale",
+          "verdict": "pass",
+          "evidence": "The subtitle says branch durations are in months, the scale bar is labeled “1 month,” and the rectangular branches use differing horizontal lengths while tips remain aligned."
+        }
+      ]
+    }
+  }
+}

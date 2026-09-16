@@ -1,0 +1,41 @@
+{
+  "id": "welding-fillet-both-sides",
+  "type": "welding",
+  "variant": "aws",
+  "title": "Fillet Both Sides",
+  "goal": "A practitioner can read the fillet both sides artefact at a glance.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible AWS reference line, arrow, and weld symbol identify the joint."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The symbol placement visibly distinguishes the specified weld side or both sides."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent redraw using the AWS exemplar visual system and AWS official A2.4 symbol chart. Source dimensions and processes preserved; joint sketch is schematic, not fabrication geometry. Rendered and visually inspected against source and AWS exemplar: weld side, dimensions, supplementary marks, contour/finish separation, leader attachment and typography checked."
+  }
+}

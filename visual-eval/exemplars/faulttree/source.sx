@@ -1,0 +1,10 @@
+faulttree "Vessel ruptures"
+  analysis: cutsets, probability
+  prob: mcub
+  top TOP "Pressure vessel ruptures" = AND(OVP, RELIEF)
+  gate OVP    "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+  gate RELIEF "Both reliefs fail"        = VOTING(2/2; PRV_A, PRV_B)
+  basic PUMP  "Pump runaway"   p: 0.004
+  basic PRV_A "Relief A stuck" p: 0.02
+  basic PRV_B "Relief B stuck" p: 0.02
+  house HEATER "Heater energised" state: 1

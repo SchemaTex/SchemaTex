@@ -49,11 +49,11 @@ Entity structure 的核心是 **视觉上区分实体类型**。同一画面可�
 |-------------|-------|----------|---------|-----------|
 | **Corporation** (C-Corp, S-Corp, Inc., Ltd., SA, AG, KK) | 直角矩形 | `<rect>` 160×60, sharp corners | `#dbeafe` (蓝底) | `corp` |
 | **LLC** (Limited Liability Company, LLP, GmbH, BV) | 圆角矩形 | `<rect>` 160×60, rx=8 | `#dcfce7` (绿底) | `llc` |
-| **Limited Partnership** (LP, LLLP, Fund) | 带斜切角矩形 | `<polygon>` 切掉左上右上角 | `#fef9c3` (黄底) | `lp` |
+| **Limited Partnership** (LP, LLLP, Fund) | 宽三角形 | `<polygon>` 三角形，文字放在较宽的下半部 | `#fef3c7` (浅琥珀底) | `lp` |
 | **Trust** | 椭圆 | `<ellipse>` rx=100, ry=40 | `#ede9fe` (紫底) | `trust` |
 | **Individual / Natural Person** | 圆形 | `<circle>` r=30-35 | `#fed7aa` (橙底) | `individual` / `person` |
-| **Foundation / NPO** | 上指五边形（盾形） | `<polygon>` pentagon | `#fef9c3` (金底) | `foundation` |
-| **Disregarded Entity / Branch** | 虚线矩形 | `<rect>` + stroke-dasharray="5,3" | `#f5f5f5` (灰底) | `disregarded` / `branch` |
+| **Foundation / NPO** | 矩形 + Foundation 文字 | `<rect>`，保留声明的 nonprofit 身份 | `#dbeafe` (浅蓝底) | `foundation` |
+| **Disregarded Entity / Branch** | 矩形内嵌椭圆 | `<rect>` + inset `<ellipse>` | `#dcfce7` (浅绿底) | `disregarded` / `branch` |
 | **To-Be-Formed / Target** | 虚线边框 + 半透明 | `<rect>` + stroke-dasharray + opacity 0.6 | 原色 + alpha | `placeholder` / `tbf` |
 | **Reserved Pool** (ESOP, option pool) | 虚线圆角矩形 | `<rect>` rx=6 + stroke-dasharray | `#f1f5f9` (灰底) | `pool` |
 
@@ -61,9 +61,9 @@ Entity structure 的核心是 **视觉上区分实体类型**。同一画面可�
 
 每个 entity 节点包含：
 - **Shape**（见上表）
-- **Entity name**（12px, 600 weight, centered）
-- **Entity type label**（10px, 500 weight, centered below name）
-- **Jurisdiction badge**（2-letter ISO 3166-1 alpha-2, 9px, 右上角 18×12 带边框）
+- **Entity name**（13px, 600 weight, centered, measured wrapping）
+- **Entity type label**（11px, centered below name）
+- **Jurisdiction**（保留来源代码，与类型并列显示在次级文字中）
 - **Tax classification label**（可选，10px, 左下角）
 - **Issuance/formation date**（可选，italic, 10px）
 
@@ -142,14 +142,14 @@ entity esop "ESOP Pool" pool [note: "reserved, unissued"]
 
 | Edge Type | Line Style | Arrow | DSL Syntax | 含义 |
 |-----------|-----------|-------|-----------|------|
-| **Ownership** (标准股权) | 实线 (1.5px) | End arrow | `parent -> child : 100%` | 持股，默认 |
-| **Preferred / Special class** | 实线蓝色 | End arrow | `vc -> acme : 20% [class: "Series A Pref"]` | 优先股 |
+| **Ownership** (标准股权) | 实线 (1.5px) | 无箭头 | `parent -> child : 100%` | 持股，默认 |
+| **Preferred / Special class** | 蓝色线 | 无箭头 | `vc -> acme : 20% [class: "Series A Pref"]` | 优先股 |
 | **Option Pool** | 虚线灰色 | End arrow | `esop -.-> acme : 10%` | 预留期权池 |
-| **IP / Service License** | 紫色虚线 | End arrow | `ip -~-> opco [label: "IP License"]` | 非股权关系 |
-| **Management / Trustee role** | 紫色虚线 | End arrow | `trustee -~-> trust [label: "Manages"]` | 非所有权角色 |
-| **Distribution** (trust → beneficiary) | 绿色虚线 | End arrow | `trust --> beneficiary [label: "Distributions"]` | 资金/资产分配 |
+| **IP / Service License** | 灰色虚线 | End arrow | `ip -~-> opco [label: "IP License"]` | 非股权关系 |
+| **Management / Trustee role** | 灰色虚线 | End arrow | `trustee -~-> trust [label: "Manages"]` | 非所有权角色 |
+| **Distribution** (trust → beneficiary) | 棕色点线 | End arrow | `trust --> beneficiary [label: "Distributions"]` | 资金/资产分配 |
 | **Settlement** (grantor → trust) | 实线 | End arrow | `grantor -> trust [label: "Settles"]` | 设立、注资 |
-| **Voting-only control** | 双线 | End arrow | `ctrl ==> target : V 100% / E 0%` | 仅投票权 |
+| **Voting-only control** | 蓝色虚线 | End arrow | `ctrl ==> target : V 100% / E 0%` | 仅投票权 |
 
 ### 4.2 Ownership Percentage Labels
 
@@ -184,13 +184,15 @@ entity esop "ESOP Pool" pool [note: "reserved, unissued"]
 
 ### 4.4 Edge Label Rendering
 
-- 位置：在 branch 水平段中心，上方 2px 处
-- 背景：白色 fill，轻 muted stroke（防止与 edge 重叠时不可读）
-- 字体：10px, 600 weight（主）/ 9px, 500 weight（sub label，如 share class）
-- 圆角：rx=2-3
-- Padding: 水平 4px, 垂直 2px
+文字位于水平线的上方或垂直线的侧面，避开实体、其他标签和连线。11px semibold，长关系说明自动换行；不再使用遮断连线的白底边框标签。
 
----
+### 4.5 Implemented visual contract (2026-09-15)
+
+Entity 名称使用 13px semibold，类型、jurisdiction、role、note 和成立日期在形状内使用 11px 次级文字；长名称测量后换行，形状和层间距随内容增长。Individual 保留圆形和外部姓名。采用 Inter / Helvetica Neue 字体栈。
+
+Corporation 为蓝色矩形、LP 为浅琥珀三角形、trust 为淡紫椭圆、disregarded entity 为绿色矩形内嵌椭圆。普通 LLC 只声明法律形式，保持圆角矩形；不推断其税务分类。Monochrome/dark 使用相应主题背景和描边。
+
+Ownership 无箭头，同一股东的子公司可以共享分支；多个股东分开接入，LP 在顶点汇合。非所有权关系使用独立侧面 ports、虚线/点线与箭头。引擎复用已有 orthogonal router，避开节点，并将连线与标签纳入画布范围。所有规则按关系语义和几何计算；无案例名称、target 坐标或 DSL 位置补丁。
 
 ## 5. Jurisdiction Cluster (Optional)
 
@@ -268,7 +270,7 @@ parent -> changed : was 50% -> 100%
 1. **Topological sort** — 按所有权方向（parent → child）拓扑排序所有 entity；无环（所有权环由 Cross-ownership 专门处理，见 7.4）
 2. **Tier 分配** — 每个 entity 的 tier = max(所有 parent 的 tier) + 1
 3. **同 tier 水平居中** — 同 tier 内的 entity 按首次出现顺序从左到右排列，居中对齐
-4. **Tier 间垂直间距** — 默认 130px（层间给足空间画 ownership % 标签）
+4. **Tier 间垂直间距** — 由内容决定：下一层的顶边 = 本层最高那个 box 的底边 + 110px。box 变高，整层跟着往下推，ownership % 标签永远有地方放。
 
 ### 7.2 Width Calculation
 
@@ -390,7 +392,7 @@ blocker -> intl : 100%
 ```
 
 **验证要点：**
-- LP 节点呈现斜切角矩形（区别于 Corp 直角、LLC 圆角）
+- LP 节点呈现宽三角形（区别于 Corp 直角、LLC 圆角）
 - 所有节点带 "DE" jurisdiction badge
 - 3 个 children 从 Blocker 的同一 branch bar 分叉
 - 每个 edge 带 "100%" 标签
@@ -420,7 +422,7 @@ esop -.-> acme : 10% [class: "Option Pool"]
 - 5 个 source 位于同一 tier（顶层）
 - Individual 渲染为圆形 + 下方姓名 + 角色标签
 - ESOP 为虚线圆角矩形（灰色填充）
-- VC (LP) 为斜切角矩形
+- VC (LP) 为宽三角形
 - Series A Pref 的 edge 和 label 为蓝色加粗（区别普通股）
 - Option Pool 的 edge 为虚线
 - 所有 edge 汇聚到底层 C-Corp
@@ -460,7 +462,7 @@ ie-ip -~-> nl-bv [label: "IP License · royalty"]
 **验证要点：**
 - US / Ireland-Cayman / Singapore 3 个 cluster 用虚线框包围，不同颜色
 - 每个 entity 带正确 jurisdiction badge（DE / IE / SG / KY / NL）
-- IP License 边为紫色虚线（区别所有权边的黑色实线）
+- IP License 边为灰色虚线（区别所有权边的黑色实线）
 - 3 tier 层级清晰，父子关系正确
 
 ### Case 4: 家族信托架构（Grantor + Trust + Trustee + Beneficiaries + Asset LLCs）
@@ -556,7 +558,7 @@ mergesub -> newtarget : was 40% -> 100%
 | P1 | Share class label on edge | Low |
 | P1 | Test case 3 SVG（跨境 + cluster） | — |
 | P1 | V / E split 百分比渲染 | Low |
-| P2 | Disregarded entity 虚线矩形 | Low |
+| P2 | Disregarded entity 矩形内嵌椭圆 | Low |
 | P2 | Foundation pentagon | Low |
 | P2 | Pool (ESOP) 虚线圆角矩形 | Low |
 | P2 | Pre/Post transaction 差异标注（new/eliminated/modified） | Medium |

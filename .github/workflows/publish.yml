@@ -51,12 +51,8 @@ jobs:
             echo "should_publish=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # `prepublishOnly` (build + typecheck) runs automatically inside
-      # `npm publish`, so it is the gate — a build/type error can't ship.
-      # NOTE: the full `npm test` is deliberately NOT in the gate yet: the P&ID
-      # suite (tests/pid/) has known-failing cases tracked in
-      # docs/issues/06-pid-layout-quality.md. Add `npm test` to prepublishOnly
-      # once those are green (or carved out) to gate on tests too.
+      # `prepublishOnly` (build + typecheck + test) runs automatically inside
+      # `npm publish`, so it is the gate — a build/type/test error can't ship.
       - name: Publish to npm
         if: steps.check.outputs.should_publish == 'true'
         run: npm publish --access public

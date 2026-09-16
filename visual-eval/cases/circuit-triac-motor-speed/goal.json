@@ -1,0 +1,44 @@
+{
+  "id": "circuit-triac-motor-speed",
+  "type": "circuit",
+  "title": "TRIAC motor speed controller",
+  "goal": "A reader must be able to follow the fused live path through the TRIAC to the motor and understand the DIAC RC firing network.",
+  "rubric": [
+    {
+      "id": "live-neutral-labelled",
+      "severity": "blocker",
+      "must": "The 230 V AC source has clearly distinct LIVE and NEUTRAL connections."
+    },
+    {
+      "id": "fuse-in-live-path",
+      "severity": "blocker",
+      "must": "A labelled 2 A slow-blow fuse is visibly in series with the live conductor before the TRIAC."
+    },
+    {
+      "id": "triac-controls-motor",
+      "severity": "blocker",
+      "must": "A labelled BT136 TRIAC is visibly between the fused live path and the labelled AC motor."
+    },
+    {
+      "id": "diac-trigger-visible",
+      "severity": "major",
+      "must": "A labelled DB3 DIAC is connected to the TRIAC gate."
+    },
+    {
+      "id": "phase-shift-network",
+      "severity": "major",
+      "must": "The trigger circuit visibly includes a 220 kΩ resistor, 470 kΩ speed potentiometer, and 100 nF X2 capacitor."
+    },
+    {
+      "id": "snubber-across-switch",
+      "severity": "major",
+      "must": "A labelled 100 Ω resistor and 47 nF X2 capacitor form a snubber path around the TRIAC."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Visually reviewed against the circuit exemplar. Corrected the actual SVG to match the current source: R2 is in series from D1 to the TRIAC gate; removed the stale, undeclared W1 bypass and GATE_R annotation. Other topology and component values are preserved."
+  }
+}

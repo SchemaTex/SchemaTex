@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1050" viewBox="0 0 1500 1050">
+  <title>Online Banking — Retail Banking Portal use cases</title>
+  <defs>
+    <marker id="open" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#263238" stroke-width="1.8"/></marker>
+    <marker id="generalization" markerWidth="22" markerHeight="20" refX="21" refY="10" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L21 10 L1 19 Z" fill="white" stroke="#263238" stroke-width="1.8"/></marker>
+    <style>
+      text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #202b33; font-size: 20px; }
+      .line { fill:none; stroke:#263238; stroke-width:2; }
+      .dependency { fill:none; stroke:#263238; stroke-width:2; stroke-dasharray:9 6; marker-end:url(#open); }
+      .usecase { fill:white; stroke:#263238; stroke-width:2; }
+      .label { text-anchor:middle; }
+      .small { font-size:18px; }
+    </style>
+  </defs>
+  <rect width="1500" height="1050" fill="white"/>
+  <text x="750" y="55" text-anchor="middle" font-size="32" font-weight="600">Online Banking</text>
+  <!-- Subject boundary -->
+  <rect x="295" y="90" width="935" height="910" rx="0" fill="white" stroke="#263238" stroke-width="2"/>
+  <text x="320" y="127" font-size="24" font-weight="600">Retail Banking Portal</text>
+  <!-- Customer and specialization -->
+  <g class="line">
+    <circle cx="140" cy="260" r="20"/>
+    <path d="M140 280 V343 M106 305 H174 M140 343 L111 388 M140 343 L169 388"/>
+    <circle cx="140" cy="666" r="20"/>
+    <path d="M140 686 V749 M106 711 H174 M140 749 L111 794 M140 749 L169 794"/>
+    <path d="M140 646 V446" marker-end="url(#generalization)"/>
+  </g>
+  <text x="140" y="422" class="label">Customer</text>
+  <text x="140" y="830" class="label">Premium Customer</text>
+  <!-- Customer associations: shared orthogonal route -->
+  <path class="line" d="M174 305 H240 V220 H345 M240 305 V485 H340 M240 485 V830 H345"/>
+  <!-- Banking services -->
+  <ellipse class="usecase" cx="485" cy="220" rx="140" ry="49"/>
+  <text x="485" y="227" class="label">View Accounts</text>
+  <ellipse class="usecase" cx="495" cy="485" rx="155" ry="93"/>
+  <text x="495" y="450" class="label" font-weight="600">Transfer Funds</text>
+  <path class="line" d="M351 469 H639"/>
+  <text x="495" y="499" class="label small" font-weight="600">extension points</text>
+  <text x="495" y="529" class="label small">suspicious transfer</text>
+  <ellipse class="usecase" cx="485" cy="830" rx="140" ry="49"/>
+  <text x="485" y="837" class="label">Download Statement</text>
+  <!-- Included reusable controls -->
+  <ellipse class="usecase" cx="1000" cy="260" rx="166" ry="49"/>
+  <text x="1000" y="267" class="label">Authenticate Customer</text>
+  <ellipse class="usecase" cx="1000" cy="430" rx="145" ry="49"/>
+  <text x="1000" y="437" class="label">Validate Payee</text>
+  <ellipse class="usecase" cx="1000" cy="600" rx="145" ry="49"/>
+  <text x="1000" y="607" class="label">Approve Transfer</text>
+  <path class="dependency" d="M613 425 H705 V260 H834"/>
+  <text x="767" y="243" class="label small">«include»</text>
+  <path class="dependency" d="M647 469 H770 V430 H855"/>
+  <text x="708" y="455" class="label small">«include»</text>
+  <path class="dependency" d="M638 520 H705 V600 H855"/>
+  <text x="782" y="584" class="label small">«include»</text>
+  <!-- Conditional extension, directed toward its base use case -->
+  <ellipse class="usecase" cx="1000" cy="880" rx="177" ry="60"/>
+  <text x="1000" y="873" class="label">Review Suspicious</text>
+  <text x="1000" y="900" class="label">Transfer</text>
+  <path class="dependency" d="M823 880 H670 V675 H495 V578"/>
+  <text x="692" y="717" class="small">«extend»</text>
+  <text x="692" y="746" class="small">[risk score high]</text>
+  <text x="692" y="775" class="small">extension point: suspicious transfer</text>
+  <!-- External system actors, outside the subject -->
+  <path class="line" d="M1145 600 H1270"/>
+  <rect x="1270" y="553" width="200" height="94" fill="white" stroke="#263238" stroke-width="2"/>
+  <text x="1370" y="581" class="label small">«external system»</text>
+  <text x="1370" y="617" class="label">Core Banking</text>
+  <path class="line" d="M1177 880 H1270"/>
+  <rect x="1270" y="833" width="200" height="94" fill="white" stroke="#263238" stroke-width="2"/>
+  <text x="1370" y="861" class="label small">«external system»</text>
+  <text x="1370" y="897" class="label">Fraud Service</text>
+</svg>

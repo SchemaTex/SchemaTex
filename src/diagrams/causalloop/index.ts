@@ -1,10 +1,11 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseCausalLoop } from "./parser";
 import { renderCausalLoop } from "./renderer";
 
 export const causalloop: DiagramPlugin = {
   type: "causalloop" as DiagramPlugin["type"],
-  detect: (t) => /^\s*(causalloop|cld)\b/i.test(t),
+  detect: (t) => /^\s*(causalloop|cld)\b/i.test(firstContentLine(t) ?? ""),
   parse: parseCausalLoop,
   render: (text, config?: RenderConfig) => renderCausalLoop(text, config),
 };

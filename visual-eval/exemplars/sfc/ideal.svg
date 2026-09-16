@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="808" viewBox="0 0 1060 808" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Bake and cool concurrently — IEC 61131-3 SFC</title><rect width="1060" height="808" fill="#FFFFFF"/>
+<text x="48" y="50" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Bake and cool concurrently</text>
+<text x="48" y="76" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Batch oven sequence  ·  IEC 61131-3 sequential function chart</text>
+<line x1="422" y1="128" x2="518" y2="128" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="128" x2="518" y2="172" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="172" x2="422" y2="172" stroke="#20272B" stroke-width="2"/>
+<line x1="422" y1="172" x2="422" y2="128" stroke="#20272B" stroke-width="2"/>
+<line x1="427" y1="133" x2="513" y2="133" stroke="#20272B" stroke-width="1.5"/>
+<line x1="513" y1="133" x2="513" y2="167" stroke="#20272B" stroke-width="1.5"/>
+<line x1="513" y1="167" x2="427" y2="167" stroke="#20272B" stroke-width="1.5"/>
+<line x1="427" y1="167" x2="427" y2="133" stroke="#20272B" stroke-width="1.5"/>
+<text x="470" y="155" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">S0</text>
+<line x1="470" y1="172" x2="470" y2="244" stroke="#20272B" stroke-width="1.5"/>
+<line x1="450" y1="208" x2="490" y2="208" stroke="#20272B" stroke-width="4"/>
+<text x="502" y="213" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">BakeReady</text>
+<line x1="422" y1="244" x2="518" y2="244" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="244" x2="518" y2="288" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="288" x2="422" y2="288" stroke="#20272B" stroke-width="2"/>
+<line x1="422" y1="288" x2="422" y2="244" stroke="#20272B" stroke-width="2"/>
+<text x="470" y="271" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">S_Heat</text>
+<line x1="518" y1="266" x2="542" y2="266" stroke="#20272B" stroke-width="1.5"/>
+<line x1="542" y1="244" x2="728" y2="244" stroke="#20272B" stroke-width="1.5"/>
+<line x1="728" y1="244" x2="728" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="728" y1="288" x2="542" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="542" y1="288" x2="542" y2="244" stroke="#20272B" stroke-width="1.5"/>
+<line x1="578" y1="244" x2="578" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<text x="560" y="271" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="588" y="271" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Heater_On</text>
+<line x1="470" y1="288" x2="470" y2="352" stroke="#20272B" stroke-width="1.5"/>
+<line x1="450" y1="320" x2="490" y2="320" stroke="#20272B" stroke-width="4"/>
+<text x="502" y="325" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">HeatDone</text>
+<line x1="230" y1="352" x2="710" y2="352" stroke="#20272B" stroke-width="1.5"/>
+<line x1="230" y1="357" x2="710" y2="357" stroke="#20272B" stroke-width="1.5"/>
+<line x1="250" y1="357" x2="250" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="250" y1="444" x2="250" y2="500" stroke="#20272B" stroke-width="1.5"/>
+<line x1="690" y1="357" x2="690" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="690" y1="444" x2="690" y2="500" stroke="#20272B" stroke-width="1.5"/>
+<line x1="202" y1="400" x2="298" y2="400" stroke="#20272B" stroke-width="2"/>
+<line x1="298" y1="400" x2="298" y2="444" stroke="#20272B" stroke-width="2"/>
+<line x1="298" y1="444" x2="202" y2="444" stroke="#20272B" stroke-width="2"/>
+<line x1="202" y1="444" x2="202" y2="400" stroke="#20272B" stroke-width="2"/>
+<text x="250" y="427" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">S_Bake</text>
+<line x1="298" y1="422" x2="322" y2="422" stroke="#20272B" stroke-width="1.5"/>
+<line x1="322" y1="400" x2="580" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="580" y1="400" x2="580" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<line x1="580" y1="444" x2="322" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<line x1="322" y1="444" x2="322" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="358" y1="400" x2="358" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<text x="340" y="427" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">D</text>
+<text x="368" y="427" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Oven_Run</text>
+<line x1="508" y1="400" x2="508" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<text x="544" y="427" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#15m</text>
+<line x1="642" y1="400" x2="738" y2="400" stroke="#20272B" stroke-width="2"/>
+<line x1="738" y1="400" x2="738" y2="444" stroke="#20272B" stroke-width="2"/>
+<line x1="738" y1="444" x2="642" y2="444" stroke="#20272B" stroke-width="2"/>
+<line x1="642" y1="444" x2="642" y2="400" stroke="#20272B" stroke-width="2"/>
+<text x="690" y="427" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">S_Cool</text>
+<line x1="738" y1="422" x2="762" y2="422" stroke="#20272B" stroke-width="1.5"/>
+<line x1="762" y1="400" x2="1020" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1020" y1="400" x2="1020" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1020" y1="444" x2="762" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<line x1="762" y1="444" x2="762" y2="400" stroke="#20272B" stroke-width="1.5"/>
+<line x1="798" y1="400" x2="798" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<text x="780" y="427" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">L</text>
+<text x="808" y="427" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Cooler_On</text>
+<line x1="948" y1="400" x2="948" y2="444" stroke="#20272B" stroke-width="1.5"/>
+<text x="984" y="427" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#5m</text>
+<line x1="230" y1="500" x2="710" y2="500" stroke="#20272B" stroke-width="1.5"/>
+<line x1="230" y1="505" x2="710" y2="505" stroke="#20272B" stroke-width="1.5"/>
+<line x1="470" y1="505" x2="470" y2="580" stroke="#20272B" stroke-width="1.5"/>
+<line x1="450" y1="542" x2="490" y2="542" stroke="#20272B" stroke-width="4"/>
+<text x="502" y="547" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Bake_Done AND Cool_Done</text>
+<line x1="422" y1="580" x2="518" y2="580" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="580" x2="518" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="518" y1="624" x2="422" y2="624" stroke="#20272B" stroke-width="2"/>
+<line x1="422" y1="624" x2="422" y2="580" stroke="#20272B" stroke-width="2"/>
+<text x="470" y="607" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">S_Done</text>
+<line x1="518" y1="602" x2="542" y2="602" stroke="#20272B" stroke-width="1.5"/>
+<line x1="542" y1="580" x2="728" y2="580" stroke="#20272B" stroke-width="1.5"/>
+<line x1="728" y1="580" x2="728" y2="624" stroke="#20272B" stroke-width="1.5"/>
+<line x1="728" y1="624" x2="542" y2="624" stroke="#20272B" stroke-width="1.5"/>
+<line x1="542" y1="624" x2="542" y2="580" stroke="#20272B" stroke-width="1.5"/>
+<line x1="578" y1="580" x2="578" y2="624" stroke="#20272B" stroke-width="1.5"/>
+<text x="560" y="607" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="588" y="607" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">AnnounceDone</text>
+<line x1="470" y1="624" x2="470" y2="700" stroke="#20272B" stroke-width="1.5"/>
+<line x1="450" y1="660" x2="490" y2="660" stroke="#20272B" stroke-width="4"/>
+<text x="502" y="665" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">NOT BakeReady</text>
+<line x1="470" y1="700" x2="110" y2="700" stroke="#20272B" stroke-width="1.5"/>
+<line x1="110" y1="700" x2="110" y2="100" stroke="#20272B" stroke-width="1.5"/>
+<line x1="110" y1="100" x2="470" y2="100" stroke="#20272B" stroke-width="1.5"/>
+<line x1="470" y1="100" x2="470" y2="128" stroke="#20272B" stroke-width="1.5"/>
+<polygon points="110,392 104,408 116,408" fill="#20272B"/>
+<line x1="48" y1="740" x2="1012" y2="740" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="766" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Double outline: initial step.  Thick bar: transition, condition to its right.  Double line: branches run simultaneously.</text>
+<text x="48" y="784" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Action qualifiers: N while the step is active,  D delayed by the time shown,  L limited to the time shown.</text>
+</svg>

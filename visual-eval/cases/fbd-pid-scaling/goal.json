@@ -1,0 +1,40 @@
+{
+  "id": "fbd-pid-scaling",
+  "type": "fbd",
+  "title": "PID level input scaling",
+  "goal": "A practitioner can read this function block program at a glance: PID level input scaling.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/fbd/ideal.svg (sha256 ece5543b92c9). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Independent IEC network composition, full source expressions and literal values retained."
+  }
+}

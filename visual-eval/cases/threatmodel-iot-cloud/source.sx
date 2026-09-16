@@ -1,0 +1,17 @@
+# STRIDE DFD: an IoT thermostat communicates through an untrusted home network to cloud services and telemetry storage.
+threatmodel "IoT Cloud Backend STRIDE"
+external Device: Smart Thermostat
+external Owner: Homeowner App
+process Gateway: IoT Cloud Gateway
+process Control: Device Control Service
+datastore Telemetry: Telemetry Store
+datastore Audit: Device Audit Log
+Device -> Gateway : MQTT telemetry
+Owner -> Gateway : control request
+Gateway -> Control : authenticated command
+Control -> Device : device command
+Gateway -> Telemetry : readings
+Control -> Audit : command audit
+boundary "Home Internet" { Device, Owner }
+boundary "Cloud Edge" { Gateway }
+boundary "Cloud Internal" { Control, Telemetry, Audit }

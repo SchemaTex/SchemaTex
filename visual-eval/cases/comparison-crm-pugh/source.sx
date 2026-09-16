@@ -1,0 +1,23 @@
+# Scenario: sales operations chooses a CRM against the incumbent datum; Salesforce should win.
+comparison "CRM vendor Pugh selection"
+mode: decision
+baseline: "HubSpot"
+option "HubSpot"
+option "Salesforce"
+option "Zoho CRM"
+criterion "Enterprise workflow fit" weight: 5
+  HubSpot: 3
+  Salesforce: 5
+  Zoho CRM: 3
+criterion "Sales-team adoption" weight: 4
+  HubSpot: 5
+  Salesforce: 4
+  Zoho CRM: 3
+criterion "Integration ecosystem" weight: 4
+  HubSpot: 3
+  Salesforce: 5
+  Zoho CRM: 3
+criterion "Annual cost" weight: 2
+  HubSpot: 4
+  Salesforce: 2
+  Zoho CRM: 5

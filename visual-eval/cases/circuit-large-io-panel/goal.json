@@ -1,0 +1,49 @@
+{
+  "id": "circuit-large-io-panel",
+  "type": "circuit",
+  "title": "Large I O relay panel",
+  "goal": "A reader must be able to map sixteen numbered terminals through eight inputs to eight relay outputs and their status lamps.",
+  "rubric": [
+    {
+      "id": "sixteen-terminal-strip",
+      "severity": "blocker",
+      "must": "A terminal strip visibly shows terminals numbered 1 through 16."
+    },
+    {
+      "id": "eight-input-switches",
+      "severity": "blocker",
+      "must": "Eight separate input switches labelled INPUT 1 through INPUT 8 are visible."
+    },
+    {
+      "id": "eight-relay-coils",
+      "severity": "blocker",
+      "must": "Eight distinct 24 VDC relay coils labelled OUTPUT 1 through OUTPUT 8 are visible."
+    },
+    {
+      "id": "eight-status-lamps",
+      "severity": "major",
+      "must": "Eight green pilot lights labelled OUT 1 through OUT 8 are visible."
+    },
+    {
+      "id": "eight-output-contacts",
+      "severity": "major",
+      "must": "Eight normally open relay contacts labelled K1 CONTACT through K8 CONTACT are visible."
+    },
+    {
+      "id": "shared-protection",
+      "severity": "major",
+      "must": "A shared 24 VDC 10 A supply feeds all channels through one clearly labelled 5 A main fuse."
+    },
+    {
+      "id": "scale-readability",
+      "severity": "minor",
+      "must": "The complete panel remains legible with no component symbols or reference labels overlapping."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Sixty components stay readable because the eight identical channels become eight equal rows, the terminal block is a single numbered column with inputs on one side and outputs on the other, and a terminal map closes the sheet. This is the target for layout at scale."
+  }
+}

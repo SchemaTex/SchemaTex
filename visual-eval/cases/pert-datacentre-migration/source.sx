@@ -1,0 +1,20 @@
+%% Context: Data-centre migration plan sequenced through readiness, migration waves, and cutover.
+pert
+title: "Data-centre Migration"
+unit: days
+direction: LR
+layout: network
+
+task A "Migration kickoff" milestone
+task B "Inventory applications" duration: 6 after: A
+task C "Build target network" duration: 8 after: A
+task D "Provision target platform" duration: 10 after: C
+task E "Complete backup validation" duration: 4 after: B
+task F "Pilot migration wave" duration: 3 after: D, E
+task G "Validate pilot" duration: 2 after: F
+task H "Wave 1 migration" duration: 4 after: G
+task I "Wave 2 migration" duration: 4 after: H
+task J "Wave 3 migration" duration: 4 after: I
+task K "Business readiness sign-off" milestone after: B, G
+task L "Cutover" milestone after: J, K
+task M "Decommission legacy" duration: 3 after: L

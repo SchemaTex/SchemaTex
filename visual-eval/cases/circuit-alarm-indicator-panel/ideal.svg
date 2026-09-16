@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="950" viewBox="0 0 1500 950">
+<title>Supervised Alarm Indicator Panel — 24 VDC circuit</title>
+<rect width="1500" height="950" fill="white"/>
+<defs>
+<style>
+wire{fill:none} .w{fill:none;stroke:#17232c;stroke-width:3;stroke-linecap:round;stroke-linejoin:round} .s{fill:white;stroke:#17232c;stroke-width:3} .dot{fill:#17232c} text{font-family:Helvetica,Arial,sans-serif;fill:#17232c;font-size:21px} .small{font-size:17px;fill:#53616b} .label{font-weight:bold;font-size:23px} .node{font-size:16px;fill:#53616b;letter-spacing:1px}
+</style>
+</defs>
+<text x="60" y="60" font-size="34" font-weight="bold">SUPERVISED ALARM INDICATOR PANEL</text>
+<text x="60" y="95" class="small">24 VDC • Normally closed sensor loop • Contacts shown with relay de-energized</text>
+<!-- Supply and common return -->
+<path class="w" d="M160 210H340 M160 210V465 M160 555V820H1370 M1370 470V820"/>
+<circle class="s" cx="160" cy="510" r="45"/>
+<path class="w" d="M151 489H169 M160 480V498 M151 531H169"/>
+<text x="60" y="610" class="label">PS1 24 VDC</text>
+<text x="60" y="640">V1 · 24 V DC</text>
+<text x="180" y="193" class="node">L24 (+)</text>
+<text x="180" y="851" class="node">COM (0 V)</text>
+<!-- Fused NC series sensor string -->
+<rect class="s" x="340" y="196" width="80" height="28"/>
+<path class="w" d="M340 210H420 M420 210H520"/>
+<text x="380" y="143" text-anchor="middle" class="label">F1</text>
+<text x="380" y="174" text-anchor="middle">500 mA</text>
+<text x="463" y="244" class="node">SAFE</text>
+<!-- NC switches: closed blade, vertical mechanical actuator -->
+<circle class="s" cx="520" cy="210" r="5"/><circle class="s" cx="600" cy="210" r="5"/>
+<path class="w" d="M525 210H595 M560 210V181 M548 181H572 M600 210H770"/>
+<text x="560" y="143" text-anchor="middle" class="label">S1 DOOR</text>
+<text x="560" y="270" text-anchor="middle">NC</text>
+<text x="659" y="244" class="node">ZONE2</text>
+<circle class="s" cx="770" cy="210" r="5"/><circle class="s" cx="850" cy="210" r="5"/>
+<path class="w" d="M775 210H845 M810 210V181 M798 181H822 M850 210H1020"/>
+<text x="810" y="143" text-anchor="middle" class="label">S2 WINDOW</text>
+<text x="810" y="270" text-anchor="middle">NC</text>
+<text x="909" y="244" class="node">ZONE3</text>
+<circle class="s" cx="1020" cy="210" r="5"/><circle class="s" cx="1100" cy="210" r="5"/>
+<path class="w" d="M1025 210H1095 M1060 210V181 M1048 181H1072 M1100 210H1370 M1190 210V340 M1370 210V340"/>
+<text x="1060" y="143" text-anchor="middle" class="label">S3 SMOKE</text>
+<text x="1060" y="270" text-anchor="middle">NC</text>
+<text x="1230" y="192" class="node">LOOP</text>
+<!-- Healthy lamp -->
+<circle cx="1190" cy="370" r="30" fill="#d8f1df" stroke="#17232c" stroke-width="3"/>
+<path class="w" d="M1169 349L1211 391 M1169 391L1211 349 M1190 400V470H1370"/>
+<text x="1145" y="324" text-anchor="end" class="label">H1 HEALTHY</text>
+<text x="1145" y="354" text-anchor="end">Green · 24 VDC</text>
+<!-- Relay coil -->
+<rect class="s" x="1345" y="340" width="50" height="60"/>
+<path class="w" d="M1345 400L1395 340 M1370 400V470"/>
+<text x="1398" y="330" text-anchor="end" class="label">K1</text>
+<text x="1405" y="510" text-anchor="end" class="label">K1 ALARM RELAY</text>
+<text x="1405" y="539" text-anchor="end">24 VDC</text>
+<!-- Alarm power rung, linked by K1 designation -->
+<path class="w" d="M160 310H270V580H370 M450 580H1090 M650 580V650 M870 580V650 M1090 580V665"/>
+<circle class="s" cx="370" cy="580" r="5"/><circle class="s" cx="450" cy="580" r="5"/>
+<path class="w" d="M375 580H445 M410 580V557"/>
+<text x="410" y="490" text-anchor="middle" class="label">K1 NC</text>
+<text x="410" y="520" text-anchor="middle">K1A · alarm contact</text>
+<text x="490" y="607" class="node">ALARM</text>
+<!-- Buzzer -->
+<path class="s" d="M620 695V680 A30 30 0 0 1 680 680V695Z"/>
+<path class="w" d="M650 650V650 M638 705H662 M650 705V820 M690 665Q704 680 690 695 M703 655Q724 680 703 705"/>
+<text x="650" y="750" text-anchor="middle" class="label">B1 BUZZER</text>
+<text x="650" y="780" text-anchor="middle">24 VDC · 85 dB</text>
+<!-- Red alarm lamp -->
+<circle cx="870" cy="680" r="30" fill="#fbdcda" stroke="#17232c" stroke-width="3"/>
+<path class="w" d="M849 659L891 701 M849 701L891 659 M870 710V820"/>
+<text x="870" y="750" text-anchor="middle" class="label">H2 ALARM</text>
+<text x="870" y="780" text-anchor="middle">Red · 24 VDC</text>
+<!-- NO reset pushbutton, exactly across ALARM and COM -->
+<circle class="s" cx="1090" cy="665" r="5"/><circle class="s" cx="1090" cy="710" r="5"/>
+<path class="w" d="M1090 705L1116 668 M1110 687H1135 M1135 674V700 M1090 715V820"/>
+<text x="1125" y="750" text-anchor="middle" class="label">S4 RESET</text>
+<text x="1125" y="780" text-anchor="middle">NO pushbutton</text>
+<!-- Junctions -->
+<g class="dot"><circle cx="160" cy="310" r="5"/><circle cx="1190" cy="210" r="5"/><circle cx="1370" cy="470" r="5"/><circle cx="650" cy="580" r="5"/><circle cx="870" cy="580" r="5"/><circle cx="650" cy="820" r="5"/><circle cx="870" cy="820" r="5"/><circle cx="1090" cy="820" r="5"/></g>
+<path d="M60 882H1440" stroke="#ced5da"/>
+<text x="60" y="916" class="small">Intact loop: H1 green and K1 energized. Open sensor: K1 releases; K1 NC closes to power B1 and H2.</text>
+</svg>

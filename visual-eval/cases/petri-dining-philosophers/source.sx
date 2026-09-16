@@ -1,0 +1,30 @@
+# Two philosophers share two forks; the initial marking enables P1 to eat without allowing both to hold the same fork.
+petri "Two Dining Philosophers"
+  layout: lr
+  place Think1 *1
+  place Think2 *1
+  place Fork1 *1
+  place Fork2 *1
+  place Eat1
+  place Eat2
+  transition Start1 "P1 takes forks"
+  transition Finish1 "P1 releases forks"
+  transition Start2 "P2 takes forks"
+  transition Finish2 "P2 releases forks"
+  Think1 -> Start1
+  Fork1 -> Start1
+  Fork2 -> Start1
+  Start1 -> Eat1
+  Eat1 -> Finish1
+  Finish1 -> Think1
+  Finish1 -> Fork1
+  Finish1 -> Fork2
+  Think2 -> Start2
+  Fork1 -> Start2
+  Fork2 -> Start2
+  Start2 -> Eat2
+  Eat2 -> Finish2
+  Finish2 -> Think2
+  Finish2 -> Fork1
+  Finish2 -> Fork2
+  fire: Start1, Finish1

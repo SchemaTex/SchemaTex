@@ -1,0 +1,96 @@
+{
+  "id": "pid-duty-standby-pumps",
+  "type": "pid",
+  "title": "Duty and standby pumps",
+  "goal": "An operator can identify the two parallel pump paths, their isolations and check valves, and the common minimum-flow bypass.",
+  "rubric": [
+    {
+      "id": "two-parallel-pump-paths",
+      "severity": "blocker",
+      "must": "Two clearly separate pump paths run from the common suction source to the common discharge destination."
+    },
+    {
+      "id": "isolation-on-each-pump",
+      "severity": "major",
+      "must": "Each pump path visibly has a suction isolation valve and a discharge isolation valve."
+    },
+    {
+      "id": "check-valve-per-discharge",
+      "severity": "major",
+      "must": "Each pump discharge contains its own identifiable non-return valve downstream of the isolation valve."
+    },
+    {
+      "id": "duty-and-standby-labelled",
+      "severity": "major",
+      "must": "The two pumps are labelled Duty Pump and Standby Pump with distinct tags."
+    },
+    {
+      "id": "bypass-distinguishable",
+      "severity": "major",
+      "must": "A smaller common bypass line with its own valve can be followed back to the suction source."
+    },
+    {
+      "id": "pressure-indicator-visible",
+      "severity": "minor",
+      "must": "A readable PI-101 instrument bubble is visibly associated with the discharge header."
+    },
+    {
+      "id": "crossings-unambiguous",
+      "severity": "minor",
+      "must": "Any crossing lines do not appear to form an unintended process connection."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly shows separate duty and standby pump paths between the shared suction source and discharge destination, with the bypass and pressure indicator traceable and no material overlap or ambiguous crossings.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:30:15.660Z",
+      "targetHash": "2a2a73d7d3cc",
+      "sourceHash": "fbe99ea1e76a",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "two-parallel-pump-paths",
+          "verdict": "pass",
+          "evidence": "TK-101 feeds two distinct branches through P-101 and P-102, which join at the common discharge header leading to TK-102."
+        },
+        {
+          "id": "isolation-on-each-pump",
+          "verdict": "pass",
+          "evidence": "Each branch shows a suction isolation valve (XV-101 or XV-201) before its pump and a discharge isolation valve (XV-102 or XV-202) after it."
+        },
+        {
+          "id": "check-valve-per-discharge",
+          "verdict": "pass",
+          "evidence": "Each discharge branch has an identifiable check-valve symbol downstream of its discharge isolation valve, labeled NRV-101 and NRV-201."
+        },
+        {
+          "id": "duty-and-standby-labelled",
+          "verdict": "pass",
+          "evidence": "The pumps are distinctly labeled P-101 “Duty Pump 45 m³/h” and P-102 “Standby Pump 45 m³/h.”"
+        },
+        {
+          "id": "bypass-distinguishable",
+          "verdict": "pass",
+          "evidence": "A smaller DN25 upper bypass runs from the P-101 discharge downstream of NRV-101, through XV-301, and returns to the top of TK-101."
+        },
+        {
+          "id": "pressure-indicator-visible",
+          "verdict": "pass",
+          "evidence": "A readable PI-101 bubble is connected by a capillary-style line to the common discharge header near TK-102."
+        },
+        {
+          "id": "crossings-unambiguous",
+          "verdict": "pass",
+          "evidence": "The bypass crosses above the duty branch without a junction; the return to TK-101 and shared discharge connections are visually traceable."
+        }
+      ]
+    }
+  }
+}

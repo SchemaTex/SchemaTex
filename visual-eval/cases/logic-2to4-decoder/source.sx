@@ -1,0 +1,12 @@
+# Enabled 2-to-4 active-high decoder; outputs are the four E-qualified minterms.
+logic "Enabled 2-to-4 Decoder"
+input E, S1, S0
+output Y0, Y1, Y2, Y3
+nS1 = NOT(S1)
+nS0 = NOT(S0)
+e0 = AND(E, nS1)
+e1 = AND(E, S1)
+Y0 = AND(e0, nS0)
+Y1 = AND(e0, S0)
+Y2 = AND(e1, nS0)
+Y3 = AND(e1, S0)

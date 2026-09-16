@@ -7,7 +7,7 @@ description: Análisis de Modos de Fallo y Efectos — el motor calcula el RPN y
 
 **FMEA** (Análisis de Modos de Fallo y Efectos) es el método de confiabilidad proactivo más ampliamente utilizado en manufactura: para cada parte de un sistema, se listan cómo puede fallar (**modos de fallo**), qué hace cada fallo (**efectos**), por qué ocurre (**causas**), y cómo se detecta (**controles**). Cada fila se califica en tres escalas del 1 al 10 — **Severidad**, **Ocurrencia**, **Detección** — y se prioriza. Estandarizado por el **Manual FMEA AIAG-VDA (2019)** y **IEC 60812**.
 
-La ventaja de Schematex es que el motor **calcula la prioridad**, no solo la tabla. Aplana la cadena de fallos a una fila de hoja de trabajo por (elemento, modo, causa), calcula **RPN = S × O × D**, y — lo más importante — la **Prioridad de Acción** AIAG-VDA (bandas con primacía de severidad), que deliberadamente corrige el error que introduce un ordenamiento de RPN puro: un fallo de airbag con S10·O2·D3 es *Alto* aunque su RPN (60) parezca bajo.
+El motor calcula **RPN = S × O × D** y **Action Priority (AP)** por fila. AP depende de los tres valores, no solo del RPN. En la tabla implementada, S10·O2·D3 da AP Low y RPN 60; AP Low no significa baja severidad.
 
 <Playground initial={`fmea "Brake system DFMEA"
   type: design
@@ -65,7 +65,7 @@ Este es el diferenciador. Del AST anidado el motor:
 
 1. **Aplana** a una fila por (elemento, modo, causa); la severidad del peor efecto del modo rige cada fila de ese modo.
 2. **RPN = S × O × D** (1–1000).
-3. **Prioridad de Acción** por la estructura de bandas AIAG-VDA — **la Severidad es el eje primario**, la Ocurrencia el segundo, la Detección el tercero. S = 9–10 (seguridad/regulatorio) es Alto para *toda* O y D; la severidad media degrada Alto→Medio→Bajo a medida que la Ocurrencia disminuye.
+3. **Action Priority** utiliza la tabla S/O/D de DFMEA/PFMEA. Una severidad de 9–10 no implica automáticamente High: la ocurrencia y la detección también determinan el resultado.
 4. **Ordena** por la clave elegida. Para `ap`: Alto > Medio > Bajo, con desempate por Severidad luego RPN — *nunca* solo RPN, lo que reintroduciría el error que AP fue diseñado para corregir.
 5. **Marca** las filas por encima del umbral.
 
@@ -112,7 +112,7 @@ Las calificaciones deben ser enteros del 1 al 10; la cadena de fallos debe anida
 
 ## 6. Conformidad con estándares
 
-La cadena de fallos y las escalas de Severidad/Ocurrencia/Detección siguen el Manual FMEA AIAG-VDA (2019) e IEC 60812. La Prioridad de Acción implementa la *estructura* de bandas publicada (con primacía de severidad), no la tabla verbatim de 1000 celdas protegida por derechos de autor. RPN sigue disponible mediante `rank: rpn` para hojas de trabajo heredadas.
+El motor utiliza la tabla S/O/D de DFMEA/PFMEA para AP. No implementa la tabla independiente de severidad/frecuencia/monitorización de FMEA-MSR. RPN sigue disponible mediante `rank: rpn`.
 
 ## 7. Hoja de ruta
 

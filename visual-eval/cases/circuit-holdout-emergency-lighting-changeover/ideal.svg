@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1040" viewBox="0 0 1500 1040">
+<title>Emergency Lighting Changeover Unit — circuit schematic</title>
+<rect width="1500" height="1040" fill="white"/>
+<defs><style>
+.w{fill:none;stroke:#18232c;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.s{fill:white;stroke:#18232c;stroke-width:2.6}.t{font-family:Helvetica,Arial,sans-serif;fill:#18232c;font-size:19px}.label{font-weight:bold;font-size:21px}.small{font-size:16px}.net{font-size:17px;font-weight:bold;fill:#24536b}.dot{fill:#18232c}.dash{fill:none;stroke:#687680;stroke-width:1.8;stroke-dasharray:7 6}
+</style></defs>
+<g class="t">
+<text x="65" y="57" font-size="30" font-weight="bold">EMERGENCY LIGHTING CHANGEOVER UNIT</text>
+<text x="65" y="88" fill="#53616a">Circuit schematic · relay contacts shown de-energised (mains absent)</text>
+<!-- mains rails -->
+<path class="w" d="M170 180H1330 M170 340H730"/>
+<text class="net" x="72" y="186">LINE</text><text class="net" x="72" y="346">NEUT</text>
+<!-- AC supply -->
+<path class="w" d="M170 180V232 M170 288V340"/>
+<circle class="s" cx="170" cy="260" r="28"/>
+<path class="w" d="M150 260C157 240 163 240 170 260S183 280 190 260"/>
+<text class="label" x="64" y="394">V1 MAINS INPUT</text><text x="64" y="421">230 V AC</text>
+<!-- charger -->
+<rect class="s" x="340" y="230" width="265" height="180"/>
+<path class="w" d="M300 180V270H340 M275 340V370H340"/>
+<circle class="dot" cx="300" cy="180" r="4.5"/><circle class="dot" cx="275" cy="340" r="4.5"/>
+<text class="small" x="351" y="265">AC_L</text><text class="small" x="351" y="365">AC_N</text>
+<text class="label" x="472" y="305" text-anchor="middle">U1 BATTERY</text><text class="label" x="472" y="332" text-anchor="middle">CHARGER</text>
+<text x="472" y="387" text-anchor="middle">Mascot 2241</text>
+<text class="small" x="586" y="251" text-anchor="end">BAT+</text><text class="small" x="586" y="358" text-anchor="end">BAT−</text>
+<text class="small" x="340" y="447">230 V AC input / 12 V battery</text>
+<path class="w" d="M605 270H640V520H1040 M605 370H665V890"/>
+<text class="net" x="685" y="509">BATT · +12 V</text>
+<!-- mains coil -->
+<path class="w" d="M730 180V232 M730 292V340"/>
+<rect class="s" x="690" y="232" width="80" height="60"/>
+<path class="w" d="M704 282L756 242"/>
+<circle class="dot" cx="730" cy="180" r="4.5"/>
+<text class="label" x="803" y="249">K1 MAINS-SENSE COIL</text><text x="803" y="280">230 VAC</text>
+<!-- electrically identical coil pins of relay -->
+<path class="w" d="M1330 180V645H1240 M730 340H1295V690H1240"/>
+<text class="net" x="1341" y="430">LINE</text><text class="net" x="1306" y="464">NEUT</text>
+<!-- relay assembly -->
+<rect x="960" y="555" width="280" height="180" fill="white" stroke="#687680" stroke-width="1.8" stroke-dasharray="7 6"/>
+<text class="label" x="960" y="402">K1 CHANGEOVER RELAY</text>
+<text x="960" y="432">U2 · SPDT, 10 A</text>
+<text class="small" x="960" y="461">COIL_A / COIL_B = K1 coil above</text>
+<!-- NO via LINE -->
+<path class="w" d="M900 180V580H1130V600"/><circle class="dot" cx="900" cy="180" r="4.5"/>
+<!-- NC via battery -->
+<path class="w" d="M1040 520V600"/>
+<circle class="s" cx="1040" cy="605" r="5"/><circle class="s" cx="1130" cy="605" r="5"/>
+<text class="net" x="1019" y="576" text-anchor="end">NC</text><text class="net" x="1162" y="576">NO</text>
+<text class="small" x="1019" y="598" text-anchor="end">BATT</text><text class="small" x="1162" y="599">LINE</text>
+<!-- common moving contact, touching NC -->
+<path class="w" d="M1085 674L1043 610 M1085 684V775"/>
+<circle class="s" cx="1085" cy="679" r="5"/>
+<text class="net" x="1103" y="713">COM</text>
+<!-- relay coil terminal labels -->
+<circle class="s" cx="1240" cy="645" r="4"/><circle class="s" cx="1240" cy="690" r="4"/>
+<text class="small" x="1226" y="650" text-anchor="end">COIL_A</text><text class="small" x="1226" y="695" text-anchor="end">COIL_B</text>
+<text class="net" x="1104" y="765">LAMP</text>
+<!-- emergency lamp -->
+<circle class="s" cx="1085" cy="810" r="35"/>
+<path class="w" d="M1060 785L1110 835 M1110 785L1060 835 M1085 845V890"/>
+<text class="label" x="1140" y="806">L1 EMERGENCY LAMP</text><text x="1140" y="837">12/230 V, 10 W LED</text>
+<!-- battery -->
+<path class="w" d="M480 520H640 M480 520V652 M480 718V890"/>
+<circle class="dot" cx="640" cy="520" r="4.5"/>
+<path class="w" d="M447 652H513 M462 670H498 M447 699H513 M462 718H498 M480 670V699"/>
+<text x="526" y="657">+</text><text x="526" y="720">−</text>
+<text class="label" x="445" y="773" text-anchor="end">B1 SEALED BATTERY</text><text x="445" y="803" text-anchor="end">12 V, 7 Ah SLA</text>
+<!-- independent test branch -->
+<path class="w" d="M480 520H170V572 M170 627V715"/>
+<circle class="dot" cx="480" cy="520" r="4.5"/>
+<circle class="s" cx="170" cy="576" r="4"/><circle class="s" cx="170" cy="623" r="4"/>
+<path class="w" d="M170 619L143 581"/>
+<text class="label" x="215" y="586">S1 LAMP TEST</text><text x="215" y="615">momentary NO</text>
+<text class="net" x="188" y="684">TEST</text>
+<circle class="s" cx="170" cy="747" r="32"/>
+<path class="w" d="M147 724L193 770 M193 724L147 770 M170 779V890"/>
+<text class="label" x="66" y="828">L2 TEST INDICATOR</text><text x="66" y="855">12 V, 1 W</text>
+<!-- return rail -->
+<path class="w" d="M170 890H1085 M665 890V915 M645 915H685 M652 924H678 M660 933H670"/>
+<circle class="dot" cx="480" cy="890" r="4.5"/><circle class="dot" cx="665" cy="890" r="4.5"/>
+<text class="net" x="726" y="922">GND · BATTERY / LAMP RETURN</text>
+<path stroke="#c8d0d5" d="M65 958H1435"/>
+<text class="small" x="65" y="986">Mains present: K1 energised → COM–NO (LINE).  Mains absent: K1 released → COM–NC (BATT).</text>
+<text class="small" x="65" y="1013">Connections follow the supplied netlist; NEUT and GND are separate nets.</text>
+</g></svg>

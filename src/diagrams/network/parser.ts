@@ -16,21 +16,18 @@ import type {
   NetworkLayoutMode,
   NetworkLink,
 } from "./types";
+import { DEVICE_KINDS } from "./types";
 import { createSourceLocator } from "../../core/source-range";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//"];
 
 export class NetworkParseError extends Error {
   override name = "NetworkParseError";
 }
 
 // ─── Vocabulary ──────────────────────────────────────────────────
-
-const DEVICE_KINDS = new Set<DeviceKind>([
-  "router", "switch", "l3switch", "firewall", "loadbalancer", "ap", "wlc",
-  "gateway", "modem", "ids", "proxy", "vpngw",
-  "server", "serverfarm", "pc", "laptop", "mobile", "ipphone", "printer", "storage",
-  "camera", "nvr", "dvr", "poeswitch", "encoder", "monitor",
-  "internet", "wan", "cloud", "pstn", "lan",
-]);
 
 /** Aliases → canonical device kind. */
 const KIND_ALIASES: Record<string, DeviceKind> = {
@@ -39,8 +36,6 @@ const KIND_ALIASES: Record<string, DeviceKind> = {
   workstation: "pc",
   phone: "mobile",
   voip: "ipphone",
-  nas: "storage",
-  san: "storage",
   servers: "serverfarm",
   ips: "ids",
   decoder: "encoder",
@@ -53,17 +48,14 @@ const KIND_ALIASES: Record<string, DeviceKind> = {
   dns: "server",
   dhcp: "server",
   ntp: "server",
-  database: "server",
-  dbserver: "server",
-  db: "server",
+  dbserver: "database",
+  db: "database",
   vm: "server",
   host: "server",
-  hypervisor: "server",
   activedirectory: "server",
   domaincontroller: "server",
   desktop: "pc",
   smartphone: "mobile",
-  tablet: "mobile",
   accesspoint: "ap",
   wap: "ap",
   hub: "switch",
@@ -108,26 +100,6 @@ interface Token {
 }
 
 /** Drop a trailing `#`/`//` comment that is not inside a quoted region. */
-function stripComment(line: string): string {
-  let inQuote = false;
-  let close = "";
-  const pairs: Record<string, string> = { '"': '"', "「": "」", "『": "』", "“": "”", "«": "»", "'": "'" };
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
-    if (inQuote) {
-      if (ch === close) inQuote = false;
-      continue;
-    }
-    if (pairs[ch]) {
-      inQuote = true;
-      close = pairs[ch]!;
-      continue;
-    }
-    if (ch === "#") return line.slice(0, i);
-    if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
-  }
-  return line;
-}
 
 /** Split a (comment-stripped) line on `;` statement separators outside quotes. */
 function splitStatements(line: string): Array<{ text: string; start: number }> {
@@ -153,7 +125,7 @@ function splitStatements(line: string): Array<{ text: string; start: number }> {
 }
 
 function tokenize(raw: string): Token[] {
-  const line = stripComment(raw);
+  const line = stripLineComment(raw, COMMENT_MARKERS);
   const out: Token[] = [];
   const pairs: Record<string, string> = { '"': '"', "「": "」", "『": "』", "“": "”", "«": "»", "'": "'" };
   let i = 0;
@@ -318,7 +290,7 @@ export function parseNetwork(text: string): NetworkAst {
   const statements: Array<{ text: string; no: number; start: number }> = [];
   let rawLineStart = 0;
   rawLines.forEach((raw, i) => {
-    for (const seg of splitStatements(stripComment(raw))) {
+    for (const seg of splitStatements(stripLineComment(raw, COMMENT_MARKERS))) {
       statements.push({ text: seg.text, no: i + 1, start: rawLineStart + seg.start });
     }
     rawLineStart += raw.length + (i < rawLines.length - 1 ? (text[rawLineStart + raw.length] === "\r" ? 2 : 1) : 0);

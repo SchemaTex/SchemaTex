@@ -1,0 +1,44 @@
+{
+  "id": "circuit-relay-latching-logic",
+  "type": "circuit",
+  "title": "Latching relay logic",
+  "goal": "A reader must be able to follow the start-stop seal-in path and see the same relay switch a load and indicator.",
+  "rubric": [
+    {
+      "id": "start-stop-buttons",
+      "severity": "blocker",
+      "must": "Separate STOP NC and START NO pushbuttons are visible."
+    },
+    {
+      "id": "latching-coil",
+      "severity": "blocker",
+      "must": "A relay coil labelled K1 LATCH COIL is visible."
+    },
+    {
+      "id": "seal-in-contact",
+      "severity": "blocker",
+      "must": "A normally open contact labelled K1 NO SEAL-IN is visibly parallel with the start path."
+    },
+    {
+      "id": "changeover-load-contact",
+      "severity": "major",
+      "must": "A K1 changeover contact visibly switches the load branch."
+    },
+    {
+      "id": "load-and-indicator",
+      "severity": "major",
+      "must": "A 24 VDC load lamp and green LATCHED pilot light are visible."
+    },
+    {
+      "id": "supply-label",
+      "severity": "minor",
+      "must": "The 24 VDC supply is clearly labelled."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Three-wire control: the break contact in series, the make contact in parallel with the start button as the seal-in, and the changeover contact switching the load and its indicator. The unused break side is tied to the common, which the source asks for and which is harmless."
+  }
+}

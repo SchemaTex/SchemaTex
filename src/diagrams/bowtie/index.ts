@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseBowtie } from "./parser";
 import { renderBowtie } from "./renderer";
@@ -5,7 +6,7 @@ import { renderBowtie } from "./renderer";
 export const bowtie: DiagramPlugin = {
   type: "bowtie" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*bowtie\b/i.test(text);
+    return /^\s*bowtie\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseBowtie,
   render(text, config?: RenderConfig) {

@@ -1,0 +1,41 @@
+{
+  "id": "bpmn-loan-origination",
+  "type": "bpmn",
+  "variant": "single-pool",
+  "title": "Loan origination",
+  "goal": "Show completeness and underwriting decisions.",
+  "rubric": [
+    {
+      "id": "gateway",
+      "severity": "blocker",
+      "must": "Complete? visibly routes to scoring or rejection."
+    },
+    {
+      "id": "decision",
+      "severity": "blocker",
+      "must": "Approve? visibly routes to Approved or Rejected end events."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Clerk and Underwriter lanes are visible."
+    },
+    {
+      "id": "tasks",
+      "severity": "major",
+      "must": "Score risk is visibly a service task."
+    },
+    {
+      "id": "events",
+      "severity": "minor",
+      "must": "Application received is a start event."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/bpmn/single-pool/ideal.svg (sha256 7d08efe4ba9e). Vision reviewed all six rasterized targets: neutral process palette, event and task markers, swimlanes, separate conditional/default routes and pool-boundary message arrows; fixed wire-body overlaps and gateway caption collisions. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

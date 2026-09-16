@@ -1,0 +1,19 @@
+# Clinic electronic health record rollout; dates are the agreed plan, not computed.
+timeline "Riverside Clinic EHR Rollout"
+config: style = gantt
+track "Planning":
+  2026-01-05 - 2026-01-30: "Workflow assessment" [category: "planning"]
+  2026-01-26 - 2026-02-13: "Vendor configuration" [category: "planning"]
+  2026-02-13: milestone "Build sign-off"
+track "Build":
+  2026-02-16 - 2026-03-20: "Data migration" [category: "build"]
+  2026-02-23 - 2026-03-27: "Lab and pharmacy interfaces" [category: "build"]
+  2026-03-16 - 2026-04-03: "Order sets and templates" [category: "build"]
+track "Training":
+  2026-03-23 - 2026-04-17: "Super-user training" [category: "training"]
+  2026-04-06 - 2026-04-24: "All-staff training" [category: "training"]
+track "Go-live":
+  2026-04-20 - 2026-04-24: "Dress rehearsal" [category: "golive"]
+  2026-04-27: milestone "Go-live"
+  2026-04-27 - 2026-05-22: "At-the-elbow support" [category: "golive"]
+  2026-05-29: milestone "Legacy system retired"

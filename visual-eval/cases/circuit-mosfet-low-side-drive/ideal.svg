@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" width="1200" height="820">
+<title>MOSFET Low-Side Relay Drive</title>
+<rect width="1200" height="820" fill="white"/>
+<style>
+wire{fill:none} .w{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.s{fill:white;stroke:#17212b;stroke-width:3}.t{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:22px}.small{font-size:18px}.head{font-size:32px;font-weight:700}.label{font-weight:700}.dot{fill:#17212b}
+</style>
+<text x="60" y="58" class="t head">MOSFET Low-Side Relay Drive</text>
+<text x="60" y="90" class="t small">GPIO-controlled relay • low-side N-channel switch • flyback protection</text>
+<!-- Shared supply and ground rails -->
+<path class="w" d="M100 150H980 M100 710H980"/>
+<text class="t label" x="620" y="135">VCC · +12 V</text>
+<text class="t small" x="1000" y="717">GND</text>
+<path class="w" d="M800 710V735 M780 735H820 M787 744H813 M795 753H805"/>
+<!-- V1 load supply -->
+<path class="w" d="M100 150V352 M100 448V710"/>
+<circle class="s" cx="100" cy="400" r="48"/>
+<path class="w" d="M89 380H111 M100 369V391 M89 422H111"/>
+<text x="60" y="792" class="t label">V1 LOAD SUPPLY</text>
+<text x="310" y="792" class="t">12 V DC</text>
+<!-- U1: all specified pins, including VCC and GND -->
+<rect class="s" x="260" y="470" width="210" height="170" rx="3"/>
+<text class="t label" x="365" y="507" text-anchor="middle">U1 MCU OUTPUT</text>
+<text class="t" x="365" y="538" text-anchor="middle">3.3 V MCU</text>
+<text class="t small" x="280" y="575">VCC</text>
+<text class="t small" x="280" y="620">GND</text>
+<text class="t small" x="458" y="578" text-anchor="end">GPIO</text>
+<path class="w" d="M220 150V568H260 M260 613H220V710 M470 570H510"/>
+<!-- Gate series resistor -->
+<path class="w" d="M510 570L519 558L535 582L551 558L567 582L583 558L599 582L608 570H740"/>
+<text class="t label" x="558" y="510" text-anchor="middle">R1 GATE</text>
+<text class="t" x="558" y="539" text-anchor="middle">100 Ω</text>
+<!-- Gate pull-down resistor -->
+<path class="w" d="M650 570V604L638 613L662 627L638 641L662 655L638 669L650 679V710"/>
+<text class="t label small" x="627" y="653" text-anchor="end">R2 PULL-DOWN</text>
+<text class="t" x="627" y="682" text-anchor="end">100 kΩ</text>
+<!-- Relay coil, vertical -->
+<path class="w" d="M800 150V238 M800 238C752 238 752 274 800 274 C752 274 752 310 800 310 C752 310 752 346 800 346 C752 346 752 382 800 382 M800 382V470"/>
+<text class="t label" x="730" y="283" text-anchor="end">K1 RELAY COIL</text>
+<text class="t" x="730" y="315" text-anchor="end">12 VDC, 400 Ω</text>
+<!-- Flyback diode: cathode up to VCC, anode down to COIL -->
+<path class="w" d="M980 150V285 M958 285H1002 M980 329V440H800"/>
+<path d="M958 329L980 290L1002 329Z" class="s"/>
+<text class="t label" x="1020" y="294">D1 FLYBACK</text>
+<text class="t" x="1020" y="325">1N4007</text>
+<text class="t small" x="950" y="276" text-anchor="end">K</text>
+<text class="t small" x="950" y="350" text-anchor="end">A</text>
+<text class="t small" x="814" y="425">COIL</text>
+<!-- Conventional enhancement-mode N-MOSFET, drain above source -->
+<path class="w" d="M800 470V523H774 M774 523V540 M774 553V578 M774 590V612 M774 612H800V710 M800 612V566H785 M752 526V611 M740 570H752"/>
+<path d="M775 566L789 558V574Z" fill="#17212b"/>
+<text class="t small" x="812" y="496">D</text>
+<text class="t small" x="723" y="557">G</text>
+<text class="t small" x="812" y="646">S</text>
+<text class="t label" x="850" y="551">Q1 N-MOSFET</text>
+<text class="t" x="850" y="583">IRLZ44N</text>
+<!-- Electrical junctions -->
+<g class="dot">
+<circle cx="100" cy="150" r="5"/><circle cx="220" cy="150" r="5"/><circle cx="800" cy="150" r="5"/><circle cx="980" cy="150" r="5"/>
+<circle cx="800" cy="440" r="5"/><circle cx="650" cy="570" r="5"/>
+<circle cx="100" cy="710" r="5"/><circle cx="220" cy="710" r="5"/><circle cx="650" cy="710" r="5"/><circle cx="800" cy="710" r="5"/>
+</g>
+</svg>

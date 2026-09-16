@@ -1,0 +1,77 @@
+{
+  "id": "umlclass-payment-gateway",
+  "type": "umlclass",
+  "title": "Payment gateway",
+  "goal": "Show a gateway selecting provider implementations through an interface.",
+  "rubric": [
+    {
+      "id": "interface",
+      "severity": "blocker",
+      "must": "PaymentProvider is visibly marked as an interface."
+    },
+    {
+      "id": "realization",
+      "severity": "blocker",
+      "must": "CardProvider and WalletProvider each use dashed hollow-triangle realization arrows pointing to PaymentProvider."
+    },
+    {
+      "id": "composition",
+      "severity": "major",
+      "must": "Payment has a filled composition diamond to PaymentRequest."
+    },
+    {
+      "id": "enum",
+      "severity": "major",
+      "must": "PaymentStatus is visibly an enumeration-like classifier listing PENDING, AUTHORIZED, and DECLINED."
+    },
+    {
+      "id": "dependency",
+      "severity": "minor",
+      "must": "PaymentService has a dashed dependency arrow to PaymentRequest."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All required elements are visible and legible: the interface, both realization arrows, composition, enumeration, and dashed dependency. Connections and labels are traceable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:33:00.151Z",
+      "targetHash": "d84ab776a539",
+      "sourceHash": "6e7738385ae5",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "interface",
+          "verdict": "pass",
+          "evidence": "PaymentProvider is marked «interface»."
+        },
+        {
+          "id": "realization",
+          "verdict": "pass",
+          "evidence": "CardProvider and WalletProvider each connect to PaymentProvider with a dashed line and hollow triangle pointing to the interface."
+        },
+        {
+          "id": "composition",
+          "verdict": "pass",
+          "evidence": "Payment connects to PaymentRequest with a filled diamond at the Payment end and multiplicity 1 at both ends."
+        },
+        {
+          "id": "enum",
+          "verdict": "pass",
+          "evidence": "PaymentStatus is marked «enumeration» and lists PENDING, AUTHORIZED, and DECLINED."
+        },
+        {
+          "id": "dependency",
+          "verdict": "pass",
+          "evidence": "PaymentService has a dashed dependency arrow labeled “uses” pointing to PaymentRequest."
+        }
+      ]
+    }
+  }
+}

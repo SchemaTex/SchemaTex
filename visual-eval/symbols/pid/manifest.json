@@ -1,0 +1,932 @@
+{
+  "type": "pid",
+  "variant": null,
+  "exemplar": "pid",
+  "style": "Ink #1E293B only, on white #FFFFFF symbol fills, no colour: every symbol outline (and a bubble's inner shape and location line) is 1.6, process stubs 2.5 with minor process 1.5, signal stubs 1.4 (electric dashed 7/5, pneumatic with a pair of 45° slashes every 34, process connection plain). Drawn at exemplar scale: every valve is the same 44 × 28 bowtie, pumps are 60-unit circles, vessels are 120 in diameter with 2:1 heads 30 deep, the tank is 160 × 140 under a 26-deep roof, and instrument symbols are 36 tall with Inter 11.5/600 letters over an 11.5 regular loop number, shrunk only when a tag would touch its outline.",
+  "symbols": [
+    {
+      "id": "valve-control-diaphragm",
+      "label": "Control valve, diaphragm actuator",
+      "file": "valve-control-diaphragm.svg",
+      "engine": "valve_control",
+      "dsl": [
+        "equip LV-101 : valve_control [actuator: \"diaphragm\"]"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.2 no. 1 (spring-diaphragm actuator) on Table 5.4.1 no. 1a (two-way valve body); stem to the body centre as in Table 5.4.4",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 283,
+      "notes": "Diaphragm actuator (dome, flat side down) on the same bowtie, with the stem running from the body's centre up to the dome and the pneumatic signal entering the dome top. The pneumatic mark is ISA's pair of slashes; the exemplar's single slash is ISA's mark for an undefined signal, and its stem stops 14 short of the body. The engine draws the rotated black hourglass with a dome floating above a short stem; fail action (FO/FC) stays a label beside the actuator. Usage counts every valve_control, whatever its actuator."
+    },
+    {
+      "id": "tank-atmospheric",
+      "label": "Atmospheric storage tank",
+      "file": "tank-atmospheric.svg",
+      "engine": "tank_atm",
+      "dsl": [
+        "equip TK-100 : tank_atm"
+      ],
+      "standard": "ISO 10628-2:2012 X8200 (tank with dished roof)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 275,
+      "notes": "Flat bottom, straight shell and a 26-deep dished roof at the exemplar's 160 × 140, with the inlet meeting the roof crown and the outlet leaving the bottom centre. The engine's tank is 90 wide with a 14-deep roof drawn as an open arc over a separate rectangle, and has no nozzles."
+    },
+    {
+      "id": "pump-centrifugal",
+      "label": "Centrifugal pump",
+      "file": "pump-centrifugal.svg",
+      "engine": "pump_centrifugal",
+      "dsl": [
+        "equip P-101 : pump_centrifugal"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2322 (pump, centrifugal type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pump,_centrifugal_type_(ISO_10628-2).svg",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 235,
+      "notes": "Casing circle, horizontal diameter and two lines from the top and bottom of the casing converging on the discharge point, with suction entering the opposite end, as ISO 10628-2 reg. 2322 draws it. The engine draws a detached wedge on the upper right that matches neither ISO pump; the exemplar's floating triangle points right while its pipe leaves from the top."
+    },
+    {
+      "id": "vessel-horizontal",
+      "label": "Horizontal vessel",
+      "file": "vessel-horizontal.svg",
+      "engine": "vessel_h",
+      "dsl": [
+        "equip V-201 : vessel_h"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2062 (tank, vessel with dished ends), horizontal",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 208,
+      "notes": "The vertical vessel laid on its side: 120 shell diameter, 240 straight length and 2:1 elliptical heads 30 deep, with a feed and a vapour nozzle on top and a liquid outlet below. The engine's drum is 130 × 70 with 14-deep heads and no nozzles."
+    },
+    {
+      "id": "valve-gate",
+      "label": "Gate valve",
+      "file": "valve-gate.svg",
+      "engine": "valve_gate",
+      "dsl": [
+        "equip HV-103 : valve_gate"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 1a (two-way valve body); ISO 10628-2:2012 reg. 2101 (valve, general)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 156,
+      "notes": "Two-way valve body: two white triangles meeting at a point on the pipe axis, 44 × 28, with nothing on top because a manual gate valve carries no operator. ISO 10628-2 X8074 adds a vertical centre line to mark the gate type; US practice leaves the body plain. The engine's catalog body is turned 90 degrees into a flat-topped hourglass and renders solid black, because the catalog stylesheet omits the valve-body class."
+    },
+    {
+      "id": "filter",
+      "label": "Filter (liquid)",
+      "file": "filter.svg",
+      "engine": "filter",
+      "dsl": [
+        "equip F-101 : filter"
+      ],
+      "standard": "ISO 10628-2:2012 X8116 (liquid filter, general)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 149,
+      "notes": "A 60 × 100 housing with a dashed line across it for the filter medium, fed from the top and drained from the bottom. The engine draws a 70 square crossed by a solid line and two diagonals, which is not an ISO filter; on the catalog sheet those inner lines vanish (their class is missing from the catalog stylesheet) and the empty tag background shows as a black bar. Usage is an overcount: the word also matches label text."
+    },
+    {
+      "id": "valve-check",
+      "label": "Check valve",
+      "file": "valve-check.svg",
+      "engine": "valve_check",
+      "dsl": [
+        "equip CV-104 : valve_check"
+      ],
+      "standard": "ISO 10628-2:2012 X8077 (check valve, general); ANSI/ISA-5.1 has no check-valve symbol",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 142,
+      "notes": "The two-way bowtie with a solid dot on its upstream top corner, with flow from left to right. The exemplar's check valve is a diagonal flapper line crossing the downstream triangle, which neither standard draws. The engine puts a small arc inside the upstream triangle of its black hourglass; the arc does not show on the catalog sheet because its class is missing from the catalog stylesheet."
+    },
+    {
+      "id": "valve-relief",
+      "label": "Pressure relief / safety valve",
+      "file": "valve-relief.svg",
+      "engine": "valve_psv",
+      "dsl": [
+        "equip PSV-105 : valve_psv [set_pressure: \"150 psig\"]"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.3 no. 15 (pressure safety valve, angle body) with Table 5.4.2 no. 20 (spring actuator); ISO 10628-2:2012 X2125",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 142,
+      "notes": "Angle body: inlet triangle from below, outlet triangle to the side, and the exemplar's drawn spring on a short stem above the body centre, on minor process stubs. The exemplar draws a straight bowtie stood on end and vents through the top of the spring; the engine draws an in-line black hourglass with a 45° outlet stub on one corner and a spring beside it that does not show on the catalog sheet. ISA draws the spring as a diagonal with cross marks; the zigzag is ISO's form and reads more clearly at this size."
+    },
+    {
+      "id": "heat-exchanger-shell-tube",
+      "label": "Shell-and-tube heat exchanger",
+      "file": "heat-exchanger-shell-tube.svg",
+      "engine": "hx_shell_tube",
+      "dsl": [
+        "equip E-101 : hx_shell_tube"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2511 (heat exchanger with straight tubes, fixed tube sheets)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 125,
+      "notes": "A 200 × 60 shell with two tube sheets 24 in from the ends and four straight tubes between them; tube-side nozzles on the channels (in top left, out bottom right) and shell-side nozzles between the tube sheets (in top right, out bottom left). The engine draws a vessel with rounded heads and tube lines, with no tube sheets and no nozzles, so the two sides cannot be told apart; on the catalog sheet even the tube lines vanish, leaving a plain drum."
+    },
+    {
+      "id": "vessel-vertical",
+      "label": "Vertical vessel",
+      "file": "vessel-vertical.svg",
+      "engine": "vessel_v",
+      "dsl": [
+        "equip V-101 : vessel_v"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2062 (tank, vessel with dished ends)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 101,
+      "notes": "Straight shell closed by 2:1 elliptical heads: 120 wide, 280 straight side and 30-deep heads (a quarter of the diameter), with the feed, relief and drain nozzles meeting the heads exactly. The exemplar's heads are 22 deep although its notes call them 2:1; the engine's vessel is 70 wide with 16-deep heads and draws no nozzles."
+    },
+    {
+      "id": "pump-positive-displacement",
+      "label": "Positive-displacement pump (gear)",
+      "file": "pump-positive-displacement.svg",
+      "engine": "pump_pd",
+      "dsl": [
+        "equip P-102 : pump_pd"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 8091 (pump, gear type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 87,
+      "notes": "The centrifugal pump's casing and discharge lines with two overlapping gear wheels in place of the diameter. ISO has no general positive-displacement symbol, so the gear pump stands for the family, as the engine intends; screw, progressive-cavity and piston pumps are tier 3. The engine draws a smaller 22-radius circle with two side-by-side wheels and no discharge lines, so it cannot show flow direction; on the catalog sheet the wheels and stubs vanish and only the bare circle is left."
+    },
+    {
+      "id": "valve-ball",
+      "label": "Ball valve",
+      "file": "valve-ball.svg",
+      "engine": "valve_ball",
+      "dsl": [
+        "equip HV-105 : valve_ball"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 6 (ball valve); ISO 10628-2:2012 X8071",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 63,
+      "notes": "An open ball of radius 10.5 at the body centre, with the two triangles stopping where they meet it. The engine draws a solid dot at the centre, which is how both standards mark a globe valve."
+    },
+    {
+      "id": "valve-globe",
+      "label": "Globe valve",
+      "file": "valve-globe.svg",
+      "engine": "valve_globe",
+      "dsl": [
+        "equip HV-106 : valve_globe"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 1b (straight globe valve); ISO 10628-2:2012 X8068",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 30,
+      "notes": "The two-way bowtie with a solid dot of radius 5 where the triangles meet. The engine draws a white circle above the body, which matches neither standard."
+    },
+    {
+      "id": "valve-control-solenoid",
+      "label": "On/off valve, solenoid actuator",
+      "file": "valve-control-solenoid.svg",
+      "engine": "valve_control",
+      "dsl": [
+        "equip XV-202 : valve_control [actuator: \"solenoid\"]"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.2 no. 10 (solenoid actuator) on Table 5.4.1 no. 1a (two-way valve body)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The exemplar's 26 square marked S on the same bowtie, with the stem from the body centre to the square and the electric trip signal entering its top. The exemplar's stem runs from the top of the body's bounding box into the square instead. The engine's catalog entry shows only the default diaphragm actuator; its renderer draws the solenoid as a 24 × 22 box on the same rotated black body. Usage is not counted separately: valve_control's 283 users include every actuator."
+    },
+    {
+      "id": "instrument-discrete-field",
+      "label": "Instrument, discrete, field mounted",
+      "file": "instrument-discrete-field.svg",
+      "engine": "field_discrete",
+      "dsl": [
+        "inst LT-101 : field_discrete"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column D, row 1 (discrete instrument; field mounted, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A plain r = 18 circle with the tag letters over the loop number, a process connection line entering from the left and an electric signal leaving right. The engine's catalog has no instrument entries; its renderer draws this one correctly at r = 14."
+    },
+    {
+      "id": "instrument-discrete-control-room",
+      "label": "Instrument, discrete, control room",
+      "file": "instrument-discrete-control-room.svg",
+      "engine": "cr_discrete",
+      "dsl": [
+        "inst TI-104 : cr_discrete"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column D, row 2 (discrete instrument; main control room, front of panel, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The field circle with one solid horizontal line through its full diameter for a primary location the operator can reach. ISA uses a dashed line for the back of the main panel and a double line for a local panel; the engine's renderer draws a dashed line for local panels."
+    },
+    {
+      "id": "instrument-shared-field",
+      "label": "Instrument, shared display / shared control, field",
+      "file": "instrument-shared-field.svg",
+      "engine": "field_shared",
+      "dsl": [
+        "inst FI-105 : field_shared"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column A, row 1 (shared display, shared control; field mounted, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A circle inscribed in a 36 square, with no location line. The engine's renderer inscribes a hexagon in a circle, which is not an ISA shape."
+    },
+    {
+      "id": "instrument-shared-control-room",
+      "label": "Instrument, shared display / shared control, control room",
+      "file": "instrument-shared-control-room.svg",
+      "engine": "cr_shared",
+      "dsl": [
+        "inst LIC-101 : cr_shared"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column A, row 2 (shared display, shared control; main control room, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Shared display, shared control function (circle inscribed in a square) with one solid horizontal line for a primary location normally accessible to the operator, r = 18 with the exemplar's tag type. The exemplar and the engine both inscribe a hexagon instead, which ISA-5.1 reserves for computer functions; the engine's symbol catalog has no instrument entries at all."
+    },
+    {
+      "id": "instrument-computer-control-room",
+      "label": "Computer function, control room",
+      "file": "instrument-computer-control-room.svg",
+      "engine": "cr_computer",
+      "dsl": [
+        "inst FY-103 : cr_computer"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column C, row 2 (computer systems and software; main control room, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A regular hexagon with flat top and bottom, as tall as the bubbles (36) and pointed at left and right, with the location line running point to point. The engine's renderer draws a diamond inside a circle for computer functions, which is not an ISA shape."
+    },
+    {
+      "id": "instrument-plc-control-room",
+      "label": "PLC function, control room",
+      "file": "instrument-plc-control-room.svg",
+      "engine": "cr_plc",
+      "dsl": [
+        "inst LY-202 : cr_plc"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column B, row 2 (alternate shared display and control, used for PLC and safety systems; main control room, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A diamond inscribed in a 36 square, corners on the square's mid-sides, with the location line across the full width. A three-digit loop number cannot fit the diamond's lower point at full size, so both tag lines move in against the location line and shrink together until they clear the diamond, extending the rule the exemplar uses for four-letter tags. The engine's renderer draws a square inside a circle for PLC functions, which is not an ISA shape."
+    },
+    {
+      "id": "reactor-cstr",
+      "label": "Stirred reactor (CSTR)",
+      "file": "reactor-cstr.svg",
+      "engine": "reactor_cstr",
+      "dsl": [
+        "equip R-101 : reactor_cstr"
+      ],
+      "standard": "ISO 10628-2:2012 X8006 (jacketed vessel with agitator)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 45,
+      "notes": "The accepted 120-diameter vessel and 2:1 heads, with a surrounding heating jacket, two minor utility nozzles and a shaft with opposed paddles. The engine omits the jacket."
+    },
+    {
+      "id": "compressor",
+      "label": "Compressor",
+      "file": "compressor.svg",
+      "engine": "compressor",
+      "dsl": [
+        "equip C-101 : compressor"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2302 (compressor, general)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 42,
+      "notes": "Gas-compressor circle with a converging passage, at the accepted 60-unit pump diameter. Uses the general compressor rather than a centrifugal subtype; the engine uses a bare trapezoid."
+    },
+    {
+      "id": "heat-exchanger-air-cooled",
+      "label": "Air-cooled heat exchanger",
+      "file": "heat-exchanger-air-cooled.svg",
+      "engine": "hx_air_cooled",
+      "dsl": [
+        "equip E-102 : hx_air_cooled"
+      ],
+      "standard": "ISO 10628-2:2012 X2505 (finned tube with fan)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 40,
+      "notes": "Finned tube bank uses the accepted heat-exchanger envelope, with a separate outlined fan above it. Process stubs connect only to the tube bank."
+    },
+    {
+      "id": "condenser",
+      "label": "Condenser",
+      "file": "condenser.svg",
+      "engine": "condenser",
+      "dsl": [
+        "equip E-103 : condenser"
+      ],
+      "standard": "ISO 10628-2:2012 X8079 (heat exchanger, general; condenser)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 30,
+      "notes": "Circular exchanger with the ISO angular internal passage and four process connections. The equipment circle follows the accepted 60-unit pump scale. Usage is an overcount because condenser also occurs in labels."
+    },
+    {
+      "id": "tank-cone-roof",
+      "label": "Cone-roof tank",
+      "file": "tank-cone-roof.svg",
+      "engine": "tank_cone_roof",
+      "dsl": [
+        "equip TK-101 : tank_cone_roof"
+      ],
+      "standard": "ISO 10628-2:2012 X2063 (tank with conical roof and flat bottom)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 29,
+      "notes": "The accepted 160 by 140 tank shell and 26-unit roof rise, with straight roof slopes instead of the atmospheric tank arc."
+    },
+    {
+      "id": "blower",
+      "label": "Blower / fan",
+      "file": "blower.svg",
+      "engine": "blower",
+      "dsl": [
+        "equip B-101 : blower"
+      ],
+      "standard": "ISO 10628-2:2012 X8164 (fan)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 24,
+      "notes": "One fan symbol represents the inventory blower/fan row. Opposed curved blades and a hub in the accepted 60-unit equipment circle; no coloured or filled blades."
+    },
+    {
+      "id": "boiler",
+      "label": "Boiler",
+      "file": "boiler.svg",
+      "engine": "boiler",
+      "dsl": [
+        "equip B-102 : boiler"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2532 (steam generator)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 23,
+      "notes": "Outlined fired enclosure with a water/steam passage above an outlined flame; 120 wide to match the accepted vessel diameter. Both process stubs reach the passage."
+    },
+    {
+      "id": "flare",
+      "label": "Flare",
+      "file": "flare.svg",
+      "engine": "flare",
+      "dsl": [
+        "equip FL-101 : flare"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2591 (flare stack)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 21,
+      "notes": "Open stack with a side inlet and an outlined flame at its open top. Flame remains white with ink outline, following the binding monochrome style."
+    },
+    {
+      "id": "reboiler",
+      "label": "Reboiler (kettle)",
+      "file": "reboiler.svg",
+      "engine": "reboiler",
+      "dsl": [
+        "equip E-104 : reboiler"
+      ],
+      "standard": "ISO 10628-2:2012 X8131 (kettle-type heat exchanger)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 20,
+      "notes": "Kettle shell with enlarged vapour space and submerged U-tube bundle. Two left tube-side ports, top vapour outlet and right liquid outlet; 120 shell diameter with a 30-deep 2:1 end."
+    },
+    {
+      "id": "column-tray",
+      "label": "Tray column",
+      "file": "column-tray.svg",
+      "engine": "column_tray",
+      "dsl": [
+        "equip T-101 : column_tray"
+      ],
+      "standard": "ISO 10628-2:2012 X8101 (tray column)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 18,
+      "notes": "Reuses the accepted vertical vessel byte-for-byte as its shell, adding six alternating trays and downcomers between the 2:1 heads."
+    },
+    {
+      "id": "valve-butterfly",
+      "label": "Butterfly valve",
+      "file": "valve-butterfly.svg",
+      "engine": "valve_butterfly",
+      "dsl": [
+        "equip HV-107 : valve_butterfly"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 5; ISO 10628-2:2012 X8075",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 10,
+      "notes": "ISA disc drawn as a diagonal between short end bars. It shares the accepted 44 by 28 valve envelope and process stubs; the butterfly convention replaces the generic bowtie."
+    },
+    {
+      "id": "valve-control-motor",
+      "label": "Control valve, motor actuator",
+      "file": "valve-control-motor.svg",
+      "engine": "valve_control",
+      "dsl": [
+        "equip XV-203 : valve_control [actuator: \"motor\"]"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.2 no. 9 on Table 5.4.1 no. 1a",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted bowtie and full centre-reaching stem, with a circular motor actuator marked M and the accepted electric signal stub. Actuator usage is included in valve_control, not counted separately."
+    },
+    {
+      "id": "valve-control-piston",
+      "label": "Control valve, piston actuator",
+      "file": "valve-control-piston.svg",
+      "engine": "valve_control",
+      "dsl": [
+        "equip XV-204 : valve_control [actuator: \"piston\"]"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.4.2 no. 4 on Table 5.4.1 no. 1a",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted bowtie and centre-reaching stem connected to the piston line inside an outlined cylinder. Pneumatic input uses the accepted double slash. Actuator usage is not counted separately."
+    },
+    {
+      "id": "actuator-manual-handwheel",
+      "label": "Manual actuator / handwheel",
+      "file": "actuator-manual-handwheel.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.4.2 no. 11 (manual actuator)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Manual operator represented by the ISA handwheel bar in side elevation on a stem, ready to attach at a valve body centre. The DSL cannot express manual actuation; dsl is empty."
+    },
+    {
+      "id": "interlock-logic",
+      "label": "Interlock logic function",
+      "file": "interlock-logic.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.1.2 no. 3",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Reuses the exemplar 52-unit standalone interlock diamond and I-202 tag with electric stubs. The DSL cannot express interlock logic: interlock silently becomes field_discrete, so dsl is empty."
+    },
+    {
+      "id": "instrument-discrete-local-panel",
+      "label": "Instrument, discrete, local panel",
+      "file": "instrument-discrete-local-panel.svg",
+      "engine": "local_discrete",
+      "dsl": [
+        "inst TI-106 : local_discrete"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column D, row 4 (auxiliary location, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted discrete bubble with two solid horizontal chords at y = -2.5 and +2.5 for an accessible auxiliary location (local panel), using the accepted paired-signal offsets. Primary control-room instruments retain one line. Letters are fitted above the double line; the engine incorrectly uses a dashed line."
+    },
+    {
+      "id": "instrument-shared-local-panel",
+      "label": "Instrument, shared display / control, local panel",
+      "file": "instrument-shared-local-panel.svg",
+      "engine": "local_shared",
+      "dsl": [
+        "inst LIC-107 : local_shared"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column A, row 4 (auxiliary location, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted circle in a square with two solid horizontal chords at y = -2.5 and +2.5 for an accessible auxiliary location (local panel), using the accepted paired-signal offsets. Primary control-room instruments retain one line. Letters are fitted above the double line. The engine uses the wrong shared shape and a dashed location line."
+    },
+    {
+      "id": "instrument-computer-field",
+      "label": "Computer function, field mounted",
+      "file": "instrument-computer-field.svg",
+      "engine": "field_computer",
+      "dsl": [
+        "inst FY-108 : field_computer"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column C, row 1",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Reuses the accepted computer hexagon without a location line for field mounting. The engine incorrectly draws a diamond inside a circle. The field PLC is drawn separately in the same inventory row."
+    },
+    {
+      "id": "instrument-plc-field",
+      "label": "PLC function, field mounted",
+      "file": "instrument-plc-field.svg",
+      "engine": "field_plc",
+      "dsl": [
+        "inst LY-109 : field_plc"
+      ],
+      "standard": "ANSI/ISA-5.1 Table 5.1.1 column B, row 1 (field mounted, normally accessible)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted diamond in a 36 square with no location line. Reuses the control-room PLC tag-fitting rule and electric stubs. The engine incorrectly draws a square inside a circle."
+    },
+    {
+      "id": "valve-angle",
+      "label": "Angle valve",
+      "file": "valve-angle.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 2; ISO 10628-2:2012 reg. 2102",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Reuses the accepted relief valve angle body, without its spring: inlet below and outlet right; each triangle is the accepted valve half-body. The DSL cannot express an angle valve."
+    },
+    {
+      "id": "valve-three-way",
+      "label": "Three-way valve",
+      "file": "valve-three-way.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.4.1 no. 3; ISO 10628-2:2012 reg. 2103",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted bowtie plus a third matching triangle below, all meeting at the body centre. Three process stubs; routing arrows are omitted for a generic body without a selected flow configuration. The DSL cannot express a three-way valve."
+    },
+    {
+      "id": "regulator-pressure-reducing",
+      "label": "Pressure-reducing regulator",
+      "file": "regulator-pressure-reducing.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.4.3 nos. 10–11 (self-actuated pressure regulator)",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Accepted bowtie, centre-reaching stem and diaphragm, with the accepted zigzag spring and downstream pressure feedback to the diaphragm. Downstream sensing distinguishes pressure reduction from back-pressure regulation. Feedback is a plain process connection. The DSL cannot express self-actuated regulators."
+    },
+    {
+      "id": "rupture-disc",
+      "label": "Rupture disc",
+      "file": "rupture-disc.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 X8080; ANSI/ISA-5.1 Table 5.4.3 no. 18",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Narrow rectangular holder with a bowed membrane, following the locally cached ISO X8080 reference. Process stubs meet the holder on both sides. The DSL cannot express a rupture disc."
+    },
+    {
+      "id": "orifice-plate",
+      "label": "Orifice plate (flow element)",
+      "file": "orifice-plate.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.4.3 no. 5; ISO 10628-2:2012 C0096",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Edge-on plate across a continuous process line, with a small open identification handle above the plate. No instrument bubble is substituted for the primary element. The DSL cannot express an in-line orifice plate."
+    },
+    {
+      "id": "reducer-concentric",
+      "label": "Concentric reducer",
+      "file": "reducer-concentric.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 516",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Outlined triangle on the process axis, wide end left, following the cached ISO reducer reference; uses the accepted 44 by 28 valve envelope. The DSL cannot express a reducer."
+    },
+    {
+      "id": "connector-off-page",
+      "label": "Off-page connector",
+      "file": "connector-off-page.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ANSI/ISA-5.1 Table 5.3.2 no. 17",
+      "sourceUrl": "https://www.isa.org/products/ansi-isa-5-1-2024-instrumentation-and-control-symb",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Outlined continuation arrow with the destination P-02 in the accepted Inter tag style and a process stub at its tail. The DSL cannot express an off-page destination."
+    },
+    {
+      "id": "strainer",
+      "label": "Strainer",
+      "file": "strainer.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 X8090",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Inline diamond housing with a dashed screen across the flow path; the medium reuses the accepted filter dashed-line idiom. Process stubs meet the left and right corners. The DSL cannot express a strainer."
+    },
+    {
+      "id": "cyclone-separator",
+      "label": "Cyclone separator",
+      "file": "cyclone-separator.svg",
+      "engine": "cyclone",
+      "dsl": [
+        "equip CY-101 : cyclone"
+      ],
+      "standard": "ISO 10628-2:2012 X2618",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 9,
+      "notes": "120-wide cylindrical chamber over a conical solids hopper, with side feed, top gas outlet and bottom solids outlet. An internal vortex finder marks the gas separation path; outline and nozzle weights follow the accepted vessel."
+    },
+    {
+      "id": "reactor-plug-flow",
+      "label": "Plug-flow reactor",
+      "file": "reactor-plug-flow.svg",
+      "engine": "reactor_pfr",
+      "dsl": [
+        "equip R-102 : reactor_pfr"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2062 (vessel body); tubular-reactor convention, no dedicated PFR symbol",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 9,
+      "notes": "Tubular vessel with axial inlet and outlet using the accepted horizontal vessel dimensions and 2:1 heads. Plug-flow service is identified by equipment metadata; no unique standardized PFR glyph is claimed. Packing is not implied, unlike the engine drawing."
+    },
+    {
+      "id": "vessel-spherical",
+      "label": "Spherical vessel",
+      "file": "vessel-spherical.svg",
+      "engine": "sphere",
+      "dsl": [
+        "equip V-301 : sphere"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2063 (spherical vessel)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 9,
+      "notes": "120-diameter spherical shell, at the accepted vessel diameter, with top and bottom process nozzles. Supports are omitted as a separately inventoried accessory."
+    },
+    {
+      "id": "burner",
+      "label": "Burner",
+      "file": "burner.svg",
+      "engine": "burner",
+      "dsl": [
+        "equip B-103 : burner"
+      ],
+      "standard": "ISO 10628-2:2012 X8107",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 8,
+      "notes": "Fuel inlet and flared burner mouth with an outlined flame, reusing the white-flame treatment of the accepted boiler and flare. Fuel stub uses the accepted minor-process weight."
+    },
+    {
+      "id": "column-packed",
+      "label": "Packed column",
+      "file": "column-packed.svg",
+      "engine": "column_packed",
+      "dsl": [
+        "equip T-102 : column_packed"
+      ],
+      "standard": "ISO 10628-2:2012 X8141 (packing) in X8100 (column)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 7,
+      "notes": "Reuses the accepted vertical vessel shell, 2:1 heads and nozzles; two bounded beds with crossed diagonals identify packing. The tray column uses open alternating trays instead."
+    },
+    {
+      "id": "cooling-tower",
+      "label": "Cooling tower",
+      "file": "cooling-tower.svg",
+      "engine": "cooling_tower",
+      "dsl": [
+        "equip CT-101 : cooling_tower"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2521 (cooling tower)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 7,
+      "notes": "Waisted natural-draught tower matching the engine's broad rim, narrow middle and flared basin, 120 wide at the accepted vessel scale. The 24 px process stubs meet the water distribution and basin lines; the outline retains the accepted 1.6 px stroke."
+    },
+    {
+      "id": "generator",
+      "label": "Generator",
+      "file": "generator.svg",
+      "engine": "generator",
+      "dsl": [
+        "equip G-101 : generator"
+      ],
+      "standard": "ISO 10628-2:2012 C0079 (generator)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 6,
+      "notes": "Outlined 60-unit equipment circle marked G in the accepted Inter lettering. The left stub is a mechanical shaft at the symbol weight, not a process or signal line. Usage is an overcount because generator also occurs in labels."
+    },
+    {
+      "id": "pump-diaphragm",
+      "label": "Diaphragm pump",
+      "file": "pump-diaphragm.svg",
+      "engine": "pump_diaphragm",
+      "dsl": [
+        "equip P-103 : pump_diaphragm"
+      ],
+      "standard": "ISO 10628-2:2012 X8095 (pump, diaphragm type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 2,
+      "notes": "Reuses the accepted 60-unit pump casing, converging discharge lines and process stubs. A bowed diaphragm joins the top and bottom of the casing, following the cached ISO pump reference."
+    },
+    {
+      "id": "pump-general",
+      "label": "Pump, general",
+      "file": "pump-general.svg",
+      "engine": "pump_general",
+      "dsl": [
+        "equip P-104 : pump_general"
+      ],
+      "standard": "ISO 10628-2:2012 reg. 2301 (pump, liquid type, general)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": 2,
+      "notes": "Accepted pump casing and discharge convergence without the centrifugal diameter or a positive-displacement internal mark; follows the cached ISO pump reference."
+    },
+    {
+      "id": "pump-screw",
+      "label": "Screw pump",
+      "file": "pump-screw.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 8092 (pump, screw type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Accepted pump casing with two parallel zigzag screw marks, following the cached ISO pump reference. The DSL cannot express a screw pump."
+    },
+    {
+      "id": "pump-progressive-cavity",
+      "label": "Progressive-cavity pump",
+      "file": "pump-progressive-cavity.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 8093 (pump, progressive cavity type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Accepted pump casing with a continuous alternating curved rotor mark, following the cached ISO pump reference. The DSL cannot express a progressive-cavity pump."
+    },
+    {
+      "id": "pump-piston",
+      "label": "Reciprocating piston pump",
+      "file": "pump-piston.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 X8094 (pump, reciprocating piston type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Accepted pump casing with a horizontal rod ending at a vertical piston bar, following the cached ISO pump reference. The DSL cannot express a piston pump."
+    },
+    {
+      "id": "heat-exchanger-plate",
+      "label": "Plate heat exchanger",
+      "file": "heat-exchanger-plate.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 2516 (heat exchanger of plate type)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Reuses the accepted 200 by 60 exchanger envelope with vertical plate divisions and crossed diagonals from the cached ISO plate-exchanger reference. Four process stubs identify the two circuits. The DSL cannot express a plate heat exchanger."
+    },
+    {
+      "id": "heat-exchanger-u-tube",
+      "label": "U-tube heat exchanger",
+      "file": "heat-exchanger-u-tube.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 2513 (heat exchanger with U-shaped tubes)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Accepted 200 by 60 exchanger shell with one tube sheet, a U-shaped tube and a divided channel. Both tube-side nozzles are left of the tube sheet; shell-side nozzles are to its right. Follows the cached ISO exchanger reference. The DSL cannot express a U-tube heat exchanger."
+    },
+    {
+      "id": "motor-electric",
+      "label": "Electric motor",
+      "file": "motor-electric.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 C0082 (electric motor)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The accepted circular M operator idiom enlarged to the 60-unit equipment scale. The right stub is a mechanical shaft at symbol weight. The DSL cannot express a standalone electric motor."
+    },
+    {
+      "id": "turbine",
+      "label": "Turbine",
+      "file": "turbine.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 2571 (turbine, general)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Expanding turbine casing with inlet at the narrow end, exhaust at the wide end and a separate mechanical shaft to the right. Outline and shaft use 1.6; fluid connections use 2.5. The DSL cannot express a turbine."
+    },
+    {
+      "id": "agitator",
+      "label": "Agitator",
+      "file": "agitator.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 10628-2:2012 reg. 2672 (agitator)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The accepted shaft and top drive bar with a horizontal impeller hub and two short pitched blades angled in opposite directions, all in the accepted 1.6 px stroke. Open blades distinguish the agitator from a bowtie valve. The DSL cannot express a standalone agitator; heating jacket and vessel supports remain undrawn."
+    }
+  ]
+}

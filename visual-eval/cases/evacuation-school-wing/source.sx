@@ -1,0 +1,24 @@
+# Scenario: a school classroom wing whose corridor opens straight to the playground at both ends.
+evacuation "Science wing escape plan" unit m
+compliance iso
+sheet a3 landscape
+room c1 "Classroom 1" at 0,0 size 7x6
+room c2 "Classroom 2" at 7,0 size 7x6
+room c3 "Classroom 3" at 14,0 size 7x6
+room corridor "Corridor" at 0,6 size 21x3
+room lab "Science Lab" at 0,9 size 10x7
+room library "Library" at 10,9 size 11x7
+door between c1 corridor at 50% width 1
+door between c2 corridor at 50% width 1
+door between c3 corridor at 50% width 1
+door between lab corridor at 30% width 1.2
+opening between library corridor at 50% width 2.4
+here in corridor at 10.5,1.5 "YOU ARE HERE"
+exit-final xW in corridor at 0,1.5 side west "EXIT"
+exit-final xE in corridor at 21,1.5 side east "EXIT"
+extinguisher f1 in lab at 9.5,0.5 class "ABC"
+safety first-aid aid1 in library at 1,6
+assembly field outside at 26,4 "ASSEMBLY POINT"
+route primary here -> xE
+route secondary here -> xW
+legend auto

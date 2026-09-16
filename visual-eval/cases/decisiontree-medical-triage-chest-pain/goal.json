@@ -1,0 +1,51 @@
+{
+  "id": "decisiontree-medical-triage-chest-pain",
+  "type": "decisiontree",
+  "variant": "taxonomy",
+  "title": "Chest pain triage",
+  "goal": "Show an educational chest-pain assessment tree leading to clear clinical dispositions.",
+  "rubric": [
+    {
+      "id": "unstable-stemi",
+      "severity": "blocker",
+      "must": "The unstable-or-severe-pain Yes branch visibly tests for STEMI and routes STEMI to immediate reperfusion."
+    },
+    {
+      "id": "stable-acs",
+      "severity": "blocker",
+      "must": "The stable branch visibly tests ECG or troponin concern before routing possible acute coronary syndrome to monitored assessment."
+    },
+    {
+      "id": "safe-discharge",
+      "severity": "major",
+      "must": "The low-risk alternative-diagnosis path visibly ends in discharge with safety-net advice and follow-up."
+    },
+    {
+      "id": "observation-disposition",
+      "severity": "major",
+      "must": "An uncertain low-risk assessment visibly leads to serial-testing observation."
+    },
+    {
+      "id": "clinical-questions",
+      "severity": "minor",
+      "must": "Each internal node is visibly phrased as a clinical assessment question."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Redrawn from the source with the independent taxonomy exemplar drawing script; no engine geometry or screenshot used to build the target.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Visually reviewed against the taxonomy exemplar and source: complete questions and outcomes, numbered hexagons, unambiguous Yes/No drops, and a shared outcome row. No clipped labels or material collisions. Unclassified outcomes remain neutral.",
+      "model": "Codex visual review",
+      "passes": 1,
+      "reviewedAt": "2026-09-14T21:56:58.149Z",
+      "targetHash": "426dec36fbed",
+      "sourceHash": "12ce3b2b2bef",
+      "exemplarHash": "0c6f8008415a"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-burnout",
+  "type": "causalloop",
+  "title": "Nurse burnout dynamics",
+  "goal": "A clinical leader can see reinforcing staffing pressure and balancing recovery feedback.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "All causal links visibly show polarity markers."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The staffing-pressure loop is visibly marked reinforcing (R)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The recovery-response loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Curved arrows visibly close both feedback loops."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Variable labels are readable without overlap."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/causalloop/ideal.svg (sha256 dd3e7464cebc). Delay hashes placed on their curve using the quadratic midpoint. Loop labels matched by polarity; unmatched source declarations are reported, not silently attached to the wrong loop. Footer and loop labels separated. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots. Pending source correction: both recovery links are negative, so their cycle reinforces, contradicting the declared B1 balancing label."
+  }
+}

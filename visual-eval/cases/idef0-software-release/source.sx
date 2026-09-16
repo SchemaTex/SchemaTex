@@ -1,0 +1,16 @@
+# Scenario: shipping a web application release, from merged code to a live production deploy.
+idef0 "Software Release"
+  node A0
+  function A1 "Build release"
+  function A2 "Test candidate"
+  function A3 "Deploy to production"
+  input A1.I "Merged code"
+  control A1.C "Release branch policy"
+  mechanism A1.M "CI pipeline"
+  A1 -> A2 : "Release candidate"
+  control A2.C "Test plan"
+  mechanism A2.M "QA engineers"
+  A2 -> A3 : "Signed-off build"
+  control A3.C "Change approval"
+  mechanism A3.M "Deployment tool"
+  output A3.O "Live release"

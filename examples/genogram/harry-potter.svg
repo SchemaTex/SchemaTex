@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 696.8 612" class="schematex-diagram schematex-genogram" width="696.8" height="612"><title>Genogram: The Potter Family</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 708.1328625725002 612" class="schematex-diagram schematex-genogram" width="708.1328625725002" height="612"><title>Genogram: The Potter Family</title>
 <desc>Genogram diagram with 10 individuals across 3 generations</desc>
 <defs></defs>
 <style>
@@ -27,7 +27,7 @@
 .schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
 .schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
 .schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
-.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
 .schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
@@ -36,84 +36,117 @@
 .schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
 /* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
 .schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
 /* Sibling-of bracket (known relative, unknown ancestry) — dashed */
 .schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
 .schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
 .schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
 /* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
 .schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
 .schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
 .schematex-genogram-title { fill: #0f172a; }
 .schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
 .schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
 </style>
-<g><text x="348.4" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">The Potter Family</text>
-<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="fleamont" data-to="euphemia"><path d="M 96 60 L 176 60" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="fleamont" data-to="euphemia"><path d="M 136 60 L 136 141" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="fleamont+euphemia" data-to="james"><path d="M 136 60 L 136 206" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="mr_evans" data-to="mrs_evans"><path d="M 376 60 L 456 60" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans" data-to="mrs_evans"><path d="M 416 60 L 416 141" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans" data-to="mrs_evans"><path d="M 416 141 L 596 141" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans+mrs_evans" data-to="petunia"><path d="M 476 141 L 476 206" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans+mrs_evans" data-to="lily"><path d="M 596 141 L 596 206" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="james" data-to="lily"><path d="M 156 226 L 576 226" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="james" data-to="lily"><path d="M 366 226 L 366 307" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="james+lily" data-to="harry"><path d="M 366 307 L 426 307 L 426 372" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="vernon" data-to="petunia"><path d="M 316 226 L 456 226" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="vernon" data-to="petunia"><path d="M 386 226 L 386 307" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="petunia+vernon" data-to="dudley"><path d="M 386 307 L 266 307 L 266 372" class="schematex-genogram-edge-path"/></g></g>
+<g><text x="354.0664312862501" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">The Potter Family</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="fleamont" data-to="euphemia"><path d="M 89.4 60 L 187.52 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="fleamont" data-to="euphemia"><path d="M 138.46 60 L 138.46 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="fleamont+euphemia" data-to="james"><path d="M 138.46 141 L 138.46 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="mr_evans" data-to="mrs_evans"><path d="M 387.52 60 L 468.84000000000003 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans" data-to="mrs_evans"><path d="M 428.18000000000006 60 L 428.18000000000006 129 L 480.06000000000006 129 L 480.06000000000006 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans" data-to="mrs_evans"><path d="M 480.06000000000006 141 L 600.0600000000001 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans+mrs_evans" data-to="petunia"><path d="M 480.06000000000006 141 L 480.06000000000006 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="mr_evans+mrs_evans" data-to="lily"><path d="M 600.0600000000001 141 L 600.0600000000001 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="james" data-to="lily"><path d="M 158.46 226 L 580.0600000000001 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="james" data-to="lily"><path d="M 369.26 226 L 369.26 295 L 438.18000000000006 295 L 438.18000000000006 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="james+lily" data-to="harry"><path d="M 438.18000000000006 307 L 438.18000000000006 368" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="vernon" data-to="petunia"><path d="M 320.06000000000006 226 L 460.06000000000006 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="vernon" data-to="petunia"><path d="M 390.06000000000006 226 L 390.06000000000006 295 L 278.18000000000006 295 L 278.18000000000006 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="petunia+vernon" data-to="dudley"><path d="M 278.18000000000006 307 L 278.18000000000006 372" class="schematex-genogram-edge-path"/></g></g>
 <g class="schematex-genogram-sibling-of-edges"></g>
-<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-cutoff" data-from="harry" data-to="petunia" data-relationship-type="cutoff"><path d="M 426 392 Q 526 309 476 226" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 2,8;"/></g>
-<g class="schematex-genogram-emotional schematex-genogram-emotional-hostile" data-from="harry" data-to="dudley" data-relationship-type="hostile"><path d="M 426 412 Q 346 442 266 412" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 8,3,2,3;"/></g>
-<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="harry" data-to="lily" data-relationship-type="close"><path d="M 426 392 Q 646 309 596 226" fill="none" stroke="#4caf50" stroke-width="3"/></g></g>
-<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="fleamont" transform="translate(76, 60)"><title>Fleamont (1909-1979)</title>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-cutoff" data-from="harry" data-to="petunia" data-relationship-type="cutoff"><path d="M 438.18000000000006 368 L 437.6779322680278 362.07817478176605 L 436.1648156655034 356.2862358466815 L 434.651699062979 350.494296911597 L 433.10246723786366 344.7120740181621 L 431.5052703854194 338.9427551073092 L 429.90807353297515 333.17343619645624 L 428.29527331716383 327.4084880446194 L 426.66305562971377 321.6489790463316 L 425.0308379422637 315.8894700480438 L 423.40330847014053 310.12863709578954 L 421.78170424101444 304.3661308524381 L 420.1601000118884 298.60362460908675 L 418.56686496422475 292.83329153463177 L 417.0043150811708 287.05449266777794 L 415.44176519811674 281.2756938009241 L 413.9526139764028 275.4778460721142 L 412.5077406398951 269.6685070802811 L 412.2713294865899 268.71797910229276" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 408.7596582349779 253.11021638992526 L 408.55562209962596 252.15221695056414 L 407.45877919374635 246.26948587790457 L 406.5325216306234 240.35525512426122 L 405.7573632960073 234.42422266732 L 405.3617759447895 228.45098325071032 L 405.3653373979541 222.4822641980217 L 405.89609992326285 216.5195157023772 L 408.0009126884664 210.9313834582542 L 412.14086538484787 206.79972203772792 L 417.861762147095 205.71978515222216 L 423.6561561895245 206.77830681475822 L 429.3429578287579 208.6322841215897 L 434.56847751876467 211.55290433824484 L 439.79399720877143 214.4735245549 L 444.74181903553506 217.82982845529517 L 449.59563616547825 221.33361751139614 L 454.4494532954215 224.8374065674971 L 460.06000000000006 226" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 406.4487191042689 270.1661532408851 L 418.09393986891087 267.26980496370044" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 402.89128022711833 254.36007220435738 L 414.6280362428375 251.86036057549313" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-hostile" data-from="harry" data-to="dudley" data-relationship-type="hostile"><path d="M 414.18000000000006 392 L 408.38000000000005 388 L 402.58000000000004 396 L 396.7800000000001 388 L 390.9800000000001 396 L 385.18000000000006 388 L 379.38000000000005 396 L 373.58000000000004 388 L 367.7800000000001 396 L 361.9800000000001 388 L 356.18000000000006 396 L 350.38000000000005 388 L 344.58000000000004 396 L 338.7800000000001 388 L 332.9800000000001 396 L 327.18000000000006 388 L 321.38000000000005 396 L 315.58000000000004 388 L 309.7800000000001 396 L 303.9800000000001 388 L 298.18000000000006 392" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="harry" data-to="lily" data-relationship-type="close"><path d="M 462.18000000000006 389.5 L 466.833008424485 388.92187338999406 L 472.1718326371744 386.38516196172355 L 477.51065684986384 383.8484505334531 L 482.8494810625532 381.31173910518265 L 488.1883052752426 378.77502767691215 L 493.52712948793203 376.2383162486417 L 498.8448367648977 373.701874305463 L 504.16406801009 371.1243313272593 L 509.48329925528225 368.5467883490557 L 514.8025305004745 365.96924537085204 L 520.1217617456668 363.39170239264837 L 525.4409929908591 360.81415941444476 L 530.7298040921927 358.23627854924774 L 536.0207257183848 355.6011130535323 L 541.3116473445768 352.96594755781683 L 546.602568970769 350.3307820621014 L 551.8934905969611 347.6956165663859 L 557.1844122231532 345.06045107067047 L 562.4239386741342 342.4064489339111 L 567.6749456104511 339.69261861514235 L 572.9259525467679 336.97878829637364 L 578.1769594830849 334.26495797760487 L 583.4279664194017 331.5511276588361 L 588.6789733557187 328.8372973400673 L 593.8287102393913 326.04124783507507 L 599.0232717490171 323.22087914161847 L 604.217833258643 320.40051044816187 L 609.4123947682689 317.5801417547053 L 614.6069562778948 314.7597730612487 L 619.6651098793418 311.8406197825994 L 624.7779715430615 308.8747144483075 L 629.8908332067814 305.9088091140156 L 635.0036948705011 302.9429037797237 L 639.99467043914 299.9701002123763 L 644.9840703298819 296.800898802781 L 649.9734702206239 293.6316973931856 L 654.9628701113658 290.4624959835903 L 659.7894681087064 287.3211211032715 L 664.5793284032756 283.8577142252356 L 669.3691886978447 280.3943073471997 L 674.1590489924139 276.93090046916376 L 678.5151136523424 273.31159339732807 L 682.9484559004719 269.4021912236873 L 687.3817981486014 265.49278905004655 L 690.9059601396264 261.31061966038044 L 694.6032526745765 256.69889799105584 L 696.7274756785204 252.20687164388778 L 698.3861668182874 248.20563336201593 L 696.5286676094399 242.5942480131517 L 693.4513752799928 239.8039179395632 L 688.6451116023541 236.36331068134166 L 683.750789139144 234.96097177426972 L 678.0900585078936 233.25977291324836 L 672.7658256015982 231.96088986455203 L 666.9023374671931 231.21426027633078 L 661.038849332788 230.46763068810955 L 655.1753611983829 229.72100109988833 L 649.5189547372764 229.33271926810812 L 643.6112707328404 229.1397981753104 L 637.7035867284043 228.94687708251269 L 631.7959027239681 228.75395598971497 L 625.8882187195319 228.56103489691725 L 620.0600000000001 228.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 462.18000000000006 394.5 L 468.9788238724781 393.438008470254 L 474.3176480851675 390.90129704198347 L 479.6564722978569 388.364585613713 L 484.99529651054627 385.82787418544257 L 490.3341207232357 383.29116275717206 L 495.6729449359251 380.7544513289016 L 501.0251918020753 378.20143560761835 L 506.3444230472676 375.6238926294147 L 511.66365429245985 373.0463496512111 L 516.9828855376521 370.4688066730074 L 522.3021167828445 367.89126369480374 L 527.6213480280367 365.31372071660013 L 532.958902272501 362.71189261913213 L 538.2498238986931 360.0767271234167 L 543.5407455248851 357.4415616277012 L 548.8316671510772 354.80639613198576 L 554.1225887772694 352.1712306362703 L 559.4135104034615 349.53606514055485 L 564.7195797771574 346.8482989906004 L 569.9705867134743 344.13446867183166 L 575.2215936497911 341.42063835306294 L 580.4726005861081 338.70680803429417 L 585.7236075224249 335.9929777155254 L 590.9746144587418 333.2791473967566 L 596.2144726260817 330.4353504549798 L 601.4090341357075 327.6149817615232 L 606.6035956453335 324.7946130680666 L 611.7981571549593 321.97424437461007 L 616.9927186645853 319.15387568115347 L 622.1739823559988 316.1656121404971 L 627.2868440197185 313.1997068062052 L 632.3997056834384 310.2338014719133 L 637.5125673471581 307.2678961376214 L 642.6755119675545 304.19065570893457 L 647.6649118582964 301.02145429933927 L 652.6543117490384 297.8522528897439 L 657.6437116397802 294.6830514801486 L 662.7191793477346 291.3728851704294 L 667.5090396423037 287.90947829239354 L 672.2988999368729 284.4460714143576 L 677.088760231442 280.9826645363217 L 681.8220942900003 277.0617772677743 L 686.2554365381299 273.1523750941335 L 690.6887787862594 269.2429729204928 L 694.8070359536098 264.4381758139217 L 698.50432848856 259.8264541445971 L 701.4591746709442 253.82273817460595 L 703.1328625725002 246.63436654287386 L 701.2753633636528 241.02298119400965 L 696.3618002194992 235.7382781779144 L 691.5555365418604 232.29767091969285 L 685.1898408008369 230.17253462683018 L 679.5291101695865 228.47133576580882 L 673.3974028817252 227.0009392459241 L 667.5339147473201 226.25430965770283 L 661.670426612915 225.5076800694816 L 655.8069384785099 224.76105048126038 L 649.6821475453174 224.3353831670035 L 643.7744635408814 224.14246207420578 L 637.8667795364453 223.94954098140806 L 631.9590955320091 223.75661988861035 L 626.0514115275729 223.56369879581263 L 620.0600000000001 223.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-male" data-individual-id="fleamont" data-status="deceased" transform="translate(69.4, 60)"><title>Fleamont (1909-1979)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
-<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">70</text></g>
-<g class="schematex-genogram-node schematex-genogram-female schematex-genogram-deceased" data-individual-id="euphemia" transform="translate(196, 60)"><title>Euphemia (1920-1979)</title>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">70</text></g>
+<g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-female" data-individual-id="euphemia" data-status="deceased" transform="translate(207.52, 60)"><title>Euphemia (1920-1979)</title>
 <circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
-<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">59</text></g>
-<g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="mr_evans" transform="translate(356, 60)"><title>Mr_evans (1925)</title>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">59</text></g>
+<g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-male" data-individual-id="mr_evans" data-status="deceased" transform="translate(367.52, 60)"><title>Mr_evans (1925)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
-<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/></g>
-<g class="schematex-genogram-node schematex-genogram-female schematex-genogram-deceased" data-individual-id="mrs_evans" transform="translate(476, 60)"><title>Mrs_evans (1928)</title>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark"/></g>
+<g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-female" data-individual-id="mrs_evans" data-status="deceased" transform="translate(488.84000000000003, 60)"><title>Mrs_evans (1928)</title>
 <circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
-<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/></g></g>
-<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="james" transform="translate(136, 226)"><title>James (1960-1981)</title>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-male" data-individual-id="james" data-status="deceased" transform="translate(138.46, 226)"><title>James (1960-1981)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
-<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">21</text></g>
-<g class="schematex-genogram-node schematex-genogram-female schematex-genogram-deceased" data-individual-id="lily" transform="translate(596, 226)"><title>Lily (1960-1981)</title>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">21</text></g>
+<g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-female" data-individual-id="lily" data-status="deceased" transform="translate(600.0600000000001, 226)"><title>Lily (1960-1981)</title>
 <circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
-<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
-<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">21</text></g>
-<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="vernon" transform="translate(296, 226)"><title>Vernon (1951)</title>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">21</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="vernon" data-status="alive" transform="translate(300.06000000000006, 226)"><title>Vernon (1951)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
-<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="petunia" transform="translate(476, 226)"><title>Petunia (1958)</title>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="petunia" data-status="alive" transform="translate(480.06000000000006, 226)"><title>Petunia (1958)</title>
 <circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
-<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-index-person" data-individual-id="harry" transform="translate(426, 392)"><title>Harry (1980)</title>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male schematex-genogram-index-person" data-individual-id="harry" data-status="alive" transform="translate(438.18000000000006, 392)"><title>Harry (1980)</title>
 <rect x="-24" y="-24" width="48" height="48" class="schematex-genogram-index-border"/>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
-<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="dudley" transform="translate(266, 392)"><title>Dudley (1980)</title>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="dudley" data-status="alive" transform="translate(278.18000000000006, 392)"><title>Dudley (1980)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
-<g class="schematex-genogram-labels"><text x="76" y="98" class="schematex-genogram-label" data-individual-id="fleamont">Fleamont (1909–1979)</text>
-<text x="196" y="98" class="schematex-genogram-label" data-individual-id="euphemia">Euphemia (1920–1979)</text>
-<text x="356" y="98" class="schematex-genogram-label" data-individual-id="mr_evans">Mr_evans (b. 1925)</text>
-<text x="476" y="98" class="schematex-genogram-label" data-individual-id="mrs_evans">Mrs_evans (b. 1928)</text>
-<text x="136" y="264" class="schematex-genogram-label" data-individual-id="james">James (1960–1981)</text>
-<text x="596" y="264" class="schematex-genogram-label" data-individual-id="lily">Lily (1960–1981)</text>
-<text x="296" y="264" class="schematex-genogram-label" data-individual-id="vernon">Vernon (b. 1951)</text>
-<text x="476" y="264" class="schematex-genogram-label" data-individual-id="petunia">Petunia (b. 1958)</text>
-<text x="426" y="430" class="schematex-genogram-label" data-individual-id="harry">Harry (b. 1980)</text>
-<text x="266" y="430" class="schematex-genogram-label" data-individual-id="dudley">Dudley (b. 1980)</text></g>
-<g class="schematex-genogram-edge-labels"><text x="366" y="220" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">m. 1978</text></g></g></g>
+<g class="schematex-genogram-labels"><text x="69.4" y="98" class="schematex-genogram-label" data-individual-id="fleamont">Fleamont (1909–1979)</text>
+<text x="207.52" y="98" class="schematex-genogram-label" data-individual-id="euphemia">Euphemia (1920–1979)</text>
+<text x="367.52" y="98" class="schematex-genogram-label" data-individual-id="mr_evans">Mr_evans (b. 1925)</text>
+<text x="488.84000000000003" y="98" class="schematex-genogram-label" data-individual-id="mrs_evans">Mrs_evans (b. 1928)</text>
+<text x="138.46" y="264" class="schematex-genogram-label" data-individual-id="james">James (1960–1981)</text>
+<text x="600.0600000000001" y="264" class="schematex-genogram-label" data-individual-id="lily">Lily (1960–1981)</text>
+<text x="300.06000000000006" y="264" class="schematex-genogram-label" data-individual-id="vernon">Vernon (b. 1951)</text>
+<text x="480.06000000000006" y="264" class="schematex-genogram-label" data-individual-id="petunia">Petunia (b. 1958)</text>
+<text x="438.18000000000006" y="430" class="schematex-genogram-label" data-individual-id="harry">Harry (b. 1980)</text>
+<text x="278.18000000000006" y="430" class="schematex-genogram-label" data-individual-id="dudley">Dudley (b. 1980)</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="james" data-to="lily"><rect x="345.56000000000006" y="206" width="47.400000000000006" height="16" fill="white" fill-opacity="0.9"/>
+<text x="369.26000000000005" y="217" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">m. 1978</text></g></g></g></g>
 <g class="schematex-legend"><style>
 .schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
@@ -124,12 +157,9 @@
 <g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="136.45" y1="547" x2="144.45" y2="555" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="144.45" y1="547" x2="136.45" y2="555" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
 <text x="159.45" y="554.5" class="schematex-legend-label">Deceased</text></g>
 <text x="16" y="572.5" class="schematex-legend-section">RELATIONSHIPS</text>
-<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><line x1="130.45" y1="569" x2="150.45" y2="569" stroke="#4caf50" stroke-width="3" stroke-linecap="round"/>
-<text x="159.45" y="572.5" class="schematex-legend-label">Close</text></g>
-<g class="schematex-legend-row" data-legend-key="hostile" data-legend-section="relationships"><line x1="211.45" y1="569" x2="231.45" y2="569" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,3,2,3"/>
-<text x="240.45" y="572.5" class="schematex-legend-label">Hostile</text></g>
-<g class="schematex-legend-row" data-legend-key="cutoff" data-legend-section="relationships"><line x1="306.45" y1="569" x2="326.45" y2="569" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,8"/>
-<text x="335.45" y="572.5" class="schematex-legend-label">Cutoff</text></g>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><path d="M 130.45 566.5 L 135.45 566.5 L 140.45 566.5 L 145.45 566.5 L 150.45 566.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 130.45 571.5 L 135.45 571.5 L 140.45 571.5 L 145.45 571.5 L 150.45 571.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><text x="159.45" y="572.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="hostile" data-legend-section="relationships"><path d="M 211.45 569 L 216.45 573 L 221.45 565 L 226.45 573 L 231.45 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/><text x="240.45" y="572.5" class="schematex-legend-label">Hostile</text></g>
+<g class="schematex-legend-row" data-legend-key="cutoff" data-legend-section="relationships"><path d="M 306.45 569 L 311.45 569 L 313.1166666666667 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 319.7833333333333 569 L 321.45 569 L 326.45 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 313.1166666666667 563 L 313.1166666666667 575" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 319.7833333333333 563 L 319.7833333333333 575" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><text x="335.45" y="572.5" class="schematex-legend-label">Cutoff</text></g>
 <text x="16" y="590.5" class="schematex-legend-section">MARKERS</text>
-<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="584" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="130.45" y="582" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="584" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="130.45" y="582" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
 <text x="159.45" y="590.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

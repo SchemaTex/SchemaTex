@@ -1,0 +1,15 @@
+# Arduino digital input: button applies 5 V and a 10 kΩ resistor holds the input low when open.
+breadboard
+board: half
+title: "Pushbutton with Pull-down"
+parts
+  uno: mcu uno @beside-left
+  sw1: button @10a
+  r1: resistor 10k @14e..18e
+wires
+  uno:5V --red-- @+t10
+  @+t10 --red-- @10a
+  uno:2 --yellow-- @12a
+  @12a --yellow-- @14e
+  @18e --black-- @-t18
+  uno:GND --black-- @-t1

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="706" viewBox="0 0 1290 706" role="img">
+<title>2-bit Magnitude Comparator</title>
+<desc>A gate-level logic diagram of a 2-bit magnitude comparator drawn with IEC 60617-12 rectangular binary-logic symbols. Every gate is a rectangle with its qualifying symbol inside: =1 for exclusive-OR, &amp; for AND, ≥1 for OR and 1 for the buffer; a small negation circle at the output turns ≥1 into NOR and 1 into an inverter. The four inputs A1, B1, A0 and B0 enter on the left; two exclusive-OR elements detect a difference on each bit pair, a negated ≥1 element forms the equal output, inverters supply the complemented B bits and the bit-1 equality term, an AND pair and a three-input AND form the greater-than product terms, a ≥1 element sums them into GT, and a final negated ≥1 element derives LT from GT and EQ. All wires are orthogonal; filled dots mark fan-out junctions and plain crossings do not connect.</desc>
+<rect x="0" y="0" width="1290" height="706" fill="#FFFFFF"/>
+<line x1="46" y1="96" x2="1244" y2="96" stroke="#E2E8F0" stroke-width="1"/>
+<line x1="46" y1="636" x2="1244" y2="636" stroke="#E2E8F0" stroke-width="1"/>
+<g fill="none" stroke="#1E293B" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter">
+<polyline points="62,118 190,118"/>
+<polyline points="110,118 110,206 380,206"/>
+<polyline points="62,142 190,142"/>
+<polyline points="88,142 88,306 190,306"/>
+<polyline points="62,470 190,470"/>
+<polyline points="110,470 110,526 490,526 490,482 570,482"/>
+<polyline points="62,494 190,494"/>
+<polyline points="88,494 88,570 190,570"/>
+<polyline points="234,130 380,130"/>
+<polyline points="276,130 276,382 570,382"/>
+<polyline points="244,306 300,306 300,230 380,230"/>
+<polyline points="234,482 324,482 324,406 570,406"/>
+<polyline points="434,130 466,130 466,464 570,464"/>
+<polyline points="244,570 514,570 514,500 570,500"/>
+<polyline points="424,218 668,218 668,294 760,294"/>
+<polyline points="614,482 692,482 692,318 760,318"/>
+<polyline points="804,306 1150,306"/>
+<polyline points="924,306 924,470 950,470"/>
+<polyline points="624,394 1150,394"/>
+<polyline points="852,394 852,494 950,494"/>
+<polyline points="1004,482 1150,482"/>
+</g>
+<g fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5">
+<rect x="190" y="106" width="44" height="48"/>
+<rect x="190" y="284" width="44" height="44"/>
+<circle cx="239" cy="306" r="5"/>
+<rect x="190" y="458" width="44" height="48"/>
+<rect x="190" y="548" width="44" height="44"/>
+<circle cx="239" cy="570" r="5"/>
+<rect x="380" y="108" width="44" height="44"/>
+<circle cx="429" cy="130" r="5"/>
+<rect x="380" y="194" width="44" height="48"/>
+<rect x="570" y="370" width="44" height="48"/>
+<circle cx="619" cy="394" r="5"/>
+<rect x="570" y="452" width="44" height="60"/>
+<rect x="760" y="282" width="44" height="48"/>
+<rect x="950" y="458" width="44" height="48"/>
+<circle cx="999" cy="482" r="5"/>
+</g>
+<g fill="#1E293B">
+<circle cx="110" cy="118" r="3.5"/>
+<circle cx="88" cy="142" r="3.5"/>
+<circle cx="110" cy="470" r="3.5"/>
+<circle cx="88" cy="494" r="3.5"/>
+<circle cx="276" cy="130" r="3.5"/>
+<circle cx="924" cy="306" r="3.5"/>
+<circle cx="852" cy="394" r="3.5"/>
+</g>
+<g font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="46" y="56" font-size="20" fill="#1E293B" text-anchor="start" font-weight="600">2-bit Magnitude Comparator</text>
+<text x="46" y="80" font-size="11.5" fill="#64748B" text-anchor="start">IEC 60617-12 rectangular symbols · signal flow left to right</text>
+<text x="1244" y="80" font-size="11.5" fill="#64748B" text-anchor="end">filled dot = junction · plain crossing = no connection · ○ = negated output</text>
+<text x="54" y="122.5" font-size="13" fill="#1E293B" text-anchor="end">A1</text>
+<text x="54" y="146.5" font-size="13" fill="#1E293B" text-anchor="end">B1</text>
+<text x="54" y="474.5" font-size="13" fill="#1E293B" text-anchor="end">A0</text>
+<text x="54" y="498.5" font-size="13" fill="#1E293B" text-anchor="end">B0</text>
+<text x="1160" y="310.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">GT</text>
+<text x="1200" y="310.5" font-size="10" fill="#64748B" text-anchor="start">A &gt; B</text>
+<text x="1160" y="398.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">EQ</text>
+<text x="1200" y="398.5" font-size="10" fill="#64748B" text-anchor="start">A = B</text>
+<text x="1160" y="486.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">LT</text>
+<text x="1200" y="486.5" font-size="10" fill="#64748B" text-anchor="start">A &lt; B</text>
+<text x="54" y="168" font-size="10" fill="#64748B" text-anchor="end">MSB</text>
+<text x="54" y="520" font-size="10" fill="#64748B" text-anchor="end">LSB</text>
+<text x="300" y="123" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">d1</text>
+<text x="262" y="299" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">nB1</text>
+<text x="449" y="123" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">e1</text>
+<text x="560" y="211" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">g1</text>
+<text x="287" y="475" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">d0</text>
+<text x="380" y="563" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">nB0</text>
+<text x="653" y="475" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">g0</text>
+<text x="46" y="664" font-size="11.5" fill="#64748B" text-anchor="start">GT = A1·B1′ + (A1 XNOR B1)·A0·B0′</text>
+<text x="340" y="664" font-size="11.5" fill="#64748B" text-anchor="start">EQ = (A1 XNOR B1)·(A0 XNOR B0)</text>
+<text x="620" y="664" font-size="11.5" fill="#64748B" text-anchor="start">LT = (GT + EQ)′</text>
+<text x="212" y="125" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">=1</text>
+<text x="212" y="303" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">1</text>
+<text x="212" y="477" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">=1</text>
+<text x="212" y="567" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">1</text>
+<text x="402" y="127" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">1</text>
+<text x="402" y="213" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">&amp;</text>
+<text x="592" y="389" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">≥1</text>
+<text x="592" y="471" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">&amp;</text>
+<text x="782" y="301" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">≥1</text>
+<text x="972" y="477" font-size="13" fill="#1E293B" text-anchor="middle" font-weight="600">≥1</text>
+</g>
+</svg>

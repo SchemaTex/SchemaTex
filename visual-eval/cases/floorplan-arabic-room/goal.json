@@ -1,0 +1,86 @@
+{
+  "id": "floorplan-arabic-room",
+  "type": "floorplan",
+  "title": "Arabic bedroom labels",
+  "goal": "A reader must be able to read the Arabic room and furniture labels naturally and identify the door, window, and dimensions of a small bedroom.",
+  "rubric": [
+    {
+      "id": "arabic-reading-order",
+      "severity": "blocker",
+      "must": "The Arabic room name and furniture labels read naturally from right to left, with the room name's words in the correct order and no reversed letters or mirrored glyphs."
+    },
+    {
+      "id": "arabic-letter-joining",
+      "severity": "blocker",
+      "must": "Arabic letters use their normal contextual joined forms wherever Arabic spelling permits joining, with no words rendered as a sequence of isolated letters."
+    },
+    {
+      "id": "arabic-label-fit",
+      "severity": "major",
+      "must": "The Arabic room name fits inside the room, and all three Arabic furniture labels fit within their respective furniture outlines without clipping or overlapping symbol strokes."
+    },
+    {
+      "id": "arabic-label-identity",
+      "severity": "major",
+      "must": "The room has an Arabic bedroom name, and the bed, wardrobe, and table each carry the appropriate ordinary Arabic name for that object."
+    },
+    {
+      "id": "small-room-and-furniture",
+      "severity": "major",
+      "must": "The drawing shows one rectangular room dimensioned 3 by 4 metres with exactly three furniture pieces, all inside its walls and clear of the door swing."
+    },
+    {
+      "id": "door-and-window",
+      "severity": "major",
+      "must": "One door has a visible leaf and inward swing arc at a wall opening, and one window has visible glazing lines in a separate wall opening."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents one 3.00 m by 4.00 m bedroom with readable, correctly joined Arabic labels, exactly three labeled furniture pieces, an inward-swinging door, and a window with visible glazing lines.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:11:02.751Z",
+      "targetHash": "3d9cf2ad286b",
+      "sourceHash": "e3d44f29ac59",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "arabic-reading-order",
+          "verdict": "pass",
+          "evidence": "The room label \"غرفة نوم\" and furniture labels \"سرير\", \"خزانة\", and \"طاولة\" read naturally right to left with correctly oriented glyphs."
+        },
+        {
+          "id": "arabic-letter-joining",
+          "verdict": "pass",
+          "evidence": "All visible Arabic words use normal contextual joined letterforms rather than isolated characters."
+        },
+        {
+          "id": "arabic-label-fit",
+          "verdict": "pass",
+          "evidence": "The bedroom name fits within the room, and each furniture label is visibly contained within its respective bed, wardrobe, or table outline without clipping or stroke overlap."
+        },
+        {
+          "id": "arabic-label-identity",
+          "verdict": "pass",
+          "evidence": "The room is labeled \"غرفة نوم\"; the bed, wardrobe, and table are appropriately labeled \"سرير\", \"خزانة\", and \"طاولة\"."
+        },
+        {
+          "id": "small-room-and-furniture",
+          "verdict": "pass",
+          "evidence": "One rectangular room is dimensioned 3.00 by 4.00 metres and contains exactly three furniture pieces, all within the walls and clear of the door swing."
+        },
+        {
+          "id": "door-and-window",
+          "verdict": "pass",
+          "evidence": "The south-wall door has a visible leaf and inward swing arc, while the north-wall window occupies a separate opening and has visible glazing lines."
+        }
+      ]
+    }
+  }
+}

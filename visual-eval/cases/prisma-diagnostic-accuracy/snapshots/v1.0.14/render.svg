@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="prisma" role="img" aria-label="Point-of-care troponin for emergency-department triage" width="746" height="699" viewBox="0 0 746 699"><title>Point-of-care troponin for emergency-department triage</title>
+<desc>PRISMA 2020 flow diagram (2020-single, systematic-review) — 7 boxes, 6 arrows</desc>
+<style>.prisma { font-family: system-ui, -apple-system, sans-serif; }
+.prisma-title { font: 700 16px sans-serif; fill: #0f172a; }
+.prisma-subtitle { font: 400 12px sans-serif; fill: #475569; }
+
+.prisma-stage { stroke-width: 1.1; stroke: #90a4ae; }
+.prisma-stage-identification { fill: #e8f1fb; }
+.prisma-stage-screening { fill: #e3f5f7; }
+.prisma-stage-included { fill: #e9f6ea; }
+.prisma-exclusion { stroke-width: 1.1; stroke: #90a4ae; fill: #f4fafb; }
+.prisma-stage-previous { stroke-width: 1.4; stroke-dasharray: 5 3; fill: #e8f1fb; stroke: #1976d2; }
+
+.prisma-stage-label { font: 600 13px sans-serif; fill: #0f172a; }
+.prisma-stage-count { font: 700 13px sans-serif; fill: #0f172a; }
+.prisma-stage-source { font: 400 11.5px sans-serif; fill: #475569; }
+.prisma-stage-subtitle { font: italic 500 11.5px sans-serif; fill: #475569; }
+.prisma-exclusion-reason { font: 400 11.5px sans-serif; fill: #475569; }
+
+.prisma-arrow-main { fill: none; stroke: #475569; stroke-width: 1.6; marker-end: url(#prisma-arrow); }
+.prisma-arrow-exclusion { fill: none; stroke: #475569; stroke-width: 1.6; marker-end: url(#prisma-arrow); }
+.prisma-arrow-merge-leg { fill: none; stroke: #475569; stroke-width: 1.6; }
+.prisma-arrow-merge-trunk { fill: none; stroke: #475569; stroke-width: 1.6; marker-end: url(#prisma-arrow); }
+.prisma-arrow-previous { fill: none; stroke: #1976d2; stroke-width: 1.5; stroke-dasharray: 5 3; marker-end: url(#prisma-arrow-accent); }
+.prisma-warning { font: italic 400 11px sans-serif; fill: #d97706; }
+
+.prisma-band { stroke: none; }
+.prisma-band-identification { fill: #1565c0; }
+.prisma-band-screening { fill: #00838f; }
+.prisma-band-included { fill: #2e7d32; }
+.prisma-band-label { font: 700 12px sans-serif; fill: #ffffff; letter-spacing: 0.8px; text-transform: uppercase; }
+
+.prisma-col-header { stroke: #90a4ae; stroke-width: 1.1; }
+.prisma-col-header-databases { fill: #ef8a3c; }
+.prisma-col-header-other { fill: #6b8694; }
+.prisma-col-header-label { font: 600 12px sans-serif; fill: #ffffff; }</style>
+<defs><marker id="prisma-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+<marker id="prisma-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker></defs>
+<text x="373" y="40" class="prisma-title" text-anchor="middle">Point-of-care troponin for emergency-department triage</text>
+<g class="prisma-bands"><g data-band="identification"><rect x="24" y="96" width="34" height="112" rx="17" ry="17" class="prisma-band prisma-band-identification" data-stage="identification"/>
+<text x="41" y="152" class="prisma-band-label" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 41 152)">Identification</text></g>
+<g data-band="screening"><rect x="24" y="264" width="34" height="280" rx="17" ry="17" class="prisma-band prisma-band-screening" data-stage="screening"/>
+<text x="41" y="404" class="prisma-band-label" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 41 404)">Screening</text></g>
+<g data-band="included"><rect x="24" y="600" width="34" height="79" rx="17" ry="17" class="prisma-band prisma-band-included" data-stage="included"/>
+<text x="41" y="639.5" class="prisma-band-label" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 41 639.5)">Included</text></g></g>
+<g class="prisma-col-headers"><g data-header="databases"><rect x="92" y="56" width="630" height="28" rx="14" ry="14" class="prisma-col-header prisma-col-header-databases" data-column="databases"/>
+<text x="407" y="74" class="prisma-col-header-label" text-anchor="middle">Identification of studies via databases and registers</text></g></g>
+<g class="prisma-edges"><path d="M 376 126 L 448 126" class="prisma-arrow-exclusion" data-edge="id-databases-&gt;id-removed"/>
+<path d="M 234 208 L 234 256" class="prisma-arrow-main" data-edge="id-databases-&gt;screening"/>
+<path d="M 234 325 L 234 424" class="prisma-arrow-main" data-edge="screening-&gt;eligibility"/>
+<path d="M 234 493 L 234 592" class="prisma-arrow-main" data-edge="eligibility-&gt;included"/>
+<path d="M 376 294.5 L 448 294.5" class="prisma-arrow-exclusion" data-edge="screening-&gt;screening-excluded"/>
+<path d="M 376 462.5 L 448 462.5" class="prisma-arrow-exclusion" data-edge="eligibility-&gt;eligibility-excluded"/></g>
+<g class="prisma-boxes"><g data-prisma-role="id-databases" data-prisma-variant="main" data-prisma-stage="identification"><rect x="92" y="96" width="284" height="112" rx="8" ry="8" class="prisma-stage prisma-stage-identification" data-role="id-databases"/>
+<text x="234" y="122" class="prisma-stage-label" text-anchor="middle">Records identified from:</text>
+<text x="157.2" y="140" class="prisma-stage-source">MEDLINE (n = 480)</text>
+<text x="157.2" y="157" class="prisma-stage-source">Embase (n = 420)</text>
+<text x="157.2" y="174" class="prisma-stage-source">Web of Science (n = 360)</text>
+<text x="234" y="192" class="prisma-stage-count" text-anchor="middle">Total (n = 1,260)</text></g>
+<g data-prisma-role="id-removed" data-prisma-variant="exclusion" data-prisma-stage="identification"><rect x="456" y="96" width="266" height="60" rx="8" ry="8" class="prisma-exclusion prisma-stage-identification" data-role="id-removed"/>
+<text x="589" y="122" class="prisma-stage-label" text-anchor="middle">Records removed before screening</text>
+<text x="477" y="140" class="prisma-exclusion-reason">Duplicate records removed (n = 260)</text></g>
+<g data-prisma-role="screening" data-prisma-variant="main" data-prisma-stage="screening"><rect x="92" y="264" width="284" height="61" rx="8" ry="8" class="prisma-stage prisma-stage-screening" data-role="screening"/>
+<text x="234" y="290" class="prisma-stage-label" text-anchor="middle">Records screened</text>
+<text x="234" y="309" class="prisma-stage-count" text-anchor="middle">n = 1,000</text></g>
+<g data-prisma-role="screening-excluded" data-prisma-variant="exclusion" data-prisma-stage="screening"><rect x="456" y="264" width="266" height="112" rx="8" ry="8" class="prisma-exclusion prisma-stage-screening" data-role="screening-excluded"/>
+<text x="589" y="290" class="prisma-stage-label" text-anchor="middle">Records excluded</text>
+<text x="589" y="309" class="prisma-stage-count" text-anchor="middle">n = 790</text>
+<text x="483.4" y="326" class="prisma-exclusion-reason">wrong index test (n = 310)</text>
+<text x="483.4" y="343" class="prisma-exclusion-reason">not diagnostic accuracy (n = 280)</text>
+<text x="483.4" y="360" class="prisma-exclusion-reason">abstract only (n = 200)</text></g>
+<g data-prisma-role="eligibility" data-prisma-variant="main" data-prisma-stage="screening"><rect x="92" y="432" width="284" height="61" rx="8" ry="8" class="prisma-stage prisma-stage-screening" data-role="eligibility"/>
+<text x="234" y="458" class="prisma-stage-label" text-anchor="middle">Reports assessed for eligibility</text>
+<text x="234" y="477" class="prisma-stage-count" text-anchor="middle">n = 210</text></g>
+<g data-prisma-role="eligibility-excluded" data-prisma-variant="exclusion" data-prisma-stage="screening"><rect x="456" y="432" width="266" height="112" rx="8" ry="8" class="prisma-exclusion prisma-stage-screening" data-role="eligibility-excluded"/>
+<text x="589" y="458" class="prisma-stage-label" text-anchor="middle">Reports excluded, with reasons:</text>
+<text x="589" y="477" class="prisma-stage-count" text-anchor="middle">n = 172</text>
+<text x="493" y="494" class="prisma-exclusion-reason">no reference standard (n = 70)</text>
+<text x="493" y="511" class="prisma-exclusion-reason">incomplete 2x2 data (n = 54)</text>
+<text x="493" y="528" class="prisma-exclusion-reason">wrong population (n = 48)</text></g>
+<g data-prisma-role="included" data-prisma-variant="main" data-prisma-stage="included"><rect x="92" y="600" width="284" height="79" rx="8" ry="8" class="prisma-stage prisma-stage-included" data-role="included"/>
+<text x="234" y="626" class="prisma-stage-label" text-anchor="middle">Studies included in review</text>
+<text x="234" y="645" class="prisma-stage-count" text-anchor="middle">Studies included (n = 38)</text>
+<text x="234" y="663" class="prisma-stage-count" text-anchor="middle">Reports of included studies (n = 41)</text></g></g></svg>

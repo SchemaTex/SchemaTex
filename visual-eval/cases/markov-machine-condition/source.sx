@@ -1,0 +1,16 @@
+# Scenario: weekly machine condition with a repair loop back to good; no absorbing state.
+markov "Machine condition by week"
+  analysis: stationary, classify
+  state Good
+  state Worn
+  state Faulty
+  state Repair "Under repair"
+  Good -> Good : 0.85
+  Good -> Worn : 0.12
+  Good -> Faulty : 0.03
+  Worn -> Worn : 0.70
+  Worn -> Faulty : 0.20
+  Worn -> Repair : 0.10
+  Faulty -> Repair : 1.0
+  Repair -> Good : 0.90
+  Repair -> Repair : 0.10

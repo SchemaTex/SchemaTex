@@ -347,7 +347,6 @@ export function parseTimeline(src: string): TimelineAST {
         if (isTrack && child.indent <= baseIndent) break;
         if (/^note\s*:/i.test(child.text)) { i++; continue; }
         const parsed = parseEventLine(child.text, child.line, nextId, ordinal, child.start, locator.range);
-        if (!parsed) throw new TimelineParseError(`Unrecognized line in ${keyword}: ${child.text}`, child.line);
         parsed.event.trackId = trackId;
         ast.events.push(parsed.event);
         if (parsed.warning) (ast.warnings ??= []).push(parsed.warning);
@@ -364,21 +363,16 @@ export function parseTimeline(src: string): TimelineAST {
 
     // Otherwise: flat event line
     const parsed = parseEventLine(text, L.line, nextId, ordinal, L.start, locator.range);
-    if (parsed) {
-      ast.events.push(parsed.event);
-      if (parsed.warning) (ast.warnings ??= []).push(parsed.warning);
+    ast.events.push(parsed.event);
+    if (parsed.warning) (ast.warnings ??= []).push(parsed.warning);
+    i++;
+    // Optional note block on next line (indented)
+    if (i < lines.length && /^note\s*:/i.test(lines[i]!.text) && lines[i]!.indent > L.indent) {
+      const noteBody = lines[i]!.text.replace(/^note\s*:\s*/i, "");
+      const [note] = readQuoted(noteBody, lines[i]!.line);
+      parsed.event.note = note;
       i++;
-      // Optional note block on next line (indented)
-      if (i < lines.length && /^note\s*:/i.test(lines[i]!.text) && lines[i]!.indent > L.indent) {
-        const noteBody = lines[i]!.text.replace(/^note\s*:\s*/i, "");
-        const [note] = readQuoted(noteBody, lines[i]!.line);
-        parsed.event.note = note;
-        i++;
-      }
-      continue;
     }
-
-    throw new TimelineParseError(`Unrecognized line: ${text}`, L.line);
   }
 
   return ast;
@@ -447,8 +441,7 @@ function applyConfig(ast: TimelineAST, k: string, v: string, line: number): void
 }
 
 /**
- * Parse a single event line. Returns `null` if the line isn't an event line
- * (e.g. unknown keyword).
+ * Parse a quoted or bare event label, or throw a line-numbered diagnostic.
  */
 function parseEventLine(
   text: string,
@@ -461,7 +454,7 @@ function parseEventLine(
   event: TimelineEvent;
   hasNote: boolean;
   warning?: { line: number; message: string };
-} | null {
+} {
   const { props, rest } = parseProperties(text, line);
   const split = splitDateAndBody(rest, line);
   const { date, end, body } = split;
@@ -469,7 +462,7 @@ function parseEventLine(
 
   // body forms:
   //   milestone "label"
-  //   "label"
+  //   "label" or bare text
   let kind: "point" | "range" | "milestone" = end ? "range" : "point";
   let bodyS = body.trim();
   if (bodyS === "") {
@@ -500,8 +493,7 @@ function parseEventLine(
     kind = "milestone";
     bodyS = bodyS.replace(/^milestone\s+/i, "");
   }
-  if (!bodyS.startsWith('"')) return null;
-  const [label] = readQuoted(bodyS, line);
+  const label = bodyS.startsWith('"') ? readQuoted(bodyS, line)[0] : bodyS;
 
   const sideRaw = props["side"];
   const side: TimelineSide | undefined =

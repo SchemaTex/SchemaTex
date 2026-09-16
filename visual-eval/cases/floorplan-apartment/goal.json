@@ -1,0 +1,69 @@
+{
+  "id": "floorplan-apartment",
+  "type": "floorplan",
+  "title": "Apartment floor plan",
+  "goal": "Reads like an architect's plan: solid walls, door swings, furniture inside its own room, dimensions on the outside.",
+  "rubric": [
+    {
+      "id": "walls-closed",
+      "severity": "blocker",
+      "must": "Every room is enclosed by unbroken wall poché; there are no gaps except at doors and windows."
+    },
+    {
+      "id": "furniture-inside-rooms",
+      "severity": "blocker",
+      "must": "No furniture symbol crosses a wall or sits outside the room it belongs to."
+    },
+    {
+      "id": "door-swings",
+      "severity": "major",
+      "must": "Each door shows a leaf and a quarter-circle swing arc that stays inside the room."
+    },
+    {
+      "id": "dimensions-outside",
+      "severity": "major",
+      "must": "Dimension strings run outside the building outline, not across the rooms."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Each room's name and area fit inside that room without touching walls or furniture."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg (imagegen-guided)",
+    "reviewed": true,
+    "notes": "Redrawn after the domain audit found the plan itself unusable: Bedroom 1 could only be reached through the bathroom. The source now gives it a door straight off the living area, swings Bedroom 2's door inward so it no longer fights the entrance door, and turns its bed along the long wall. Codex preferred the generated picture and redrew the SVG to follow it; the picture is kept as look.png."
+  },
+  "audit": {
+    "reviewedBy": "a licensed architect reviewing a residential or commercial plan before it goes out",
+    "at": "2026-09-07T19:04:16.410Z",
+    "verdict": "flawed",
+    "findings": [
+      {
+        "severity": "blocker",
+        "what": "Bedroom 1 has no independent access from the common circulation space.",
+        "why": "Its only routes to the entrance pass through the bathroom or through Bedroom 2 and the closet. Occupying or locking either room compromises access, privacy, and escape.",
+        "fix": "Add a door directly between Bedroom 1 and the living area."
+      },
+      {
+        "severity": "major",
+        "what": "The entrance door and Bedroom 2 door have overlapping swings in the hall.",
+        "why": "The doors can obstruct one another in the apartment’s entrance and exit path.",
+        "fix": "Reverse the Bedroom 2 door to swing into the bedroom, keeping its swing clear of furniture."
+      },
+      {
+        "severity": "major",
+        "what": "Bedroom 2’s bed leaves only about 0.3 m at its foot, before accounting for wall thickness.",
+        "why": "The bed blocks practical access to its far side, making the second sleeping position difficult to reach and the bed difficult to make.",
+        "fix": "Rotate the bed so its length runs along the room’s 3.8 m dimension, and reposition the nightstands to preserve access to both sides."
+      }
+    ]
+  }
+}

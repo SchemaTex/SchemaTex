@@ -1,0 +1,50 @@
+{
+  "id": "genogram-divorce-remarriage-stepchildren",
+  "type": "genogram",
+  "title": "Divorce, remarriage and stepchildren",
+  "goal": "A reader can distinguish the two former unions from Alex and Sam's remarriage, trace biological parentage for all five children, and identify the secondary step relationships without mistaking them for biological descent.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "former-unions",
+      "severity": "blocker",
+      "must": "Alex and Jordan have a divorce-marked partnership labeled div. 2018; Casey and Sam have a separate divorce-marked partnership labeled div. 2019."
+    },
+    {
+      "id": "biological-parentage",
+      "severity": "blocker",
+      "must": "Maya and Leo connect by primary descent lines to Alex and Jordan, Ella to Casey and Sam, and Noah and Ivy to Alex and Sam."
+    },
+    {
+      "id": "remarriage",
+      "severity": "blocker",
+      "must": "Alex and Sam share a marriage line labeled m. 2020, visibly distinct from both divorce-marked former unions."
+    },
+    {
+      "id": "step-connectors",
+      "severity": "blocker",
+      "must": "Maya, Leo and Ella each have a secondary connector with two right angles from Alex and Sam's union, while their biological descent lines remain visible."
+    },
+    {
+      "id": "unique-people-and-generations",
+      "severity": "major",
+      "must": "Each of the nine named people appears once; Alex, Jordan, Casey and Sam occupy the parent generation, with Maya, Leo, Ella, Noah and Ivy in the child generation."
+    },
+    {
+      "id": "sibling-order",
+      "severity": "major",
+      "must": "Maya (2010) appears to the left of Leo (2013), and Noah (2022) appears to the left of Ivy (2024), with readable names and birth years."
+    },
+    {
+      "id": "legend-and-readability",
+      "severity": "major",
+      "must": "The legend includes a readable Step-child entry with a connector bent through two right angles, and all names, dates and partnership labels can be read without overlapping other text."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Maya and Leo descend from Alex and Jordan, Ella from Casey and Sam, and Noah and Ivy from Alex and Sam's 2020 marriage; only the two former unions carry divorce slashes. Separate secondary connectors with two right angles identify Maya, Leo and Ella as stepchildren of the remarried union."
+  }
+}

@@ -1,0 +1,26 @@
+# Battery-powered telemetry node with signal buses and a separate power distribution path.
+blockdiagram "Embedded Telemetry Node"
+battery = block("Li-ion Battery") [role: input]
+pmic = block("Power Management IC") [role: actuator]
+mcu = block("Microcontroller") [role: controller]
+temp = block("Temperature Sensor") [role: sensor]
+press = block("Pressure Sensor") [role: sensor]
+radio = block("LoRa Radio") [role: output]
+flash = block("SPI Flash Memory") [role: generic]
+antenna = block("Antenna") [role: output]
+power = signal("3.3 V power rail") [discrete]
+i2c = signal("I2C bus")
+spi = signal("SPI bus")
+battery -> pmic ["battery power"]
+pmic -> power ["regulated 3.3 V"]
+power -> mcu ["3.3 V"]
+power -> temp ["3.3 V"]
+power -> press ["3.3 V"]
+power -> radio ["3.3 V"]
+temp -> i2c ["temperature data"]
+press -> i2c ["pressure data"]
+i2c -> mcu ["sensor bus"]
+mcu -> spi ["memory bus"]
+spi -> flash ["SPI"]
+mcu -> radio ["telemetry packets"]
+radio -> antenna ["RF"]

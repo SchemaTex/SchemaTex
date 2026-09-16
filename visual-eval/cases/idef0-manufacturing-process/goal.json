@@ -1,0 +1,40 @@
+{
+  "id": "idef0-manufacturing-process",
+  "type": "idef0",
+  "title": "Manufacturing Process",
+  "goal": "A practitioner can read the manufacturing process artefact at a glance.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-idef0-target.mjs`, which draws all five IDEF0 cases from one kit so the set is one drawing repeated. An IDEF0 function model of Manufacturing Process, drawn to FIPS PUB 183. 3 function boxes — Plan production (1), Make parts (2), Assemble product (3) — step down a diagonal staircase from upper left to lower right, each carrying its box number in the lower-right interior corner. Every arrow occupies the edge its role requires: inputs enter the left edge, controls descend into the top, outputs leave the right, and mechanisms rise into the bottom. Each arrow's label sits outside the box at the arrow's open end, and every boundary arrow carries its ICOM code — C, I, M, O numbered along each edge — where it meets the diagram frame. The page carries the standard frame with a bottom title block of three cells: node, title and number. Rules come from `docs/reference/45-IDEF0-STANDARD.md` (FIPS PUB 183), where placement is semantics rather than taste: inputs enter the left edge, controls descend into the top, outputs leave the right, mechanisms rise into the bottom; each arrow's label sits outside the box at its open end; the box number 0–6 (not the node number) sits in the lower-right interior corner; boundary arrows carry an ICOM code numbered along their own edge where they meet the frame; and the page carries the standard frame with a bottom title block of three cells. Boxes step on the FIPS diagonal staircase, upper-left to lower-right. Where a boundary input has to cross a mechanism arrow the crossing is drawn as a hop, so it can never be misread as a junction — IDEF0 marks a real junction by merging the arrows, never by touching them. Every label was checked against every other label, every box and the canvas edge: 0 overlaps."
+  }
+}

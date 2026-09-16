@@ -1,0 +1,41 @@
+{
+  "id": "bpmn-supplier-onboarding",
+  "type": "bpmn",
+  "variant": "collaboration",
+  "title": "Supplier onboarding",
+  "goal": "Show supplier compliance screening and response.",
+  "rubric": [
+    {
+      "id": "pools",
+      "severity": "blocker",
+      "must": "Supplier and Company are separate pools."
+    },
+    {
+      "id": "messages",
+      "severity": "blocker",
+      "must": "Application, Remediation request, and Approval notice are dashed message flows crossing pools."
+    },
+    {
+      "id": "gateway",
+      "severity": "major",
+      "must": "Compliant? visibly routes to approval or remediation."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Procurement and Compliance lanes are visible."
+    },
+    {
+      "id": "ends",
+      "severity": "minor",
+      "must": "Approved and Rejected are end events."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/bpmn/collaboration/ideal.svg (sha256 8de8bd2f08be). Vision reviewed all six rasterized targets: neutral process palette, event and task markers, swimlanes, separate conditional/default routes and pool-boundary message arrows; fixed wire-body overlaps and gateway caption collisions. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

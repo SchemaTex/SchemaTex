@@ -1,0 +1,14 @@
+# Matrix delivery model: primary reports are functional; dashed lines show project assignment accountability.
+orgchart "Orion Systems · Matrix Delivery"
+COO : "Alex Morgan" | Chief Operating Officer | Executive [role: Ops]
+  Eng : "Jamie Wu" | Engineering Manager | Engineering
+    Dev1 : "Morgan Lee" | Software Engineer | Engineering
+    Dev2 : "Riley Scott" | Test Engineer | Engineering
+  Design : "Casey Brown" | Design Manager | Design
+    UX1 : "Taylor King" | Product Designer | Design
+  Delivery : "Jordan Fox" | PMO Director | Delivery
+    Pma : "Ari Bennett" | Project Manager, Atlas | Delivery
+    Pmb : "Skyler Diaz" | Project Manager, Beacon | Delivery
+Pma -.-> Dev1 [label: "Atlas project"]
+Pma -.-> UX1 [label: "Atlas project"]
+Pmb -.-> Dev2 [label: "Beacon project"]

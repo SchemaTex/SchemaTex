@@ -9,6 +9,16 @@ import type {
   LayoutEdge,
 } from "../../core/types";
 
+import { estimateTextWidth } from "../../core/text-metrics";
+import { individualCaptions } from "./captions";
+import { individualPerimeter } from "./symbols";
+import { twinPaths } from "./line-forms";
+import { EMOTIONAL_REL_TYPES, routeEmotionalEdges } from "./routing";
+
+interface GenogramLayoutConfig extends LayoutConfig {
+  fontSize?: number;
+}
+
 // ─── Internal types ─────────────────────────────────────────
 
 interface FamilyUnit {
@@ -30,13 +40,40 @@ interface LayoutGraph {
 
 export function layoutGenogram(
   ast: DiagramAST,
-  config: LayoutConfig,
+  config: GenogramLayoutConfig,
   pins?: Map<string, { x: number; y: number }>
 ): LayoutResult {
   const graph = buildGraph(ast);
+  // Contacts connected only by emotional ties have no ancestral generation.
+  // Keep actual family relationships authoritative even if marked external.
+  const contacts = ast.individuals.filter(ind => ind.external && !ind.siblingOf &&
+    !ast.individuals.some(other => other.siblingOf === ind.id) &&
+    !ast.relationships.some(r => (r.from === ind.id || r.to === ind.id) && !EMOTIONAL_REL_TYPES.has(r.type)) &&
+    ast.relationships.some(r => (r.from === ind.id || r.to === ind.id) &&
+      ast.individuals.some(other => other.id === (r.from === ind.id ? r.to : r.from) && !other.external)));
+  for (const contact of contacts) graph.individuals.delete(contact.id);
   assignGenerations(graph);
   const ordered = orderNodesInGenerations(graph, config);
   const positions = assignPositions(ordered, graph, config);
+  for (const contact of contacts) {
+    // Only family members determine the supported generation. Other contacts
+    // may already be placed, but must not change this semantic anchor.
+    const peerIds = new Set(ast.relationships.filter(r => r.from === contact.id || r.to === contact.id)
+      .map(r => r.from === contact.id ? r.to : r.from));
+    const peers = [...peerIds].filter(id => !graph.individuals.get(id)?.external)
+      .map(id => positions.get(id))
+      .filter((p): p is NodePosition => p !== undefined);
+    const anchor = [...peers].sort((a, b) => a.y - b.y || a.x - b.x)[Math.floor(peers.length / 2)];
+    const row = [...positions.values()].filter(p => p.generation === anchor.generation);
+    const half = Math.max(config.nodeWidth, captionWidth(contact, config)) / 2;
+    const extent = (p: NodePosition) => Math.max(config.nodeWidth, captionWidth(graph.individuals.get(p.id)!, config)) / 2;
+    const left = Math.min(...row.map(p => p.x - extent(p))) - config.nodeSpacingX - half;
+    const right = Math.max(...row.map(p => p.x + extent(p))) + config.nodeSpacingX + half;
+    const cost = (x: number) => peers.reduce((sum, p) => sum + Math.abs(x - p.x), 0);
+    positions.set(contact.id, { id: contact.id, x: cost(left) < cost(right) ? left : right,
+      y: anchor.y, generation: anchor.generation });
+    graph.individuals.set(contact.id, contact);
+  }
   if (pins?.size) {
     const padding = 40;
     for (const position of positions.values()) {
@@ -44,20 +81,21 @@ export function layoutGenogram(
       if (pin) position.x = pin.x + config.nodeWidth / 2 - padding;
     }
   }
-  const edges = computeEdges(graph, positions, config);
   const secondaryEdges = computeSecondaryParentEdges(
     ast.relationships,
     graph,
     positions,
     config
   );
-  const emotionalEdges = computeEmotionalEdges(ast.relationships, positions, config);
-  return packageResult(
+  const edges = computeEdges(graph, positions, config, ast.relationships);
+  const result = packageResult(
     positions,
-    [...edges, ...secondaryEdges, ...emotionalEdges],
+    [...edges, ...secondaryEdges],
     graph,
     config
   );
+  routeEmotionalEdges(result, ast.relationships, config.fontSize ?? DEFAULT_FONT_SIZE);
+  return result;
 }
 
 // ─── Step 1: Build graph ────────────────────────────────────
@@ -114,7 +152,7 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
       if (
         (r.type === "parent-child" ||
           r.type === "adopted" ||
-          r.type === "foster") &&
+          r.type === "foster" || r.type === "step") &&
         r.from === fuId &&
         !r.secondary
       ) {
@@ -249,7 +287,7 @@ interface OrderedGeneration {
 
 function orderNodesInGenerations(
   graph: LayoutGraph,
-  _config: LayoutConfig
+  _config: GenogramLayoutConfig
 ): OrderedGeneration[] {
   const { generations, familyUnits } = graph;
 
@@ -392,30 +430,24 @@ interface NodePosition {
 
 const LABEL_HEIGHT = 20;
 const LABEL_GAP = 6;
-const CAPTION_LINE = 13;
+const DEFAULT_FONT_SIZE = 12;
 
-/**
- * Extra vertical space (px) the bottom-label block needs for genealogy
- * vital-records and note captions, so generations don't collide and bottom
- * captions aren't clipped. Mirrors the trigger logic in the renderer's
- * `vitalDatesLine` (full date or birth status → one caption line; note → one
- * more). Pure year-only / clinical genograms get 0 extra (unchanged layout).
- */
-function captionExtra(graph: LayoutGraph): number {
-  let maxLines = 0;
-  for (const ind of graph.individuals.values()) {
-    let lines = 0;
-    if (ind.dob || ind.dod || ind.birthStatus) lines++;
-    if (ind.note) lines++;
-    if (lines > maxLines) maxLines = lines;
-  }
-  return maxLines * CAPTION_LINE;
+/** Reserve every caption line below the name for generation and canvas bounds. */
+function captionExtra(graph: LayoutGraph, config: GenogramLayoutConfig): number {
+  const maxLines = Math.max(0, ...Array.from(graph.individuals.values(),
+    (ind) => individualCaptions(ind).length - 1));
+  return maxLines * (Math.max(9, config.fontSize ?? DEFAULT_FONT_SIZE) + 1);
+}
+
+function captionWidth(ind: Individual, config: GenogramLayoutConfig): number {
+  return Math.max(config.nodeWidth, ...individualCaptions(ind).map((caption) =>
+    estimateTextWidth(caption.text, Math.max(9, config.fontSize ?? DEFAULT_FONT_SIZE))));
 }
 
 function assignPositions(
   orderedGens: OrderedGeneration[],
   graph: LayoutGraph,
-  config: LayoutConfig
+  config: GenogramLayoutConfig
 ): Map<string, NodePosition> {
   const positions = new Map<string, NodePosition>();
   const { nodeWidth, nodeSpacingX } = config;
@@ -425,7 +457,7 @@ function assignPositions(
   // Family gap = space between separate family units
   const familyGap = nodeWidth + nodeSpacingX * 1.5;
   // Generation Y spacing = node height + label space + vertical gap
-  const genStepY = config.nodeHeight + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY + captionExtra(graph);
+  const genStepY = config.nodeHeight + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + LABEL_GAP + config.nodeSpacingY + captionExtra(graph, config);
 
   // Pass 1: Initial placement based on generation ordering
   for (const gen of orderedGens) {
@@ -437,12 +469,9 @@ function assignPositions(
       const seg = segments[s];
       if (s > 0) xCursor += familyGap;
 
-      if (seg.type === "couple") {
-        positions.set(seg.ids[0], { id: seg.ids[0], x: xCursor, y, generation: gen.index });
-        xCursor += coupleGap;
-        positions.set(seg.ids[1], { id: seg.ids[1], x: xCursor, y, generation: gen.index });
-      } else {
-        positions.set(seg.ids[0], { id: seg.ids[0], x: xCursor, y, generation: gen.index });
+      for (const [index, id] of seg.ids.entries()) {
+        if (index > 0) xCursor += coupleGap;
+        positions.set(id, { id, x: xCursor, y, generation: gen.index });
       }
     }
   }
@@ -459,6 +488,7 @@ function assignPositions(
   // Pass 4: Resolve any new overlaps introduced by centering
   resolveOverlaps(positions, orderedGens, config, graph);
 
+  alignUnionBlocks(positions, graph, config);
   return positions;
 }
 
@@ -475,57 +505,17 @@ function buildSegments(
 ): Segment[] {
   const nodeSet = new Set(nodeIds);
 
-  // Find multi-married individuals first
-  const personFUs = new Map<string, FamilyUnit[]>();
-  for (const fu of graph.familyUnits) {
-    if (nodeSet.has(fu.partners[0]) && nodeSet.has(fu.partners[1])) {
-      for (const p of fu.partners) {
-        const arr = personFUs.get(p) ?? [];
-        arr.push(fu);
-        personFUs.set(p, arr);
-      }
-    }
-  }
-
-  const multiMarried = new Set<string>();
-  for (const [id, fus] of personFUs) {
-    if (fus.length > 1) multiMarried.add(id);
-  }
-
+  const chains = partnershipChains(graph).filter(chain => chain.length > 2);
   const segments: Segment[] = [];
   const placed = new Set<string>();
 
   for (const id of nodeIds) {
     if (placed.has(id)) continue;
-
-    // Multi-married: place as couple chain (ex-partner, SHARED, current-partner)
-    if (multiMarried.has(id)) {
-      const fus = personFUs.get(id) ?? [];
-      const sorted = [...fus].sort((a, b) => {
-        const sa = a.relationship === "divorced" || a.relationship === "separated" ? 0 : 1;
-        const sb = b.relationship === "divorced" || b.relationship === "separated" ? 0 : 1;
-        return sa - sb;
-      });
-
-      for (const fu of sorted) {
-        const partner = fu.partners[0] === id ? fu.partners[1] : fu.partners[0];
-        if (!placed.has(partner)) {
-          // For first (ex) partner: place partner first, then shared person
-          // For subsequent partners: shared already placed, place partner after
-          if (!placed.has(id)) {
-            segments.push({ type: "couple", ids: [partner, id], fuId: fu.id });
-            placed.add(partner);
-            placed.add(id);
-          } else {
-            segments.push({ type: "couple", ids: [id, partner], fuId: fu.id });
-            placed.add(partner);
-          }
-        }
-      }
-      if (!placed.has(id)) {
-        segments.push({ type: "single", ids: [id] });
-        placed.add(id);
-      }
+    const chain = chains.find(chain => chain.includes(id));
+    if (chain) {
+      const ids = chain.filter(member => nodeSet.has(member));
+      segments.push({ type: "couple", ids });
+      ids.forEach(member => placed.add(member));
       continue;
     }
 
@@ -556,12 +546,86 @@ function buildSegments(
   return segments;
 }
 
+/** Connected partnerships in source order, starting at the earliest union's end. */
+function partnershipChains(graph: LayoutGraph): string[][] {
+  const ended = (fu: FamilyUnit) => ["divorced", "separated", "cohabiting-ended"].includes(fu.relationship) ? 0 : 1;
+  const units = graph.familyUnits.map((fu, index) => ({ fu, index }))
+    .sort((a, b) => ended(a.fu) - ended(b.fu) || a.index - b.index).map(entry => entry.fu);
+  const adjacent = new Map<string, string[]>();
+  for (const fu of units) for (const [a, b] of [fu.partners, [...fu.partners].reverse()]) {
+    const neighbours = adjacent.get(a) ?? [];
+    if (!neighbours.includes(b)) neighbours.push(b);
+    adjacent.set(a, neighbours);
+  }
+  const visited = new Set<string>();
+  const chains: string[][] = [];
+  for (const fu of units) {
+    if (visited.has(fu.partners[0])) continue;
+    const component: string[] = [];
+    const collect = (id: string) => {
+      if (component.includes(id)) return;
+      component.push(id);
+      for (const other of adjacent.get(id) ?? []) collect(other);
+    };
+    collect(fu.partners[0]);
+    const start = component.find(id => adjacent.get(id)!.length === 1) ?? component[0];
+    const chain: string[] = [];
+    const walk = (id: string) => {
+      if (visited.has(id)) return;
+      visited.add(id); chain.push(id);
+      for (const other of adjacent.get(id) ?? []) walk(other);
+    };
+    walk(start); chains.push(chain);
+  }
+  return chains;
+}
+
+/** Reserve each connected union's child footprint inside its partnership interval. */
+function alignUnionBlocks(positions: Map<string, NodePosition>, graph: LayoutGraph, config: GenogramLayoutConfig): void {
+  const chains = partnershipChains(graph).filter(chain => chain.length > 2);
+  for (const chain of chains) {
+    const children = graph.familyUnits.filter(fu => fu.partners.every(id => chain.includes(id))).flatMap(fu => fu.children);
+    const blockGap = Math.max(config.nodeWidth + config.nodeSpacingX,
+      ...children.map(id => captionWidth(graph.individuals.get(id)!, config) + LABEL_GAP)) *
+      (config.nodeWidth + config.nodeSpacingX * 1.5) / (config.nodeWidth + config.nodeSpacingX);
+    const anchor = chain.find(id => graph.childOf.has(id)) ?? chain[0];
+    const anchorX = positions.get(anchor)!.x;
+    const offsets = new Map<string, number>([[chain[0], 0]]);
+    const blocks: Array<{ fu: FamilyUnit; offsets: number[]; width: number }> = [];
+    let x = 0;
+    for (let i = 1; i < chain.length; i++) {
+      const fu = graph.familyUnits.find(fu => fu.partners.includes(chain[i - 1]) && fu.partners.includes(chain[i]));
+      const children = fu?.children ?? [];
+      const childOffsets = [0];
+      for (let j = 1; j < children.length; j++) {
+        const a = graph.individuals.get(children[j - 1])!, b = graph.individuals.get(children[j])!;
+        childOffsets.push(childOffsets[j - 1] + Math.max(config.nodeWidth + config.nodeSpacingX,
+          (captionWidth(a, config) + captionWidth(b, config)) / 2 + LABEL_GAP));
+      }
+      const width = children.length ? childOffsets.at(-1)! : 0;
+      const margin = blockGap;
+      x += Math.max(config.nodeWidth + config.nodeSpacingX, width + margin,
+        (captionWidth(graph.individuals.get(chain[i - 1])!, config) + captionWidth(graph.individuals.get(chain[i])!, config)) / 2 + LABEL_GAP);
+      offsets.set(chain[i], x);
+      if (fu) blocks.push({ fu, offsets: childOffsets, width });
+    }
+    const origin = anchorX - offsets.get(anchor)!;
+    for (const id of chain) positions.get(id)!.x = origin + offsets.get(id)!;
+    for (const block of blocks) {
+      const [a, b] = block.fu.partners.map(id => positions.get(id)!);
+      const left = (a.x + b.x) / 2 - block.width / 2;
+      block.fu.children.forEach((id, i) => { positions.get(id)!.x = left + block.offsets[i]; });
+    }
+  }
+}
+
 function centerChildrenUnderParents(
   positions: Map<string, NodePosition>,
   graph: LayoutGraph,
-  config: LayoutConfig
+  config: GenogramLayoutConfig
 ): void {
   const coupleGap = config.nodeSpacingX + config.nodeWidth;
+  const chains = partnershipChains(graph).filter(chain => chain.length > 2);
 
   // Build a lookup: personId → family units they're a partner in
   const personToFUs = new Map<string, FamilyUnit[]>();
@@ -583,6 +647,7 @@ function centerChildrenUnderParents(
       if (!posA || !posB) continue;
 
       const parentMidX = (posA.x + posB.x) / 2;
+      const oldChildX = new Map(fu.children.map(id => [id, positions.get(id)?.x ?? 0]));
 
       // Re-space children evenly under parent midpoint
       const sortedChildren = [...fu.children].sort((a, b) => {
@@ -643,6 +708,15 @@ function centerChildrenUnderParents(
       for (const childId of fu.children) {
         const childPos = positions.get(childId);
         if (!childPos) continue;
+        const chain = chains.find(chain => chain.includes(childId));
+        if (chain) {
+          const delta = childPos.x - oldChildX.get(childId)!;
+          for (const id of chain) {
+            const partner = positions.get(id);
+            if (partner && id !== childId) partner.x += delta;
+          }
+          continue;
+        }
         const childFUs = personToFUs.get(childId) ?? [];
         for (const childFU of childFUs) {
           const partnerId =
@@ -669,7 +743,7 @@ function centerChildrenUnderParents(
 function unscrambleSibships(
   positions: Map<string, NodePosition>,
   graph: LayoutGraph,
-  config: LayoutConfig
+  config: GenogramLayoutConfig
 ): void {
   const familyGap = config.nodeWidth + config.nodeSpacingX * 1.5;
   const childSpacing = config.nodeWidth + config.nodeSpacingX;
@@ -728,27 +802,23 @@ function unscrambleSibships(
 function resolveOverlaps(
   positions: Map<string, NodePosition>,
   orderedGens: OrderedGeneration[],
-  config: LayoutConfig,
-  graph?: LayoutGraph
+  config: GenogramLayoutConfig,
+  graph: LayoutGraph
 ): void {
   const minGap = config.nodeWidth + config.nodeSpacingX;
-  // Cousins from different couples need wider visual separation than siblings.
-  const familyGap = config.nodeWidth + config.nodeSpacingX * 1.5;
 
   // Cluster = childOf family unit; spouses inherit from their partner.
   const cluster = new Map<string, string>();
-  if (graph) {
-    for (const [id] of positions) {
-      const fu = graph.childOf.get(id);
-      if (fu) cluster.set(id, fu);
-    }
-    for (const fu of graph.familyUnits) {
-      for (const p of fu.partners) {
-        if (cluster.has(p)) continue;
-        const other = fu.partners[0] === p ? fu.partners[1] : fu.partners[0];
-        const otherCluster = cluster.get(other);
-        if (otherCluster) cluster.set(p, otherCluster);
-      }
+  for (const [id] of positions) {
+    const fu = graph.childOf.get(id);
+    if (fu) cluster.set(id, fu);
+  }
+  for (const fu of graph.familyUnits) {
+    for (const p of fu.partners) {
+      if (cluster.has(p)) continue;
+      const other = fu.partners[0] === p ? fu.partners[1] : fu.partners[0];
+      const otherCluster = cluster.get(other);
+      if (otherCluster) cluster.set(p, otherCluster);
     }
   }
 
@@ -758,13 +828,21 @@ function resolveOverlaps(
       .filter((p): p is NodePosition => p !== undefined);
 
     genNodes.sort((a, b) => a.x - b.x);
+    // Keep family groups distinct even when captions widen the sibling gaps.
+    const familyGap = Math.max(minGap, ...genNodes.map((node) =>
+      captionWidth(graph.individuals.get(node.id)!, config) + LABEL_GAP)) *
+      (config.nodeWidth + config.nodeSpacingX * 1.5) / minGap;
 
     for (let i = 1; i < genNodes.length; i++) {
       const prev = genNodes[i - 1];
       const cur = genNodes[i];
       const cPrev = cluster.get(prev.id);
       const cCur = cluster.get(cur.id);
-      const required = cPrev && cCur && cPrev !== cCur ? familyGap : minGap;
+      const required = Math.max(
+        cPrev && cCur && cPrev !== cCur ? familyGap : minGap,
+        (captionWidth(graph.individuals.get(prev.id)!, config) +
+          captionWidth(graph.individuals.get(cur.id)!, config)) / 2 + LABEL_GAP
+      );
       const gap = cur.x - prev.x;
       if (gap < required) {
         const shift = required - gap;
@@ -793,17 +871,18 @@ function resolveOverlaps(
 function computeEdges(
   graph: LayoutGraph,
   positions: Map<string, NodePosition>,
-  config: LayoutConfig
+  config: GenogramLayoutConfig,
+  relationships: Relationship[]
 ): LayoutEdge[] {
   const edges: LayoutEdge[] = [];
-  const half = config.nodeWidth / 2;
-  const dropY_offset = config.nodeHeight / 2 + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY * 0.35 + captionExtra(graph);
+  const dropY_offset = config.nodeHeight / 2 + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + LABEL_GAP + config.nodeSpacingY * 0.35 + captionExtra(graph, config);
 
   for (const fu of graph.familyUnits) {
     const posA = positions.get(fu.partners[0]);
     const posB = positions.get(fu.partners[1]);
     if (!posA || !posB) continue;
 
+    const attachmentHalf = (id: string) => individualPerimeter(graph.individuals.get(id)!, config.nodeWidth).half;
     const leftPos = posA.x < posB.x ? posA : posB;
     const rightPos = posA.x < posB.x ? posB : posA;
     const leftId = posA.x < posB.x ? fu.partners[0] : fu.partners[1];
@@ -816,7 +895,7 @@ function computeEdges(
       to: rightId,
       label: fu.label,
     };
-    const couplePath = `M ${leftPos.x + half} ${leftPos.y} L ${rightPos.x - half} ${rightPos.y}`;
+    const couplePath = `M ${leftPos.x + attachmentHalf(leftId)} ${leftPos.y} L ${rightPos.x - attachmentHalf(rightId)} ${rightPos.y}`;
     edges.push({
       from: leftId,
       to: rightId,
@@ -843,11 +922,34 @@ function computeEdges(
 
       childPositions.sort((a, b) => a.pos.x - b.pos.x);
 
-      const leftX = childPositions[0].pos.x;
-      const rightX = childPositions[childPositions.length - 1].pos.x;
+      const twins = new Map<string, { type: RelationshipType; ids: Set<string> }>();
+      for (const rel of relationships) {
+        if ((rel.type !== "twin-identical" && rel.type !== "twin-fraternal") ||
+          !fu.children.includes(rel.from) || !fu.children.includes(rel.to)) continue;
+        const key = `${rel.type}:${graph.individuals.get(rel.from)?.birthYear ?? ""}`;
+        const group = twins.get(key) ?? { type: rel.type, ids: new Set<string>() };
+        group.ids.add(rel.from);
+        group.ids.add(rel.to);
+        twins.set(key, group);
+      }
+      const twinIds = new Set([...twins.values()].flatMap(group => [...group.ids]));
+      const attachments = childPositions.filter(child => !twinIds.has(child.id)).map(child => child.pos.x);
+      for (const twin of twins.values()) {
+        const members = childPositions.filter(child => twin.ids.has(child.id));
+        const apex = { x: (members[0].pos.x + members[members.length - 1].pos.x) / 2, y: dropY };
+        attachments.push(apex.x);
+        const path = twinPaths(apex, members.map(child => ({ x: child.pos.x, y: child.pos.y - attachmentHalf(child.id) })), twin.type === "twin-identical").join(" ");
+        edges.push({ from: members[0].id, to: members[members.length - 1].id,
+          relationship: { type: twin.type, from: members[0].id, to: members[members.length - 1].id }, path });
+      }
+      const leftX = Math.min(...attachments);
+      const rightX = Math.max(...attachments);
 
       // Drop line from couple midpoint
-      const dropPath = `M ${midX} ${coupleY} L ${midX} ${dropY}`;
+      const trunkX = Math.max(leftX, Math.min(rightX, midX));
+      const dropPath = trunkX === midX
+        ? `M ${midX} ${coupleY} L ${midX} ${dropY}`
+        : `M ${midX} ${coupleY} L ${midX} ${dropY - 12} L ${trunkX} ${dropY - 12} L ${trunkX} ${dropY}`;
       edges.push({
         from: fu.partners[0],
         to: fu.partners[1],
@@ -855,37 +957,25 @@ function computeEdges(
         path: dropPath,
       });
 
-      // Sibship line (horizontal). Extend to include midX so the parent
-      // drop line always lands on the bar — needed when a child is also a
-      // partner in another union and gets pulled outside the [leftX, rightX]
-      // range of their siblings.
-      if (childPositions.length > 1) {
-        const sibLeft = Math.min(leftX, midX);
-        const sibRight = Math.max(rightX, midX);
-        const sibPath = `M ${sibLeft} ${dropY} L ${sibRight} ${dropY}`;
+      // End the sibship at actual child attachments (a twin apex counts once).
+      if (leftX < rightX) {
         edges.push({
-          from: sibLeft < leftX - 0.1 ? fu.id : childPositions[0]!.id,
-          to: sibRight > rightX + 0.1 ? fu.id : childPositions[childPositions.length - 1]!.id,
+          from: childPositions[0].id,
+          to: childPositions[childPositions.length - 1].id,
           relationship: { type: "parent-child", from: fu.id, to: "_sibship" },
-          path: sibPath,
+          path: `M ${leftX} ${dropY} L ${rightX} ${dropY}`,
         });
       }
 
       // Vertical lines from sibship to each child
       for (const child of childPositions) {
-        const childTop = child.pos.y - config.nodeHeight / 2;
-        let childPath: string;
-        if (childPositions.length === 1) {
-          if (Math.abs(child.pos.x - midX) < 1) {
-            childPath = `M ${midX} ${coupleY} L ${midX} ${childTop}`;
-          } else {
-            childPath = `M ${midX} ${dropY} L ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
-          }
-        } else {
-          childPath = `M ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
-        }
+        if (twinIds.has(child.id)) continue;
+        const childTop = child.pos.y - attachmentHalf(child.id);
+        const childPath = `M ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
 
-        const pcRel = findParentChildRel(graph, fu.id, child.id);
+        const pcRel = relationships.find((rel) =>
+          rel.from === fu.id && rel.to === child.id && !rel.secondary
+        );
         edges.push({
           from: fu.id,
           to: child.id,
@@ -903,28 +993,13 @@ function computeEdges(
   return edges;
 }
 
-function findParentChildRel(
-  graph: LayoutGraph,
-  _fuId: string,
-  childId: string
-): Relationship | undefined {
-  // Find from original family unit mapping
-  const fuId = graph.childOf.get(childId);
-  if (!fuId) return undefined;
-  return {
-    type: "parent-child",
-    from: fuId,
-    to: childId,
-  };
-}
-
 // ─── Step 7: Package result ─────────────────────────────────
 
 function packageResult(
   positions: Map<string, NodePosition>,
   edges: LayoutEdge[],
   graph: LayoutGraph,
-  config: LayoutConfig
+  config: GenogramLayoutConfig
 ): LayoutResult {
   const padding = 40;
   const nodes: LayoutNode[] = [];
@@ -955,8 +1030,7 @@ function packageResult(
   let minX = Infinity;
   for (const node of nodes) {
     const cx = node.x + node.width / 2;
-    const labelText = estimateLabelText(node.individual);
-    const labelHalfWidth = labelText.length * 3.8;
+    const labelHalfWidth = captionWidth(node.individual, config) / 2;
     const right = Math.max(node.x + node.width, cx + labelHalfWidth);
     const left = Math.min(node.x, cx - labelHalfWidth);
     const bottom = node.y + node.height;
@@ -979,89 +1053,10 @@ function packageResult(
 
   return {
     width: maxX + padding,
-    height: maxY + padding + LABEL_GAP + LABEL_HEIGHT + 10 + captionExtra(graph),
+    height: maxY + padding + LABEL_GAP + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + 10 + captionExtra(graph, config),
     nodes,
     edges: shiftedEdges,
   };
-}
-
-function estimateLabelText(ind: Individual): string {
-  const name = ind.label || ind.id;
-  // Genealogy / legal mode: the dates and note live on their own caption lines,
-  // so width is governed by the widest of name / dates / note.
-  if (ind.dob || ind.dod || ind.birthStatus || ind.note) {
-    const candidates = [name];
-    const born = ind.dob ?? (ind.birthYear ? String(ind.birthYear) : undefined);
-    const died = ind.dod ?? (ind.deathYear ? String(ind.deathYear) : undefined);
-    const dateParts: string[] = [];
-    if (born) dateParts.push(`[*] ${born}`);
-    if (died || ind.status === "deceased") dateParts.push(`† ${died ?? ""}`);
-    if (dateParts.length) candidates.push(dateParts.join("  "));
-    if (ind.note) candidates.push(ind.note);
-    return candidates.reduce((a, b) => (b.length > a.length ? b : a), name);
-  }
-  if (ind.birthYear && ind.deathYear) return `${name} (${ind.birthYear}–${ind.deathYear})`;
-  if (ind.birthYear) return `${name} (b. ${ind.birthYear})`;
-  return name;
-}
-
-// ─── Emotional relationship edges ───────────────────────────
-
-const EMOTIONAL_REL_TYPES = new Set([
-  "harmony", "close", "bestfriends", "love", "inlove", "friendship",
-  "hostile", "conflict", "enmity", "distant-hostile", "cutoff",
-  "close-hostile", "fused", "fused-hostile",
-  "distant", "normal", "nevermet",
-  "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect",
-  "manipulative", "controlling", "jealous",
-  "focused", "focused-neg", "distrust", "admirer", "limerence",
-]);
-
-function computeEmotionalEdges(
-  relationships: Relationship[],
-  positions: Map<string, NodePosition>,
-  config: LayoutConfig
-): LayoutEdge[] {
-  const edges: LayoutEdge[] = [];
-  const half = config.nodeWidth / 2;
-
-  const emotionalRels = relationships.filter(r => EMOTIONAL_REL_TYPES.has(r.type));
-
-  for (const rel of emotionalRels) {
-    const posA = positions.get(rel.from);
-    const posB = positions.get(rel.to);
-    if (!posA || !posB) continue;
-
-    // Use raw positions (no padding) — packageResult will shift
-    const ax = posA.x;
-    const ay = posA.y;
-    const bx = posB.x;
-    const by = posB.y;
-
-    let pathData: string;
-
-    if (posA.generation === posB.generation) {
-      // Same generation: curved path below nodes
-      const midX = (ax + bx) / 2;
-      const curveY = ay + half + 30;
-      pathData = `M ${ax} ${ay + half} Q ${midX} ${curveY} ${bx} ${by + half}`;
-    } else {
-      // Cross-generation: curved path to the side
-      const midY = (ay + by) / 2;
-      const maxX = Math.max(ax, bx);
-      const curveX = maxX + half + 30;
-      pathData = `M ${ax} ${ay} Q ${curveX} ${midY} ${bx} ${by}`;
-    }
-
-    edges.push({
-      from: rel.from,
-      to: rel.to,
-      relationship: rel,
-      path: pathData,
-    });
-  }
-
-  return edges;
 }
 
 // ─── Secondary parent-child edges (foster/adopted "current caregiver") ──
@@ -1070,54 +1065,45 @@ function computeSecondaryParentEdges(
   relationships: Relationship[],
   graph: LayoutGraph,
   positions: Map<string, NodePosition>,
-  config: LayoutConfig
+  config: GenogramLayoutConfig
 ): LayoutEdge[] {
-  const edges: LayoutEdge[] = [];
-  const half = config.nodeHeight / 2;
-
-  for (const rel of relationships) {
-    if (!rel.secondary) continue;
-    if (
-      rel.type !== "parent-child" &&
-      rel.type !== "foster" &&
-      rel.type !== "adopted"
-    )
-      continue;
-
-    // Resolve couple key "leftId+rightId" → midpoint of the two partners
-    const fu = graph.familyUnits.find((f) => f.id === rel.from);
+  const links = relationships.filter(rel => rel.secondary &&
+    ["parent-child", "foster", "adopted", "step"].includes(rel.type));
+  const tracks: Array<{ y: number; left: number; right: number }> = [];
+  const routes: Array<{ rel: Relationship; start: NodePosition; child: NodePosition; x: number; dx: number; y: number; dy: number }> = [];
+  for (const rel of links) {
+    const fu = graph.familyUnits.find(fu => fu.id === rel.from);
     if (!fu) continue;
-    const posA = positions.get(fu.partners[0]);
-    const posB = positions.get(fu.partners[1]);
-    const childPos = positions.get(rel.to);
-    if (!posA || !posB || !childPos) continue;
-
-    const coupleMidX = (posA.x + posB.x) / 2;
-    const coupleY = posA.y;
-    // Anchor on the bottom edge of the couple line, route to top of child
-    const startX = coupleMidX;
-    const startY = coupleY + half + 4;
-    const childTopY = childPos.y - half - 4;
-
-    // Manhattan-style routing so the dotted line is unambiguous, even when
-    // the foster couple sits on a different generation than the bio child.
-    const path =
-      childPos.y === coupleY
-        ? `M ${startX} ${startY} L ${startX} ${startY + 16} L ${childPos.x} ${
-            startY + 16
-          } L ${childPos.x} ${childPos.y - half - 4}`
-        : `M ${startX} ${startY} L ${startX} ${
-            (startY + childTopY) / 2
-          } L ${childPos.x} ${(startY + childTopY) / 2} L ${childPos.x} ${childTopY}`;
-
-    edges.push({
-      from: rel.from,
-      to: rel.to,
-      relationship: rel,
-      path,
-    });
+    const a = positions.get(fu.partners[0]), b = positions.get(fu.partners[1]), child = positions.get(rel.to);
+    if (!a || !b || !child) continue;
+    const mid = (a.x + b.x) / 2;
+    const side = child.x < mid ? -1 : 1;
+    const x = mid + side * Math.min(12, Math.max(0, Math.abs(a.x - b.x) / 2 - config.nodeWidth / 2) / 2);
+    const portIndex = links.filter(other => other.to === rel.to).indexOf(rel);
+    const perimeter = individualPerimeter(graph.individuals.get(rel.to)!, config.nodeWidth);
+    const dx = side * (portIndex % 2 ? -1 : 1) * perimeter.half * (0.4 + 0.4 / (1 + Math.floor(portIndex / 2)));
+    const dy = perimeter.shape === "circle" ? -Math.sqrt(perimeter.half ** 2 - dx ** 2)
+      : perimeter.shape === "diamond" ? -perimeter.half + Math.abs(dx)
+      : perimeter.shape === "triangle" ? -perimeter.half + 2 * Math.abs(dx) : -perimeter.half;
+    const left = Math.min(x, child.x + dx), right = Math.max(x, child.x + dx);
+    let y = a.y + config.nodeHeight / 2 + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + LABEL_GAP +
+      config.nodeSpacingY * 0.35 + captionExtra(graph, config) + 12;
+    while (tracks.some(track => Math.abs(track.y - y) < 12 && track.left < right + 4 && left < track.right + 4)) y += 12;
+    tracks.push({ y, left, right });
+    routes.push({ rel, start: a, child, x, dx, y, dy });
   }
-
+  // Grow only bands that cannot fit their allocated placement tracks.
+  for (const generation of [...new Set(routes.map(route => route.child.generation))].sort((a, b) => a - b)) {
+    const group = routes.filter(route => route.child.generation === generation && route.start.generation < generation);
+    const extra = Math.max(0, ...group.map(route => route.y + 12 - (route.child.y + route.dy)));
+    if (!extra) continue;
+    for (const position of positions.values()) if (position.generation >= generation) position.y += extra;
+    for (const route of routes) if (route.start.generation >= generation) route.y += extra;
+  }
+  const edges: LayoutEdge[] = routes.map(({ rel, start, child, x, dx, y, dy }) => ({
+    from: rel.from, to: rel.to, relationship: rel,
+    path: `M ${x} ${start.y} L ${x} ${y} L ${child.x + dx} ${y} L ${child.x + dx} ${child.y + dy}`,
+  }));
   return edges;
 }
 

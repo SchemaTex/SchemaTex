@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-seq" role="img" aria-label="UML sequence diagram" width="831" height="891" viewBox="0 0 831 891" data-diagram-type="sequence"><title>Sequence Diagram</title>
+<desc>5 participants, 15 messages, 1 combined fragments.</desc>
+<style>.sx-seq { font-family: system-ui, -apple-system, sans-serif; }
+.sx-seq-axis { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 4; }
+.sx-seq-head rect, .sx-seq-head path { fill: #e8f0fb; stroke: #5b85c0; stroke-width: 1.4; }
+.sx-seq-head-name { font: 600 12.5px sans-serif; fill: #0f172a; }
+.sx-seq-head-stereo { font: italic 10px sans-serif; fill: #475569; }
+.sx-seq-actor line, .sx-seq-actor circle { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-seq-actor-head { fill: #ffffff; }
+.sx-seq-icon { fill: #ffffff; stroke: #5b85c0; stroke-width: 1.6; }
+.sx-seq-icon-line { stroke: #5b85c0; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-seq-icon-fill { fill: #5b85c0; stroke: none; }
+.sx-seq-act { fill: #ffffff; stroke: #5b85c0; stroke-width: 1.2; }
+.sx-seq-msg { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-seq-msg-reply { stroke: #334155; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.sx-seq-msg-label { font: 11px sans-serif; fill: #0f172a; }
+.sx-seq-msg-num { font: 600 10px sans-serif; fill: #475569; }
+.sx-seq-endpoint { fill: #334155; }
+.sx-seq-frame { fill: none; stroke: #94a3b8; stroke-width: 1.2; }
+.sx-seq-frame-neg { fill: #dc2626; fill-opacity: 0.06; }
+.sx-seq-frame-sep { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 5 4; }
+.sx-seq-frame-tab { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+.sx-seq-frame-op { font: 700 11px sans-serif; fill: #0f172a; }
+.sx-seq-guard { font: italic 10.5px sans-serif; fill: #475569; }
+.sx-seq-ref-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-seq-note rect { fill: #fdf6da; stroke: #d9c97e; stroke-width: 1.1; }
+.sx-seq-note path { fill: #efe2a6; stroke: #d9c97e; stroke-width: 1.1; }
+.sx-seq-note-text { font: 11px sans-serif; fill: #0f172a; }
+.sx-seq-div line { stroke: #94a3b8; stroke-width: 1; }
+.sx-seq-div rect { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
+.sx-seq-div-text { font: 600 11px sans-serif; fill: #475569; }
+.sx-seq-inv rect { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.1; }
+.sx-seq-inv-text { font: italic 10.5px sans-serif; fill: #475569; }
+.sx-seq-destroy { stroke: #dc2626; stroke-width: 2; }
+.sx-seq-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-seq-filled" viewBox="0 0 12 10" refX="10" refY="5" markerWidth="11" markerHeight="9" orient="auto"><polygon points="0,0 11,5 0,10" fill="#334155"/></marker>
+<marker id="sx-seq-open" viewBox="0 0 12 10" refX="10" refY="5" markerWidth="12" markerHeight="10" orient="auto"><polyline points="0,0 10,5 0,10" fill="none" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<g><g class="sx-seq-lifelines"><g class="sx-seq-lifeline" data-id="User" data-kind="actor"><line class="sx-seq-axis" x1="69" y1="54" x2="69" y2="891"/>
+<g class="sx-seq-actor sx-seq-head"><circle class="sx-seq-actor-head" cx="69" cy="22" r="4.5"/>
+<line x1="69" y1="26" x2="69" y2="38"/>
+<line x1="61" y1="30" x2="77" y2="30"/>
+<line x1="69" y1="38" x2="62" y2="48"/>
+<line x1="69" y1="38" x2="76" y2="48"/>
+<text class="sx-seq-head-name" x="69" y="60" text-anchor="middle">User</text></g></g>
+<g class="sx-seq-lifeline" data-id="Web" data-kind="participant"><line class="sx-seq-axis" x1="270.45000000000005" y1="54" x2="270.45000000000005" y2="891"/>
+<g class="sx-seq-head"><rect x="225.45000000000005" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="270.45000000000005" y="40" text-anchor="middle">Web</text></g></g>
+<g class="sx-seq-lifeline" data-id="Account" data-kind="participant"><line class="sx-seq-axis" x1="410.45000000000005" y1="54" x2="410.45000000000005" y2="891"/>
+<g class="sx-seq-head"><rect x="365.45000000000005" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="410.45000000000005" y="40" text-anchor="middle">Account</text></g></g>
+<g class="sx-seq-lifeline" data-id="TokenStore" data-kind="participant"><line class="sx-seq-axis" x1="617.55" y1="54" x2="617.55" y2="891"/>
+<g class="sx-seq-head"><rect x="569.05" y="16" width="97" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="617.55" y="40" text-anchor="middle">TokenStore</text></g></g>
+<g class="sx-seq-lifeline" data-id="Email" data-kind="participant"><line class="sx-seq-axis" x1="757.55" y1="54" x2="757.55" y2="891"/>
+<g class="sx-seq-head"><rect x="712.55" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="757.55" y="40" text-anchor="middle">Email</text></g></g></g>
+<g class="sx-seq-frames"><g class="sx-seq-fragment" data-op="alt"><rect class="sx-seq-frame" x="260.45000000000005" y="490" width="367.0999999999999" height="224" rx="2" ry="2"/>
+<line class="sx-seq-frame-sep" x1="260.45000000000005" y1="648" x2="627.55" y2="648"/></g></g>
+<g class="sx-seq-acts"><rect class="sx-seq-act" data-id="Account" x="405.45000000000005" y="152" width="10" height="182"/>
+<rect class="sx-seq-act" data-id="Account" x="405.45000000000005" y="440" width="10" height="304"/></g>
+<g class="sx-seq-frame-tabs"><g class="sx-seq-fragment-tab-g" data-op="alt"><path class="sx-seq-frame-tab" d="M 260.45000000000005 490 H 306.45000000000005 V 502 L 300.45000000000005 508 H 260.45000000000005 Z"/>
+<text class="sx-seq-frame-op" x="268.45000000000005" y="503">alt</text>
+<text class="sx-seq-guard" x="314.45000000000005" y="503">[valid]</text>
+<text class="sx-seq-guard" x="268.45000000000005" y="662">[expired]</text></g></g>
+<g class="sx-seq-refs"></g>
+<g class="sx-seq-messages"><g class="sx-seq-message" data-kind="sync" data-from="User" data-to="Web"><line class="sx-seq-msg" x1="69" y1="84" x2="270.45000000000005" y2="84" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="169.72500000000002" y="78" text-anchor="middle">Request reset</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Web" data-to="Account"><line class="sx-seq-msg" x1="270.45000000000005" y1="122" x2="410.45000000000005" y2="122" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="340.45000000000005" y="116" text-anchor="middle">Find account</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Account" data-to="TokenStore"><line class="sx-seq-msg" x1="415.45000000000005" y1="190" x2="617.55" y2="190" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="516.5" y="184" text-anchor="middle">Create token</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="TokenStore" data-to="Account"><line class="sx-seq-msg-reply" x1="617.55" y1="228" x2="415.45000000000005" y2="228" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="516.5" y="222" text-anchor="middle">Token</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Account" data-to="Email"><line class="sx-seq-msg" x1="415.45000000000005" y1="266" x2="757.55" y2="266" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="586.5" y="260" text-anchor="middle">Send reset link</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Email" data-to="User"><line class="sx-seq-msg-reply" x1="757.55" y1="304" x2="69" y2="304" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="413.275" y="298" text-anchor="middle">Reset email</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="User" data-to="Web"><line class="sx-seq-msg" x1="69" y1="372" x2="270.45000000000005" y2="372" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="169.72500000000002" y="366" text-anchor="middle">Submit new password and token</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Web" data-to="Account"><line class="sx-seq-msg" x1="270.45000000000005" y1="410" x2="410.45000000000005" y2="410" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="340.45000000000005" y="404" text-anchor="middle">Reset password</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Account" data-to="TokenStore"><line class="sx-seq-msg" x1="415.45000000000005" y1="478" x2="617.55" y2="478" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="516.5" y="472" text-anchor="middle">Validate token</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="TokenStore" data-to="Account"><line class="sx-seq-msg-reply" x1="617.55" y1="524" x2="415.45000000000005" y2="524" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="516.5" y="518" text-anchor="middle">Valid</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Account" data-to="Account"><path class="sx-seq-msg" d="M 415.45000000000005 562 H 463.45000000000005 V 592 H 415.45000000000005" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="469.45000000000005" y="580">Hash and save password</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Account" data-to="Web"><line class="sx-seq-msg-reply" x1="405.45000000000005" y1="630" x2="270.45000000000005" y2="630" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="337.95000000000005" y="624" text-anchor="middle">Reset complete</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="TokenStore" data-to="Account"><line class="sx-seq-msg-reply" x1="617.55" y1="664" x2="415.45000000000005" y2="664" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="516.5" y="658" text-anchor="middle">Expired</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Account" data-to="Web"><line class="sx-seq-msg-reply" x1="405.45000000000005" y1="702" x2="270.45000000000005" y2="702" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="337.95000000000005" y="696" text-anchor="middle">Request new link</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Web" data-to="User"><line class="sx-seq-msg-reply" x1="270.45000000000005" y1="782" x2="69" y2="782" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="169.72500000000002" y="776" text-anchor="middle">Result</text></g></g>
+<g class="sx-seq-notes"><g class="sx-seq-note"><path d="M 363.70000000000005 792 H 656.3 L 664.3 800 V 823 H 363.70000000000005 Z"/>
+<path d="M 656.3 792 V 800 H 664.3 Z"/>
+<text class="sx-seq-note-text" x="514" y="811.5" text-anchor="middle">Tokens are single use</text></g></g>
+<g class="sx-seq-divs"></g>
+<g class="sx-seq-invs"></g>
+<g class="sx-seq-destroys"></g></g></svg>

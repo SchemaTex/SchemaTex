@@ -1,0 +1,29 @@
+# Healthcare essential electrical system concept: normal, critical, and life-safety branches each transfer from normal to generator supply.
+sld "Hospital Essential Electrical System" [standard: ansi]
+UTIL = utility [voltage: "480V", rating: "65 kA", label: "Normal Utility Service"]
+GEN = generator [voltage: "480V", rating: "1250 kW", label: "Emergency Generator"]
+MAIN = breaker [rating: "2000 A, 65 kA", label: "Main Service Breaker"]
+NORM = bus [voltage: "480V", label: "Normal Switchboard"]
+ATSN = ats [rating: "400 A", label: "ATS Equipment Branch"]
+ATSC = ats [rating: "600 A", label: "ATS Critical Branch"]
+ATSL = ats [rating: "400 A", label: "ATS Life Safety Branch"]
+EQ = panel [rating: "400 A", label: "Equipment Branch Panel"]
+CR = panel [rating: "600 A", label: "Critical Branch Panel"]
+LS = panel [rating: "400 A", label: "Life Safety Panel"]
+HVAC = load [rating: "200 kW", label: "Essential HVAC"]
+OR = load [rating: "150 kW", label: "OR and ICU Critical Loads"]
+EGR = load [rating: "80 kW", label: "Egress Lighting and Fire Alarm"]
+UTIL -> MAIN
+MAIN -> NORM
+NORM -> ATSN
+ATSN -> EQ
+EQ -> HVAC
+NORM -> ATSC
+ATSC -> CR
+CR -> OR
+NORM -> ATSL
+ATSL -> LS
+LS -> EGR
+GEN -> ATSN
+GEN -> ATSC
+GEN -> ATSL

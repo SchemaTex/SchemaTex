@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseEventTree } from "./parser";
 import { renderEventTree } from "./renderer";
@@ -5,7 +6,7 @@ import { renderEventTree } from "./renderer";
 export const eventtree: DiagramPlugin = {
   type: "eventtree" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*(eventtree|eta)\b/i.test(text);
+    return /^\s*(eventtree|eta)\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseEventTree,
   render(text, config?: RenderConfig) {

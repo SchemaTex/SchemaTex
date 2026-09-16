@@ -1,0 +1,46 @@
+{
+  "id": "pert-bridge-construction",
+  "type": "pert",
+  "variant": "network",
+  "title": "Bridge construction",
+  "goal": "Show a coherent bridge-construction precedence network from notice to opening.",
+  "rubric": [
+    {
+      "id": "foundation-prerequisites",
+      "severity": "blocker",
+      "must": "Excavate Foundations visibly waits for both Survey and Setting Out and Environmental Controls."
+    },
+    {
+      "id": "girder-erection-gate",
+      "severity": "blocker",
+      "must": "Erect Girders visibly waits for both piers and abutments and fabricated girders."
+    },
+    {
+      "id": "deck-to-opening-chain",
+      "severity": "major",
+      "must": "A visible chain runs from girder erection through deck, barriers and drainage, paving, load test, and opening."
+    },
+    {
+      "id": "parallel-fabrication",
+      "severity": "major",
+      "must": "Fabricate Girders visibly begins independently after Notice to Proceed while foundation work proceeds."
+    },
+    {
+      "id": "milestones",
+      "severity": "major",
+      "must": "Notice to Proceed and Open to Traffic are visibly distinguished as milestones."
+    },
+    {
+      "id": "critical-path",
+      "severity": "minor",
+      "must": "The critical path is visibly highlighted along the controlling construction sequence."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/pert/network/ideal.svg (sha256 63a6affd85e5). Exemplar six-value schedule cells. Early/late times and total float independently calculated from source dependencies. Original milestone symbols and topology retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "erd-ecommerce-orders",
+  "type": "erd",
+  "title": "E-commerce orders",
+  "goal": "Show the core entities and crow's-foot relationships of an e-commerce ordering domain.",
+  "rubric": [
+    {
+      "id": "customer-orders",
+      "severity": "blocker",
+      "must": "Customer visibly has a one-to-many places relationship to Order."
+    },
+    {
+      "id": "order-lines-products",
+      "severity": "blocker",
+      "must": "Order visibly contains one or more line items and Product visibly relates to many line items."
+    },
+    {
+      "id": "payment-address",
+      "severity": "major",
+      "must": "Order visibly relates to payments and to a shipping address."
+    },
+    {
+      "id": "entity-attributes",
+      "severity": "major",
+      "must": "Customer, Order, Line Item, Product, Payment, and Address each appear as labelled entities with readable fields."
+    },
+    {
+      "id": "key-fields",
+      "severity": "major",
+      "must": "Primary-key and foreign-key fields are visibly marked in the entity tables."
+    },
+    {
+      "id": "crows-foot",
+      "severity": "minor",
+      "must": "Relationship endpoints visibly use crow's-foot cardinality notation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly shows all six entities, readable attributes and key markers, plus all six required crow’s-foot relationships with cardinalities consistent with the source.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:06:48.279Z",
+      "targetHash": "7846116f2ac2",
+      "sourceHash": "7374d4ad12bc",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "customer-orders",
+          "verdict": "pass",
+          "evidence": "CUSTOMER connects to ORDER through “places,” with exactly one at CUSTOMER and zero-or-many at ORDER."
+        },
+        {
+          "id": "order-lines-products",
+          "verdict": "pass",
+          "evidence": "ORDER “contains” one-or-many LINE_ITEM records; PRODUCT “appears_in” zero-or-many LINE_ITEM records."
+        },
+        {
+          "id": "payment-address",
+          "verdict": "pass",
+          "evidence": "ORDER connects to zero-or-many PAYMENT records through “has” and to exactly one ADDRESS through “ships_to”; an ADDRESS can serve zero-or-many orders."
+        },
+        {
+          "id": "entity-attributes",
+          "verdict": "pass",
+          "evidence": "CUSTOMER, ORDER, LINE_ITEM, PRODUCT, PAYMENT, and ADDRESS are all labelled and contain readable fields matching the source data."
+        },
+        {
+          "id": "key-fields",
+          "verdict": "pass",
+          "evidence": "Primary keys have visible blue PK badges and foreign keys have visible orange FK badges in the appropriate entity tables."
+        },
+        {
+          "id": "crows-foot",
+          "verdict": "pass",
+          "evidence": "Relationship endpoints visibly use bars, circles, and crow’s feet to express exactly-one, zero-or-one, one-or-many, and zero-or-many cardinalities."
+        }
+      ]
+    }
+  }
+}

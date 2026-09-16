@@ -1,0 +1,37 @@
+# Scenario: an IT manager shortlists laptop classes for a field-inspection team.
+comparison "Laptop class for the field-inspection team"
+mode: matrix
+option "Ultrabook"
+option "Rugged"
+option "2-in-1 tablet"
+option "Mobile workstation"
+criterion "Weight"
+  Ultrabook: "1.2 kg"
+  Rugged: "3.4 kg"
+  2-in-1 tablet: "1.1 kg"
+  Mobile workstation: "2.6 kg"
+criterion "Survives a 1.2 m drop"
+  Ultrabook: no
+  Rugged: yes
+  2-in-1 tablet: partial
+  Mobile workstation: no
+criterion "Readable in direct sunlight"
+  Ultrabook: partial
+  Rugged: yes
+  2-in-1 tablet: partial
+  Mobile workstation: no
+criterion "Pen input for markup"
+  Ultrabook: no
+  Rugged: partial
+  2-in-1 tablet: yes
+  Mobile workstation: no
+criterion "Runs the CAD viewer smoothly"
+  Ultrabook: partial
+  Rugged: partial
+  2-in-1 tablet: no
+  Mobile workstation: yes
+criterion "Battery lasts a full shift"
+  Ultrabook: yes
+  Rugged: yes
+  2-in-1 tablet: partial
+  Mobile workstation: no

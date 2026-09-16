@@ -1,0 +1,23 @@
+# Dynasty-trust family office: a grantor funds a South Dakota trust that owns a
+# Delaware holding company, its single-member LLCs and a family partnership.
+entity-structure "Smith Family Office — Dynasty Trust Structure"
+jurisdiction SD "South Dakota"
+jurisdiction DE "Delaware"
+
+entity grantor "Robert Smith" individual [role: "Grantor"]
+entity trust1 "Smith Irrevocable Dynasty Trust" trust@SD [est: "2021-04-01", note: "GST exempt"]
+entity trustee "Dakota Trust Company" corp@SD [role: "Directed trustee"]
+entity children "Children's Separate Shares" trust@SD
+entity holdco "Smith Family Holdings, Inc." corp@DE
+entity realestate "Smith Real Estate LLC" disregarded@DE
+entity securities "Smith Securities LLC" disregarded@DE
+entity partners "Smith Family Partners, LP" lp@DE
+
+grantor -> trust1 [label: "gift"]
+trustee ==> trust1 [label: "administers"]
+trust1 --> children [label: "distributions"]
+trust1 -> holdco : 100%
+trust1 -> partners [label: "99% LP"]
+holdco -> partners [label: "1% GP"]
+holdco -> realestate : 100%
+holdco -> securities : 100%

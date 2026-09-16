@@ -1,0 +1,15 @@
+# Scenario: two energy groups form a 60/40 offshore wind joint venture with project companies.
+entity-structure "Helios Nordwind joint venture"
+entity helios "Helios Energy plc" corp@UK
+entity nordwind "Nordwind AG" corp@DE
+entity jv "Helios Nordwind Offshore B.V." llc@NL [note: "Joint venture company"]
+entity baltic "Baltic Wind Farm Sp. z o.o." llc@PL [note: "Project company"]
+entity grid "North Sea Grid Link B.V." llc@NL [note: "Project company"]
+entity lender "Offshore Wind Lenders" pool
+helios -> jv : 60%
+nordwind -> jv : 40%
+jv -> baltic : 100%
+jv -> grid : 51%
+nordwind -> grid : 49%
+helios -~-> jv [label: "Operations services agreement"]
+lender --> baltic [label: "Project finance loan"]

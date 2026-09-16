@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Buy vs Build Decision" width="1150" height="556" viewBox="0 0 1150 556"><title>Buy vs Build Decision</title>
+<desc>Decision tree (taxonomy mode) with 11 nodes and 10 edges</desc>
+<style>.lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
+.lt-dtree-title { font: 700 16px sans-serif; fill: #0f172a; }
+.lt-dtree-edge { fill: none; stroke: #334155; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #059669; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #334155; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font: 500 11px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font: italic 400 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #f1f5f9; stroke: #334155; stroke-width: 1.4; }
+.lt-dtree-node-label { font: 500 12px sans-serif; fill: #0f172a; }
+.lt-dtree-ev { font: 500 10px "SF Mono", monospace; fill: #475569; }
+.lt-dtree-ev-optimal { font: 600 10px "SF Mono", monospace; fill: #059669; }
+.lt-dtree-payoff { font: 600 12px "SF Mono", monospace; fill: #0f172a; }
+.lt-dtree-payoff-neg { font: 600 12px "SF Mono", monospace; fill: #dc2626; }
+.lt-dtree-ml-rect { stroke: #334155; stroke-width: 1; }
+.lt-dtree-ml-line-1 { font: 500 12px sans-serif; fill: #0f172a; }
+.lt-dtree-ml-line-muted { font: 400 10px sans-serif; fill: #475569; }
+.lt-dtree-ml-mono { font: 400 10px "SF Mono", monospace; fill: #475569; }
+.lt-dtree-ml-class { font: 600 11px sans-serif; }
+.lt-dtree-taxon { fill: #eef2ff; stroke: #4f46e5; stroke-width: 1.4; }
+.lt-dtree-taxon-leaf { fill: #ecfdf5; stroke: #059669; stroke-width: 1.4; }
+.lt-dtree-taxon-label { font: 500 12px sans-serif; fill: #0f172a; text-anchor: middle; }</style>
+<text x="575" y="24" class="lt-dtree-title" text-anchor="middle">Buy vs Build Decision</text>
+<g transform="translate(0, 36)" data-mode="taxonomy"><path d="M 610 90 L 610 130 L 340 130 L 340 170" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6"/>
+<path d="M 610 90 L 610 130 L 880 130 L 880 170" class="lt-dtree-edge" data-edge="n1-&gt;n7" stroke-width="1.6"/>
+<path d="M 340 220 L 340 260 L 205 260 L 205 300" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6"/>
+<path d="M 340 220 L 340 260 L 475 260 L 475 300" class="lt-dtree-edge" data-edge="n2-&gt;n6" stroke-width="1.6"/>
+<path d="M 205 350 L 205 390 L 115 390 L 115 430" class="lt-dtree-edge" data-edge="n3-&gt;n4" stroke-width="1.6"/>
+<path d="M 205 350 L 205 390 L 295 390 L 295 430" class="lt-dtree-edge" data-edge="n3-&gt;n5" stroke-width="1.6"/>
+<path d="M 880 220 L 880 260 L 745 260 L 745 300" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6"/>
+<path d="M 880 220 L 880 260 L 1015 260 L 1015 300" class="lt-dtree-edge" data-edge="n7-&gt;n11" stroke-width="1.6"/>
+<path d="M 745 350 L 745 390 L 655 390 L 655 430" class="lt-dtree-edge" data-edge="n8-&gt;n9" stroke-width="1.6"/>
+<path d="M 745 350 L 745 390 L 835 390 L 835 430" class="lt-dtree-edge" data-edge="n8-&gt;n10" stroke-width="1.6"/>
+<rect x="460.7" y="123" width="28.6" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="475" y="130" class="lt-dtree-edge-label">yes</text>
+<rect x="733.8" y="123" width="22.4" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="745" y="130" class="lt-dtree-edge-label">no</text>
+<rect x="258.2" y="253" width="28.6" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="272.5" y="260" class="lt-dtree-edge-label">yes</text>
+<rect x="396.3" y="253" width="22.4" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="407.5" y="260" class="lt-dtree-edge-label">no</text>
+<rect x="145.7" y="383" width="28.6" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="160" y="390" class="lt-dtree-edge-label">yes</text>
+<rect x="238.8" y="383" width="22.4" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="250" y="390" class="lt-dtree-edge-label">no</text>
+<rect x="798.2" y="253" width="28.6" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="812.5" y="260" class="lt-dtree-edge-label">yes</text>
+<rect x="936.3" y="253" width="22.4" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="947.5" y="260" class="lt-dtree-edge-label">no</text>
+<rect x="685.7" y="383" width="28.6" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="700" y="390" class="lt-dtree-edge-label">yes</text>
+<rect x="778.8" y="383" width="22.4" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="790" y="390" class="lt-dtree-edge-label">no</text>
+<g data-node-id="n1" data-node-kind="question" data-leaf="false"><rect x="535" y="40" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon"/>
+<text x="610" y="62" class="lt-dtree-taxon-label">Does a product meet</text>
+<text x="610" y="76" class="lt-dtree-taxon-label">critical requirements?</text></g>
+<g data-node-id="n2" data-node-kind="question" data-leaf="false"><rect x="265" y="170" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon"/>
+<text x="340" y="192" class="lt-dtree-taxon-label">Can vendor pass</text>
+<text x="340" y="206" class="lt-dtree-taxon-label">security and</text></g>
+<g data-node-id="n3" data-node-kind="question" data-leaf="false"><rect x="130" y="300" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon"/>
+<text x="205" y="322" class="lt-dtree-taxon-label">Is total cost within</text>
+<text x="205" y="336" class="lt-dtree-taxon-label">the approved budget?</text></g>
+<g data-node-id="n4" data-node-kind="answer" data-leaf="true"><rect x="40" y="430" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="115" y="459" class="lt-dtree-taxon-label">Buy and integrate</text></g>
+<g data-node-id="n5" data-node-kind="answer" data-leaf="true"><rect x="220" y="430" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="295" y="452" class="lt-dtree-taxon-label">Negotiate or seek</text>
+<text x="295" y="466" class="lt-dtree-taxon-label">another vendor</text></g>
+<g data-node-id="n6" data-node-kind="answer" data-leaf="true"><rect x="400" y="300" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="475" y="322" class="lt-dtree-taxon-label">Build internally or</text>
+<text x="475" y="336" class="lt-dtree-taxon-label">use a compliant</text></g>
+<g data-node-id="n7" data-node-kind="question" data-leaf="false"><rect x="805" y="170" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon"/>
+<text x="880" y="192" class="lt-dtree-taxon-label">Can the team build a</text>
+<text x="880" y="206" class="lt-dtree-taxon-label">safe MVP before the</text></g>
+<g data-node-id="n8" data-node-kind="question" data-leaf="false"><rect x="670" y="300" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon"/>
+<text x="745" y="322" class="lt-dtree-taxon-label">Is long-term ownership</text>
+<text x="745" y="336" class="lt-dtree-taxon-label">capacity funded?</text></g>
+<g data-node-id="n9" data-node-kind="answer" data-leaf="true"><rect x="580" y="430" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="655" y="459" class="lt-dtree-taxon-label">Build in-house</text></g>
+<g data-node-id="n10" data-node-kind="answer" data-leaf="true"><rect x="760" y="430" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="835" y="452" class="lt-dtree-taxon-label">Reduce scope or use a</text>
+<text x="835" y="466" class="lt-dtree-taxon-label">managed service</text></g>
+<g data-node-id="n11" data-node-kind="answer" data-leaf="true"><rect x="940" y="300" width="150" height="50" rx="8" ry="8" class="lt-dtree-taxon-leaf"/>
+<text x="1015" y="322" class="lt-dtree-taxon-label">Buy adjacent</text>
+<text x="1015" y="336" class="lt-dtree-taxon-label">capability and defer</text></g></g></svg>

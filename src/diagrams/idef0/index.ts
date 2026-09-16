@@ -1,10 +1,11 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseIdef0 } from "./parser";
 import { renderIdef0 } from "./renderer";
 
 export const idef0: DiagramPlugin = {
   type: "idef0" as DiagramPlugin["type"],
-  detect: (t) => /^\s*idef0\b/i.test(t),
+  detect: (t) => /^\s*idef0\b/i.test(firstContentLine(t) ?? ""),
   parse: parseIdef0,
   render(text, config?: RenderConfig) {
     return renderIdef0(text, config);

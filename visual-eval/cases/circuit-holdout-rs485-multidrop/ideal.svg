@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+<title>RS-485 Multidrop Bus — three MAX3485 nodes with end-only termination and fail-safe bias</title>
+<rect width="1500" height="980" fill="white"/>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:20px}
+.w{fill:none;stroke:#17212b;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.dot{fill:#17212b}
+.label{font-size:18px}.big{font-size:26px;font-weight:700}.net{font-size:23px;font-weight:700}
+</style>
+<text x="750" y="55" text-anchor="middle" font-size="34" font-weight="700">RS-485 Multidrop Bus</text>
+<text x="750" y="90" text-anchor="middle">Half-duplex · 3.3 V logic · 120 Ω termination at physical ends only</text>
+<!-- Shared power rail and logic supply -->
+<path class="w" d="M90 170H1280 M90 170V680 M90 750V870 M90 870H1350"/>
+<circle class="w" cx="90" cy="715" r="35"/>
+<path class="w" d="M80 699H100 M90 689V709 M80 731H100"/>
+<text x="140" y="742" font-weight="700">V1 LOGIC SUPPLY</text>
+<text x="140" y="774">3.3 V</text>
+<text class="net" x="100" y="148">VCC · 3.3 V</text>
+<text class="net" x="1370" y="877">COM</text>
+<!-- Continuous differential pair -->
+<path class="w" d="M270 380H1370 M270 510H1370"/>
+<text class="net" x="215" y="387">A</text>
+<text class="net" x="215" y="517">B</text>
+<text class="net" x="1390" y="387">A</text>
+<text class="net" x="1390" y="517">B</text>
+<!-- End termination resistors: exactly two -->
+<path class="w" d="M270 380V402 L261 409 L279 422 L261 435 L279 448 L261 461 L279 474 L270 481V510"/>
+<text x="242" y="431" text-anchor="end" font-weight="700">RT1</text>
+<text x="242" y="459" text-anchor="end">120 Ω</text>
+<text class="label" x="320" y="557" text-anchor="end">LEFT TERMINATION</text>
+<path class="w" d="M1370 380V402 L1361 409 L1379 422 L1361 435 L1379 448 L1361 461 L1379 474 L1370 481V510"/>
+<text x="1342" y="431" text-anchor="end" font-weight="700">RT2</text>
+<text x="1342" y="459" text-anchor="end">120 Ω</text>
+<text class="label" x="1360" y="700" text-anchor="middle">RIGHT TERMINATION</text>
+<!-- Single-node fail-safe bias: VCC to A and B to COM -->
+<path class="w" d="M350 170V236 L341 243 L359 256 L341 269 L359 282 L341 295 L359 308 L350 315V380"/>
+<text x="380" y="263" font-weight="700">RPU FAIL-SAFE</text>
+<text x="380" y="292">680 Ω</text>
+<path class="w" d="M350 510V594 L341 601 L359 614 L341 627 L359 640 L341 653 L359 666 L350 673V870"/>
+<text x="326" y="619" text-anchor="end" font-weight="700">RPD FAIL-SAFE</text>
+<text x="326" y="648" text-anchor="end">680 Ω</text>
+<!-- Power distribution routed above all bus connections -->
+<path d="M660 365V395 M660 495V525 M980 365V395 M980 495V525 M1280 365V395 M1280 495V525" fill="none" stroke="white" stroke-width="11"/>
+<path class="w" d="M660 170V650H610 M980 170V650H930 M1280 170V650H1250"/>
+<!-- Three transceiver blocks -->
+<rect class="w" x="410" y="590" width="200" height="210"/>
+<rect class="w" x="730" y="590" width="200" height="210"/>
+<rect class="w" x="1050" y="590" width="200" height="210"/>
+<!-- A taps cross B without junctions: small white clearance under wire -->
+<path d="M455 380V590 M775 380V590 M1095 380V590" fill="none" stroke="white" stroke-width="11"/>
+<path class="w" d="M455 380V590 M555 510V590 M775 380V590 M875 510V590 M1095 380V590 M1195 510V590"/>
+<!-- Pin labels inside blocks -->
+<g text-anchor="middle">
+<text x="455" y="620">A</text><text x="555" y="620">B</text>
+<text x="775" y="620">A</text><text x="875" y="620">B</text>
+<text x="1095" y="620">A</text><text x="1195" y="620">B</text>
+<text class="big" x="510" y="698">MAX3485</text>
+<text x="510" y="733" font-weight="700">U1 · NODE 1</text>
+<text class="label" x="510" y="758">LEFT END</text>
+<text class="big" x="830" y="698">MAX3485</text>
+<text x="830" y="733" font-weight="700">U2 · NODE 2</text>
+<text class="big" x="1150" y="698">MAX3485</text>
+<text x="1150" y="733" font-weight="700">U3 · NODE 3</text>
+<text class="label" x="1150" y="758">RIGHT END</text>
+<text class="label" x="510" y="787">GND</text><text class="label" x="830" y="787">GND</text><text class="label" x="1150" y="787">GND</text>
+</g>
+<text class="label" x="600" y="657" text-anchor="end">VCC</text>
+<text class="label" x="920" y="657" text-anchor="end">VCC</text>
+<text class="label" x="1240" y="657" text-anchor="end">VCC</text>
+<path class="w" d="M510 800V870 M830 800V870 M1150 800V870"/>
+<!-- Junction dots distinguish connected taps from wire crossings -->
+<g class="dot">
+<circle cx="270" cy="380" r="5"/><circle cx="270" cy="510" r="5"/>
+<circle cx="1370" cy="380" r="5"/><circle cx="1370" cy="510" r="5"/>
+<circle cx="350" cy="170" r="5"/><circle cx="350" cy="380" r="5"/><circle cx="350" cy="510" r="5"/><circle cx="350" cy="870" r="5"/>
+<circle cx="455" cy="380" r="5"/><circle cx="555" cy="510" r="5"/>
+<circle cx="775" cy="380" r="5"/><circle cx="875" cy="510" r="5"/>
+<circle cx="1095" cy="380" r="5"/><circle cx="1195" cy="510" r="5"/>
+<circle cx="660" cy="170" r="5"/><circle cx="980" cy="170" r="5"/><circle cx="1280" cy="170" r="5"/>
+<circle cx="510" cy="870" r="5"/><circle cx="830" cy="870" r="5"/><circle cx="1150" cy="870" r="5"/>
+</g>
+<text x="750" y="935" text-anchor="middle" class="label">● Connected junction   ·   Wire crossings without dots are not connected</text>
+</svg>

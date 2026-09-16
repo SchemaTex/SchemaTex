@@ -1,0 +1,12 @@
+# Scenario: product team maps note-taking features shared by three competitors.
+venn "Note-taking product feature overlap"
+set notion "Notion"
+set obsidian "Obsidian"
+set roam "Roam"
+notion only: "Databases"
+obsidian only: "Local-first vault"
+roam only: "Block references"
+notion & obsidian: "Markdown"
+notion & roam: "Web app"
+obsidian & roam: "Backlinks"
+notion & obsidian & roam: "Tags and search"

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1140 700">
+  <title>Four sample clusters (mock) — rectangular dendrogram with a cut at 1.5</title>
+  <desc>Eight synthetic samples share an aligned leaf baseline at merge height zero. A1 and A2 merge at 0.4, B1 and B2 at 0.8, C1 and C2 at 1.0, and D1 and D2 at 1.2. All four pairs merge at height 5.0. A cut at height 1.5 identifies four clusters.</desc>
+  <rect width="1140" height="700" fill="#ffffff"/>
+  <style>
+    text{font-family:Verdana,sans-serif;fill:#1e293b} .title{font-family:'Trebuchet MS',sans-serif;font-size:28px;font-weight:700}.subtitle{font-size:13px;fill:#64748b}.section{font-size:12px;fill:#64748b;letter-spacing:1px}.label{font-size:16px}.note{font-size:11px;fill:#64748b}.height{font-size:12px}.cluster{font-size:12px;font-weight:700}.branch{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <text x="48" y="48" class="title">Four sample clusters (mock)</text>
+  <text x="48" y="76" class="subtitle">Rectangular dendrogram · merge height and a cut at 1.5</text>
+  <path d="M48 99H1092" stroke="#dbe1e9"/>
+  <text x="80" y="133" class="section">MERGE HEIGHT</text>
+  <text x="684" y="133" class="section">SAMPLE</text>
+  <text x="967" y="133" class="section">CLUSTER</text>
+  <!-- Linear merge-height scale: x = 630 - 110h. All leaves lie at h = 0. -->
+  <g fill-opacity="0.045">
+    <rect x="668" y="148" width="424" height="88" rx="3" fill="#0f766e"/>
+    <rect x="668" y="268" width="424" height="88" rx="3" fill="#2563eb"/>
+    <rect x="668" y="388" width="424" height="88" rx="3" fill="#a16207"/>
+    <rect x="668" y="508" width="424" height="88" rx="3" fill="#64748b"/>
+  </g>
+  <path d="M630 148V596" stroke="#cbd5e1" stroke-width="1"/>
+  <g stroke="#b6c3d6" stroke-width="1" stroke-dasharray="2.5 4.5">
+    <path d="M630 170H671M630 214H671M630 290H671M630 334H671M630 410H671M630 454H671M630 530H671M630 574H671"/>
+  </g>
+  <g class="branch" stroke="#1e293b">
+    <path d="M80 192V552M80 192H586M80 312H542M80 432H520M80 552H498"/>
+  </g>
+  <g class="branch">
+    <path d="M630 170H586V214H630" stroke="#0f766e"/>
+    <path d="M630 290H542V334H630" stroke="#2563eb"/>
+    <path d="M630 410H520V454H630" stroke="#a16207"/>
+    <path d="M630 530H498V574H630" stroke="#64748b"/>
+  </g>
+  <g class="height" text-anchor="end">
+    <text x="578" y="183" style="fill:#0f766e">0.4</text>
+    <text x="534" y="303" style="fill:#2563eb">0.8</text>
+    <text x="512" y="423" style="fill:#a16207">1.0</text>
+    <text x="490" y="543" style="fill:#64748b">1.2</text>
+    <text x="72" y="183">5.0</text>
+  </g>
+  <path d="M465 150V615" fill="none" stroke="#64748b" stroke-width="1.3" stroke-dasharray="5 5"/>
+  <text x="454" y="145" text-anchor="end" class="height" style="fill:#64748b">cut 1.5</text>
+  <g class="label">
+    <text x="684" y="175">A1</text><text x="684" y="219">A2</text>
+    <text x="684" y="295">B1</text><text x="684" y="339">B2</text>
+    <text x="684" y="415">C1</text><text x="684" y="459">C2</text>
+    <text x="684" y="535">D1</text><text x="684" y="579">D2</text>
+  </g>
+  <g fill="none" stroke-width="1.4">
+    <path d="M945 158H952V226H945" stroke="#0f766e"/>
+    <path d="M945 278H952V346H945" stroke="#2563eb"/>
+    <path d="M945 398H952V466H945" stroke="#a16207"/>
+    <path d="M945 518H952V586H945" stroke="#64748b"/>
+  </g>
+  <g class="cluster">
+    <text x="967" y="196" style="fill:#0f766e">A</text>
+    <text x="967" y="316" style="fill:#2563eb">B</text>
+    <text x="967" y="436" style="fill:#a16207">C</text>
+    <text x="967" y="556" style="fill:#64748b">D</text>
+  </g>
+  <g fill="none" stroke="#1e293b" stroke-width="1.3">
+    <path d="M80 615H630M80 610V620M190 610V620M300 610V620M410 610V620M520 610V620M630 610V620"/>
+  </g>
+  <g class="height" text-anchor="middle">
+    <text x="80" y="636">5</text><text x="190" y="636">4</text><text x="300" y="636">3</text><text x="410" y="636">2</text><text x="520" y="636">1</text><text x="630" y="636">0</text>
+  </g>
+  <text x="355" y="657" text-anchor="middle" class="note">cluster distance</text>
+  <text x="684" y="620" class="note">Cut at 1.5: four clusters, two samples each.</text>
+  <text x="684" y="643" class="note">Leaves align at 0; node values show merge height.</text>
+  <path d="M48 668H1092" stroke="#dbe1e9"/>
+  <text x="48" y="689" class="note">Mock dataset · synthetic samples and authored merge heights, not empirical data or an inferred analysis.</text>
+</svg>

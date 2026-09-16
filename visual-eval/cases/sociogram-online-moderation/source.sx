@@ -1,0 +1,16 @@
+# Moreno sociogram: moderation escalation choices show a central senior moderator and an isolated new volunteer.
+sociogram "Online Community Moderation Network"
+  config: highlight = stars, isolates
+  mod_lee [label: "Lee"]
+  mod_sam [label: "Sam"]
+  mod_tori [label: "Tori"]
+  mod_uma [label: "Uma"]
+  mod_vic [label: "Vic"]
+  mod_wen [label: "Wen"]
+  mod_sam -> mod_lee
+  mod_tori -> mod_lee
+  mod_uma -> mod_lee
+  mod_vic -> mod_lee
+  mod_lee <-> mod_sam
+  mod_tori <-> mod_uma
+  mod_wen

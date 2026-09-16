@@ -1,0 +1,14 @@
+# Scenario: the right-back overlaps the winger, receives on the byline and crosses for two runners attacking the box.
+playbook "Overlap and cross from the right" sport soccer
+view half
+player 7 o at 74,56 label 7
+player 2 o at 62,54 label 2
+player 9 o at 88,38 label 9
+player 11 o at 86,20 label 11
+player 10 o at 80,30 label 10
+dribble 7 to 83,50
+run 2 to 92,62
+pass 7 to 92,62
+pass 2 to 101,36
+run 9 to 100,37
+run 11 to 100,28

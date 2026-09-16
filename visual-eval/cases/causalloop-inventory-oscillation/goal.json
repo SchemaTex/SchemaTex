@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-inventory-oscillation",
+  "type": "causalloop",
+  "title": "Retail inventory oscillation",
+  "goal": "An operations team can see a delayed balancing replenishment loop.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The replenishment loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "A visible delay mark appears on the order-to-delivery link."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The loop visibly closes through inventory, perceived gap, orders, and deliveries."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Directional arrows and labels remain readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/causalloop/ideal.svg (sha256 dd3e7464cebc). Delay hashes placed on their curve using the quadratic midpoint. Loop labels matched by polarity; unmatched source declarations are reported, not silently attached to the wrong loop. Footer and loop labels separated. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1000" viewBox="0 0 960 667">
+<title>Multi-tenant SaaS schema — billing and entitlements</title>
+<rect width="960" height="667" fill="white"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0f172a} .structure{fill:none;stroke:#334155;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round} .verb{font-size:10.5px;fill:#475569;paint-order:stroke;stroke:white;stroke-width:4px;stroke-linejoin:round} .field{font-size:12px} .type{font-size:12px;fill:#475569} .name{font-size:13px;font-weight:600;letter-spacing:.4px} .tag{font-size:10px;font-weight:700;fill:white}
+</style>
+<text x="44" y="42" font-size="20" font-weight="600">Multi-tenant SaaS schema — billing and entitlements</text>
+<text x="44" y="63" font-size="10.5" fill="#475569" style="fill:#475569;letter-spacing:.3px">CROW’S FOOT (IE) NOTATION · 6 TABLES · 5 RELATIONSHIPS</text>
+<path d="M44 73H916" stroke="#94a3b8" stroke-width="1"/>
+
+<path class="structure" d="M464 222V286"/>
+<path class="structure" d="M457.5 233.0L470.5 233.0"/>
+<path class="structure" d="M471 286L464 274L457 286"/>
+<path class="structure" d="M470.5 264.0L457.5 264.0"/>
+<text class="verb" x="497" y="257" text-anchor="middle">contains</text>
+<path class="structure" d="M284 360H344"/>
+<path class="structure" d="M295.0 366.5L295.0 353.5"/>
+<path class="structure" d="M344 353L332 360L344 367"/>
+<circle cx="322" cy="360" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="314" y="346" text-anchor="middle">assigns</text>
+<path class="structure" d="M584 166H676"/>
+<path class="structure" d="M595.0 172.5L595.0 159.5"/>
+<path class="structure" d="M676 159L664 166L676 173"/>
+<circle cx="654" cy="166" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="630" y="152" text-anchor="middle">holds</text>
+<path class="structure" d="M796 247V286"/>
+<path class="structure" d="M789.5 258.0L802.5 258.0"/>
+<path class="structure" d="M803 286L796 274L789 286"/>
+<circle cx="796" cy="264" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="837" y="270" text-anchor="middle">produces</text>
+<path class="structure" d="M344 166H284"/>
+<path class="structure" d="M333.0 159.5L333.0 172.5"/>
+<path class="structure" d="M284 173L296 166L284 159"/>
+<circle cx="306" cy="166" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="314" y="143" text-anchor="middle">configures</text>
+<rect x="344" y="110" width="240" height="112" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M344 142H584"/>
+<text class="name" x="464.0" y="131" text-anchor="middle">TENANT</text>
+<text class="field" x="356" y="163" font-weight="600" text-decoration="underline">tenant_id</text>
+<text class="type" x="542" y="163" text-anchor="end">int</text>
+<rect x="550" y="152" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="561" y="163" text-anchor="middle">PK</text>
+<path d="M344 172H584" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="356" y="189">name</text>
+<text class="type" x="542" y="189" text-anchor="end">string</text>
+<path d="M356 197H572" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="356" y="214">plan</text>
+<text class="type" x="542" y="214" text-anchor="end">string</text>
+<rect x="344" y="286" width="240" height="137" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M344 318H584"/>
+<text class="name" x="464.0" y="307" text-anchor="middle">USER</text>
+<text class="field" x="356" y="339" font-weight="600" text-decoration="underline">user_id</text>
+<text class="type" x="542" y="339" text-anchor="end">int</text>
+<rect x="550" y="328" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="561" y="339" text-anchor="middle">PK</text>
+<path d="M344 348H584" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="356" y="365">tenant_id</text>
+<text class="type" x="542" y="365" text-anchor="end">int</text>
+<rect x="550" y="354" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="561" y="365" text-anchor="middle">FK</text>
+<path d="M356 373H572" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="356" y="390">role_id</text>
+<text class="type" x="542" y="390" text-anchor="end">int</text>
+<rect x="550" y="379" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="561" y="390" text-anchor="middle">FK</text>
+<path d="M356 398H572" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="356" y="415">email</text>
+<text class="type" x="542" y="415" text-anchor="end">string</text>
+<rect x="44" y="286" width="240" height="112" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M44 318H284"/>
+<text class="name" x="164.0" y="307" text-anchor="middle">ROLE</text>
+<text class="field" x="56" y="339" font-weight="600" text-decoration="underline">role_id</text>
+<text class="type" x="242" y="339" text-anchor="end">int</text>
+<rect x="250" y="328" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="261" y="339" text-anchor="middle">PK</text>
+<path d="M44 348H284" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="56" y="365">name</text>
+<text class="type" x="242" y="365" text-anchor="end">string</text>
+<path d="M56 373H272" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="56" y="390">permissions</text>
+<text class="type" x="242" y="390" text-anchor="end">string</text>
+<rect x="676" y="110" width="240" height="137" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M676 142H916"/>
+<text class="name" x="796.0" y="131" text-anchor="middle">SUBSCRIPTION</text>
+<text class="field" x="688" y="163" font-weight="600" text-decoration="underline">subscription_id</text>
+<text class="type" x="874" y="163" text-anchor="end">int</text>
+<rect x="882" y="152" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="893" y="163" text-anchor="middle">PK</text>
+<path d="M676 172H916" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="688" y="189">tenant_id</text>
+<text class="type" x="874" y="189" text-anchor="end">int</text>
+<rect x="882" y="178" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="893" y="189" text-anchor="middle">FK</text>
+<path d="M688 197H904" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="688" y="214">status</text>
+<text class="type" x="874" y="214" text-anchor="end">string</text>
+<path d="M688 222H904" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="688" y="239">renewal_date</text>
+<text class="type" x="874" y="239" text-anchor="end">date</text>
+<rect x="676" y="286" width="240" height="137" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M676 318H916"/>
+<text class="name" x="796.0" y="307" text-anchor="middle">INVOICE</text>
+<text class="field" x="688" y="339" font-weight="600" text-decoration="underline">invoice_id</text>
+<text class="type" x="874" y="339" text-anchor="end">int</text>
+<rect x="882" y="328" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="893" y="339" text-anchor="middle">PK</text>
+<path d="M676 348H916" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="688" y="365">subscription_id</text>
+<text class="type" x="874" y="365" text-anchor="end">int</text>
+<rect x="882" y="354" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="893" y="365" text-anchor="middle">FK</text>
+<path d="M688 373H904" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="688" y="390">amount_due</text>
+<text class="type" x="874" y="390" text-anchor="end">decimal</text>
+<path d="M688 398H904" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="688" y="415">due_date</text>
+<text class="type" x="874" y="415" text-anchor="end">date</text>
+<rect x="44" y="110" width="240" height="137" rx="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path class="structure" d="M44 142H284"/>
+<text class="name" x="164.0" y="131" text-anchor="middle">FEATURE_FLAG</text>
+<text class="field" x="56" y="163" font-weight="600" text-decoration="underline">feature_flag_id</text>
+<text class="type" x="242" y="163" text-anchor="end">int</text>
+<rect x="250" y="152" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="261" y="163" text-anchor="middle">PK</text>
+<path d="M44 172H284" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="56" y="189">tenant_id</text>
+<text class="type" x="242" y="189" text-anchor="end">int</text>
+<rect x="250" y="178" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="261" y="189" text-anchor="middle">FK</text>
+<path d="M56 197H272" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="56" y="214">key</text>
+<text class="type" x="242" y="214" text-anchor="end">string</text>
+<path d="M56 222H272" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="56" y="239">enabled</text>
+<text class="type" x="242" y="239" text-anchor="end">boolean</text>
+<rect x="704" y="496" width="212" height="108" rx="4" fill="white" stroke="#94a3b8" stroke-width="1"/><text x="718" y="517" font-size="10.5" font-weight="600" style="fill:#475569;letter-spacing:.4px">CARDINALITY</text>
+<path class="structure" d="M718 536H762M762 528V544"/>
+<path class="structure" d="M751.0 529.5L751.0 542.5"/>
+<text x="774" y="539.5" font-size="10.5" style="fill:#475569">exactly one</text>
+<path class="structure" d="M718 554H762M762 546V562"/>
+<circle cx="751" cy="554" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="774" y="557.5" font-size="10.5" style="fill:#475569">zero or one</text>
+<path class="structure" d="M718 572H762M762 564V580"/>
+<path class="structure" d="M762 565L750 572L762 579"/>
+<path class="structure" d="M740.0 565.5L740.0 578.5"/>
+<text x="774" y="575.5" font-size="10.5" style="fill:#475569">one or many</text>
+<path class="structure" d="M718 590H762M762 582V598"/>
+<path class="structure" d="M762 583L750 590L762 597"/>
+<circle cx="740" cy="590" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="774" y="593.5" font-size="10.5" style="fill:#475569">zero or many</text>
+</svg>

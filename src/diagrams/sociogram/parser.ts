@@ -1,3 +1,4 @@
+import { isBlankOrComment } from "../../core/dsl-preprocess";
 import { parseLegendDirective } from "../../core/legend-parser";
 import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
@@ -157,8 +158,8 @@ export function parseSociogram(text: string): SociogramAST {
   const lines = text.split("\n");
   let lineIdx = 0;
 
-  // Skip empty lines
-  while (lineIdx < lines.length && !lines[lineIdx].trim()) lineIdx++;
+  // Skip leading blank lines and comments before consuming the header
+  while (lineIdx < lines.length && isBlankOrComment(lines[lineIdx])) lineIdx++;
 
   // Parse header
   const headerLine = lines[lineIdx]?.trim() ?? "";
@@ -190,7 +191,7 @@ export function parseSociogram(text: string): SociogramAST {
     const trimmed = raw.trim();
     lineIdx++;
 
-    if (!trimmed || trimmed.startsWith("#")) continue;
+    if (isBlankOrComment(trimmed)) continue;
 
     // Legend directives (legend.title, legend.position, legend.label, etc.)
     if (parseLegendDirective(trimmed, legendOverrides)) {

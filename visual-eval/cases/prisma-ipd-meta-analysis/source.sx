@@ -1,0 +1,24 @@
+# Scenario: IPD meta-analysis; studies and participant totals are retained in the final box.
+prisma
+mode: 2020-single
+title: "Individual participant data meta-analysis of stroke rehabilitation"
+kind: systematic-review
+identification:
+  databases:
+    n: 1620
+    sources: MEDLINE=650, Embase=540, CENTRAL=430
+    duplicates-removed: 320
+screening:
+  records-screened: 1300
+  excluded:
+    n: 1040
+    reasons: wrong rehabilitation phase=410, not randomized=360, protocol only=270
+eligibility:
+  full-text-assessed: 260
+  excluded:
+    n: 214
+    reasons: investigators declined IPD=80, unavailable dataset=74, inadequate consent=60
+included:
+  studies: 46
+  reports: 52
+  participants: 12840

@@ -7,7 +7,7 @@
  *   2. Lane assignment — one swimlane per branch, allocated by first appearance;
  *      main is lane `mainBranchOrder` (0). `order:` overrides participate in a
  *      stable sort. Lanes are *never reused* once opened (simplest, deterministic,
- *      no merge-edge crossings) — see standard §TODO lane-reuse note (deferred).
+ *      stable branch identity) — lane reuse is deferred.
  *   3. Chronological ordering — commits step monotonically along the time axis in
  *      source order (a topological order consistent with parent links).
  *   4. Merge-edge routing — branch divergence = elbow from parent lane to child
@@ -19,6 +19,7 @@
  * Zero deps, strict TS.
  */
 
+import { estimateTextWidth } from "../../core/text-metrics";
 import { GitGraphParseError } from "./parser";
 import type {
   GitBranchInfo,
@@ -244,7 +245,7 @@ function pseudoHash(n: number, branch: string): string {
  *   - branches with an explicit `order:` are placed by that order;
  *   - the rest fill remaining lanes by first-appearance.
  * The final lane numbers are a stable, gap-free 0..n-1 sequence on the cross
- * axis. Never-reuse policy → no merge-edge crossings, fully deterministic.
+ * axis. Lanes retain their identity; crossings can still occur between lanes.
  */
 function assignLanes(ast: GitGraphAst, state: ReplayState): GitBranchInfo[] {
   const infos = state.order.map((name) => state.branches.get(name)!);
@@ -288,11 +289,43 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
   // Normalised frame: `t` = time-axis position index (seq), `c` = lane index.
   // We map (t, c) → (x, y) per orientation at the end.
 
-  const headBand = ast.showBranches ? C.PILL_GUTTER : C.LEAD_IN;
+  const commitById = new Map(replay.commits.map(n => [n.id, n]));
+  const channelCounts = new Map<number, number>();
+  for (const node of replay.commits) {
+    for (const [index, id] of node.parents.entries()) {
+      const parent = commitById.get(id)!;
+      if (parent.branch === node.branch || index !== 0) continue;
+      const slot = parent.seq;
+      channelCounts.set(slot, (channelCounts.get(slot) ?? 0) + 1);
+    }
+  }
+  const usedChannels = new Map<number, number>();
+  const vertical = ast.orientation !== "LR";
+  const labelWidths = replay.commits.map(n => ast.showCommitLabel ? estimateTextWidth(n.id, 10) : 0);
+  const longestLabel = Math.max(0, ...labelWidths);
+  const labelHeight = ast.rotateCommitLabel ? longestLabel / Math.SQRT2 + 12 : 14;
+  const branchWidth = Math.max(0, ...replay.branches.map(b => estimateTextWidth(b.name, 12, {fontWeight:700}) + 24));
+  const tagWidth = Math.max(0, ...replay.commits.map(n => n.tag ? Math.max(22, n.tag.length * 6.5 + 12) : 0));
+  const rowLabels = vertical && !ast.rotateCommitLabel;
+  const laneGap = rowLabels ? C.LANE_GAP : Math.max(C.LANE_GAP, vertical ? Math.max(longestLabel + tagWidth + 48, branchWidth + 16) : labelHeight + C.TAG_BAND + 30);
+  // Labels stay in screen coordinates for all orientations. Include their
+  // rotated footprint, not just the lane spacing, in the outer frame.
+  const labelLeft = ast.showCommitLabel ? (ast.rotateCommitLabel ? 3 / Math.SQRT2 : longestLabel / 2) : 0;
+  const labelRight = ast.showCommitLabel ? (ast.rotateCommitLabel ? (longestLabel + 10) / Math.SQRT2 : longestLabel / 2) : 0;
+  const labelBottom = ast.showCommitLabel ? C.DOT_R + 8 + (ast.rotateCommitLabel ? (longestLabel + 3) / Math.SQRT2 : 3) : 0;
+  const headBand = rowLabels ? C.PAD : Math.max(
+    ast.showBranches ? Math.max(C.PILL_GUTTER, branchWidth + C.PAD) : C.LEAD_IN,
+    (ast.orientation === "BT" ? labelBottom : vertical ? 0 : Math.max(labelLeft, tagWidth / 2)) + C.PAD - C.LEAD_IN,
+  );
+  const annotationSpan = !vertical
+    ? Math.max(tagWidth, ast.showCommitLabel ? (ast.rotateCommitLabel ? labelRight * 2 : longestLabel) : 0)
+    : labelBottom;
+  // Channel spacing is additional to the text footprint, not an alternative to it.
+  const timeStep = rowLabels ? C.TIME_STEP : Math.max(C.TIME_STEP, annotationSpan + 32 + Math.max(0, ...channelCounts.values()) * 16);
   // time-axis coordinate of commit at seq s
-  const timeAt = (s: number): number => headBand + C.LEAD_IN + s * C.TIME_STEP;
+  const timeAt = (s: number): number => headBand + C.LEAD_IN + s * timeStep;
   // cross-axis coordinate of lane l
-  const crossAt = (l: number): number => C.PAD + C.TAG_BAND + C.LANE_GAP / 2 + l * C.LANE_GAP;
+  const crossAt = (l: number): number => (rowLabels ? C.PAD + C.DOT_R : Math.max(C.PAD + C.TAG_BAND + C.LANE_GAP / 2, vertical ? Math.max(labelLeft + C.PAD, branchWidth / 2 + C.PAD, Math.max(tagWidth, longestLabel) + C.DOT_R + 8 + C.PAD) : 0)) + l * laneGap;
 
   const timeSpan = commitCount > 0 ? timeAt(commitCount - 1) : timeAt(0);
   const crossSpan = crossAt(Math.max(0, laneCount - 1));
@@ -300,10 +333,15 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
   const isVertical = ast.orientation === "TB" || ast.orientation === "BT";
 
   // Logical canvas extent (before orientation map).
-  const timeMax = timeSpan + C.TIME_STEP / 2 + (ast.showCommitLabel ? C.LABEL_BAND : C.PAD);
-  const crossMax = crossSpan + C.LANE_GAP / 2 + C.PAD;
+  const timeMax = Math.max(
+    timeSpan + C.TIME_STEP / 2 + (ast.showCommitLabel ? C.LABEL_BAND : C.PAD),
+    timeSpan + (ast.orientation === "TB" ? labelBottom : vertical ? 0 : Math.max(labelRight, tagWidth / 2)) + C.PAD,
+  );
+  const crossMax = crossSpan + Math.max(C.LANE_GAP / 2, vertical ? longestLabel + 20 : labelHeight + 20,
+    vertical ? labelRight : labelBottom) + C.PAD;
 
-  const width = isVertical ? crossMax : timeMax;
+  const messageX = rowLabels ? crossSpan + C.DOT_R + 24 : undefined;
+  const width = messageX !== undefined ? messageX + longestLabel + branchWidth + tagWidth + 64 : isVertical ? crossMax : timeMax;
   const height = isVertical ? timeMax : crossMax;
 
   // Map normalised (time, cross) → (x, y).
@@ -314,8 +352,6 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
     return { x: c, y: height - t };
   };
 
-  const byId = new Map(replay.commits.map((n) => [n.id, n] as const));
-  const seqOf = (id: string): number => byId.get(id)?.seq ?? 0;
   const laneOf = (branch: string): number => branchByName.get(branch)?.lane ?? 0;
   const colorOf = (branch: string): number => branchByName.get(branch)?.colorIndex ?? 0;
 
@@ -324,61 +360,40 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
     const t = timeAt(node.seq);
     const c = crossAt(laneOf(node.branch));
     const { x, y } = place(t, c);
-    return { node, x, y, lane: laneOf(node.branch), colorIndex: colorOf(node.branch) };
+    const lane = laneOf(node.branch);
+    const incomingFromAfter = node.isMerge && node.parents.some(id => laneOf(commitById.get(id)!.branch) > lane);
+    const labelSide = (!vertical && lane === 0) || incomingFromAfter ? -1 : 1;
+    return { node, x, y, lane, colorIndex: colorOf(node.branch), labelSide };
   });
   const laidById = new Map(commits.map((lc) => [lc.node.id, lc] as const));
 
-  // Branch lanes (line extent = first..last commit on the lane, or the fork point).
-  const branches: GitLaidBranch[] = replay.branches.map((info) => {
-    const own = replay.commits.filter((n) => n.branch === info.name);
-    let startSeq: number;
-    let endSeq: number;
-    if (own.length > 0) {
-      startSeq = own[0]!.seq;
-      endSeq = own[own.length - 1]!.seq;
-    } else {
-      startSeq = 0;
-      endSeq = 0;
-    }
-    // The trunk (root branch — its first commit has no parent) keeps a short
-    // lead-in under its pill. A *branched* lane instead starts exactly at its
-    // first commit: the divergence elbow already connects it to the parent, so a
-    // leading half-step stub would just dangle to the left of the first node.
-    const firstOwn = own[0];
-    const isTrunk = !firstOwn || firstOwn.parents.length === 0;
-    const startT = isTrunk ? timeAt(startSeq) - C.TIME_STEP / 2 : timeAt(startSeq);
-    const endT = timeAt(endSeq);
-    const c = crossAt(info.lane);
-    const head = place(startT, c);
-    const tail = place(endT, c);
-
-    // Pill anchor: at the lane head on the cross axis, before the first commit.
-    const pillT = headBand - C.LEAD_IN / 2;
-    const pillPos = place(pillT, c);
-
-    return {
-      info,
-      cross: c,
-      start: isVertical ? head.y : head.x,
-      end: isVertical ? tail.y : tail.x,
-      pillX: pillPos.x,
-      pillY: pillPos.y,
-    };
+  // Branch labels identify lanes; only actual parent edges form the backbone.
+  const branches: GitLaidBranch[] = replay.branches.map(info => {
+    const pill = place(headBand - C.LEAD_IN / 2, crossAt(info.lane));
+    const tip = commits.filter(c => c.node.branch === info.name).at(-1);
+    return messageX !== undefined && tip
+      ? { info, pillX: messageX + longestLabel + 16 + branchWidth / 2, pillY: tip.y }
+      : { info, pillX: pill.x, pillY: pill.y };
   });
 
   // Edges: for each commit, draw connectors to its parents.
   const edges: GitLaidEdge[] = [];
   for (const node of replay.commits) {
     const child = laidById.get(node.id)!;
-    node.parents.forEach((pid, idx) => {
+    const relations = node.parents.map((pid, idx) => ({ pid, isCopy: false, isMerge: node.isMerge && idx === 1 }));
+    if (node.cherryFrom) relations.push({ pid: node.cherryFrom, isCopy: true, isMerge: false });
+    relations.forEach(({ pid, isCopy, isMerge }) => {
       const parent = laidById.get(pid);
       if (!parent) return;
       const sameLane = parent.lane === child.lane;
-      const isMergeSecondParent = node.isMerge && idx === 1;
+      const isMergeSecondParent = isMerge;
 
       let kind: GitLaidEdge["kind"];
       let colorIndex: number;
-      if (isMergeSecondParent) {
+      if (isCopy) {
+        kind = "cherry-pick";
+        colorIndex = parent.colorIndex;
+      } else if (isMergeSecondParent) {
         kind = "merge";
         // Merge curve takes the merged-in (source) branch colour.
         colorIndex = parent.colorIndex;
@@ -391,6 +406,10 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
         colorIndex = child.colorIndex;
       }
 
+      const slot = kind === "elbow" ? parent.node.seq : node.seq - 1;
+      const used = usedChannels.get(slot) ?? 0;
+      if (kind === "elbow") usedChannels.set(slot, used + 1);
+      const turn = timeAt(slot) + timeStep / 2 + (used - ((channelCounts.get(slot) ?? 1) - 1) / 2) * 16;
       edges.push({
         fromX: parent.x,
         fromY: parent.y,
@@ -398,6 +417,12 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
         toY: child.y,
         colorIndex,
         kind,
+        path: isCopy
+          ? copyReference(timeAt(parent.node.seq), crossAt(parent.lane), timeAt(node.seq), crossAt(child.lane), place)
+          : sameLane
+          ? `M ${parent.x} ${parent.y} L ${child.x} ${child.y}`
+          : laneTransition(timeAt(parent.node.seq), crossAt(parent.lane), timeAt(node.seq), crossAt(child.lane),
+              turn, place, kind === "merge"),
       });
     });
   }
@@ -410,7 +435,6 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
     return (a.fromX + a.fromY) - (b.fromX + b.fromY);
   });
 
-  void seqOf; // retained for clarity; ordering already encoded in seq
 
   return {
     ast,
@@ -420,5 +444,33 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
     edges,
     width,
     height,
+    messageX,
+    tagX: messageX !== undefined ? messageX + longestLabel + branchWidth + 32 : undefined,
   };
+}
+
+/** A lane change occupies a gap between commit columns, never a long diagonal. */
+function laneTransition(
+  fromT: number, fromC: number, toT: number, toC: number, turnT: number,
+  place: (t: number, c: number) => { x: number; y: number },
+  merge: boolean,
+): string {
+  const radius = Math.min((toT - fromT) / 3, Math.abs(toC - fromC) / 2, merge ? toT - turnT : turnT - fromT);
+  const sign = Math.sign(toC - fromC);
+  const p = (t: number, c: number) => { const point = place(t, c); return `${point.x} ${point.y}`; };
+  // Enter the merge node across the lane, rather than joining its backbone early.
+  if (merge) return `M ${p(fromT, fromC)} L ${p(toT - radius, fromC)} ` +
+    `C ${p(toT, fromC)} ${p(toT, fromC)} ${p(toT, fromC + sign * radius)} L ${p(toT, toC)}`;
+  return `M ${p(fromT, fromC)} L ${p(turnT - radius, fromC)} ` +
+    `C ${p(turnT, fromC)} ${p(turnT, fromC)} ${p(turnT, fromC + sign * radius)} ` +
+    `L ${p(turnT, toC - sign * radius)} ` +
+    `C ${p(turnT, toC)} ${p(turnT, toC)} ${p(turnT + radius, toC)} L ${p(toT, toC)}`;
+}
+
+/** Copy provenance is an annotation across the lane gap, not a branch backbone. */
+function copyReference(fromT: number, fromC: number, toT: number, toC: number,
+  place: (t: number, c: number) => { x: number; y: number }): string {
+  const p = (t: number, c: number) => { const point = place(t, c); return `${point.x} ${point.y}`; };
+  const span = (toT - fromT) / 3;
+  return `M ${p(fromT, fromC)} C ${p(fromT + span, fromC)} ${p(toT - span, toC)} ${p(toT, toC)}`;
 }

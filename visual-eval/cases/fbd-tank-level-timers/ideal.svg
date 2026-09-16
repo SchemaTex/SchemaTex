@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1270" viewBox="0 0 1140 1270" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Tank fill pump timers</title><desc>Hand-authored IEC FBD reference; source blocks, expressions, negations and literals preserved.</desc><rect width="1140" height="1270" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Tank fill pump timers</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Function block diagram</text>
+<path d="M48 110L1092 110" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="137" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 0</text>
+<text x="164" y="137" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Start only after low level holds for 5 s</text>
+<rect x="390" y="185" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="208" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<text x="465" y="173" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">LowDelay</text>
+<text x="402" y="236" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="357" y="236" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">LowLevel</text>
+<path d="M365 231L390 231" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="402" y="268" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">PT</text>
+<text x="357" y="268" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">T#5s</text>
+<path d="M365 263L390 263" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="236" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M540 231L564 231" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="268" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">ET</text>
+<path d="M540 263L564 263" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M48 350L1092 350" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="377" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 1</text>
+<text x="164" y="377" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Dry-run trip after 10 s without flow</text>
+<rect x="300" y="430" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="375" y="453" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<text x="267" y="481" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">PumpRun</text>
+<path d="M275 476L300 476" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="267" y="513" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">FlowSwitch</text>
+<path d="M275 508L291 508" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="295.5" cy="508" r="4.5" fill="white" stroke="#20272B" stroke-width="1.5"/>
+<path d="M450 476L474 476" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="554" y="459" font-size="13" font-weight="600" text-anchor="start" fill="#20272B">NoFlow</text>
+<rect x="730" y="430" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="805" y="453" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<text x="805" y="418" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">DryRun</text>
+<text x="742" y="481" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="742" y="513" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">PT</text>
+<text x="697" y="513" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">T#10s</text>
+<path d="M705 508L730 508" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="870" y="481" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M880 476L904 476" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="870" y="513" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">ET</text>
+<path d="M880 508L904 508" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M474 476H602V476H730" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M48 650L1092 650" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="677" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 2</text>
+<text x="164" y="677" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Pump latch</text>
+<rect x="360" y="760" width="150" height="132" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="435" y="783" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<text x="327" y="811" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">PumpRun</text>
+<path d="M335 806L360 806" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="327" y="843" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">HighLevel</text>
+<path d="M335 838L351 838" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="355.5" cy="838" r="4.5" fill="white" stroke="#20272B" stroke-width="1.5"/>
+<text x="327" y="875" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">DryRun.Q</text>
+<path d="M335 870L351 870" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="355.5" cy="870" r="4.5" fill="white" stroke="#20272B" stroke-width="1.5"/>
+<path d="M510 806L534 806" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="730" y="728" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="805" y="751" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">OR</text>
+<text x="697" y="779" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">LowDelay.Q</text>
+<path d="M705 774L730 774" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M880 774L904 774" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M534 806H632V806H730" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M904 774L934 774" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="943" y="779" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">PumpRun</text>
+<path d="M48 970L1092 970" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="997" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 3</text>
+<text x="164" y="997" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Keep outlet valve open 3 s after the pump stops</text>
+<rect x="300" y="1050" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="375" y="1073" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">TOF</text>
+<text x="375" y="1038" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">Hold</text>
+<text x="312" y="1101" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="267" y="1101" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">PumpRun</text>
+<path d="M275 1096L300 1096" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="312" y="1133" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">PT</text>
+<text x="267" y="1133" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">T#3s</text>
+<path d="M275 1128L300 1128" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="440" y="1101" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M450 1096L474 1096" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="440" y="1133" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">ET</text>
+<path d="M450 1128L474 1128" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="730" y="1050" width="150" height="80" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="805" y="1073" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">MOVE</text>
+<text x="742" y="1101" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="870" y="1101" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M880 1096L904 1096" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M474 1096H602V1096H730" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M904 1096L934 1096" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="943" y="1101" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">ValveOpen</text>
+<path d="M48 1194L1092 1194" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1222" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Open input circle = logical inversion.  Triangle at CU = rising-edge counter input.</text>
+<text x="48" y="1242" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Instance names sit above blocks; named variables connect separate networks.</text></svg>

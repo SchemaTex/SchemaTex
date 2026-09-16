@@ -1,0 +1,24 @@
+# Workflow net: an intake token chooses either standard or expedited review before a merge and completion.
+petri "Review Workflow Choice and Merge"
+  layout: lr
+  place Start *1
+  place Standard
+  place Expedite
+  place Reviewed
+  place Complete
+  transition ChooseStandard
+  transition ChooseExpedite
+  transition ReviewStandard
+  transition ReviewExpedite
+  transition Close
+  Start -> ChooseStandard
+  ChooseStandard -> Standard
+  Start -> ChooseExpedite
+  ChooseExpedite -> Expedite
+  Standard -> ReviewStandard
+  ReviewStandard -> Reviewed
+  Expedite -> ReviewExpedite
+  ReviewExpedite -> Reviewed
+  Reviewed -> Close
+  Close -> Complete
+  fire: ChooseStandard, ReviewStandard, Close

@@ -45,6 +45,8 @@ export interface StateNode {
   /** Exact source token for an explicitly-authored display label. */
   labelSourceRange?: import("../../core/types").SourceRange;
   kind: StateNodeKind;
+  /** Explicit <<accepting>> / <<final>> classifier; preserves the display label. */
+  accepting?: boolean;
   /** Only set when kind === "pseudo" */
   pseudoKind?: PseudoStateKind;
   /** Activities inside the state body (for simple + composite states). */

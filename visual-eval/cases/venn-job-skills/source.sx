@@ -1,0 +1,12 @@
+# Scenario: career coach identifies overlapping skills for three data-related roles.
+venn "Data-role skills overlap"
+set analyst "Data analyst"
+set engineer "Data engineer"
+set scientist "Data scientist"
+analyst only: "Dashboard design"
+engineer only: "Pipelines"
+scientist only: "Experimentation"
+analyst & engineer: "SQL"
+analyst & scientist: "Statistics"
+engineer & scientist: "Python"
+analyst & engineer & scientist: "Data literacy"

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
+<title>Potentiometer LED Dimmer — 12 V NPN low-side LED driver</title>
+<rect width="1200" height="850" fill="white" />
+<defs>
+ <marker id="arrow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 3.5 L0 7 Z" fill="#16212b" /></marker>
+</defs>
+<g fill="#16212b" font-family="Helvetica, Arial, sans-serif">
+ <text x="60" y="58" font-size="30" font-weight="bold">Potentiometer LED Dimmer</text>
+ <text x="60" y="91" font-size="18">12 V DC · potentiometer-controlled NPN low-side driver</text>
+</g>
+
+<g stroke="#16212b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+ 
+ <path d="M140 150 H900 M140 150 V367 M140 453 V740 H900" />
+ <circle cx="140" cy="410" r="43" />
+ <path d="M130 391 H150 M140 381 V401 M130 429 H150" />
+ 
+ <path d="M380 150 V320 M380 500 V740" />
+ <rect x="365" y="320" width="30" height="180" />
+ 
+ <path d="M510 410 H440 L395 433" marker-end="url(#arrow)" />
+ 
+ <path d="M510 410 H545 M635 410 H780 V565 H856" />
+ <rect x="545" y="395" width="90" height="30" />
+ 
+ <path d="M700 410 V600 M700 680 V740" />
+ <rect x="685" y="600" width="30" height="80" />
+ 
+ <path d="M900 150 V205 M900 285 V320" />
+ <rect x="885" y="205" width="30" height="80" />
+ 
+ <path d="M900 320 L883 344 H917 Z M881 348 H919 M900 348 V377" />
+ <path d="M900 377 L883 401 H917 Z M881 405 H919 M900 405 V434" />
+ <path d="M900 434 L883 458 H917 Z M881 462 H919 M900 462 V521" />
+ 
+ <path d="M923 332 L944 313 M930 345 L951 326 M923 389 L944 370 M930 402 L951 383 M923 446 L944 427 M930 459 L951 440" marker-end="url(#arrow)" />
+ 
+ <circle cx="881" cy="565" r="50" />
+ <path d="M856 538 V592 M856 548 L900 521 M856 580 L900 609" />
+ <path d="M874 592 L899 609" marker-end="url(#arrow)" />
+ <path d="M900 609 V740" />
+ 
+ <path d="M520 740 V772 M498 772 H542 M505 781 H535 M513 790 H527" />
+</g>
+<g fill="#16212b">
+ <circle cx="380" cy="150" r="5" /><circle cx="380" cy="740" r="5" />
+ <circle cx="700" cy="410" r="5" /><circle cx="700" cy="740" r="5" />
+ <circle cx="520" cy="740" r="5" />
+</g>
+<g fill="#16212b" font-family="Helvetica, Arial, sans-serif" font-size="21">
+ <text x="165" y="139" font-weight="bold">VCC · +12 V</text>
+ <text x="60" y="490" font-weight="bold">V1</text>
+ <text x="60" y="518">12 V DC</text>
+ <text x="195" y="350" font-weight="bold">P1 DIMMER</text>
+ <text x="195" y="379">10 kΩ linear</text>
+ <text x="423" y="391" font-size="17">WIPER</text>
+ <text x="590" y="345" text-anchor="middle" font-weight="bold">R1 BASE</text>
+ <text x="590" y="375" text-anchor="middle">4.7 kΩ</text>
+ <text x="741" y="445" font-size="17">BASE</text>
+ <text x="663" y="624" text-anchor="end" font-weight="bold">R2 PULL-DOWN</text>
+ <text x="663" y="654" text-anchor="end">100 kΩ</text>
+ <text x="940" y="229" font-weight="bold">R3 LED LIMIT</text>
+ <text x="940" y="259">330 Ω, 0.5 W</text>
+ <text x="900" y="307" text-anchor="middle" font-size="15">LED_A</text>
+ <text x="979" y="366" font-weight="bold">D1 LED STRING</text>
+ <text x="979" y="398">3 × warm white</text>
+ <text x="979" y="427">LEDs</text>
+ <text x="916" y="495" font-size="15">LED_K</text>
+ <text x="952" y="557" font-weight="bold">Q1</text>
+ <text x="952" y="588">BC547B · NPN</text>
+ <text x="912" y="633" font-size="16">E</text>
+ <text x="876" y="509" font-size="16">C</text>
+ <text x="831" y="552" font-size="16">B</text>
+ <text x="552" y="790" font-size="18">GND · 0 V</text>
+</g>
+</svg>

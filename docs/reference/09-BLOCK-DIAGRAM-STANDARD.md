@@ -233,6 +233,12 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 
 ### 3.0 Implemented parser and layout contract
 
+2026-09-15 visual refresh: blocks use the existing semantic role fills with ink `#16202B`, secondary text `#63707F`, 1.5px strokes and 4px corners. Names use 14px semibold Inter / Helvetica Neue; signal names use 12px italic. Arrowheads are 9×7 SVG units and end at the receiving edge, independent of line thickness.
+
+Layout identifies cycle-closing edges before assigning longest-path layers to the remaining DAG. An auxiliary source feeding several successive stages therefore does not collapse those stages into the same column. Genuine feedback and summing-junction polarity remain intact. Forward routes that encounter an intermediate block use the shared orthogonal obstacle router. Measured edge labels populate the layout’s `labelWidth`/`labelHeight` fields and are placed beside free segments with node, label and wire clearance.
+
+The hardware exemplar's shared-bus trunks, coloured power rails and subsystem frames remain target capabilities. `signal()` is currently expanded into connections by the parser; it does not preserve a typed power/bus net. No label-name inference or new per-node layout controls are added to imitate the exemplar.
+
 - `block("…")`、`signal("…")` 和 edge label 同时支持 escaped `\n` 与引号内部的 physical newline。
 - 未知 non-comment statement 返回 `BLOCK_UNKNOWN_STATEMENT`；不会被静默丢弃后继续标成 `valid`。
 - `input` 与 `output` 是一等 visual roles。其他未知 `role:` 值退化为 `generic`，并通过公共 diagnostics channel 发出含原始 `token` 与 `line` 的 `blockdiagram/unknown-role` warning。

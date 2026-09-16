@@ -1,0 +1,40 @@
+{
+  "id": "breadboard-potentiometer-analog",
+  "type": "breadboard",
+  "title": "Potentiometer Analog Input",
+  "goal": "A practitioner can visually assess the Potentiometer Analog Input scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "physical-board",
+      "severity": "blocker",
+      "must": "A solderless breadboard with labelled physical components and colored jumper wires is visible."
+    },
+    {
+      "id": "power-ground",
+      "severity": "blocker",
+      "must": "Red positive-supply wiring and black ground-return wiring are visibly distinct."
+    },
+    {
+      "id": "signal-path",
+      "severity": "major",
+      "must": "The visible signal path connects the controller or IC to the named load or module."
+    },
+    {
+      "id": "series-correctness",
+      "severity": "major",
+      "must": "The picture visibly places the current-limiting or timing component in the intended circuit path rather than as an unconnected part."
+    },
+    {
+      "id": "buildable-layout",
+      "severity": "minor",
+      "must": "Parts and wire endpoints visibly land on breadboard tie points without ambiguous floating connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/breadboard/ideal.svg (sha256 c5804491ffdc). Updated physical Arduino/module symbols from the reviewed symbol library, 18 px hole pitch, and dressed rounded jumpers. Wire endpoints and net colours follow source. Unused breadboards are omitted in direct module assemblies. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

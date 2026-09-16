@@ -1,0 +1,86 @@
+{
+  "id": "floorplan-boutique-retail",
+  "type": "floorplan",
+  "title": "Boutique retail plan",
+  "goal": "Let a shopper understand the shopfront, merchandise displays, fitting rooms, checkout queue, and stock access before entering.",
+  "rubric": [
+    {
+      "id": "shopfront-visible",
+      "severity": "blocker",
+      "must": "The entrance and two large shopfront windows are visibly arranged along the customer-facing wall."
+    },
+    {
+      "id": "display-variety",
+      "severity": "blocker",
+      "must": "Perimeter shelving and multiple freestanding island clothing racks are both clearly visible."
+    },
+    {
+      "id": "fitting-block-visible",
+      "severity": "major",
+      "must": "An enclosed fitting-room block visibly contains three separate fitting-room symbols."
+    },
+    {
+      "id": "checkout-queue-clear",
+      "severity": "major",
+      "must": "The checkout counter has a labeled clear queue area that does not overlap any display fixture."
+    },
+    {
+      "id": "stockroom-access",
+      "severity": "major",
+      "must": "A labeled stockroom with shelving is visibly connected to the sales floor by a door."
+    },
+    {
+      "id": "shopper-aisles",
+      "severity": "major",
+      "must": "Visible aisles remain around the display islands and provide a clear route from entrance to fitting rooms and checkout."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The plan visibly shows the south-facing entrance between two shopfront windows, perimeter shelving and four freestanding clothing racks, three separate fitting rooms inside an enclosed block, and a labeled dashed checkout queue clear of fixtures. The stockroom is labeled, contains shelving, and connects to the sales floor by a door. Open circulation is visible between the display islands and toward checkout and fitting rooms; no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:12:28.427Z",
+      "targetHash": "d93c3c166939",
+      "sourceHash": "4fcc5f917733",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "shopfront-visible",
+          "verdict": "pass",
+          "evidence": "Two windows and a centered entrance are visibly arranged along the south-facing wall."
+        },
+        {
+          "id": "display-variety",
+          "verdict": "pass",
+          "evidence": "Perimeter shelving runs along the left side, and four separate feature racks are visible in the sales floor."
+        },
+        {
+          "id": "fitting-block-visible",
+          "verdict": "pass",
+          "evidence": "The enclosed fitting-room block on the right contains three separately drawn, labeled try-on rooms."
+        },
+        {
+          "id": "checkout-queue-clear",
+          "verdict": "pass",
+          "evidence": "The checkout counter and labeled dashed checkout queue area are distinct; the queue does not visibly overlap a display fixture."
+        },
+        {
+          "id": "stockroom-access",
+          "verdict": "pass",
+          "evidence": "The labeled stockroom at lower right contains two shelving rows and has a doorway connecting it to the sales floor."
+        },
+        {
+          "id": "shopper-aisles",
+          "verdict": "pass",
+          "evidence": "Visible open aisles separate the four rack islands, with a clear route from the entrance through the sales floor toward checkout and the fitting-room doorway."
+        }
+      ]
+    }
+  }
+}

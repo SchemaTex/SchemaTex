@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="586" height="380" viewBox="0 0 586 380" class="schematex-bpmn"><title>Incident Escalation</title>
+<desc>BPMN LR — 1 pool(s), 7 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#94a3b8"/></marker></defs>
+<g class="schematex-bpmn-pool"><rect x="16" y="16" width="554" height="348" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="348" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="190" transform="rotate(-90 29 190)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Security Operations</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="16" width="506" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="16" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="126" transform="rotate(-90 53 126)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Analyst</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="236" width="506" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="236" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="300" transform="rotate(-90 53 300)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Manager</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 80 L 220.5 80 L 220.5 80 L 256 80" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 172 L 217.7 172 L 217.7 300 L 246.4 300" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,172 189,167 194,172 189,177" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="217.7" y="230" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 189 172 L 220.9 172 L 220.9 172 L 252.8 172" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 185 176 L 193 168" stroke="#334155" stroke-width="1.5"/>
+<text x="220.89999999999998" y="166" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 317 110 L 317 196 L 467 196 L 467 282" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-event kind-start trigger-none"><circle cx="167" cy="80" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/></g>
+<g class="schematex-bpmn-task marker-user"><rect x="256" y="50" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Triage incident</tspan></text>
+<g class="marker-user"><circle cx="269" cy="62" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 264 69 Q 269 64 274 69" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,150 189,172 167,194 145,172" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 162.76 L 176.24 181.24 M 176.24 162.76 L 157.76 181.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="144" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Critical?</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="252.79999999999998" y="142" width="128.40000000000003" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="172" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Contain incident</tspan></text>
+<g class="marker-user"><circle cx="265.79999999999995" cy="154" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 260.79999999999995 161 Q 265.79999999999995 156 270.79999999999995 161" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-event kind-intermediate trigger-timer"><circle cx="467" cy="300" r="18" fill="#ffffff" stroke="#334155" stroke-width="1.2"/>
+<circle cx="467" cy="300" r="15" fill="none" stroke="#334155" stroke-width="1.2"/>
+<g class="trigger-timer"><circle cx="467" cy="300" r="4.95" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 467 296.55 L 467 295.05 M 468.725 297.0122123569437 L 469.475 295.71317425126705 M 469.9877876430563 298.275 L 471.28682574873295 297.525 M 470.45 300 L 471.95 300 M 469.9877876430563 301.725 L 471.28682574873295 302.475 M 468.725 302.9877876430563 L 469.475 304.28682574873295 M 467 303.45 L 467 304.95 M 465.275 302.9877876430563 L 464.525 304.28682574873295 M 464.0122123569437 301.725 L 462.71317425126705 302.475 M 463.55 300 L 462.05 300 M 464.0122123569437 298.275 L 462.71317425126705 297.525 M 465.275 297.0122123569437 L 464.525 295.71317425126705" stroke="#334155" stroke-width="0.8"/>
+<path d="M 467 300 L 467 296.535 M 467 300 L 469.475 300" stroke="#334155" stroke-width="1.2" stroke-linecap="round"/></g>
+<text x="467" y="332" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">15 minutes</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="246.39999999999998" y="270" width="141.20000000000005" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="300" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Escalate commander</tspan></text>
+<g class="marker-user"><circle cx="259.4" cy="282" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 254.39999999999998 289 Q 259.4 284 264.4 289" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="167" cy="300" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="167" y="332" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Resolved</text></g></svg>

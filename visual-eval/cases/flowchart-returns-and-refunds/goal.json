@@ -1,0 +1,87 @@
+{
+  "id": "flowchart-returns-and-refunds",
+  "type": "flowchart",
+  "title": "Returns and refunds",
+  "goal": "Show a retail return from eligibility through inspection and customer resolution.",
+  "rubric": [
+    {
+      "id": "eligibility-rejection",
+      "severity": "blocker",
+      "must": "An ineligible return visibly routes from the eligibility decision to a Reject return terminator."
+    },
+    {
+      "id": "inspection-disposition",
+      "severity": "blocker",
+      "must": "The inspection decision visibly separates restocking from scrap-or-recycle handling."
+    },
+    {
+      "id": "replacement-or-refund",
+      "severity": "major",
+      "must": "A customer-request decision visibly separates replacement shipment from refund processing."
+    },
+    {
+      "id": "payment-exception-loop",
+      "severity": "major",
+      "must": "A failed refund acceptance branch visibly enters payment investigation and loops back to refund processing."
+    },
+    {
+      "id": "return-intake",
+      "severity": "major",
+      "must": "The eligible path visibly includes issuing a return label and receiving the returned item before inspection."
+    },
+    {
+      "id": "storage-shape",
+      "severity": "minor",
+      "must": "Restock inventory is visibly distinguished as a storage-style node."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a traceable returns workflow with readable labels and no material overlaps or cropping. Its branches and node shapes match the supplied source and rubric.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:15:18.072Z",
+      "targetHash": "f63efbe61e4f",
+      "sourceHash": "ad96860b5099",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "eligibility-rejection",
+          "verdict": "pass",
+          "evidence": "“Return eligible?” branches on No to the “Reject return” terminator."
+        },
+        {
+          "id": "inspection-disposition",
+          "verdict": "pass",
+          "evidence": "“Item resellable?” branches to “Restock inventory” on Yes and “Scrap or recycle item” on No."
+        },
+        {
+          "id": "replacement-or-refund",
+          "verdict": "pass",
+          "evidence": "“Customer requested replacement?” branches to “Create replacement shipment” on Yes and “Refund original payment” on No."
+        },
+        {
+          "id": "payment-exception-loop",
+          "verdict": "pass",
+          "evidence": "“Refund accepted?” sends No to “Investigate payment exception”; a dashed loop returns from investigation to refund processing."
+        },
+        {
+          "id": "return-intake",
+          "verdict": "pass",
+          "evidence": "The eligible path includes “Issue return label” and then “Receive returned item” before “Inspect condition”."
+        },
+        {
+          "id": "storage-shape",
+          "verdict": "pass",
+          "evidence": "“Restock inventory” is drawn as a cylinder-shaped storage node."
+        }
+      ]
+    }
+  }
+}

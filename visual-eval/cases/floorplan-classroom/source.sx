@@ -1,0 +1,19 @@
+floorplan "Classroom for 28 Students" unit m
+north
+wall exterior thickness 0.24
+room classroom "Classroom" at 0,0 size 12x11
+
+door classroom south at 46% width 1.2 hinge right swing in
+window classroom west at 35% width 2.0
+window classroom west at 70% width 2.0
+window classroom east at 35% width 2.0
+window classroom east at 70% width 2.0
+
+furniture whiteboard "Whiteboard" in classroom at 3,0.15 size 6x0.12
+furniture teacher-desk "Teacher" in classroom at 1.4,1.5 size 1.4x0.7
+furniture chair in classroom at 1.85,0.7 size 0.5x0.5
+furniture cubbies "Storage" in classroom at 9.5,0.2 size 2x0.5
+
+grid desk-chair in classroom rows 4 cols 3 count 12 centers 1.6,3.8 4.4,9.2 itemsize 0.6x0.75
+grid desk-chair in classroom rows 4 cols 4 count 16 centers 6.6,3.8 10.8,9.2 itemsize 0.6x0.75
+zone aisle "Central aisle 1.6 m" in classroom at 4.7,3 size 1.6x7.8 keep-clear

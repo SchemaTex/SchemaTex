@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-logic" viewBox="0 0 920 727" width="920" height="727" role="img" data-diagram-type="logic"><title>4-to-1 Multiplexer</title>
+<desc>Logic gate diagram with 9 gates, 6 inputs, 1 outputs</desc>
+<defs><style>.schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-logic-gate-body { fill: #ffffff; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-bubble { fill: #ffffff; stroke: #111111; stroke-width: 1.5; }
+.schematex-logic-clock-tri { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linejoin: round; }
+.schematex-logic-wire { stroke: #111111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-wire-clearance { stroke: #ffffff; stroke-width: 5; fill: none; }
+.schematex-logic-junction { fill: #111111; }
+.schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: #111111; }
+.schematex-logic-pin-label { font: 9px sans-serif; fill: #222222; }
+.schematex-logic-gate-type { font: 10px sans-serif; fill: #555555; }
+.schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: #111111; }
+.schematex-logic-title { font: 700 16px sans-serif; fill: #111111; }
+.schematex-logic-module { fill: none; stroke: #555555; stroke-width: 1.25; stroke-dasharray: 6 4; }
+.schematex-logic-module-label { font: 11px sans-serif; fill: #555555; font-style: italic; }
+[data-gate-type="unknown"] .schematex-logic-gate-body { stroke: #1d4e89; stroke-dasharray: 5 3; }
+[data-gate-type="unknown"] .schematex-logic-gate-iec-label { fill: #1d4e89; }</style></defs>
+<g transform="translate(0, 20)"><g class="schematex-logic-modules"></g>
+<g class="schematex-logic-wires"><path d="M 60,648 L 44,648 L 44,190 L 170,190" class="schematex-logic-wire-clearance"/><path d="M 60,648 L 44,648 L 44,190 L 170,190" class="schematex-logic-wire" data-from="S1" data-to="nS1"/>
+<path d="M 60,662 L 36,662 L 36,330 L 170,330" class="schematex-logic-wire-clearance"/><path d="M 60,662 L 36,662 L 36,330 L 170,330" class="schematex-logic-wire" data-from="S0" data-to="nS0"/>
+<path d="M 60,572 L 78,572 L 78,147 L 302,147 L 302,165 L 340,165" class="schematex-logic-wire-clearance"/><path d="M 60,572 L 78,572 L 78,147 L 302,147 L 302,165 L 340,165" class="schematex-logic-wire" data-from="D0" data-to="p0"/>
+<path d="M 230,190 L 340,190" class="schematex-logic-wire-clearance"/><path d="M 230,190 L 340,190" class="schematex-logic-wire" data-from="nS1" data-to="p0"/>
+<path d="M 230,330 L 248,330 L 248,215 L 340,215" class="schematex-logic-wire-clearance"/><path d="M 230,330 L 248,330 L 248,215 L 340,215" class="schematex-logic-wire" data-from="nS0" data-to="p0"/>
+<path d="M 60,596 L 294,596 L 294,305 L 340,305" class="schematex-logic-wire-clearance"/><path d="M 60,596 L 294,596 L 294,305 L 340,305" class="schematex-logic-wire" data-from="D1" data-to="p1"/>
+<path d="M 230,190 L 306,190 L 306,330 L 340,330" class="schematex-logic-wire-clearance"/><path d="M 230,190 L 306,190 L 306,330 L 340,330" class="schematex-logic-wire" data-from="nS1" data-to="p1"/>
+<path d="M 60,662 L 36,662 L 36,392 L 302,392 L 302,355 L 340,355" class="schematex-logic-wire-clearance"/><path d="M 60,662 L 36,662 L 36,392 L 302,392 L 302,355 L 340,355" class="schematex-logic-wire" data-from="S0" data-to="p1"/>
+<path d="M 60,620 L 306,620 L 306,445 L 340,445" class="schematex-logic-wire-clearance"/><path d="M 60,620 L 306,620 L 306,445 L 340,445" class="schematex-logic-wire" data-from="D2" data-to="p2"/>
+<path d="M 60,648 L 314,648 L 314,470 L 340,470" class="schematex-logic-wire-clearance"/><path d="M 60,648 L 314,648 L 314,470 L 340,470" class="schematex-logic-wire" data-from="S1" data-to="p2"/>
+<path d="M 230,330 L 248,330 L 248,495 L 340,495" class="schematex-logic-wire-clearance"/><path d="M 230,330 L 248,330 L 248,495 L 340,495" class="schematex-logic-wire" data-from="nS0" data-to="p2"/>
+<path d="M 60,634 L 52,634 L 52,580 L 130,580 L 130,445 L 180,445" class="schematex-logic-wire-clearance"/><path d="M 60,634 L 52,634 L 52,580 L 130,580 L 130,445 L 180,445" class="schematex-logic-wire" data-from="D3" data-to="p3"/>
+<path d="M 60,648 L 44,648 L 44,470 L 180,470" class="schematex-logic-wire-clearance"/><path d="M 60,648 L 44,648 L 44,470 L 180,470" class="schematex-logic-wire" data-from="S1" data-to="p3"/>
+<path d="M 60,662 L 142,662 L 142,495 L 180,495" class="schematex-logic-wire-clearance"/><path d="M 60,662 L 142,662 L 142,495 L 180,495" class="schematex-logic-wire" data-from="S0" data-to="p3"/>
+<path d="M 400,190 L 462,190 L 462,245 L 498,245" class="schematex-logic-wire-clearance"/><path d="M 400,190 L 462,190 L 462,245 L 498,245" class="schematex-logic-wire" data-from="p0" data-to="o01"/>
+<path d="M 400,330 L 462,330 L 462,275 L 498,275" class="schematex-logic-wire-clearance"/><path d="M 400,330 L 462,330 L 462,275 L 498,275" class="schematex-logic-wire" data-from="p1" data-to="o01"/>
+<path d="M 400,470 L 418,470 L 418,385 L 498,385" class="schematex-logic-wire-clearance"/><path d="M 400,470 L 418,470 L 418,385 L 498,385" class="schematex-logic-wire" data-from="p2" data-to="o23"/>
+<path d="M 240,470 L 258,470 L 258,415 L 498,415" class="schematex-logic-wire-clearance"/><path d="M 240,470 L 258,470 L 258,415 L 498,415" class="schematex-logic-wire" data-from="p3" data-to="o23"/>
+<path d="M 550,260 L 612,260 L 612,315 L 648,315" class="schematex-logic-wire-clearance"/><path d="M 550,260 L 612,260 L 612,315 L 648,315" class="schematex-logic-wire" data-from="o01" data-to="Y"/>
+<path d="M 550,400 L 612,400 L 612,345 L 648,345" class="schematex-logic-wire-clearance"/><path d="M 550,400 L 612,400 L 612,345 L 648,345" class="schematex-logic-wire" data-from="o23" data-to="Y"/>
+<path d="M 700,330 L 780,330" class="schematex-logic-wire-clearance"/><path d="M 700,330 L 780,330" class="schematex-logic-wire" data-from="Y" data-to="$out$Y"/></g>
+<g class="schematex-logic-junctions"><circle cx="44" cy="470" r="2.5" class="schematex-logic-junction" data-net="S1"/>
+<circle cx="36" cy="392" r="2.5" class="schematex-logic-junction" data-net="S0"/>
+<circle cx="306" cy="190" r="2.5" class="schematex-logic-junction" data-net="nS1"/>
+<circle cx="248" cy="330" r="2.5" class="schematex-logic-junction" data-net="nS0"/></g>
+<g class="schematex-logic-gates"><g transform="translate(160, 160)" data-gate-id="nS1" data-gate-type="NOT"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<circle cx="66" cy="30" r="4" class="schematex-logic-bubble"/>
+<text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">NOT</text></g>
+<g transform="translate(160, 300)" data-gate-id="nS0" data-gate-type="NOT"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<circle cx="66" cy="30" r="4" class="schematex-logic-bubble"/>
+<text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">NOT</text></g>
+<g transform="translate(160, 440)" data-gate-id="p3" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
+<g transform="translate(320, 160)" data-gate-id="p0" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
+<g transform="translate(320, 300)" data-gate-id="p1" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
+<g transform="translate(320, 440)" data-gate-id="p2" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
+<g transform="translate(480, 230)" data-gate-id="o01" data-gate-type="OR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">OR</text></g>
+<g transform="translate(480, 370)" data-gate-id="o23" data-gate-type="OR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">OR</text></g>
+<g transform="translate(630, 300)" data-gate-id="Y" data-gate-type="OR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">OR</text></g></g>
+<g class="schematex-logic-input-bubbles"></g>
+<g class="schematex-logic-ports"><g transform="translate(20, 557)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">D0</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 581)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">D1</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 605)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">D2</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 619)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">D3</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 633)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">S1</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 647)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">S0</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(780, 315)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
+<text x="16" y="19" text-anchor="start" class="schematex-logic-port-label">Y</text></g></g></g>
+<text x="460" y="18" text-anchor="middle" class="schematex-logic-title">4-to-1 Multiplexer</text></svg>

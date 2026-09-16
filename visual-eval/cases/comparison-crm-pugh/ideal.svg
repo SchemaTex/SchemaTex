@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="990" viewBox="0 0 1600 990">
+  <title>CRM vendor Pugh selection — Salesforce wins the weighted decision matrix</title>
+  <rect width="1600" height="990" fill="#FFFFFF"/>
+  <style>
+    text{font-family:Helvetica,Arial,sans-serif;fill:#1B2430}
+    .title{font-size:39px;font-weight:600}
+    .head{font-size:25px;font-weight:600}
+    .label{font-size:24px}
+    .score{font-size:28px;font-weight:500}
+    .secondary{fill:#5F6B7A}
+    .points{font-size:20px;fill:#8592A4}
+    .sub{font-size:20px}
+    .weight{font-size:23px;font-weight:600;fill:#5F6B7A}
+    .total{font-size:34px;font-weight:600}
+    .rank{font-size:19px;font-weight:600;fill:#5F6B7A}
+    .green{fill:#2E7A4E}
+    .delta{font-size:27px;font-weight:600}
+    .hair{stroke:#E4E9EE;stroke-width:2}
+    .pill{fill:#FFFFFF;stroke:#CBD5E2;stroke-width:1.8}
+  </style>
+  <text x="83" y="100" class="title">CRM vendor Pugh selection</text>
+  <rect x="652" y="152" width="288" height="668" fill="#F4F6F9"/>
+  <rect x="940" y="152" width="289" height="668" fill="#F2F8F4"/>
+  <path d="M940 155H1229" stroke="#2E7A4E" stroke-width="5"/>
+  <text x="579" y="208" text-anchor="middle" class="label secondary">Weight</text>
+  <g text-anchor="middle">
+    <text x="796" y="208" class="head">HubSpot</text>
+    <text x="796" y="239" class="sub secondary" font-weight="600">Datum</text>
+    <text x="1084" y="208" class="head">Salesforce</text>
+    <text x="1084" y="239" class="sub green" font-weight="600">Highest total</text>
+    <text x="1373" y="208" class="head">Zoho CRM</text>
+  </g>
+  <path d="M83 260H1517" stroke="#1B2430" stroke-width="2.5"/>
+  <g class="hair"><path d="M83 353H1517"/><path d="M83 446H1517"/><path d="M83 540H1517"/></g>
+  <g class="label">
+    <text x="110" y="315">Enterprise workflow fit</text>
+    <text x="110" y="408">Sales-team adoption</text>
+    <text x="110" y="502">Integration ecosystem</text>
+    <text x="110" y="595">Annual cost</text>
+  </g>
+  <g class="pill">
+    <rect x="546" y="287" width="67" height="39" rx="20"/>
+    <rect x="546" y="380" width="67" height="39" rx="20"/>
+    <rect x="546" y="474" width="67" height="39" rx="20"/>
+    <rect x="546" y="567" width="67" height="39" rx="20"/>
+  </g>
+  <g text-anchor="middle" class="weight">
+    <text x="579" y="315">×5</text><text x="579" y="408">×4</text>
+    <text x="579" y="502">×4</text><text x="579" y="595">×2</text>
+  </g>
+  <g text-anchor="middle">
+    <g class="score">
+      <text x="796" y="308">3</text><text x="1084" y="308">5</text><text x="1373" y="308">3</text>
+      <text x="796" y="401">5</text><text x="1084" y="401">4</text><text x="1373" y="401">3</text>
+      <text x="796" y="495">3</text><text x="1084" y="495">5</text><text x="1373" y="495">3</text>
+      <text x="796" y="588">4</text><text x="1084" y="588">2</text><text x="1373" y="588">5</text>
+    </g>
+    <g class="points">
+      <text x="796" y="338">15 pts</text><text x="1084" y="338">25 pts</text><text x="1373" y="338">15 pts</text>
+      <text x="796" y="431">20 pts</text><text x="1084" y="431">16 pts</text><text x="1373" y="431">12 pts</text>
+      <text x="796" y="525">12 pts</text><text x="1084" y="525">20 pts</text><text x="1373" y="525">12 pts</text>
+      <text x="796" y="618">8 pts</text><text x="1084" y="618">4 pts</text><text x="1373" y="618">10 pts</text>
+    </g>
+  </g>
+  <path d="M83 633H1517" stroke="#1B2430" stroke-width="2.5"/>
+  <text x="110" y="682" class="head">Weighted total</text>
+  <text x="110" y="712" class="sub secondary">sum of score × weight</text>
+  <g text-anchor="middle" class="total">
+    <text x="796" y="684">55</text><text x="1084" y="684" class="green">65</text><text x="1373" y="684">49</text>
+  </g>
+  <rect x="765" y="698" width="62" height="30" rx="15" class="pill"/>
+  <rect x="1053" y="698" width="62" height="30" rx="15" fill="#2E7A4E"/>
+  <rect x="1342" y="698" width="62" height="30" rx="15" class="pill"/>
+  <g text-anchor="middle" class="rank">
+    <text x="796" y="720">2nd</text><text x="1084" y="720" style="fill:#FFFFFF">1st</text><text x="1373" y="720">3rd</text>
+  </g>
+  <path d="M83 741H1517" class="hair"/>
+  <text x="110" y="790" class="label">Versus the HubSpot datum</text>
+  <text x="796" y="790" text-anchor="middle" class="points">datum</text>
+  <text x="1084" y="790" text-anchor="middle" class="delta green">+10</text>
+  <text x="1373" y="790" text-anchor="middle" class="delta" style="fill:#B03A3A">−6</text>
+  <path d="M83 820H1517" stroke="#CBD5E2" stroke-width="1.8"/>
+  <text x="83" y="883" class="label">Salesforce wins with 65 points, 10 ahead of the HubSpot datum; HubSpot is second with 55.</text>
+  <text x="83" y="920" font-size="21" class="secondary">Each cell shows the score and, beneath it, the points it earns: the score times the criterion’s weight.</text>
+</svg>

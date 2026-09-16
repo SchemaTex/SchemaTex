@@ -1,0 +1,44 @@
+{
+  "id": "circuit-plc-io-wiring",
+  "type": "circuit",
+  "title": "PLC digital I/O wiring",
+  "goal": "A reader must be able to trace four field inputs and four outputs between numbered terminals, the PLC, and the 24 VDC supply.",
+  "rubric": [
+    {
+      "id": "plc-eight-point-io",
+      "severity": "blocker",
+      "must": "A PLC labelled with four digital input points and four digital output points is visible."
+    },
+    {
+      "id": "numbered-field-terminals",
+      "severity": "blocker",
+      "must": "A numbered field I/O terminal block is visible between the PLC and field devices."
+    },
+    {
+      "id": "input-devices",
+      "severity": "major",
+      "must": "START, STOP, and RESET pushbuttons plus a proximity sensor are visibly shown on the input side."
+    },
+    {
+      "id": "output-loads",
+      "severity": "major",
+      "must": "Two control relays, a solenoid valve, and an output pilot are visibly shown on the output side."
+    },
+    {
+      "id": "fused-24v-supply",
+      "severity": "blocker",
+      "must": "A 24 VDC supply and a clearly labelled 2 A PLC I/O fuse are visible."
+    },
+    {
+      "id": "common-returns",
+      "severity": "major",
+      "must": "Separate DI common return and DO common plus-24V wiring labels are visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Field devices on the left, PLC in the middle, output devices on the right, each crossing a numbered terminal; the +24 V feed and the 0 V return are drawn in different colours and both commons are wired. A note explains that one terminal block is shown in two sections."
+  }
+}

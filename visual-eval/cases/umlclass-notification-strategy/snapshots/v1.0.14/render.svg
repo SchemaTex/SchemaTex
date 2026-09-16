@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1766" height="644" viewBox="0 0 1766 644" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 9 class; 3 realization, 3 directed, 1 dependency, 1 composition; 1 merged inheritance tree (3 warnings).</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="1766" height="644" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="NotificationService" data-kind="class"><rect x="549.7999999999997" y="32" width="253" height="30" class="sx-umlclass-header-fill"/>
+<rect x="549.7999999999997" y="62" width="253" height="76" class="sx-umlclass-box-fill"/>
+<rect x="549.7999999999997" y="32" width="253" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="549.7999999999997" y1="62" x2="802.7999999999997" y2="62" class="sx-umlclass-divider"/>
+<line x1="549.7999999999997" y1="100" x2="802.7999999999997" y2="100" class="sx-umlclass-divider"/>
+<text x="676.2999999999997" y="53" class="sx-umlclass-classname" text-anchor="middle">NotificationService</text>
+<text x="563.7999999999997" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>send</tspan>(message: Message): <tspan>Delivery</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="NotificationChannel" data-kind="class"><rect x="656.6999999999998" y="227" width="273" height="30" class="sx-umlclass-header-fill"/>
+<rect x="656.6999999999998" y="257" width="273" height="76" class="sx-umlclass-box-fill"/>
+<rect x="656.6999999999998" y="227" width="273" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="656.6999999999998" y1="257" x2="929.6999999999998" y2="257" class="sx-umlclass-divider"/>
+<line x1="656.6999999999998" y1="295" x2="929.6999999999998" y2="295" class="sx-umlclass-divider"/>
+<text x="793.1999999999998" y="248" class="sx-umlclass-classname" text-anchor="middle">NotificationChannel</text>
+<text x="670.6999999999998" y="281" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;interface&gt;&gt;</tspan></text>
+<text x="670.6999999999998" y="319" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>deliver</tspan>(message: Message): <tspan>Delivery</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="EmailChannel" data-kind="class"><rect x="339" y="444" width="273" height="30" class="sx-umlclass-header-fill"/>
+<rect x="339" y="474" width="273" height="76" class="sx-umlclass-box-fill"/>
+<rect x="339" y="444" width="273" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="339" y1="474" x2="612" y2="474" class="sx-umlclass-divider"/>
+<line x1="339" y1="512" x2="612" y2="512" class="sx-umlclass-divider"/>
+<text x="475.5" y="465" class="sx-umlclass-classname" text-anchor="middle">EmailChannel</text>
+<text x="353" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>deliver</tspan>(message: Message): <tspan>Delivery</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="SmsChannel" data-kind="class"><rect x="666" y="444" width="273" height="30" class="sx-umlclass-header-fill"/>
+<rect x="666" y="474" width="273" height="76" class="sx-umlclass-box-fill"/>
+<rect x="666" y="444" width="273" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="666" y1="474" x2="939" y2="474" class="sx-umlclass-divider"/>
+<line x1="666" y1="512" x2="939" y2="512" class="sx-umlclass-divider"/>
+<text x="802.5" y="465" class="sx-umlclass-classname" text-anchor="middle">SmsChannel</text>
+<text x="680" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>deliver</tspan>(message: Message): <tspan>Delivery</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="PushChannel" data-kind="class"><rect x="993" y="444" width="273" height="30" class="sx-umlclass-header-fill"/>
+<rect x="993" y="474" width="273" height="76" class="sx-umlclass-box-fill"/>
+<rect x="993" y="444" width="273" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="993" y1="474" x2="1266" y2="474" class="sx-umlclass-divider"/>
+<line x1="993" y1="512" x2="1266" y2="512" class="sx-umlclass-divider"/>
+<text x="1129.5" y="465" class="sx-umlclass-classname" text-anchor="middle">PushChannel</text>
+<text x="1007" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>deliver</tspan>(message: Message): <tspan>Delivery</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Message" data-kind="class"><rect x="1320" y="433" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1320" y="463" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="1320" y="433" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="1320" y1="463" x2="1480" y2="463" class="sx-umlclass-divider"/>
+<line x1="1320" y1="523" x2="1480" y2="523" class="sx-umlclass-divider"/>
+<text x="1400" y="454" class="sx-umlclass-classname" text-anchor="middle">Message</text>
+<text x="1334" y="487" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>subject</tspan>: <tspan>String</tspan></text>
+<text x="1334" y="509" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>body</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Delivery" data-kind="class"><rect x="983.6999999999998" y="216" width="187" height="30" class="sx-umlclass-header-fill"/>
+<rect x="983.6999999999998" y="246" width="187" height="98" class="sx-umlclass-box-fill"/>
+<rect x="983.6999999999998" y="216" width="187" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="983.6999999999998" y1="246" x2="1170.6999999999998" y2="246" class="sx-umlclass-divider"/>
+<line x1="983.6999999999998" y1="306" x2="1170.6999999999998" y2="306" class="sx-umlclass-divider"/>
+<text x="1077.1999999999998" y="237" class="sx-umlclass-classname" text-anchor="middle">Delivery</text>
+<text x="997.6999999999998" y="270" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>sentAt</tspan>: <tspan>Instant</tspan></text>
+<text x="997.6999999999998" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>status</tspan>: <tspan>DeliveryStatus</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="DeliveryStatus" data-kind="class"><rect x="1534" y="422" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1534" y="452" width="160" height="120" class="sx-umlclass-box-fill"/>
+<rect x="1534" y="422" width="160" height="150" class="sx-umlclass-box-stroke"/>
+<line x1="1534" y1="452" x2="1694" y2="452" class="sx-umlclass-divider"/>
+<line x1="1534" y1="534" x2="1694" y2="534" class="sx-umlclass-divider"/>
+<text x="1614" y="443" class="sx-umlclass-classname" text-anchor="middle">DeliveryStatus</text>
+<text x="1548" y="476" class="sx-umlclass-member" data-visibility="public"><tspan>QUEUED</tspan></text>
+<text x="1548" y="498" class="sx-umlclass-member" data-visibility="public"><tspan>SENT</tspan></text>
+<text x="1548" y="520" class="sx-umlclass-member" data-visibility="public"><tspan>FAILED</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Template" data-kind="class"><rect x="32" y="227" width="253" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="257" width="253" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="227" width="253" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="257" x2="285" y2="257" class="sx-umlclass-divider"/>
+<line x1="32" y1="295" x2="285" y2="295" class="sx-umlclass-divider"/>
+<text x="158.5" y="248" class="sx-umlclass-classname" text-anchor="middle">Template</text>
+<text x="46" y="319" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>render</tspan>(message: Message): <tspan>String</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="NotificationService" data-to="NotificationChannel" data-kind="directed" data-name="chooses"><path d="M 708.1 138 L 761.4 216" class="sx-umlclass-rel-line"/>
+<path d="M 755.9271794871793 216 L 761.4271794871793 227 L 766.9271794871793 216" class="sx-umlclass-arrowhead"/>
+<text x="734.7499999999998" y="172" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">chooses</text>
+<text x="734.7499999999998" y="172" class="sx-umlclass-edge-name" text-anchor="middle">chooses</text></g>
+<g class="sx-umlclass-rel" data-from="NotificationService" data-to="Template" data-kind="dependency" data-name="renders with"><path d="M 549.8 132.6 L 296 232.4" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 296 226.86095017381226 L 285 232.36095017381226 L 296 237.86095017381226" class="sx-umlclass-arrowhead"/>
+<text x="422.89999999999986" y="177.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">renders with</text>
+<text x="422.89999999999986" y="177.5" class="sx-umlclass-edge-name" text-anchor="middle">renders with</text></g>
+<g class="sx-umlclass-rel" data-from="NotificationService" data-to="Delivery" data-kind="composition" data-name="creates"><path d="M 785.3 158 L 983.7 234.5" class="sx-umlclass-rel-line"/>
+
+<polygon points="785.2625641025638,138 791.2625641025638,148 785.2625641025638,158 779.2625641025638,148" class="sx-umlclass-diamond-filled"/>
+<text x="884.4812820512818" y="191.26053878772763" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">creates</text>
+<text x="884.4812820512818" y="191.26053878772763" class="sx-umlclass-edge-name" text-anchor="middle">creates</text></g>
+<g class="sx-umlclass-rel" data-from="Delivery" data-to="DeliveryStatus" data-kind="directed"><path d="M 1170.7 317.8 L 1523 464.7" class="sx-umlclass-rel-line"/>
+<path d="M 1523 459.1602086438152 L 1534 464.6602086438152 L 1523 470.1602086438152" class="sx-umlclass-arrowhead"/></g>
+<g class="sx-umlclass-rel" data-from="NotificationChannel" data-to="Message" data-kind="directed" data-name="delivers"><path d="M 929.7 328.8 L 1309 468.4" class="sx-umlclass-rel-line"/>
+<path d="M 1309 462.8909030982202 L 1320 468.3909030982202 L 1309 473.8909030982202" class="sx-umlclass-arrowhead"/>
+<text x="1119.35" y="393.602587343441" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delivers</text>
+<text x="1119.35" y="393.602587343441" class="sx-umlclass-edge-name" text-anchor="middle">delivers</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="realization" data-parent="NotificationChannel" data-children="EmailChannel,SmsChannel,PushChannel"><path d="M 475.5 444 L 475.5 388.5 L 802.5 388.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 802.5 444 L 802.5 388.5 L 802.5 388.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 1129.5 444 L 1129.5 388.5 L 802.5 388.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 802.5 388.5 L 802.5 347" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="802.5,333 793.5,347 811.5,347" class="sx-umlclass-triangle"/></g></g></svg>

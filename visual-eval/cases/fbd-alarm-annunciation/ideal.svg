@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1260" viewBox="0 0 1140 1260" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Pressure alarm annunciation</title><desc>Hand-authored IEC FBD reference; source blocks, expressions, negations and literals preserved.</desc><rect width="1140" height="1260" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Pressure alarm annunciation</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Function block diagram</text>
+<path d="M48 110L1092 110" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="137" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 0</text>
+<text x="164" y="137" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Detect a new alarm</text>
+<rect x="390" y="178" width="150" height="80" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="201" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">R_TRIG</text>
+<text x="465" y="166" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">NewAlarm</text>
+<text x="402" y="229" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">CLK</text>
+<text x="357" y="229" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">HighPressure</text>
+<path d="M365 224L390 224" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="229" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<path d="M540 224L564 224" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M48 325L1092 325" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="352" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 1</text>
+<text x="164" y="352" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Hold until acknowledged</text>
+<rect x="360" y="442" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="435" y="465" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<text x="327" y="493" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Unacked</text>
+<path d="M335 488L360 488" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="327" y="525" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">AckBtn</text>
+<path d="M335 520L351 520" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="355.5" cy="520" r="4.5" fill="white" stroke="#20272B" stroke-width="1.5"/>
+<path d="M510 488L534 488" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="720" y="410" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="795" y="433" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">OR</text>
+<text x="687" y="461" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">NewAlarm.Q</text>
+<path d="M695 456L720 456" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M870 456L894 456" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M534 488H627V488H720" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M894 456L924 456" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="933" y="461" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Unacked</text>
+<path d="M48 610L1092 610" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="637" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 2</text>
+<text x="164" y="637" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Sound horn</text>
+<rect x="390" y="685" width="150" height="80" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="465" y="708" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">MOVE</text>
+<text x="402" y="736" font-size="12" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<text x="357" y="736" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Unacked</text>
+<path d="M365 731L390 731" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="530" y="736" font-size="12" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<path d="M540 731L564 731" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M564 731L594 731" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="603" y="736" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Horn</text>
+<path d="M48 830L1092 830" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="857" font-size="15" font-weight="600" text-anchor="start" fill="#20272B">Network 3</text>
+<text x="164" y="857" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Flash while unacknowledged; steady while the fault remains</text>
+<rect x="360" y="900" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="435" y="923" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<text x="327" y="951" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Unacked</text>
+<path d="M335 946L360 946" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="327" y="983" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">FlashClock</text>
+<path d="M335 978L360 978" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M510 946L534 946" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="360" y="1040" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="435" y="1063" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<text x="327" y="1091" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">HighPressure</text>
+<path d="M335 1086L360 1086" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="327" y="1123" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Unacked</text>
+<path d="M335 1118L351 1118" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="355.5" cy="1118" r="4.5" fill="white" stroke="#20272B" stroke-width="1.5"/>
+<path d="M510 1086L534 1086" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<rect x="720" y="940" width="150" height="100" fill="white" stroke="#20272B" stroke-width="2"/>
+<text x="795" y="963" font-size="16" font-weight="600" text-anchor="middle" fill="#20272B">OR</text>
+<path d="M870 986L894 986" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M534 946H627V986H720" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M534 1086H627V1018H720" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<path d="M894 986L924 986" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="933" y="991" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Lamp</text>
+<path d="M48 1184L1092 1184" fill="none" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1212" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Open input circle = logical inversion.  Triangle at CU = rising-edge counter input.</text>
+<text x="48" y="1232" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Instance names sit above blocks; named variables connect separate networks.</text></svg>

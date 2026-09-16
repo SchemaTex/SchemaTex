@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1140 700">
+  <title>Primate Phylogeny — rectangular phylogram with highlighted Homininae</title>
+  <desc>Rooted primate phylogeny. Human and Chimpanzee are sister taxa, together sister to Gorilla within Homininae. Homininae is sister to Orangutan, and their common ancestor is sister to Gibbon. Horizontal lengths encode substitutions per site: root to great ape ancestor 0.025, to Homininae ancestor 0.018, to human–chimpanzee ancestor 0.007, and to each of Human and Chimpanzee 0.006; Gorilla 0.013, Orangutan 0.031, and Gibbon 0.056. The terminal comma in the supplied Newick is interpreted as an implicit encompassing root so that Gibbon is included.</desc>
+  <rect width="1140" height="700" fill="#ffffff"/>
+  <style>
+    text {font-family:Verdana,sans-serif;fill:#1e293b}
+    .title {font-family:'Trebuchet MS',sans-serif;font-size:28px;font-weight:700}
+    .subtitle {font-size:13px;fill:#64748b;letter-spacing:.25px}
+    .heading {font-size:12px;fill:#64748b;letter-spacing:1px}
+    .taxon {font-size:16px}
+    .note {font-size:11px;fill:#64748b}
+    .branch {fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .guide {fill:none;stroke:#b8c5d6;stroke-width:1;stroke-dasharray:2 5}
+  </style>
+  <text class="title" x="48" y="48">Primate Phylogeny</text>
+  <text class="subtitle" x="48" y="76">Rectangular phylogram · branch distances and highlighted Homininae</text>
+  <path d="M48 99H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="heading" x="80" y="133">PHYLOGENY</text>
+  <text class="heading" x="654" y="133">TAXON</text>
+  <text class="heading" x="967" y="133">CLADE</text>
+
+  <rect x="638" y="148" width="454" height="132" rx="3" fill="#1e88e5" fill-opacity=".045"/>
+
+  <!-- Linear horizontal scale: 9500 SVG units per substitution/site. -->
+  <!-- Root x=80; great apes x=317.5; Homininae x=488.5; human/chimp x=555; tips x=612. -->
+  <g class="branch" stroke="#1e293b">
+    <path d="M80 304.5V430M80 304.5H317.5M80 430H612"/>
+    <path d="M317.5 225V384M317.5 384H612"/>
+  </g>
+  <g class="branch" stroke="#1e88e5">
+    <path d="M317.5 225H488.5M488.5 192V258M488.5 258H612"/>
+    <path d="M488.5 192H555M555 170V214M555 170H612M555 214H612"/>
+  </g>
+  <g class="guide">
+    <path d="M612 170H641M612 214H641M612 258H641M612 384H641M612 430H641"/>
+  </g>
+  <g class="taxon">
+    <text x="654" y="175">Human</text>
+    <text x="654" y="219">Chimpanzee</text>
+    <text x="654" y="263">Gorilla</text>
+    <text x="654" y="389">Orangutan</text>
+    <text x="654" y="435">Gibbon</text>
+  </g>
+  <path d="M945 158H952V270H945" fill="none" stroke="#1e88e5" stroke-width="1.4"/>
+  <text x="967" y="218" style="font-size:12px;font-weight:700;fill:#1e88e5">Homininae</text>
+
+  <path d="M80 600V610M80 605H175M175 600V610" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="630" font-size="12">0.01 substitutions/site</text>
+  <text class="note" x="466" y="606">Horizontal distance: substitutions/site</text>
+  <text class="note" x="466" y="629">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 653H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="note" x="48" y="678">Supplied molecular primate phylogeny · branch lengths follow the source; no support values supplied.</text>
+</svg>

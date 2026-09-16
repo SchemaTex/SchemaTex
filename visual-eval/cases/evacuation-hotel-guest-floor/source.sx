@@ -1,0 +1,35 @@
+# Scenario: escape plan on the back of a hotel guest-room door, with stairs at both ends of the corridor.
+evacuation "Third floor guest rooms" unit m
+compliance iso
+sheet a3 landscape
+room r301 "301" at 3,0 size 4x5
+room r302 "302" at 7,0 size 4x5
+room r303 "303" at 11,0 size 4x5
+room r304 "304" at 15,0 size 4x5
+room corridor "Corridor" at 3,5 size 16x1.8
+room r305 "305" at 3,6.8 size 4x5
+room r306 "306" at 7,6.8 size 4x5
+room lobby "Lift Lobby" at 11,6.8 size 4x5
+room r307 "307" at 15,6.8 size 4x5
+room stairW "Stair A" at 0,4 size 3x3.8
+room stairE "Stair B" at 19,4 size 3x3.8
+door between r301 corridor at 50% width 0.9
+door between r302 corridor at 50% width 0.9
+door between r303 corridor at 50% width 0.9
+door between r304 corridor at 50% width 0.9
+door between r305 corridor at 50% width 0.9
+door between r306 corridor at 50% width 0.9
+door between r307 corridor at 50% width 0.9
+opening between lobby corridor at 50% width 2
+door between corridor stairW at 50% width 1.2
+fire-door between corridor stairW rating "EI30"
+door between corridor stairE at 50% width 1.2
+fire-door between corridor stairE rating "EI30"
+here in r302 at 2,4.5 "YOU ARE HERE"
+exit-final xA in stairW at 0,1.9 side west "EXIT"
+exit-final xB in stairE at 3,1.9 side east "EXIT"
+extinguisher f1 in corridor at 8,0.2 class "ABC"
+assembly muster outside at 25,14 "ASSEMBLY POINT"
+route primary here -> corridor -> stairW -> xA
+route secondary here -> corridor -> stairE -> xB
+legend auto

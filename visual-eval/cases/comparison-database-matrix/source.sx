@@ -1,0 +1,22 @@
+# Scenario: product architecture team compares database engines for a multi-tenant SaaS.
+comparison "Database engine comparison"
+mode: matrix
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "ACID transactions"
+  PostgreSQL: yes
+  MongoDB: partial
+  DynamoDB: partial
+criterion "Flexible schema"
+  PostgreSQL: partial
+  MongoDB: yes
+  DynamoDB: yes
+criterion "Complex joins"
+  PostgreSQL: yes
+  MongoDB: partial
+  DynamoDB: no
+criterion "Managed serverless option"
+  PostgreSQL: partial
+  MongoDB: yes
+  DynamoDB: yes

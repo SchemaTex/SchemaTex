@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { PLAYBOOK_TOKENS } from "../../src/core/theme";
 import { parsePlaybook, PlaybookParseError } from "../../src/diagrams/playbook/parser";
 import { layoutPlaybook, sportModule } from "../../src/diagrams/playbook/layout";
 
@@ -87,4 +88,56 @@ describe("playbook — validation", () => {
     expect(r.warnings.length).toBeGreaterThan(0);
     expect(r.moves.some((m) => m.kind === "pass")).toBe(false);
   });
+});
+
+it("court actions follow updated player positions while passes do not move players", () => {
+  const r = lay(`playbook "Movement sequence" sport basketball
+set 5-out
+pass 1 2
+cut 1 elbow
+pass 2 1
+shot 1`);
+  const [first, cut, back, shot] = r.moves;
+  expect(cut.points[0]).toEqual(first.points[0]);
+  expect(back.points.at(-1)).toEqual(cut.points.at(-1));
+  expect(shot.points[0]).toEqual(cut.points.at(-1));
+  expect(r.players.find(p => p.id === "1")?.y).not.toBe(shot.points[0].y);
+});
+
+it("football assignments still start at the formation, independent of declaration order", () => {
+  const r = lay(`playbook "Assignments" sport football
+formation spread
+route X corner 12
+route X post 8`);
+  expect(r.moves[0].points[0]).toEqual(r.moves[1].points[0]);
+});
+
+it("NBA foul-line landmarks are measured from the baseline, not the backboard", () => {
+  const court = sportModule("basketball");
+  expect(court.resolveLandmark?.("ft")).toEqual({ x: 0, y: 19 });
+  expect(court.resolveLandmark?.("elbow")).toEqual({ x: 8, y: 19 });
+  expect(court.resolveLandmark?.("rim")).toEqual({ x: 0, y: 5.25 });
+});
+
+it("a basket cut leaves a receiving position before the rim and a visible finishing shot", () => {
+  const r = lay(`playbook "Basket approach" sport basketball
+set 5-out
+cut 2 basket
+pass 1 2
+shot 2`);
+  const [cut, pass, shot] = r.moves;
+  expect(pass.points.at(-1)).toEqual(cut.points.at(-1));
+  expect(shot.points[0]).toEqual(cut.points.at(-1));
+  const end = shot.points.at(-1)!;
+  expect(Math.hypot(end.x - shot.points[0].x, end.y - shot.points[0].y)).toBeCloseTo(3, 1);
+});
+
+
+it("football painted yard lines stay on absolute five-yard marks when LOS is off-grid", () => {
+  const layout = lay('playbook "Off-grid" sport football\nfield los 37 hash nfl\nformation spread');
+  const svg = sportModule("football").drawField(layout, { X: (x) => x, Y: (y) => y, px: (v) => v }, PLAYBOOK_TOKENS.default);
+  const lines = [...svg.matchAll(/<line[^>]*class="sx-pb-yard"[^>]*>/g)].map(([tag]) => Number(/y1="([^"]+)"/.exec(tag)![1]));
+  expect(lines).toContain(3); // absolute 40
+  expect(lines).toContain(-2); // absolute 35
+  expect(lines).not.toContain(0); // LOS 37 is an overlay, not a painted yard line
 });

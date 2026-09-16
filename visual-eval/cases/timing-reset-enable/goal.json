@@ -1,0 +1,40 @@
+{
+  "id": "timing-reset-enable",
+  "type": "timing",
+  "title": "Power-on reset and enable sequence",
+  "goal": "A practitioner can read this timing diagram at a glance: Power-on reset and enable sequence.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently hand-composed reference after visual-eval/exemplars/timing/ideal.svg (sha256 2c0d774545bd). Vision-reviewed rendered SVG against source and exemplar, including labels, connections and symbol placement. Independent aligned waveforms and bus-cell geometry, exemplar monochrome palette and readable labels."
+  }
+}

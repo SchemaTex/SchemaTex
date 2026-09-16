@@ -1,0 +1,23 @@
+# Scenario: systematic review of a new drug; all flow counts reconcile.
+prisma
+mode: 2020-single
+title: "Drug efficacy for refractory migraine"
+kind: systematic-review
+identification:
+  databases:
+    n: 1450
+    sources: MEDLINE=600, Embase=500, CENTRAL=350
+    duplicates-removed: 310
+screening:
+  records-screened: 1140
+  excluded:
+    n: 900
+    reasons: irrelevant title=620, wrong language=140, animal study=140
+eligibility:
+  full-text-assessed: 240
+  excluded:
+    n: 198
+    reasons: wrong population=80, wrong dose=62, wrong outcome=56
+included:
+  studies: 42
+  reports: 46

@@ -1,0 +1,45 @@
+{
+  "id": "sld-motor-control-centre",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Motor control centre section",
+  "goal": "A maintenance electrician can distinguish and trace each complete motor-starter feeder from the MCC bus to its motor.",
+  "rubric": [
+    {
+      "id": "main-incomer-and-bus",
+      "severity": "blocker",
+      "must": "A single plant supply passes through the MCC main breaker to a clearly labelled bus."
+    },
+    {
+      "id": "three-complete-starters",
+      "severity": "blocker",
+      "must": "Three separate feeder paths each visibly contain a breaker, contactor, overload relay and motor."
+    },
+    {
+      "id": "motor-branches-distinct",
+      "severity": "major",
+      "must": "The three near-identical vertical feeder branches remain visually separate from busbar to motor."
+    },
+    {
+      "id": "ratings-follow-devices",
+      "severity": "major",
+      "must": "Breaker, contactor and overload ratings are readable beside the device they describe on every feeder."
+    },
+    {
+      "id": "motor-loads-labelled",
+      "severity": "major",
+      "must": "Each motor is labelled with its unique tag, service and power rating."
+    },
+    {
+      "id": "no-wiring-through-symbols",
+      "severity": "minor",
+      "must": "No feeder line passes through the body of a breaker, contactor, overload relay or motor symbol."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. The 480 V plant supply enters through the MCC-1 800 A main breaker onto the MCC-1 480 V bus. Three identical motor-starter columns tap the bus, each built the same way top to bottom: feeder breaker, contactor, overload relay, motor — a process pump, a cooling fan and a conveyor drive, each with its own cable size. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

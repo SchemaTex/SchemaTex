@@ -18,6 +18,9 @@
  * Spec: docs/reference/29-USECASE-STANDARD.md §8
  */
 
+import { wrapTextToWidth } from "../../core/text-metrics";
+import { placeLabel, edgeLabelObstacles, labelPathPoints } from "../../core/label-placement";
+
 import type {
   UsecaseActor,
   UsecaseActorBox,
@@ -340,7 +343,11 @@ export function layoutUsecase(ast: UsecaseAst): UsecaseLayoutResult {
   for (let d = 0; d <= maxDepth; d++) {
     cursorX += colMaxRx[d];
     colCenterX[d] = cursorX;
-    cursorX += colMaxRx[d] + C.COL_GAP;
+    const annotationWidth = Math.max(C.COL_GAP, ...ast.relations
+      .filter(r => r.kind === "include" || r.kind === "extend")
+      .flatMap(r => [r.condition ?? "", r.extensionPointRef ? `(extension point: ${r.extensionPointRef})` : ""])
+      .map(label => Math.min(150, estimateTextWidth(label, 5.8)) + 30));
+    cursorX += colMaxRx[d] + annotationWidth;
   }
 
   // global row pitch big enough for tallest ellipse
@@ -682,9 +689,14 @@ export function layoutUsecase(ast: UsecaseAst): UsecaseLayoutResult {
     if (r.kind === "directed" || r.kind === "include" || r.kind === "extend") arrowKind = "open";
     else if (r.kind === "generalization") arrowKind = "hollow";
 
+    const route = routeAroundEllipses(pa, pb, ellipses.filter(e => e.usecase.id !== r.source && e.usecase.id !== r.target));
+    if (route.length > 2) {
+      if (!srcActor) route[0] = perimeter(r.source, route[1].x, route[1].y);
+      if (!tgtActor) route[route.length-1] = perimeter(r.target, route[route.length-2].x, route[route.length-2].y);
+    }
     const edge: UsecaseEdge = {
       relation: r,
-      d: `M ${round(pa.x)} ${round(pa.y)} L ${round(pb.x)} ${round(pb.y)}`,
+      d: route.map((p,i)=>`${i===0?"M":"L"} ${round(p.x)} ${round(p.y)}`).join(" "),
       arrowKind,
       dashed,
     };
@@ -719,6 +731,23 @@ export function layoutUsecase(ast: UsecaseAst): UsecaseLayoutResult {
     }
 
     edges.push(edge);
+  }
+
+  // Edge annotations are content: place them after all geometry is known so
+  // long extend conditions cannot cover an ellipse or another relationship.
+  const occupied = ellipses.map(e => ({x:e.cx-e.rx,y:e.cy-e.ry,width:e.rx*2,height:e.ry*2}));
+  for (const edge of edges) {
+    if (!edge.label) continue;
+    const rows = edge.label.rows.flatMap(row => wrapTextToWidth(row, 10, 150));
+    edge.label.rows = rows;
+    const points = labelPathPoints(edge.d);
+    const first = points[0], last = points[points.length-1];
+    const box = placeLabel({x:edge.label.cx,y:edge.label.cy},
+      {width:Math.max(...rows.map(row=>estimateTextWidth(row,5.8)))+12,height:rows.length*13+8},
+      [...occupied,...edges.filter(e=>e!==edge).flatMap(e=>edgeLabelObstacles(labelPathPoints(e.d)))],
+      {x:last.x-first.x,y:last.y-first.y});
+    edge.label.cx=box.x+box.width/2;edge.label.cy=box.y+box.height/2;
+    occupied.push(box);
   }
 
   const result: UsecaseLayoutResult = {
@@ -780,4 +809,35 @@ function placeMultiplicity(
 
 function round(n: number): number {
   return Math.round(n * 100) / 100;
+}
+
+/** Visibility routing around unrelated use-case ellipses. Straight associations
+ * stay straight when clear; only blocked connections acquire a detour. */
+function routeAroundEllipses(start:{x:number;y:number},end:{x:number;y:number},obstacles:UsecaseEllipse[]):Array<{x:number;y:number}> {
+  const clear=(a:{x:number;y:number},b:{x:number;y:number})=>obstacles.every(e=>{
+    const rx=e.rx+8,ry=e.ry+8;
+    const ax=(a.x-e.cx)/rx,ay=(a.y-e.cy)/ry,dx=(b.x-a.x)/rx,dy=(b.y-a.y)/ry;
+    const t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/(dx*dx+dy*dy||1)));
+    return (ax+t*dx)**2+(ay+t*dy)**2>=1;
+  });
+  if(clear(start,end))return[start,end];
+  const points=[start,end,...obstacles.flatMap(e=>[-1,1].flatMap(x=>[-1,1].map(y=>({x:e.cx+x*(e.rx+14),y:e.cy+y*(e.ry+14)}))))];
+  const distances=points.map(()=>Infinity),previous=points.map(()=>-1),visited=new Set<number>();
+  distances[0]=0;
+  for(let step=0;step<points.length;step++){
+    let index=-1;
+    for(let i=0;i<points.length;i++)if(!visited.has(i)&&(index<0||distances[i]<distances[index]))index=i;
+    if(index<0||!Number.isFinite(distances[index]))break;
+    if(index===1)break;
+    visited.add(index);
+    for(let i=0;i<points.length;i++){
+      if(visited.has(i)||!clear(points[index],points[i]))continue;
+      const cost=distances[index]+Math.hypot(points[i].x-points[index].x,points[i].y-points[index].y)+12;
+      if(cost<distances[i]){distances[i]=cost;previous[i]=index;}
+    }
+  }
+  if(previous[1]<0)return[start,end];
+  const route=[];
+  for(let i=1;i>=0;i=previous[i])route.unshift(points[i]);
+  return route;
 }

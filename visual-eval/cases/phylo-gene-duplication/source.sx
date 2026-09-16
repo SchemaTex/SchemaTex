@@ -1,0 +1,5 @@
+# Gene-family tree: duplicated paralogs A and B each retain human and mouse orthologs; NHX annotations identify duplication branches.
+phylo "Gene Duplication Tree" [layout: rectangular, mode: phylogram]
+  newick: "((Human_GeneA:0.06,Mouse_GeneA:0.07)[&&NHX:D=N]:0.18,(Human_GeneB:0.05,Mouse_GeneB:0.06)[&&NHX:D=N]:0.17)[&&NHX:D=Y];"
+  clade GeneA = (Human_GeneA, Mouse_GeneA) [color: "#FB8C00"]
+  scale "substitutions/site"

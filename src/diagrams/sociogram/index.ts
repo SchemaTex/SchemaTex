@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import { parseSociogram } from "./parser";
 import { layoutSociogram } from "./layout";
@@ -7,7 +8,7 @@ export const sociogram: DiagramPlugin = {
   type: "sociogram",
 
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("sociogram");
   },
 

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1209 1136" width="1209" height="1136" role="img">
+<title>CI CD Supply Chain STRIDE</title>
+<desc>A STRIDE threat model of CI CD Supply Chain STRIDE, drawn as a data-flow diagram over 3 trust zones: Developer Internet, Build Zone, Production. 2 external entities are drawn as rectangles, 2 processes as circles, and 3 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 6 data flows, 4 cross a trust boundary — Software Developer to Source Repository, CI Runner to Source Repository, CI Runner to Package Registry, CI Runner to Artifact Store — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite.</desc>
+<rect x="0" y="0" width="1209" height="1136" fill="#ffffff"/>
+<text x="46" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">CI CD Supply Chain STRIDE</text>
+<text x="46" y="65" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="1.3">STRIDE THREAT MODEL · DATA-FLOW DIAGRAM</text>
+<line x1="46" y1="78" x2="1163" y2="78" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="152" width="220" height="810" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="494" y="152" width="152" height="810" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="860" y="152" width="220" height="810" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M 170 336 L 170 984 L 970 984 L 970 534" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 620 302 L 719 302 L 719 498 L 876 498" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 520 302 L 421 302 L 421 498 L 264 498" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 620 302 L 745 302 L 745 694 L 876 694" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1045.72 302 L 1064 302 L 1064 694 L 1064 694" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 1045.72 302 L 1064 302 L 1064 890 L 1064 890" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 472 L 1054 472" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 524 L 1054 524" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 668 L 1054 668" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 720 L 1054 720" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 864 L 1054 864" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 886 916 L 1054 916" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 970 524 L 973.6 534 L 966.4 534 Z" fill="#b02a37"/>
+<rect x="528.62" y="968.76" width="82.75" height="13.2" fill="#ffffff"/>
+<rect x="673.15" y="368.76" width="91.71" height="13.2" fill="#ffffff"/>
+<path d="M 886 498 L 876 501.6 L 876 494.4 Z" fill="#b02a37"/>
+<rect x="359.77" y="368.76" width="122.46" height="13.2" fill="#ffffff"/>
+<path d="M 254 498 L 264 494.4 L 264 501.6 Z" fill="#b02a37"/>
+<rect x="691.51" y="492.76" width="106.98" height="13.2" fill="#ffffff"/>
+<path d="M 886 694 L 876 697.6 L 876 690.4 Z" fill="#b02a37"/>
+<path d="M 1054 694 L 1064 690.4 L 1064 697.6 Z" fill="#1e293b"/>
+<rect x="1069" y="414.36" width="64.59" height="13.2" fill="#ffffff"/>
+<path d="M 1054 890 L 1064 886.4 L 1064 893.6 Z" fill="#1e293b"/>
+<rect x="1069" y="473.16" width="98.03" height="13.2" fill="#ffffff"/>
+<rect x="86" y="268" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="237" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="86" y="464" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="433" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="570" cy="302" r="50" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="527.7" y="221" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="970" cy="302" r="75.72" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="927.7" y="195.28" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="886" y="472" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="937.94" y="441" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="886" y="668" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="937.94" y="637" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="886" y="864" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="937.94" y="833" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="170" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">DEVELOPER INTERNET</text>
+<text x="570" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">BUILD ZONE</text>
+<text x="970" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">PRODUCTION</text>
+<text x="570" y="978" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">signed commit</text>
+<text x="719" y="378" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">source checkout</text>
+<text x="421" y="378" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">dependency download</text>
+<text x="745" y="502" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">signed build artifact</text>
+<text x="1074" y="423.6" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">artifact pull</text>
+<text x="1074" y="482.4" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">deployment event</text>
+<text x="170" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Software Developer</text>
+<text x="170" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="170" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Package Registry</text>
+<text x="170" y="445.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="570" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">CI Runner</text>
+<text x="570" y="233.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="970" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Deployment Service</text>
+<text x="970" y="207.78" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="970" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Source Repository</text>
+<text x="970" y="453.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="970" y="698.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Artifact Store</text>
+<text x="970" y="649.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="970" y="894.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Build Audit Log</text>
+<text x="970" y="845.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="46" y="1030" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#b02a37">4 of 6 flows cross a trust boundary</text>
+<text x="46" y="1048" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#475569">Software Developer → Source Repository   ·   CI Runner → Source Repository   ·   CI Runner → Package Registry   ·   CI Runner → Artifact Store</text>
+<text x="46" y="1072" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Rectangle = external entity (S·R)  —  Circle = process (S·T·R·I·D·E)  —  Parallel lines = data store (T·R?·I·D)  —  Every data flow carries T·I·D</text>
+<text x="46" y="1090" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Trust boundaries are drawn neutral; red is reserved for the flows that cross one, which is where spoofing, tampering and disclosure bite.</text>
+</svg>

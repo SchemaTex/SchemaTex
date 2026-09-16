@@ -1,11 +1,22 @@
 import { describe, it, expect } from "vitest";
 import { parseFishboneDSL } from "../../src/diagrams/fishbone/parser";
 import { layoutFishbone } from "../../src/diagrams/fishbone/layout";
+import { renderFishboneAST } from "../../src/diagrams/fishbone/renderer";
 
-const build = (body: string) =>
-  layoutFishbone(
-    parseFishboneDSL(`fishbone "T"\neffect "E"\n${body}`)
-  );
+const attrs = (source: string): Record<string, string> => Object.fromEntries(
+  [...source.matchAll(/([\w-]+)="([^"]*)"/g)].map(match => [match[1], match[2]]));
+const build = (body: string) => {
+  const svg = renderFishboneAST(parseFishboneDSL(`fishbone "T"\neffect "E"\n${body}`));
+  const lines = [...svg.matchAll(/<line\b([^>]*)>/g)].map(match => attrs(match[1]));
+  const headers = [...svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)]
+    .filter(match => attrs(match[1]).class === "sx-fb-header-text");
+  const root = attrs(svg.slice(0, svg.indexOf(">")));
+  return { width: Number(root.width), height: Number(root.height),
+    ribs: lines.filter(line => line.class === "sx-fb-rib").map((line, index) => ({
+      half: Number(line.y2) < Number(line.y1) ? "top" : "bottom", label: headers[index][2],
+      spineX: Number(line.x1), endX: Number(line.x2),
+    })), svg };
+};
 
 describe("Fishbone layout — flexibility options", () => {
   describe("sides", () => {
@@ -90,36 +101,42 @@ describe("Fishbone layout — flexibility options", () => {
   });
 
   describe("causeSide", () => {
-    it("default head — all cause branches extend toward head (branchX > ribX)", () => {
-      const r = build(
-        `category a "A"\na : "x1"\na : "x2"`
-      );
-      for (const cause of r.ribs[0]!.causes) {
-        expect(cause.branchX).toBeGreaterThan(cause.ribX);
-        expect(cause.causeSide).toBe("head");
-      }
+    // Which side of the bone a cause hangs from. `head` puts it on the spine
+    // side, `tail` on the far side, `both` alternates. The layout records the
+    // choice per cause, so read it back rather than guessing from coordinates.
+    const sidesOf = (config: string) => {
+      const ast = parseFishboneDSL(`fishbone "T"\neffect "E"\n${config}\n` +
+        `category a "A"\na : "x1"\na : "x2"\na : "x3"\na : "x4"`);
+      return layoutFishbone(ast).ribs.flatMap(rib => rib.causes.map(cause => cause.causeSide));
+    };
+
+    it("hangs every cause on the tail side by default", () => {
+      expect(sidesOf("")).toEqual(["tail", "tail", "tail", "tail"]);
+      expect(sidesOf("config causeSide = tail")).toEqual(sidesOf(""));
     });
 
-    it("tail flips cause direction (branchX < ribX)", () => {
-      const r = build(
-        `config causeSide = tail\ncategory a "A"\na : "x1"\na : "x2"`
-      );
-      for (const cause of r.ribs[0]!.causes) {
-        expect(cause.branchX).toBeLessThan(cause.ribX);
-        expect(cause.causeSide).toBe("tail");
-        expect(cause.labelAnchor).toBe("end");
-      }
+    it("moves every cause to the head side on request", () => {
+      expect(sidesOf("config causeSide = head")).toEqual(["head", "head", "head", "head"]);
     });
 
-    it("both alternates direction by slot (even → head, odd → tail)", () => {
-      const r = build(
-        `config causeSide = both\ncategory a "A"\na : "x0"\na : "x1"\na : "x2"\na : "x3"`
-      );
-      const causes = r.ribs[0]!.causes;
-      expect(causes[0]!.causeSide).toBe("head");
-      expect(causes[1]!.causeSide).toBe("tail");
-      expect(causes[2]!.causeSide).toBe("head");
-      expect(causes[3]!.causeSide).toBe("tail");
+    it("alternates sides when asked for both", () => {
+      const sides = sidesOf("config causeSide = both");
+      expect(new Set(sides)).toEqual(new Set(["head", "tail"]));
+      expect(sides.every((side, index) => index === 0 || side !== sides[index - 1])).toBe(true);
     });
+
+    it.each(["", "config causeSide = tail", "config causeSide = head", "config causeSide = both"])(
+      "keeps causes above horizontal ribs and left aligned (%s)", config => {
+        const { svg } = build(`${config}\ncategory a "A"\na : "x1"\na : "x2"`);
+        const labels = [...svg.matchAll(/<text\b([^>]*)>/g)].map(match => attrs(match[1]))
+          .filter(text => text.class === "sx-fb-cause-label");
+        const ribs = [...svg.matchAll(/<line\b([^>]*)>/g)].map(match => attrs(match[1]))
+          .filter(line => line.class === "sx-fb-branch");
+        labels.forEach((label, index) => {
+          expect(label["text-anchor"]).toBe("start");
+          expect(Number(label.y)).toBeLessThan(Number(ribs[index].y1));
+          expect(ribs[index].y1).toBe(ribs[index].y2);
+        });
+      });
   });
 });

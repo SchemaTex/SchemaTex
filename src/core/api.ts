@@ -1,12 +1,12 @@
 import type { DiagramPlugin, DiagramType, RenderConfig, SceneItem, SourceRange } from "./types";
 import {
-  findArtifactWrapperRanges,
-  parseFrontmatter,
+  normalizeDslInput,
   stripLineComment,
   UNIVERSAL_COMMENT_MARKERS,
 } from "./dsl-preprocess";
 import { parseMachineSections } from "./editing";
 import { createSourceLocator, findFirstQuotedRange } from "./source-range";
+import { normalizeQuotePairs } from "./quotes";
 import { sourceRevision } from "./revision";
 import { TITLE_SCENE_ID } from "./title-scene";
 import { isInteractiveDiagramType } from "./interactive-capabilities";
@@ -231,24 +231,6 @@ function textLines(source: string): TextLine[] {
 }
 
 /**
- * Run the Mermaid-compat frontmatter pass and merge any `title:` into the
- * first header line as a quoted suffix (`flowchart TD` → `flowchart TD "T"`).
- *
- * Most per-diagram header regexes already accept a trailing quoted title, or
- * tolerate trailing tokens. Diagram types whose grammar would reject the
- * appended title are left alone — the frontmatter is silently dropped rather
- * than producing a misleading parse error.
- */
-/** Blank globally invalid LLM wrappers while preserving source offsets. */
-function blankArtifactWrappers(input: MappedText): MappedText {
-  let result = input;
-  for (const range of findArtifactWrapperRanges(input.text)) {
-    result = blankMapped(result, range.start, range.end);
-  }
-  return result;
-}
-
-/**
  * Forgive an abbreviated header keyword once the target engine is known.
  * LLMs routinely shorten the type line (`flow` → flowchart, `org` → orgchart,
  * `gen` → genogram, `ped` → pedigree, `seq` → sequence, `socio` → sociogram,
@@ -261,7 +243,7 @@ function normalizeHeader(input: MappedText, type: string): MappedText {
   const lines = textLines(input.text);
   for (const line of lines) {
     const trimmed = line.text.trim();
-    if (!trimmed) continue;
+    if (!trimmed || trimmed.startsWith("%%")) continue;
     const m = trimmed.match(/^([A-Za-z][A-Za-z0-9_-]*)/);
     if (!m) return input;
     const tok = m[1]!;
@@ -321,58 +303,12 @@ function recoverHeader(
   return prepared;
 }
 
-function blankFrontmatter(input: MappedText): {
-  mapped: MappedText;
-  data: Record<string, string>;
-  titleRange?: { start: number; end: number };
-} {
-  const parsed = parseFrontmatter(input.text);
-  if (Object.keys(parsed.data).length === 0) return { mapped: input, data: {} };
-  const lines = textLines(input.text);
-  let open = -1;
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i]!.text.trim();
-    if (trimmed === "") continue;
-    if (/^-{3,}\s*$/.test(trimmed)) open = i;
-    break;
-  }
-  if (open < 0) return { mapped: input, data: {} };
-  let close = -1;
-  for (let i = open + 1; i < lines.length; i++) {
-    if (/^-{3,}\s*$/.test(lines[i]!.text.trim())) {
-      close = i;
-      break;
-    }
-  }
-  if (close < 0) return { mapped: input, data: {} };
-  let titleRange: { start: number; end: number } | undefined;
-  for (let i = open + 1; i < close; i++) {
-    const line = lines[i]!;
-    const trimmed = line.text.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const colon = trimmed.indexOf(":");
-    if (colon <= 0 || trimmed.slice(0, colon).trim() !== "title") continue;
-    const rawValue = trimmed.slice(colon + 1).trim();
-    if (!rawValue) break;
-    const valueStart = line.text.indexOf(rawValue, line.text.indexOf(trimmed) + colon + 1);
-    if (valueStart >= 0) {
-      titleRange = {
-        start: line.start + valueStart,
-        end: line.start + valueStart + rawValue.length,
-      };
-    }
-    break;
-  }
-  return {
-    mapped: blankMapped(input, lines[open]!.start, lines[close]!.contentEnd),
-    data: parsed.data,
-    titleRange,
-  };
-}
-
-function blankUniversalComments(input: MappedText): MappedText {
+// Before detection retain directives owned by any plugin; once selected, keep
+// only that parser's directives. Blanking keeps diagnostic offsets unchanged.
+function blankUniversalComments(input: MappedText, owners = plugins): MappedText {
   let result = input;
   for (const line of textLines(input.text)) {
+    if (owners.some(plugin => plugin.isDirective?.(line.text))) continue;
     const kept = stripLineComment(line.text, UNIVERSAL_COMMENT_MARKERS);
     if (kept.length < line.text.length) {
       result = blankMapped(result, line.start + kept.length, line.contentEnd);
@@ -389,7 +325,7 @@ function appendFrontmatterTitle(
   const safeTitle = titleValue.replace(/"/g, '\\"');
   for (const line of textLines(input.text)) {
     const trimmed = line.text.trim();
-    if (trimmed === "") continue;
+    if (trimmed === "" || trimmed.startsWith("%%")) continue;
     if (findFirstQuotedRange(trimmed)) {
       return { mapped: input, inserted: false };
     }
@@ -404,8 +340,8 @@ function appendFrontmatterTitle(
 }
 
 function preprocess(source: string): PreparedInput {
-  let mapped = blankArtifactWrappers(originalMappedText(source));
-  const frontmatter = blankFrontmatter(mapped);
+  const frontmatter = normalizeDslInput(source);
+  let mapped = { ...originalMappedText(source), text: frontmatter.text };
   const locator = createSourceLocator(source);
   const frontmatterTitleRange = frontmatter.titleRange
     ? locator.range(
@@ -413,7 +349,6 @@ function preprocess(source: string): PreparedInput {
         mapped.boundaries[frontmatter.titleRange.end] ?? source.length
       )
     : undefined;
-  mapped = frontmatter.mapped;
   const machine = parseMachineSections(mapped.text);
   mapped = { text: machine.body, boundaries: mapped.boundaries };
   mapped = blankUniversalComments(mapped);
@@ -435,7 +370,15 @@ function prepareForPlugin(
   forced: boolean,
   type: DiagramType = plugin.type
 ): PreparedInput {
-  const normalized = normalizeHeader(input, type);
+  // Fold the seven documented quote pairs down to ASCII `"` before this
+  // plugin's grammar sees the text, so no parser has to re-learn the locale
+  // spellings. The rewrite is length-preserving, so `boundaries` still maps
+  // every processed offset back to the character the author typed.
+  const quoted: MappedText = {
+    ...input,
+    text: normalizeQuotePairs(input.text, plugin.reservedQuotes),
+  };
+  const normalized = normalizeHeader(blankUniversalComments(quoted, [plugin]), type);
   const recovered = recoverHeader(plugin, normalized, forced, type);
   return { ...input, text: recovered.text, boundaries: recovered.boundaries };
 }

@@ -1,0 +1,87 @@
+{
+  "id": "flowchart-ci-cd-pipeline",
+  "type": "flowchart",
+  "title": "CI/CD pipeline",
+  "goal": "Show a production deployment pipeline with quality gates, approval, and rollback.",
+  "rubric": [
+    {
+      "id": "quality-gates",
+      "severity": "blocker",
+      "must": "Build, test, and security decisions visibly gate the path before staging deployment."
+    },
+    {
+      "id": "rollback-path",
+      "severity": "blocker",
+      "must": "A failed production health-check branch visibly reaches Rollback production and then Incident opened."
+    },
+    {
+      "id": "developer-feedback",
+      "severity": "major",
+      "must": "Failed build, test, or security outcomes visibly feed a developer notification loop back toward the commit."
+    },
+    {
+      "id": "approval-gate",
+      "severity": "major",
+      "must": "Staging integration tests visibly lead to a release-approval decision before production deployment."
+    },
+    {
+      "id": "success-terminator",
+      "severity": "major",
+      "must": "Passing production health checks visibly reach the Release complete terminator."
+    },
+    {
+      "id": "emphasised-mainline",
+      "severity": "minor",
+      "must": "The early commit-to-build path is visually emphasised relative to ordinary connectors."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly communicates the requested deployment pipeline. Its branches and feedback loops are traceable, labels are readable, and there are no material overlaps or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:14:00.503Z",
+      "targetHash": "b2daf3165e79",
+      "sourceHash": "adf1c76ae92b",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "quality-gates",
+          "verdict": "pass",
+          "evidence": "Build succeeds?, Tests pass?, and Findings acceptable? each gate the path before Deploy to staging; failed outcomes route to Notify developer."
+        },
+        {
+          "id": "rollback-path",
+          "verdict": "pass",
+          "evidence": "The No branch from Health checks pass? leads to Rollback production, then Incident opened."
+        },
+        {
+          "id": "developer-feedback",
+          "verdict": "pass",
+          "evidence": "No branches from the build, tests, and security decisions reach Notify developer; a dashed loop returns toward Commit merged."
+        },
+        {
+          "id": "approval-gate",
+          "verdict": "pass",
+          "evidence": "Run integration tests leads to Release approved?; its Yes branch leads to Deploy production, while No leads to Hold release."
+        },
+        {
+          "id": "success-terminator",
+          "verdict": "pass",
+          "evidence": "The Yes branch from Health checks pass? reaches the Release complete terminator."
+        },
+        {
+          "id": "emphasised-mainline",
+          "verdict": "pass",
+          "evidence": "The Commit merged-to-Build artifact connector is visibly thicker than ordinary connectors."
+        }
+      ]
+    }
+  }
+}

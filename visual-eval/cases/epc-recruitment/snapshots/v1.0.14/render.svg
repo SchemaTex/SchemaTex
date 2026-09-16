@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="492" height="1480" viewBox="0 0 492 1480" role="img" aria-label="Event-driven process chain" data-diagram-type="epc"><title>Event-driven process chain</title>
+<desc>Event-driven process chain: 8 events, 5 functions, 2 connectors. 2 rule violations. Function &quot;Post job advert&quot; has 2 incoming arcs — an event or function must have a single input. The join belongs on a connector (and/or/xor) placed before it. Function &quot;Interview candidates&quot; has 2 incoming arcs — an event or function must have a single input. The join belongs on a connector (and/or/xor) placed before it.</desc>
+<style>.sx-epc-bg { fill: #ffffff; }
+.sx-epc-event { fill: #f6a5b8; stroke: #1f2937; stroke-width: 2; stroke-linejoin: round; }
+.sx-epc-func { fill: #86d29a; stroke: #1f2937; stroke-width: 2; }
+.sx-epc-conn { fill: #e5e7eb; stroke: #374151; stroke-width: 2; }
+.sx-epc-node[data-flagged="true"] .sx-epc-event,
+.sx-epc-node[data-flagged="true"] .sx-epc-func,
+.sx-epc-node[data-flagged="true"] .sx-epc-conn { stroke: #dc2626; stroke-width: 3; }
+.sx-epc-flagring { fill: none; stroke: #dc2626; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-epc-label { fill: #1f2937; font-size: 12px; font-weight: 600; }
+.sx-epc-glyph { fill: #111827; font-size: 17px; font-weight: 700; }
+.sx-epc-edge { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-epc-edge[data-back="true"] { stroke: #94a3b8; stroke-dasharray: 5 4; }
+.sx-epc-arrow { fill: #334155; stroke: none; }
+.sx-epc-arrow-back { fill: #94a3b8; stroke: none; }
+.sx-epc-edge-label { fill: #475569; font-size: 9px; }
+.sx-epc-title { fill: #1f2937; font-size: 16px; font-weight: 700; }</style>
+<defs><marker id="sx-epc-arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow"/></marker>
+<marker id="sx-epc-arrowhead-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow-back"/></marker></defs>
+<rect x="0" y="0" width="492" height="1480" class="sx-epc-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-epc-edge-g" data-from="E1" data-to="F1"><path d="M 196 82 L 196 138" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F1" data-to="E2"><path d="M 196 202 L 196 258" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E2" data-to="F2"><path d="M 196 312 L 196 368" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F2" data-to="X1"><path d="M 196 432 L 196 488" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 184.4227850846592 517.4486181885385 L 128.11 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E3" data-to="F3"><path d="M 124.83478260869565 632 L 170.12173913043478 688" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F3" data-to="E5"><path d="M 196 752 L 196 808" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E5" data-to="F4"><path d="M 196 862 L 196 918" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F4" data-to="X2"><path d="M 196 982 L 196 1038" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E4"><path d="M 207.5772149153408 517.4486181885385 L 263.89 578" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E4" data-to="F1"><path d="M 283.22758620689655 578 L 422 578 L 422 202 L 202.84137931034482 202" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead-back)" data-back="true"/></g>
+<g class="sx-epc-edge-g" data-from="X2" data-to="E6"><path d="M 184.4227850846592 1067.4486181885384 L 128.11 1128" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E6" data-to="F5"><path d="M 124.83478260869565 1182 L 170.12173913043478 1238" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F5" data-to="E8"><path d="M 196 1302 L 196 1358" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X2" data-to="E7"><path d="M 207.5772149153408 1067.4486181885384 L 263.89 1128" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E7" data-to="F3"><path d="M 283.22758620689655 1128 L 422 1128 L 422 752 L 202.84137931034482 752" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead-back)" data-back="true"/></g>
+<g class="sx-epc-node" data-id="E1" data-kind="event"><polygon points="135,28 257,28 271,55 257,82 135,82 121,55" class="sx-epc-event"/>
+<text x="196" y="55" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Vacancy approved</tspan></text></g>
+<g class="sx-epc-node" data-id="F1" data-kind="function" data-flagged="true"><rect x="116" y="138" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="170" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Post job advert</tspan></text>
+<rect x="111" y="133" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="135,258 257,258 271,285 257,312 135,312 121,285" class="sx-epc-event"/>
+<text x="196" y="285" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="-7">Applications</tspan><tspan x="196" dy="14">received</tspan></text></g>
+<g class="sx-epc-node" data-id="F2" data-kind="function"><rect x="116" y="368" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="400" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Screen applicants</tspan></text></g>
+<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="196" cy="505" r="17" class="sx-epc-conn"/>
+<text x="196" y="505" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="42,578 164,578 178,605 164,632 42,632 28,605" class="sx-epc-event"/>
+<text x="103" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="103" dy="0">Shortlist ready</tspan></text></g>
+<g class="sx-epc-node" data-id="E4" data-kind="event"><polygon points="228,578 350,578 364,605 350,632 228,632 214,605" class="sx-epc-event"/>
+<text x="289" y="605" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="289" dy="-7">No suitable</tspan><tspan x="289" dy="14">applicant</tspan></text></g>
+<g class="sx-epc-node" data-id="F3" data-kind="function" data-flagged="true"><rect x="116" y="688" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="720" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="-7">Interview</tspan><tspan x="196" dy="14">candidates</tspan></text>
+<rect x="111" y="683" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="E5" data-kind="event"><polygon points="135,808 257,808 271,835 257,862 135,862 121,835" class="sx-epc-event"/>
+<text x="196" y="835" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Candidate selected</tspan></text></g>
+<g class="sx-epc-node" data-id="F4" data-kind="function"><rect x="116" y="918" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="950" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Make offer</tspan></text></g>
+<g class="sx-epc-node" data-id="X2" data-kind="connector" data-operator="xor"><circle cx="196" cy="1055" r="17" class="sx-epc-conn"/>
+<text x="196" y="1055" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E6" data-kind="event"><polygon points="42,1128 164,1128 178,1155 164,1182 42,1182 28,1155" class="sx-epc-event"/>
+<text x="103" y="1155" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="103" dy="0">Offer accepted</tspan></text></g>
+<g class="sx-epc-node" data-id="E7" data-kind="event"><polygon points="228,1128 350,1128 364,1155 350,1182 228,1182 214,1155" class="sx-epc-event"/>
+<text x="289" y="1155" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="289" dy="0">Offer declined</tspan></text></g>
+<g class="sx-epc-node" data-id="F5" data-kind="function"><rect x="116" y="1238" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="1270" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Onboard new hire</tspan></text></g>
+<g class="sx-epc-node" data-id="E8" data-kind="event"><polygon points="135,1358 257,1358 271,1385 257,1412 135,1412 121,1385" class="sx-epc-event"/>
+<text x="196" y="1385" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Employee started</tspan></text></g></g></svg>

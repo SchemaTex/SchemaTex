@@ -1,0 +1,18 @@
+# STRIDE DFD: source changes move from an external developer through CI into protected artifact and deployment systems.
+threatmodel "CI CD Supply Chain STRIDE"
+external Developer: Software Developer
+external Registry: Package Registry
+process CI: CI Runner
+process Deploy: Deployment Service
+datastore Source: Source Repository
+datastore Artifacts: Artifact Store
+datastore Audit: Build Audit Log
+Developer -> Source : signed commit
+CI -> Source : source checkout
+CI -> Registry : dependency download
+CI -> Artifacts : signed build artifact
+Deploy -> Artifacts : artifact pull
+Deploy -> Audit : deployment event
+boundary "Developer Internet" { Developer, Registry }
+boundary "Build Zone" { CI }
+boundary "Production" { Deploy, Source, Artifacts, Audit }

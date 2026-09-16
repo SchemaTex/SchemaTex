@@ -1,0 +1,5 @@
+# 16S rRNA phylogeny: representative bacterial genera show Proteobacteria, Firmicutes, and Actinobacteria branches.
+phylo "Bacterial 16S rRNA Tree" [layout: rectangular, mode: phylogram]
+  newick: "((Escherichia_coli:0.08,Pseudomonas_aeruginosa:0.09):0.12,(Bacillus_subtilis:0.13,Staphylococcus_aureus:0.14):0.11,Mycobacterium_tuberculosis:0.25):0.18;"
+  clade Proteobacteria = (Escherichia_coli, Pseudomonas_aeruginosa) [color: "#1565C0"]
+  scale "substitutions/site"

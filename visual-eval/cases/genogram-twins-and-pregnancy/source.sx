@@ -1,0 +1,11 @@
+genogram "Twins, pregnancy and pregnancy losses" [asOf: 2026]
+  morgan [male, 1988, label: "Morgan"]
+  riley [female, 1990, label: "Riley"]
+  morgan -- riley
+    nina [female, 2018, twin-identical, label: "Nina"]
+    nora [female, 2018, twin-identical, label: "Nora"]
+    owen [male, 2021, twin-fraternal, label: "Owen"]
+    iris [female, 2021, twin-fraternal, label: "Iris"]
+    loss [miscarriage, 2023, label: "Loss at 10 weeks"]
+    stillbirth [male, stillborn, 2024, label: "Stillbirth"]
+    expected [pregnancy, label: "Expected baby"]

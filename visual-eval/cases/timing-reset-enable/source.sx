@@ -1,0 +1,11 @@
+# Scenario: power-on sequence: reset releases after supply is good, the PLL locks, then the core is enabled.
+timing "Power-on reset and enable sequence"
+[Supply and clock]
+CLK: pppppppppppp
+VDD_OK: 001111111111
+---
+[Control]
+RST_N: 000001111111
+PLL_LOCK: 000000011111
+EN: 000000000111
+STATE: x=...=.=.=.. data: ["RESET", "CALIBRATE", "IDLE", "RUN"]

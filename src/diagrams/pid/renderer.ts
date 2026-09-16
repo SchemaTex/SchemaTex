@@ -6,7 +6,8 @@ import { renderEquip, renderInstrument } from "./symbols";
 import type { PidAST, PidLayoutLine, PidLayoutResult } from "./types";
 import { resolveSceneTitle } from "../../core/title-scene";
 
-const STYLE = `
+export function pidStylesheet(): string {
+  return `
 .lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
 .lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
 .lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
@@ -42,10 +43,11 @@ const STYLE = `
 .lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
 .lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
 `;
+}
 
 const ARROW_ID = "lt-pid-arrow";
 
-/** Line-type → CSS class. `process_minor` → `lt-pid-process-min` (matches STYLE). */
+/** Line-type → CSS class. `process_minor` → `lt-pid-process-min` (matches pidStylesheet). */
 const LINE_CLASS: Record<string, string> = {
   process: "lt-pid-process",
   process_minor: "lt-pid-process-min",
@@ -352,7 +354,7 @@ function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
           },
           [polygon({ points: "0,0 10,3 0,6", fill: "#1d1d1d" })]
         ),
-        el("style", {}, STYLE),
+        el("style", {}, pidStylesheet()),
       ]),
       titleNode,
       // Z-order: process pipes behind equipment; signal lines + instruments above.

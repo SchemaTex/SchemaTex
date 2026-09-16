@@ -1,0 +1,78 @@
+{
+  "id": "playbook-football-mesh",
+  "type": "playbook",
+  "variant": "football",
+  "title": "Mesh Concept",
+  "goal": "A practitioner can read this play at a glance: Mesh Concept.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/football exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:41:52.591112+00:00",
+      "targetHash": "99c31df0c20b",
+      "sourceHash": "6032c40a1946",
+      "exemplarHash": "3ef95b8af407",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "“Mesh Concept” is prominently titled, with trips-right personnel, five eligible routes, defensive markers, and a deep-middle Cover 1 zone visibly shown."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Title, field context, offensive labels, defensive labels, legend, and “DEEP MIDDLE” text are legible and positioned beside the corresponding symbols."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: X and Y visibly run opposing shallow drag tracks beneath the deep-middle zone. The X track has a short gap exactly where it crosses Y’s vertical stem, and resumes on the same horizontal line with a right-pointing arrowhead. This crossing gap does not remove the route. H, Z and RB retain separate traceable routes."
+        }
+      ]
+    }
+  }
+}

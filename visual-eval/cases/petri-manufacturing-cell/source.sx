@@ -1,0 +1,25 @@
+# Manufacturing cell: a shared robot loads and unloads one machine, enforcing exclusive robot use.
+petri "Manufacturing Cell Shared Robot"
+  layout: lr
+  place RawPart *1
+  place RobotFree *1
+  place MachineFree *1
+  place Loaded
+  place Machining
+  place Finished
+  transition Load
+  transition StartMachine
+  transition Unload
+  RawPart -> Load
+  RobotFree -> Load
+  MachineFree -> Load
+  Load -> Loaded
+  Load -> RobotFree
+  Loaded -> StartMachine
+  StartMachine -> Machining
+  Machining -> Unload
+  RobotFree -> Unload
+  Unload -> Finished
+  Unload -> RobotFree
+  Unload -> MachineFree
+  fire: Load, StartMachine, Unload

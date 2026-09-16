@@ -45,7 +45,11 @@ describe("petri layout — structure & dynamics", () => {
     expect(r.places.find((p) => p.place.id === "P3")!.tokens).toBe(2);
     const back = r.arcs.find((a) => a.arc.from === "P4" && a.arc.to === "T1")!;
     expect(back.reversed).toBe(true);
-    expect(back.points.length).toBe(4); // routed as a bowed back-edge
+    expect(back.points.length).toBeGreaterThan(2);
+    for (let i = 1; i < back.points.length; i++) {
+      const a = back.points[i - 1]!, b = back.points[i]!;
+      expect(a.x === b.x || a.y === b.y).toBe(true);
+    }
   });
 
   it("TC-3: capacity place + timed transition carry through layout", () => {

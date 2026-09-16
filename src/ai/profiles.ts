@@ -11,12 +11,15 @@ import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
  * Generated DSL should stay on this smaller surface unless a caller asks for
  * reference syntax to reach an advanced feature.
  */
+/**
+ * Said at the foot of every card, so it earns its place only if it changes what
+ * the model writes. Whether the caller validates before returning is the
+ * caller's policy, not grammar; quote style is the parser's business and every
+ * parser now accepts the seven documented pairs.
+ */
 export const COMMON_GENERATION_RULES = [
   "Generate one diagram document with one selected diagram type.",
-  'Use ASCII double quotes (") for generated labels and titles.',
   "Do not emit DSL comments unless the user explicitly asks for annotated source.",
-  "Prefer explicit IDs and declarations when they make validation less ambiguous.",
-  "Call validateDsl with the explicit selected type, fix reported errors, and validate again before returning DSL.",
 ] as const;
 
 export interface GenerationProfile {
@@ -48,7 +51,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'genogram "Title"',
     mode: "individual declarations + couple lines + indented children",
     keywords:
-      'sex: male female unknown other · status: deceased stillborn miscarriage abortion · couple ops: -- (married) ~/~ (cohabiting-ended) ~x~ (divorced) -/- (separated) -o- (engaged) == (consanguineous) ~ (cohabiting) · child props: adopted foster guardian twin-identical twin-fraternal · individual attrs: age:N dob:"…" dod:"…" death:YYYY note:"…" birth:out-of-wedlock|adopted|legitimate label:"…" sibling-of:ID index · conditions: name(fill[,#color]) + … · fills: full half-left half-right half-top half-bottom quad-tl quad-tr quad-bl quad-br quarter striped dotted · emotional ops: -TYPE- or -TYPE-> where TYPE ∈ harmony close love hostile conflict cutoff fused distant nevermet abuse neglect controlling jealous focused distrust',
+      'sex: male female unknown other · status: deceased stillborn miscarriage abortion · couple ops: -- (married) ~/~ (cohabiting-ended) ~x~ (divorced) -/- (separated) -o- (engaged) == (consanguineous) ~ (cohabiting) · child props: adopted foster guardian twin-identical twin-fraternal · individual attrs: age:N dob:"…" dod:"…" death:YYYY note:"…" birth:out-of-wedlock|adopted|legitimate label:"…" sibling-of:ID external:true|false index · conditions: name(fill[,#color]) + … · fills: full half-left half-right half-top half-bottom quad-tl quad-tr quad-bl quad-br quarter striped dotted · emotional ops: -TYPE- or -TYPE-> where TYPE ∈ harmony close love hostile conflict cutoff fused distant nevermet abuse neglect controlling jealous focused distrust',
     forms: [
       'genogram "Smith Family"',
       "  john [male, 1975]",
@@ -62,11 +65,14 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use couple operators `--` (married), `~/~` (cohabiting-ended), `~x~` (divorced), `-/-` (separated), `==` (consanguineous), `~` (cohabiting) on their own line; indent children beneath.",
       "Annotate conditions as `conditions: name(fill, #color) + name2(fill2)`, e.g. `conditions: diabetes(half-left, #ff9800) + cancer(quad-tr, #9c27b0)`.",
       "Mark the identified patient with the `index` attribute so the concentric double-border is drawn.",
+      'Use `helper [other, label: "Counsellor", external: true]` for an outside support contact, then connect them with an emotional line such as `helper -close- alice`. Contacts with only emotional ties sit beside directly connected family members; actual family relationships take precedence.',
+      "Describe people and relationships; the engine chooses coordinates, spacing and emotional routes.",
     ],
     avoid: [
       "Don't use pedigree genetic-status tokens (`affected`, `carrier`, `proband`) in a genogram — use `conditions:` fill patterns instead.",
       "Don't attach emotional-operator labels with `[label:]`; place the optional quoted label after the right-hand id: `john -conflict- mary \"ongoing\"`.",
       "Don't invent fill patterns — use only `full`, `half-left/right/top/bottom`, `quad-tl/tr/bl/br`, `quarter`, `striped`, `dotted`.",
+      "Unknown `key:value` attributes are metadata only: they do not create layout or visual features. Household boundaries are not supported; do not invent `household`, coordinates or routing attributes to simulate them.",
     ],
     repair: [
       "'Unknown individual' -> declare `id [sex]` before any couple or emotional line that references that id.",
@@ -124,7 +130,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     prefer: [
       "Use Roman-numeral generation labels (`I-1`, `II-3`) for individual ids — the NSGC clinical convention.",
-      "Declare genetic status on each individual: `affected`, `carrier`, `carrier-x` (X-linked dot), `obligate-carrier`, `presymptomatic`, or `unaffected`.",
+      "Declare genetic status on each individual: `affected`, `carrier`, `carrier-x` (X-linked carrier), `obligate-carrier`, `presymptomatic`, or `unaffected`.",
+      "All carrier statuses use the diagonal hatch fill defined in the key (NSGC Bennett 2022 §4.5); `presymptomatic` draws an edge-to-edge vertical line.",
+      "Life symbols: `stillborn` = deceased slash + SB; `ectopic` = loss triangle + termination slash + ECT; `pregnancy` = P inside the sex shape. `-/-` draws a continuous line with two slashes (relationship no longer exists).",
       "Mark the index case with `proband`; mark a family member seeking advice with `consultand`.",
     ],
     avoid: [
@@ -151,6 +159,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       '  scale "substitutions/site"',
     ],
     prefer: [
+      "Default layout is slanted; use layout: rectangular for elbows. Layout does not change distance semantics: phylogram measures horizontal displacement, cladogram aligns tips and conveys topology only. Dendrogram keeps rectangular merge-height connectors.",
       "Use `newick: \"…\"` for first-shot generation — a Newick string with branch lengths (`Name:length`); NHX annotations `[&&NHX:B=98]` carry bootstrap values.",
       "Add `clade ID = (leaf1, leaf2, …) [color: \"#hex\", label: \"…\"]` after the newick line to highlight named clades.",
       "Use `[mode: chronogram, mrsd: \"YYYY\"]` for time-calibrated trees and `[mode: cladogram]` when branch lengths are absent.",
@@ -264,7 +273,13 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · production aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · relay: type=relay (coil_a coil_b common no) or type=relay_spdt (coil_a coil_b common nc no) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · pins="…" · ORIENTATION: in netlist mode layout places and orients every part itself, including mirroring a polarised part whose upstream pin is written second — do NOT set dir= there, it overrides that and is usually wrong; dir=(right|left|up|down) is for positional mode · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect`,
+      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · ` +
+      `id prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay coil) U/X(ic) W(wire) T(terminal) · ` +
+      `ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type=<name> override · pins="NAME:role,…" with roles input|output|bidirectional|power|return · named pin connection: Wlink NET Component.pin · ` +
+      `group id "Label": C1 C2 · flow groupA -> groupB · bus NET,NET: C1 -> C2 · ` +
+      `relay: type=relay (coil_a coil_b common no), type=relay_spdt (coil_a coil_b common nc no) · ` +
+      `aliases: mcu pushbutton ntc regulator ldo_3v3 dc_supply selector switch_spst_nc pullup dc_motor solar · ` +
+      `types: ${CIRCUIT_GENERATION_CAPABILITIES.supportedComponentTypes.join(" ")}`,
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -276,17 +291,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Rload vout 0 1k",
     ],
     prefer: [
-      "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
+      'Always use netlist mode (`circuit "name" netlist`). Each line is one component; there is no cursor state to track.',
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
-      "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
-      "Omit `dir=` in netlist mode by default so topology can orient each part. Use it only when the requested electrical meaning requires a specific symbol direction.",
+      "The id's first letter sets the type (R=resistor, C=capacitor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Add `type=` when the prefix is ambiguous or the part is one of the named types above.",
+      "Declare electrical connectivity and pin identity only. Placement, wire routing, bends, spacing and pin sides belong to the engine — never add coordinates, dimensions, `dir=` overrides or route hints, and never change a pin's electrical role to move its drawing.",
+      'Optional functional structure: `group sense "Sensing": U1 R1` keeps a stage and its supporting parts together, `flow sense -> compute` orders groups for reading (it adds no connections), and `bus A,B: R1 -> U1 -> R2` declares physical cable order. A component belongs to at most one group and one bus; electrical feedback stays in the netlist, not in `flow`.',
+      'Reuse a named type and its pin definition before reaching for a generic IC. For a custom device, `U1 VP GND IN OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output"` binds nets to pin names in the same order; annotate every pin when using roles.',
     ],
     avoid: [
-      "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
-      "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
-      "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
+      'A `terminal_block` with `pins="1,2"` has two independent terminals, not an internal jumper. Share a net or draw an explicit wire when they must be connected.',
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
-      "Don't invent a placeholder when the catalog has a supported type; request `detail: reference` for specialized household, automotive, or panel forms.",
+      "Don't use `RL1` for a lamp unless it really is a relay or load resistor; use `L1 … type=lamp` or `H1 … type=pilot_light`.",
+      "Don't invent a placeholder part. The type list above is the complete catalog; request `detail: reference` for cabinet placement and specialised household or panel forms.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -302,10 +318,11 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     keywords:
       `ID = block("label") [role:…][route:above|below] · labels support ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.multilineLabels.join(" and ")} inside the closing quotes · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect declared ids with -> (chainable a -> b -> c) · explicit shorthand ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} -> ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic`,
     forms: [
+      'blockdiagram "Feedback control"',
       'C = block("PID C(s)") [role: controller]',
       'G = block("Plant G(s)") [role: plant]',
       "err = sum(+r, -y)",
-      "in -> err -> C -> G -> y",
+      "in -> err -> C -> G -> out",
       "G -> err",
     ],
     prefer: [
@@ -330,7 +347,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'ladder "Title"',
     mode: "rungs with IEC 61131-3 contacts / coils / function blocks; OR branches via parallel:/branch:",
     keywords:
-      'rung N ["comment"]: · contacts XIC XIO ONS OSF · coils OTE OTL OTU OTN RES · function blocks TON TOFF TP CTU CTD CTUD ADD SUB MUL DIV MOV EQU NEQ GRT LES GEQ LEQ · parallel: branch: (OR branch block) · element syntax ELEM(tag [, address] [, name="…"])',
+      'rung N ["comment"]: · contacts XIC XIO ONS OSF · coils OTE OTL OTU OTN · reset instruction RES · function blocks TON TOFF TP CTU CTD CTUD ADD SUB MUL DIV MOV EQU NEQ GRT LES GEQ LEQ · parallel: branch: (OR branch block) · element syntax ELEM(tag [, address] [, name="…"])',
     forms: [
       'ladder "Motor Start/Stop"',
       'rung 1 "Seal-in circuit":',
@@ -343,8 +360,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       '  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")',
     ],
     prefer: [
-      "Use uppercase element names: contacts `XIC` `XIO` `ONS` `OSF`; coils `OTE` `OTL` `OTU` `OTN` `RES`; function blocks `TON` `TOFF` `TP` `CTU` `CTD` `CTUD` `ADD` `SUB` `MUL` `DIV` `MOV` `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ`.",
+      "Use uppercase element names: contacts `XIC` `XIO` `ONS` `OSF`; coils `OTE` `OTL` `OTU` `OTN`; reset instruction `RES`; function blocks `TON` `TOFF` `TP` `CTU` `CTD` `CTUD` `ADD` `SUB` `MUL` `DIV` `MOV` `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ`.",
       "Keep the tag as the first argument in parentheses; optional address (second positional) and `name=` follow: `XIC(START_PB, \"IN 1.0\", name=\"Start Button\")`.",
+      "`OTL`/`OTU` draw Allen-Bradley L/U coils; `ONS`/`RES` draw bracketed inline instructions; timer/counter blocks have a ruled header.",
       "Model parallel contacts (OR logic) with an indented `parallel:` block containing two or more `branch:` sub-blocks.",
     ],
     avoid: [
@@ -364,7 +382,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'sld "Title"',
     mode: "equipment declarations + directed power-flow edges",
     keywords:
-      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…" curve:"…" icn:"…" rcd_type:"…" sensitivity:"…"] · ID -> ID [cable:"…" cable_csa:"…" cable_length_m:"…" cable_insulation:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub consumer_unit · switching: breaker breaker_vacuum switch switch_load ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault rcd · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->rcd isolator/disconnector->switch_load panel/consumer_unit/distribution_board->consumer_unit',
+      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…" curve:"…" icn:"…" rcd_type:"…" sensitivity:"…"] · ID -> ID [cable:"…" cable_csa:"…" cable_length_m:"…" cable_insulation:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub consumer_unit · switching: breaker breaker_vacuum switch switch_load contactor ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault rcd · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->rcd isolator/disconnector->switch_load panel/consumer_unit/distribution_board->consumer_unit',
     forms: [
       'sld "Utility + Generator Backup"',
       'UTIL = utility [voltage: "480V", label: "Utility"]',
@@ -432,7 +450,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'fishbone "Title"',
     mode: "effect + structured category ribs + cause lines",
     keywords:
-      'effect "…" · category id "Label" [side:top|bottom order:N color:"#hex"] · catId : "cause text" · compact: category Label: cause1; cause2 · sub-cause: indent >=2 + "- text" · config direction = left|right · config sides = both|top|bottom · config density = compact|normal|spacious',
+      'effect "…" · category id "Label" · catId : "cause text" · compact: category Label: cause1; cause2 · sub-cause: indent >=2 + "- text" · config direction = left|right · config sides = both|top|bottom · config density = compact|normal|spacious',
     forms: [
       'fishbone "Manufacturing defect spike"',
       'effect "Solder joint defect > 3%"',
@@ -446,7 +464,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     prefer: [
       "Declare each `category id \"Label\"` before referencing `id : \"cause\"` — the structured form keeps category ids unambiguous.",
-      "Use `[side: top]` / `[side: bottom]` and `[order: N]` on a category to pin important categories (e.g. the 6M) to a specific rib instead of auto-alternating.",
+      "Describe the effect, categories, causes and sub-causes; let the engine choose sides, ordering, spacing and wrapping. Use manual layout options only when the user explicitly asks for that presentation.",
       "For second-level sub-causes, indent >= 2 spaces and prefix with `- `; they attach to the last Level-1 cause above them.",
     ],
     avoid: [
@@ -621,7 +639,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       '    eng1: "Priya Nair" | Eng Lead | Engineering [role: engineer]',
       '  cfo: "Ellen Wu" | CFO [role: cfo]',
       'advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]',
-      "pm_core -.-> lead_core",
+      "adv1 -.-> eng1",
     ],
     prefer: [
       "Use 2-space indentation per level for the reporting tree — this is the implicit `->` edge. Fields are `id : \"Name\" | Title | Department`, pipe-separated.",
@@ -1057,14 +1075,6 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'task D "Frontend build" duration: 10 after: B, C',
       'task E "QA / testing" duration: 5 after: D',
       'task G "Launch event" duration: 2 after: E',
-      "",
-      "# — or a Gantt chart (same scheduler, calendar bars) —",
-      'gantt "Website Relaunch"',
-      "start: 2026-07-01",
-      "calendar: 5day",
-      'task P "Discovery" duration: 5 lane: "Plan"',
-      'task Q "Build" duration: 12 after: P lane: "Build" progress: 30%',
-      'task R "Go live" milestone after: Q lane: "Build"',
     ],
     prefer: [
       "Each `task ID \"label\" duration: N` is one activity; wire dependencies with `after: A, B` (comma-separated, forward references allowed). The engine computes ES/EF/LS/LF and the critical path — never write those yourself.",
@@ -1120,8 +1130,12 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     keywords:
       'place ID ["label"] *N|tokens:N [capacity:N] · transition ID ["label"] [immediate|timed] [rate:N] [priority:N] [guard: expr] · arc types: -> (standard) | -o (inhibitor, P→T only) | -- (read) | => (reset, P→T only) · weight: N or *N on arc · layout: lr|tb · marking: id=n,… · fire: T1, T2, … (simulate firing)',
     forms: [
+      'petri "Weighted transfer"',
       "place P1 *1",
+      "place P2",
+      "place P3 *2",
       "transition T1",
+      "transition T2",
       "P1 -> T1",
       "T1 -> P2",
       "P3 -> T2 weight: 2",
@@ -1145,7 +1159,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'network "Title"',
     mode: "device declarations + links (annotations are optional)",
     keywords:
-      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
+      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan database hypervisor nas wireless-bridge container cellular-router satellite-terminal access-control iot-sensor display san olt ont pbx tablet plc ups hmi media-converter pos-terminal patch-panel · aliases: multilayer->l3switch wifi->ap workstation->pc db/dbserver->database · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf · spines: / leaves:',
     forms: [
       'network "Branch office"',
       'site hq "HQ Building" {',
@@ -1168,6 +1182,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Common kinds: router, switch, l3switch, firewall, ap, server, pc, laptop, camera, nvr, poeswitch, internet, cloud.",
     ],
     avoid: [
+      "Do not supply coordinates or routing instructions. Describe devices, connections, and semantic tiers; the engine owns placement and wire geometry.",
       "Avoid linking to an undeclared device id.",
       "Don't omit a boundary id — `site \"HQ\" {` is invalid because the quoted text is a label, not an id.",
       "Add verbose per-link annotations (`vlan:`, `port:`, speeds, `trunk`/`access`) and `subnet \"cidr\" { ... }` boundaries ONLY when the request needs them — they don't affect layout and are where generation most often breaks.",
@@ -1221,14 +1236,13 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     keywords:
       'header: faulttree | fta · event kinds: top | gate | basic | undeveloped | house | condition · gate exprs: AND(a,b,…) | OR(…) | XOR(…) | VOTING(k/n; …) | INHIBIT(x) if cond | PAND(a,b) [order: a,b] · leaf attr: p: N (or prob:, sci 1e-3) · house attr: state: 0|1 · analysis: cutsets | probability | pathsets · prob: rare|mcub|exact · layout: tb|bt · style: ansi|iec',
     forms: [
+      'faulttree "System failure"',
       "analysis: cutsets, probability",
-      'top  T  "System fails" = OR(G1, G2)',
-      'gate G1 "Sub-fault"    = AND(A, B)',
+      'top T "System fails" = OR(G1, C)',
+      'gate G1 "Both components fail" = AND(A, B)',
       'basic A "Component A fails" p: 0.01',
-      'undeveloped EXT "External cause"',
-      'house HX "Power on" state: 1',
-      "RELIEF = VOTING(2/3; PRV_A, PRV_B, PRV_C)",
-      "OVP = INHIBIT(PUMP) if HEATER",
+      'basic B "Component B fails" p: 0.02',
+      'basic C "Supply fails" p: 0.005',
     ],
     prefer: [
       "Single-word keyword is `faulttree` (alias `fta`). Declare exactly one `top` event.",
@@ -1402,12 +1416,6 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'criterion "Horizontal scaling" weight: 4',
       "  PostgreSQL: 3",
       "  MongoDB: 5",
-      "# — or a simple T-chart —",
-      "mode: tchart",
-      'column "Remote"',
-      "- No commute",
-      'column "Office"',
-      "- Easier collaboration",
     ],
     prefer: [
       "Choose the mode by the job: 2–N bullet columns → `tchart`; a green/red list → `pros-cons`; an options×criteria table of facts → `matrix`; a *decision* with weighted scores → `decision` (alias `pugh`); a compare/contrast organizer → `double-bubble`.",
@@ -1693,7 +1701,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "furniture stairs S1 in living fit margin 0.1 rotate 90 mirror x",
       'floor 1 "First Floor"',
       'room landing "Landing" at 0,0 size 5.2x4.2',
-      "furniture stairs S1 in landing at 4.0,0.4",
+      "furniture stairs S1 in landing fit margin 0.1 rotate 90 mirror x",
     ],
     prefer: [
       "For multi-floor plans, start each level with `floor N \"Label\"`; level 0 is ground, positive levels are above, and negative levels are basements. All plates use one shared scale.",
@@ -1712,9 +1720,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'For a seating chart / plan de table / 席次表 — who sits where, not just where the tables go — add `seats "Alice" "Bob" …` to each table: the names are written onto the chairs in seating order (round tables clockwise from top, head/long tables along the seated edge). Fewer names than chairs is fine (extras stay empty); CJK names quote like any label.',
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
       "Stairs are furniture: `furniture stairs in hall at x,y` (also stairs-l, stairs-u, spiral-stairs) — they draw treads, the UP arrow, and the cut-plane break line automatically; label \"DN\" for a descending run.",
-      "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",
-      "Restaurant kitchens use the real commercial symbols `prep-table`, `range`, `grill`, `fryer`, `walk-in`, and `commercial-sink`; don't substitute a row of household `stove` symbols with text labels. The `oven` → `stove` alias is only for household kitchens.",
-      "For electrical fittings plans, stay in `floorplan` and add overlay furniture: `duplex-outlet`, `switch`, `ceiling-light`, `data-outlet`, `electrical-panel`, `distribution-board`. Set `symbols nec|iec` on the header to select the document-wide electrical symbol convention.",
+      "Retail, warehouse, salon, gym, restaurant-kitchen and site symbols are in the vocabulary above — use the real one rather than a household part with a text label. The `oven` → `stove` alias is for household kitchens only.",
+      "For electrical fittings plans stay in `floorplan` and add the overlay furniture; `symbols nec|iec` on the header picks the document-wide convention.",
       "Give every controlled switch, motion-sensor, and luminaire an instance id, then use `controls SW1 -> L1` or `controls SW2 -> L2, L3` for dashed switch-to-luminaire control lines; multiple switches may control the same luminaire.",
       "Floorplan is rectilinear and placement-focused. Switch-to-luminaire control lines are supported, but conductor runs, home runs to the panel, circuit numbering, and circuit/wiring topology are not; use `sld` for panel internals and report curved room boundaries or plumbing/HVAC routing as unsupported.",
     ],
@@ -1733,6 +1740,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
       "'array overlaps internally …' -> enlarge the `within` bounds, reduce rows/cols, shrink itemsize, or add a truthful gap; one array diagnostic replaces pairwise collision spam.",
       "'door … swing is obstructed by …' -> move the furniture, change hinge/swing, or use the truthful sliding/pocket/bifold door type; do not suppress the warning.",
+      "'unknown furniture type' -> the catalog holds ~99 parts across residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, restaurant-kitchen and site. Request `detail: reference` for the full list rather than inventing a name.",
       "'opening … must be declared before it is referenced' -> move the id-bearing opening earlier, then keep the relative opening on the same wall.",
       "'references room … on floor …' -> move the statement into that room's `floor` section or reference a room declared on the current floor.",
     ],
@@ -1755,6 +1763,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'safety here in office at 3.5,2.5 "YOU ARE HERE"',
       "safety exit-final E1 outside at 7,6 side east",
       "route primary here -> office -> corridor -> E1",
+      "safety exit-final E2 outside at 0,6 side west",
+      "route secondary here -> office -> corridor -> E2",
       "safety extinguisher F1 in corridor at 0.5,1",
       "legend auto",
     ],
@@ -1775,7 +1785,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'missing YOU ARE HERE' -> add one `safety here in <room> at x,y` marker for this posted plan.",
       "'route … does not terminate at a final exit' -> point `to` at a declared `safety exit-final <id>`.",
       "'route … rooms share no opening' -> insert the missing intermediate room in the `->` chain or declare the door/opening that occupants use.",
-      "'fewer than two independent escape routes' -> add a secondary route to a different final exit whose room sequence differs by at least two rooms.",
+      "'fewer than two independent escape routes' -> add a secondary route to a different final exit; a shared corridor is allowed.",
       "'scale 1:N exceeds 1:250' -> use a larger sheet, reduce the plotted extent, or split the building into one sheet per floor.",
       "'legend cannot be disabled' -> remove `legend off`; evacuation mode always renders the mandatory Tier M legend.",
     ],
@@ -1797,6 +1807,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no',
       'equipment di-box bass-di in deck at 5,8 channel 4 source "Bass DI" model "Radial J48" stand none phantom yes',
       'monitor 1 lead-wedge in deck at 13,17 "Lead"',
+      'equipment snake snake-a in deck at 2,14 "Stage snake"',
+      'equipment foh-console foh outside at 12,28 "FOH"',
       "signal bass-di -> snake-a -> foh",
       "signal-paths on",
     ],
@@ -1879,6 +1891,8 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "run RB dive right",
     ],
     prefer: [
+      "Choose `sport football|basketball|soccer`. For basketball use a `set` preset; for soccer use a `formation`. Request `detail: reference` for the sport-specific presets and action syntax.",
+      "Basketball and soccer movement actions update the player's position for later passes in declaration order; player symbols show starting positions. Football assignments are simultaneous from the snap formation.",
       "Start from a `formation` preset — it places all 11 offensive players with standard ids (QB RB FB C LG RG LT RT, TE=Y, receivers X/Z/H). Then assign routes by id.",
       "Use named routes from the tree (`route Z post`, `route H out 12`) — the optional number is the stem depth in yards off the LOS; an explicit `left`/`right` overrides the natural break side.",
       "Use `run RB power right` for the ball carrier, `pull LG right` for a pulling lineman, `block FB DE_S` for a key block (T-bar drawn on the target), `handoff QB RB` for the mesh.",

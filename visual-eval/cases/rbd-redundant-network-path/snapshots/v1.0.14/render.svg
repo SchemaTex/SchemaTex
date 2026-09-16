@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1341" height="281" viewBox="0 0 1341 281" role="img" aria-label="Reliability block diagram" data-diagram-type="rbd"><title>Reliability block diagram</title>
+<desc>Reliability block diagram: 8 blocks. System reliability n/a — missing R on rbd.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1341" height="281" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="650.5" y="18" class="sx-rbd-rsys" text-anchor="middle">System reliability: n/a — missing R on rbd</text>
+<path d="M 406 113 L 450 113" class="sx-rbd-wire"/>
+<path d="M 788 77 L 832 77" class="sx-rbd-wire"/>
+<path d="M 650.5 113 L 650.5 77 L 677 77" class="sx-rbd-wire"/>
+<path d="M 978 77 L 1004.5 77 L 1004.5 113" class="sx-rbd-wire"/>
+<path d="M 788 149 L 832 149" class="sx-rbd-wire"/>
+<path d="M 650.5 113 L 650.5 149 L 677 149" class="sx-rbd-wire"/>
+<path d="M 978 149 L 1004.5 149 L 1004.5 113" class="sx-rbd-wire"/>
+<path d="M 603 113 L 650.5 113" class="sx-rbd-wire"/>
+<path d="M 1004.5 113 L 1048.5 113" class="sx-rbd-wire"/>
+<path d="M 258 113 L 302 113" class="sx-rbd-wire"/>
+<path d="M 28 113 L 58 113" class="sx-rbd-wire"/>
+<path d="M 1242.5 113 L 1272.5 113" class="sx-rbd-wire"/>
+<circle cx="650.5" cy="113" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="1004.5" cy="113" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="113" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1272.5" cy="113" r="6" class="sx-rbd-term" data-node="out"/>
+<g class="sx-rbd-block-g" data-id="rbd"><rect x="58" y="90" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="158" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="158" dy="-6.5">Redundant network</tspan><tspan x="158" dy="13">service path</tspan></text></g>
+<g class="sx-rbd-block-g" data-id="CORE" data-r="0.999"><rect x="302" y="90" width="104" height="46" rx="5" class="sx-rbd-block"/>
+<text x="354" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="354" dy="0">Core switch</tspan></text>
+<text x="354" y="151" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="FIREWALL" data-r="0.998"><rect x="450" y="90" width="153" height="46" rx="5" class="sx-rbd-block"/>
+<text x="526.5" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="526.5" dy="0">Perimeter firewall</tspan></text>
+<text x="526.5" y="151" class="sx-rbd-r" text-anchor="middle">R=0.998</text></g>
+<g class="sx-rbd-block-g" data-id="ROUTER_A" data-r="0.99"><rect x="677" y="54" width="111" height="46" rx="5" class="sx-rbd-block"/>
+<text x="732.5" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="732.5" dy="0">WAN router A</tspan></text>
+<text x="732.5" y="115" class="sx-rbd-r" text-anchor="middle">R=0.99</text></g>
+<g class="sx-rbd-block-g" data-id="CARRIER_A" data-r="0.985"><rect x="832" y="54" width="146" height="46" rx="5" class="sx-rbd-block"/>
+<text x="905" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="905" dy="0">Carrier A circuit</tspan></text>
+<text x="905" y="115" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="ROUTER_B" data-r="0.99"><rect x="677" y="126" width="111" height="46" rx="5" class="sx-rbd-block"/>
+<text x="732.5" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="732.5" dy="0">WAN router B</tspan></text>
+<text x="732.5" y="187" class="sx-rbd-r" text-anchor="middle">R=0.99</text></g>
+<g class="sx-rbd-block-g" data-id="CARRIER_B" data-r="0.985"><rect x="832" y="126" width="146" height="46" rx="5" class="sx-rbd-block"/>
+<text x="905" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="905" dy="0">Carrier B circuit</tspan></text>
+<text x="905" y="187" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="SERVICE" data-r="0.999"><rect x="1048.5" y="90" width="194" height="46" rx="5" class="sx-rbd-block"/>
+<text x="1145.5" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1145.5" dy="-6.5">Network service</tspan><tspan x="1145.5" dy="13">endpoint</tspan></text>
+<text x="1145.5" y="151" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g></g></svg>

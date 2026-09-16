@@ -1,0 +1,22 @@
+# Assumptions: scores represent a programmable hospital infusion pump used with standard nursing checks.
+# Severity is patient-focused and detection follows the AIAG-VDA 1-to-10 convention.
+fmea "Medical infusion pump DFMEA"
+  type: design
+  rank: rpn
+  flag: rpn > 100
+  number: DFMEA-INF-031
+  item "Programmable infusion pump" fn "Deliver prescribed fluid volume at prescribed rate"
+    mode "Over-infusion"
+      effect "Patient overdose and serious harm" sev: 10
+      cause "Flow-sensor calibration drift" occ: 3
+        controls prevention: "Calibration specification", detection: "Flow-rate verification test" det: 3
+      cause "Incorrect rate entry" occ: 4
+        controls prevention: "Dose-error reduction library", detection: "Independent nurse check" det: 4
+    mode "Under-infusion"
+      effect "Therapy ineffective or delayed" sev: 8
+      cause "Occluded administration set" occ: 5
+        controls prevention: "Anti-kink set design", detection: "Occlusion alarm test" det: 2
+    mode "Unexpected pump stop"
+      effect "Interruption of critical medication" sev: 9
+      cause "Battery depletion" occ: 3
+        controls prevention: "Battery capacity monitoring", detection: "Low-battery alarm test" det: 3

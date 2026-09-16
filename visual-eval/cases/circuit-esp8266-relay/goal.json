@@ -1,0 +1,44 @@
+{
+  "id": "circuit-esp8266-relay",
+  "type": "circuit",
+  "title": "ESP8266 dual relay controller",
+  "goal": "A reader must be able to trace each ESP8266 output through its transistor to a distinct protected 5 V relay channel.",
+  "rubric": [
+    {
+      "id": "module-is-identifiable",
+      "severity": "blocker",
+      "must": "A clearly labelled ESP8266 module is visible with separate GPIO12 and GPIO13 connections."
+    },
+    {
+      "id": "two-distinct-relay-channels",
+      "severity": "blocker",
+      "must": "Two separately labelled relay channels are visible and distinguishable as Relay 1 and Relay 2."
+    },
+    {
+      "id": "transistor-drivers-visible",
+      "severity": "major",
+      "must": "Each relay coil is connected to its own labelled NPN transistor driver."
+    },
+    {
+      "id": "flyback-per-coil",
+      "severity": "major",
+      "must": "A labelled flyback diode is shown across each relay coil."
+    },
+    {
+      "id": "indicator-per-channel",
+      "severity": "major",
+      "must": "Each relay channel has its own labelled green indicator LED and series resistor."
+    },
+    {
+      "id": "separate-voltage-rails",
+      "severity": "major",
+      "must": "The 5 V input and regulated 3.3 V supply are both labelled and visibly distinct."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Split into supply, controller and two relay channels; each channel has its own base resistor, transistor, flyback diode and indicator, and stays visually separate from the other. Cross-section connections are made by named rails with a note saying so, rather than by dragging wires across the sheet."
+  }
+}

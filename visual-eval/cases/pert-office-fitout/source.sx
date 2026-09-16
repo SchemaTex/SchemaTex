@@ -1,0 +1,19 @@
+%% Context: Office fit-out schedule with landlord handover, construction, commissioning, and move-in.
+pert
+title: "Office Fit-out"
+unit: days
+direction: LR
+layout: network
+
+task A "Lease handover" duration: 0 milestone
+task B "Confirm design" duration: 5 after: A
+task C "Order long-lead furniture" duration: 12 after: B
+task D "Strip-out existing space" duration: 4 after: A
+task E "Build partitions" duration: 8 after: D FS+1d
+task F "Electrical and data rough-in" duration: 6 after: E
+task G "Install ceiling and finishes" duration: 5 after: F
+task H "Install furniture" duration: 3 after: C, G
+task I "IT commissioning" duration: 4 after: F
+task J "Safety inspection" duration: 2 after: G
+task K "Practical completion" milestone after: H, I, J
+task L "Move-in" duration: 1 after: K

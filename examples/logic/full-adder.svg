@@ -1,10 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-logic" viewBox="0 0 770 270" width="770" height="270" role="img" data-diagram-type="logic"><title>1-bit Full Adder</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-logic" viewBox="0 0 770 402" width="770" height="402" role="img" data-diagram-type="logic"><title>1-bit Full Adder</title>
 <desc>Logic gate diagram with 5 gates, 3 inputs, 2 outputs</desc>
 <defs><style>.schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-logic-gate-body { fill: none; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-gate-body { fill: #ffffff; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-arc { fill: none; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-xor-gap { fill: #ffffff; stroke: none; }
+.schematex-logic-enable-pin { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linecap: square; }
 .schematex-logic-bubble { fill: #ffffff; stroke: #111111; stroke-width: 1.5; }
 .schematex-logic-clock-tri { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linejoin: round; }
 .schematex-logic-wire { stroke: #111111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-wire-clearance { stroke: #ffffff; stroke-width: 5; fill: none; }
+.schematex-logic-junction { fill: #111111; }
 .schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: #111111; }
 .schematex-logic-pin-label { font: 9px sans-serif; fill: #222222; }
 .schematex-logic-gate-type { font: 10px sans-serif; fill: #555555; }
@@ -15,39 +20,48 @@
 [data-gate-type="unknown"] .schematex-logic-gate-body { stroke: #1d4e89; stroke-dasharray: 5 3; }
 [data-gate-type="unknown"] .schematex-logic-gate-iec-label { fill: #1d4e89; }</style></defs>
 <g transform="translate(0, 20)"><g class="schematex-logic-modules"></g>
-<g class="schematex-logic-wires"><path d="M 60,55 L 116,55 L 116,60 L 172,60" class="schematex-logic-wire" data-from="A" data-to="s1"/>
-<path d="M 60,125 L 116,125 L 116,90 L 172,90" class="schematex-logic-wire" data-from="B" data-to="s1"/>
-<path d="M 230,75 L 281,75 L 281,60 L 332,60" class="schematex-logic-wire" data-from="s1" data-to="Sum"/>
-<path d="M 60,195 L 196,195 L 196,90 L 332,90" class="schematex-logic-wire" data-from="Cin" data-to="Sum"/>
-<path d="M 60,55 L 120,55 L 120,160 L 180,160" class="schematex-logic-wire" data-from="A" data-to="c1"/>
-<path d="M 60,125 L 120,125 L 120,190 L 180,190" class="schematex-logic-wire" data-from="B" data-to="c1"/>
-<path d="M 230,75 L 285,75 L 285,160 L 340,160" class="schematex-logic-wire" data-from="s1" data-to="c2"/>
-<path d="M 60,195 L 200,195 L 200,190 L 340,190" class="schematex-logic-wire" data-from="Cin" data-to="c2"/>
-<path d="M 240,175 L 369,175 L 369,110 L 498,110" class="schematex-logic-wire" data-from="c1" data-to="Cout"/>
-<path d="M 400,175 L 449,175 L 449,140 L 498,140" class="schematex-logic-wire" data-from="c2" data-to="Cout"/>
-<path d="M 390,75 L 510,75 L 510,90 L 630,90" class="schematex-logic-wire" data-from="Sum" data-to="$out$Sum"/>
-<path d="M 550,125 L 590,125 L 590,160 L 630,160" class="schematex-logic-wire" data-from="Cout" data-to="$out$Cout"/></g>
-<g class="schematex-logic-gates"><g transform="translate(160, 45)" data-gate-id="s1" data-gate-type="XOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z M 8,60 Q 3,30 8,0" class="schematex-logic-gate-body"/>
+<g class="schematex-logic-wires"><path d="M 60,80 L 172,80" class="schematex-logic-wire-clearance"/><path d="M 60,80 L 172,80" class="schematex-logic-wire" data-from="A" data-to="s1"/>
+<path d="M 60,110 L 172,110" class="schematex-logic-wire-clearance"/><path d="M 60,110 L 172,110" class="schematex-logic-wire" data-from="B" data-to="s1"/>
+<path d="M 230,95 L 302,95 L 302,80 L 332,80" class="schematex-logic-wire-clearance"/><path d="M 230,95 L 302,95 L 302,80 L 332,80" class="schematex-logic-wire" data-from="s1" data-to="Sum"/>
+<path d="M 60,337 L 290,337 L 290,110 L 332,110" class="schematex-logic-wire-clearance"/><path d="M 60,337 L 290,337 L 290,110 L 332,110" class="schematex-logic-wire" data-from="Cin" data-to="Sum"/>
+<path d="M 60,80 L 78,80 L 78,220 L 180,220" class="schematex-logic-wire-clearance"/><path d="M 60,80 L 78,80 L 78,220 L 180,220" class="schematex-logic-wire" data-from="A" data-to="c1"/>
+<path d="M 60,110 L 70,110 L 70,250 L 180,250" class="schematex-logic-wire-clearance"/><path d="M 60,110 L 70,110 L 70,250 L 180,250" class="schematex-logic-wire" data-from="B" data-to="c1"/>
+<path d="M 230,95 L 298,95 L 298,220 L 340,220" class="schematex-logic-wire-clearance"/><path d="M 230,95 L 298,95 L 298,220 L 340,220" class="schematex-logic-wire" data-from="s1" data-to="c2"/>
+<path d="M 60,337 L 290,337 L 290,250 L 340,250" class="schematex-logic-wire-clearance"/><path d="M 60,337 L 290,337 L 290,250 L 340,250" class="schematex-logic-wire" data-from="Cin" data-to="c2"/>
+<path d="M 240,235 L 258,235 L 258,191 L 462,191 L 462,220 L 498,220" class="schematex-logic-wire-clearance"/><path d="M 240,235 L 258,235 L 258,191 L 462,191 L 462,220 L 498,220" class="schematex-logic-wire" data-from="c1" data-to="Cout"/>
+<path d="M 400,235 L 462,235 L 462,250 L 498,250" class="schematex-logic-wire-clearance"/><path d="M 400,235 L 462,235 L 462,250 L 498,250" class="schematex-logic-wire" data-from="c2" data-to="Cout"/>
+<path d="M 390,95 L 630,95" class="schematex-logic-wire-clearance"/><path d="M 390,95 L 630,95" class="schematex-logic-wire" data-from="Sum" data-to="$out$Sum"/>
+<path d="M 550,235 L 630,235" class="schematex-logic-wire-clearance"/><path d="M 550,235 L 630,235" class="schematex-logic-wire" data-from="Cout" data-to="$out$Cout"/></g>
+<g class="schematex-logic-junctions"><circle cx="78" cy="80" r="2.5" class="schematex-logic-junction" data-net="A"/>
+<circle cx="70" cy="110" r="2.5" class="schematex-logic-junction" data-net="B"/>
+<circle cx="298" cy="95" r="2.5" class="schematex-logic-junction" data-net="s1"/>
+<circle cx="290" cy="250" r="2.5" class="schematex-logic-junction" data-net="Cin"/></g>
+<g class="schematex-logic-gates"><g transform="translate(160, 65)" data-gate-id="s1" data-gate-type="XOR"><path d="M 6,0 Q 22,30 6,60 L 12,60 Q 28,30 12,0 Z" class="schematex-logic-xor-gap"/>
+<path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
+<path d="M 6,0 Q 22,30 6,60" class="schematex-logic-xor-arc"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">XOR</text></g>
-<g transform="translate(160, 145)" data-gate-id="c1" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body"/>
+<g transform="translate(160, 205)" data-gate-id="c1" data-gate-type="AND"><path d="M 20,0 H 50 A 30 30 0 0 1 50,60 H 20 Z" class="schematex-logic-gate-body"/>
 <text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
-<g transform="translate(320, 45)" data-gate-id="Sum" data-gate-type="XOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z M 8,60 Q 3,30 8,0" class="schematex-logic-gate-body"/>
+<g transform="translate(320, 65)" data-gate-id="Sum" data-gate-type="XOR"><path d="M 6,0 Q 22,30 6,60 L 12,60 Q 28,30 12,0 Z" class="schematex-logic-xor-gap"/>
+<path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
+<path d="M 6,0 Q 22,30 6,60" class="schematex-logic-xor-arc"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">XOR</text></g>
-<g transform="translate(320, 145)" data-gate-id="c2" data-gate-type="AND"><path d="M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z" class="schematex-logic-gate-body"/>
+<g transform="translate(320, 205)" data-gate-id="c2" data-gate-type="AND"><path d="M 20,0 H 50 A 30 30 0 0 1 50,60 H 20 Z" class="schematex-logic-gate-body"/>
 <text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">AND</text></g>
-<g transform="translate(480, 95)" data-gate-id="Cout" data-gate-type="OR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body"/>
+<g transform="translate(480, 205)" data-gate-id="Cout" data-gate-type="OR"><path d="M 12,0 Q 28,30 12,60 C 37.13333333333333,57.5 56.46666666666667,47.5 70,30 C 56.46666666666667,12.5 37.13333333333333,2.5 12,0 Z" class="schematex-logic-gate-body"/>
 <text x="35" y="74" class="schematex-logic-gate-type" text-anchor="middle">OR</text></g></g>
-<g class="schematex-logic-ports"><g transform="translate(20, 40)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">A</text>
+<g class="schematex-logic-input-bubbles"></g>
+<g class="schematex-logic-ports"><g transform="translate(20, 65)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">A</text>
 <line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
 </g>
-<g transform="translate(20, 110)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">B</text>
+<g transform="translate(20, 95)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">B</text>
 <line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
 </g>
-<g transform="translate(20, 180)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">Cin</text>
+<g transform="translate(20, 322)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">Cin</text>
 <line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
 </g>
-<g transform="translate(630, 75)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
+<g transform="translate(630, 80)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
 <text x="16" y="19" text-anchor="start" class="schematex-logic-port-label">Sum</text></g>
-<g transform="translate(630, 145)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
+<g transform="translate(630, 220)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
 <text x="16" y="19" text-anchor="start" class="schematex-logic-port-label">Cout</text></g></g></g>
 <text x="385" y="18" text-anchor="middle" class="schematex-logic-title">1-bit Full Adder</text></svg>

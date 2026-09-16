@@ -1,0 +1,77 @@
+{
+  "id": "state-turnstile",
+  "type": "state",
+  "title": "Coin-operated turnstile",
+  "goal": "Show the complete two-state turnstile machine with labelled coin and push transitions.",
+  "rubric": [
+    {
+      "id": "two-states",
+      "severity": "blocker",
+      "must": "Exactly two operational states, Locked and Unlocked, are visibly shown."
+    },
+    {
+      "id": "coin-unlocks",
+      "severity": "blocker",
+      "must": "A transition labelled coin visibly goes from Locked to Unlocked."
+    },
+    {
+      "id": "push-locks",
+      "severity": "major",
+      "must": "A transition labelled push visibly goes from Unlocked to Locked."
+    },
+    {
+      "id": "self-transitions",
+      "severity": "major",
+      "must": "Locked has a visible push self-transition and Unlocked has a visible coin self-transition."
+    },
+    {
+      "id": "initial-locked",
+      "severity": "minor",
+      "must": "The initial marker visibly enters Locked."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly shows exactly the two operational states, Locked and Unlocked, with traceable and correctly labelled transitions. The initial marker enters Locked; no blocking defects are visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:26.877Z",
+      "targetHash": "d04b940fc180",
+      "sourceHash": "07c4a6a8f9b4",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "two-states",
+          "verdict": "pass",
+          "evidence": "Locked and Unlocked are the only operational states shown."
+        },
+        {
+          "id": "coin-unlocks",
+          "verdict": "pass",
+          "evidence": "A horizontal transition labelled “coin” points from Locked to Unlocked."
+        },
+        {
+          "id": "push-locks",
+          "verdict": "pass",
+          "evidence": "The lower return transition labelled “push” runs from Unlocked back to Locked."
+        },
+        {
+          "id": "self-transitions",
+          "verdict": "pass",
+          "evidence": "Locked has a visible self-transition labelled “push”; Unlocked has one labelled “coin”."
+        },
+        {
+          "id": "initial-locked",
+          "verdict": "pass",
+          "evidence": "The filled initial marker above Locked connects downward into Locked."
+        }
+      ]
+    }
+  }
+}

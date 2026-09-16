@@ -1,0 +1,33 @@
+# Dosing solution is adjusted to pH 7.0; metering rate is verified in a calibration column.
+# The pH controller commands the dosing valve; the valve fails closed.
+pid "Chemical Dosing Package" [direction: LR, units: metric]
+
+equip TK-701 : tank_atm [tag: "TK-701 Chemical Dosing Tank"]
+equip AG-701 : reactor_cstr [tag: "AG-701 Agitated Dosing Tank"]
+equip P-701 : pump_diaphragm [tag: "P-701 Metering Pump"]
+equip C-701 : vessel_v [tag: "C-701 Calibration Column"]
+equip FV-701 : valve_control [tag: "FV-701 Dosing Control Valve", actuator: "diaphragm", fail: "FC"]
+equip XV-701 : valve_gate [tag: "XV-701 Calibration Isolation"]
+equip NRV-701 : valve_check [tag: "NRV-701 Injection Check Valve"]
+equip V-702 : vessel_h [tag: "V-702 Process Mixing Header"]
+
+line tankToAgitator from TK-701.bottom to AG-701.in [type: process, size: "DN25", service: "chemical solution"]
+line pumpSuction from AG-701.bottom to P-701.in [type: process, size: "DN20", service: "chemical solution"]
+line pumpDischarge from P-701.out to C-701.in [type: process, size: "DN15", service: "dosing solution"]
+line calibrationOutlet from C-701.out to XV-701.in [type: process, size: "DN15", service: "dosing solution"]
+line dosingControl from XV-701.out to FV-701.in [type: process, size: "DN15", service: "dosing solution"]
+line injection from FV-701.out to NRV-701.in [type: process, size: "DN15", service: "dosing solution"]
+line processInjection from NRV-701.out to V-702.in [type: process, size: "DN15", service: "chemical injection"]
+
+inst AT-701 : field_discrete
+  measures V-702
+inst AIC-701 : cr_shared
+  controls FV-701
+inst FT-701 : field_discrete
+  measures C-701
+inst FI-701 : cr_discrete
+  measures C-701
+
+line phSignal from AT-701 to AIC-701 [type: electric]
+line dosingCommand from AIC-701 to FV-701.signal [type: pneumatic]
+line calibrationSignal from FT-701 to FI-701 [type: electric]

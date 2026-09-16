@@ -1,22 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 920 694" width="920" height="694" class="sx-pb" role="img"><title>Counter-Attack</title>
 <desc>soccer play. 11 players, 0 opponents, 6 assignments.</desc>
 <style>.sx-pb { font-family: system-ui, -apple-system, sans-serif; }
-.sx-pb-title { font: 700 16px sans-serif; fill: #0f172a; }
-.sx-pb-field, .sx-pb-turf { fill: #2f8f4e; }
+.sx-pb-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.sx-pb-field, .sx-pb-turf { fill: #6d9b73; }
 .sx-pb-court { fill: #f1ddba; }
-.sx-pb-surround { fill: #21683a; }
+.sx-pb-paint { fill: #b07c40; fill-opacity: 0.12; }
+.sx-pb-surround { fill: #4f7356; }
 .sx-pb-surround-court { fill: #6b4f2c; }
 .sx-pb-boundary { fill: none; stroke: #ffffff; stroke-width: 2.6; }
 .sx-pb-boundary-court { fill: none; stroke: #b07c40; stroke-width: 2.6; }
-.sx-pb-stripe { fill: #2b8549; }
-.sx-pb-yard, .sx-pb-pitch-line, .sx-pb-goalbox { fill: none; stroke: rgba(255,255,255,0.62); stroke-width: 1.4; }
+.sx-pb-stripe { fill: #67946d; }
+.sx-pb-yard, .sx-pb-pitch-line { fill: none; stroke: rgba(255,255,255,0.62); stroke-width: 1.4; }
 .sx-pb-court-line { fill: none; stroke: #b07c40; stroke-width: 1.5; }
 .sx-pb-hash { fill: none; stroke: rgba(255,255,255,0.62); stroke-width: 1.2; }
-.sx-pb-los, .sx-pb-goalline { fill: none; stroke: #ffffff; stroke-width: 2.4; }
+.sx-pb-goalbox { fill: none; stroke: #ffffff; stroke-width: 2.2; }
+.sx-pb-goalnet { fill: none; stroke: rgba(255,255,255,0.62); stroke-width: 0.6; }
+.sx-pb-los { fill: none; stroke: #fcd34d; stroke-width: 1.6; stroke-dasharray: 7 4; }
+.sx-pb-goalline { fill: none; stroke: #ffffff; stroke-width: 2.4; }
 .sx-pb-goalline { stroke: #fcd34d; }
 .sx-pb-goalpost { fill: none; stroke: #fcd34d; stroke-width: 2.4; stroke-linecap: round; }
 .sx-pb-endzone { fill: rgba(255,255,255,0.10); }
-.sx-pb-yardnum { font: 600 11px sans-serif; fill: rgba(255,255,255,0.85); }
+.sx-pb-yardnum { font: 600 18px sans-serif; fill: rgba(255,255,255,0.85); }
+.sx-pb-shot-double { stroke-width: 5; }
+.sx-pb-shot-gap { fill: none; stroke: #6d9b73; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
 .sx-pb-rim { stroke: #f97316; stroke-width: 2.4; }
 .sx-pb-pitch-dot { fill: #ffffff; }
 .sx-pb-zone { fill: rgba(253,224,71,0.12); stroke: #fde047; stroke-width: 1.3; stroke-dasharray: 5 4; }
@@ -28,6 +34,7 @@
 .sx-pb-move-fill { fill: #0b1f3a; stroke: none; }
 .sx-pb-shot-fill { fill: #f59e0b; stroke: none; }
 .sx-pb-motion-fill { fill: #e2e8f0; stroke: none; }
+.sx-pb-step { fill: #334155; font-size: 11px; font-weight: 600; stroke: #ffffff; stroke-width: 3; paint-order: stroke; stroke-linejoin: round; }
 .sx-pb-o { fill: #ffffff; stroke: #13294b; stroke-width: 2; }
 .sx-pb-gk { fill: #facc15; stroke: #13294b; stroke-width: 2; }
 .sx-pb-o-text { font: 700 10.5px sans-serif; fill: #13294b; }
@@ -43,16 +50,17 @@
 <defs><clipPath id="sx-pb-clip"><rect x="16" y="56" width="888" height="592" rx="7"/></clipPath></defs>
 <text class="sx-pb-title" x="460" y="24" text-anchor="middle">Counter-Attack</text>
 <rect class="sx-pb-surround" x="2" y="40" width="916" height="624" rx="12"/>
-<rect class="sx-pb-turf" x="16" y="56" width="888" height="592" rx="7"/>
-<g clip-path="url(#sx-pb-clip)"><g class="sx-pb-field-g"><rect class="sx-pb-stripe" x="124" y="80" width="84" height="544"/>
+<rect class="sx-pb-surround" x="16" y="56" width="888" height="592" rx="7"/>
+<g clip-path="url(#sx-pb-clip)"><g class="sx-pb-field-g"><rect class="sx-pb-turf" x="40" y="80" width="840" height="544"/>
+<rect class="sx-pb-stripe" x="124" y="80" width="84" height="544"/>
 <rect class="sx-pb-stripe" x="292" y="80" width="84" height="544"/>
 <rect class="sx-pb-stripe" x="460" y="80" width="84" height="544"/>
 <rect class="sx-pb-stripe" x="628" y="80" width="84" height="544"/>
 <rect class="sx-pb-stripe" x="796" y="80" width="84" height="544"/>
-<path class="sx-pb-pitch-line" fill="none" d="M 48 80 A 8 8 0 0 0 40 88"/>
-<path class="sx-pb-pitch-line" fill="none" d="M 872 80 A 8 8 0 0 1 880 88"/>
-<path class="sx-pb-pitch-line" fill="none" d="M 48 624 A 8 8 0 0 1 40 616"/>
-<path class="sx-pb-pitch-line" fill="none" d="M 872 624 A 8 8 0 0 0 880 616"/>
+<path class="sx-pb-pitch-line" fill="none" d="M 48 80 A 8 8 0 0 1 40 88"/>
+<path class="sx-pb-pitch-line" fill="none" d="M 872 80 A 8 8 0 0 0 880 88"/>
+<path class="sx-pb-pitch-line" fill="none" d="M 48 624 A 8 8 0 0 0 40 616"/>
+<path class="sx-pb-pitch-line" fill="none" d="M 872 624 A 8 8 0 0 1 880 616"/>
 <line class="sx-pb-pitch-line" x1="460" y1="80" x2="460" y2="624"/>
 <circle class="sx-pb-pitch-line" fill="none" cx="460" cy="352" r="73.2"/>
 <circle class="sx-pb-pitch-dot" cx="460" cy="352" r="1.6"/>
@@ -60,26 +68,62 @@
 <rect class="sx-pb-pitch-line" fill="none" x="40" y="278.72" width="44" height="146.56"/>
 <circle class="sx-pb-pitch-dot" cx="128" cy="352" r="1.4"/>
 <path class="sx-pb-pitch-line" fill="none" d="M 172 293.5 A 73.2 73.2 0 0 1 172 410.5"/>
+<line class="sx-pb-goalnet" x1="35.6" y1="322.72" x2="35.6" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="31.2" y1="322.72" x2="31.2" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="26.8" y1="322.72" x2="26.8" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="40" y1="327.6" x2="22.4" y2="327.6"/>
+<line class="sx-pb-goalnet" x1="40" y1="332.48" x2="22.4" y2="332.48"/>
+<line class="sx-pb-goalnet" x1="40" y1="337.36" x2="22.4" y2="337.36"/>
+<line class="sx-pb-goalnet" x1="40" y1="342.24" x2="22.4" y2="342.24"/>
+<line class="sx-pb-goalnet" x1="40" y1="347.12" x2="22.4" y2="347.12"/>
+<line class="sx-pb-goalnet" x1="40" y1="352" x2="22.4" y2="352"/>
+<line class="sx-pb-goalnet" x1="40" y1="356.88" x2="22.4" y2="356.88"/>
+<line class="sx-pb-goalnet" x1="40" y1="361.76" x2="22.4" y2="361.76"/>
+<line class="sx-pb-goalnet" x1="40" y1="366.64" x2="22.4" y2="366.64"/>
+<line class="sx-pb-goalnet" x1="40" y1="371.52" x2="22.4" y2="371.52"/>
+<line class="sx-pb-goalnet" x1="40" y1="376.4" x2="22.4" y2="376.4"/>
+<line class="sx-pb-goalnet" x1="40" y1="381.28" x2="22.4" y2="381.28"/>
 <rect class="sx-pb-goalbox" x="22.4" y="322.72" width="17.6" height="58.56"/>
 <rect class="sx-pb-pitch-line" fill="none" x="748" y="190.72" width="132" height="322.56"/>
 <rect class="sx-pb-pitch-line" fill="none" x="836" y="278.72" width="44" height="146.56"/>
 <circle class="sx-pb-pitch-dot" cx="792" cy="352" r="1.4"/>
 <path class="sx-pb-pitch-line" fill="none" d="M 748 293.5 A 73.2 73.2 0 0 0 748 410.5"/>
-<rect class="sx-pb-goalbox" x="880" y="322.72" width="17.6" height="58.56"/></g></g>
+<line class="sx-pb-goalnet" x1="884.4" y1="322.72" x2="884.4" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="888.8" y1="322.72" x2="888.8" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="893.2" y1="322.72" x2="893.2" y2="381.28"/>
+<line class="sx-pb-goalnet" x1="880" y1="327.6" x2="897.6" y2="327.6"/>
+<line class="sx-pb-goalnet" x1="880" y1="332.48" x2="897.6" y2="332.48"/>
+<line class="sx-pb-goalnet" x1="880" y1="337.36" x2="897.6" y2="337.36"/>
+<line class="sx-pb-goalnet" x1="880" y1="342.24" x2="897.6" y2="342.24"/>
+<line class="sx-pb-goalnet" x1="880" y1="347.12" x2="897.6" y2="347.12"/>
+<line class="sx-pb-goalnet" x1="880" y1="352" x2="897.6" y2="352"/>
+<line class="sx-pb-goalnet" x1="880" y1="356.88" x2="897.6" y2="356.88"/>
+<line class="sx-pb-goalnet" x1="880" y1="361.76" x2="897.6" y2="361.76"/>
+<line class="sx-pb-goalnet" x1="880" y1="366.64" x2="897.6" y2="366.64"/>
+<line class="sx-pb-goalnet" x1="880" y1="371.52" x2="897.6" y2="371.52"/>
+<line class="sx-pb-goalnet" x1="880" y1="376.4" x2="897.6" y2="376.4"/>
+<line class="sx-pb-goalnet" x1="880" y1="381.28" x2="897.6" y2="381.28"/>
+<rect class="sx-pb-goalbox" x="880" y="322.72" width="17.6" height="58.56"/>
+<rect class="sx-pb-boundary" x="40" y="80" width="840" height="544"/></g></g>
 <g class="sx-pb-zones" clip-path="url(#sx-pb-clip)"></g>
-<g class="sx-pb-moves"><g class="sx-pb-move-g" data-kind="pass" data-player="6"><path class="sx-pb-move" d="M 376 352 L 456 272"/>
-<polygon class="sx-pb-move-fill" points="456,272 453.14,279.47 448.53,274.86"/></g>
-<g class="sx-pb-move-g" data-kind="dribble" data-player="8"><path class="sx-pb-move" d="M 456 272 L 457.07 275.51 L 459.12 275.59 L 461.99 272.77 L 464.58 270.96 L 466.1 272.89 L 467 276.96 L 468.47 279.08 L 471.01 277.43 L 473.9 274.56 L 476.01 274.42 L 477.11 277.82 L 478.14 281.44 L 480.13 281.73 L 482.99 278.98 L 485.62 277.02 L 487.19 278.75 L 488.11 282.8 L 489.52 285.11 L 492.01 283.63 L 494.91 280.71 L 497.08 280.37 L 498.22 283.64 L 499.22 287.36 L 501.15 287.85 L 503.98 285.19 L 506.66 283.08 L 508.29 284.61 L 509.21 288.64 L 510.57 291.13 L 513.01 289.83 L 515.92 286.88 L 518.15 286.33 L 519.32 289.46 L 520.31 293.26 L 522.17 293.97 L 524.98 291.4 L 527.69 289.16 L 529.38 290.48 L 530.31 294.47 L 531.62 297.13 L 534.01 296.02 L 536.93 293.05 L 539.21 292.3 L 540.43 295.28 L 541.39 299.16 L 543.2 300.08 L 545.98 297.61 L 548.72 295.24 L 550.47 296.36 L 551.42 300.3 L 552.68 303.13 L 555.01 302.2 L 557.93 299.23 L 560.27 298.29 L 568 304"/>
+<g class="sx-pb-moves"><g class="sx-pb-move-g" data-kind="pass" data-player="6"><path class="sx-pb-move" d="M 384.49 343.51 L 447.51 280.49"/>
+<text x="436.4" y="332.4" class="sx-pb-step" text-anchor="middle">1 pass</text>
+<polygon class="sx-pb-move-fill" points="447.51,280.49 444.66,287.96 440.04,283.34"/></g>
+<g class="sx-pb-move-g" data-kind="dribble" data-player="8"><path class="sx-pb-move" d="M 467.54 275.3 L 468.6 278.81 L 470.65 278.89 L 473.52 276.07 L 476.11 274.26 L 477.63 276.18 L 478.54 280.24 L 480 282.37 L 482.53 280.74 L 485.42 277.87 L 487.54 277.71 L 488.64 281.09 L 489.67 284.72 L 491.65 285.04 L 494.5 282.3 L 497.14 280.31 L 498.72 282.01 L 499.63 286.06 L 501.03 288.4 L 503.51 286.96 L 506.42 284.04 L 508.6 283.65 L 509.74 286.88 L 510.74 290.62 L 512.65 291.17 L 515.48 288.53 L 518.16 286.38 L 519.81 287.85 L 520.73 291.87 L 522.07 294.41 L 524.49 293.17 L 527.41 290.22 L 529.65 289.6 L 530.85 292.67 L 531.82 296.5 L 533.66 297.3 L 536.45 294.76 L 539.18 292.47 L 540.89 293.7 L 541.83 297.67 L 543.12 300.41 L 545.48 299.38 L 548.4 296.41 L 550.7 295.57 L 551.95 298.47 L 552.9 302.38 L 554.67 303.41 L 557.43 300.99 L 560.19 298.57 L 568 304"/>
+<text x="511.66" y="311.03" class="sx-pb-step" text-anchor="middle">2 dribble</text>
 <polygon class="sx-pb-move-fill" points="568,304 560.08,305.13 561.87,298.86"/></g>
-<g class="sx-pb-move-g" data-kind="pass" data-player="8"><path class="sx-pb-move" d="M 456 272 L 808 224"/>
-<polygon class="sx-pb-move-fill" points="808,224 801.2,228.22 800.32,221.75"/></g>
-<g class="sx-pb-move-g" data-kind="run" data-player="7"><path class="sx-pb-move-dash" d="M 696 176 L 832 240"/>
+<g class="sx-pb-move-g" data-kind="pass" data-player="8"><path class="sx-pb-move" d="M 568 304 L 808 224"/>
+<text x="694.53" y="283.58" class="sx-pb-step" text-anchor="middle">3 pass</text>
+<polygon class="sx-pb-move-fill" points="808,224 802.1,229.4 800.04,223.22"/></g>
+<g class="sx-pb-move-g" data-kind="run" data-player="7"><path class="sx-pb-move-dash" d="M 706.86 181.11 L 832 240"/>
+<text x="760.2" y="230.16" class="sx-pb-step" text-anchor="middle">4 run</text>
 <polygon class="sx-pb-move-fill" points="832,240 824,239.84 826.78,233.94"/></g>
-<g class="sx-pb-move-g" data-kind="run" data-player="9"><path class="sx-pb-move-dash" d="M 696 352 L 792 368"/>
+<g class="sx-pb-move-g" data-kind="run" data-player="9"><path class="sx-pb-move-dash" d="M 707.84 353.97 L 792 368"/>
+<text x="747.13" y="377.71" class="sx-pb-step" text-anchor="middle">5 run</text>
 <polygon class="sx-pb-move-fill" points="792,368 784.26,370.02 785.33,363.58"/></g>
-<g class="sx-pb-move-g" data-kind="run" data-player="11"><path class="sx-pb-move-dash" d="M 696 528 L 800 496"/>
+<g class="sx-pb-move-g" data-kind="run" data-player="11"><path class="sx-pb-move-dash" d="M 707.47 524.47 L 800 496"/>
+<text x="759.41" y="528.68" class="sx-pb-step" text-anchor="middle">6 run</text>
 <polygon class="sx-pb-move-fill" points="800,496 793.98,501.27 792.06,495.03"/></g></g>
-<rect class="sx-pb-boundary" x="16" y="56" width="888" height="592" rx="7"/>
 <g class="sx-pb-players"><g class="sx-pb-player" data-side="offense" data-id="1"><polygon class="sx-pb-gk" points="80,340.5 91.5,361.2 68.5,361.2"/>
 <text class="sx-pb-o-text" x="80" y="358" text-anchor="middle">1</text></g>
 <g class="sx-pb-player" data-side="offense" data-id="2"><circle class="sx-pb-o" cx="200" cy="176" r="10"/>
@@ -115,5 +159,5 @@
 <text class="sx-pb-legend" x="365" y="686">Run</text>
 <g transform="translate(404.5,682)"><path class="sx-pb-move" d="M0,0 Q3,-4 6,0 T12,0"/><polygon class="sx-pb-move-fill" points="20,0 13,-3.5 13,3.5"/></g>
 <text class="sx-pb-legend" x="430.5" y="686">Dribble</text>
-<g transform="translate(496,682)"><line class="sx-pb-shot" x1="0" y1="0" x2="14" y2="0"/><polygon class="sx-pb-shot-fill" points="20,0 13,-3.5 13,3.5"/></g>
+<g transform="translate(496,682)"><line class="sx-pb-shot" x1="0" y1="-2" x2="14" y2="-2"/><line class="sx-pb-shot" x1="0" y1="2" x2="14" y2="2"/><polygon class="sx-pb-shot-fill" points="20,0 13,-3.5 13,3.5"/></g>
 <text class="sx-pb-legend" x="522" y="686">Shot</text></g></svg>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="620" viewBox="0 0 1060 620" role="img">
+<title>NOR SR Latch</title>
+<desc>Gate-level active-high SR latch built from two cross-coupled NOR gates, drawn with ANSI/IEEE Std 91 distinctive-shape symbols. Inputs S and R enter on the left through buffers sbuf and rbuf. The upper NOR takes rbuf and the fed-back Qbar and produces Q; the lower NOR takes sbuf and the fed-back Q and produces Qbar, so each output is wired back to the other gate's second input — the cross-coupling that gives the latch its memory. Q and Qbar also drive buffer chains qbuf to qmonitor and qb1 to qb2 before leaving on the right. All wires are orthogonal; filled dots mark junctions and plain crossings mark wires that pass without connecting.</desc>
+<rect x="0" y="0" width="1060" height="620" fill="#FFFFFF"/>
+<line x1="46" y1="96" x2="1014" y2="96" stroke="#E2E8F0" stroke-width="1"/>
+<line x1="46" y1="550" x2="1014" y2="550" stroke="#E2E8F0" stroke-width="1"/>
+<g fill="none" stroke="#1E293B" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter">
+<polyline points="62,188 190,188"/>
+<polyline points="62,388 190,388"/>
+<polyline points="232,188 425.25,188"/>
+<polyline points="232,388 425.25,388"/>
+<polyline points="490,200 940,200"/>
+<polyline points="540,200 540,340 356,340 356,412 425.25,412"/>
+<polyline points="600,200 600,140 640,140"/>
+<polyline points="490,400 940,400"/>
+<polyline points="566,400 566,290 380,290 380,212 425.25,212"/>
+<polyline points="600,400 600,460 640,460"/>
+<polyline points="682,140 830,140"/>
+<polyline points="682,460 830,460"/>
+<polyline points="872,140 920,140"/>
+<polyline points="872,460 920,460"/>
+</g>
+<g fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5" stroke-linejoin="round">
+<path d="M 190,166 L 190,210 L 232,188 Z"/>
+<path d="M 190,366 L 190,410 L 232,388 Z"/>
+<path d="M 420,176 Q 434,200 420,224 C 446,221.984 466,214.016 480,200 C 466,185.984 446,178.016 420,176 Z"/>
+<circle cx="485" cy="200" r="5" stroke-width="1.5"/>
+<path d="M 420,376 Q 434,400 420,424 C 446,421.984 466,414.016 480,400 C 466,385.984 446,378.016 420,376 Z"/>
+<circle cx="485" cy="400" r="5" stroke-width="1.5"/>
+<path d="M 640,118 L 640,162 L 682,140 Z"/>
+<path d="M 640,438 L 640,482 L 682,460 Z"/>
+<path d="M 830,118 L 830,162 L 872,140 Z"/>
+<path d="M 830,438 L 830,482 L 872,460 Z"/>
+</g>
+<g fill="#1E293B">
+<circle cx="540" cy="200" r="3.5"/>
+<circle cx="600" cy="200" r="3.5"/>
+<circle cx="566" cy="400" r="3.5"/>
+<circle cx="600" cy="400" r="3.5"/>
+</g>
+<g font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="928" y="144.5" font-size="10" fill="#64748B" text-anchor="start">qmonitor</text>
+<text x="928" y="464.5" font-size="10" fill="#64748B" text-anchor="start">qb2</text>
+<text x="288" y="179" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">rbuf</text>
+<text x="288" y="379" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">sbuf</text>
+<text x="756" y="131" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">qbuf</text>
+<text x="756" y="451" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">qb1</text>
+<text x="46" y="578" font-size="11.5" fill="#64748B" text-anchor="start">Q = (R + Qbar)′</text>
+<text x="240" y="578" font-size="11.5" fill="#64748B" text-anchor="start">Qbar = (S + Q)′</text>
+<text x="440" y="578" font-size="11.5" fill="#64748B" text-anchor="start">S = R = 1 is disallowed — both outputs would go low</text>
+<text x="46" y="56" font-size="20" fill="#1E293B" text-anchor="start" font-weight="600">NOR SR Latch</text>
+<text x="46" y="80" font-size="11.5" fill="#64748B" text-anchor="start">ANSI / IEEE Std 91 distinctive-shape gates · signal flow left to right</text>
+<text x="1014" y="80" font-size="11.5" fill="#64748B" text-anchor="end">filled dot = junction · plain crossing = no connection</text>
+<text x="54" y="192.5" font-size="13" fill="#1E293B" text-anchor="end">R</text>
+<text x="54" y="392.5" font-size="13" fill="#1E293B" text-anchor="end">S</text>
+<text x="950" y="204.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">Q</text>
+<text x="950" y="404.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">Qbar</text>
+</g>
+</svg>

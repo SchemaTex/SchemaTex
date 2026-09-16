@@ -1,0 +1,6 @@
+# Scenario: AWS A2.4 fillet welds of equal size on both sides of a T-joint.
+welding "Double Fillet T-Joint" [standard: aws]
+joint "T-joint, both sides" {
+  both: fillet size=8 len=100
+  tail: "GMAW; WPS-18"
+}

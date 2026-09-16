@@ -1,0 +1,45 @@
+{
+  "id": "network-office-branch",
+  "type": "network",
+  "title": "Branch office network",
+  "goal": "Show a secure, VLAN-segmented office network from the ISP edge to user devices.",
+  "rubric": [
+    {
+      "id": "edge-chain",
+      "severity": "blocker",
+      "must": "Internet, ISP router, firewall, and core switch are visibly connected in that order."
+    },
+    {
+      "id": "access-fanout",
+      "severity": "blocker",
+      "must": "Two access switches visibly serve office endpoints and wireless access points."
+    },
+    {
+      "id": "vlans",
+      "severity": "major",
+      "must": "Staff, guest Wi-Fi, services, and voice VLAN labels are visibly distinct."
+    },
+    {
+      "id": "poe-wifi-phone",
+      "severity": "major",
+      "must": "The access points and desk phone show PoE connections."
+    },
+    {
+      "id": "endpoints",
+      "severity": "major",
+      "must": "A printer, PCs, laptop, and IP phone are visibly present."
+    },
+    {
+      "id": "trunks",
+      "severity": "minor",
+      "must": "Core-to-access uplinks visibly carry the VLAN trunk annotation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. A branch-office network drawn top-down. The Internet, the ISP router, the NGFW and the core switch are chained down the middle of the sheet; the core trunks to two access switches, which fan out to seven endpoints along the foot: an IP phone, two desktop PCs, two Wi-Fi access points, a laptop and a finance MFP. Every link carries its media and speed, uplinks carry the VLAN trunk list, PoE drops are drawn in green and the wireless hop as a dotted line. Each endpoint wears a coloured chip naming the VLAN it belongs to, and a key under the subtitle lists all four. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

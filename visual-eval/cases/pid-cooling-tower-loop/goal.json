@@ -1,0 +1,87 @@
+{
+  "id": "pid-cooling-tower-loop",
+  "type": "pid",
+  "title": "Cooling tower circulating-water loop",
+  "goal": "A utility engineer can trace circulation, basin makeup and blowdown, and the cold-water temperature loop.",
+  "rubric": [
+    {
+      "id": "circulation-loop",
+      "severity": "blocker",
+      "must": "The basin, circulating pumps, process cooler, and cooling tower form a visible circulating-water path."
+    },
+    {
+      "id": "makeup-control",
+      "severity": "blocker",
+      "must": "LT-601 and LIC-601 visibly connect to LV-601, which is visibly piped from MakeupWater to the basin."
+    },
+    {
+      "id": "blowdown-control",
+      "severity": "major",
+      "must": "AT-601 and AIC-601 visibly connect to AV-601 on the basin blowdown line."
+    },
+    {
+      "id": "temperature-loop",
+      "severity": "major",
+      "must": "TT-601, TIC-601, and TV-601 form a readable temperature-control loop."
+    },
+    {
+      "id": "fail-positions",
+      "severity": "major",
+      "must": "LV-601 and AV-601 visibly show FC, while TV-601 visibly shows FO."
+    },
+    {
+      "id": "duty-standby-pumps",
+      "severity": "minor",
+      "must": "P-601A and P-601B are visibly labelled as circulating and standby pumps."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "needs-change",
+      "evidence": "Direct visual inspection confirms the P-601B “Standby Circulating Pump” description sits across the horizontal footer divider. The text remains decipherable, but the overlap should be corrected before accepting this as a clean reference target. Required process paths remain traceable.",
+      "model": "gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:54:30.172176+00:00",
+      "targetHash": "78df5c264986",
+      "sourceHash": "715e69515295",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "circulation-loop",
+          "verdict": "pass",
+          "evidence": "A visible closed path connects B-601 through parallel P-601A/P-601B branches, E-601, the warm-water return to CT-601, and the cold-water return to B-601."
+        },
+        {
+          "id": "makeup-control",
+          "verdict": "pass",
+          "evidence": "MakeupWater is visibly piped through FC valve LV-601 to B-601; LT-601 connects to the basin and electrically to LIC-601, whose pneumatic line reaches LV-601."
+        },
+        {
+          "id": "blowdown-control",
+          "verdict": "pass",
+          "evidence": "The DN25 basin blowdown line visibly passes through FC valve AV-601; AT-601 connects from the basin to AIC-601, whose pneumatic command reaches AV-601."
+        },
+        {
+          "id": "temperature-loop",
+          "verdict": "pass",
+          "evidence": "TT-601 visibly measures at E-601 and connects electrically to TIC-601; TIC-601 shows SP 30 °C and a pneumatic connection to TV-601."
+        },
+        {
+          "id": "fail-positions",
+          "verdict": "pass",
+          "evidence": "LV-601 and AV-601 each visibly show FC, while TV-601 visibly shows FO."
+        },
+        {
+          "id": "duty-standby-pumps",
+          "verdict": "pass",
+          "evidence": "P-601A is visibly labelled Circulating Pump and P-601B is visibly labelled Standby Circulating Pump."
+        }
+      ]
+    }
+  }
+}

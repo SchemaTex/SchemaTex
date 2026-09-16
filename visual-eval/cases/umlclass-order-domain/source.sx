@@ -1,0 +1,15 @@
+%% E-commerce order domain with dependent line items and pricing collaborators.
+classDiagram
+class Order { -id : UUID +place() : void +total() : Money }
+class LineItem { -quantity : int +subtotal() : Money }
+class Product { +sku : String +price : Money }
+class Customer { +email : String }
+class Address { +city : String }
+class TaxPolicy { +calculate() : Money }
+class OrderStatus { PENDING PAID SHIPPED }
+Order "1" *-- "1..*" LineItem : contains
+LineItem "*" --> "1" Product : product
+Customer "1" -- "0..*" Order : places
+Customer o-- "0..*" Address : saves
+Order --> OrderStatus : status
+Order ..> TaxPolicy : calculates tax with

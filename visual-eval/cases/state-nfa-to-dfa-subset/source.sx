@@ -1,0 +1,14 @@
+%% Total DFA over {a,b} accepting exactly the two words ab and ba; Dead absorbs all other prefixes.
+stateDiagram-v2
+  [*] --> Start
+  Start --> SeenA : a
+  Start --> SeenB : b
+  SeenA --> Accept : b
+  SeenA --> Dead : a
+  SeenB --> Accept : a
+  SeenB --> Dead : b
+  Accept --> Dead : a
+  Accept --> Dead : b
+  Dead --> Dead : a
+  Dead --> Dead : b
+  state Accept <<accepting>>

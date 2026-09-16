@@ -1,0 +1,77 @@
+{
+  "id": "siteplan-residential-subdivision",
+  "type": "siteplan",
+  "title": "Willow Grove subdivision",
+  "goal": "Show four serviced lots, roads, setbacks, and utility easement.",
+  "rubric": [
+    {
+      "id": "lots",
+      "severity": "blocker",
+      "must": "Four distinct labelled lots are visibly enclosed within the tract."
+    },
+    {
+      "id": "roads",
+      "severity": "blocker",
+      "must": "Willow Grove Drive and Cedar Lane visibly cross between the lots."
+    },
+    {
+      "id": "setbacks",
+      "severity": "major",
+      "must": "Front and rear setbacks are visibly labelled inside Lot 1."
+    },
+    {
+      "id": "easement",
+      "severity": "blocker",
+      "must": "A continuous 10 ft utility easement is visibly marked through the subdivision."
+    },
+    {
+      "id": "orientation",
+      "severity": "minor",
+      "must": "North arrow, scale, and overall dimension are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly shows four enclosed, individually labelled lots; both named roads cross between them; Lot 1 has labelled front and rear setbacks; a continuous utility easement runs through the subdivision; and the north arrow, graphic scale, and overall dimension are visible. No material overlap or cropping blocks interpretation.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:31:41.452Z",
+      "targetHash": "0198b7c5ad31",
+      "sourceHash": "abcf9551feff",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "lots",
+          "verdict": "pass",
+          "evidence": "Lots 1–4 are individually labelled and enclosed within the tract boundary."
+        },
+        {
+          "id": "roads",
+          "verdict": "pass",
+          "evidence": "Willow Grove Drive crosses horizontally between the lot rows, and Cedar Lane crosses vertically between the lot columns; both are labelled."
+        },
+        {
+          "id": "setbacks",
+          "verdict": "pass",
+          "evidence": "Lot 1 contains labelled 25 ft front and 20 ft rear setback lines."
+        },
+        {
+          "id": "easement",
+          "verdict": "pass",
+          "evidence": "A continuous, labelled 10 ft utility easement runs north–south through the subdivision."
+        },
+        {
+          "id": "orientation",
+          "verdict": "pass",
+          "evidence": "The 300 ft overall dimension, graphic scale, and north arrow are visible."
+        }
+      ]
+    }
+  }
+}

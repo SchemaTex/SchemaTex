@@ -1,0 +1,41 @@
+{
+  "id": "venn-research-fields",
+  "type": "venn",
+  "variant": "venn",
+  "title": "Climate-health-data research overlap",
+  "goal": "A research office can identify an interdisciplinary early-warning opportunity.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Three labelled research-field sets visibly overlap."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The triple intersection is visibly labelled Early-warning systems."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "All three pairwise intersections have visible labels."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Each field has a visible exclusive area label."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The set labels and intersections are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/venn/venn/ideal.svg (07e0f59e6164); rendered and visually reviewed. Three equal translucent circles; every exclusive, pairwise and triple region is labelled inside its exact region, with clearance from boundaries. No areas or counts invented."
+  }
+}

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1208" viewBox="0 0 1060 800">
+  <title>Learning-technology adoption radar</title>
+  <desc>Four learning technologies positioned by maturity increasing rightward and instructional value increasing upward. Bubble area represents relative size: AI feedback assistant 5, Learning management system 9, Virtual reality lab 3, Classroom clickers 4.</desc>
+  <defs>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#1e293b}
+      .title{font-size:22px;font-weight:600}
+      .subtitle{font-size:13px;fill:#475569}
+      .quadrant{font-size:13px;font-weight:600;fill:#475569}
+      .secondary{font-size:11px;fill:#64748b}
+      .name{font-size:12px;font-weight:500}
+      .value{font-size:10.5px;fill:#475569}
+      .axis{font-size:12px;font-weight:600}
+      .end{font-size:11px;fill:#475569}
+      .head{font-size:11px;font-weight:600;letter-spacing:.65px;fill:#475569}
+      .key{font-size:12px}
+      .rule{stroke:#e2e8f0;stroke-width:1}
+      .pilot{fill:#24618c;fill-opacity:.85;stroke:#19465f;stroke-width:1.5}
+      .core{fill:#3f8f7a;fill-opacity:.85;stroke:#2c6657;stroke-width:1.5}
+      .established{fill:#c08a2e;fill-opacity:.85;stroke:#896322;stroke-width:1.5}
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#1e293b"/></marker>
+  </defs>
+  <rect width="1060" height="800" fill="white"/>
+  <text x="48" y="46" class="title">Learning-technology adoption radar</text>
+  <text x="48" y="74" class="subtitle">Bubble area = relative scale. Maturity increases to the right; instructional value increases upward.</text>
+
+  <rect x="132" y="124" width="300" height="300" fill="#E6E9ED"/>
+  <rect x="432" y="124" width="300" height="300" fill="#F6F5F4"/>
+  <rect x="132" y="424" width="300" height="300" fill="#F1F3F6"/>
+  <rect x="432" y="424" width="300" height="300" fill="#FCFBFB"/>
+  <rect x="132" y="124" width="600" height="600" fill="none" class="rule"/>
+  <path d="M432 124V724M132 424H732" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+
+  <text x="148" y="152" class="quadrant">Emerging · High value</text>
+  <text x="148" y="167" class="secondary">Emerging maturity, high instructional value</text>
+  <text x="716" y="152" text-anchor="end" class="quadrant">Mature · High value</text>
+  <text x="716" y="167" text-anchor="end" class="secondary">Mature tools, high instructional value</text>
+  <text x="148" y="690" class="quadrant">Emerging · Low value</text>
+  <text x="148" y="705" class="secondary">Emerging maturity, low instructional value</text>
+  <text x="716" y="690" text-anchor="end" class="quadrant">Mature · Low value</text>
+  <text x="716" y="705" text-anchor="end" class="secondary">Mature tools, low instructional value</text>
+
+  <circle cx="276" cy="256" r="34.286" class="pilot"/>
+  <text x="319" y="254" class="name">AI feedback assistant</text>
+  <text x="319" y="267" class="value">5</text>
+
+  <circle cx="636" cy="232" r="46" class="core"/>
+  <text x="578" y="218" text-anchor="end" class="name">Learning management</text>
+  <text x="578" y="232" text-anchor="end" class="name">system</text>
+  <text x="578" y="245" text-anchor="end" class="value">9</text>
+
+  <circle cx="312" cy="472" r="26.558" class="pilot"/>
+  <text x="347" y="470" class="name">Virtual reality lab</text>
+  <text x="347" y="483" class="value">3</text>
+
+  <circle cx="600" cy="436" r="30.667" class="established"/>
+  <text x="600" y="489" text-anchor="middle" class="name">Classroom clickers</text>
+  <text x="600" y="502" text-anchor="middle" class="value">4</text>
+
+  <path d="M132 724V102M132 724H754" fill="none" stroke="#1e293b" stroke-width="1.25" marker-end="url(#arrow)"/>
+  <path d="M132 124V102" fill="none" stroke="#1e293b" stroke-width="1.25" marker-end="url(#arrow)"/>
+  <text x="104" y="124" transform="rotate(-90 104 124)" text-anchor="end" class="end">High instructional value</text>
+  <text x="104" y="724" transform="rotate(-90 104 724)" class="end">Low instructional value</text>
+  <text x="78" y="424" transform="rotate(-90 78 424)" text-anchor="middle" class="axis">Instructional value</text>
+  <text x="132" y="750" class="end">Emerging</text>
+  <text x="732" y="750" text-anchor="end" class="end">Mature</text>
+  <text x="432" y="774" text-anchor="middle" class="axis">Maturity</text>
+
+  <rect x="776" y="124" width="236" height="404" rx="6" fill="white" class="rule"/>
+  <text x="794" y="150" class="head">CATEGORY</text>
+  <circle cx="801" cy="168" r="6.5" class="pilot"/><text x="814" y="172" class="key">Pilot</text>
+  <circle cx="801" cy="194" r="6.5" class="core"/><text x="814" y="198" class="key">Core</text>
+  <circle cx="801" cy="220" r="6.5" class="established"/><text x="814" y="224" class="key">Established</text>
+  <path d="M794 278H994" class="rule"/>
+  <text x="794" y="306" class="head">RELATIVE SCALE</text>
+  <g fill="none" stroke="#94a3b8" stroke-width="1">
+    <circle cx="846" cy="372" r="46"/>
+    <circle cx="846" cy="383.714" r="34.286"/>
+    <circle cx="846" cy="391.442" r="26.558"/>
+  </g>
+  <path d="M846 326H912M846 349.428H912M846 364.884H912" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="918" y="330" class="value">9</text>
+  <text x="918" y="353.428" class="value">5</text>
+  <text x="918" y="368.884" class="value">3</text>
+  <path d="M794 442H994" class="rule"/>
+  <text x="794" y="470" class="head">PORTFOLIO</text>
+  <text x="794" y="492" font-size="13" font-weight="600">4 learning technologies</text>
+  <text x="794" y="510" class="value">across 3 categories · total scale 21</text>
+</svg>

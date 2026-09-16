@@ -64,14 +64,14 @@ describe("gitgraph renderer (semantic SVG)", () => {
     expect(svg).toContain('data-type="HIGHLIGHT"');
   });
 
-  it("renders tags, rotated commit ids, and a cherry-pick marker", () => {
+  it("renders tags, readable commit ids, and cherry-pick provenance", () => {
     const svg = renderGitGraph(dsl);
     expect(svg).toContain("sx-gg-tag");
     expect(svg).toContain("v0.1");
     expect(svg).toContain("v1.0");
     expect(svg).toContain("sx-gg-id");
-    expect(svg).toContain("rotate(45");
-    expect(svg).toContain("sx-gg-cherry");
+    expect(svg).not.toContain("rotate(45");
+    expect(svg).toContain("sx-gg-edge-cherry-pick");
     expect(svg).toContain("data-cherry-pick");
   });
 

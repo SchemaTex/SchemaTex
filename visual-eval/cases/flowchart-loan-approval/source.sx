@@ -1,0 +1,19 @@
+%% Context: Consumer lending workflow with automated decisioning and manual review.
+flowchart TD
+  A([Application submitted]) --> B[Verify identity]
+  B --> C{Identity verified?}
+  C -->|No| D([Decline application])
+  C -->|Yes| E[(Run credit check)]
+  E --> F{Credit score meets policy?}
+  F -->|Yes| G{Debt-to-income within limit?}
+  F -->|Borderline| H[[Manual underwriting review]]
+  F -->|No| D
+  G -->|Yes| I[Generate loan offer]
+  G -->|No| H
+  H --> J{Request more evidence?}
+  J -->|Yes| K[Collect supporting documents]
+  K -.-> H
+  J -->|No| L{Approved by underwriter?}
+  L -->|Yes| I
+  L -->|No| D
+  I --> M([Offer issued])

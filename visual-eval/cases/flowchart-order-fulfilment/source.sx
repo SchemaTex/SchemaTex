@@ -1,0 +1,21 @@
+%% Context: E-commerce order fulfilment, including payment, inventory, and carrier exceptions.
+flowchart TD
+  A([Order received]) --> B[Validate order]
+  B --> C{Payment authorised?}
+  C -->|No| D[Notify payment failure]
+  D --> E([Order cancelled])
+  C -->|Yes| F[(Reserve inventory)]
+  F --> G{All items available?}
+  G -->|No| H[Offer backorder or refund]
+  H --> I{Customer accepts backorder?}
+  I -->|No| E
+  I -->|Yes| J[Create replenishment order]
+  J -.-> F
+  G -->|Yes| K[[Release pick list]]
+  K ==> L[Pick items]
+  L --> M[Pack and label]
+  M --> N{Carrier collection confirmed?}
+  N -->|No| O[Hold for next collection]
+  O -.-> N
+  N -->|Yes| P>Dispatch shipment]
+  P --> Q([Confirmation sent])

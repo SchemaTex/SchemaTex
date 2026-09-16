@@ -1,0 +1,12 @@
+# Assumptions: branch probabilities are conditional on the preceding path and each function has binary success/failure.
+# Fire detection is followed by suppression and evacuation only where those later functions are relevant.
+eventtree "Fire in process area"
+  initiating FIRE "Fire in process area" freq: 0.01
+  function DET "Fire detection and alarm" p: 0.04
+  function SUP "Automatic fire suppression" p: 0.12
+  function EVAC "Personnel evacuation" p: 0.03
+  outcome s s s -> "Controlled fire; personnel safe"
+  outcome s s f -> "Controlled fire; personnel injury"
+  outcome s f s -> "Escalated fire; personnel safe"
+  outcome s f f -> "Escalated fire; personnel injury"
+  outcome f * * -> "Late-detected fire; major damage"

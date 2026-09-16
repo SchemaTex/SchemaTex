@@ -1,0 +1,41 @@
+# Conveyor operates from START with seal-in; JOG runs only while held.
+# STOP and overload de-energise the conveyor; run lamp follows motor output.
+ladder "Conveyor Start Stop and Jog"
+
+rung 0 "Start-stop seal-in run command":
+  XIO(StopPB)
+  XIO(OverloadTrip)
+  parallel:
+    branch:
+      XIC(StartPB)
+    branch:
+      XIC(ConveyorRun)
+  OTE(ConveyorRun)
+
+rung 1 "Jog command bypasses seal-in":
+  XIO(StopPB)
+  XIO(OverloadTrip)
+  XIC(JogPB)
+  OTE(ConveyorJog)
+
+rung 2 "Motor contactor from run or jog":
+  XIO(StopPB)
+  XIO(OverloadTrip)
+  parallel:
+    branch:
+      XIC(ConveyorRun)
+    branch:
+      XIC(ConveyorJog)
+  OTE(ConveyorMotor)
+
+rung 3 "Run lamp follows motor contactor":
+  XIC(ConveyorMotor)
+  OTE(RunLamp)
+
+rung 4 "Fault lamp on overload":
+  XIC(OverloadTrip)
+  OTE(OverloadLamp)
+
+rung 5 "Stop clears held run command":
+  XIC(StopPB)
+  OTU(ConveyorRun)

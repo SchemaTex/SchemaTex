@@ -1,0 +1,40 @@
+{
+  "id": "sequence-oauth-code-flow",
+  "type": "sequence",
+  "title": "OAuth code flow",
+  "goal": "Show OAuth authorization-code sign-in with PKCE.",
+  "rubric": [
+    {
+      "id": "code-order",
+      "severity": "blocker",
+      "must": "Consent and redirect with code visibly precede Client token request."
+    },
+    {
+      "id": "pkce",
+      "severity": "blocker",
+      "must": "The redirect names PKCE challenge and token request names code and verifier."
+    },
+    {
+      "id": "activation",
+      "severity": "major",
+      "must": "Client and Auth have activation bars."
+    },
+    {
+      "id": "opt",
+      "severity": "major",
+      "must": "An opt frame encloses Userinfo."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note over Client and Auth says Back-channel code exchange."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/sequence/ideal.svg (sha256 c97704a0e340). Vision reviewed all six rasterized targets: distinct call/reply arrowheads, nested frames and operand separators, activation bars, message labels and notes remain readable. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

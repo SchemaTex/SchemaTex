@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+<title>Dedicated EV Charge Point Supply</title>
+<rect width="1600" height="1100" fill="white"/>
+<defs>
+<style>
+text{font-family: 'Helvetica Neue', Helvetica, sans-serif;fill:#15232d} .title{font-size:34px;font-weight:700}.label{font-size:23px;font-weight:700}.value{font-size:21px}.small{font-size:18px}.wire{fill:none;stroke:#15232d;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}.symbol{fill:white;stroke:#15232d;stroke-width:3}.node{fill:#15232d}.pe{fill:none;stroke:#28734d;stroke-width:4}.secondary{fill:none;stroke:#476477;stroke-width:2.5}
+</style>
+</defs>
+<text x="70" y="68" class="title">Dedicated EV Charge Point Supply</text>
+<text x="70" y="105" class="value">230 V AC · 50 Hz · Dedicated 32 A EV final circuit</text>
+<path d="M70 128H1530" stroke="#adb7bc" stroke-width="1.5"/>
+<!-- Service source and neutral return -->
+<path class="wire" d="M150 390V290H445 M150 480V860H1310"/>
+<circle cx="150" cy="435" r="45" class="symbol"/>
+<path class="wire" d="M120 435C130 406 140 406 150 435S170 464 180 435"/>
+<text x="70" y="540" class="label">V1 SERVICE INCOMER</text>
+<text x="70" y="573" class="value">230 V AC, 50 Hz, 100 A</text>
+<text x="166" y="275" class="small">LINE_IN</text>
+<text x="185" y="848" class="small">NEUTRAL (N)</text>
+<!-- Current transformer on uninterrupted incoming line -->
+<ellipse cx="390" cy="290" rx="24" ry="49" class="symbol"/>
+<path class="wire" d="M345 290H490"/>
+<path class="secondary" d="M382 336V645H470V690 M398 336V620H640V690"/>
+<text x="300" y="193" class="label">CT1 LOAD MANAGEMENT CT</text>
+<text x="300" y="226" class="value">100 A : 50 mA, Class 1</text>
+<!-- QF1 main breaker: contacts, opening blade, trip mark -->
+<path class="wire" d="M490 290H555 M620 290H745"/>
+<circle cx="555" cy="290" r="5" class="symbol"/>
+<circle cx="620" cy="290" r="5" class="symbol"/>
+<path class="wire" d="M555 290L609 250 M579 260l10 13 12-9"/>
+<text x="545" y="385" class="label">QF1 EV MAIN BREAKER</text>
+<text x="545" y="417" class="value">40 A, C-curve, 10 kA</text>
+<text x="458" y="275" class="small">LINE_CT</text>
+<!-- RCD switch -->
+<circle cx="745" cy="290" r="5" class="symbol"/>
+<circle cx="810" cy="290" r="5" class="symbol"/>
+<path class="wire" d="M745 290L799 250 M810 290H965"/>
+<text x="753" y="237" class="small">ΔI</text>
+<text x="770" y="488" class="label">Q1 TYPE B RCD</text>
+<text x="770" y="520" class="value">40 A, 30 mA, Type B</text>
+<path d="M778 323V454" fill="none" stroke="#9ca9b0" stroke-width="1.5"/>
+<text x="640" y="275" class="small">LINE_MCB</text>
+<!-- Local isolator -->
+<circle cx="965" cy="290" r="5" class="symbol"/>
+<circle cx="1030" cy="290" r="5" class="symbol"/>
+<path class="wire" d="M965 290L1019 250 M1030 290H1210V440H1250"/>
+<text x="982" y="385" class="label">S1 EV ISOLATOR</text>
+<text x="982" y="417" class="value">40 A, 2-pole, AC-22A</text>
+<text x="835" y="275" class="small">LINE_RCD</text>
+<text x="1085" y="275" class="small">LINE_EV</text>
+<!-- EV charge point -->
+<rect x="1250" y="395" width="290" height="270" rx="0" class="symbol"/>
+<text x="1395" y="498" text-anchor="middle" class="label">U1</text>
+<text x="1395" y="533" text-anchor="middle" class="label">EV CHARGE POINT</text>
+<text x="1395" y="572" text-anchor="middle" class="value">230 V, 32 A, 7.4 kW</text>
+<text x="1266" y="448" class="small">L</text>
+<path class="wire" d="M1310 665V860"/>
+<text x="1310" y="648" text-anchor="middle" class="small">N</text>
+<text x="1470" y="648" text-anchor="middle" class="small">PE</text>
+<circle cx="1250" cy="440" r="4" class="node"/>
+<circle cx="1310" cy="665" r="4" class="node"/>
+<!-- Load manager and isolated CT secondary pair -->
+<rect x="435" y="690" width="350" height="130" class="symbol"/>
+<text x="470" y="716" text-anchor="middle" class="small">S1</text>
+<text x="640" y="716" text-anchor="middle" class="small">S2</text>
+<text x="610" y="754" text-anchor="middle" class="label">U2 LOAD MANAGER</text>
+<text x="610" y="790" text-anchor="middle" class="value">230 V, 100 A monitored</text>
+<text x="475" y="639" class="small">CT_S1</text>
+<text x="653" y="658" class="small">CT_S2</text>
+<!-- Protective earth conductor and main earth terminal -->
+<path class="pe" d="M1470 665V940H390"/>
+<circle cx="1470" cy="665" r="4" fill="#28734d"/>
+<text x="1040" y="912" class="label">W1 PROTECTIVE EARTH</text>
+<text x="1040" y="977" class="value">10 mm² Cu CPC</text>
+<text x="1485" y="908" class="small">PE</text>
+<rect x="350" y="920" width="40" height="40" class="symbol"/>
+<circle cx="370" cy="940" r="11" class="symbol"/>
+<path class="wire" d="M362 948L378 932"/>
+<path class="pe" d="M350 940H265V995"/>
+<path class="wire" d="M237 995H293 M245 1006H285 M254 1017H276"/>
+<text x="70" y="967" class="small">EARTH</text>
+<text x="435" y="984" class="label">T2 MAIN EARTH TERMINAL</text>
+<text x="435" y="1016" class="value">100 A earth terminal · PE</text>
+<path d="M70 1045H1530" stroke="#adb7bc" stroke-width="1.5"/>
+<text x="70" y="1077" class="small">Supply path: service incomer → CT → main breaker → Type B RCD → local isolator → EV charge point</text>
+</svg>

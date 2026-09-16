@@ -1,0 +1,87 @@
+{
+  "id": "flowchart-order-fulfilment",
+  "type": "flowchart",
+  "title": "Order fulfilment",
+  "goal": "Show a complete e-commerce order path from intake through dispatch with realistic exceptions.",
+  "rubric": [
+    {
+      "id": "payment-gate",
+      "severity": "blocker",
+      "must": "A payment-authorisation decision visibly sends a No branch to a cancelled-order terminator."
+    },
+    {
+      "id": "stock-gate",
+      "severity": "blocker",
+      "must": "An inventory-availability decision visibly separates the pick-and-pack path from a backorder-or-refund path."
+    },
+    {
+      "id": "fulfilment-mainline",
+      "severity": "major",
+      "must": "The successful path visibly runs from reserved inventory through pick list, picking, packing, carrier collection, and dispatch."
+    },
+    {
+      "id": "backorder-loop",
+      "severity": "major",
+      "must": "A customer-accepted backorder visibly loops back toward inventory reservation."
+    },
+    {
+      "id": "carrier-exception",
+      "severity": "major",
+      "must": "A failed carrier collection visibly leads to a hold step that loops back to collection confirmation."
+    },
+    {
+      "id": "readable-labels",
+      "severity": "minor",
+      "must": "Decision branches are visibly labelled so the success and failure outcomes can be distinguished."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a complete, traceable order flow from intake through dispatch, with visible payment, inventory, backorder, and carrier exceptions. Labels are readable and branches are marked; no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:15:15.329Z",
+      "targetHash": "e30266a78021",
+      "sourceHash": "f918a0e41d37",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "payment-gate",
+          "verdict": "pass",
+          "evidence": "“Payment authorised?” has a labelled No branch to “Notify payment failure,” then to the “Order cancelled” terminator."
+        },
+        {
+          "id": "stock-gate",
+          "verdict": "pass",
+          "evidence": "“All items available?” separates a labelled Yes branch into “Release pick list” and a No branch into “Offer backorder or refund.”"
+        },
+        {
+          "id": "fulfilment-mainline",
+          "verdict": "pass",
+          "evidence": "The Yes path from inventory reservation proceeds through release pick list, pick items, pack and label, carrier collection confirmation, and dispatch shipment."
+        },
+        {
+          "id": "backorder-loop",
+          "verdict": "pass",
+          "evidence": "Accepting the backorder leads to “Create replenishment order,” with a dashed rework loop returning toward “Reserve inventory.”"
+        },
+        {
+          "id": "carrier-exception",
+          "verdict": "pass",
+          "evidence": "The No branch from “Carrier collection confirmed?” leads to “Hold for next collection,” whose dashed loop returns to the collection decision."
+        },
+        {
+          "id": "readable-labels",
+          "verdict": "pass",
+          "evidence": "Decision branches are visibly marked Yes and No, and the labels and flowchart text are readable."
+        }
+      ]
+    }
+  }
+}

@@ -1,8 +1,11 @@
+import { pointOnRoute } from "./routing";
 /**
  * Network topology — SVG renderer.
  *
  * Spec: docs/reference/35-NETWORK-STANDARD.md §3, §6, §8.
  */
+import { LABEL_GAP, edgeLabelObstacles, labelEdgeAnchor, labelLeader, placeLabel, type LabelBox } from "../../core/label-placement";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 import type { RenderConfig, SceneItem } from "../../core/types";
 import {
@@ -19,40 +22,56 @@ import {
 } from "../../core/svg";
 import { resolveNetworkTheme, type NetworkTokens, type ResolvedTheme } from "../../core/theme";
 import { parseNetwork } from "./parser";
-import { layoutNetwork, NET_CONST as C } from "./layout";
+import { layoutNetwork, deviceCaption, deviceLabelLines, NET_CONST as C } from "./layout";
 import { drawDeviceIcon, isCloudKind } from "./symbols";
 import type { DeviceBox, GroupBox, LinkGeom, NetworkAst, NetworkLayoutResult, NetworkLink } from "./types";
 import { resolveSceneTitle } from "../../core/title-scene";
 
 type Theme = ResolvedTheme<NetworkTokens>;
 
+// Two pixels above and below the font envelope include descenders and the text halo.
+const LABEL_VERTICAL_PADDING = 4;
+
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 function buildCss(t: Theme): string {
+  // Opaque tint derived from the existing theme: overlapping VM tiles and
+  // camera housings must hide the strokes behind them, not show through.
+  const panelFill = "#" + [1, 3, 5].map(offset => Math.round(
+    parseInt(t.deviceStroke.slice(offset, offset + 2), 16) * .12 +
+    parseInt(t.deviceFill.slice(offset, offset + 2), 16) * .88,
+  ).toString(16).padStart(2, "0")).join("");
   return `
-.sx-net { font-family: system-ui, -apple-system, sans-serif; }
-.sx-net-body { fill: ${t.deviceFill}; stroke: ${t.deviceStroke}; stroke-width: 2; }
+.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: ${t.deviceFill}; stroke: ${t.deviceStroke}; stroke-width: 1.4; }
 .sx-net-detail { fill: none; stroke: ${t.deviceStroke}; stroke-width: 1; }
 .sx-net-glyph { fill: ${t.deviceAccent}; stroke: none; }
 .sx-net-glyph-line { fill: none; stroke: ${t.deviceAccent}; stroke-width: 1.4; }
-.sx-net-icontext { font: 700 8px sans-serif; fill: ${t.deviceAccent}; }
-.sx-net-icontag { font: 700 8px sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
-.sx-net-cloud-body { fill: ${t.cloudFill}; stroke: ${t.cloudStroke}; stroke-width: 2; }
-.sx-net-cloudtext { font: 600 13px sans-serif; fill: ${t.text}; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: ${t.deviceAccent}; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: ${panelFill}; stroke-width: 1; }
+.sx-net-screen { fill: ${panelFill}; stroke: none; }
+.sx-net-port-solid { fill: ${t.deviceStroke}; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: ${t.cloudFill}; stroke: ${t.cloudStroke}; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: ${t.text}; }
 .sx-net-bus { stroke: ${t.deviceStroke}; stroke-width: 4; stroke-linecap: round; }
-.sx-net-label { font: 12px sans-serif; fill: ${t.label}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
-.sx-net-sublabel { font: 10px sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
-.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: ${t.label}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
 .sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
 .sx-net-link-lag { stroke-width: 3; }
-.sx-net-linklabel { font: 9px sans-serif; fill: ${t.linkLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
-.sx-net-port { font: 8px sans-serif; fill: ${t.linkLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: ${t.linkLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: ${t.linkLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
 .sx-net-boundary-site { fill: none; stroke: ${t.siteStroke}; stroke-width: 1.5; }
 .sx-net-boundary-rack { fill: none; stroke: ${t.siteStroke}; stroke-width: 1.5; stroke-dasharray: 1 2; }
 .sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: ${t.subnetFill}; stroke: ${t.subnetStroke}; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
 .sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: ${t.zoneStroke}; stroke-width: 1.2; stroke-dasharray: 5 3; }
-.sx-net-boundary-label { font: 600 10px sans-serif; }
-.sx-net-title { font: 700 16px sans-serif; fill: ${t.text}; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: ${t.text}; }
 `.trim();
 }
 
@@ -98,21 +117,24 @@ function arrowHead(x1: number, y1: number, x2: number, y2: number, color: string
   });
 }
 
-function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): string {
+function renderLink(lg: LinkGeom, t: Theme, occupied: LabelBox[], boundaries: readonly GroupBox[], scene?: SceneItem[], index = 0, otherWires: readonly LabelBox[] = []): string {
   const { link } = lg;
-  const p1 = lg.points[0]!;
-  const p2 = lg.points[lg.points.length - 1]!;
   const color = linkColor(t, link);
   const cls = `sx-net-link sx-net-link-${link.linkType}`;
   const parts: string[] = [];
 
   if (link.linkType === "lag") {
-    // double line: two parallel offsets perpendicular to the run
-    const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x) + Math.PI / 2;
-    const ox = 1.8 * Math.cos(ang);
-    const oy = 1.8 * Math.sin(ang);
-    parts.push(line({ class: cls, stroke: color, x1: r2(p1.x + ox), y1: r2(p1.y + oy), x2: r2(p2.x + ox), y2: r2(p2.y + oy) }));
-    parts.push(line({ class: cls, stroke: color, x1: r2(p1.x - ox), y1: r2(p1.y - oy), x2: r2(p2.x - ox), y2: r2(p2.y - oy) }));
+    // Offset the complete routed polyline, including its bends.
+    for(const offset of [-1.8,1.8]) {
+      const points=lg.points.map((p,i)=>{
+        const before=lg.points[Math.max(0,i-1)],after=lg.points[Math.min(lg.points.length-1,i+1)];
+        const normal=(a:typeof p,b:typeof p)=>{const len=Math.hypot(b.x-a.x,b.y-a.y)||1;return {x:-(b.y-a.y)/len,y:(b.x-a.x)/len};};
+        const n1=i?normal(before,p):normal(p,after),n2=i<lg.points.length-1?normal(p,after):n1;
+        const divisor=Math.max(.5,1+n1.x*n2.x+n1.y*n2.y);
+        return `${r2(p.x+offset*(n1.x+n2.x)/divisor)},${r2(p.y+offset*(n1.y+n2.y)/divisor)}`;
+      });
+      parts.push(el("polyline",{class:cls,stroke:color,points:points.join(" ")}));
+    }
   } else if (scene) {
     parts.push(el("path", {
       class: cls,
@@ -125,30 +147,59 @@ function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): str
     parts.push(el("polyline", { class: cls, stroke: color, points: lg.points.map((p) => `${r2(p.x)},${r2(p.y)}`).join(" ") }));
   }
 
-  if (link.directed) parts.push(arrowHead(p1.x, p1.y, p2.x, p2.y, color));
+  if (link.directed) { const before=lg.points[lg.points.length-3],tip=lg.points[lg.points.length-2]; parts.push(arrowHead(before.x, before.y, tip.x, tip.y, color)); }
 
   // fiber slash ticks
   if (link.linkType === "fiber") {
-    const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x) + Math.PI / 2;
     for (const f of [0.4, 0.55]) {
-      const mx = p1.x + (p2.x - p1.x) * f;
-      const my = p1.y + (p2.y - p1.y) * f;
+      const {point,previous,next}=pointOnRoute(lg.points,f);
+      const ang=Math.atan2(next.y-previous.y,next.x-previous.x)+Math.PI/2;
+      const mx=point.x,my=point.y;
       parts.push(line({ class: cls, stroke: color, x1: r2(mx - 3 * Math.cos(ang)), y1: r2(my - 3 * Math.sin(ang)), x2: r2(mx + 3 * Math.cos(ang)), y2: r2(my + 3 * Math.sin(ang)) }));
     }
   }
 
-  // mid-link annotation
+  // Use the same measured boxes for placement, painted labels and scene metadata.
+  const place = (label: string, x: number, baseline: number, fontSize: number, cls: string, editable = false): LabelBox => {
+    const size = { width: estimateTextWidth(label, fontSize), height: fontSize + LABEL_VERTICAL_PADDING };
+    const anchor = labelEdgeAnchor({ x, y: baseline - fontSize / 2 }, lg.points).point;
+    // A crossing link's label belongs to the innermost boundary at its anchor.
+    const container = boundaries.find((g) => g.group.kind !== "vlan" && anchor.x >= g.x && anchor.x <= g.x + g.w &&
+      anchor.y >= g.y && anchor.y <= g.y + g.h);
+    // Reserve the title band as well as the boundary stroke and label gap.
+    const bounds = container ? { x: container.x + LABEL_GAP + 1, y: container.y + 17 + LABEL_GAP,
+      width: container.w - 2 * (LABEL_GAP + 1), height: container.h - 18 - 2 * LABEL_GAP } : undefined;
+    // A label may sit on its own wire (the text halo makes a readable gap),
+    // but must still clear other wires. Restrict container search to the local
+    // channel: a boundary corner is not a meaningful annotation anchor.
+    const local = bounds ? {
+      x:Math.max(bounds.x,anchor.x-size.width/2-48),
+      y:Math.max(bounds.y,anchor.y-size.height/2-32),
+      width:0,height:0,
+    } : undefined;
+    if(local && bounds) {
+      local.width=Math.max(size.width,Math.min(bounds.x+bounds.width,anchor.x+size.width/2+48)-local.x);
+      local.height=Math.max(size.height,Math.min(bounds.y+bounds.height,anchor.y+size.height/2+32)-local.y);
+    }
+    const box = placeLabel(anchor, size, [...occupied,...otherWires], labelEdgeAnchor(anchor, lg.points).direction, local);
+    occupied.push(box);
+    const leader = labelLeader(box, lg.points);
+    if (leader) {
+      parts.push(line({ x1: leader.from.x, y1: leader.from.y, x2: leader.to.x, y2: leader.to.y, stroke: color, "stroke-width": 1 }));
+      occupied.push(...edgeLabelObstacles([leader.from, leader.to]));
+    }
+    parts.push(textEl({
+      class: cls, x: r2(box.x + box.width / 2), y: r2(box.y + box.height / 2 + fontSize / 2), "text-anchor": "middle",
+      "data-sx-key": scene && editable ? `edge:${index}:label` : undefined,
+      "data-sx-role": scene && editable ? "label" : undefined,
+      "data-sx-live-midpoint": scene && cls === "sx-net-linklabel" ? "true" : undefined,
+    }, label));
+    return box;
+  };
   const ann = annotation(link);
-  if (ann) parts.push(textEl({
-    class: "sx-net-linklabel", x: r2(lg.labelX), y: r2(lg.labelY - 3), "text-anchor": "middle",
-    "data-sx-key": scene && link.labelSourceRange ? `edge:${index}:label` : undefined,
-    "data-sx-role": scene && link.labelSourceRange ? "label" : undefined,
-    "data-sx-live-midpoint": scene ? "true" : undefined,
-  }, ann));
-
-  // port labels near endpoints
-  if (link.portNear) parts.push(textEl({ class: "sx-net-port", x: r2(p1.x + (p2.x - p1.x) * 0.16), y: r2(p1.y + (p2.y - p1.y) * 0.16 - 3), "text-anchor": "middle" }, link.portNear));
-  if (link.portFar) parts.push(textEl({ class: "sx-net-port", x: r2(p2.x + (p1.x - p2.x) * 0.16), y: r2(p2.y + (p1.y - p2.y) * 0.16 - 3), "text-anchor": "middle" }, link.portFar));
+  const annotationBox = ann ? place(ann, lg.labelX, lg.labelY - 3, 9, "sx-net-linklabel", link.labelSourceRange !== undefined) : undefined;
+  if (link.portNear) place(link.portNear, pointOnRoute(lg.points,0.16).point.x, pointOnRoute(lg.points,0.16).point.y - 3, 8, "sx-net-port");
+  if (link.portFar) place(link.portFar, pointOnRoute(lg.points,0.84).point.x, pointOnRoute(lg.points,0.84).point.y - 3, 8, "sx-net-port");
 
   if (scene) {
     scene.push({
@@ -161,6 +212,7 @@ function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): str
       scene.push({
         key: `edge:${index}:label`, kind: "label", label: link.label,
         sourceRange: link.labelSourceRange,
+        bbox: annotationBox,
         editable: { label: true, position: "none" },
       });
     }
@@ -178,7 +230,8 @@ function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): str
         "data-sx-live-explicit": "true",
         "data-sx-live-start": link.from,
         "data-sx-live-end": link.to,
-        "data-sx-live-mode": "orthogonal",
+        "data-sx-live-mode": lg.points.every((p, i) => i === 0 || p.x === lg.points[i - 1].x || p.y === lg.points[i - 1].y)
+          ? "orthogonal" : "sampled",
       } : {}),
     },
     parts,
@@ -186,6 +239,11 @@ function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): str
 }
 
 // ── boundaries ───────────────────────────────────────────────────
+
+function boundaryLabel(gb: GroupBox): string {
+  const label = gb.group.label ?? gb.group.id;
+  return gb.group.kind === "vlan" && !/^vlan\b/i.test(label.trimStart()) ? `VLAN ${label}` : label;
+}
 
 function renderGroup(gb: GroupBox, t: Theme): string {
   const k = gb.group.kind;
@@ -195,11 +253,11 @@ function renderGroup(gb: GroupBox, t: Theme): string {
       : k === "subnet" || k === "vlan" ? t.subnetStroke
         : t.siteStroke;
   const label = gb.group.label ?? gb.group.id;
-  const tag = k === "vlan" ? `VLAN ${label}` : label;
+  const tag = boundaryLabel(gb);
   return group(
     { class: "sx-net-boundary", "data-kind": k, "data-label": escapeXml(label) },
     [
-      rect({ class: cls, x: r2(gb.x), y: r2(gb.y), width: r2(gb.w), height: r2(gb.h), rx: 8, ry: 8 }),
+      rect({ class: cls, x: r2(gb.x), y: r2(gb.y), width: r2(gb.w), height: r2(gb.h), rx: k === "vlan" ? 3 : 8, ry: k === "vlan" ? 3 : 8 }),
       textEl({ class: "sx-net-boundary-label", fill: labelColor, x: r2(gb.x + C.GROUP_LABEL_INSET), y: r2(gb.y + 13) }, tag),
     ],
   );
@@ -212,13 +270,15 @@ function renderDevice(b: DeviceBox, t: Theme, scene?: SceneItem[]): string {
   const parts: string[] = [drawDeviceIcon(d, { x: b.x, y: b.y, w: b.w, h: b.h })];
 
   if (!isCloudKind(d.kind)) {
-    const labelY = b.y + b.h + C.LABEL_GAP + 11;
-    parts.push(textEl({
-      class: "sx-net-label", x: r2(b.cx), y: r2(labelY), "text-anchor": "middle",
-      "data-sx-role": scene && d.labelSourceRange ? "label" : undefined,
-    }, d.label ?? d.id));
+    const caption=deviceCaption(b);
+    const labelY = caption.baseline, labelX=caption.x+caption.width/2;
+    const lines=deviceLabelLines(d);
+    parts.push(...lines.map((label,i)=>textEl({
+      class: "sx-net-label", x:r2(labelX),y:r2(labelY+i*C.LABEL_H),"text-anchor":"middle",
+      "data-sx-role":scene&&d.labelSourceRange?"label":undefined,
+    },label)));
     const sub = d.ip ?? d.model;
-    if (sub) parts.push(textEl({ class: "sx-net-sublabel", x: r2(b.cx), y: r2(labelY + C.SUBLABEL_H), "text-anchor": "middle" }, sub));
+    if (sub) parts.push(textEl({ class: "sx-net-sublabel", x: r2(labelX), y: r2(labelY + (lines.length-1)*C.LABEL_H + C.SUBLABEL_H), "text-anchor": "middle" }, sub));
   }
 
   const attrs: Record<string, string | number | undefined> = {
@@ -275,24 +335,51 @@ export function renderNetworkLayout(layout: NetworkLayoutResult, config?: Render
     children.push(textEl({ x: r2(title.x), y: r2(title.y), class: "sx-net-title", "text-anchor": "middle", ...title.attrs }, layout.title));
   }
 
+  const occupied: LabelBox[] = [
+    ...layout.devices.flatMap((device) => {
+      const boxes = [{ x: device.x, y: device.y, width: device.w, height: device.h }];
+      if (!isCloudKind(device.device.kind)) {
+        const caption=deviceCaption(device);
+        boxes.push({x:caption.x,y:caption.y,width:caption.width,height:caption.height+LABEL_VERTICAL_PADDING});
+      }
+      return boxes;
+    }),
+    ...layout.groups.map((g) => ({ x: g.x + C.GROUP_LABEL_INSET, y: g.y + 3,
+      width: estimateTextWidth(boundaryLabel(g), 10, { fontWeight: 600 }), height: 10 + LABEL_VERTICAL_PADDING })),
+    ...layout.groups.flatMap((g) => [
+      { x: g.x - 1, y: g.y - 1, width: g.w + 2, height: 2 },
+      { x: g.x - 1, y: g.y + g.h - 1, width: g.w + 2, height: 2 },
+      { x: g.x - 1, y: g.y - 1, width: 2, height: g.h + 2 },
+      { x: g.x + g.w - 1, y: g.y - 1, width: 2, height: g.h + 2 },
+    ]),
+  ];
+
   const body: string[] = [];
   // boundaries behind, outermost first
   const sortedGroups = [...layout.groups].sort((a, b) => a.depth - b.depth);
   body.push(group({ class: "sx-net-boundaries" }, sortedGroups.map((g) => renderGroup(g, t))));
-  body.push(group({ class: "sx-net-links" }, layout.links.map((l, i) => renderLink(l, t, config?.__scene, i))));
+  const labelBoundaries = [...sortedGroups].reverse();
+  body.push(group({ class: "sx-net-links" }, layout.links.map((l, i) => {
+    const a=layout.devices.find(d=>d.device.id===l.link.from)!,b=layout.devices.find(d=>d.device.id===l.link.to)!;
+    const visible={...l,points:[{x:a.cx,y:a.cy},...l.points,{x:b.cx,y:b.cy}]};
+    return renderLink(visible, t, occupied, labelBoundaries, config?.__scene, i, layout.links.flatMap((other,j)=>j===i?[]:edgeLabelObstacles(other.points)));
+  })));
   body.push(group({ class: "sx-net-devices" }, layout.devices.map((b) => renderDevice(b, t, config?.__scene))));
 
   children.push(titleBand ? group({ transform: `translate(0, ${titleBand})` }, body) : group({}, body));
 
-  const height = layout.height + titleBand;
+  const left = Math.min(0, ...occupied.map((box) => box.x - C.PAD));
+  const top = Math.min(0, ...occupied.map((box) => box.y - C.PAD));
+  const width = Math.max(layout.width, ...occupied.map((box) => box.x + box.width + C.PAD)) - left;
+  const height = Math.max(layout.height, ...occupied.map((box) => box.y + box.height + C.PAD)) - top + titleBand;
   return svgRoot(
     {
       class: "sx-net",
       role: "img",
       "aria-label": escapeXml(layout.title ?? "Network diagram"),
-      width: r2(layout.width),
+      width: r2(width),
       height: r2(height),
-      viewBox: `0 0 ${r2(layout.width)} ${r2(height)}`,
+      viewBox: `${r2(left)} ${r2(top)} ${r2(width)} ${r2(height)}`,
       "data-diagram-type": "network",
     },
     children,

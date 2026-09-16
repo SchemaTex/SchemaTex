@@ -71,8 +71,9 @@ function cell(name: string): string {
       ? "uae"
       : "iso";
   const drawing = def.draw({ hand, profile });
+  const w = def.viewWidth ?? 24;
   return `<article class="tile">
-    <svg width="112" height="112" viewBox="0 0 24 24" role="img" aria-label="${name}">${drawing}</svg>
+    <svg width="${(112 * w) / 24}" height="112" viewBox="0 0 ${w} 24" role="img" aria-label="${name}">${drawing}</svg>
     <div><strong>${name}</strong><small>${def.code || "profile / structural"} · ${def.sheetMm} mm</small></div>
   </article>`;
 }

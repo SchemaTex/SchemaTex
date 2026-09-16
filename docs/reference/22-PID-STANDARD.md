@@ -211,10 +211,10 @@ ISA-5.1 规定 instrument 符号为 **圆形 bubble**，根据**位置**（field
 
 | Location \ Type | Discrete / Analog (one instrument) | Shared Display / Shared Control (DCS/SCADA) |
 |---|---|---|
-| **Field mounted** | 圆 `r=10`，无横线 | 圆 + 内接六边形 |
-| **Main control panel — front** | 圆 + 水平穿线 | 圆 + 内接六边形 + 水平穿线 |
-| **Main control panel — rear (aux)** | 圆 + 两条水平穿线 | 圆 + 六边形 + 双穿线 |
-| **Local panel mounted** | 圆 + 虚线横线 | 圆 + 六边形 + 虚线横线 |
+| **Field mounted** | 圆 `r=10`，无横线 | 圆内切于正方形 |
+| **Main control panel — front** | 圆 + 水平穿线 | 圆内切于正方形 + 水平穿线 |
+| **Main control panel — rear (aux)** | 圆 + 两条水平穿线 | 圆内切于正方形 + 双穿线 |
+| **Local panel mounted** | 圆 + 虚线横线 | 圆内切于正方形 + 虚线横线 |
 
 | Location \ Type | Computer Function | Programmable Logic (PLC) |
 |---|---|---|

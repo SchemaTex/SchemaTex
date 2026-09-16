@@ -1,0 +1,41 @@
+{
+  "id": "timeline-company-milestones",
+  "type": "timeline",
+  "variant": "swimlane",
+  "title": "Company milestones",
+  "goal": "Show a company history from founding to the present in clearly labelled eras.",
+  "rubric": [
+    {
+      "id": "era-sections",
+      "severity": "blocker",
+      "must": "Founding, Growth, and Platform eras are visibly separated across the timeline."
+    },
+    {
+      "id": "chronological-milestones",
+      "severity": "blocker",
+      "must": "Founding, financing, user-growth, platform launch, and AI-suite milestone events appear in chronological order."
+    },
+    {
+      "id": "present-event",
+      "severity": "major",
+      "must": "A present operating-plan event is visibly placed at the end of the timeline."
+    },
+    {
+      "id": "milestone-emphasis",
+      "severity": "major",
+      "must": "Founding, financing, user-growth, and AI-suite events use visually stronger milestone markers."
+    },
+    {
+      "id": "dated-events",
+      "severity": "minor",
+      "must": "Events visibly carry readable dates."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 满足两个 blocker，并清楚呈现末端 operating-plan、重点 milestone 标记和可读日期；Image 2 缺少规定的 era 与关键事件。"
+  }
+}

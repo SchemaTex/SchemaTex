@@ -1,0 +1,78 @@
+{
+  "id": "matrix-eisenhower-ops",
+  "type": "matrix",
+  "variant": "quadrant",
+  "title": "Hospital operations Eisenhower matrix",
+  "goal": "An operations manager can separate urgent work from important work at a glance.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "All four Eisenhower action quadrants are visibly labelled."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Each named work item is positioned in a clear urgency-importance quadrant."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Urgency and importance axes are visibly directional."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "At least one item is visible in each action type."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Labels remain readable in the plot."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all five work items in clear quadrants, directional urgency and importance axes, and readable labels. Each action type has at least one item; no material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:27:39.176Z",
+      "targetHash": "dcc98e219073",
+      "sourceHash": "11e985f11438",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "All four quadrants are labelled: Schedule, Do now, Eliminate, and Delegate."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Restore medication scanner and Approve staffing roster are in the high-importance, high-urgency quadrant; Review infection dashboard is high-importance, low-urgency; Reply to vendor survey is low-importance, high-urgency; Reformat old slides is low-importance, low-urgency."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Urgency increases to the right, indicated by the right-pointing horizontal axis arrow; importance increases upward, indicated by the upward vertical axis arrow."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "The Schedule, Do now, Delegate, and Eliminate quadrants each contain at least one work item."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "All five work-item labels are readable within the plot, with no visible material overlap or cropping."
+        }
+      ]
+    }
+  }
+}

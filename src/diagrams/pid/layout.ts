@@ -8,6 +8,7 @@ import type {
   PidLayoutResult,
   PidLine,
 } from "./types";
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 import { applyPins } from "../../core/editing";
 
 const PADDING = 30;
@@ -16,7 +17,7 @@ const EQUIP_GAP_MAIN = 76;
 const EQUIP_GAP_LANE = 54;
 const INST_RADIUS = 14;
 const INST_OFFSET = 38; // distance from equipment edge to instrument
-const FIELD_INSTRUMENT_CLEARANCE = 62; // clears the equipment tag below the symbol
+const FIELD_INSTRUMENT_CLEARANCE = 76; // clears the equipment tag below the symbol
 const BACK_EDGE_GAP = 28;
 
 const PROCESS_LINE_TYPES = new Set(["process", "process_minor"]);
@@ -203,6 +204,10 @@ function manhattanPath(
   // For vertical exits (top/bottom) we route V → H → V.
   const isHFrom = fromSide === "left" || fromSide === "right";
   const isHTo = toSide === "left" || toSide === "right";
+  if (Math.abs(fromX - toX) < 0.5 || Math.abs(fromY - toY) < 0.5) {
+    return { d: `M ${fromX} ${fromY} L ${toX} ${toY}`, midX: (fromX + toX) / 2, midY: (fromY + toY) / 2 };
+  }
+
 
   if (isHFrom && isHTo) {
     const midX = (fromX + toX) / 2;
@@ -212,27 +217,17 @@ function manhattanPath(
       midY: (fromY + toY) / 2,
     };
   }
+  const leadFromY = fromY + (fromSide === "bottom" ? 10 : -10);
+  const leadToY = toY + (toSide === "bottom" ? 10 : -10);
   if (!isHFrom && !isHTo) {
-    const midY = (fromY + toY) / 2;
-    return {
-      d: `M ${fromX} ${fromY} L ${fromX} ${midY} L ${toX} ${midY} L ${toX} ${toY}`,
-      midX: (fromX + toX) / 2,
-      midY,
-    };
+    const midX = (fromX + toX) / 2;
+    return { d: `M ${fromX} ${fromY} L ${fromX} ${leadFromY} L ${midX} ${leadFromY} L ${midX} ${leadToY} L ${toX} ${leadToY} L ${toX} ${toY}`, midX, midY: (leadFromY + leadToY) / 2 };
   }
-  // Mixed: simple L-shape.
   if (isHFrom) {
-    return {
-      d: `M ${fromX} ${fromY} L ${toX} ${fromY} L ${toX} ${toY}`,
-      midX: toX,
-      midY: (fromY + toY) / 2,
-    };
+    return { d: `M ${fromX} ${fromY} L ${fromX + (fromSide === "right" ? 20 : -20)} ${fromY} L ${fromX + (fromSide === "right" ? 20 : -20)} ${leadToY} L ${toX} ${leadToY} L ${toX} ${toY}`, midX: (fromX + toX) / 2, midY: leadToY };
   }
-  return {
-    d: `M ${fromX} ${fromY} L ${fromX} ${toY} L ${toX} ${toY}`,
-    midX: (fromX + toX) / 2,
-    midY: toY,
-  };
+  const approachX = toX + (toSide === "left" ? -20 : 20);
+  return { d: `M ${fromX} ${fromY} L ${fromX} ${leadFromY} L ${approachX} ${leadFromY} L ${approachX} ${toY} L ${toX} ${toY}`, midX: (fromX + approachX) / 2, midY: leadFromY };
 }
 
 export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number }>): PidLayoutResult {
@@ -249,14 +244,14 @@ export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number
   );
   const maxWidth = Math.max(
     60,
-    ...ast.equipment.map((equip) => GEOMETRY[equip.equipType]?.width ?? 60)
+    ...ast.equipment.map((equip) => Math.max(GEOMETRY[equip.equipType]?.width ?? 60, Math.min(150, estimateTextWidth(equip.tag ?? equip.id, 11, { fontWeight: 600 })) + 12))
   );
   const maxHeight = Math.max(
     60,
     ...ast.equipment.map((equip) => GEOMETRY[equip.equipType]?.height ?? 60)
   );
   const laneStep =
-    (isLR ? maxHeight : maxWidth) + EQUIP_GAP_LANE;
+    (isLR ? maxHeight + 30 : maxWidth) + EQUIP_GAP_LANE;
   const acrossCenter =
     PADDING +
     TITLE_AREA +
@@ -273,7 +268,7 @@ export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number
       40,
       ...group.map((equip) => {
         const geo = GEOMETRY[equip.equipType] ?? { width: 60, height: 40, ports: {} };
-        return isLR ? geo.width : geo.height;
+        return isLR ? Math.max(geo.width, Math.min(150, estimateTextWidth(equip.tag ?? equip.id, 11, { fontWeight: 600 })) + 12) : geo.height + 30;
       })
     );
     rankMain.set(rank, mainCursor + mainSpan / 2);
@@ -432,10 +427,9 @@ export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number
     Math.abs(a.cy - b.cy) < INST_RADIUS;
   const sortedByX = [...instruments].sort((a, b) => a.cx - b.cx);
   for (let i = 1; i < sortedByX.length; i++) {
-    const prev = sortedByX[i - 1]!;
     const cur = sortedByX[i]!;
-    if (sameYRow(prev, cur) && cur.cx < prev.cx + INST_FANOUT) {
-      cur.cx = prev.cx + INST_FANOUT;
+    for (const prev of sortedByX.slice(0, i)) {
+      if (sameYRow(prev, cur) && cur.cx < prev.cx + INST_FANOUT) cur.cx = prev.cx + INST_FANOUT;
     }
   }
 
@@ -476,6 +470,28 @@ export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number
     if (path) lines.push(path);
   }
 
+  // Allocate label space on actual pipe segments, avoiding symbols and other
+  // labels. A geometric midpoint can sit on a turn or inside an instrument.
+  const occupied = [
+    ...equipment.map(e => ({ x: e.cx - Math.max(e.width, Math.min(150, estimateTextWidth(e.equip.tag ?? e.equip.id, 11))) / 2 - 6, y: e.y - 6, width: Math.max(e.width, Math.min(150, estimateTextWidth(e.equip.tag ?? e.equip.id, 11))) + 12, height: e.height + 20 + wrapTextToWidth(e.equip.tag ?? e.equip.id, 11, 150, { fontWeight: 600 }).length * 14 })),
+    ...instruments.map(i => ({ x: i.cx - i.r - 5, y: i.cy - i.r - 5, width: i.r * 2 + 10, height: i.r * 2 + 20 })),
+  ];
+  for (const line of lines) {
+    if (!line.line.tag) continue;
+    const width = Math.max(28, line.line.tag.length * 6);
+    const points = [...line.path.matchAll(/[ML]\s+(-?[\d.]+)\s+(-?[\d.]+)/g)].map(m => ({ x: Number(m[1]), y: Number(m[2]) }));
+    const candidates: Array<{ x: number; y: number; length: number }> = [];
+    for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1]!, b = points[i]!;
+      const length = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+      for (const fraction of [0.5, 0.25, 0.75]) candidates.push({ x: a.x + (b.x - a.x) * fraction, y: a.y + (b.y - a.y) * fraction, length });
+    }
+    candidates.sort((a, b) => b.length - a.length);
+    const free = candidates.find(p => occupied.every(o => p.x + width / 2 + 3 <= o.x || p.x - width / 2 - 3 >= o.x + o.width || p.y + 8 <= o.y || p.y - 8 >= o.y + o.height));
+    if (free) { line.midX = free.x; line.midY = free.y; }
+    occupied.push({ x: line.midX - width / 2 - 3, y: line.midY - 9, width: width + 6, height: 18 });
+  }
+
   // 4. Compute total bounds.
   const allX: number[] = [];
   const allY: number[] = [];
@@ -484,7 +500,7 @@ export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number
     // bounding box) aren't clipped at the SVG edge.
     const tagPad = Math.max(0, ((e.equip.tag ?? e.equip.id).length * 6.6 - e.width) / 2 + 4);
     allX.push(e.x - tagPad, e.x + e.width + tagPad);
-    allY.push(e.y, e.y + e.height + 30);
+    allY.push(e.y, e.y + e.height + 20 + wrapTextToWidth(e.equip.tag ?? e.equip.id, 11, 150, { fontWeight: 600 }).length * 14);
   }
   for (const i of instruments) {
     allX.push(i.cx - i.r, i.cx + i.r);

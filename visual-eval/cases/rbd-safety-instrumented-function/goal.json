@@ -1,0 +1,45 @@
+{
+  "id": "rbd-safety-instrumented-function",
+  "type": "rbd",
+  "title": "Safety instrumented function",
+  "goal": "Show a sensor, logic-solver, and final-element safety function with 1oo2 and 2oo3 redundancy.",
+  "rubric": [
+    {
+      "id": "three-stages",
+      "severity": "blocker",
+      "must": "Sensor, logic-solver, and shutdown-valve stages are visibly arranged in series."
+    },
+    {
+      "id": "sensor-1oo2",
+      "severity": "blocker",
+      "must": "Two high-pressure sensors are visibly arranged as a parallel 1oo2 stage."
+    },
+    {
+      "id": "logic-2oo3",
+      "severity": "blocker",
+      "must": "Three logic solvers visibly enter a group labelled 2/3."
+    },
+    {
+      "id": "valve-1oo2",
+      "severity": "major",
+      "must": "Two shutdown valves are visibly arranged as a parallel final-element stage."
+    },
+    {
+      "id": "reliability-labels",
+      "severity": "major",
+      "must": "Every sensor, solver, and valve block visibly displays a reliability."
+    },
+    {
+      "id": "computed-summary",
+      "severity": "minor",
+      "must": "A system reliability or computed analysis summary is visible on the drawing."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/rbd/ideal.svg (sha256 1f4f1225b103). Exemplar pale block fills and blue numerical emphasis. Voting groups and reliability values retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

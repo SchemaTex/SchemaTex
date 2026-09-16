@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="482" height="690" viewBox="0 0 482 690" role="img" aria-label="Fault tree" data-diagram-type="faulttree"><title>Fault tree</title>
+<desc>Fault tree for &quot;Train unable to achieve required braking&quot;: 1 top, 3 intermediate, 5 basic. 4 minimal cut sets: {TRACTION_CONTROL_FAIL, TRAIN_LINE_AIR_LOSS}, {TRACTION_POWER_LOSS, TRAIN_LINE_AIR_LOSS}, {BOGIE_A_FAIL, BOGIE_B_FAIL, TRACTION_CONTROL_FAIL}, {BOGIE_A_FAIL, BOGIE_B_FAIL, TRACTION_POWER_LOSS}. P(top) = 4.24e-5 (exact).</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="482" height="690" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><rect x="198" y="369" width="138" height="56" rx="6" class="sx-ft-cutset" data-cutset="TRACTION_CONTROL_FAIL,TRAIN_LINE_AIR_LOSS" data-cutset-index="0" data-order="2" data-cutset-prob="0.000012"/>
+<rect x="196" y="367" width="216" height="60" rx="6" class="sx-ft-cutset" data-cutset="TRACTION_POWER_LOSS,TRAIN_LINE_AIR_LOSS" data-cutset-index="1" data-order="2" data-cutset-prob="0.00003"/>
+<rect x="32.5" y="365" width="307.5" height="226" rx="6" class="sx-ft-cutset" data-cutset="BOGIE_A_FAIL,BOGIE_B_FAIL,TRACTION_CONTROL_FAIL" data-cutset-index="2" data-order="3" data-cutset-prob="1.4400000000000002e-7"/>
+<rect x="36.5" y="369" width="373.5" height="218" rx="6" class="sx-ft-cutset" data-cutset="BOGIE_A_FAIL,BOGIE_B_FAIL,TRACTION_POWER_LOSS" data-cutset-index="3" data-order="3" data-cutset-prob="3.6e-7"/>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="PNEUMATIC_BRAKE_LOSS#1"><path d="M 254.4 148 L 254.4 179 L 163.8 179 L 163.8 210" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="DYNAMIC_BRAKE_LOSS#6"><path d="M 254.4 148 L 254.4 179 L 345 179 L 345 210" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="PNEUMATIC_BRAKE_LOSS#1" data-to="BOTH_BOGIE_BRAKES_FAIL#2"><path d="M 163.8 310 L 163.8 341 L 101.5 341 L 101.5 372" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="PNEUMATIC_BRAKE_LOSS#1" data-to="TRAIN_LINE_AIR_LOSS#5"><path d="M 163.8 310 L 163.8 343 L 226 343 L 226 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="BOTH_BOGIE_BRAKES_FAIL#2" data-to="BOGIE_A_FAIL#3"><path d="M 101.5 472 L 101.5 505 L 64.5 505 L 64.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="BOTH_BOGIE_BRAKES_FAIL#2" data-to="BOGIE_B_FAIL#4"><path d="M 101.5 472 L 101.5 505 L 138.5 505 L 138.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DYNAMIC_BRAKE_LOSS#6" data-to="TRACTION_CONTROL_FAIL#7"><path d="M 345 310 L 345 343 L 308 343 L 308 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DYNAMIC_BRAKE_LOSS#6" data-to="TRACTION_POWER_LOSS#8"><path d="M 345 310 L 345 343 L 382 343 L 382 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="TOP#0" data-gate="and"><line x1="254.375" y1="110" x2="254.375" y2="98" class="sx-ft-pin"/>
+<path d="M 227.375 148 L 227.375 129 A 27 19 0 0 1 281.375 129 L 281.375 148 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="PNEUMATIC_BRAKE_LOSS#1" data-gate="or"><line x1="163.75" y1="272" x2="163.75" y2="260" class="sx-ft-pin"/>
+<path d="M 136.75 310 Q 163.75 301 190.75 310 Q 190.75 281.5 163.75 272 Q 136.75 281.5 136.75 310 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="BOTH_BOGIE_BRAKES_FAIL#2" data-gate="and"><line x1="101.5" y1="434" x2="101.5" y2="422" class="sx-ft-pin"/>
+<path d="M 74.5 472 L 74.5 453 A 27 19 0 0 1 128.5 453 L 128.5 472 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="DYNAMIC_BRAKE_LOSS#6" data-gate="or"><line x1="345" y1="272" x2="345" y2="260" class="sx-ft-pin"/>
+<path d="M 318 310 Q 345 301 372 310 Q 372 281.5 345 272 Q 318 281.5 318 310 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-event-g" data-id="TOP" data-role="top"><rect x="155.375" y="48" width="198" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="254.375" y="73" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="254.375" dy="-7">Train unable to</tspan><tspan x="254.375" dy="14">achieve required braking</tspan></text></g>
+<g class="sx-ft-event-g" data-id="PNEUMATIC_BRAKE_LOSS" data-role="intermediate"><rect x="95.75" y="210" width="136" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="163.75" y="235" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="163.75" dy="-7">Pneumatic brake</tspan><tspan x="163.75" dy="14">unavailable</tspan></text></g>
+<g class="sx-ft-event-g" data-id="BOTH_BOGIE_BRAKES_FAIL" data-role="intermediate"><rect x="30" y="372" width="143" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="101.5" y="397" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="101.5" dy="-7">Both bogie brake</tspan><tspan x="101.5" dy="14">controllers fail</tspan></text></g>
+<g class="sx-ft-event-g" data-id="BOGIE_A_FAIL" data-role="basic" data-prob="0.006"><circle cx="64.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="64.5" y="562" class="sx-ft-id" text-anchor="middle">BOGIE_A_FAIL</text>
+<text x="64.5" y="599" class="sx-ft-cap" text-anchor="middle">Bogie A brake contr…</text>
+<text x="64.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.006</text></g>
+<g class="sx-ft-event-g" data-id="BOGIE_B_FAIL" data-role="basic" data-prob="0.006"><circle cx="138.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="138.5" y="562" class="sx-ft-id" text-anchor="middle">BOGIE_B_FAIL</text>
+<text x="138.5" y="599" class="sx-ft-cap" text-anchor="middle">Bogie B brake contr…</text>
+<text x="138.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.006</text></g>
+<g class="sx-ft-event-g" data-id="TRAIN_LINE_AIR_LOSS" data-role="basic" data-prob="0.003"><circle cx="226" cy="397" r="21" class="sx-ft-basic"/>
+<text x="226" y="400" class="sx-ft-id" text-anchor="middle">TRAIN_LINE_AIR_LOSS</text>
+<text x="226" y="437" class="sx-ft-cap" text-anchor="middle">Train-line air pres…</text>
+<text x="226" y="450" class="sx-ft-prob" text-anchor="middle">p=0.003</text></g>
+<g class="sx-ft-event-g" data-id="DYNAMIC_BRAKE_LOSS" data-role="intermediate"><rect x="279" y="210" width="132" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="345" y="235" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="345" dy="-7">Dynamic brake</tspan><tspan x="345" dy="14">unavailable</tspan></text></g>
+<g class="sx-ft-event-g" data-id="TRACTION_CONTROL_FAIL" data-role="basic" data-prob="0.004"><circle cx="308" cy="397" r="21" class="sx-ft-basic"/>
+<text x="308" y="400" class="sx-ft-id" text-anchor="middle">TRACTION_CONTROL_FAIL</text>
+<text x="308" y="437" class="sx-ft-cap" text-anchor="middle">Traction brake comm…</text>
+<text x="308" y="450" class="sx-ft-prob" text-anchor="middle">p=0.004</text></g>
+<g class="sx-ft-event-g" data-id="TRACTION_POWER_LOSS" data-role="basic" data-prob="0.01"><circle cx="382" cy="397" r="21" class="sx-ft-basic"/>
+<text x="382" y="400" class="sx-ft-id" text-anchor="middle">TRACTION_POWER_LOSS</text>
+<text x="382" y="437" class="sx-ft-cap" text-anchor="middle">Traction power unav…</text>
+<text x="382" y="450" class="sx-ft-prob" text-anchor="middle">p=0.01</text></g>
+<text x="254.375" y="39" class="sx-ft-ptop" text-anchor="middle">P(top) = 4.24e-5 (exact)</text></g></svg>

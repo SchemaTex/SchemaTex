@@ -1,0 +1,43 @@
+# One pump is selected as lead for each demand; reset transfers the next duty assignment.
+# The selected duty motor runs on StartDemand unless its overload is active.
+ladder "Two Motor Alternation"
+
+rung 0 "Start motor A when selected":
+  XIC(StartDemand)
+  XIC(LeadA)
+  XIO(MotorAOverload)
+  OTE(MotorA)
+
+rung 1 "Start motor B when selected":
+  XIC(StartDemand)
+  XIC(LeadB)
+  XIO(MotorBOverload)
+  OTE(MotorB)
+
+rung 2 "Set motor B as next lead after A duty":
+  XIC(ResetPB)
+  XIC(LeadA)
+  OTL(LeadB)
+
+rung 3 "Clear motor A lead after transfer":
+  XIC(ResetPB)
+  XIC(LeadA)
+  OTU(LeadA)
+
+rung 4 "Set motor A as next lead after B duty":
+  XIC(ResetPB)
+  XIC(LeadB)
+  OTL(LeadA)
+
+rung 5 "Clear motor B lead after transfer":
+  XIC(ResetPB)
+  XIC(LeadB)
+  OTU(LeadB)
+
+rung 6 "Motor A running lamp":
+  XIC(MotorA)
+  OTE(MotorALamp)
+
+rung 7 "Motor B running lamp":
+  XIC(MotorB)
+  OTE(MotorBLamp)

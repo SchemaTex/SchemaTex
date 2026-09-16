@@ -1,0 +1,6 @@
+# Mock data: authored for visual evaluation; not user data or an inferred analysis.
+phylo "Clade support comparison (mock)" [mode: phylogram]
+  newick: "(((Sample_A:0.04,Sample_B:0.06)[&&NHX:B=99]:0.06,Sample_C:0.12)[&&NHX:B=88]:0.10,((Sample_D:0.08,Sample_E:0.09)[&&NHX:B=74]:0.05,Sample_F:0.15)[&&NHX:B=96]:0.10);"
+  clade North = (Sample_A, Sample_B, Sample_C) [color: "#0f766e", label: "North", highlight: both]
+  clade South = (Sample_D, Sample_E, Sample_F) [color: "#2563eb", label: "South", highlight: both]
+  scale "substitutions/site"

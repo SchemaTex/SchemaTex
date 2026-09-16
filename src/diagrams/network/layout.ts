@@ -1,3 +1,5 @@
+import { routeNetworkLink, pointOnRoute } from "./routing";
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 /**
  * Network topology — layout engine.
  *
@@ -6,7 +8,7 @@
  * geometry inflated by padding (§5.5), mirroring C4.
  */
 
-import { iconSize, isCloudKind } from "./symbols";
+import { iconSize, isCloudKind, cloudSize } from "./symbols";
 import type {
   DeviceBox,
   GroupBox,
@@ -23,7 +25,7 @@ import { applyPins } from "../../core/editing";
 export const NET_CONST = {
   DEVICE_W: 64,
   DEVICE_H: 48,
-  TIER_BAND_GAP: 104,
+  TIER_BAND_GAP: 170,
   SIBLING_GAP: 44,
   RING_RADIUS_MIN: 120,
   STAR_HUB_GAP: 130,
@@ -31,7 +33,7 @@ export const NET_CONST = {
   LABEL_GAP: 6,
   LABEL_H: 15,
   SUBLABEL_H: 12,
-  GROUP_PAD: 18,
+  GROUP_PAD: 24,
   GROUP_LABEL_INSET: 12,
   GROUP_HEADER: 16,
   CHAR_W: 6.3,
@@ -41,13 +43,15 @@ export const NET_CONST = {
 const ENDPOINT_KINDS = new Set([
   "pc", "laptop", "mobile", "ipphone", "printer", "camera",
   "server", "serverfarm", "storage", "monitor", "nvr", "dvr",
+  // These distinct kinds previously inherited endpoint placement through aliases.
+  "database", "hypervisor", "nas", "san", "tablet",
 ]);
 
 // ─── small geometry helpers ──────────────────────────────────────
 
 function labelExtra(d: NetworkDevice): number {
   if (isCloudKind(d.kind)) return 0;
-  let h = NET_CONST.LABEL_GAP + NET_CONST.LABEL_H;
+  let h = NET_CONST.LABEL_GAP + deviceLabelLines(d).length * NET_CONST.LABEL_H;
   if (d.ip || d.model) h += NET_CONST.SUBLABEL_H;
   return h;
 }
@@ -56,81 +60,115 @@ function labelText(d: NetworkDevice): string {
   return d.label ?? d.id;
 }
 
+export function deviceLabelLines(d: NetworkDevice): string[] {
+  return wrapTextToWidth(labelText(d),12,120);
+}
+
 function deviceFootprint(d: NetworkDevice): { w: number; h: number } {
-  return iconSize(d.kind);
+  const fp = iconSize(d.kind);
+  return isCloudKind(d.kind) ? cloudSize(labelText(d)) : fp;
 }
 
 /** Effective bounding box including the label rendered below the icon. */
-function effBox(box: DeviceBox): { left: number; top: number; right: number; bottom: number } {
-  const labelW = Math.max(box.w, labelText(box.device).length * NET_CONST.CHAR_W + 6);
-  const half = labelW / 2;
-  return {
-    left: box.cx - half,
-    top: box.y,
-    right: box.cx + half,
-    bottom: box.y + box.h + labelExtra(box.device),
-  };
+export function deviceCaption(box: DeviceBox): { x:number; y:number; width:number; height:number; baseline:number } {
+  const width=captionWidth(box.device), height=labelExtra(box.device)-NET_CONST.LABEL_GAP;
+  const side=box.captionSide==="right";
+  const x=side?box.x+box.w+12:box.cx-width/2;
+  const baseline=side?box.cy+4-(height-NET_CONST.LABEL_H)/2:box.y+box.h+NET_CONST.LABEL_GAP+11;
+  return {x,y:baseline-12,width,height,baseline};
 }
-
-/** Point on a box boundary in the direction of (tx, ty). */
-function edgePoint(box: DeviceBox, tx: number, ty: number): NetPoint {
-  const dx = tx - box.cx;
-  const dy = ty - box.cy;
-  if (dx === 0 && dy === 0) return { x: box.cx, y: box.cy };
-  const hw = box.w / 2;
-  const hh = box.h / 2;
-  const sx = dx !== 0 ? hw / Math.abs(dx) : Infinity;
-  const sy = dy !== 0 ? hh / Math.abs(dy) : Infinity;
-  const s = Math.min(sx, sy);
-  return { x: box.cx + dx * s, y: box.cy + dy * s };
+function effBox(box: DeviceBox): { left: number; top: number; right: number; bottom: number } {
+  const caption=deviceCaption(box);
+  return {left:Math.min(box.x,caption.x),top:Math.min(box.y,caption.y),
+    right:Math.max(box.x+box.w,caption.x+caption.width),bottom:Math.max(box.y+box.h,caption.y+caption.height)};
 }
 
 // ─── banded placement (tiered + tree share this) ─────────────────
 
-function placeBanded(
-  ast: NetworkAst,
-  ranks: Map<string, number>,
-): Map<string, NetPoint> {
-  const lr = ast.direction === "lr";
-  // group device ids by rank, preserving declaration order
-  const byRank = new Map<number, NetworkDevice[]>();
-  for (const d of ast.devices) {
-    const r = ranks.get(d.id) ?? 0;
-    if (!byRank.has(r)) byRank.set(r, []);
-    byRank.get(r)!.push(d);
-  }
-  const rankValues = [...byRank.keys()].sort((a, b) => a - b);
+function captionWidth(d: NetworkDevice): number {
+  return Math.max(...deviceLabelLines(d).map(line=>estimateTextWidth(line,12)), estimateTextWidth(d.ip ?? d.model ?? "", 10)) + 12;
+}
 
-  // cross-axis size of each row = max footprint along the cross axis
-  const pos = new Map<string, NetPoint>();
-  // compute total cross-axis width per row to center rows
-  let maxRowSpan = 0;
-  const rowSpans = new Map<number, number>();
-  for (const r of rankValues) {
-    const devs = byRank.get(r)!;
-    let span = 0;
-    devs.forEach((d, i) => {
-      const fp = deviceFootprint(d);
-      const cross = lr ? fp.h + labelExtra(d) : Math.max(fp.w, labelText(d).length * NET_CONST.CHAR_W + 6);
-      span += cross + (i > 0 ? NET_CONST.SIBLING_GAP : 0);
-    });
-    rowSpans.set(r, span);
-    maxRowSpan = Math.max(maxRowSpan, span);
-  }
-
-  rankValues.forEach((r, rowIdx) => {
-    const devs = byRank.get(r)!;
-    const along = rowIdx * NET_CONST.TIER_BAND_GAP;
-    let cursor = (maxRowSpan - rowSpans.get(r)!) / 2;
-    for (const d of devs) {
-      const fp = deviceFootprint(d);
-      const cross = lr ? fp.h + labelExtra(d) : Math.max(fp.w, labelText(d).length * NET_CONST.CHAR_W + 6);
-      const center = cursor + cross / 2;
-      if (lr) pos.set(d.id, { x: along, y: center });
-      else pos.set(d.id, { x: center, y: along });
-      cursor += cross + NET_CONST.SIBLING_GAP;
-    }
+function placeBanded(ast: NetworkAst, ranks: Map<string, number>): Map<string, NetPoint> {
+  const lr = ast.direction === "lr", pos = new Map<string, NetPoint>();
+  const adj = adjacency(ast.devices, ast.links);
+  const sideCaption = (d: NetworkDevice) => !lr && !isCloudKind(d.kind) && [...adj.get(d.id)??[]].some(id=>(ranks.get(id)??0)>(ranks.get(d.id)??0));
+  const crossSize = (d: NetworkDevice) => sideCaption(d) ? deviceFootprint(d).w + 12 + captionWidth(d) : lr ? deviceFootprint(d).h + labelExtra(d) : Math.max(deviceFootprint(d).w, captionWidth(d));
+  const rankValues = [...new Set(ranks.values())].sort((a,b) => a-b);
+  const members = (id: string): Set<string> => {
+    const g = ast.groups.find(g => g.id === id)!;
+    return new Set([...g.members, ...g.children.flatMap(c => [...members(c)])]);
+  };
+  // A boundary is a placement constraint, not a rectangle drawn after arranging
+  // unrelated rows. Flat subset groups inherit their containing group as well.
+  const groups = ast.groups.filter(g => g.kind !== "vlan").map(g => ({ id: g.id, members: members(g.id) }));
+  const roots = groups.filter(g => g.members.size && !groups.some(other => other !== g &&
+    other.members.size > g.members.size && [...g.members].every(id => other.members.has(id))));
+  const owned = new Set(roots.flatMap(g => [...g.members]));
+  const free = ast.devices.filter(d => !owned.has(d.id));
+  const lanes = roots.map(g => ({ ...g, devices: ast.devices.filter(d => g.members.has(d.id)) }));
+  // Ungrouped devices alongside a bounded row need their own lane. Ancestors
+  // above all groups can still sit centrally over their connected children.
+  const boundedRanks = new Set(lanes.flatMap(g => g.devices.map(d => ranks.get(d.id)!)));
+  const alongside = free.filter(d => boundedRanks.has(ranks.get(d.id)!));
+  if (alongside.length) lanes.unshift({ id: "", members: new Set(alongside.map(d => d.id)), devices: alongside });
+  const span = (devs: NetworkDevice[]) => devs.reduce((v,d,i) => v + crossSize(d) + (i ? NET_CONST.SIBLING_GAP : 0),0);
+  const widths = lanes.map(g => Math.max(120, ...rankValues.map(r => span(g.devices.filter(d => ranks.get(d.id)===r)))) + 2*NET_CONST.GROUP_PAD);
+  const total = Math.max(widths.reduce((a,b)=>a+b,0) + Math.max(0,lanes.length-1)*NET_CONST.SIBLING_GAP, ...rankValues.map(r=>span(free.filter(d=>ranks.get(d.id)===r))));
+  const order = (devs: NetworkDevice[]) => [...devs].sort((a,b) => {
+    const bary = (d: NetworkDevice) => {
+      const neighbors = [...adj.get(d.id) ?? []].map(id => pos.get(id)).filter((p): p is NetPoint => !!p);
+      return neighbors.length ? neighbors.reduce((v,p)=>v+(lr?p.y:p.x),0)/neighbors.length : ast.devices.indexOf(d)*100;
+    };
+    return bary(a)-bary(b);
   });
+  const placeRow = (devs: NetworkDevice[], left: number, width: number, along: number) => {
+    let cursor = left + (width-span(devs))/2;
+    for(const d of order(devs)) { const cross=cursor+(sideCaption(d)?deviceFootprint(d).w/2:crossSize(d)/2);
+      pos.set(d.id,lr?{x:along,y:cross}:{x:cross,y:along});cursor+=crossSize(d)+NET_CONST.SIBLING_GAP;
+    }
+  };
+  // Reserve actual along-axis footprints and annotation channels, including
+  // long labels in left-to-right diagrams.
+  let along = 0;
+  rankValues.forEach((r,index) => {
+    const row = ast.devices.filter(d=>ranks.get(d.id)===r);
+    const extent = Math.max(...row.map(d=>lr?Math.max(deviceFootprint(d).w,captionWidth(d)):deviceFootprint(d).h+labelExtra(d)), 0);
+    if(index) along += extent/2 + 60;
+    let left=0;
+    lanes.forEach((lane,i)=> { placeRow(lane.devices.filter(d=>ranks.get(d.id)===r),left,widths[i],along);left+=widths[i]+NET_CONST.SIBLING_GAP; });
+    const outside = free.filter(d=>ranks.get(d.id)===r&&!alongside.includes(d));
+    placeRow(outside,0,Math.max(total,span(outside)),along);
+    along += extent/2;
+  });
+  // Pack once in each direction: parent centering followed by child alignment.
+  // The second sweep keeps a one-to-one access/endpoint column vertical even
+  // when the parent has a wider caption than its endpoint.
+  const pack = (row: NetworkDevice[], targets: Map<string,number>) => {
+    let end=-Infinity;
+    const packed=new Map<string,number>();
+    for(const d of [...row].sort((a,b)=>targets.get(a.id)!-targets.get(b.id)!)) {
+      const leftExtent=sideCaption(d)?deviceFootprint(d).w/2:crossSize(d)/2;
+      const cross=Math.max(targets.get(d.id)!,end+leftExtent);
+      packed.set(d.id,cross);end=cross+crossSize(d)-leftExtent+NET_CONST.SIBLING_GAP;
+    }
+    const shift=row.length?row.reduce((v,d)=>v+targets.get(d.id)!-packed.get(d.id)!,0)/row.length:0;
+    for(const d of row){const p=pos.get(d.id)!,cross=packed.get(d.id)!+shift;if(lr)p.y=cross;else p.x=cross;}
+  };
+  for(const downward of [false,true])for(const r of downward?rankValues:[...rankValues].reverse()) {
+    const row=free.filter(d=>ranks.get(d.id)===r&&!alongside.includes(d));
+    const targets=new Map<string,number>();
+    for(const d of row) {
+      const neighbors=[...adj.get(d.id)??[]].filter(id=>downward?(ranks.get(id)??r)<r:(ranks.get(id)??r)>r).map(id=>pos.get(id)!);
+      if(neighbors.length)targets.set(d.id,neighbors.reduce((v,p)=>v+(lr?p.y:p.x),0)/neighbors.length);
+    }
+    for(const d of row)if(!targets.has(d.id)) {
+      const peers=downward?[]:[...adj.get(d.id)??[]].map(id=>targets.get(id)).filter((x):x is number=>x!==undefined);
+      const current=pos.get(d.id)!;
+      targets.set(d.id,peers.length?peers.reduce((a,b)=>a+b,0)/peers.length:(lr?current.y:current.x));
+    }
+    pack(row,targets);
+  }
   return pos;
 }
 
@@ -217,6 +255,31 @@ function placeCircle(ast: NetworkAst, radiusBase: number): Map<string, NetPoint>
   return pos;
 }
 
+function placeRing(ast: NetworkAst, links: NetworkLink[]): Map<string, NetPoint> {
+  const adj=adjacency(ast.devices,links), core=new Set(ast.devices.map(d=>d.id));
+  let changed=true;
+  while(changed){changed=false;for(const id of core)if([...adj.get(id)??[]].filter(n=>core.has(n)).length<2){core.delete(id);changed=true;}}
+  if(!core.size)return placeBanded(ast,treeRanks(ast,links));
+  // Follow cycle connectivity, never declaration order. For a mesh core, retain
+  // the remaining devices too; chords carry those additional links explicitly.
+  const order:string[]=[], remaining=new Set(core);
+  let next=remaining.values().next().value as string;
+  while(remaining.size){order.push(next);remaining.delete(next);next=[...adj.get(next)??[]].find(n=>remaining.has(n))??remaining.values().next().value as string;}
+  const maxCaption=Math.max(...ast.devices.map(captionWidth));
+  const step=Math.max(150,maxCaption+40), radius=Math.max(140,step/(2*Math.sin(Math.PI/Math.max(core.size,3))));
+  const pos=new Map<string,NetPoint>(), visited=new Set(core);
+  order.forEach((id,i)=>{const angle=-Math.PI/2+i*2*Math.PI/order.length;pos.set(id,{x:radius*Math.cos(angle),y:radius*Math.sin(angle)});});
+  const branch=(id:string,angle:number,depth:number)=>{
+    const children=[...adj.get(id)??[]].filter(n=>!visited.has(n));children.forEach(n=>visited.add(n));
+    children.forEach((n,i)=>{const a=angle+(i-(children.length-1)/2)*Math.min(.6,Math.PI/order.length);
+      const parent=pos.get(id)!;
+      pos.set(n,{x:parent.x+step*Math.cos(a),y:parent.y+step*Math.sin(a)});branch(n,a,depth+1);});
+  };
+  order.forEach((id,i)=>branch(id,-Math.PI/2+i*2*Math.PI/order.length,0));
+  let offset=radius+step;for(const d of ast.devices)if(!pos.has(d.id)){pos.set(d.id,{x:offset,y:radius+step});offset+=step;}
+  return pos;
+}
+
 function placeStar(ast: NetworkAst, links: NetworkLink[]): Map<string, NetPoint> {
   const adj = adjacency(ast.devices, links);
   let hub = ast.devices[0];
@@ -249,31 +312,21 @@ function placeBus(ast: NetworkAst): Map<string, NetPoint> {
 }
 
 function placeSpineLeaf(ast: NetworkAst, links: NetworkLink[]): Map<string, NetPoint> {
-  const pos = new Map<string, NetPoint>();
-  const spineSet = new Set(ast.spines);
-  const leafSet = new Set(ast.leaves);
-  const rowGap = NET_CONST.SPINE_LEAF_GAP;
-  const step = NET_CONST.DEVICE_W + NET_CONST.SIBLING_GAP;
-
-  const centerRow = (ids: string[], y: number) => {
-    const span = (ids.length - 1) * step;
-    ids.forEach((id, i) => pos.set(id, { x: i * step - span / 2, y }));
-  };
-  centerRow(ast.spines, 0);
-  centerRow(ast.leaves, rowGap);
-
-  // hosts = everything else; hang below the leaf they connect to (else sequential)
-  const adj = adjacency(ast.devices, links);
-  const hosts = ast.devices.filter((d) => !spineSet.has(d.id) && !leafSet.has(d.id));
-  let seq = 0;
-  for (const h of hosts) {
-    let anchorX: number | undefined;
-    for (const n of adj.get(h.id) ?? []) {
-      if (leafSet.has(n)) { anchorX = pos.get(n)?.x; break; }
-    }
-    pos.set(h.id, { x: anchorX ?? (seq++ * step), y: rowGap * 2 });
+  const fabric = new Set([...ast.spines,...ast.leaves]);
+  const adj=adjacency(ast.devices,links), ranks=new Map<string,number>();
+  ast.spines.forEach(id=>ranks.set(id,0));ast.leaves.forEach(id=>ranks.set(id,1));
+  const extras=ast.devices.filter(d=>!fabric.has(d.id));
+  // Declared fabric tiers fix their ranks; connected devices follow them.
+  for(const d of extras) {
+    const neighbors=[...adj.get(d.id)??[]].filter(id=>fabric.has(id));
+    if(neighbors.length)ranks.set(d.id,2);
   }
-  return pos;
+  for(let pass=0;pass<extras.length;pass++)for(const d of extras)if(!ranks.has(d.id)){
+    const rs=[...adj.get(d.id)??[]].map(id=>ranks.get(id)).filter((r):r is number=>r!==undefined);
+    if(rs.length)ranks.set(d.id,Math.max(...rs)+1);
+  }
+  for(const d of extras)if(!ranks.has(d.id))ranks.set(d.id,2);
+  return placeBanded({...ast, links}, ranks);
 }
 
 function placeManual(ast: NetworkAst): Map<string, NetPoint> {
@@ -335,7 +388,7 @@ export function layoutNetwork(
   switch (ast.layout) {
     case "tree": centers = placeBanded(ast, treeRanks(ast, links)); break;
     case "star": centers = placeStar(ast, links); break;
-    case "ring": centers = placeCircle(ast, NET_CONST.RING_RADIUS_MIN); break;
+    case "ring": centers = placeRing(ast, links); break;
     case "mesh": centers = placeCircle(ast, NET_CONST.RING_RADIUS_MIN); break;
     case "bus": centers = placeBus(ast); break;
     case "spine-leaf": centers = placeSpineLeaf(ast, links); break;
@@ -360,6 +413,9 @@ export function layoutNetwork(
     };
   });
   const boxById = new Map(boxes.map((b) => [b.device.id, b]));
+  const adjacent=adjacency(ast.devices,links);
+  for(const b of boxes) b.captionSide=ast.direction!=="lr" && ast.layout!=="ring" && ast.layout!=="mesh" && ast.layout!=="star" &&
+    !isCloudKind(b.device.kind) && [...adjacent.get(b.device.id)??[]].some(id=>(boxById.get(id)?.cy??b.cy)>b.cy+1) ? "right" : "below";
 
   // 3. group boxes (inner first), union of member geometry + padding
   const groupBoxesRaw = new Map<string, { left: number; top: number; right: number; bottom: number; depth: number }>();
@@ -372,6 +428,7 @@ export function layoutNetwork(
   // process deepest groups first so parents can include child boxes
   const groupsByDepth = [...ast.groups].sort((a, b) => depthOf(b.id) - depthOf(a.id));
   for (const g of groupsByDepth) {
+    if (g.kind === "vlan") continue;
     let l = Infinity, t = Infinity, r = -Infinity, bm = -Infinity;
     const addBox = (e: { left: number; top: number; right: number; bottom: number }) => {
       l = Math.min(l, e.left); t = Math.min(t, e.top); r = Math.max(r, e.right); bm = Math.max(bm, e.bottom);
@@ -430,6 +487,18 @@ export function layoutNetwork(
     });
   }
 
+  // VLAN membership can span unrelated branches or physical sites. Show it
+  // at each device instead of drawing a false enclosing physical boundary.
+  for (const g of ast.groups.filter(g => g.kind === "vlan")) {
+    const label = /^vlan\b/i.test(g.label ?? g.id) ? (g.label ?? g.id) : `VLAN ${g.label ?? g.id}`;
+    const w = estimateTextWidth(label, 10, {fontWeight:600}) + 20;
+    for(const id of g.members) {
+      const b = boxById.get(id); if(!b)continue;
+      const count=groups.filter(gb=>gb.group.kind==="vlan"&&gb.group.members.includes(id)).length;
+      groups.push({group:{...g,members:[id]},x:b.cx-w/2,y:effBox(b).bottom+6+count*22,w,h:18,depth:0});
+    }
+  }
+
   // 5. link geometry (straight, clipped to box boundaries)
   // The label defaults to the midpoint, but on long diagonals the midpoint can
   // land on an unrelated device (the label zone of a tiered layout). Try a few
@@ -455,11 +524,20 @@ export function layoutNetwork(
   const labelClearsPlaced = (x: number, y: number): boolean =>
     placedLabels.every((p) => Math.abs(p.x - x) > 90 || Math.abs(p.y - y) > 16);
 
+  const wireObstacles = boxes.flatMap(b => {
+    const c=deviceCaption(b);
+    return [{left:b.x,top:b.y,right:b.x+b.w,bottom:b.y+b.h},
+      ...(!isCloudKind(b.device.kind)?[{left:c.x-4,right:c.x+c.width+4,top:c.y-4,bottom:c.y+c.height+4}]:[])];
+  });
+  wireObstacles.push(...groups.map(g=>({left:g.x+6,right:g.x+Math.min(g.w-6,estimateTextWidth(g.group.label??g.group.id,10)+20),top:g.y,bottom:g.y+18})));
+  const routed: {net:string;points:NetPoint[]}[]=[];
   const linkGeoms: LinkGeom[] = links.map((link) => {
     const a = boxById.get(link.from)!;
     const b = boxById.get(link.to)!;
-    const p1 = edgePoint(a, b.cx, b.cy);
-    const p2 = edgePoint(b, a.cx, a.cy);
+    const points = routeNetworkLink(a, b, wireObstacles, routed);
+    // Crossing costs are defined only for orthogonal segments in the shared router.
+    if(points.every((p,i)=>!i||p.x===points[i-1].x||p.y===points[i-1].y))
+      routed.push({net:`${a.device.id}:${b.device.id}`,points});
     const hasAnnotation = Boolean(
       link.label || link.speed || link.mode || (link.vlans && link.vlans.length)
     );
@@ -473,10 +551,7 @@ export function layoutNetwork(
         (link.label ? link.label.length : 0);
       const halfW = (annLen * 5.4) / 2;
       const candidates = [0.5, 0.38, 0.62, 0.28, 0.72, 0.2, 0.8, 0.14, 0.86];
-      const at = (t: number) => ({
-        x: p1.x + (p2.x - p1.x) * t,
-        y: p1.y + (p2.y - p1.y) * t,
-      });
+      const at = (t: number) => pointOnRoute(points,t).point;
       const strict = candidates.find((t) => {
         const p = at(t);
         return labelClearsDevices(p.x, p.y, halfW) && labelClearsPlaced(p.x, p.y);
@@ -489,20 +564,27 @@ export function layoutNetwork(
       });
       labelT = relaxed ?? 0.5;
       placedLabels.push({
-        x: p1.x + (p2.x - p1.x) * labelT,
-        y: p1.y + (p2.y - p1.y) * labelT,
+        ...pointOnRoute(points,labelT).point,
       });
     }
     return {
       link,
-      points: [p1, p2],
-      labelX: p1.x + (p2.x - p1.x) * labelT,
-      labelY: p1.y + (p2.y - p1.y) * labelT,
+      points,
+      labelX: pointOnRoute(points,labelT).point.x,
+      labelY: pointOnRoute(points,labelT).point.y,
     };
   });
 
-  const pinnedMaxX = Math.max(maxX - minX + NET_CONST.PAD, ...boxes.map((b) => effBox(b).right));
-  const pinnedMaxY = Math.max(maxY - minY + NET_CONST.PAD, ...boxes.map((b) => effBox(b).bottom));
+  // Routed channels belong to the canvas too. Normalize before the renderer
+  // adds the title band, so a top escape cannot run across the title.
+  const geometry=linkGeoms.flatMap(l=>l.points);
+  const shiftX=Math.max(0,NET_CONST.PAD-Math.min(...geometry.map(p=>p.x)));
+  const shiftY=Math.max(0,NET_CONST.PAD-Math.min(...geometry.map(p=>p.y)));
+  for(const b of boxes){b.x+=shiftX;b.cx+=shiftX;b.y+=shiftY;b.cy+=shiftY;}
+  for(const g of groups){g.x+=shiftX;g.y+=shiftY;}
+  for(const l of linkGeoms){for(const p of l.points){p.x+=shiftX;p.y+=shiftY;}l.labelX+=shiftX;l.labelY+=shiftY;}
+  const pinnedMaxX = Math.max(maxX - minX + NET_CONST.PAD, ...boxes.map((b) => effBox(b).right), ...groups.map(g=>g.x+g.w),...geometry.map(p=>p.x));
+  const pinnedMaxY = Math.max(maxY - minY + NET_CONST.PAD, ...boxes.map((b) => effBox(b).bottom), ...groups.map(g=>g.y+g.h),...geometry.map(p=>p.y));
   const width = pinnedMaxX + NET_CONST.PAD;
   const height = pinnedMaxY + NET_CONST.PAD;
 

@@ -1,0 +1,20 @@
+%% TCP connection establishment, data transfer, and orderly or simultaneous close transitions.
+stateDiagram-v2
+  [*] --> CLOSED
+  CLOSED --> LISTEN : passive open
+  CLOSED --> SYN_SENT : active open / send SYN
+  LISTEN --> SYN_RCVD : rcv SYN / send SYN,ACK
+  LISTEN --> SYN_SENT : send SYN
+  SYN_SENT --> SYN_RCVD : rcv SYN / send SYN,ACK
+  SYN_SENT --> ESTABLISHED : rcv SYN,ACK / send ACK
+  SYN_RCVD --> ESTABLISHED : rcv ACK
+  ESTABLISHED --> FIN_WAIT_1 : close / send FIN
+  ESTABLISHED --> CLOSE_WAIT : rcv FIN / send ACK
+  FIN_WAIT_1 --> FIN_WAIT_2 : rcv ACK of FIN
+  FIN_WAIT_1 --> CLOSING : rcv FIN / send ACK
+  FIN_WAIT_1 --> TIME_WAIT : rcv FIN,ACK / send ACK
+  FIN_WAIT_2 --> TIME_WAIT : rcv FIN / send ACK
+  CLOSING --> TIME_WAIT : rcv ACK of FIN
+  CLOSE_WAIT --> LAST_ACK : close / send FIN
+  LAST_ACK --> CLOSED : rcv ACK of FIN
+  TIME_WAIT --> CLOSED : 2MSL timeout

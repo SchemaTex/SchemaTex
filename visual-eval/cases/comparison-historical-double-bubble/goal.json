@@ -1,0 +1,78 @@
+{
+  "id": "comparison-historical-double-bubble",
+  "type": "comparison",
+  "variant": "double-bubble",
+  "title": "Civil-rights leadership comparison",
+  "goal": "Students can distinguish shared leadership traits from each figure's distinct approaches.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Two named central figures are visible on opposite sides."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Shared traits appear in central bubbles connected to both figures."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Unique traits appear only on their respective outer sides."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The double-bubble connections are visible."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "All bubble labels are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/double-bubble exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram faithfully compares both figures: three shared traits sit between the two central bubbles and connect to both; each figure’s two distinct approaches appear on that figure’s outer side. Labels are readable, and there are no material overlaps or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:04:15.372Z",
+      "targetHash": "9706434e634c",
+      "sourceHash": "e8e7067c337a",
+      "exemplarHash": "4f6c996b6d7f",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Martin Luther King Jr. is the left central bubble and Malcolm X is the right central bubble."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The central bubbles read “Civil-rights leadership,” “Powerful public speaking,” and “Sought Black dignity and equality”; each is connected to both figures."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "The left side shows “Nonviolent direct action” and “Southern Christian Leadership Conference”; the right side shows “Black nationalism emphasis” and “Nation of Islam spokesperson.”"
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "Visible connector lines link each shared bubble to both central figures and link each unique bubble to its respective figure."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "All bubble labels are legible, with no material overlap or cropping."
+        }
+      ]
+    }
+  }
+}

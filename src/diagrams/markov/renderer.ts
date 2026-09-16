@@ -16,6 +16,11 @@
  * palette is derived from the shared BaseTheme (no edits to theme.ts).
  */
 
+import { wrapTextToWidth } from "../../core/text-metrics";
+
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
+
 import type { RenderConfig } from "../../core/types";
 import {
   svgRoot,
@@ -31,7 +36,7 @@ import {
 } from "../../core/svg";
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { parseMarkov } from "./parser";
-import { layoutMarkov, MARKOV_CONST as C } from "./layout";
+import { layoutMarkov } from "./layout";
 import type {
   MarkovArcGeom,
   MarkovAst,
@@ -76,7 +81,7 @@ function buildCss(p: MarkovPalette): string {
 .sx-markov-arc { stroke: ${p.arcStroke}; stroke-width: 1.6; fill: none; }
 .sx-markov-arc-self { stroke: ${p.arcStroke}; stroke-width: 1.6; fill: none; }
 .sx-markov-prob { font: 11px sans-serif; fill: ${p.text}; }
-.sx-markov-title { font: 700 16px sans-serif; fill: ${p.text}; }
+.sx-markov-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${p.text}; }
 `.trim();
 }
 
@@ -86,15 +91,16 @@ function markers(p: MarkovPalette): string {
       "marker",
       {
         id: "sx-markov-head",
-        viewBox: "0 0 10 10",
-        refX: 8.5,
+        viewBox: "-1 -1 12 12",
+        refX: 9,
         refY: 5,
-        markerWidth: 7,
-        markerHeight: 7,
-        orient: "auto-start-reverse",
+        markerWidth: 12,
+        markerHeight: 12,
+        markerUnits: "userSpaceOnUse",
+        orient: "auto",
       },
       // Open arrowhead (two strokes), matching the canonical figures.
-      [pathEl({ d: "M 0 0 L 9 5 L 0 10", fill: "none", stroke: p.arcStroke, "stroke-width": 1.4 })],
+      [pathEl({ d: "M 0 0 L 9 5 L 0 10", fill: "none", stroke: p.arcStroke, "stroke-width": 1.4, "stroke-linejoin": "round" })],
     ),
   ]);
 }
@@ -114,12 +120,12 @@ function renderState(sb: MarkovStateBox): string {
 
   // Centred label (id, or human label if present).
   const labelText = sb.state.label ?? sb.state.id;
-  parts.push(
-    textEl(
-      { class: "sx-markov-state-label", x: sb.cx, y: sb.cy + 4, "text-anchor": "middle" },
-      labelText,
-    ),
-  );
+  const labelLines = labelText.includes(" ")
+    ? wrapTextToWidth(labelText, 13, sb.r * 1.8, {fontWeight: 600})
+    : [labelText];
+  labelLines.forEach((line,index)=>parts.push(textEl(
+    {class:"sx-markov-state-label",x:sb.cx,y:sb.cy+4+(index-(labelLines.length-1)/2)*15,"text-anchor":"middle"},line)));
+
 
   // π annotation under the circle when computed.
   if (sb.pi !== undefined) {
@@ -235,11 +241,12 @@ export function renderMarkovLayout(layout: MarkovLayoutResult, config?: RenderCo
   children.push(el("style", {}, buildCss(p)));
   children.push(markers(p));
 
-  const titleBand = layout.title ? C.TITLE_BAND : 0;
+  const titleBand = layout.title ? TITLE.bandH : 0;
   if (layout.title) {
+    const title = resolveSceneTitle(layout.title, undefined, layout.width / 2, TITLE.y, config);
     children.push(
       textEl(
-        { x: layout.width / 2, y: 22, class: "sx-markov-title", "text-anchor": "middle" },
+        { x: title.x, y: title.y, ...title.attrs, class: "sx-markov-title", "text-anchor": "middle" },
         layout.title,
       ),
     );

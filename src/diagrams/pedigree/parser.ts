@@ -189,10 +189,33 @@ export function parsePedigree(text: string): DiagramAST {
     i++;
   }
 
+  // A flag identifies one pair in a family. More than two members is ambiguous:
+  // do not guess which children share a birth simply from declaration order.
+  const twinGroups = new Map<string, Set<string>>();
+  for (const relationship of relationships.filter(r => r.type === "parent-child")) {
+    const twin = individualsMap.get(relationship.to)?.properties?.twin;
+    if (!twin) continue;
+    const key = `${relationship.from}:${twin}`;
+    const group = twinGroups.get(key) ?? new Set<string>();
+    group.add(relationship.to);
+    twinGroups.set(key, group);
+  }
+  const paired = new Set<string>();
+  for (const members of twinGroups.values()) {
+    if (members.size !== 2) throw new PedigreeParseError("A twin flag must identify exactly two children of the same family and zygosity; multiple pairs need explicit birth-group support", rawLines.length);
+    const [from, to] = [...members];
+    const twin = individualsMap.get(from)?.properties?.twin;
+    relationships.push({ type: twin === "twin-mz" ? "twin-identical" : "twin-fraternal", from, to });
+    paired.add(from); paired.add(to);
+  }
+  if ([...individualsMap.values()].some(ind => ind.properties?.twin && !paired.has(ind.id))) {
+    throw new PedigreeParseError("Twin flags require two children declared under the same family", rawLines.length);
+  }
+
   return {
     type: "pedigree",
     individuals: Array.from(individualsMap.values()),
-    relationships,
+    relationships: [...new Map(relationships.map(relationship => [`${relationship.type}:${relationship.from}:${relationship.to}`, relationship])).values()],
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     legend: legend.length > 0 ? legend : undefined,
     legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
@@ -244,10 +267,15 @@ function splitProps(propsStr: string): string[] {
   const result: string[] = [];
   let current = "";
   let parenDepth = 0;
+  let quoted = false;
+  let escaped = false;
   for (const ch of propsStr) {
-    if (ch === "(") parenDepth++;
-    if (ch === ")") parenDepth--;
-    if (ch === "," && parenDepth === 0) {
+    if (escaped) { current += ch; escaped = false; continue; }
+    if (quoted && ch === "\\") { current += ch; escaped = true; continue; }
+    if (ch === '"') quoted = !quoted;
+    if (!quoted && ch === "(") parenDepth++;
+    if (!quoted && ch === ")") parenDepth--;
+    if (ch === "," && parenDepth === 0 && !quoted) {
       result.push(current);
       current = "";
     } else {
@@ -258,7 +286,7 @@ function splitProps(propsStr: string): string[] {
   return result;
 }
 
-function buildIndividual(id: string, propsStr: string | null, _lineNum: number): Individual {
+function buildIndividual(id: string, propsStr: string | null, lineNum: number): Individual {
   const ind: Individual = {
     id: id.toLowerCase(),
     label: id,
@@ -276,9 +304,17 @@ function buildIndividual(id: string, propsStr: string | null, _lineNum: number):
     if (VALID_SEX.has(lower)) {
       ind.sex = lower === "amab" ? "male" : lower === "afab" ? "female" : lower === "uaab" ? "unknown" : lower as Individual["sex"];
     } else if (VALID_STATUS.has(lower)) {
-      ind.status = lower as Individual["status"];
+      // Stillbirth includes death; an explicit deceased token cannot erase SB.
+      if (lower !== "deceased" || ind.status !== "stillborn") {
+        // VALID_STATUS contains only members of Individual's status union.
+        ind.status = lower as Individual["status"];
+      }
     } else if (GENETIC_STATUSES.has(lower)) {
       ind.geneticStatus = lower as GeneticStatus;
+    } else if (lower === "twin-mz" || lower === "twin-dz") {
+      ind.properties = { ...ind.properties, twin: lower };
+    } else if (lower === "donor-sperm" || lower === "donor-egg" || lower === "donor-embryo") {
+      ind.childType = lower;
     } else if (MARKERS.has(lower)) {
       if (!ind.markers) ind.markers = [];
       ind.markers.push(lower as IndividualMarker);
@@ -292,12 +328,17 @@ function buildIndividual(id: string, propsStr: string | null, _lineNum: number):
       const colonIdx = token.indexOf(":");
       const key = token.substring(0, colonIdx).trim().toLowerCase();
       const value = token.substring(colonIdx + 1).trim().replace(/^"|"$/g, "");
+      if (key === "twin" && value !== "twin-mz" && value !== "twin-dz") {
+        throw new PedigreeParseError("Unsupported twin value; use twin-mz or twin-dz", lineNum);
+      }
       if (key === "label") {
         ind.label = value;
       } else {
         if (!ind.properties) ind.properties = {};
         ind.properties[key] = value;
       }
+    } else if (token) {
+      throw new PedigreeParseError(`Unknown property '${token}'`, lineNum);
     }
   }
 
@@ -308,9 +349,11 @@ function mergeIndividual(existing: Individual, incoming: Individual): Individual
   return {
     ...existing,
     sex: incoming.sex !== "unknown" ? incoming.sex : existing.sex,
-    status: incoming.status !== "alive" ? incoming.status : existing.status,
+    status: existing.status === "stillborn" && incoming.status === "deceased"
+      ? "stillborn" : incoming.status !== "alive" ? incoming.status : existing.status,
     birthYear: incoming.birthYear ?? existing.birthYear,
     geneticStatus: incoming.geneticStatus ?? existing.geneticStatus,
+    childType: incoming.childType ?? existing.childType,
     markers: incoming.markers ?? existing.markers,
     conditions: incoming.conditions ?? existing.conditions,
     properties: { ...existing.properties, ...incoming.properties },

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1260" viewBox="0 0 1200 1260">
+<title>Consumer loan application decisioning and manual review</title>
+<defs>
+ <marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#1B2430"/></marker>
+ <style>
+  text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1B2430;font-size:13px;text-anchor:middle}
+  .title{font-size:21px;font-weight:600;text-anchor:start}.subtitle{font-size:12px;fill:#5F6B7A;text-anchor:start}
+  .node{stroke:#1B2430;stroke-width:1.5;fill:#FFFFFF;stroke-linejoin:round}
+  .end{fill:#DFEBE0}.decision{fill:#FBEDCE}.data{fill:#E2EDF9}
+  .edge{fill:none;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arrow)}
+  .rail{fill:none;stroke:#1B2430;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .pill{fill:#FFFFFF;stroke:#D8DFE8;stroke-width:1}
+  .outcome{font-size:11px;font-weight:500}.legend{font-size:11px;fill:#5F6B7A;text-anchor:start}
+ </style>
+</defs>
+<rect width="1200" height="1260" fill="#FFFFFF"/>
+<text class="title" x="56" y="52">Consumer loan application decisioning</text>
+<text class="subtitle" x="56" y="74">Consumer lending · identity verification, automated decisioning, manual review</text>
+<path d="M56 88H1144" stroke="#D8DFE8" stroke-width="1"/>
+<!-- Orthogonal routes; rejection branches share the outer left rail. -->
+<path class="edge" d="M780 148V184"/>
+<path class="edge" d="M780 236V284"/>
+<path class="rail" d="M696 330H64Q60 330 60 334V1036Q60 1040 64 1040H171Q175 1040 175 1044"/>
+<path class="edge" d="M175 1044V1058"/>
+<path class="edge" d="M780 376V410"/>
+<path class="edge" d="M780 472V500"/>
+<path class="rail" d="M675 565H60"/>
+<path class="edge" d="M780 630V735"/>
+<path class="edge" d="M727.5 597.5V626Q727.5 630 723.5 630H454Q450 630 450 634V654"/>
+<path class="edge" d="M670 800H604Q600 800 600 796V684Q600 680 596 680H575"/>
+<path class="rail" d="M780 865V1018"/>
+<path class="edge" d="M450 706V785"/>
+<path class="edge" d="M365 835H305"/>
+<path class="edge" stroke-dasharray="6 5" d="M200 809V684Q200 680 204 680H325"/>
+<path class="edge" d="M450 885V915"/>
+<path class="rail" d="M355 965H60"/>
+<path class="rail" d="M545 965H776Q780 965 780 969"/>
+<path class="edge" d="M780 1018V1054"/>
+<path class="edge" d="M780 1106V1153"/>
+<!-- All thirteen DSL nodes. -->
+<rect class="node end" x="683" y="104" width="194" height="44" rx="22"/>
+<text x="780" y="131">Application submitted</text>
+<rect class="node" x="712" y="184" width="136" height="52" rx="4"/>
+<text x="780" y="215">Verify identity</text>
+<path class="node decision" d="M780 284 864 330 780 376 696 330Z"/>
+<text x="780" y="326"><tspan x="780">Identity</tspan><tspan x="780" dy="17">verified?</tspan></text>
+<path class="node data" d="M690 420C690 407 870 407 870 420V462C870 475 690 475 690 462Z"/>
+<ellipse class="node data" cx="780" cy="420" rx="90" ry="10"/>
+<text x="780" y="447">Run credit check</text>
+<path class="node decision" d="M780 500 885 565 780 630 675 565Z"/>
+<text x="780" y="561"><tspan x="780">Credit score</tspan><tspan x="780" dy="17">meets policy?</tspan></text>
+<path class="node decision" d="M780 735 890 800 780 865 670 800Z"/>
+<text x="780" y="796"><tspan x="780">Debt-to-income</tspan><tspan x="780" dy="17">within limit?</tspan></text>
+<rect class="node" x="325" y="654" width="250" height="52" rx="4"/>
+<path class="rail" d="M336 654V706M564 654V706"/>
+<text x="450" y="685">Manual underwriting review</text>
+<path class="node decision" d="M450 785 535 835 450 885 365 835Z"/>
+<text x="450" y="831"><tspan x="450">Request more</tspan><tspan x="450" dy="17">evidence?</tspan></text>
+<rect class="node" x="95" y="809" width="210" height="52" rx="4"/>
+<text x="200" y="840">Collect supporting documents</text>
+<path class="node decision" d="M450 915 545 965 450 1015 355 965Z"/>
+<text x="450" y="961"><tspan x="450">Approved by</tspan><tspan x="450" dy="17">underwriter?</tspan></text>
+<rect class="node end" x="80" y="1058" width="190" height="44" rx="22"/>
+<text x="175" y="1085">Decline application</text>
+<rect class="node" x="694" y="1054" width="172" height="52" rx="4"/>
+<text x="780" y="1085">Generate loan offer</text>
+<rect class="node end" x="711" y="1153" width="138" height="44" rx="22"/>
+<text x="780" y="1180">Offer issued</text>
+<!-- Outcome pills sit beside, never on, their edges. -->
+<g><rect class="pill" x="650" y="305" width="28" height="19" rx="5"/><text class="outcome" x="664" y="318">No</text></g>
+<g><rect class="pill" x="792" y="384" width="34" height="19" rx="5"/><text class="outcome" x="809" y="397">Yes</text></g>
+<g><rect class="pill" x="629" y="540" width="28" height="19" rx="5"/><text class="outcome" x="643" y="553">No</text></g>
+<g><rect class="pill" x="792" y="666" width="34" height="19" rx="5"/><text class="outcome" x="809" y="679">Yes</text></g>
+<g><rect class="pill" x="532" y="605" width="72" height="19" rx="5"/><text class="outcome" x="568" y="618">Borderline</text></g>
+<g><rect class="pill" x="629" y="775" width="28" height="19" rx="5"/><text class="outcome" x="643" y="788">No</text></g>
+<g><rect class="pill" x="792" y="893" width="34" height="19" rx="5"/><text class="outcome" x="809" y="906">Yes</text></g>
+<g><rect class="pill" x="318" y="810" width="34" height="19" rx="5"/><text class="outcome" x="335" y="823">Yes</text></g>
+<g><rect class="pill" x="462" y="890" width="28" height="19" rx="5"/><text class="outcome" x="476" y="903">No</text></g>
+<g><rect class="pill" x="310" y="940" width="28" height="19" rx="5"/><text class="outcome" x="324" y="953">No</text></g>
+<g><rect class="pill" x="562" y="940" width="34" height="19" rx="5"/><text class="outcome" x="579" y="953">Yes</text></g>
+<!-- Symbol vocabulary, matching the exemplar's quiet legend. -->
+<g transform="translate(957 1010)">
+<text class="legend" x="0" y="0" style="font-weight:600;letter-spacing:1px">LEGEND</text>
+<rect class="node end" x="0" y="22" width="34" height="15" rx="7.5"/><text class="legend" x="46" y="34">Start / end</text>
+<rect class="node" x="0" y="48" width="34" height="15" rx="3"/><text class="legend" x="46" y="60">Process step</text>
+<path class="node decision" d="M17 74 34 81.5 17 89 0 81.5Z"/><text class="legend" x="46" y="86">Decision</text>
+<path class="node data" d="M0 105C0 100 34 100 34 105V113C34 119 0 119 0 113Z"/><ellipse class="node data" cx="17" cy="105" rx="17" ry="4"/><text class="legend" x="46" y="112">System of record</text>
+<rect class="node" x="0" y="126" width="34" height="15" rx="3"/><path class="rail" d="M5 126V141M29 126V141"/><text class="legend" x="46" y="138">Predefined process</text>
+<path class="rail" stroke-dasharray="6 5" d="M0 160H34"/><text class="legend" x="46" y="164">Rework loop</text>
+</g>
+</svg>

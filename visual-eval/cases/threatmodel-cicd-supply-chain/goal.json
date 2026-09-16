@@ -1,0 +1,40 @@
+{
+  "id": "threatmodel-cicd-supply-chain",
+  "type": "threatmodel",
+  "title": "CI CD Supply Chain STRIDE",
+  "goal": "A practitioner can visually assess the CI CD Supply Chain STRIDE scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "dfd-elements",
+      "severity": "blocker",
+      "must": "External entities, processes, and data stores use visibly distinct DFD shapes."
+    },
+    {
+      "id": "trust-boundaries",
+      "severity": "blocker",
+      "must": "Named dashed trust boundaries visibly group the public, edge, and internal security zones."
+    },
+    {
+      "id": "crossing-flows",
+      "severity": "major",
+      "must": "Data flows crossing between trust zones are visibly highlighted as boundary crossings."
+    },
+    {
+      "id": "stride-badges",
+      "severity": "major",
+      "must": "Visible STRIDE letter badges correspond to the DFD element types, including SR for externals and STRIDE for processes."
+    },
+    {
+      "id": "security-flows",
+      "severity": "minor",
+      "must": "Arrowed, labelled data flows make the system's sensitive request, identity, data, or audit path readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-threatmodel-target.mjs`, which draws all six STRIDE cases from one kit so the set is one drawing repeated. A STRIDE threat model of CI CD Supply Chain STRIDE, drawn as a data-flow diagram over 3 trust zones: Developer Internet, Build Zone, Production. 2 external entities are drawn as rectangles, 2 processes as circles, and 3 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 6 data flows, 4 cross a trust boundary — Software Developer to Source Repository, CI Runner to Source Repository, CI Runner to Package Registry, CI Runner to Artifact Store — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite. Notation follows `docs/reference/46-THREAT-MODEL-STRIDE-STANDARD.md` and the DFD vocabulary it inherits from `31-DFD-STANDARD.md` §5: external entity = rectangle, process = circle, data store = two parallel horizontal lines with the label between, data flow = labelled arrow. The two things the engine is meant to compute are shown outright — every element wears the STRIDE letters that apply to its kind, and the flows that cross a trust boundary are counted in the footer. Trust boundaries are drawn neutral and red is spent only on those crossings: Microsoft's tool tints the boundary itself red, but the standard doc leaves the choice open and reserving red for the crossing is what keeps the danger signal sharp. Flow labels are placed by searching for a free position rather than by a fixed offset, and every label was checked against every other label, every element, every badge and the canvas edge: 0 overlaps."
+  }
+}

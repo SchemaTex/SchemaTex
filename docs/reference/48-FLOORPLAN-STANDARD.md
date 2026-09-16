@@ -24,6 +24,8 @@
 
 **Scope boundary (defensibility).** Schematex `floorplan` targets the **measurable-and-editable** 80%: classroom arrangements, event seating, small residential/commercial plans, with industry-standard symbols. It does **not** compete for "dream home concept art" (multimodal image models win there) and does **not** attempt construction-document precision (CAD wins there).
 
+**The dividing line that makes a DSL work here: the author gives the shell, the engine fills it.** Rooms, their sizes, and their positions come from the text. From there the engine is deterministic and does the tedious part — merging shared walls, hanging doors with correct swings, tiling chairs around tables, computing areas and dimension strings. The engine must never try to *infer* the building's own outline from a description of what is next to what. That inverse problem has no published standard to satisfy the way Newick or IEC 61131-3 pin down the other engines, and the academic algorithms for it (rectangular dualization, VLSI floorplanning, squarified treemaps) only produce *some* valid blocky arrangement, never the real to-scale building a professional asked for — some adjacency lists cannot even be drawn with rectangles.
+
 ---
 
 ## 1. Relation to Existing Schematex Engines
@@ -303,7 +305,7 @@ Working POC (parser + renderer + the three scenario renders, zero-dep JS): `../C
 
 ## 8. Non-Goals / Deferred (decided, not forgotten)
 
-- **Auto-layout from adjacency constraints only** ("kitchen next to living, no coordinates") — academic-grade problem (diffusion/MIP); v0.1 is explicit-dims + relative placement, which covers the observed demand. Revisit only with usage evidence.
+- **Auto-layout from adjacency constraints only** ("kitchen next to living, no coordinates") — this is the "derive the shell" case §0 rules out, and it stays out. v0.1 is explicit dimensions plus relative placement, which covers the observed demand.
 - **Polygon-vertex rooms** — `extend` (rect union) covers rectilinear L/T/U natively; a `polygon` vertex-list escape hatch (rectilinear-validated, later relaxed to 45°) is reserved syntax for a fast-follow. **Diagonal (45°) walls** = fast-follow; **curved/arc walls** = deferred — evidence: the RPLAN corpus (80k real residential plans) is fully axis-aligned, and RoomSketcher gates curved walls behind its Pro tier. Bay windows (the most common curved-ish feature) are covered by `window … type bay`.
 - **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred. Multi-floor plate assembly and stair registration are implemented in 1.0.2.
 - **Electrical wiring design** — conductor runs, home runs back to the panel, circuit numbering, and load calculations are not supported. `controls` shows which switch operates which luminaire; it does not say how cable is pulled. Panel internals and schedules remain `sld` / `circuit` territory.

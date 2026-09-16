@@ -1,0 +1,12 @@
+# Assumptions: flood warning, spillway operation, and evacuation are sequential conditional functions.
+# The failure probability shown at each node complements its success probability.
+eventtree "Dam overtopping"
+  initiating FLOOD "Extreme inflow exceeds reservoir design level" freq: 0.002
+  function WARN "Flood warning issued" p: 0.05
+  function SPILL "Emergency spillway operates" p: 0.03
+  function EVAC "Downstream evacuation succeeds" p: 0.10
+  outcome s s s -> "Controlled release; population safe"
+  outcome s s f -> "Controlled release; evacuation casualties"
+  outcome s f s -> "Overtopping; population evacuated"
+  outcome s f f -> "Overtopping; severe downstream losses"
+  outcome f * * -> "Unwarned flood; severe downstream losses"

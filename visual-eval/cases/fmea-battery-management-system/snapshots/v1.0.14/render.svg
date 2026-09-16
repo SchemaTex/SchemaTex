@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="872" height="574" viewBox="0 0 872 574" role="img" aria-label="Battery management system DFMEA" data-diagram-type="fmea" data-rank="ap" data-rows="5" data-flagged="2"><title>Battery management system DFMEA</title>
+<desc>FMEA worksheet (design); 5 failure-mode row(s); ranked by AP; highest risk: &quot;Overcharge protection does not trip&quot; S10·O2·D4 → RPN 80, AP High (action needed); 2 flagged.</desc>
+<style>.sx-fmea-bg { fill: #ffffff; }
+.sx-fmea-border { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-fmea-cell { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-cell-alt { fill: #f8fafc; }
+.sx-fmea-headcell { fill: #1d4e89; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-band { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-band-text { fill: #1e293b; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+.sx-fmea-headtext { fill: #ffffff; font-size: 10px; font-weight: 700; }
+.sx-fmea-text { fill: #0f172a; font-size: 10px; }
+.sx-fmea-risk-text { fill: #ffffff; font-size: 12px; font-weight: 700; }
+.sx-fmea-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-fmea-meta { fill: #334155; font-size: 10px; }
+.sx-fmea-legend { fill: #334155; font-size: 10px; font-weight: 600; }
+.sx-fmea-rpn-high { fill: #dc2626; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-rpn-mid { fill: #f59e0b; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-rpn-low { fill: #16a34a; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-high { fill: #dc2626; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-mid { fill: #f59e0b; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-low { fill: #16a34a; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-flag { fill: none; stroke: #b91c1c; stroke-width: 3;  }</style>
+<rect x="0" y="0" width="872" height="574" class="sx-fmea-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="416" y="30" class="sx-fmea-title" text-anchor="middle">Battery management system DFMEA</text>
+<text x="16" y="48" class="sx-fmea-meta">Number: DFMEA-BMS-042</text>
+<text x="16" y="68" class="sx-fmea-legend">Flag: ap &gt;= High    ·    Rank: AP</text>
+<rect x="16" y="80" width="28" height="40" class="sx-fmea-headcell"/>
+<text x="30" y="104" class="sx-fmea-headtext" text-anchor="middle">#</text>
+<rect x="44" y="80" width="130" height="40" class="sx-fmea-headcell"/>
+<text x="109" y="97.5" class="sx-fmea-headtext" text-anchor="middle">Item</text>
+<text x="109" y="110.5" class="sx-fmea-headtext" text-anchor="middle">Function</text>
+<rect x="174" y="80" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="234" y="104" class="sx-fmea-headtext" text-anchor="middle">Failure Mode</text>
+<rect x="294" y="80" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="354" y="104" class="sx-fmea-headtext" text-anchor="middle">Effect(s)</text>
+<rect x="414" y="80" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="427" y="104" class="sx-fmea-headtext" text-anchor="middle">S</text>
+<rect x="440" y="80" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="500" y="104" class="sx-fmea-headtext" text-anchor="middle">Cause(s)</text>
+<rect x="560" y="80" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="573" y="104" class="sx-fmea-headtext" text-anchor="middle">O</text>
+<rect x="586" y="80" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="646" y="104" class="sx-fmea-headtext" text-anchor="middle">Current Controls</text>
+<rect x="706" y="80" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="719" y="104" class="sx-fmea-headtext" text-anchor="middle">D</text>
+<rect x="732" y="80" width="38" height="40" class="sx-fmea-headcell"/>
+<text x="751" y="104" class="sx-fmea-headtext" text-anchor="middle">RPN</text>
+<rect x="770" y="80" width="46" height="40" class="sx-fmea-headcell"/>
+<text x="793" y="104" class="sx-fmea-headtext" text-anchor="middle">AP</text>
+<rect x="16" y="120" width="28" height="90" class="sx-fmea-cell" data-col="no" data-row="1"/>
+<text x="30" y="169" class="sx-fmea-text" text-anchor="middle">1</text>
+<rect x="294" y="120" width="120" height="90" class="sx-fmea-cell" data-col="effect" data-row="1"/>
+<text x="300" y="156" class="sx-fmea-text" text-anchor="start">Cell thermal</text>
+<text x="300" y="169" class="sx-fmea-text" text-anchor="start">runaway and pack</text>
+<text x="300" y="182" class="sx-fmea-text" text-anchor="start">fire</text>
+<rect x="414" y="120" width="26" height="90" class="sx-fmea-cell" data-col="sev" data-row="1"/>
+<text x="427" y="169" class="sx-fmea-text" text-anchor="middle">10</text>
+<rect x="440" y="120" width="120" height="90" class="sx-fmea-cell" data-col="cause" data-row="1"/>
+<text x="446" y="162.5" class="sx-fmea-text" text-anchor="start">Charge-limit</text>
+<text x="446" y="175.5" class="sx-fmea-text" text-anchor="start">software defect</text>
+<rect x="560" y="120" width="26" height="90" class="sx-fmea-cell" data-col="occ" data-row="1"/>
+<text x="573" y="169" class="sx-fmea-text" text-anchor="middle">2</text>
+<rect x="586" y="120" width="120" height="90" class="sx-fmea-cell" data-col="controls" data-row="1"/>
+<text x="592" y="136.5" class="sx-fmea-text" text-anchor="start">P: Requirements</text>
+<text x="592" y="149.5" class="sx-fmea-text" text-anchor="start">traceability and</text>
+<text x="592" y="162.5" class="sx-fmea-text" text-anchor="start">code review</text>
+<text x="592" y="175.5" class="sx-fmea-text" text-anchor="start">D:</text>
+<text x="592" y="188.5" class="sx-fmea-text" text-anchor="start">Hardware-in-the-lo</text>
+<text x="592" y="201.5" class="sx-fmea-text" text-anchor="start">op test</text>
+<rect x="706" y="120" width="26" height="90" class="sx-fmea-cell" data-col="det" data-row="1"/>
+<text x="719" y="169" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="732" y="120" width="38" height="90" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rpn" data-row="1" data-risk="rpn-mid"/>
+<text x="751" y="169" class="sx-fmea-risk-text" text-anchor="middle">80</text>
+<rect x="770" y="120" width="46" height="90" class="sx-fmea-cell sx-fmea-ap-high" data-col="ap" data-row="1" data-risk="ap-high"/>
+<text x="793" y="169" class="sx-fmea-risk-text" text-anchor="middle">High</text>
+<rect x="16" y="210" width="28" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="no" data-row="2"/>
+<text x="30" y="252.5" class="sx-fmea-text" text-anchor="middle">2</text>
+<rect x="294" y="210" width="120" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="effect" data-row="2"/>
+<text x="300" y="239.5" class="sx-fmea-text" text-anchor="start">Cell thermal</text>
+<text x="300" y="252.5" class="sx-fmea-text" text-anchor="start">runaway and pack</text>
+<text x="300" y="265.5" class="sx-fmea-text" text-anchor="start">fire</text>
+<rect x="414" y="210" width="26" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="sev" data-row="2"/>
+<text x="427" y="252.5" class="sx-fmea-text" text-anchor="middle">10</text>
+<rect x="440" y="210" width="120" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="cause" data-row="2"/>
+<text x="446" y="246" class="sx-fmea-text" text-anchor="start">Voltage-sense</text>
+<text x="446" y="259" class="sx-fmea-text" text-anchor="start">channel stuck low</text>
+<rect x="560" y="210" width="26" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="occ" data-row="2"/>
+<text x="573" y="252.5" class="sx-fmea-text" text-anchor="middle">2</text>
+<rect x="586" y="210" width="120" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="controls" data-row="2"/>
+<text x="592" y="226.5" class="sx-fmea-text" text-anchor="start">P: Redundant</text>
+<text x="592" y="239.5" class="sx-fmea-text" text-anchor="start">cell-voltage</text>
+<text x="592" y="252.5" class="sx-fmea-text" text-anchor="start">sensing</text>
+<text x="592" y="265.5" class="sx-fmea-text" text-anchor="start">D: End-of-line BMS</text>
+<text x="592" y="278.5" class="sx-fmea-text" text-anchor="start">diagnostic test</text>
+<rect x="706" y="210" width="26" height="77" class="sx-fmea-cell sx-fmea-cell-alt" data-col="det" data-row="2"/>
+<text x="719" y="252.5" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="732" y="210" width="38" height="77" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rpn" data-row="2" data-risk="rpn-mid"/>
+<text x="751" y="252.5" class="sx-fmea-risk-text" text-anchor="middle">60</text>
+<rect x="770" y="210" width="46" height="77" class="sx-fmea-cell sx-fmea-ap-high" data-col="ap" data-row="2" data-risk="ap-high"/>
+<text x="793" y="252.5" class="sx-fmea-risk-text" text-anchor="middle">High</text>
+<rect x="16" y="287" width="28" height="64" class="sx-fmea-cell" data-col="no" data-row="3"/>
+<text x="30" y="323" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="294" y="287" width="120" height="64" class="sx-fmea-cell" data-col="effect" data-row="3"/>
+<text x="300" y="316.5" class="sx-fmea-text" text-anchor="start">Cell damage and</text>
+<text x="300" y="329.5" class="sx-fmea-text" text-anchor="start">reduced pack life</text>
+<rect x="414" y="287" width="26" height="64" class="sx-fmea-cell" data-col="sev" data-row="3"/>
+<text x="427" y="323" class="sx-fmea-text" text-anchor="middle">8</text>
+<rect x="440" y="287" width="120" height="64" class="sx-fmea-cell" data-col="cause" data-row="3"/>
+<text x="446" y="316.5" class="sx-fmea-text" text-anchor="start">Thermal-model</text>
+<text x="446" y="329.5" class="sx-fmea-text" text-anchor="start">calibration error</text>
+<rect x="560" y="287" width="26" height="64" class="sx-fmea-cell" data-col="occ" data-row="3"/>
+<text x="573" y="323" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="586" y="287" width="120" height="64" class="sx-fmea-cell" data-col="controls" data-row="3"/>
+<text x="592" y="303.5" class="sx-fmea-text" text-anchor="start">P: Calibration</text>
+<text x="592" y="316.5" class="sx-fmea-text" text-anchor="start">control plan</text>
+<text x="592" y="329.5" class="sx-fmea-text" text-anchor="start">D: Environmental</text>
+<text x="592" y="342.5" class="sx-fmea-text" text-anchor="start">chamber validation</text>
+<rect x="706" y="287" width="26" height="64" class="sx-fmea-cell" data-col="det" data-row="3"/>
+<text x="719" y="323" class="sx-fmea-text" text-anchor="middle">5</text>
+<rect x="732" y="287" width="38" height="64" class="sx-fmea-cell sx-fmea-rpn-high" data-col="rpn" data-row="3" data-risk="rpn-high"/>
+<text x="751" y="323" class="sx-fmea-risk-text" text-anchor="middle">160</text>
+<rect x="770" y="287" width="46" height="64" class="sx-fmea-cell sx-fmea-ap-mid" data-col="ap" data-row="3" data-risk="ap-mid"/>
+<text x="793" y="316.5" class="sx-fmea-risk-text" text-anchor="middle">Mediu</text>
+<text x="793" y="329.5" class="sx-fmea-risk-text" text-anchor="middle">m</text>
+<rect x="16" y="351" width="28" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="no" data-row="4"/>
+<text x="30" y="400" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="294" y="351" width="120" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="effect" data-row="4"/>
+<text x="300" y="393.5" class="sx-fmea-text" text-anchor="start">Cell damage and</text>
+<text x="300" y="406.5" class="sx-fmea-text" text-anchor="start">reduced pack life</text>
+<rect x="414" y="351" width="26" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="sev" data-row="4"/>
+<text x="427" y="400" class="sx-fmea-text" text-anchor="middle">8</text>
+<rect x="440" y="351" width="120" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="cause" data-row="4"/>
+<text x="446" y="393.5" class="sx-fmea-text" text-anchor="start">Temperature sensor</text>
+<text x="446" y="406.5" class="sx-fmea-text" text-anchor="start">open circuit</text>
+<rect x="560" y="351" width="26" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="occ" data-row="4"/>
+<text x="573" y="400" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="586" y="351" width="120" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="controls" data-row="4"/>
+<text x="592" y="367.5" class="sx-fmea-text" text-anchor="start">P: Sensor</text>
+<text x="592" y="380.5" class="sx-fmea-text" text-anchor="start">plausibility</text>
+<text x="592" y="393.5" class="sx-fmea-text" text-anchor="start">diagnostics</text>
+<text x="592" y="406.5" class="sx-fmea-text" text-anchor="start">D: Diagnostic</text>
+<text x="592" y="419.5" class="sx-fmea-text" text-anchor="start">fault-injection</text>
+<text x="592" y="432.5" class="sx-fmea-text" text-anchor="start">test</text>
+<rect x="706" y="351" width="26" height="90" class="sx-fmea-cell sx-fmea-cell-alt" data-col="det" data-row="4"/>
+<text x="719" y="400" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="732" y="351" width="38" height="90" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rpn" data-row="4" data-risk="rpn-mid"/>
+<text x="751" y="400" class="sx-fmea-risk-text" text-anchor="middle">72</text>
+<rect x="770" y="351" width="46" height="90" class="sx-fmea-cell sx-fmea-ap-low" data-col="ap" data-row="4" data-risk="ap-low"/>
+<text x="793" y="400" class="sx-fmea-risk-text" text-anchor="middle">Low</text>
+<rect x="16" y="441" width="28" height="77" class="sx-fmea-cell" data-col="no" data-row="5"/>
+<text x="30" y="483.5" class="sx-fmea-text" text-anchor="middle">5</text>
+<rect x="174" y="441" width="120" height="77" class="sx-fmea-cell" data-col="mode" data-row="5"/>
+<text x="180" y="477" class="sx-fmea-text" text-anchor="start">State-of-charge</text>
+<text x="180" y="490" class="sx-fmea-text" text-anchor="start">estimate incorrect</text>
+<rect x="294" y="441" width="120" height="77" class="sx-fmea-cell" data-col="effect" data-row="5"/>
+<text x="300" y="477" class="sx-fmea-text" text-anchor="start">Unexpected vehicle</text>
+<text x="300" y="490" class="sx-fmea-text" text-anchor="start">power limitation</text>
+<rect x="414" y="441" width="26" height="77" class="sx-fmea-cell" data-col="sev" data-row="5"/>
+<text x="427" y="483.5" class="sx-fmea-text" text-anchor="middle">6</text>
+<rect x="440" y="441" width="120" height="77" class="sx-fmea-cell" data-col="cause" data-row="5"/>
+<text x="446" y="477" class="sx-fmea-text" text-anchor="start">Current-sensor</text>
+<text x="446" y="490" class="sx-fmea-text" text-anchor="start">offset drift</text>
+<rect x="560" y="441" width="26" height="77" class="sx-fmea-cell" data-col="occ" data-row="5"/>
+<text x="573" y="483.5" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="586" y="441" width="120" height="77" class="sx-fmea-cell" data-col="controls" data-row="5"/>
+<text x="592" y="457.5" class="sx-fmea-text" text-anchor="start">P: Offset</text>
+<text x="592" y="470.5" class="sx-fmea-text" text-anchor="start">compensation</text>
+<text x="592" y="483.5" class="sx-fmea-text" text-anchor="start">algorithm</text>
+<text x="592" y="496.5" class="sx-fmea-text" text-anchor="start">D: End-of-line</text>
+<text x="592" y="509.5" class="sx-fmea-text" text-anchor="start">calibration check</text>
+<rect x="706" y="441" width="26" height="77" class="sx-fmea-cell" data-col="det" data-row="5"/>
+<text x="719" y="483.5" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="732" y="441" width="38" height="77" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rpn" data-row="5" data-risk="rpn-mid"/>
+<text x="751" y="483.5" class="sx-fmea-risk-text" text-anchor="middle">96</text>
+<rect x="770" y="441" width="46" height="77" class="sx-fmea-cell sx-fmea-ap-low" data-col="ap" data-row="5" data-risk="ap-low"/>
+<text x="793" y="483.5" class="sx-fmea-risk-text" text-anchor="middle">Low</text>
+<rect x="174" y="120" width="120" height="167" class="sx-fmea-cell" data-col="mode" data-row="1"/>
+<text x="180" y="137" class="sx-fmea-text" text-anchor="start">Overcharge</text>
+<text x="180" y="150" class="sx-fmea-text" text-anchor="start">protection does</text>
+<text x="180" y="163" class="sx-fmea-text" text-anchor="start">not trip</text>
+<rect x="174" y="287" width="120" height="154" class="sx-fmea-cell" data-col="mode" data-row="3"/>
+<text x="180" y="304" class="sx-fmea-text" text-anchor="start">Overtemperature</text>
+<text x="180" y="317" class="sx-fmea-text" text-anchor="start">detection delayed</text>
+<rect x="44" y="120" width="130" height="398" class="sx-fmea-cell" data-col="item" data-row="1"/>
+<text x="50" y="137" class="sx-fmea-text" text-anchor="start">Battery management</text>
+<text x="50" y="150" class="sx-fmea-text" text-anchor="start">system</text>
+<text x="50" y="163" class="sx-fmea-text" text-anchor="start">— Monitor cells and</text>
+<text x="50" y="176" class="sx-fmea-text" text-anchor="start">prevent operation</text>
+<text x="50" y="189" class="sx-fmea-text" text-anchor="start">outside safe limits</text>
+<rect x="16" y="120" width="800" height="90" class="sx-fmea-flag" data-flagged="true" data-rpn="80" data-ap="High"/>
+<rect x="16" y="210" width="800" height="77" class="sx-fmea-flag" data-flagged="true" data-rpn="60" data-ap="High"/>
+<rect x="16" y="80" width="800" height="438" class="sx-fmea-border"/></g></svg>

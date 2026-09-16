@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-technical-debt",
+  "type": "causalloop",
+  "title": "Technical-debt spiral",
+  "goal": "A product team can see how delivery pressure reinforces technical debt.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The debt-spiral loop is visibly marked reinforcing (R)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The closed loop visibly connects pressure, shortcutting, debt, effort, and pressure."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The defect-rate branch is visibly connected to development effort."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Loop arrows and variable labels are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/causalloop/ideal.svg (sha256 dd3e7464cebc). Delay hashes placed on their curve using the quadratic midpoint. Loop labels matched by polarity; unmatched source declarations are reported, not silently attached to the wrong loop. Footer and loop labels separated. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

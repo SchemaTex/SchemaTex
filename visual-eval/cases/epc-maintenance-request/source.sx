@@ -1,0 +1,20 @@
+# Scenario: a facilities team handles a maintenance request that may need spare parts.
+epc "Facility maintenance request"
+  event E1 "Fault reported"
+  function F1 "Log work order"
+  event E2 "Work order logged"
+  function F2 "Diagnose fault"
+  xor X1
+  event E3 "Parts needed"
+  event E4 "Repairable on site"
+  function F3 "Order parts"
+  event E5 "Parts delivered"
+  xor X2
+  function F4 "Carry out repair"
+  event E6 "Repair done"
+  function F5 "Close work order"
+  event E7 "Work order closed"
+  E1 -> F1 -> E2 -> F2 -> X1
+  X1 -> E3 -> F3 -> E5 -> X2
+  X1 -> E4 -> X2
+  X2 -> F4 -> E6 -> F5 -> E7

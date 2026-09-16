@@ -1,0 +1,43 @@
+# Scenario: SaaS customer-success team investigates a spike in small-business cancellations.
+fishbone "Small-business customer churn causes"
+
+effect "Monthly churn rose to 6.4%"
+
+category people "People"
+category process "Process"
+category product "Product"
+category policy "Policy"
+category place "Place"
+category promotion "Promotion"
+
+people: "Onboarding specialist capacity constrained"
+  - "Two specialists left in Q2"
+people: "No owner for at-risk accounts"
+people: "Support replies slower than promised"
+
+process: "First-value milestone not tracked"
+  - "Activation undefined for small teams"
+process: "No health review before renewal"
+process: "Cancellation runs without a save offer"
+process: "Reviews only for accounts above 50k"
+
+product: "Export workflow fails for large files"
+  - "Times out above 50k rows"
+product: "Integrations break after vendor updates"
+product: "Approvals missing on mobile"
+product: "Small-team bugs never triaged"
+
+policy: "Price increase communicated late"
+  - "In-app banner only, no email"
+policy: "Annual terms renew without notice"
+policy: "Seat minimum raised at renewal"
+
+place: "Support hours miss APAC customers"
+  - "No follow-the-sun rota"
+place: "Help centre only in English"
+place: "EU data residency unavailable"
+
+promotion: "Trial promise overstates automation"
+  - "Demo shows unreleased features"
+promotion: "Discounted cohorts churn at renewal"
+promotion: "Partner leads arrive unqualified"

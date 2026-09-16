@@ -1,0 +1,9 @@
+# Assumptions: the trait is autosomal recessive; both unaffected parents are confirmed heterozygous carriers.
+# Their affected child has genotype aa, while the other children have no confirmed carrier status.
+pedigree "Autosomal recessive carrier couple"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, unaffected]
+    II-2 [female, affected, proband]
+    II-3 [male, unaffected]

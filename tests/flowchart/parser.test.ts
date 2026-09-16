@@ -172,3 +172,18 @@ style A fill:#f9f,stroke:#333`);
     expect(a?.style?.["stroke"]).toBe("#333");
   });
 });
+
+describe("production asymmetric nodes", () => {
+  test.each([
+    "A --> C>Output]",
+    "A --> >C([Output])",
+  ])("parses %s as an asymmetric flag", (statement) => {
+    const ast = parseFlowchart(`flowchart TD\n${statement}`);
+    expect(ast.nodes.find((node) => node.id === "C")).toMatchObject({ shape: "asymmetric", label: "Output" });
+    expect(ast.edges[0]).toMatchObject({ from: "A", to: "C" });
+  });
+
+  test("stadium shape remains a stadium", () => {
+    expect(parseFlowchart("flowchart TD\nA --> C([Output])").nodes[1]?.shape).toBe("stadium");
+  });
+});

@@ -1,0 +1,16 @@
+# Concept parking layout in feet. Counts are design-intent labels and not a code-compliance certification.
+siteplan "Cedar Point Retail · Access and Parking" unit ft
+parcel site "Retail Parcel" points 0,0 440,0 440,310 0,310 fill #F7F5EF
+road highway "Cedar Avenue" from -20,285 to 460,285 width 30
+structure retail "Retail Building · 24,000 sf" points 115,45 330,45 330,145 115,145
+parking north "North Parking · 54 bays" points 55,155 390,155 390,225 55,225 fill #E3F2FD
+parking accessible "Accessible bays · 4" points 115,150 165,150 165,175 115,175 fill #BBDEFB
+driveway entry "Primary entry aisle" points 45,285 45,225 390,225 390,285 width 24
+driveway service "Service access" points 355,285 355,145 width 18
+walkway walk "Accessible route" points 140,175 140,145 width 5
+entry front at 220,145 size 14 "Customer entrance"
+dim "440 ft frontage" from 0,325 to 440,325
+callout "Loading access" at 405,110 to 355,145
+north
+scale 50
+legend on

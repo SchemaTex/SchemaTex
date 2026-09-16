@@ -1,0 +1,81 @@
+{
+  "id": "pid-water-treatment",
+  "type": "pid",
+  "title": "Water treatment P&ID symbol coverage",
+  "goal": "An instrument engineer can read the process line from source to discharge and identify every tagged item.",
+  "rubric": [
+    {
+      "id": "no-line-through-body",
+      "severity": "blocker",
+      "must": "No process or signal line passes through the inside of an equipment or instrument symbol."
+    },
+    {
+      "id": "flow-direction",
+      "severity": "major",
+      "must": "Every process line carries an arrowhead showing flow direction."
+    },
+    {
+      "id": "instrument-bubbles-legible",
+      "severity": "major",
+      "must": "Every instrument bubble's tag text fits inside the bubble and is readable."
+    },
+    {
+      "id": "tag-attachment",
+      "severity": "major",
+      "must": "Each equipment tag sits next to the item it names, with no ambiguity about which item it belongs to."
+    },
+    {
+      "id": "signal-vs-process",
+      "severity": "minor",
+      "must": "Instrument signal lines are visually distinct from process piping (dashed or thinner)."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap, and no text is crossed by a line."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex, which preferred its own SVG over the generated picture. Every tag, line and instrument in the source is present, with arrowheads on all piping. Reviewed and corrected: the dosing line's arrowhead sat on the filter's own outline, where it could not be seen."
+  },
+  "audit": {
+    "reviewedBy": "a process engineer reviewing a P&ID before HAZOP",
+    "at": "2026-09-07T19:05:46.104Z",
+    "verdict": "flawed",
+    "findings": [
+      {
+        "severity": "major",
+        "what": "The diaphragm dosing pump has no discharge overpressure protection or injection non-return valve.",
+        "why": "A blocked injection connection can overpressure the dosing line. Process pressure can also drive water backward into the chemical system.",
+        "fix": "Add a suitably rated relief valve returning to TK-201 and a non-return valve at the injection point; confirm any integral pump protection provides equivalent protection."
+      },
+      {
+        "severity": "major",
+        "what": "The filter feed, backwash supply and drain are permanently connected without isolation valves.",
+        "why": "There is no defined filtration or backwash operating configuration. Water can escape to the sump or enter the backwash tank, and backwash cannot be directed reliably through the media.",
+        "fix": "Add isolation valves on the filter feed, chemical injection, backwash and drain connections. Use XV-101 for product isolation only if suitable, and define the valve positions for filtration, backwash and maintenance."
+      },
+      {
+        "severity": "major",
+        "what": "FIC-101 commands XV-101 but receives no flow measurement.",
+        "why": "The flow controller cannot close its loop or regulate filtered-water flow without a measured input.",
+        "fix": "Add a tagged flow transmitter on the filtered-water line and connect its measurement signal to FIC-101."
+      },
+      {
+        "severity": "major",
+        "what": "P-101 has no shown protection against a closed outlet or loss of suction water.",
+        "why": "Closing XV-101 can leave the transfer pump running at zero flow; emptying TK-101 can cause dry running and pump damage.",
+        "fix": "Add a TK-101 low-level pump trip and inhibit or stop P-101 when the discharge path is closed. Confirm the pump's minimum-flow requirement and provide protection if operation below it remains possible."
+      },
+      {
+        "severity": "major",
+        "what": "The pumps cannot be isolated, and the filter has no shown high-point vent.",
+        "why": "Pump maintenance requires draining connected tanks or pipework. The filter cannot be reliably vented during filling or checked and relieved of trapped pressure before opening.",
+        "fix": "Add pump suction and discharge isolation valves and safe bleed points, plus a valved high-point vent on F-101; retain its drain with the isolation valve described above."
+      }
+    ]
+  }
+}

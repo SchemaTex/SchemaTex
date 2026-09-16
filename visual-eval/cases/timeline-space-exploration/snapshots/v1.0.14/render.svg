@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 284" width="960" height="284" class="st-timeline st-timeline-swimlane" data-diagram-type="timeline" data-style="swimlane" role="graphics-document"><title>Timeline — Space Exploration Milestones</title>
+<desc>Schematex timeline diagram</desc>
+<defs><style>
+    .st-timeline { 
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+      --st-axis: #334155;
+      --st-axis-label: #475569;
+      --st-era-label: #0f172a;
+      --st-lane-stripe: #f1f5f9;
+      --st-marker-ring: #2563eb;
+      --st-marker-fill: #ffffff;
+      --st-milestone-fill: #d97706;
+      --st-pin-shaft: #94a3b8;
+      --st-card-bg: #ffffff;
+      --st-card-stroke: #cbd5e1;
+      --st-card-text: #0f172a;
+      --st-legend-bg: #f8fafc;
+      --st-legend-stroke: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif; }
+    .st-title { font-size: 16px; font-weight: 600; fill: var(--schematex-text); }
+    .st-axis-line { stroke: var(--st-axis); stroke-width: 1.5; fill: none; }
+    .st-axis-tick { stroke: var(--st-axis); stroke-width: 1; opacity: 0.55; }
+    .st-axis-label { font-size: 11px; fill: var(--st-axis-label); }
+    .st-era-rect { opacity: 0.55; }
+    .st-era-strip { opacity: 0.14; }
+    .st-era-label { font-size: 11px; font-weight: 500; fill: var(--st-era-label); }
+    .st-event-dot { stroke: var(--st-marker-fill); stroke-width: 1.5; }
+    .st-event-label { font-size: 12px; fill: var(--schematex-text); }
+    .st-range-bar { opacity: 0.88; }
+    .st-range-label { font-size: 11px; fill: #fff; font-weight: 500; }
+    .st-milestone { stroke: var(--st-marker-fill); stroke-width: 2; }
+    .st-milestone-label { font-size: 12px; fill: var(--schematex-text); font-weight: 600; }
+    .st-track-label { font-size: 12px; font-weight: 600; fill: var(--schematex-text); }
+    .st-lane-stripe { fill: var(--st-lane-stripe); opacity: 0.6; }
+    .st-callout-line { stroke: var(--st-axis); stroke-width: 0.8; stroke-dasharray: 2 2; opacity: 0.5; fill: none; }
+    .st-callout-text { font-size: 10.5px; fill: var(--schematex-text-muted); }
+    .st-label-leader { stroke: var(--st-axis); stroke-width: 0.75; opacity: 0.35; fill: none; }
+    .st-icon { font-size: 14px; }
+    /* Gantt */
+    .st-pin-shaft { stroke: var(--st-pin-shaft); stroke-width: 1.25; stroke-dasharray: 3 2; fill: none; }
+    .st-pin-label { font-size: 11.5px; fill: var(--schematex-text); font-weight: 500; }
+    .st-pin-head { stroke: var(--st-marker-fill); stroke-width: 1.5; }
+    .st-lane-label { font-size: 11px; fill: var(--schematex-text-muted); font-weight: 500; }
+    .st-legend-box { fill: var(--st-legend-bg); stroke: var(--st-legend-stroke); stroke-width: 1; }
+    .st-legend-title { font-size: 11px; font-weight: 600; fill: var(--schematex-text-muted); }
+    .st-legend-label { font-size: 11px; fill: var(--schematex-text); }
+    /* Lollipop */
+    .st-card { fill: var(--st-card-bg); stroke: var(--st-card-stroke); stroke-width: 1; }
+    .st-card-title { font-size: 12px; font-weight: 600; fill: var(--st-card-text); }
+    .st-card-date { font-size: 10.5px; fill: var(--schematex-text-muted); }
+    .st-card-icon { font-size: 16px; }
+    .st-stem { stroke: var(--st-axis); stroke-width: 1.25; opacity: 0.55; fill: none; }
+    .st-lp-marker-ring { stroke-width: 2.5; }
+    .st-lp-marker-core { stroke: none; }
+    .sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: ew-resize; }
+    .sx-native-handle:hover, .sx-native-handle.sx-interactive-selected { fill: #dbeafe; stroke-width: 2; }
+  </style></defs>
+<text x="480" y="26" text-anchor="middle" class="st-title">Space Exploration Milestones</text>
+
+<g class="st-track-labels"><text x="128" y="94" text-anchor="end" class="st-track-label">Earth Orbit</text>
+<text x="128" y="130" text-anchor="end" class="st-track-label">Moon</text>
+<text x="128" y="166" text-anchor="end" class="st-track-label">Deep Space</text>
+<text x="128" y="202" text-anchor="end" class="st-track-label">Mars</text></g><g class="st-lanes"><rect x="140" y="76" width="780" height="28" class="st-lane-stripe"/>
+<rect x="140" y="148" width="780" height="28" class="st-lane-stripe"/></g><g class="st-ranges"></g><g class="st-points"><path d="M155.00,80.00 L157.35,86.76 L164.51,86.91 L158.80,91.24 L160.88,98.09 L155.00,94.00 L149.12,98.09 L151.20,91.24 L145.49,86.91 L152.65,86.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-2"/>
+<circle cx="195.76604204560124" cy="90" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-3"/>
+<path d="M291.54,116.00 L293.89,122.76 L301.05,122.91 L295.35,127.24 L297.42,134.09 L291.54,130.00 L285.66,134.09 L287.74,127.24 L282.03,122.91 L289.19,122.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-5"/>
+<circle cx="330.94589421961416" cy="126" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-6"/>
+<circle cx="385.66917643077704" cy="162" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-8"/>
+<circle cx="529.7620659024584" cy="162" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-9"/>
+<circle cx="615.2597182860275" cy="198" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-11"/>
+<path d="M888.85,188.00 L891.20,194.76 L898.36,194.91 L892.66,199.24 L894.73,206.09 L888.85,202.00 L882.97,206.09 L885.05,199.24 L879.34,194.91 L886.50,194.76 Z" fill="#d97706" class="st-milestone" data-event-id="ev-12"/>
+<circle cx="904.9999999999991" cy="198" r="5" fill="#2563eb" class="st-event-dot" data-event-id="ev-13"/></g><g class="st-labels"><text x="155.0000000000009" y="76" text-anchor="middle" class="st-milestone-label">Sputnik 1</text>
+<text x="195.76604204560124" y="108" text-anchor="middle" class="st-event-label">First human orbital flight</text>
+<text x="291.54244744300263" y="144" text-anchor="middle" class="st-milestone-label">Apollo 11 lunar landing</text>
+<line x1="330.94589421961416" y1="132" x2="330.94589421961416" y2="148" class="st-label-leader"/>
+<text x="330.94589421961416" y="158" text-anchor="middle" class="st-event-label">Apollo 17 final Moonwalk</text>
+<text x="385.66917643077704" y="180" text-anchor="middle" class="st-event-label">Voyager 1 launch</text>
+<text x="529.7620659024584" y="148" text-anchor="middle" class="st-event-label">Pale Blue Dot image</text>
+<text x="615.2597182860275" y="184" text-anchor="middle" class="st-event-label">Mars Pathfinder landing</text>
+<text x="888.8522059134526" y="184" text-anchor="middle" class="st-milestone-label">Perseverance rover landing</text>
+<text x="904.9999999999991" y="216" text-anchor="middle" class="st-event-label">JWST first images</text></g><g class="st-notes"></g>
+<g class="st-axis"><line x1="140" y1="224" x2="920" y2="224" class="st-axis-line"/>
+<line x1="180.98240345163248" y1="224" x2="180.98240345163248" y2="229" class="st-axis-tick"/>
+<text x="180.98240345163248" y="242" text-anchor="middle" class="st-axis-label">1960</text>
+<line x1="296.7769975889357" y1="224" x2="296.7769975889357" y2="229" class="st-axis-tick"/>
+<text x="296.7769975889357" y="242" text-anchor="middle" class="st-axis-label">1970</text>
+<line x1="412.571591726239" y1="224" x2="412.571591726239" y2="229" class="st-axis-tick"/>
+<text x="412.571591726239" y="242" text-anchor="middle" class="st-axis-label">1980</text>
+<line x1="528.3661858635423" y1="224" x2="528.3661858635423" y2="229" class="st-axis-tick"/>
+<text x="528.3661858635423" y="242" text-anchor="middle" class="st-axis-label">1990</text>
+<line x1="644.1607800008455" y1="224" x2="644.1607800008455" y2="229" class="st-axis-tick"/>
+<text x="644.1607800008455" y="242" text-anchor="middle" class="st-axis-label">2000</text>
+<line x1="759.9553741381487" y1="224" x2="759.9553741381487" y2="229" class="st-axis-tick"/>
+<text x="759.9553741381487" y="242" text-anchor="middle" class="st-axis-label">2010</text>
+<line x1="875.749968275452" y1="224" x2="875.749968275452" y2="229" class="st-axis-tick"/>
+<text x="875.749968275452" y="242" text-anchor="middle" class="st-axis-label">2020</text></g>
+</svg>

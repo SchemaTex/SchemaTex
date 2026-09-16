@@ -1,0 +1,24 @@
+floorplan "Compact Studio Apartment" unit m
+north
+wall exterior thickness 0.30
+wall interior thickness 0.12
+room studio "Studio Living / Sleep / Cook" at 0,0 size 4.6x5.2
+room bath "Bathroom" right-of studio size 1.8x2.2
+
+door studio south from start 0.35 width 0.9 id entry hinge left swing in
+door between studio bath at 45% width 0.75 hinge right swing in
+window studio north at 45% width 1.8
+window studio west at 48% width 1.4
+window bath east at 50% width 0.8
+
+furniture bed-double in studio at 0.35,0.45 size 1.4x2.0
+furniture wardrobe in studio at 0.15,2.8 size 0.55x1.3
+furniture sofa in studio at 2.0,2.2 size 1.9x0.85
+furniture coffee-table in studio at 2.15,3.15 size 0.8x0.5
+furniture counter in studio at 1.35,4.35 size 2.7x0.6
+furniture kitchen-sink in studio at 1.65,4.38 size 0.8x0.5
+furniture stove in studio at 2.85,4.35 size 0.7x0.6
+furniture fridge in studio at 3.85,3.45 size 0.65x0.75
+furniture toilet in bath at 0.75,0.18
+furniture sink in bath at 0.12,0.18
+furniture shower in bath at 0.85,1.15 size 0.8x0.8

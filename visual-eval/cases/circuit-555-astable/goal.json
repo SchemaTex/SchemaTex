@@ -1,0 +1,57 @@
+{
+  "id": "circuit-555-astable",
+  "type": "circuit",
+  "title": "555 astable LED flasher",
+  "goal": "Reads like a textbook schematic: IC pins on the correct sides, power at the top, ground at the bottom, no line crossing a component body.",
+  "rubric": [
+    {
+      "id": "no-wire-through-body",
+      "severity": "blocker",
+      "must": "No wire passes through the inside of a component symbol or the IC rectangle."
+    },
+    {
+      "id": "power-ground-convention",
+      "severity": "major",
+      "must": "The supply rail is drawn above the circuit and ground below it, following schematic convention."
+    },
+    {
+      "id": "pin-side-convention",
+      "severity": "major",
+      "must": "IC pins leave the chip body on a side consistent with their function; no pin stub is drawn inside the body."
+    },
+    {
+      "id": "labels-attached",
+      "severity": "major",
+      "must": "Each component's reference designator and value sits beside its own symbol, not overlapping a neighbour's."
+    },
+    {
+      "id": "orthogonal-wires",
+      "severity": "minor",
+      "must": "Wires run horizontally or vertically, with corners rather than diagonals."
+    },
+    {
+      "id": "no-text-overlap",
+      "severity": "major",
+      "must": "No two pieces of text overlap, and no text is crossed by a wire."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex, which preferred its own SVG over the generated picture. Checked against the netlist: all eight 555 pins land where the DSL puts them, and every value matches (BAT1 9 V, R1 10 kΩ, R2 100 kΩ, C1 10 µF, C2 10 nF, R3 470 Ω)."
+  },
+  "audit": {
+    "reviewedBy": "a practising electronics engineer checking a schematic before layout",
+    "at": "2026-09-07T19:03:15.133Z",
+    "verdict": "flawed",
+    "findings": [
+      {
+        "severity": "major",
+        "what": "U1 has no supply decoupling capacitor between pin 8 and pin 1.",
+        "why": "A bipolar 555 draws brief switching-current spikes that can disturb the supply and cause false triggering, especially with battery leads. C2 bypasses CTRL and does not provide supply decoupling. The [TI datasheet](https://www.ti.com/lit/ds/symlink/ne555.pdf) recommends 100 nF across the supply.",
+        "fix": "Add a 100 nF ceramic capacitor rated at least 16 V directly between pins 8 and 1, placed close to U1 with short connections."
+      }
+    ]
+  }
+}

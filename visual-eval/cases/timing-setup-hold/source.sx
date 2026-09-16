@@ -1,0 +1,5 @@
+# Scenario: a D flip-flop samples on the rising edge; data must be stable before (setup) and after (hold) each edge.
+timing "D flip-flop setup and hold" [hscale: 3]
+CLK: pppp
+D: x=x=x=x= data: ["D0", "D1", "D2", "D3"]
+Q: xx=.=.=. data: ["D0", "D1", "D2"]

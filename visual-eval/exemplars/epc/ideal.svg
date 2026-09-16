@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 951 1268" width="951" height="1268" role="img">
+  <title>Purchase to Pay — event-driven process chain (eEPC)</title>
+  <desc>An ARIS event-driven process chain read top to bottom. A purchase requisition is raised, purchasing checks budget and supplier, then an exclusive-or connector splits the flow: within the spending limit the cost centre owner approves, above it the finance head approves, and an exclusive-or join merges the two paths back into one approved requisition. A purchase order is issued, after which an AND connector runs two branches in parallel — the warehouse posts the goods receipt while accounts payable captures the supplier invoice — and an AND join synchronises them before the three-way match releases payment. Events are lilac hexagons, functions are green rounded rectangles, logical connectors are small grey circles, and the departments and documents attached to each function hang off its side on thin lines.</desc>
+  <defs><marker id="arw" viewBox="0 0 9 7.5" refX="9" refY="3.75" markerWidth="9" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 9 3.75 L 0 7.5 Z" fill="#1F1B2E"/></marker></defs>
+  <rect x="0" y="0" width="951" height="1268" fill="#FFFFFF"/>
+  <text x="83.1" y="40" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1F1B2E" text-anchor="start">Purchase to Pay</text>
+  <text x="83.1" y="60" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10" fill="#6B7280" text-anchor="start">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+  <line x1="83.1" y1="70" x2="868.8" y2="70" stroke="#E5E7EB" stroke-width="1"/>
+  <path d="M 479 124 L 479 154" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 204 L 479 234" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 262 L 479 284" fill="none" stroke="#1F1B2E" stroke-width="1.5"/>
+  <path d="M 479 284 L 359 284 L 359 314" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 284 L 599 284 L 599 314" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 359 360 L 359 390" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 599 360 L 599 390" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 359 440 L 359 470 L 479 470" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 599 440 L 599 470 L 479 470" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 479 470 L 479 492" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 520 L 479 550" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 596 L 479 626" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 676 L 479 706" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 752 L 479 782" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 810 L 479 832" fill="none" stroke="#1F1B2E" stroke-width="1.5"/>
+  <path d="M 479 832 L 359 832 L 359 862" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 832 L 599 832 L 599 862" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 359 912 L 359 942" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 599 912 L 599 942" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 359 988 L 359 1018 L 479 1018" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 599 988 L 599 1018 L 479 1018" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 479 1018 L 479 1040" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 1068 L 479 1098" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <path d="M 479 1148 L 479 1178" fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round" marker-end="url(#arw)"/>
+  <line x1="602" y1="179" x2="628" y2="179" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="681.3" cy="179" rx="53.3" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="681.3" y="182.8" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Purchasing</text>
+  <line x1="258" y1="415" x2="232" y2="415" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="157.6" cy="415" rx="74.4" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="157.6" y="418.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Cost centre owner</text>
+  <line x1="700" y1="415" x2="726" y2="415" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="770.2" cy="415" rx="44.2" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="770.2" y="418.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Finance</text>
+  <line x1="602" y1="651" x2="628" y2="651" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="681.3" cy="651" rx="53.3" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="681.3" y="654.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Purchasing</text>
+  <line x1="258" y1="887" x2="232" y2="887" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="181.8" cy="887" rx="50.2" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="181.8" y="890.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Warehouse</text>
+  <line x1="700" y1="887" x2="726" y2="887" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="797.4" cy="887" rx="71.4" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="797.4" y="890.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Accounts payable</text>
+  <line x1="602" y1="1123" x2="628" y2="1123" stroke="#6B7280" stroke-width="1"/>
+  <ellipse cx="699.4" cy="1123" rx="71.4" ry="19.0" fill="#FEF08A" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="699.4" y="1126.8" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Accounts payable</text>
+  <line x1="356" y1="179" x2="330" y2="179" stroke="#6B7280" stroke-width="1"/>
+  <rect x="183" y="162" width="147.0" height="34" rx="2" fill="#FFFFFF" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="256.5" y="182.8" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Purchase requisition</text>
+  <line x1="356" y1="651" x2="330" y2="651" stroke="#6B7280" stroke-width="1"/>
+  <rect x="219.3" y="634" width="110.7" height="34" rx="2" fill="#FFFFFF" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="274.6" y="654.9" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Purchase order</text>
+  <line x1="356" y1="1123" x2="330" y2="1123" stroke="#6B7280" stroke-width="1"/>
+  <rect x="207.2" y="1106" width="122.8" height="34" rx="2" fill="#FFFFFF" stroke="#1F1B2E" stroke-width="1.4"/>
+  <text x="268.6" y="1126.8" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#1F1B2E" text-anchor="middle">Supplier invoice</text>
+  <path d="M 371.0 78 L 587.0 78 L 602.0 101.0 L 587.0 124.0 L 371.0 124.0 L 356.0 101.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="479" y="105.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Purchase requisition raised</text>
+  <rect x="356" y="154" width="246" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="479" y="183.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Check budget and supplier</text>
+  <circle cx="479" cy="248" r="14" fill="#E5E7EB" stroke="#1F1B2E" stroke-width="1.4"/>
+  <path d="M 473.5 242.5 L 484.5 253.5 M 484.5 242.5 L 473.5 253.5" stroke="#1F1B2E" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 273.0 314 L 445.0 314 L 460.0 337.0 L 445.0 360.0 L 273.0 360.0 L 258.0 337.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="359" y="341.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Within spending limit</text>
+  <path d="M 513.0 314 L 685.0 314 L 700.0 337.0 L 685.0 360.0 L 513.0 360.0 L 498.0 337.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="599" y="341.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Above spending limit</text>
+  <rect x="258" y="390" width="202" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="359" y="419.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Approve at cost centre</text>
+  <rect x="498" y="390" width="202" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="599" y="419.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Approve by finance head</text>
+  <circle cx="479" cy="506" r="14" fill="#E5E7EB" stroke="#1F1B2E" stroke-width="1.4"/>
+  <path d="M 473.5 500.5 L 484.5 511.5 M 484.5 500.5 L 473.5 511.5" stroke="#1F1B2E" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 371.0 550 L 587.0 550 L 602.0 573.0 L 587.0 596.0 L 371.0 596.0 L 356.0 573.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="479" y="577.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Requisition approved</text>
+  <rect x="356" y="626" width="246" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="479" y="655.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Issue purchase order</text>
+  <path d="M 371.0 706 L 587.0 706 L 602.0 729.0 L 587.0 752.0 L 371.0 752.0 L 356.0 729.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="479" y="733.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Purchase order issued</text>
+  <circle cx="479" cy="796" r="14" fill="#E5E7EB" stroke="#1F1B2E" stroke-width="1.4"/>
+  <path d="M 473 801 L 479 790 L 485 801" fill="none" stroke="#1F1B2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="258" y="862" width="202" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="359" y="891.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Post goods receipt</text>
+  <rect x="498" y="862" width="202" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="599" y="891.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Capture supplier invoice</text>
+  <path d="M 273.0 942 L 445.0 942 L 460.0 965.0 L 445.0 988.0 L 273.0 988.0 L 258.0 965.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="359" y="969.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Goods receipt posted</text>
+  <path d="M 513.0 942 L 685.0 942 L 700.0 965.0 L 685.0 988.0 L 513.0 988.0 L 498.0 965.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="599" y="969.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Invoice captured</text>
+  <circle cx="479" cy="1054" r="14" fill="#E5E7EB" stroke="#1F1B2E" stroke-width="1.4"/>
+  <path d="M 473 1059 L 479 1048 L 485 1059" fill="none" stroke="#1F1B2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="356" y="1098" width="246" height="50" rx="9" fill="#BBF7D0" stroke="#1F1B2E" stroke-width="1.4"/>
+    <text x="479" y="1127.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Match invoice and release payment</text>
+  <path d="M 371.0 1178 L 587.0 1178 L 602.0 1201.0 L 587.0 1224.0 L 371.0 1224.0 L 356.0 1201.0 Z" fill="#E9D5FF" stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round"/>
+    <text x="479" y="1205.2" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="#1F1B2E" text-anchor="middle">Supplier paid</text>
+</svg>

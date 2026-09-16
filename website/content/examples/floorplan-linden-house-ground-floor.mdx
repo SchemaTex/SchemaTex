@@ -1,0 +1,92 @@
+---
+title: House ground floor — six rooms, 92 m²
+description: "Ground floor of a two-storey house on a 10 × 9.2 m footprint: exterior and interior wall weights, hinged, double, pocket and sliding doors, a cased opening, windows, a stair, and furnished kitchen, bathroom and utility rooms."
+diagram: floorplan
+standard: Architectural Graphic Standards · Neufert, Architects' Data · ISO 128 / ISO 129
+industry: [residential, construction]
+persona: For the homeowner or designer drafting a house plan in text
+complexity: 4
+tags: [floorplan, residential, house, doors, windows, stairs, kitchen, bathroom]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Linden House — Ground Floor" unit m
+  north
+  wall exterior thickness 0.30
+  wall interior thickness 0.12
+
+  room living "Living Room" at 0,0 size 5.8x4.4
+  room kitchen "Kitchen / Dining" right-of living size 4.2x4.4
+  room guest "Guest Bedroom" at 0,4.4 size 3.4x4.8
+  room hall "Hall" right-of guest size 2.4x4.8
+  room bath "Bathroom" right-of hall size 2.2x4.8
+  room utility "Utility" right-of bath size 2.0x4.8
+
+  door hall south from start 0.25 width 0.95 id front hinge left swing in
+  door between living hall at 50% width 1.4 type double
+  door between guest hall from start 0.9 width 0.85 hinge left
+  door between bath hall from start 0.3 width 0.8 type pocket
+  door between utility kitchen at 40% width 0.8 hinge right
+  door utility east at 72% width 0.9 hinge right swing in
+  door kitchen north from start 0.3 width 2.2 type sliding id patio
+  opening between living kitchen at 45% width 1.6
+
+  window living north at 40% width 2.0
+  window living west at 50% width 1.6
+  window kitchen east at 35% width 1.2
+  window guest west at 45% width 1.4
+  window guest south at 50% width 1.4
+  window bath south at 40% width 0.9
+
+  furniture rug in living at 0.9,1.0 size 2.8x2.0
+  furniture sofa in living at 1.2,3.3 size 2.2x0.9 rotate 180
+  furniture armchair in living at 1.0,0.5 size 0.8x0.8
+  furniture armchair in living at 2.8,0.5 size 0.8x0.8
+  furniture coffee-table in living at 1.8,1.9 size 1.0x0.6
+  furniture bookshelf in living at 0.15,3.05 size 0.35x1.2
+
+  furniture counter in kitchen at 3.55,0.9 size 0.6x3.0
+  furniture kitchen-sink in kitchen at 3.45,1.29 size 0.8x0.5 rotate 90
+  furniture dishwasher in kitchen at 3.55,2.0 size 0.6x0.6
+  furniture stove in kitchen at 3.55,2.95 size 0.6x0.6
+  furniture fridge in kitchen at 3.45,0.15 size 0.7x0.7
+  furniture dining-table in kitchen at 0.9,2.3 size 1.6x0.9
+
+  furniture bed-double in guest at 0.65,0.15 size 1.4x2.0
+  furniture nightstand in guest at 0.17,0.2 size 0.45x0.45
+  furniture nightstand in guest at 2.1,0.2 size 0.45x0.45
+  furniture wardrobe in guest at 2.72,2.4 size 0.6x1.8
+
+  furniture stairs in hall at 1.4,1.35 size 0.9x3.3 rotate 180
+
+  furniture vanity in bath at 0.75,0.12 size 1.2x0.55
+  furniture toilet in bath at 1.57,1.0 size 0.4x0.7 rotate 90
+  furniture shower in bath at 1.2,2.7 size 0.9x0.9
+  furniture bathtub in bath at 0.15,3.9 size 1.7x0.75
+
+  furniture washer in utility at 0.12,0.9
+  furniture dryer in utility at 0.12,1.6
+  furniture counter in utility at 0.12,2.35 size 0.65x1.2
+---
+
+## Scenario
+
+The ground floor of Linden House, a small two-storey home: living room, open kitchen and dining, a guest bedroom, a hall with the stair to the upper floor, a bathroom and a utility room. Six rooms, 92.0 m². The plan uses the whole residential drawing kit — two wall thicknesses, several door types, windows, a stair, and kitchen and bathroom fixtures.
+
+## Annotation key
+
+- `unit m` and `north` — metres, with a north arrow
+- `wall exterior thickness 0.30` / `wall interior thickness 0.12` — the two wall weights
+- `room id "Name" at x,y size WxH` — a room placed by its corner; `right-of` places it beside another room
+- `door hall south from start 0.25 width 0.95 id front hinge left swing in` — an outside door on one wall of a room, with its position, hinge side and swing
+- `door between A B at 50% width 1.4 type double` — a door in the wall two rooms share; `type pocket` and `type sliding` change the symbol
+- `opening between living kitchen` — a doorway with no door
+- `window room side at 40% width 2.0` — a window on one wall of a room
+- `furniture kind in room at x,y size WxH rotate 180` — a fixture or furniture piece placed inside a room; `stairs` is placed the same way
+
+## How to read
+
+North is up. The living room and kitchen/dining face the garden to the north and share an open doorway; a sliding door leads from the dining area outside. The front door on the south wall opens into the hall, which holds the stair and reaches the living room through double doors, the guest bedroom through a hinged door, and the bathroom through a pocket door. The utility room connects to the kitchen and has its own side door to the outside.

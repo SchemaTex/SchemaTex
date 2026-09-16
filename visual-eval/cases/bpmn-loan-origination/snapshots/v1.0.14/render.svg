@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="436" height="564" viewBox="0 0 436 564" class="schematex-bpmn"><title>Loan Origination</title>
+<desc>BPMN LR — 1 pool(s), 8 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#94a3b8"/></marker></defs>
+<g class="schematex-bpmn-pool"><rect x="16" y="16" width="404" height="532" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="532" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="282" transform="rotate(-90 29 282)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Bank</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="16" width="356" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="16" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="126" transform="rotate(-90 53 126)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Clerk</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="236" width="356" height="312" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="236" width="22" height="312" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="392" transform="rotate(-90 53 392)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Underwriter</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 80 L 215.7 80 L 215.7 80 L 246.4 80" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 172 L 225.5 172 L 225.5 300 L 262 300" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,172 189,167 194,172 189,177" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="225.5" y="230" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 167 194 L 167 330 L 317 330 L 317 466" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 163 198 L 171 190" stroke="#334155" stroke-width="1.5"/>
+<text x="242" y="324" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 392 L 244 392 L 244 392 L 299 392" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,392 189,387 194,392 189,397" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="244" y="386" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 189 392 L 244 392 L 244 484 L 299 484" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 185 396 L 193 388" stroke="#334155" stroke-width="1.5"/>
+<text x="244" y="432" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-event kind-start trigger-none"><circle cx="167" cy="80" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<text x="167" y="112" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Application received</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="246.39999999999998" y="50" width="141.20000000000005" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Check completeness</tspan></text>
+<g class="marker-user"><circle cx="259.4" cy="62" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 254.39999999999998 69 Q 259.4 64 264.4 69" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,150 189,172 167,194 145,172" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 162.76 L 176.24 181.24 M 176.24 162.76 L 157.76 181.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="144" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Complete?</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="262" y="270" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="300" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Score risk</tspan></text>
+<g class="marker-service"><circle cx="275" cy="283" r="4" fill="none" stroke="#334155" stroke-width="1"/>
+<circle cx="275" cy="283" r="1.5" fill="#334155"/>
+<path d="M 275 277 L 275 279 M 275 287 L 275 289 M 269 283 L 271 283 M 279 283 L 281 283" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="112" y="270" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="167" y="300" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="167" dy="0">Review loan</tspan></text>
+<g class="marker-user"><circle cx="125" cy="282" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 120 289 Q 125 284 130 289" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,370 189,392 167,414 145,392" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 382.76 L 176.24 401.24 M 176.24 382.76 L 157.76 401.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="364" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Approve?</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="317" cy="392" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="317" y="424" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Approved</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="317" cy="484" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="317" y="516" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Rejected</text></g></svg>

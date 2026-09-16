@@ -1,0 +1,78 @@
+{
+  "id": "playbook-basketball-pick-roll",
+  "type": "playbook",
+  "variant": "basketball",
+  "title": "High pick and roll",
+  "goal": "A practitioner can read this play at a glance: High pick and roll.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/basketball exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents a complete high pick-and-roll: player 5 screens for ball-handler 1, 1 dribbles around the screen, 5 rolls toward the basket, a dashed pocket pass reaches the roll path, and the final shot points to the rim. Player 3’s corner cut and man-defense markers are also visible without materially misleading connections.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:06.120Z",
+      "targetHash": "2ca22f620b12",
+      "sourceHash": "1a46884dec95",
+      "exemplarHash": "dd7d605bd8ac",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title “High Pick and Roll” is prominent, and the central screen, roll, pocket pass, and shot sequence visibly depicts that play."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "A recognizable half-court diagram uses numbered offense circles, red defense X marks, a ball marker, screen symbol, dribble path, cut arrows, dashed pass, shot arrow, and a legend."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The flow can be followed from player 1 and the ball, through the dribble around player 5’s screen, into the pocket pass, player 5’s roll, and the shot at the rim."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The title and key labels “Screen,” “Roll,” “Pocket pass,” and “Shot” are legible and placed beside their corresponding visible actions."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Distinct line styles separate dribbling, passing, player movement, screening, and shooting; their endpoints and arrow directions do not visibly imply an unintended play connection."
+        }
+      ]
+    }
+  }
+}

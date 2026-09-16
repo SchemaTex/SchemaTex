@@ -9,6 +9,10 @@ import type {
 } from "../../core/types";
 import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#"];
 
 export class EntityParseError extends Error {
   constructor(message: string) {
@@ -39,17 +43,6 @@ const ENTITY_TYPE_ALIAS: Record<string, EntityType> = {
   placeholder: "placeholder",
   tbf: "placeholder",
 };
-
-function stripComment(s: string): string {
-  let out = "";
-  let inQuote = false;
-  for (const ch of s) {
-    if (ch === '"') inQuote = !inQuote;
-    if (ch === "#" && !inQuote) break;
-    out += ch;
-  }
-  return out;
-}
 
 function stripQuotes(v: string): string {
   const t = v.trim();
@@ -109,7 +102,7 @@ function joinBrackets(lines: string[]): string[] {
   let buf = "";
   let depth = 0;
   for (const raw of lines) {
-    const line = stripComment(raw);
+    const line = stripLineComment(raw, COMMENT_MARKERS);
     if (!line.trim() && depth === 0) {
       if (buf) {
         out.push(buf);

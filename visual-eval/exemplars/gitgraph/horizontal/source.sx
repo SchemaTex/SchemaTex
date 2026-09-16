@@ -1,0 +1,26 @@
+gitgraph LR
+  commit id: "Release 2.3.0" tag: "v2.3.0"
+  branch develop
+  checkout develop
+  commit id: "Add product search API"
+  branch feature/saved-carts
+  checkout feature/saved-carts
+  commit id: "Persist carts per user"
+  commit id: "Restore cart on sign-in"
+  checkout main
+  branch hotfix/2.3.1
+  checkout hotfix/2.3.1
+  commit id: "Fix VAT rounding on refunds" type: HIGHLIGHT
+  checkout main
+  merge hotfix/2.3.1 id: "Merge hotfix/2.3.1" tag: "v2.3.1"
+  checkout develop
+  merge hotfix/2.3.1 id: "Merge hotfix/2.3.1 into develop"
+  merge feature/saved-carts id: "Merge feature/saved-carts"
+  branch release/2.4
+  checkout release/2.4
+  commit id: "Bump version to 2.4.0"
+  commit id: "Fix checkout button copy"
+  checkout main
+  merge release/2.4 id: "Merge release/2.4" tag: "v2.4.0"
+  checkout develop
+  merge release/2.4 id: "Merge release/2.4 into develop"

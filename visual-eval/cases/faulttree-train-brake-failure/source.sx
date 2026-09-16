@@ -1,0 +1,14 @@
+# Assumptions: pneumatic and electronic brake channels are independent except for loss of train-line air.
+# A runaway condition requires loss of all available braking paths.
+faulttree "Train braking failure"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Train unable to achieve required braking" = AND(PNEUMATIC_BRAKE_LOSS, DYNAMIC_BRAKE_LOSS)
+  gate PNEUMATIC_BRAKE_LOSS "Pneumatic brake unavailable" = OR(BOTH_BOGIE_BRAKES_FAIL, TRAIN_LINE_AIR_LOSS)
+  gate BOTH_BOGIE_BRAKES_FAIL "Both bogie brake controllers fail" = AND(BOGIE_A_FAIL, BOGIE_B_FAIL)
+  gate DYNAMIC_BRAKE_LOSS "Dynamic brake unavailable" = OR(TRACTION_CONTROL_FAIL, TRACTION_POWER_LOSS)
+  basic BOGIE_A_FAIL "Bogie A brake controller fails" p: 0.006
+  basic BOGIE_B_FAIL "Bogie B brake controller fails" p: 0.006
+  basic TRAIN_LINE_AIR_LOSS "Train-line air pressure lost" p: 0.003
+  basic TRACTION_CONTROL_FAIL "Traction brake command fails" p: 0.004
+  basic TRACTION_POWER_LOSS "Traction power unavailable" p: 0.01

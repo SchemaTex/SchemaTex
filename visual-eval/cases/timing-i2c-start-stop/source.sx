@@ -1,0 +1,4 @@
+# Scenario: I2C address phase framed by a start condition (SDA falls while SCL is high) and a stop condition (SDA rises while SCL is high).
+timing "I2C start and stop conditions" [hscale: 2]
+SCL: 1pppppppppp1
+SDA: 10========01 data: ["A6", "A5", "A4", "A3", "A2", "A1", "A0", "R/W"]

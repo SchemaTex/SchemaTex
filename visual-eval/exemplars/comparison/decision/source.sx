@@ -1,0 +1,33 @@
+# Scenario: a logistics director chooses the site for a second distribution centre, scored against Reno as the datum.
+comparison "Site for the second distribution centre"
+mode: decision
+baseline: "Reno"
+option "Reno"
+option "Salt Lake City"
+option "Phoenix"
+option "Boise"
+criterion "Labour availability" weight: 5
+  Reno: 3
+  Salt Lake City: 5
+  Phoenix: 4
+  Boise: 2
+criterion "Two-day truck reach to customers" weight: 5
+  Reno: 3
+  Salt Lake City: 4
+  Phoenix: 4
+  Boise: 2
+criterion "Land and build cost" weight: 4
+  Reno: 3
+  Salt Lake City: 3
+  Phoenix: 4
+  Boise: 5
+criterion "State tax incentives" weight: 3
+  Reno: 4
+  Salt Lake City: 4
+  Phoenix: 3
+  Boise: 3
+criterion "Heat and water risk" weight: 2
+  Reno: 3
+  Salt Lake City: 4
+  Phoenix: 1
+  Boise: 4

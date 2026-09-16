@@ -1,0 +1,87 @@
+{
+  "id": "pid-steam-boiler-drum",
+  "type": "pid",
+  "title": "Steam boiler drum control",
+  "goal": "A boiler engineer can trace main steam, feedwater, safety relief, and the three-element level-control instruments.",
+  "rubric": [
+    {
+      "id": "steam-and-feed-paths",
+      "severity": "blocker",
+      "must": "The drum visibly connects to a main-steam line through FT-401E and a feedwater line through FT-402E and LV-401."
+    },
+    {
+      "id": "three-elements",
+      "severity": "blocker",
+      "must": "LT-401, FT-401, and FT-402 are all visibly shown with loop signals around the feedwater control arrangement."
+    },
+    {
+      "id": "feedwater-control",
+      "severity": "major",
+      "must": "LIC-401 visibly connects to LV-401 by a pneumatic command line."
+    },
+    {
+      "id": "feedwater-fail-position",
+      "severity": "major",
+      "must": "LV-401 visibly shows diaphragm actuation and FC fail position."
+    },
+    {
+      "id": "steam-isolation",
+      "severity": "major",
+      "must": "XV-401 is visibly in series on the main steam path downstream of the steam flow element."
+    },
+    {
+      "id": "safety-valve",
+      "severity": "minor",
+      "must": "PSV-401 is visibly connected to the drum steam space."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: the slash-marked pneumatic signal leaves the left edge of LIC-401, runs left to its riser, steps farther left above the drum, then descends to the LV-401 diaphragm actuator. It is continuous and visually distinguishable from the nearby PSV-401 relief piping; the feedwater and steam paths remain traceable.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:41:52.602035+00:00",
+      "targetHash": "a20bce991ef8",
+      "sourceHash": "a8524d39b04f",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "steam-and-feed-paths",
+          "verdict": "pass",
+          "evidence": "D-401 visibly connects rightward through FE-401 to the steam line and downward through LV-401 and FE-402 to the feedwater header."
+        },
+        {
+          "id": "three-elements",
+          "verdict": "pass",
+          "evidence": "LT-401, FT-401, and FT-402 are all visible, with dashed loop signal lines shown around LIC-401, FIC-402, and the feedwater control arrangement."
+        },
+        {
+          "id": "feedwater-control",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: the slash-marked pneumatic signal leaves the left edge of LIC-401, runs left to its riser, steps farther left above the drum, then descends to the LV-401 diaphragm actuator. It is continuous and visually distinguishable from the nearby PSV-401 relief piping; the feedwater and steam paths remain traceable."
+        },
+        {
+          "id": "feedwater-fail-position",
+          "verdict": "pass",
+          "evidence": "LV-401 visibly has a diaphragm actuator and an adjacent FC marking."
+        },
+        {
+          "id": "steam-isolation",
+          "verdict": "pass",
+          "evidence": "XV-401 is visibly installed in series downstream of FE-401 on the line to STEAM HEADER."
+        },
+        {
+          "id": "safety-valve",
+          "verdict": "pass",
+          "evidence": "PSV-401 is visibly connected by a DN50 branch to the top steam space of D-401, with discharge toward TO ATM."
+        }
+      ]
+    }
+  }
+}

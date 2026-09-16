@@ -1,0 +1,68 @@
+{
+  "id": "phylo-mock-unequal-rates",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Unequal evolutionary rates (mock)",
+  "goal": "Mock dataset (not empirical or user data). Compare strongly unequal terminal distances without turning the tree into a cladogram.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "rate-contrast",
+      "severity": "blocker",
+      "must": "Fast B and F extend farther horizontally than their slow sister taxa A and E."
+    },
+    {
+      "id": "three-pairs",
+      "severity": "blocker",
+      "must": "A/B, C/D and E/F remain separate sister pairs."
+    },
+    {
+      "id": "labels",
+      "severity": "major",
+      "must": "Six labels are readable despite the staggered tip positions."
+    },
+    {
+      "id": "scale-unit",
+      "severity": "major",
+      "must": "A visible scale identifies substitutions per site."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The visible phylogram preserves all three sister pairs, shows strongly unequal terminal branch distances for the fast versus slow taxa, keeps all six labels readable through dashed alignment guides, and includes a labeled substitutions/site scale bar.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:26:45.789Z",
+      "targetHash": "619d82b0121c",
+      "sourceHash": "09a05edf6633",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "rate-contrast",
+          "verdict": "pass",
+          "evidence": "Fast B extends much farther right than Slow A, and Fast F extends much farther right than Slow E."
+        },
+        {
+          "id": "three-pairs",
+          "verdict": "pass",
+          "evidence": "The branching visibly groups Slow A/Fast B, Medium C/Medium D, and Slow E/Fast F as three separate sister pairs."
+        },
+        {
+          "id": "labels",
+          "verdict": "pass",
+          "evidence": "All six taxon labels are clearly readable and aligned with their staggered branch tips."
+        },
+        {
+          "id": "scale-unit",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled “0.05 substitutions/site.”"
+        }
+      ]
+    }
+  }
+}

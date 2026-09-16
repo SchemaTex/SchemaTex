@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1340" height="470" viewBox="0 0 1340 470" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>I2C register read burst — timing diagram</title><rect width="1340" height="470" fill="#FFFFFF"/>
+<text x="24" y="44" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">I2C register read burst</text>
+<text x="24" y="70" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">Master reads two bytes from register 0x10 of the device at address 0x50  ·  WaveDrom signal notation</text>
+<line x1="180" y1="150" x2="180" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="236" y1="150" x2="236" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="292" y1="150" x2="292" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="348" y1="150" x2="348" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="404" y1="150" x2="404" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="460" y1="150" x2="460" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="516" y1="150" x2="516" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="572" y1="150" x2="572" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="628" y1="150" x2="628" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="684" y1="150" x2="684" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="740" y1="150" x2="740" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="796" y1="150" x2="796" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="852" y1="150" x2="852" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="908" y1="150" x2="908" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="964" y1="150" x2="964" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1020" y1="150" x2="1020" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1076" y1="150" x2="1076" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1132" y1="150" x2="1132" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1188" y1="150" x2="1188" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1244" y1="150" x2="1244" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="1300" y1="150" x2="1300" y2="388" stroke="#E8ECEF" stroke-width="1"/>
+<line x1="236" y1="124" x2="628" y2="124" stroke="#59636B" stroke-width="1"/>
+<line x1="236" y1="124" x2="236" y2="130" stroke="#59636B" stroke-width="1"/>
+<line x1="628" y1="124" x2="628" y2="130" stroke="#59636B" stroke-width="1"/>
+<text x="432" y="116" font-size="12" font-weight="600" text-anchor="middle" fill="#59636B">Write register pointer 0x10</text>
+<line x1="628" y1="124" x2="1244" y2="124" stroke="#59636B" stroke-width="1"/>
+<line x1="628" y1="124" x2="628" y2="130" stroke="#59636B" stroke-width="1"/>
+<line x1="1244" y1="124" x2="1244" y2="130" stroke="#59636B" stroke-width="1"/>
+<text x="936" y="116" font-size="12" font-weight="600" text-anchor="middle" fill="#59636B">Read two bytes, NACK the last one, stop</text>
+<text x="160" y="184" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">SCL</text>
+<text x="24" y="184" font-size="12" font-weight="600" text-anchor="start" fill="#59636B">Bus lines</text>
+<polyline points="180,164 292,164 292,194 306,194 306,164 334,164 334,194 362,194 362,164 390,164 390,194 418,194 418,164 446,164 446,194 474,194 474,164 502,164 502,194 530,194 530,164 558,164 558,194 586,194 586,164 614,164 614,194 642,194 642,164 670,164 670,194 698,194 698,164 726,164 726,194 754,194 754,164 782,164 782,194 810,194 810,164 838,164 838,194 866,194 866,164 894,164 894,194 922,194 922,164 950,164 950,194 978,194 978,164 1006,164 1006,194 1034,194 1034,164 1062,164 1062,194 1090,194 1090,164 1118,164 1118,194 1146,194 1146,164 1174,164 1174,194 1202,194 1202,164 1300,164" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<text x="160" y="240" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">SDA</text>
+<line x1="180" y1="220" x2="231" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="231" y1="220" x2="241" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="241" y1="220" x2="259" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="259" y1="220" x2="269" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="269" y1="250" x2="287" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="287" y1="250" x2="297" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="287" y1="250" x2="297" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="297" y1="220" x2="399" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="297" y1="250" x2="399" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="348" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">0x50 · W</text>
+<line x1="399" y1="220" x2="409" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="220" x2="409" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="250" x2="409" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="250" x2="409" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="409" y1="220" x2="455" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="409" y1="250" x2="455" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="432" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">ACK</text>
+<line x1="455" y1="220" x2="465" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="220" x2="465" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="250" x2="465" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="250" x2="465" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="465" y1="220" x2="567" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="465" y1="250" x2="567" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="516" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">Reg 0x10</text>
+<line x1="567" y1="220" x2="577" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="220" x2="577" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="250" x2="577" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="250" x2="577" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="577" y1="220" x2="623" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="577" y1="250" x2="623" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="600" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">ACK</text>
+<line x1="623" y1="220" x2="633" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="623" y1="250" x2="633" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="633" y1="220" x2="651" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="651" y1="220" x2="661" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="661" y1="250" x2="679" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="679" y1="250" x2="689" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="679" y1="250" x2="689" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="689" y1="220" x2="791" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="689" y1="250" x2="791" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="740" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">0x50 · R</text>
+<line x1="791" y1="220" x2="801" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="220" x2="801" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="250" x2="801" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="250" x2="801" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="801" y1="220" x2="847" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="801" y1="250" x2="847" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="824" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">ACK</text>
+<line x1="847" y1="220" x2="857" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="847" y1="220" x2="857" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="847" y1="250" x2="857" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="847" y1="250" x2="857" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="857" y1="220" x2="959" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="857" y1="250" x2="959" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="908" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">Data 0</text>
+<line x1="959" y1="220" x2="969" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="220" x2="969" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="250" x2="969" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="250" x2="969" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="969" y1="220" x2="1015" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="969" y1="250" x2="1015" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="992" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">ACK</text>
+<line x1="1015" y1="220" x2="1025" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="220" x2="1025" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="250" x2="1025" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="250" x2="1025" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1025" y1="220" x2="1127" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1025" y1="250" x2="1127" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="1076" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">Data 1</text>
+<line x1="1127" y1="220" x2="1137" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="220" x2="1137" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="250" x2="1137" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="250" x2="1137" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1137" y1="220" x2="1183" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1137" y1="250" x2="1183" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<text x="1160" y="240" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">NACK</text>
+<line x1="1183" y1="220" x2="1193" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1183" y1="250" x2="1193" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1193" y1="250" x2="1216.6" y2="250" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1216.6" y1="250" x2="1226.6" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1226.6" y1="220" x2="1239" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1239" y1="220" x2="1249" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1249" y1="220" x2="1300" y2="220" stroke="#20272B" stroke-width="1.5"/>
+<line x1="24" y1="272" x2="1316" y2="272" stroke="#CBD1D6" stroke-width="1"/>
+<text x="160" y="308" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">SDA driver</text>
+<text x="24" y="308" font-size="12" font-weight="600" text-anchor="start" fill="#59636B">Decoded</text>
+<line x1="180" y1="303" x2="231" y2="303" stroke="#20272B" stroke-width="1.5"/>
+<line x1="231" y1="303" x2="241" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="231" y1="303" x2="241" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="241" y1="288" x2="399" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="241" y1="318" x2="399" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="320" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Master</text>
+<line x1="399" y1="288" x2="409" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="288" x2="409" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="318" x2="409" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="399" y1="318" x2="409" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="409" y1="288" x2="455" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="409" y1="318" x2="455" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="432" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Slave</text>
+<line x1="455" y1="288" x2="465" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="288" x2="465" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="318" x2="465" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="455" y1="318" x2="465" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="465" y1="288" x2="567" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="465" y1="318" x2="567" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="516" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Master</text>
+<line x1="567" y1="288" x2="577" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="288" x2="577" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="318" x2="577" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="567" y1="318" x2="577" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="577" y1="288" x2="623" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="577" y1="318" x2="623" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="600" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Slave</text>
+<line x1="623" y1="288" x2="633" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="623" y1="288" x2="633" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="623" y1="318" x2="633" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="623" y1="318" x2="633" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="633" y1="288" x2="791" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="633" y1="318" x2="791" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="712" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Master</text>
+<line x1="791" y1="288" x2="801" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="288" x2="801" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="318" x2="801" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="791" y1="318" x2="801" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="801" y1="288" x2="959" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="801" y1="318" x2="959" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="880" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Slave</text>
+<line x1="959" y1="288" x2="969" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="288" x2="969" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="318" x2="969" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="959" y1="318" x2="969" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="969" y1="288" x2="1015" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="969" y1="318" x2="1015" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="992" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Master</text>
+<line x1="1015" y1="288" x2="1025" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="288" x2="1025" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="318" x2="1025" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1015" y1="318" x2="1025" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1025" y1="288" x2="1127" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1025" y1="318" x2="1127" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="1076" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Slave</text>
+<line x1="1127" y1="288" x2="1137" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="288" x2="1137" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="318" x2="1137" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1127" y1="318" x2="1137" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1137" y1="288" x2="1239" y2="288" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1137" y1="318" x2="1239" y2="318" stroke="#20272B" stroke-width="1.5"/>
+<text x="1188" y="308" font-size="12" font-weight="400" text-anchor="middle" fill="#59636B">Master</text>
+<line x1="1239" y1="288" x2="1249" y2="303" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1239" y1="318" x2="1249" y2="303" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1249" y1="303" x2="1300" y2="303" stroke="#20272B" stroke-width="1.5"/>
+<line x1="24" y1="336" x2="1316" y2="336" stroke="#CBD1D6" stroke-width="1"/>
+<text x="160" y="372" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BUSY</text>
+<text x="24" y="372" font-size="12" font-weight="600" text-anchor="start" fill="#59636B">Firmware</text>
+<polyline points="180,382 236,382 236,352 1244,352 1244,382 1300,382" fill="none" stroke="#20272B" stroke-width="1.5"/>
+<line x1="264" y1="150" x2="264" y2="262" stroke="#59636B" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="264" y="146" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">S</text>
+<line x1="656" y1="150" x2="656" y2="262" stroke="#59636B" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="656" y="146" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">Sr</text>
+<line x1="1221.6" y1="150" x2="1221.6" y2="262" stroke="#59636B" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="1221.6" y="146" font-size="12" font-weight="600" text-anchor="middle" fill="#20272B">P</text>
+<line x1="24" y1="404" x2="1316" y2="404" stroke="#CBD1D6" stroke-width="1"/>
+<text x="24" y="428" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">S start and P stop: SDA changes while SCL is high.  Sr repeated start.  ACK: the receiver pulls SDA low; NACK: SDA is left high.</text>
+<text x="24" y="446" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Byte fields are compressed: the eight data clocks of each byte are drawn as two.</text>
+</svg>

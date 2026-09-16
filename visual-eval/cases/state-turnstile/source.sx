@@ -1,0 +1,7 @@
+%% Textbook coin-operated turnstile; every transition carries its triggering event.
+stateDiagram-v2
+  [*] --> Locked
+  Locked --> Unlocked : coin
+  Locked --> Locked : push
+  Unlocked --> Locked : push
+  Unlocked --> Unlocked : coin

@@ -20,6 +20,10 @@ import type {
   PrismaSource,
   PrismaValidateCounts,
 } from "./types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//"];
 
 export class PrismaParseError extends Error {
   constructor(
@@ -43,7 +47,7 @@ function preprocess(src: string): RawLine[] {
   for (let i = 0; i < rows.length; i++) {
     const raw = rows[i] ?? "";
     // Strip end-of-line comments but preserve `#` inside quotes.
-    const stripped = stripComment(raw);
+    const stripped = stripLineComment(raw, COMMENT_MARKERS);
     if (!stripped.trim()) continue;
     kept.push({
       spaces: stripped.length - stripped.replace(/^\s+/, "").length,
@@ -64,20 +68,6 @@ function preprocess(src: string): RawLine[] {
     text: l.text,
     line: l.line,
   }));
-}
-
-function stripComment(raw: string): string {
-  // Lines starting with # or // are full-line comments.
-  const t = raw.trimStart();
-  if (t.startsWith("#") || t.startsWith("//")) return "";
-  // End-of-line `# …` (only if # is not inside quotes — sources/reasons can include "#" via quoting; keep simple: respect quotes).
-  let inQ = false;
-  for (let i = 0; i < raw.length; i++) {
-    const c = raw[i];
-    if (c === '"') inQ = !inQ;
-    else if (!inQ && c === "#") return raw.slice(0, i);
-  }
-  return raw;
 }
 
 function parseInt10(s: string, lineNum: number): number {

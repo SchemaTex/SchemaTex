@@ -1,0 +1,16 @@
+%% University enrolment schema using crow's-foot notation.
+erDiagram
+  STUDENT ||--o{ ENROLMENT : registers
+  COURSE ||--o{ SECTION : offers
+  SECTION ||--o{ ENROLMENT : receives
+  INSTRUCTOR ||--o{ SECTION : teaches
+  DEPARTMENT ||--o{ COURSE : owns
+  DEPARTMENT ||--o{ INSTRUCTOR : employs
+  TERM ||--o{ SECTION : schedules
+  STUDENT { int student_id PK string email string full_name }
+  ENROLMENT { int enrolment_id PK int student_id FK int section_id FK string grade }
+  COURSE { int course_id PK int department_id FK string course_code string title }
+  SECTION { int section_id PK int course_id FK int instructor_id FK int term_id FK string room }
+  INSTRUCTOR { int instructor_id PK int department_id FK string name }
+  DEPARTMENT { int department_id PK string name }
+  TERM { int term_id PK string name date starts_on }

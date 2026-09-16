@@ -9,6 +9,10 @@ import type {
 } from "../../core/types";
 import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//", "%%"];
 
 const STRUCTURED_CATEGORY_RE = new RegExp(
   `^category\\s+(${IDENTIFIER_SOURCE})\\s+("[^"]*"|[^\\s[]+)(?:\\s*(\\[.*\\]))?\\s*$`,
@@ -117,7 +121,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
   for (let i = 0; i < rawLines.length; i++) {
     const raw = rawLines[i] ?? "";
-    const line = stripComment(raw).trimEnd();
+    const line = stripLineComment(raw, COMMENT_MARKERS).trimEnd();
     if (!line.trim()) continue;
 
     const indent = countIndent(raw);
@@ -381,22 +385,6 @@ export function parseFishboneDSL(text: string): FishboneAST {
 }
 
 // ─── helpers ─────────────────────────────────────────────────
-
-function stripComment(s: string): string {
-  let out = "";
-  let inQuote = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i]!;
-    if (ch === '"') inQuote = !inQuote;
-    if (!inQuote) {
-      if (ch === "#") break;
-      if (ch === "/" && s[i + 1] === "/") break;
-      if (ch === "%" && s[i + 1] === "%") break;
-    }
-    out += ch;
-  }
-  return out;
-}
 
 function stripQuotes(v: string): string {
   const t = v.trim();

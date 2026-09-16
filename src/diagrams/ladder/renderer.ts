@@ -1,8 +1,5 @@
 import type {
   LadderAST,
-  LadderContact,
-  LadderCoil,
-  LadderFunctionBlock,
   RenderConfig,
   SourceRange,
 } from "../../core/types";
@@ -31,6 +28,11 @@ function buildCss(t: IT): string {
 .lt-ladder-fb { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 2; }
 .lt-ladder-fb-name { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: middle; }
 .lt-ladder-pin { font: 8px sans-serif; fill: ${t.stroke}; }
+.lt-ladder-fb-rule { stroke: ${t.textMuted}; stroke-width: 1; }
+.lt-ladder-fb-heading { text-anchor: start; }
+.lt-ladder-param-name { font: 8px sans-serif; fill: ${t.textMuted}; }
+.lt-ladder-param-value { font: 600 8px sans-serif; fill: ${t.text}; text-anchor: end; }
+.lt-ladder-operand { text-anchor: middle; }
 .lt-ladder-name { font: 9px sans-serif; fill: ${t.text}; text-anchor: middle; }
 .lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: ${t.accent}; text-anchor: middle; }
 .lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: ${t.error}; text-anchor: middle; }
@@ -38,8 +40,8 @@ function buildCss(t: IT): string {
 .lt-ladder-comment { font: italic 10px sans-serif; fill: ${t.textMuted}; }
 .lt-ladder-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-ladder-symbol-label { font: bold 10px sans-serif; fill: ${t.stroke}; text-anchor: middle; }
-.lt-ladder-rung-handle { fill: ${t.bg}; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
-.lt-ladder-rung-grip { fill: #2563eb; }
+.lt-ladder-rung-handle { fill: ${t.bg}; stroke: ${t.accent}; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: ${t.accent}; }
 `.trim();
 }
 
@@ -81,33 +83,49 @@ function labelsAbove(
   return pieces;
 }
 
-function renderContact(node: LadderLayoutNode): string {
-  const c = node.element as LadderContact;
+/** The instruction shares contact/coil anchors; only the strokes inside change. */
+function inlineInstruction(node: LadderLayoutNode, mnemonic: string): string[] {
   const { x, y, width: w, height: h } = node;
   const cy = y + h / 2;
-  const leftBarX = x + 4;
-  const rightBarX = x + w - 4;
-  const cx = x + w / 2;
-  const pieces: string[] = [];
-  pieces.push(el("line", { x1: x, y1: cy, x2: leftBarX, y2: cy, class: "lt-ladder-wire" }));
-  pieces.push(el("line", { x1: rightBarX, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }));
-  pieces.push(el("line", { x1: leftBarX, y1: y, x2: leftBarX, y2: y + h, class: "lt-ladder-element" }));
-  pieces.push(el("line", { x1: rightBarX, y1: y, x2: rightBarX, y2: y + h, class: "lt-ladder-element" }));
+  return [
+    el("line", { x1: x, y1: cy, x2: x + 1, y2: cy, class: "lt-ladder-wire" }),
+    el("line", { x1: x + w - 1, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }),
+    pathEl({ d: `M ${x + 5} ${y} H ${x + 1} V ${y + h} H ${x + 5}`, class: "lt-ladder-element lt-ladder-inline-bracket" }),
+    pathEl({ d: `M ${x + w - 5} ${y} H ${x + w - 1} V ${y + h} H ${x + w - 5}`, class: "lt-ladder-element lt-ladder-inline-bracket" }),
+    text({ x: x + w / 2, y: cy + 3, class: "lt-ladder-symbol-label" }, mnemonic),
+  ];
+}
 
-  if (c.contactType === "XIO") {
-    pieces.push(
-      el("line", {
-        x1: leftBarX + 2,
-        y1: y + h - 2,
-        x2: rightBarX - 2,
-        y2: y + 2,
-        class: "lt-ladder-element",
-      })
-    );
-  } else if (c.contactType === "ONS") {
-    pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, "↑"));
-  } else if (c.contactType === "OSF") {
-    pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, "↓"));
+function renderContact(node: LadderLayoutNode): string {
+  const c = node.element;
+  if (c.elementType !== "contact") return "";
+  const { x, y, width: w, height: h } = node;
+  const cy = y + h / 2;
+  const cx = x + w / 2;
+  const leftBarX = cx - h / 4;
+  const rightBarX = cx + h / 4;
+  const pieces: string[] = [];
+  if (c.contactType === "ONS") {
+    pieces.push(...inlineInstruction(node, "ONS"));
+  } else {
+    pieces.push(el("line", { x1: x, y1: cy, x2: leftBarX, y2: cy, class: "lt-ladder-wire" }));
+    pieces.push(el("line", { x1: rightBarX, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }));
+    pieces.push(el("line", { x1: leftBarX, y1: y, x2: leftBarX, y2: y + h, class: "lt-ladder-element lt-ladder-contact-blade" }));
+    pieces.push(el("line", { x1: rightBarX, y1: y, x2: rightBarX, y2: y + h, class: "lt-ladder-element lt-ladder-contact-blade" }));
+
+    if (c.contactType === "XIO") {
+      pieces.push(
+        el("line", {
+          x1: leftBarX,
+          y1: y + h - 2,
+          x2: rightBarX,
+          y2: y + 2,
+          class: "lt-ladder-element lt-ladder-negation",
+        })
+      );
+    } else if (c.contactType === "OSF") {
+      pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, "N"));
+    }
   }
 
   pieces.push(...labelsAbove(c.name, c.tag, cx, y));
@@ -120,25 +138,39 @@ function renderContact(node: LadderLayoutNode): string {
 }
 
 function renderCoil(node: LadderLayoutNode): string {
-  const c = node.element as LadderCoil;
+  const c = node.element;
+  if (c.elementType !== "coil") return "";
   const { x, y, width: w, height: h } = node;
   const cy = y + h / 2;
   const cx = x + w / 2;
   const pieces: string[] = [];
-  const leftArc = `M ${x + 6} ${y} A 10 ${h / 2} 0 0 0 ${x + 6} ${y + h}`;
-  const rightArc = `M ${x + w - 6} ${y} A 10 ${h / 2} 0 0 1 ${x + w - 6} ${y + h}`;
-  pieces.push(pathEl({ d: leftArc, class: "lt-ladder-coil" }));
-  pieces.push(pathEl({ d: rightArc, class: "lt-ladder-coil" }));
-  pieces.push(el("line", { x1: x, y1: cy, x2: x + 6, y2: cy, class: "lt-ladder-wire" }));
-  pieces.push(el("line", { x1: x + w - 6, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }));
+  if (c.coilType === "RES") {
+    pieces.push(...inlineInstruction(node, "RES"));
+  } else {
+    // Half-ellipse crowns sit two units inside the unchanged connection box.
+    // Bake the 1:2 arc aspect ratio into coordinates; never scale strokes/text.
+    const rx = h / 4;
+    const leftCrown = x + 2;
+    const rightCrown = x + w - 2;
+    const leftArc = `M ${leftCrown + rx} ${y} A ${rx} ${h / 2} 0 0 0 ${leftCrown + rx} ${y + h}`;
+    const rightArc = `M ${rightCrown - rx} ${y} A ${rx} ${h / 2} 0 0 1 ${rightCrown - rx} ${y + h}`;
+    pieces.push(pathEl({ d: leftArc, class: "lt-ladder-coil" }));
+    pieces.push(pathEl({ d: rightArc, class: "lt-ladder-coil" }));
+    pieces.push(el("line", { x1: x, y1: cy, x2: leftCrown, y2: cy, class: "lt-ladder-wire" }));
+    pieces.push(el("line", { x1: rightCrown, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }));
 
-  let inner = "";
-  if (c.coilType === "OTL") inner = "S";
-  else if (c.coilType === "OTU") inner = "R";
-  else if (c.coilType === "OTN") inner = "/";
-  else if (c.coilType === "RES") inner = "R";
-  if (inner) {
-    pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, inner));
+    let inner = "";
+    if (c.coilType === "OTL") inner = "L";
+    else if (c.coilType === "OTU") inner = "U";
+    else if (c.coilType === "OTN") {
+      pieces.push(el("line", {
+        x1: cx - h / 4, y1: y + h - 2, x2: cx + h / 4, y2: y + 2,
+        class: "lt-ladder-element lt-ladder-negation",
+      }));
+    }
+    if (inner) {
+      pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, inner));
+    }
   }
 
   pieces.push(...labelsAbove(c.name, c.tag, cx, y));
@@ -151,34 +183,46 @@ function renderCoil(node: LadderLayoutNode): string {
 }
 
 function renderCompare(node: LadderLayoutNode): string {
-  const fb = node.element as LadderFunctionBlock;
+  const fb = node.element;
+  if (fb.elementType !== "function_block") return "";
   const { x, y, width: w, height: h } = node;
   const cy = y + h / 2;
   const cx = x + w / 2;
   const pieces: string[] = [];
-  pieces.push(el("rect", { x, y, width: w, height: h, class: "lt-ladder-fb" }));
-  pieces.push(text({ x: cx, y: y + 12, class: "lt-ladder-fb-name" }, fb.fbType));
-  const entries = Object.entries(fb.params);
-  entries.slice(0, 2).forEach(([k, v], i) => {
+  const operators: Partial<Record<typeof fb.fbType, string>> = {
+    EQU: "=", NEQ: "≠", GRT: ">", LES: "<", GEQ: "≥", LEQ: "≤",
+  };
+  const leftBarX = cx - w / 4;
+  const rightBarX = cx + w / 4;
+  for (const bx of [leftBarX, rightBarX]) {
+    pieces.push(el("line", { x1: bx, y1: cy - 8, x2: bx, y2: cy + 8, class: "lt-ladder-element lt-ladder-contact-blade" }));
+  }
+  pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, operators[fb.fbType] ?? ""));
+  // IN1 is the upper operand even when the DSL lists IN2 first.
+  const operandOrder = (key: string): number => key === "IN1" ? 0 : key === "IN2" ? 1 : 2;
+  const entries = Object.entries(fb.params).sort(([a], [b]) => operandOrder(a) - operandOrder(b));
+  entries.slice(0, 2).forEach(([, v], i) => {
     pieces.push(
-      text({ x: x + 4, y: y + 22 + i * 9, class: "lt-ladder-pin" }, `${k}:${v}`)
+      text({ x: cx, y: i === 0 ? y + 6 : y + h - 1, class: "lt-ladder-pin lt-ladder-operand" }, String(v))
     );
   });
-  pieces.push(el("line", { x1: x - 2, y1: cy, x2: x, y2: cy, class: "lt-ladder-wire" }));
-  pieces.push(el("line", { x1: x + w, y1: cy, x2: x + w + 2, y2: cy, class: "lt-ladder-wire" }));
+  pieces.push(el("line", { x1: x, y1: cy, x2: leftBarX, y2: cy, class: "lt-ladder-wire" }));
+  pieces.push(el("line", { x1: rightBarX, y1: cy, x2: x + w, y2: cy, class: "lt-ladder-wire" }));
   pieces.push(text({ x: cx, y: y - 4, class: "lt-ladder-tag" }, fb.tag));
   return group({ "data-element": "compare", "data-tag": fb.tag }, pieces);
 }
 
 function renderFunctionBlock(node: LadderLayoutNode): string {
-  const fb = node.element as LadderFunctionBlock;
+  const fb = node.element;
+  if (fb.elementType !== "function_block") return "";
   const { x, y, width: w, height: h } = node;
   const cy = y + h / 2;
   const cx = x + w / 2;
   const pieces: string[] = [];
 
   pieces.push(el("rect", { x, y, width: w, height: h, class: "lt-ladder-fb" }));
-  pieces.push(text({ x: cx, y: y + 14, class: "lt-ladder-fb-name" }, fb.fbType));
+  pieces.push(text({ x: x + 4, y: y + 14, class: "lt-ladder-fb-name lt-ladder-fb-heading" }, fb.fbType));
+  pieces.push(el("line", { x1: x, y1: y + 20, x2: x + w, y2: y + 20, class: "lt-ladder-fb-rule" }));
 
   pieces.push(
     el("line", { x1: x - 6, y1: cy, x2: x, y2: cy, class: "lt-ladder-wire" })
@@ -190,7 +234,8 @@ function renderFunctionBlock(node: LadderLayoutNode): string {
   const entries = Object.entries(fb.params);
   entries.slice(0, 3).forEach(([k, v], i) => {
     pieces.push(
-      text({ x: x + 4, y: y + 28 + i * 9, class: "lt-ladder-pin" }, `${k}=${v}`)
+      text({ x: x + 4, y: y + 31 + i * 10, class: "lt-ladder-param-name" }, k),
+      text({ x: x + w - 4, y: y + 31 + i * 10, class: "lt-ladder-param-value" }, String(v))
     );
   });
 
@@ -253,8 +298,7 @@ export function renderLadder(ast: LadderAST, config?: RenderConfig): string {
     })
   );
 
-  for (let index = 0; index < layout.rungs.length; index++) {
-    const r = layout.rungs[index]!;
+  for (const [index, r] of layout.rungs.entries()) {
     const block = rungBlocks[index];
     if (config?.__scene && block) {
       const key = `ladder:rung:${r.rung.number}:order`;

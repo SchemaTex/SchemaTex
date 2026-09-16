@@ -16,6 +16,13 @@
 
 Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 → 开源获分发，MyMap.ai / ChatDiagram.com 集成变现（替换路径进行中）。
 
+### Diagram 优化的验收标准
+
+- **Vision 是最终验收标准。** 必须看实际渲染：器件、文字是否清晰，连接是否容易追踪，结构是否容易理解。测试通过、线更短、折弯或交叉更少，都不能代替视觉验收。
+- 每轮候选改动都检查整组案例的整体效果；发现视觉退步就继续修改或撤回，不能只展示改善的案例。未完成整组检查的实验不能作为已验收版本。
+- 不按案例 ID、标题、器件名称或 target 坐标写特殊分支。DSL 表达器件和连接语义，不要求 LLM 用坐标、曲线或细碎的 layout 参数补救引擎。
+- 区分“已修复局部问题”和“整体达到 target”；如实保留仍不合格的视觉发现，不用指标上涨宣称完成。
+
 ---
 
 ## 文档体系
@@ -51,7 +58,7 @@ Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 �
 ### 自主开发流程
 
 1. **读 impl doc** — `../CoCEO/schematex/impl/` 对应文件
-2. **写 tests FIRST** — 尤其 layout
+2. **先检查已有测试覆盖** — 非必要不另加测试；优先修改或合并已有测试。只有未覆盖的解析、计算、连接等实际功能风险才补 regression test。
 3. **实现** — 按 impl doc 步骤
 4. **过 quality gate** — `typecheck → test → lint → build`
 5. **更新 impl doc status** → `Implemented`
@@ -70,10 +77,11 @@ Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 �
 1. **零 runtime dependency** — 无 D3，无 dagre，无 parser generator。手写一切。
 2. **Strict TypeScript** — 无 `any`，无未注释 `as`。
 3. **语义 SVG** — `<title>` + `<desc>`，CSS class 可主题化，`data-*` 可交互。无 inline style。
-4. **Test-first for layout**。
+4. **不为每次改动机械新增测试**。保留语义、计算、连接和实际避障检查；文案、图标细节、固定像素与 SVG 路径外观由 vision 验收，不冻结成测试。
 5. **标准合规** — 详见各 `docs/reference/` 文件。
 6. **用 `src/core/svg.ts` builder** — 不拼接 raw SVG string。
 7. **文件命名** — `src/diagrams/{type}/{module}.ts`，`tests/{type}/{module}.test.ts`
+8. **DSL 保持 LLM friendly** — 生成时描述领域内容与关系；坐标、曲线选择、避让和文字间距由引擎负责，不通过逐项 DSL 配置补救布局。视觉优化不能按案例 ID、标题、固定元件编号或 target 坐标分支；用通用几何/拓扑规则和独立构造的测试验证。若 holdout 反馈参与修复，明确记录该集合已用于开发，不再声称它是独立验收。
 
 ---
 

@@ -1,0 +1,37 @@
+# Two protected office sites connected by an encrypted VPN across the public Internet.
+network "HQ to Branch Site-to-Site VPN"
+  layout: tiered
+  direction: lr
+  site hq "Headquarters" {
+    firewall hqfw "HQ Firewall"
+    router hqr "HQ Edge Router"
+    switch hqsw "HQ LAN Switch"
+    pc hqpc "HQ Analyst"
+  }
+  site branch "Branch Office" {
+    firewall brfw "Branch Firewall"
+    router brr "Branch Edge Router"
+    switch brsw "Branch LAN Switch"
+    pc brpc "Branch Analyst"
+    printer brpr "Branch Printer"
+  }
+  internet inet "Public Internet"
+  subnet hqnet "10.10.0.0/24" {
+    hqsw
+    hqpc
+  }
+  subnet brnet "10.20.0.0/24" {
+    brsw
+    brpc
+    brpr
+  }
+  hqpc -- hqsw : access vlan: 10
+  hqsw -- hqfw : trunk vlan: 10 1G
+  hqfw -- hqr : copper 1G
+  hqr -- inet : wan "HQ ISP"
+  inet -- brr : wan "Branch ISP"
+  brr -- brfw : copper 1G
+  brfw -- brsw : trunk vlan: 20 1G
+  brsw -- brpc : access vlan: 20
+  brsw -- brpr : access vlan: 20
+  hqfw -- brfw : vpn "IPsec AES-256"

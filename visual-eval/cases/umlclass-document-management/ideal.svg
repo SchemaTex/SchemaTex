@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Document management — ownership and access</title>
+<desc>Eight UML classifiers. Document composes one or more Pages and Versions. Folder aggregates Documents. Users receive AccessGrants that point to Permission and Document. SearchIndex depends on Document.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0F172A} .title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}.name{font-size:13.5px;font-weight:600}.member{font-size:12px}.type,.role,.legend{fill:#475569}.vis{fill:#64748B}.role,.legend{font-size:11.5px}.mult{font-size:12px;font-weight:500}.keyword{font-size:11px;fill:#2563EB}.edge{fill:none;stroke:#334155;stroke-width:1.4;stroke-linejoin:miter}.dash{stroke-dasharray:6 4}
+</style>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<text x="46" y="50" class="title">Document management — ownership and access</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 8 CLASSIFIERS · 7 RELATIONSHIPS</text>
+<path d="M46 91H1554" stroke="#94A3B8" stroke-width="1.25"/>
+
+<path d="M504 251V419" class="edge"/>
+<path d="M504 251l6.5 12 -6.5 12 -6.5 -12Z" stroke="#334155" stroke-width="1.4" fill="#FFFFFF"/>
+<text x="496" y="393" class="role" text-anchor="end">contains</text>
+<text x="512" y="411" class="mult" text-anchor="start">0..*</text>
+<path d="M440 522V638H308V706" class="edge"/>
+<path d="M440 522l6.5 12 -6.5 12 -6.5 -12Z" stroke="#334155" stroke-width="1.4" fill="#334155"/>
+<text x="453" y="547" class="mult" text-anchor="start">1</text>
+<text x="316" y="697" class="mult" text-anchor="start">1..*</text>
+<text x="300" y="697" class="role" text-anchor="end">pages</text>
+<path d="M560 522V638H638V706" class="edge"/>
+<path d="M560 522l6.5 12 -6.5 12 -6.5 -12Z" stroke="#334155" stroke-width="1.4" fill="#334155"/>
+<text x="573" y="547" class="mult" text-anchor="start">1</text>
+<text x="646" y="697" class="mult" text-anchor="start">1..*</text>
+<text x="630" y="697" class="role" text-anchor="end">versions</text>
+<path d="M1041 251V419" class="edge"/>
+<text x="1049" y="271" class="mult" text-anchor="start">1</text>
+<text x="1049" y="411" class="mult" text-anchor="start">0..*</text>
+<text x="1029" y="341" class="role" text-anchor="end">receives</text>
+<path d="M896 466H633" class="edge"/>
+<path d="M645 460L633 466L645 472" class="edge"/>
+<text x="764" y="486" class="role" text-anchor="middle">grants access to</text>
+<path d="M1186 466H1274" class="edge"/>
+<path d="M1262 460L1274 466L1262 472" class="edge"/>
+<path d="M1046 706V605H725V503H633" class="edge dash"/>
+<path d="M645 497L633 503L645 509" class="edge"/>
+<text x="735" y="559" class="role" text-anchor="start">indexes</text>
+<rect x="375" y="172" width="258" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M375.75 172.75H632.25V207H375.75Z" fill="#EEF2F7"/>
+<path d="M375 207H633M375 241H633" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="504.0" y="195" class="name" text-anchor="middle">Folder</text>
+<text x="388" y="229" class="member" text-anchor="start"><tspan class="vis">+ </tspan>name<tspan class="type">: String</tspan></text>
+<rect x="375" y="419" width="258" height="103" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M375.75 419.75H632.25V454H375.75Z" fill="#EEF2F7"/>
+<path d="M375 454H633M375 488H633" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="504.0" y="442" class="name" text-anchor="middle">Document</text>
+<text x="388" y="476" class="member" text-anchor="start"><tspan class="vis">- </tspan>id<tspan class="type">: UUID</tspan></text>
+<text x="388" y="510" class="member" text-anchor="start"><tspan class="vis">+ </tspan>publish()<tspan class="type">: void</tspan></text>
+<rect x="225" y="706" width="166" height="103" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M225.75 706.75H390.25V741H225.75Z" fill="#EEF2F7"/>
+<path d="M225 741H391M225 775H391" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="308.0" y="729" class="name" text-anchor="middle">Page</text>
+<text x="238" y="763" class="member" text-anchor="start"><tspan class="vis">- </tspan>number<tspan class="type">: int</tspan></text>
+<text x="238" y="797" class="member" text-anchor="start"><tspan class="vis">+ </tspan>render()<tspan class="type">: Image</tspan></text>
+<rect x="555" y="706" width="166" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M555.75 706.75H720.25V741H555.75Z" fill="#EEF2F7"/>
+<path d="M555 741H721M555 775H721" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="638.0" y="729" class="name" text-anchor="middle">Version</text>
+<text x="568" y="763" class="member" text-anchor="start"><tspan class="vis">- </tspan>number<tspan class="type">: int</tspan></text>
+<rect x="896" y="172" width="290" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M896.75 172.75H1185.25V207H896.75Z" fill="#EEF2F7"/>
+<path d="M896 207H1186M896 241H1186" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1041.0" y="195" class="name" text-anchor="middle">User</text>
+<text x="909" y="229" class="member" text-anchor="start"><tspan class="vis">+ </tspan>displayName<tspan class="type">: String</tspan></text>
+<rect x="896" y="419" width="290" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M896.75 419.75H1185.25V454H896.75Z" fill="#EEF2F7"/>
+<path d="M896 454H1186M896 488H1186" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1041.0" y="442" class="name" text-anchor="middle">AccessGrant</text>
+<text x="909" y="476" class="member" text-anchor="start"><tspan class="vis">+ </tspan>permission<tspan class="type">: Permission</tspan></text>
+<rect x="1274" y="419" width="249" height="136" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M1274.75 419.75H1522.25V471H1274.75Z" fill="#EEF2F7"/>
+<path d="M1274 471H1523M1274 545H1523" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1398.5" y="439" class="keyword" text-anchor="middle">«enumeration»</text>
+<text x="1398.5" y="458" class="name" text-anchor="middle">Permission</text>
+<text x="1287" y="493" class="member" text-anchor="start">READ</text>
+<text x="1287" y="513" class="member" text-anchor="start">WRITE</text>
+<text x="1287" y="533" class="member" text-anchor="start">ADMIN</text>
+<rect x="896" y="706" width="300" height="79" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+<path d="M896.75 706.75H1195.25V741H896.75Z" fill="#EEF2F7"/>
+<path d="M896 741H1196M896 751H1196" fill="none" stroke="#334155" stroke-width="1"/>
+<text x="1046.0" y="729" class="name" text-anchor="middle">SearchIndex</text>
+<text x="909" y="773" class="member" text-anchor="start"><tspan class="vis">+ </tspan>index(document: Document)<tspan class="type">: void</tspan></text>
+<path d="M46 915.5H1554" stroke="#94A3B8" stroke-width="1"/>
+<path d="M46 947H98" class="edge"/>
+<path d="M98 938V956" class="edge"/>
+<text x="110" y="951" class="legend" text-anchor="start">association</text>
+<path d="M212 947H264" class="edge"/>
+<path d="M264 938V956" class="edge"/>
+<path d="M252 941L264 947L252 953" class="edge"/>
+<text x="276" y="951" class="legend" text-anchor="start">navigable association</text>
+<path d="M433 947H485" class="edge"/>
+<path d="M485 938V956" class="edge"/>
+<path d="M459 947l12 -6.5 12 6.5 -12 6.5Z" stroke="#334155" stroke-width="1.4" fill="#FFFFFF"/>
+<text x="497" y="951" class="legend" text-anchor="start">aggregation</text>
+<path d="M602 947H654" class="edge"/>
+<path d="M654 938V956" class="edge"/>
+<path d="M628 947l12 -6.5 12 6.5 -12 6.5Z" stroke="#334155" stroke-width="1.4" fill="#334155"/>
+<text x="666" y="951" class="legend" text-anchor="start">composition</text>
+<path d="M774 947H826" class="edge"/>
+<path d="M826 938V956" class="edge"/>
+<path d="M825 947l-15 -9v18Z" stroke="#334155" stroke-width="1.4" fill="#FFFFFF"/>
+<text x="838" y="951" class="legend" text-anchor="start">generalization</text>
+<path d="M954 947H1006" class="edge dash"/>
+<path d="M1006 938V956" class="edge"/>
+<path d="M1005 947l-15 -9v18Z" stroke="#334155" stroke-width="1.4" fill="#FFFFFF"/>
+<text x="1018" y="951" class="legend" text-anchor="start">realization</text>
+<path d="M1114 947H1166" class="edge dash"/>
+<path d="M1166 938V956" class="edge"/>
+<path d="M1154 941L1166 947L1154 953" class="edge"/>
+<text x="1178" y="951" class="legend" text-anchor="start">dependency</text>
+</svg>

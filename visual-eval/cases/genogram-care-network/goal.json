@@ -1,0 +1,44 @@
+{
+  "id": "genogram-care-network",
+  "type": "genogram",
+  "title": "Three-generation care network",
+  "goal": "A reader can distinguish a three-generation family from the external people who support the identified child and parent.",
+  "rubric": [
+    {
+      "id": "three-family-generations",
+      "severity": "blocker",
+      "must": "偉明 and 美玲 appear above 建國 and 麗華, who appear above 小安, in three distinct family generations."
+    },
+    {
+      "id": "family-descent",
+      "severity": "blocker",
+      "must": "建國 and 麗華 are connected as the parents of 小安, and 偉明 and 美玲 are connected as the parents of 麗華 only — 建國 married in and hangs off no sibship line."
+    },
+    {
+      "id": "external-contacts-distinct",
+      "severity": "blocker",
+      "must": "學校輔導員 陳老師, 個案社工 王女士 and 鄰居 張阿姨 use a visibly distinct external-contact symbol treatment from family members."
+    },
+    {
+      "id": "care-links-not-descent",
+      "severity": "blocker",
+      "must": "The three labeled support links are visibly different from the solid partnership and parent-child structure lines and do not imply biological descent."
+    },
+    {
+      "id": "support-connections",
+      "severity": "major",
+      "must": "小安 visibly connects to 學校輔導員 陳老師 and 鄰居 張阿姨, while 麗華 visibly connects to 個案社工 王女士, and each of the three links carries its label (學校支持 / 個案支持 / 鄰里照顧)."
+    },
+    {
+      "id": "chinese-label-fit",
+      "severity": "major",
+      "must": "All person and support-contact labels are written in Traditional Chinese, remain legible, and do not overlap symbols or lines."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "偉明與美玲是麗華的父母，建國與麗華是焦點人物小安的父母；建國沒有連到上一代的子女支線。虛線菱形標示三位外部聯絡人，小安以雙線弧線連到學校輔導員 陳老師（學校支持）及鄰居 張阿姨（鄰里照顧），麗華以虛線弧線連到個案社工 王女士（個案支持）。"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "erd-logistics-shipments",
+  "type": "erd",
+  "title": "Logistics shipments",
+  "goal": "Show shipment fulfilment, packages, carrier legs, and delivery proof in a logistics domain.",
+  "rubric": [
+    {
+      "id": "order-shipment",
+      "severity": "blocker",
+      "must": "Sales Order visibly has a one-to-many fulfilment relationship to Shipment."
+    },
+    {
+      "id": "shipment-contents-and-legs",
+      "severity": "blocker",
+      "must": "Shipment visibly contains Packages and has one or more Shipment Legs."
+    },
+    {
+      "id": "carrier-leg",
+      "severity": "major",
+      "must": "Carrier visibly operates many Shipment Legs."
+    },
+    {
+      "id": "dispatch-and-destination",
+      "severity": "major",
+      "must": "Shipment visibly relates to a dispatching Warehouse and Sales Order visibly relates to an Address."
+    },
+    {
+      "id": "delivery-proof",
+      "severity": "major",
+      "must": "Shipment visibly has an optional Delivery Proof relationship."
+    },
+    {
+      "id": "key-fields",
+      "severity": "minor",
+      "must": "Primary and foreign key markings are visible in the entity fields."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly includes all requested entities, relationships, and key markings. Connections are traceable, labels are readable, and no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:50.493Z",
+      "targetHash": "a0949a6092c6",
+      "sourceHash": "1e9390fc9c71",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "order-shipment",
+          "verdict": "pass",
+          "evidence": "SALES_ORDER connects to SHIPMENT with exactly-one at the order end and one-or-many at the shipment end; labeled “fulfils.”"
+        },
+        {
+          "id": "shipment-contents-and-legs",
+          "verdict": "pass",
+          "evidence": "SHIPMENT connects to PACKAGE and SHIPMENT_LEG; each shows one-or-many at the child end and exactly-one at the shipment end."
+        },
+        {
+          "id": "carrier-leg",
+          "verdict": "pass",
+          "evidence": "CARRIER connects to SHIPMENT_LEG with one-or-many at the leg end and exactly-one at the carrier end; labeled “operates.”"
+        },
+        {
+          "id": "dispatch-and-destination",
+          "verdict": "pass",
+          "evidence": "WAREHOUSE connects to SHIPMENT via “dispatches,” and ADDRESS connects to SALES_ORDER via “delivers_to.” Both show one-or-many at the shipment/order end and exactly-one at the warehouse/address end."
+        },
+        {
+          "id": "delivery-proof",
+          "verdict": "pass",
+          "evidence": "SHIPMENT connects to DELIVERY_PROOF via “confirms,” with an optional proof at the proof end and exactly one shipment at the other end."
+        },
+        {
+          "id": "key-fields",
+          "verdict": "pass",
+          "evidence": "Primary keys have visible blue PK badges and foreign keys have orange FK badges in the entity fields."
+        }
+      ]
+    }
+  }
+}

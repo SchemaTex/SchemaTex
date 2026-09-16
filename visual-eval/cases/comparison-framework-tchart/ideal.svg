@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="612" viewBox="0 0 1600 612">
+  <title>Event-driven versus request-response integration</title>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #1B2430; }
+      .title { font-size: 35.2px; font-weight: 600; }
+      .heading { font-size: 32px; font-weight: 700; }
+      .point { font-size: 24px; font-weight: 400; }
+      .blue { fill: #28598C; }
+      .plum { fill: #6B4F8C; }
+      .separator { stroke: #FFFFFF; stroke-width: 3.2; }
+      .structure { stroke: #1B2430; stroke-width: 4.8; stroke-linecap: round; fill: none; }
+    </style>
+  </defs>
+  <rect width="1600" height="612" fill="#FFFFFF"/>
+  <text class="title" x="75" y="90">Event-driven versus request-response integration</text>
+  <text class="heading blue" x="109" y="194">Event-driven</text>
+  <text class="heading plum" x="849" y="194">Request-response</text>
+  <path d="M75 225 H784 V522 Q784 538 768 538 H91 Q75 538 75 522 Z" fill="#F0F5FB"/>
+  <path d="M816 225 H1525 V522 Q1525 538 1509 538 H832 Q816 538 816 522 Z" fill="#F5F2F9"/>
+  <path class="structure" d="M75 225 H1525 M800 225 V538"/>
+  <g class="blue">
+    <circle cx="115.5" cy="281" r="5.6"/>
+    <circle cx="115.5" cy="364" r="5.6"/>
+    <circle cx="115.5" cy="447" r="5.6"/>
+  </g>
+  <g class="point">
+    <text x="143" y="289">Asynchronous communication</text>
+    <text x="143" y="372">Loose coupling between services</text>
+    <text x="143" y="455">Requires observability and replay handling</text>
+  </g>
+  <path class="separator" d="M143 323 H750 M143 406 H750"/>
+  <g class="plum">
+    <circle cx="856" cy="281" r="5.6"/>
+    <circle cx="856" cy="364" r="5.6"/>
+    <circle cx="856" cy="447" r="5.6"/>
+  </g>
+  <g class="point">
+    <text x="884" y="289">Immediate synchronous reply</text>
+    <text x="884" y="372">Simple for direct queries</text>
+    <text x="884" y="455">Caller waits for dependency availability</text>
+  </g>
+  <path class="separator" d="M884 323 H1490 M884 406 H1490"/>
+</svg>

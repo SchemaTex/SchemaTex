@@ -1,0 +1,17 @@
+# Moreno sociogram: player choices for a relay team show captains, mutual trust, and a neglected player.
+sociogram "Youth Soccer Team Cohesion"
+  config: highlight = stars, isolates
+  aria
+  beau
+  cam
+  dani
+  ezra
+  farah
+  gus
+  aria -> cam
+  beau -> cam
+  dani -> cam
+  ezra -> cam
+  cam <-> farah
+  aria <-> beau
+  gus -> farah

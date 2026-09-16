@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseComparison } from "./parser";
 import { renderComparison } from "./renderer";
@@ -5,7 +6,7 @@ import { renderComparison } from "./renderer";
 export const comparison: DiagramPlugin = {
   type: "comparison" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*(comparison|compare|vs|tchart|t-chart|pugh|decision-matrix|decisionmatrix)\b/i.test(text);
+    return /^\s*(comparison|compare|vs|tchart|t-chart|pugh|decision-matrix|decisionmatrix)\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseComparison,
   render(text, config?: RenderConfig) {

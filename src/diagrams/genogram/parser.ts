@@ -1,5 +1,6 @@
 import type {
   DiagramAST,
+  SchematexDiagnostic,
   Individual,
   LegendOverrides,
   Relationship,
@@ -40,11 +41,14 @@ const COUPLE_OPS: Array<{ token: string; type: RelationshipType }> = [
   { token: "~", type: "cohabiting" },
 ];
 
-const VALID_SEX = new Set(["male", "female", "unknown", "other"]);
+// Bennett 2022 adds nonbinary and intersex to the classic three; both draw as
+// the diamond the symbol table already defines for them.
+const VALID_SEX = new Set(["male", "female", "unknown", "other", "nonbinary", "intersex"]);
 const VALID_STATUS = new Set([
   "deceased",
   "stillborn",
   "miscarriage",
+  "pregnancy",
   "abortion",
 ]);
 // Everyday synonyms an LLM reaches for, mapped to the canonical status token.
@@ -61,13 +65,14 @@ const STATUS_ALIASES: Record<string, string> = {
 const SPECIAL_CHILD_PROPS = new Set([
   "adopted",
   "foster",
+  "step",
   "twin-identical",
   "twin-fraternal",
 ]);
 // Tokens whose appearance on a redeclared child indicates the link is a
-// secondary "current caregiver" relationship (foster / adopted / guardian),
+// secondary "current caregiver" relationship (foster / adopted / guardian / step),
 // not the structural biological link.
-const SECONDARY_LINK_PROPS = new Set(["foster", "adopted", "guardian"]);
+const SECONDARY_LINK_PROPS = new Set(["foster", "adopted", "guardian", "step"]);
 const VALID_FILLS = new Set([
   "full",
   "half-left",
@@ -112,6 +117,7 @@ export function parseGenogram(text: string): DiagramAST {
 
   // Parse header
   const metadata: Record<string, string> = {};
+  const warnings: SchematexDiagnostic[] = [];
   const headerLine = currentLineText(state);
   if (headerLine === undefined) {
     throw new ParseError("Empty input", 1, 1, "");
@@ -125,9 +131,32 @@ export function parseGenogram(text: string): DiagramAST {
       headerLine
     );
   }
-  const titleMatch = headerTrimmed.match(/^genogram\s+"([^"]*)"$/i);
-  if (titleMatch) {
-    metadata.title = titleMatch[1];
+  const headerMatch = headerTrimmed.match(/^genogram(?:\s+"([^"]*)")?(?:\s+\[([^[\]]*)\])?\s*$/i);
+  if (!headerMatch) {
+    throw new ParseError('Expected genogram "Title" [key: value, ...]', state.currentLine + 1, 1, headerLine);
+  }
+  if (headerMatch[1] !== undefined) metadata.title = headerMatch[1];
+  if (headerMatch[2] !== undefined) {
+    // Split the general property family without splitting commas in quoted values.
+    for (const property of headerMatch[2].match(/(?:[^,"]|"(?:\\.|[^"\\])*")+/g) ?? []) {
+      const entry = property.trim().match(/^([a-zA-Z][\w-]*)(?:\s*:\s*(.*))?$/);
+      if (!entry) {
+        throw new ParseError('Expected a header property: key: value', state.currentLine + 1, 1, headerLine);
+      }
+      const [, key, value] = entry;
+      if (key.toLowerCase() === "asof") {
+        if (!/^[0-9]{4}$/.test(value ?? "") || Number(value) === 0 || metadata.asOf !== undefined) {
+          throw new ParseError('Expected one asOf: YYYY header property with a plain four-digit year (0001–9999)', state.currentLine + 1, 1, headerLine);
+        }
+        metadata.asOf = value;
+      } else {
+        warnings.push({
+          severity: "warning", code: "GENOGRAM_UNIMPLEMENTED_HEADER_PROPERTY", fatal: false,
+          line: state.currentLine + 1, column: 1, source: headerLine, token: key,
+          message: `Line ${state.currentLine + 1}: Header property '${key}' is not implemented and has no rendering effect.`,
+        });
+      }
+    }
   }
   const headerToken = findFirstQuotedRange(headerLine);
   const headerStart = rawLines.slice(0, state.currentLine).reduce((sum, line) => sum + line.length + 1, 0);
@@ -140,6 +169,7 @@ export function parseGenogram(text: string): DiagramAST {
   const individualsMap = new Map<string, Individual>();
   const relationships: Relationship[] = [];
   const childSpecialProps = new Map<string, string>();
+  const relationshipLabelLines = new Set<number>();
   const legendOverrides: LegendOverrides = {};
   // Track which children already have a structural (primary) parent-child rel.
   // The first one wins layout; later declarations under another couple become
@@ -161,6 +191,10 @@ export function parseGenogram(text: string): DiagramAST {
       continue;
     }
 
+    if (trimmed.startsWith("@")) {
+      throw new ParseError("Annotation requires a preceding individual declaration", state.currentLine + 1, 1, lineText);
+    }
+
     // Legend directives (`legend: ...`, `legend.title: ...`, etc.)
     if (parseLegendDirective(trimmed, legendOverrides)) {
       state.currentLine++;
@@ -168,7 +202,7 @@ export function parseGenogram(text: string): DiagramAST {
     }
 
     // Check for emotional relationship line: `A -TYPE- B` or `A -TYPE-> B`
-    const emotionalMatch = detectEmotionalOp(trimmed);
+    const emotionalMatch = detectEmotionalOp(trimmed, state.currentLine + 1, lineText);
     if (emotionalMatch) {
       const { leftId, emotionalType, rightId: emRightId, directional, label: emLabel } = emotionalMatch;
       const lineNum = state.currentLine + 1;
@@ -190,6 +224,7 @@ export function parseGenogram(text: string): DiagramAST {
       if (directional) rel.directional = true;
       if (emLabel) rel.label = emLabel;
       relationships.push(rel);
+      relationshipLabelLines.add(state.currentLine);
       state.currentLine++;
       continue;
     }
@@ -200,10 +235,16 @@ export function parseGenogram(text: string): DiagramAST {
       const lineNum = state.currentLine + 1;
 
       // Extract optional relationship label: quoted string at the end
-      const { cleaned: rightCleaned, label: relLabel } = extractRelLabel(rightRaw);
+      const { cleaned: rightCleaned, label: relLabel } = extractRelLabel(rightRaw, lineNum, lineText);
+
+      if (!/^[a-zA-Z][a-zA-Z0-9_-]*(?:\s*\[[^[\]]*\])?$/.test(rightCleaned)) {
+        throw new ParseError("Invalid relationship endpoint or label", lineNum, 1, lineText);
+      }
 
       // Parse right side — may have inline props
       const { id: rightId, props: rightProps } = parseIdWithOptionalProps(rightCleaned);
+
+      if (!rightProps) relationshipLabelLines.add(state.currentLine);
 
       // Ensure left individual exists
       const leftKey = leftId.toLowerCase();
@@ -243,6 +284,8 @@ export function parseGenogram(text: string): DiagramAST {
       const coupleIndent = getIndent(lineText);
       state.currentLine++;
 
+      if (rightProps) parseAnnotations(state, individualsMap.get(rightKey)!, coupleIndent);
+
       // Check for children (indented lines below couple)
       while (state.currentLine < state.lines.length) {
         const childLine = state.lines[state.currentLine];
@@ -255,6 +298,10 @@ export function parseGenogram(text: string): DiagramAST {
 
         const childIndent = getIndent(childLine);
         if (childIndent <= coupleIndent) break;
+
+        if (childTrimmed.startsWith("@")) {
+          throw new ParseError("Annotation requires a preceding individual declaration", state.currentLine + 1, 1, childLine);
+        }
 
         // This is a child line
         const childLineNum = state.currentLine + 1;
@@ -304,8 +351,8 @@ export function parseGenogram(text: string): DiagramAST {
           SPECIAL_CHILD_PROPS.has(t)
         );
         const relType: RelationshipType =
-          lineChildType === "adopted" || lineChildType === "foster"
-            ? (lineChildType as RelationshipType)
+          lineChildType === "adopted" || lineChildType === "foster" || lineChildType === "step"
+            ? lineChildType
             : "parent-child";
 
         // Dual-parent handling: if this child already has a primary
@@ -323,6 +370,7 @@ export function parseGenogram(text: string): DiagramAST {
         if (!isSecondary) childrenWithPrimary.add(childKey);
 
         state.currentLine++;
+        parseAnnotations(state, individualsMap.get(childKey)!, childIndent);
       }
     } else {
       // Individual definition line
@@ -343,6 +391,7 @@ export function parseGenogram(text: string): DiagramAST {
       }
 
       state.currentLine++;
+      parseAnnotations(state, individualsMap.get(key)!, getIndent(lineText));
     }
   }
 
@@ -356,10 +405,10 @@ export function parseGenogram(text: string): DiagramAST {
           r.to === childKey &&
           (r.type === "parent-child" ||
             r.type === "adopted" ||
-            r.type === "foster")
+            r.type === "foster" || r.type === "step")
       );
       if (pcRel) {
-        const groupKey = `${pcRel.from}:${prop}`;
+        const groupKey = `${pcRel.from}:${prop}:${individualsMap.get(childKey)?.birthYear ?? ""}`;
         const group = twinGroups.get(groupKey) ?? [];
         group.push(childKey);
         twinGroups.set(groupKey, group);
@@ -393,9 +442,9 @@ export function parseGenogram(text: string): DiagramAST {
   // id-derived label is intentionally not editable because renaming an id must
   // also rewrite every relationship reference.
   let sourceOffset = 0;
-  for (const line of rawLines) {
+  for (const [lineIndex, line] of rawLines.entries()) {
     const labelMatch = /\blabel\s*:\s*("[^"]*"|[^,\]\s]+)/i.exec(line);
-    if (labelMatch) {
+    if (labelMatch && !relationshipLabelLines.has(lineIndex)) {
       const token = labelMatch[1]!;
       const tokenStart = labelMatch.index + labelMatch[0].lastIndexOf(token);
       const before = line.slice(0, labelMatch.index);
@@ -419,6 +468,7 @@ export function parseGenogram(text: string): DiagramAST {
     individuals: Array.from(individualsMap.values()),
     relationships,
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined,
     titleSourceRange,
     legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
@@ -429,6 +479,7 @@ function normalizePrimaryParentRels(relationships: Relationship[]): void {
     "parent-child",
     "adopted",
     "foster",
+    "step",
   ]);
   // Group indices by child id
   const byChild = new Map<string, number[]>();
@@ -471,6 +522,22 @@ function skipBlankAndComments(state: ParserState): void {
   }
 }
 
+/** Consume the annotation block immediately following an individual declaration. */
+function parseAnnotations(state: ParserState, individual: Individual, indent: number): void {
+  skipBlankAndComments(state);
+  while (state.currentLine < state.lines.length) {
+    const line = state.lines[state.currentLine];
+    if (!line.trim().startsWith("@")) break;
+    const match = /^\s+@([a-zA-Z][a-zA-Z0-9_-]*):\s*"([^"]*)"\s*$/.exec(line);
+    if (!match || getIndent(line) <= indent) {
+      throw new ParseError('Invalid annotation; expected an indented @key: "value" beneath an individual', state.currentLine + 1, 1, line);
+    }
+    individual.annotations = { ...individual.annotations, [match[1]]: match[2] };
+    state.currentLine++;
+    skipBlankAndComments(state);
+  }
+}
+
 function getIndent(line: string): number {
   const match = line.match(/^(\s*)/);
   return match ? match[1].length : 0;
@@ -490,7 +557,7 @@ interface EmotionalMatch {
   label: string | null;
 }
 
-function detectEmotionalOp(trimmed: string): EmotionalMatch | null {
+function detectEmotionalOp(trimmed: string, lineNum: number, source: string): EmotionalMatch | null {
   // Pattern: ID -TYPE- ID or ID -TYPE-> ID, optionally followed by "label"
   const match = trimmed.match(
     /^([a-zA-Z][a-zA-Z0-9_-]*)\s+-([\w-]+)->(.*)|^([a-zA-Z][a-zA-Z0-9_-]*)\s+-([\w-]+)-\s+(.*)/
@@ -502,28 +569,27 @@ function detectEmotionalOp(trimmed: string): EmotionalMatch | null {
   const emotionalType = directional ? match[2] : match[5];
   const rest = (directional ? match[3] : match[6]).trim();
 
-  if (!EMOTIONAL_TYPES.has(emotionalType)) return null;
-
-  // Extract right ID and optional quoted label
-  const { id: rightId, label } = extractIdAndLabel(rest);
-  if (!rightId || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(rightId)) return null;
-
+  if (COUPLE_OPS.some(op => op.token === `-${emotionalType}-`)) return null;
+  if (!EMOTIONAL_TYPES.has(emotionalType)) {
+    throw new ParseError(`Unknown emotional relationship '${emotionalType}'`, lineNum, 1, source);
+  }
+  const { cleaned: rightId, label } = extractRelLabel(rest, lineNum, source);
+  if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(rightId)) {
+    throw new ParseError('Invalid emotional relationship; expected ID [label: "text"]', lineNum, 1, source);
+  }
   return { leftId, emotionalType, rightId, directional, label };
 }
 
-function extractIdAndLabel(raw: string): { id: string; label: string | null } {
-  // ID possibly followed by "label text"
-  const labelMatch = raw.match(/^([a-zA-Z][a-zA-Z0-9_-]*)\s+"([^"]*)"$/);
-  if (labelMatch) return { id: labelMatch[1], label: labelMatch[2] };
-  const idOnly = raw.match(/^([a-zA-Z][a-zA-Z0-9_-]*)$/);
-  if (idOnly) return { id: idOnly[1], label: null };
-  return { id: raw.trim(), label: null };
-}
-
-function extractRelLabel(rightRaw: string): { cleaned: string; label: string | null } {
-  // Check for trailing "label text" after the individual definition
-  const match = rightRaw.match(/^(.*?)\s+"([^"]*)"$/);
-  if (match) return { cleaned: match[1].trim(), label: match[2] };
+function extractRelLabel(rightRaw: string, lineNum: number, source: string): { cleaned: string; label: string | null } {
+  // A label-only bracket belongs to the relationship. Inline person properties
+  // (e.g. [female, label: "Name"]) still belong to the endpoint declaration.
+  const bracket = rightRaw.match(/^(.*?)\s*\[\s*label\s*:\s*"([^"]*)"\s*\]$/i);
+  if (bracket) return { cleaned: bracket[1].trim(), label: bracket[2] };
+  if (/\[\s*label\b/i.test(rightRaw)) {
+    throw new ParseError('Invalid relationship label; expected [label: "text"]', lineNum, 1, source);
+  }
+  const quoted = rightRaw.match(/^(.*?)\s+"([^"]*)"$/);
+  if (quoted) return { cleaned: quoted[1].trim(), label: quoted[2] };
   return { cleaned: rightRaw, label: null };
 }
 
@@ -628,6 +694,9 @@ function buildIndividual(
   lineNum: number,
   lineText: string
 ): Individual {
+  if (!/^(?:[a-zA-Z][a-zA-Z0-9_-]*|__unknown_siblings_\d+)$/.test(id)) {
+    throw new ParseError("Invalid individual or relationship", lineNum, 1, lineText);
+  }
   const individual: Individual = {
     id: id.toLowerCase(),
     label: id,
@@ -680,6 +749,8 @@ function buildIndividual(
       if (key === "age") {
         const ageNum = parseInt(value, 10);
         if (!isNaN(ageNum)) individual.age = ageNum;
+      } else if (key === "initials") {
+        throw new ParseError('initials is not supported; use label: "JG" below the symbol or age: N inside it', lineNum, 1, lineText);
       } else if (key === "death") {
         const deathNum = parseInt(value, 10);
         if (!isNaN(deathNum)) individual.deathYear = deathNum;
@@ -712,6 +783,11 @@ function buildIndividual(
         }
       } else if (key === "label") {
         individual.label = value.replace(/^"|"$/g, "");
+      } else if (key === "external") {
+        if (value !== "true" && value !== "false") {
+          throw new ParseError("external must be true or false", lineNum, 1, lineText);
+        }
+        individual.external = value === "true";
       } else if (key === "sibling-of") {
         individual.siblingOf = value.toLowerCase();
       } else if (key === "shape") {
@@ -733,7 +809,7 @@ function buildIndividual(
       }
     } else {
       throw new ParseError(
-        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, guardian, twin-identical, twin-fraternal, index, unknown-siblings, a 4-digit year, conditions:..., age:N, death:YYYY, dob:"YYYY-MM-DD", dod:"YYYY-MM-DD", note:"...", birth:out-of-wedlock|adopted, label:"...", sibling-of:ID, or key:value`,
+        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, pregnancy, abortion, adopted, foster, guardian, step, twin-identical, twin-fraternal, index, unknown-siblings, a 4-digit year, conditions:..., age:N, death:YYYY, dob:"YYYY-MM-DD", dod:"YYYY-MM-DD", note:"...", birth:out-of-wedlock|adopted, label:"...", sibling-of:ID, or key:value`,
         lineNum,
         1,
         lineText
@@ -882,6 +958,7 @@ function mergeIndividual(
     conditions: incoming.conditions ?? existing.conditions,
     heritage: incoming.heritage ?? existing.heritage,
     siblingOf: incoming.siblingOf ?? existing.siblingOf,
+    external: incoming.external ?? existing.external,
     markers: mergedMarkers,
     properties: {
       ...existing.properties,

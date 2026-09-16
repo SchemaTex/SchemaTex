@@ -18,7 +18,7 @@ function ensureFont(): string {
 const W = 1200;
 const H = 630;
 
-// Variant A: light theme (design-system.html .og-card default)
+// Variant A: light theme (the OG card defaults in docs/DESIGN-SYSTEM.md)
 const C_BG = '#ffffff';
 const C_TEXT = '#0f172a';
 const C_TEXT_MUTED = '#475569';

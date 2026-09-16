@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-logic" viewBox="0 0 460 1140" width="460" height="1140" role="img" data-diagram-type="logic"><title>NOR SR Latch</title>
+<desc>Logic gate diagram with 8 gates, 2 inputs, 2 outputs</desc>
+<defs><style>.schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-logic-gate-body { fill: #ffffff; stroke: #111111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-bubble { fill: #ffffff; stroke: #111111; stroke-width: 1.5; }
+.schematex-logic-clock-tri { fill: none; stroke: #111111; stroke-width: 1.5; stroke-linejoin: round; }
+.schematex-logic-wire { stroke: #111111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-wire-clearance { stroke: #ffffff; stroke-width: 5; fill: none; }
+.schematex-logic-junction { fill: #111111; }
+.schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: #111111; }
+.schematex-logic-pin-label { font: 9px sans-serif; fill: #222222; }
+.schematex-logic-gate-type { font: 10px sans-serif; fill: #555555; }
+.schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: #111111; }
+.schematex-logic-title { font: 700 16px sans-serif; fill: #111111; }
+.schematex-logic-module { fill: none; stroke: #555555; stroke-width: 1.25; stroke-dasharray: 6 4; }
+.schematex-logic-module-label { font: 11px sans-serif; fill: #555555; font-style: italic; }
+[data-gate-type="unknown"] .schematex-logic-gate-body { stroke: #1d4e89; stroke-dasharray: 5 3; }
+[data-gate-type="unknown"] .schematex-logic-gate-iec-label { fill: #1d4e89; }</style></defs>
+<g transform="translate(0, 20)"><g class="schematex-logic-modules"></g>
+<g class="schematex-logic-wires"><path d="M 60,70 L 170,70" class="schematex-logic-wire-clearance"/><path d="M 60,70 L 170,70" class="schematex-logic-wire" data-from="S" data-to="sbuf"/>
+<path d="M 60,210 L 170,210" class="schematex-logic-wire-clearance"/><path d="M 60,210 L 170,210" class="schematex-logic-wire" data-from="R" data-to="rbuf"/>
+<path d="M 220,210 L 228,210 L 228,298 L 138,298 L 138,335 L 178,335" class="schematex-logic-wire-clearance"/><path d="M 220,210 L 228,210 L 228,298 L 138,298 L 138,335 L 178,335" class="schematex-logic-wire" data-from="rbuf" data-to="Q"/>
+<path d="M 240,490 L 246,490 L 246,412 L 154,412 L 154,365 L 178,365" class="schematex-logic-wire-clearance"/><path d="M 240,490 L 246,490 L 246,412 L 154,412 L 154,365 L 178,365" class="schematex-logic-wire" data-from="Qbar" data-to="Q"/>
+<path d="M 220,70 L 238,70 L 238,306 L 146,306 L 146,475 L 178,475" class="schematex-logic-wire-clearance"/><path d="M 220,70 L 238,70 L 238,306 L 146,306 L 146,475 L 178,475" class="schematex-logic-wire" data-from="sbuf" data-to="Qbar"/>
+<path d="M 240,350 L 258,350 L 258,586 L 142,586 L 142,505 L 178,505" class="schematex-logic-wire-clearance"/><path d="M 240,350 L 258,350 L 258,586 L 142,586 L 142,505 L 178,505" class="schematex-logic-wire" data-from="Q" data-to="Qbar"/>
+<path d="M 240,350 L 258,350 L 258,586 L 142,586 L 142,630 L 170,630" class="schematex-logic-wire-clearance"/><path d="M 240,350 L 258,350 L 258,586 L 142,586 L 142,630 L 170,630" class="schematex-logic-wire" data-from="Q" data-to="qbuf"/>
+<path d="M 240,490 L 266,490 L 266,726 L 142,726 L 142,770 L 170,770" class="schematex-logic-wire-clearance"/><path d="M 240,490 L 266,490 L 266,726 L 142,726 L 142,770 L 170,770" class="schematex-logic-wire" data-from="Qbar" data-to="qb1"/>
+<path d="M 220,770 L 228,770 L 228,866 L 142,866 L 142,910 L 170,910" class="schematex-logic-wire-clearance"/><path d="M 220,770 L 228,770 L 228,866 L 142,866 L 142,910 L 170,910" class="schematex-logic-wire" data-from="qb1" data-to="qb2"/>
+<path d="M 220,630 L 238,630 L 238,1006 L 142,1006 L 142,1050 L 170,1050" class="schematex-logic-wire-clearance"/><path d="M 220,630 L 238,630 L 238,1006 L 142,1006 L 142,1050 L 170,1050" class="schematex-logic-wire" data-from="qbuf" data-to="qmonitor"/>
+<path d="M 240,350 L 320,350" class="schematex-logic-wire-clearance"/><path d="M 240,350 L 320,350" class="schematex-logic-wire" data-from="Q" data-to="$out$Q"/>
+<path d="M 240,490 L 320,490" class="schematex-logic-wire-clearance"/><path d="M 240,490 L 320,490" class="schematex-logic-wire" data-from="Qbar" data-to="$out$Qbar"/></g>
+<g class="schematex-logic-junctions"><circle cx="246" cy="490" r="2.5" class="schematex-logic-junction" data-net="Qbar"/>
+<circle cx="266" cy="490" r="2.5" class="schematex-logic-junction" data-net="Qbar"/>
+<circle cx="258" cy="350" r="2.5" class="schematex-logic-junction" data-net="Q"/>
+<circle cx="142" cy="586" r="2.5" class="schematex-logic-junction" data-net="Q"/></g>
+<g class="schematex-logic-gates"><g transform="translate(160, 40)" data-gate-id="sbuf" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g>
+<g transform="translate(160, 180)" data-gate-id="rbuf" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g>
+<g transform="translate(160, 320)" data-gate-id="Q" data-gate-type="NOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<circle cx="76" cy="30" r="4" class="schematex-logic-bubble"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">NOR</text></g>
+<g transform="translate(160, 460)" data-gate-id="Qbar" data-gate-type="NOR"><path d="M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<circle cx="76" cy="30" r="4" class="schematex-logic-bubble"/>
+<text x="40" y="74" class="schematex-logic-gate-type" text-anchor="middle">NOR</text></g>
+<g transform="translate(160, 600)" data-gate-id="qbuf" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g>
+<g transform="translate(160, 740)" data-gate-id="qb1" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g>
+<g transform="translate(160, 880)" data-gate-id="qb2" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g>
+<g transform="translate(160, 1020)" data-gate-id="qmonitor" data-gate-type="BUF"><path d="M 10,55 L 60,30 L 10,5 Z" class="schematex-logic-gate-body" vector-effect="non-scaling-stroke"/>
+<text x="30" y="74" class="schematex-logic-gate-type" text-anchor="middle">BUF</text></g></g>
+<g class="schematex-logic-input-bubbles"></g>
+<g class="schematex-logic-ports"><g transform="translate(20, 55)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">S</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(20, 195)" data-port="input"><text x="0" y="19" text-anchor="start" class="schematex-logic-port-label">R</text>
+<line x1="28" y1="15" x2="40" y2="15" class="schematex-logic-wire"/>
+</g>
+<g transform="translate(320, 335)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
+<text x="16" y="19" text-anchor="start" class="schematex-logic-port-label">Q</text></g>
+<g transform="translate(320, 475)" data-port="output"><line x1="0" y1="15" x2="12" y2="15" class="schematex-logic-wire"/>
+<text x="16" y="19" text-anchor="start" class="schematex-logic-port-label">Qbar</text></g></g></g>
+<text x="230" y="18" text-anchor="middle" class="schematex-logic-title">NOR SR Latch</text></svg>

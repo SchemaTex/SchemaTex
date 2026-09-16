@@ -1,0 +1,18 @@
+circuit "Three-Phase Distribution Board" netlist
+# 400/230 V TN-S board: a three-pole incomer supplies four phase-balanced RCBO final circuits.
+V1 L1 N type=acsource value="230 V AC L1-N" label="SUPPLY L1"
+V2 L2 N type=acsource value="230 V AC L2-N" label="SUPPLY L2"
+V3 L3 N type=acsource value="230 V AC L3-N" label="SUPPLY L3"
+S1 L1 B1 type=disconnect_switch value="63 A, 3-pole" label="QF1 MAIN L1"
+S2 L2 B2 type=disconnect_switch value="63 A, 3-pole" label="QF1 MAIN L2"
+S3 L3 B3 type=disconnect_switch value="63 A, 3-pole" label="QF1 MAIN L3"
+U1 B1 N C1 N type=ic pins="LINE,N_IN,LOAD,N_OUT" value="C16 30 mA" label="RCBO1 L1 LIGHTING"
+U2 B2 N C2 N type=ic pins="LINE,N_IN,LOAD,N_OUT" value="C16 30 mA" label="RCBO2 L2 SOCKETS"
+U3 B3 N C3 N type=ic pins="LINE,N_IN,LOAD,N_OUT" value="C16 30 mA" label="RCBO3 L3 HVAC"
+U4 B1 N C4 N type=ic pins="LINE,N_IN,LOAD,N_OUT" value="C16 30 mA" label="RCBO4 L1 KITCHEN"
+U5 C1 N PE type=ic pins="L,N,PE" value="230 V, 60 W" label="LIGHTING CIRCUIT"
+U6 C2 N PE type=ic pins="L,N,PE" value="230 V, 2 kW" label="SOCKET CIRCUIT"
+U7 C3 N PE type=ic pins="L,N,PE" value="230 V, 1.5 kW" label="HVAC CIRCUIT"
+U8 C4 N PE type=ic pins="L,N,PE" value="230 V, 2.5 kW" label="KITCHEN CIRCUIT"
+T1 N type=terminal_block pins="N" value="100 A" label="NEUTRAL BAR"
+T2 PE PE PE PE type=terminal_block pins="PE1,PE2,PE3,PE4" value="100 A" label="EARTH BAR"

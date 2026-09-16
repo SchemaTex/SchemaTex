@@ -1,0 +1,23 @@
+# Scenario: recruiting for an approved vacancy, re-advertising when no applicant fits.
+epc "Recruitment"
+  layout: tb
+  event E1 "Vacancy approved"
+  function F1 "Post job advert"
+  event E2 "Applications received"
+  function F2 "Screen applicants"
+  xor X1
+  event E3 "Shortlist ready"
+  event E4 "No suitable applicant"
+  function F3 "Interview candidates"
+  event E5 "Candidate selected"
+  function F4 "Make offer"
+  xor X2
+  event E6 "Offer accepted"
+  event E7 "Offer declined"
+  function F5 "Onboard new hire"
+  event E8 "Employee started"
+  E1 -> F1 -> E2 -> F2 -> X1
+  X1 -> E3 -> F3 -> E5 -> F4 -> X2
+  X1 -> E4 -> F1
+  X2 -> E6 -> F5 -> E8
+  X2 -> E7 -> F3

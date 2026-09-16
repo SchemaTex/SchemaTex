@@ -1,0 +1,17 @@
+%% Payment gateway adapters, provider contracts, and transaction states.
+classDiagram
+class PaymentService { +authorize(request : PaymentRequest) : Payment }
+class PaymentRequest { +amount : Money +currency : String }
+class Payment { -id : UUID +capture() : Receipt }
+class PaymentProvider { <<interface>> +authorize(request : PaymentRequest) : ProviderResult }
+class CardProvider { +authorize(request : PaymentRequest) : ProviderResult }
+class WalletProvider { +authorize(request : PaymentRequest) : ProviderResult }
+class ProviderResult { +approved : boolean }
+class PaymentStatus { PENDING AUTHORIZED DECLINED }
+PaymentService --> PaymentProvider : selects
+CardProvider ..|> PaymentProvider
+WalletProvider ..|> PaymentProvider
+PaymentService ..> PaymentRequest : uses
+Payment "1" *-- "1" PaymentRequest : records
+Payment --> PaymentStatus : state
+PaymentProvider --> ProviderResult : returns

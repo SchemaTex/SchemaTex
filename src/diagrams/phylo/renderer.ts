@@ -1,5 +1,5 @@
 import type { PhyloTreeAST } from "../../core/types";
-import type { PhyloLayoutResult } from "./layout";
+import { cladeLabelPositions, estimateLabelWidth, type PhyloLayoutResult } from "./layout";
 import {
   svgRoot,
   group,
@@ -67,10 +67,10 @@ function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
 ${cutColors.join("\n")}
 .schematex-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${t.text}; dominant-baseline: central; }
 .schematex-phylo-tip-label-italic { font-style: italic; }
-.schematex-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: auto; }
+.schematex-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: end; dominant-baseline: auto; }
 .schematex-phylo-support-dot { stroke: none; }
 .schematex-phylo-scale-bar line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
-.schematex-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: middle; }
+.schematex-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: start; }
 .schematex-phylo-scale-tick { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
 .schematex-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
 .schematex-phylo-clade-label { font-size: 13px; font-weight: bold; }
@@ -120,19 +120,19 @@ function renderScaleBar(
   if (bar.pxLength < 5) return "";
 
   const x = 20;
-  const y = layout.height - 20;
+  const y = layout.height - 36;
 
   const elements = [
     line({ x1: x, y1: y, x2: x + bar.pxLength, y2: y, class: "schematex-phylo-scale-bar" }),
     line({ x1: x, y1: y - 4, x2: x, y2: y + 4, class: "schematex-phylo-scale-tick" }),
     line({ x1: x + bar.pxLength, y1: y - 4, x2: x + bar.pxLength, y2: y + 4, class: "schematex-phylo-scale-tick" }),
-    text({ x: x + bar.pxLength / 2, y: y + 16, "text-anchor": "middle", class: "schematex-phylo-scale-bar" }, bar.label),
+    text({ x, y: y + 16, "text-anchor": "start", class: "schematex-phylo-scale-bar" }, bar.label),
   ];
 
   if (scaleLabel) {
     elements.push(
       text(
-        { x: x + bar.pxLength / 2, y: y + 28, "text-anchor": "middle", "font-size": "9", fill: t.textMuted },
+        { x, y: y + 28, "text-anchor": "start", "font-size": "9", fill: t.textMuted },
         scaleLabel
       )
     );
@@ -145,28 +145,28 @@ function renderScaleBar(
 
 function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<BiologyTokens>): string[] {
   const elements: string[] = [];
+  const labelPositions = cladeLabelPositions(layout);
 
   for (let ci = 0; ci < layout.ast.clades.length; ci++) {
     const clade = layout.ast.clades[ci];
     const hl = clade.highlight ?? "branch";
-    if (hl === "branch") continue;
 
     const memberNodes = layout.nodes.filter(
       (n) => n.node.isLeaf && clade.members.includes(n.node.id)
     );
     if (memberNodes.length === 0) continue;
 
-    const minY = Math.min(...memberNodes.map((n) => n.y)) - 10;
-    const maxY = Math.max(...memberNodes.map((n) => n.y)) + 10;
-    const minX = Math.min(...memberNodes.map((n) => n.x)) - 20;
+    const minY = Math.min(...memberNodes.map((n) => layout.tipLabels?.get(n.node.id)?.y ?? n.y)) - 10;
+    const maxY = Math.max(...memberNodes.map((n) => layout.tipLabels?.get(n.node.id)?.y ?? n.y)) + 10;
+    const minX = Math.min(...memberNodes.map((n) => layout.tipLabels?.get(n.node.id)?.x ?? n.x)) - 2;
     const maxX = Math.max(...memberNodes.map((n) => {
-      const labelW = ((n.node.label ?? n.node.id).length * 7.2) + TIP_LABEL_GAP + 8;
-      return n.x + labelW;
+      const labelW = estimateLabelWidth(n.node) + TIP_LABEL_GAP + 14;
+      return (layout.tipLabels?.get(n.node.id)?.x ?? n.x) + labelW;
     }));
 
     const color = clade.color ?? t.cladeColors[ci % t.cladeColors.length];
 
-    elements.push(
+    if (hl !== "branch") elements.push(
       rect({
         x: minX,
         y: minY,
@@ -179,22 +179,26 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
       })
     );
 
-    if (clade.label) {
-      elements.push(
-        text(
-          {
-            x: maxX + 4,
-            y: (minY + maxY) / 2,
-            class: `schematex-phylo-clade-label schematex-phylo-clade-label-${clade.id}`,
-            fill: color,
-            "font-weight": "bold",
-            "font-size": "13",
-            "dominant-baseline": "central",
-          },
-          clade.label
-        )
-      );
-    }
+    const labelX = labelPositions.get(clade.id)?.x ?? maxX + 8;
+    if (hl === "branch") elements.push(path({
+      d: `M ${labelX - 10},${minY} H ${labelX - 6} V ${maxY} H ${labelX - 10}`,
+      fill: "none", stroke: color, "stroke-width": STROKE_WIDTH.thin,
+      class: "schematex-phylo-clade-bracket",
+    }));
+    elements.push(
+      text(
+        {
+          x: labelX,
+          y: (minY + maxY) / 2,
+          class: `schematex-phylo-clade-label schematex-phylo-clade-label-${clade.id}`,
+          fill: color,
+          "font-weight": "bold",
+          "font-size": "13",
+          "dominant-baseline": "central",
+        },
+        clade.label ?? clade.id
+      )
+    );
   }
 
   return elements;
@@ -338,7 +342,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
       circle({
         cx: rootLayout.x,
         cy: rootLayout.y,
-        r: 5,
+        r: 2.5,
         class: "schematex-phylo-root-marker",
       })
     );
@@ -346,6 +350,11 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   for (const layoutNode of nodes) {
     const { node, x, y } = layoutNode;
+
+    // A visible fork distinguishes short shared ancestry from a polytomy.
+    if (ast.layout === "slanted" && !node.isLeaf && node !== ast.root && node.support === undefined) {
+      nodeElements.push(circle({ cx: x, cy: y, r: 2, fill: t.text, class: "schematex-phylo-fork" }));
+    }
 
     // Support dots / labels for internal nodes
     if (!node.isLeaf && node.support !== undefined) {
@@ -356,14 +365,14 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
           circle({
             cx: x,
             cy: y,
-            r: 4,
+            r: 2,
             class: "schematex-phylo-support-dot",
             fill: color,
           })
         );
         labelElements.push(
           text(
-            { x, y: y - 8, class: "schematex-phylo-support-label" },
+            { x: x - 5, y: y - 7, class: "schematex-phylo-support-label" },
             String(Math.round(support))
           )
         );
@@ -372,15 +381,21 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
     // Tip labels
     if (node.isLeaf) {
-      const label = node.label ?? node.id;
+      const label = (node.label ?? node.id).replaceAll("_", " ");
+      const anchor = layout.tipLabels?.get(node.id) ?? { x, y };
+      if (anchor.x > x + TIP_LABEL_GAP) {
+        branchElements.push(line({ x1: x, y1: y, x2: anchor.x, y2: anchor.y,
+          stroke: t.textMuted, "stroke-width": STROKE_WIDTH.thin, "stroke-opacity": 0.4,
+          "stroke-dasharray": "2 4", class: "schematex-phylo-tip-guide" }));
+      }
       const italic = isSpeciesBinomial(label);
       const cls = `schematex-phylo-tip-label${italic ? " schematex-phylo-tip-label-italic" : ""}`;
 
       labelElements.push(
         text(
           {
-            x: x + TIP_LABEL_GAP,
-            y,
+            x: anchor.x + TIP_LABEL_GAP,
+            y: anchor.y,
             class: cls,
             "font-style": italic ? "italic" : undefined,
             "data-taxon-id": node.id,
@@ -420,7 +435,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   const svgContent = [
     title(`${descTitle}${ast.title ? `: ${ast.title}` : ""}`),
     desc(
-      `${isDendrogramMode ? "Dendrogram" : "Phylogenetic tree"} with ${leafCount} taxa, ${descMode} mode, ${ast.layout} layout${cutSuffix}`
+      `${isDendrogramMode ? "Dendrogram" : "Phylogenetic tree"} with ${leafCount} taxa, ${descMode} mode, ${ast.layout} layout${cutSuffix}. Dotted tip extensions align labels and do not represent branch distance.`
     ),
     el("style", {}, css),
   ];

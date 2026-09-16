@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1340" height="1280" viewBox="0 0 1340 1280" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Traffic Light Sequence</title><desc>Independent reference target. Measured spacious rung bands and consistent AB contact, coil and reset-bracket symbols. All rungs and branch membership preserved. PROVISIONAL: each TON is disabled by its own Q contact, so it resets on completion; the source does not implement the promised stable 30 s / 4 s / 30 s cycle.</desc><rect width="1340" height="1280" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Traffic Light Sequence</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC ladder framework  ·  AB instruction notation  ·  Offline logic</text>
+<line x1="48" y1="96" x2="1292" y2="96" stroke="#CBD1D6" stroke-width="1"/>
+<line x1="80" y1="130" x2="80" y2="1175" stroke="#20272B" stroke-width="3"/>
+<line x1="1260" y1="130" x2="1260" y2="1175" stroke="#20272B" stroke-width="3"/>
+<text x="57" y="168" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">000</text>
+<text x="100" y="114" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Green phase timer</text>
+<text x="220" y="138" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AutoEnable</text>
+<line x1="212" y1="149" x2="212" y2="177" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="149" x2="228" y2="177" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="163" x2="212" y2="163" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="138" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer.Q</text>
+<line x1="447" y1="149" x2="447" y2="177" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="149" x2="463" y2="177" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="180" x2="468" y2="146" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="163" x2="447" y2="163" stroke="#20272B" stroke-width="1.5"/>
+<rect x="1045" y="136" width="210" height="98" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="1150" y="156" font-size="15" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<line x1="1045" y1="168" x2="1255" y2="168" stroke="#CBD1D6" stroke-width="1"/>
+<text x="1150" y="191" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer</text>
+<text x="1062" y="215" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">Preset</text>
+<text x="1236" y="215" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">30000</text>
+<line x1="463" y1="163" x2="1045" y2="163" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1255" y1="163" x2="1260" y2="163" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="348" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">001</text>
+<text x="100" y="294" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Green lamp before timer done</text>
+<text x="220" y="318" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AutoEnable</text>
+<line x1="212" y1="329" x2="212" y2="357" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="329" x2="228" y2="357" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="343" x2="212" y2="343" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="318" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer.Q</text>
+<line x1="447" y1="329" x2="447" y2="357" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="329" x2="463" y2="357" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="360" x2="468" y2="326" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="343" x2="447" y2="343" stroke="#20272B" stroke-width="1.5"/>
+<text x="1150" y="318" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenLamp</text>
+<path d="M1138 327 A10 16 0 0 0 1138 359 M1162 327 A10 16 0 0 1 1162 359" stroke="#20272B" stroke-width="2" fill="none"/>
+<line x1="463" y1="343" x2="1128" y2="343" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1172" y1="343" x2="1260" y2="343" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="483" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">002</text>
+<text x="100" y="429" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Amber phase timer after green</text>
+<text x="220" y="453" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer.Q</text>
+<line x1="212" y1="464" x2="212" y2="492" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="464" x2="228" y2="492" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="478" x2="212" y2="478" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="453" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer.Q</text>
+<line x1="447" y1="464" x2="447" y2="492" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="464" x2="463" y2="492" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="495" x2="468" y2="461" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="478" x2="447" y2="478" stroke="#20272B" stroke-width="1.5"/>
+<rect x="1045" y="451" width="210" height="98" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="1150" y="471" font-size="15" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<line x1="1045" y1="483" x2="1255" y2="483" stroke="#CBD1D6" stroke-width="1"/>
+<text x="1150" y="506" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer</text>
+<text x="1062" y="530" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">Preset</text>
+<text x="1236" y="530" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">4000</text>
+<line x1="463" y1="478" x2="1045" y2="478" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1255" y1="478" x2="1260" y2="478" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="663" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">003</text>
+<text x="100" y="609" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Amber lamp during amber timer</text>
+<text x="220" y="633" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer.Q</text>
+<line x1="212" y1="644" x2="212" y2="672" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="644" x2="228" y2="672" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="658" x2="212" y2="658" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="633" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer.Q</text>
+<line x1="447" y1="644" x2="447" y2="672" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="644" x2="463" y2="672" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="675" x2="468" y2="641" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="658" x2="447" y2="658" stroke="#20272B" stroke-width="1.5"/>
+<text x="1150" y="633" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberLamp</text>
+<path d="M1138 642 A10 16 0 0 0 1138 674 M1162 642 A10 16 0 0 1 1162 674" stroke="#20272B" stroke-width="2" fill="none"/>
+<line x1="463" y1="658" x2="1128" y2="658" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1172" y1="658" x2="1260" y2="658" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="798" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">004</text>
+<text x="100" y="744" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Red phase timer after amber</text>
+<text x="220" y="768" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer.Q</text>
+<line x1="212" y1="779" x2="212" y2="807" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="779" x2="228" y2="807" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="793" x2="212" y2="793" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="768" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedTimer.Q</text>
+<line x1="447" y1="779" x2="447" y2="807" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="779" x2="463" y2="807" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="810" x2="468" y2="776" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="793" x2="447" y2="793" stroke="#20272B" stroke-width="1.5"/>
+<rect x="1045" y="766" width="210" height="98" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="1150" y="786" font-size="15" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<line x1="1045" y1="798" x2="1255" y2="798" stroke="#CBD1D6" stroke-width="1"/>
+<text x="1150" y="821" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedTimer</text>
+<text x="1062" y="845" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">Preset</text>
+<text x="1236" y="845" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">30000</text>
+<line x1="463" y1="793" x2="1045" y2="793" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1255" y1="793" x2="1260" y2="793" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="978" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">005</text>
+<text x="100" y="924" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Red lamp during red timer</text>
+<text x="220" y="948" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer.Q</text>
+<line x1="212" y1="959" x2="212" y2="987" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="959" x2="228" y2="987" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="973" x2="212" y2="973" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="948" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedTimer.Q</text>
+<line x1="447" y1="959" x2="447" y2="987" stroke="#20272B" stroke-width="2"/>
+<line x1="463" y1="959" x2="463" y2="987" stroke="#20272B" stroke-width="2"/>
+<line x1="442" y1="990" x2="468" y2="956" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="973" x2="447" y2="973" stroke="#20272B" stroke-width="1.5"/>
+<text x="1150" y="948" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedLamp</text>
+<path d="M1138 957 A10 16 0 0 0 1138 989 M1162 957 A10 16 0 0 1 1162 989" stroke="#20272B" stroke-width="2" fill="none"/>
+<line x1="463" y1="973" x2="1128" y2="973" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1172" y1="973" x2="1260" y2="973" stroke="#20272B" stroke-width="1.5"/>
+<text x="57" y="1113" font-size="13" font-weight="400" text-anchor="end" fill="#59636B">006</text>
+<text x="100" y="1059" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Reset phase timers after red</text>
+<text x="220" y="1083" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedTimer.Q</text>
+<line x1="212" y1="1094" x2="212" y2="1122" stroke="#20272B" stroke-width="2"/>
+<line x1="228" y1="1094" x2="228" y2="1122" stroke="#20272B" stroke-width="2"/>
+<line x1="80" y1="1108" x2="212" y2="1108" stroke="#20272B" stroke-width="1.5"/>
+<text x="455" y="1083" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">GreenTimer</text>
+<path d="M432 1094 h-6 v28 h6 M478 1094 h6 v28 h-6" stroke="#20272B" stroke-width="2" fill="none"/>
+<text x="455" y="1113" font-size="13" font-weight="600" text-anchor="middle" fill="#20272B">RES</text>
+<line x1="228" y1="1108" x2="426" y2="1108" stroke="#20272B" stroke-width="1.5"/>
+<text x="690" y="1083" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AmberTimer</text>
+<path d="M667 1094 h-6 v28 h6 M713 1094 h6 v28 h-6" stroke="#20272B" stroke-width="2" fill="none"/>
+<text x="690" y="1113" font-size="13" font-weight="600" text-anchor="middle" fill="#20272B">RES</text>
+<line x1="484" y1="1108" x2="661" y2="1108" stroke="#20272B" stroke-width="1.5"/>
+<text x="1150" y="1083" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">RedTimer</text>
+<path d="M1127 1094 h-6 v28 h6 M1173 1094 h6 v28 h-6" stroke="#20272B" stroke-width="2" fill="none"/>
+<text x="1150" y="1113" font-size="13" font-weight="600" text-anchor="middle" fill="#20272B">RES</text>
+<line x1="719" y1="1108" x2="1121" y2="1108" stroke="#20272B" stroke-width="1.5"/>
+<line x1="1179" y1="1108" x2="1260" y2="1108" stroke="#20272B" stroke-width="1.5"/>
+<line x1="48" y1="1208" x2="1292" y2="1208" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1232" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">XIC: examine true   ·   XIO: examine false   ·   L: latch / set   ·   U: unlatch / reset   ·   RES: reset instruction</text>
+<text x="48" y="1252" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Rungs are reproduced from the declared source; this reference is a logic drawing, not a validated machine program.</text></svg>

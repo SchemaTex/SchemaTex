@@ -1,0 +1,30 @@
+# Insurance claim intake and assessment.
+bpmn
+direction: LR
+title: "Insurance Claim"
+pool "Policyholder" blackbox
+pool "Insurer" {
+ lane "Claims" {
+   A: start message "Claim received"
+   B: task user "Validate policy"
+   G: gateway xor "Covered?"
+   C: task user "Assess damage"
+ }
+ lane "Fraud" {
+   D: task user "Investigate fraud"
+ }
+ lane "Settlement" {
+   H: gateway xor "Fraud risk?"
+   E: task service "Pay settlement"
+   X: end "Settled"
+   Y: end "Declined"
+ }
+}
+flows
+"Policyholder" ~~> A : "Claim"
+A --> B --> G
+G --? "yes" --> C --> H
+G --* "no" --> Y
+H --? "risk" --> D --> Y
+H --* "clear" --> E --> X
+X ~~> "Policyholder" : "Settlement notice"

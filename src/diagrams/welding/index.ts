@@ -1,10 +1,11 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseWelding } from "./parser";
 import { renderWelding } from "./renderer";
 
 export const welding: DiagramPlugin = {
   type: "welding" as DiagramPlugin["type"],
-  detect: (t: string) => /^\s*welding\b/i.test(t),
+  detect: (t: string) => /^\s*welding\b/i.test(firstContentLine(t) ?? ""),
   parse: parseWelding,
   render(text: string, config?: RenderConfig) {
     return renderWelding(text, config);

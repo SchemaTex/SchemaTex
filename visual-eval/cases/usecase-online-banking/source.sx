@@ -1,0 +1,27 @@
+# Online banking customer services and fraud-aware transfer handling.
+usecase
+title: "Online Banking"
+system: "Retail Banking Portal"
+actor: Customer as C
+actor: "Premium Customer" as PC
+actor: "Core Banking" as CB (external)
+actor: "Fraud Service" as FS (external)
+usecase: "View Accounts" as View
+usecase: "Transfer Funds" as Transfer { 
+  extension point: suspicious transfer
+}
+usecase: "Authenticate Customer" as Auth
+usecase: "Validate Payee" as Payee
+usecase: "Approve Transfer" as Approve
+usecase: "Review Suspicious Transfer" as Review
+usecase: "Download Statement" as Statement
+PC --|> C
+C -- View
+C -- Transfer
+C -- Statement
+Transfer ..> Auth : «include»
+Transfer ..> Payee : «include»
+Transfer ..> Approve : «include»
+Approve -- CB
+Review <.. Transfer : «extend» [risk score high] (extension point: suspicious transfer)
+Review -- FS

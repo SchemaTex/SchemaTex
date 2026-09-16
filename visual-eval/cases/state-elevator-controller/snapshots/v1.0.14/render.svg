@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="728" height="1588" viewBox="0 0 728 1588" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"><g class="lt-state lt-composite" data-id="Moving"><rect x="209" y="42" width="203" height="1522" rx="10" ry="10" class="lt-composite-body"/>
+<path d="M 210 64 L 411 64" class="lt-state-div"/>
+<text x="221" y="58" class="lt-composite-title">Moving</text></g>
+<g class="lt-state lt-composite" data-id="DoorCycle"><rect x="456" y="780" width="248" height="526" rx="10" ry="10" class="lt-composite-body"/>
+<path d="M 457 802 L 703 802" class="lt-state-div"/>
+<text x="468" y="796" class="lt-composite-title">DoorCycle</text></g></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="108.5" cy="108" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="GoingDown"><rect x="263.5" y="86" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="310.5" y="112" text-anchor="middle" class="lt-state-name"><tspan x="310.5" dy="0">GoingDown</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Closing"><rect x="540" y="824" width="80" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="580" y="850" text-anchor="middle" class="lt-state-name"><tspan x="580" dy="0">Closing</tspan></text></g>
+<g class="lt-state lt-pseudo" data-id="__final_4" data-kind="final"><circle cx="520" cy="984" r="11" class="lt-ps-final-outer"/>
+<circle cx="520" cy="984" r="6" class="lt-ps-final-inner"/></g>
+<g class="lt-state lt-pseudo" data-id="__initial_3" data-kind="initial"><circle cx="640" cy="984" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="Idle"><rect x="72.5" y="1100" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="108.5" y="1126" text-anchor="middle" class="lt-state-name"><tspan x="108.5" dy="0">Idle</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Opening"><rect x="540" y="1100" width="80" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="580" y="1126" text-anchor="middle" class="lt-state-name"><tspan x="580" dy="0">Opening</tspan></text></g>
+<g class="lt-state lt-simple" data-id="EmergencyStop"><rect x="48" y="1238" width="121" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="108.5" y="1264" text-anchor="middle" class="lt-state-name"><tspan x="108.5" dy="0">EmergencyStop</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Open"><rect x="544" y="1238" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="580" y="1264" text-anchor="middle" class="lt-state-name"><tspan x="580" dy="0">Open</tspan></text></g>
+<g class="lt-state lt-pseudo" data-id="__initial_2" data-kind="initial"><circle cx="310.5" cy="1260" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="SelectingDirection"><rect x="233" y="1376" width="155" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="310.5" y="1402" text-anchor="middle" class="lt-state-name"><tspan x="310.5" dy="0">SelectingDirection</tspan></text></g>
+<g class="lt-state lt-simple" data-id="GoingUp"><rect x="270.5" y="1496" width="80" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="310.5" y="1522" text-anchor="middle" class="lt-state-name"><tspan x="310.5" dy="0">GoingUp</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="Idle"><path d="M 108.5 116 L 108.5 186 L 108.5 186 L 108.5 246 L 108.5 306 L 108.5 306 L 108.5 366 L 108.5 426 L 108.5 426 L 108.5 486 L 108.5 546 L 108.5 546 L 108.5 606 L 108.5 666 L 108.5 666 L 108.5 726 L 108.5 786 L 108.5 786 L 108.5 846 L 108.5 906 L 108.5 906 L 108.5 984 L 108.5 1062 L 108.5 1062 L 108.5 1100" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="Idle"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="Idle" data-to="Moving"><path d="M 108.5 1144 L 108.5 1182 L 310.5 1182 L 310.5 1252" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Idle" data-to="Moving"/>
+<rect x="171.5" y="1166" width="76" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="209.5" y="1177" text-anchor="middle" class="lt-transition-label"><tspan x="209.5" dy="0">call received</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="__initial_2" data-to="SelectingDirection"><path d="M 310.5 1268 L 310.5 1338 L 310.5 1338 L 310.5 1376" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_2" data-to="SelectingDirection"/></g>
+<g class="lt-edge" data-edge-id="t4" data-from="SelectingDirection" data-to="GoingUp"><path d="M 310.5 1420 L 310.5 1458 L 310.5 1458 L 310.5 1496" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SelectingDirection" data-to="GoingUp"/>
+<rect x="316.5" y="1450" width="73" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="1461" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">target above</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="SelectingDirection" data-to="GoingDown"><path d="M 310.5 130 L 310.5 186 L 310.5 186 L 310.5 246 L 310.5 306 L 310.5 306 L 310.5 366 L 310.5 426 L 310.5 426 L 310.5 486 L 310.5 546 L 310.5 546 L 310.5 606 L 310.5 666 L 310.5 666 L 310.5 726 L 310.5 786 L 310.5 786 L 310.5 846 L 310.5 906 L 310.5 906 L 310.5 984 L 310.5 1062 L 310.5 1062 L 310.5 1122 L 310.5 1182 L 310.5 1182 L 310.5 1260 L 310.5 1338 L 310.5 1338 L 310.5 1376" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SelectingDirection" data-to="GoingDown"/>
+<rect x="316.5" y="178" width="71" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="189" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">target below</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="GoingUp" data-to="SelectingDirection"><path d="M 310.5 1420 L 310.5 1458 L 310.5 1458 L 310.5 1496" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="GoingUp" data-to="SelectingDirection"/>
+<rect x="316.5" y="1450" width="135" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="1461" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">floor reached / next call</tspan></text></g>
+<g class="lt-edge" data-edge-id="t7" data-from="GoingDown" data-to="SelectingDirection"><path d="M 310.5 130 L 310.5 186 L 310.5 186 L 310.5 246 L 310.5 306 L 310.5 306 L 310.5 366 L 310.5 426 L 310.5 426 L 310.5 486 L 310.5 546 L 310.5 546 L 310.5 606 L 310.5 666 L 310.5 666 L 310.5 726 L 310.5 786 L 310.5 786 L 310.5 846 L 310.5 906 L 310.5 906 L 310.5 984 L 310.5 1062 L 310.5 1062 L 310.5 1122 L 310.5 1182 L 310.5 1182 L 310.5 1260 L 310.5 1338 L 310.5 1338 L 310.5 1376" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="GoingDown" data-to="SelectingDirection"/>
+<rect x="316.5" y="178" width="135" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="189" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">floor reached / next call</tspan></text></g>
+<g class="lt-edge" data-edge-id="t8" data-from="Moving" data-to="DoorCycle"><path d="M 310.5 130 L 310.5 186 L 310.5 186 L 310.5 246 L 310.5 306 L 310.5 306 L 310.5 366 L 310.5 426 L 640 426 L 640 486 L 640 546 L 640 546 L 640 606 L 640 666 L 640 666 L 640 726 L 640 786 L 640 786 L 640 846 L 640 906 L 640 906 L 640 976" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Moving" data-to="DoorCycle"/>
+<rect x="316.5" y="178" width="113" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="189" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">target floor reached</tspan></text></g>
+<g class="lt-edge" data-edge-id="t9" data-from="__initial_3" data-to="Opening"><path d="M 640 992 L 640 1062 L 580 1062 L 580 1100" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_3" data-to="Opening"/></g>
+<g class="lt-edge" data-edge-id="t10" data-from="Opening" data-to="Open"><path d="M 580 1144 L 580 1182 L 580 1182 L 580 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Opening" data-to="Open"/>
+<rect x="586" y="1174" width="85" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="586" y="1185" text-anchor="start" class="lt-transition-label"><tspan x="586" dy="0">door fully open</tspan></text></g>
+<g class="lt-edge" data-edge-id="t11" data-from="Open" data-to="Closing"><path d="M 580 868 L 580 906 L 580 906 L 580 984 L 580 1062 L 580 1062 L 580 1122 L 580 1182 L 580 1182 L 580 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Open" data-to="Closing"/>
+<rect x="586" y="898" width="74" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="586" y="909" text-anchor="start" class="lt-transition-label"><tspan x="586" dy="0">dwell timeout</tspan></text></g>
+<g class="lt-edge" data-edge-id="t12" data-from="Closing" data-to="Open"><path d="M 580 868 L 580 906 L 580 906 L 580 984 L 580 1062 L 580 1062 L 580 1122 L 580 1182 L 580 1182 L 580 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Closing" data-to="Open"/>
+<rect x="586" y="898" width="113" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="586" y="909" text-anchor="start" class="lt-transition-label"><tspan x="586" dy="0">obstruction detected</tspan></text></g>
+<g class="lt-edge" data-edge-id="t13" data-from="Closing" data-to="__final_4"><path d="M 580 868 L 580 906 L 520 906 L 520 973" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Closing" data-to="__final_4"/>
+<rect x="502.5" y="890" width="95" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="550" y="901" text-anchor="middle" class="lt-transition-label"><tspan x="550" dy="0">door fully closed</tspan></text></g>
+<g class="lt-edge" data-edge-id="t14" data-from="DoorCycle" data-to="Idle"><path d="M 520 995 L 520 1062 L 108.5 1062 L 108.5 1100" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="DoorCycle" data-to="Idle"/>
+<rect x="270.25" y="1046" width="88" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="314.25" y="1057" text-anchor="middle" class="lt-transition-label"><tspan x="314.25" dy="0">no queued calls</tspan></text></g>
+<g class="lt-edge" data-edge-id="t15" data-from="DoorCycle" data-to="Moving"><path d="M 520 995 L 520 1062 L 520 1062 L 520 1122 L 520 1182 L 310.5 1182 L 310.5 1252" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="DoorCycle" data-to="Moving"/>
+<rect x="526" y="1054" width="67" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="526" y="1065" text-anchor="start" class="lt-transition-label"><tspan x="526" dy="0">queued call</tspan></text></g>
+<g class="lt-edge" data-edge-id="t16" data-from="Idle" data-to="EmergencyStop"><path d="M 108.5 1144 L 108.5 1182 L 108.5 1182 L 108.5 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Idle" data-to="EmergencyStop"/>
+<rect x="114.5" y="1174" width="108" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="114.5" y="1185" text-anchor="start" class="lt-transition-label"><tspan x="114.5" dy="0">emergency pressed</tspan></text></g>
+<g class="lt-edge" data-edge-id="t17" data-from="Moving" data-to="EmergencyStop"><path d="M 310.5 130 L 310.5 186 L 310.5 186 L 310.5 246 L 310.5 306 L 310.5 306 L 310.5 366 L 310.5 426 L 310.5 426 L 310.5 486 L 310.5 546 L 310.5 546 L 310.5 606 L 310.5 666 L 310.5 666 L 310.5 726 L 310.5 786 L 310.5 786 L 310.5 846 L 310.5 906 L 310.5 906 L 310.5 984 L 310.5 1062 L 310.5 1062 L 310.5 1122 L 310.5 1182 L 108.5 1182 L 108.5 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Moving" data-to="EmergencyStop"/>
+<rect x="316.5" y="178" width="108" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="316.5" y="189" text-anchor="start" class="lt-transition-label"><tspan x="316.5" dy="0">emergency pressed</tspan></text></g>
+<g class="lt-edge" data-edge-id="t18" data-from="EmergencyStop" data-to="Idle"><path d="M 108.5 1144 L 108.5 1182 L 108.5 1182 L 108.5 1238" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="EmergencyStop" data-to="Idle"/>
+<rect x="114.5" y="1174" width="109" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="114.5" y="1185" text-anchor="start" class="lt-transition-label"><tspan x="114.5" dy="0">reset acknowledged</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

@@ -7,7 +7,7 @@ description: Failure Mode and Effects Analysis — the engine computes RPN and A
 
 **FMEA** (Failure Mode and Effects Analysis) is the most widely used proactive reliability method in manufacturing: for every part of a system, list how it can fail (**failure modes**), what each failure does (**effects**), why it happens (**causes**), and how it is caught (**controls**). Each row is rated on three 1–10 scales — **Severity**, **Occurrence**, **Detection** — and prioritised. Standardised by **AIAG-VDA FMEA Handbook (2019)** and **IEC 60812**.
 
-Schematex's edge is that the engine **computes the priority**, not just the table. It flattens the failure chain to one worksheet row per (item, mode, cause), computes **RPN = S × O × D**, and — crucially — the AIAG-VDA **Action Priority** (severity-primary banding), which deliberately fixes the bug a raw RPN sort introduces: an airbag failure at S10·O2·D3 is *High* even though its RPN (60) looks low.
+The engine computes **RPN = S × O × D** and **Action Priority (AP)** for each worksheet row. AP depends on all three scores, not RPN alone. In the implemented lookup, S10·O2·D3 gives Low AP and RPN 60; Low AP does not mean low severity.
 
 <Playground initial={`fmea "Brake system DFMEA"
   type: design
@@ -65,7 +65,7 @@ This is the differentiator. From the nested AST the engine:
 
 1. **Flattens** to one row per (item, mode, cause); the mode's worst effect severity governs every row of that mode.
 2. **RPN = S × O × D** (1–1000).
-3. **Action Priority** by the AIAG-VDA band structure — **Severity is the primary axis**, Occurrence second, Detection third. S = 9–10 (safety/regulatory) is High for *every* O and D; mid-severity degrades High→Medium→Low as Occurrence falls.
+3. **Action Priority** uses the DFMEA/PFMEA S/O/D lookup. Severity 9–10 does not automatically mean High: Occurrence and Detection also determine the result.
 4. **Sorts** by the chosen key. For `ap`: High > Medium > Low, tie-broken by Severity then RPN — *never* RPN alone, which would re-introduce the bug AP was designed to fix.
 5. **Flags** rows over the threshold.
 
@@ -112,7 +112,7 @@ Ratings must be integers 1–10; the failure chain must nest `item → mode → 
 
 ## 6. Standard compliance
 
-The failure chain and the Severity/Occurrence/Detection scales follow the AIAG-VDA FMEA Handbook (2019) and IEC 60812. The Action Priority implements the published band *structure* (severity-primary), not the paywalled verbatim 1000-cell table. RPN remains available via `rank: rpn` for legacy worksheets.
+The engine uses the DFMEA/PFMEA S/O/D lookup for Action Priority. It does not implement the separate FMEA-MSR severity/frequency/monitoring table. RPN remains available via `rank: rpn`.
 
 ## 7. Roadmap
 

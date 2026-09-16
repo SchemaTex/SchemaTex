@@ -1,0 +1,45 @@
+{
+  "id": "rbd-telecom-core-network",
+  "type": "rbd",
+  "title": "Telecom core network",
+  "goal": "Show redundant router and fibre paths within a core-network reliability path.",
+  "rubric": [
+    {
+      "id": "path",
+      "severity": "blocker",
+      "must": "A left-to-right reliability path visibly represents telecom service success path."
+    },
+    {
+      "id": "redundancy",
+      "severity": "blocker",
+      "must": "The drawing visibly shows two router-and-fibre paths visibly arranged in parallel."
+    },
+    {
+      "id": "series",
+      "severity": "blocker",
+      "must": "The drawing visibly shows access aggregation and peering edge as series blocks."
+    },
+    {
+      "id": "reliabilities",
+      "severity": "major",
+      "must": "Every component block visibly displays its reliability value."
+    },
+    {
+      "id": "terminals",
+      "severity": "major",
+      "must": "Input and output terminals visibly bracket the success path."
+    },
+    {
+      "id": "summary",
+      "severity": "minor",
+      "must": "A computed system-reliability summary is visible on the drawing."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/rbd/ideal.svg (sha256 1f4f1225b103), source sha256 32e8c8e70102. Independent recursive series/parallel drawing with all source blocks, separate complete redundant paths, reliability totals and Birnbaum importance computed from the success expression. Red borders mark actual single points of failure; highest importance uses green (inner border when both roles apply). All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

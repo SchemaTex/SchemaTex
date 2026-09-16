@@ -1,0 +1,78 @@
+{
+  "id": "matrix-competitor-positioning",
+  "type": "matrix",
+  "variant": "quadrant",
+  "title": "Laboratory supplier positioning",
+  "goal": "A procurement team can compare suppliers on price and assay quality.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Named suppliers are visibly positioned against price and assay-quality axes."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "At least one value supplier and one premium-quality supplier are visually distinct."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Bubble sizes visibly differentiate suppliers."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Supplier labels are readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Quadrant dividers are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all four named suppliers positioned on price and assay-quality axes, with category colors and visibly different bubble sizes. Labels are readable, and the quadrant dividers are visible. No material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:27:33.017Z",
+      "targetHash": "952d08acf10e",
+      "sourceHash": "6f86a42de098",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Northstar Labs, Meridian Diagnostics, Apex Bioanalytics, and RapidTest Co. are plotted against Low price → Premium price and Basic assay quality → High assay quality axes."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Value suppliers Northstar Labs and RapidTest Co. are blue; premium supplier Meridian Diagnostics is distinctly green and positioned high on assay quality."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "The four bubbles have visibly different sizes, with Meridian Diagnostics largest and RapidTest Co. smallest."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "All supplier names are legible and placed beside their bubbles."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "Vertical and horizontal quadrant divider lines are clearly visible."
+        }
+      ]
+    }
+  }
+}

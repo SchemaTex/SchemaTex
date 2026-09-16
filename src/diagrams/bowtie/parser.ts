@@ -22,6 +22,11 @@ import type {
   BowtieEscalation,
   BowtieThreat,
 } from "./types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+import { matchQuoted } from "../../core/quotes";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//"];
 
 export class BowtieParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -50,7 +55,7 @@ export function parseBowtie(text: string): BowtieAst {
   // ── Header ──
   let headerSeen = false;
   while (i < rawLines.length) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") { i++; continue; }
     const h = /^bowtie\b(.*)$/i.exec(t);
     if (h) {
@@ -74,7 +79,7 @@ export function parseBowtie(text: string): BowtieAst {
   let tCount = 0, cCount = 0;
 
   for (; i < rawLines.length; i++) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") continue;
     const lineNo = i + 1;
 
@@ -239,36 +244,10 @@ function requireLabel(s: string, keyword: string, lineNo: number): string {
   return bare;
 }
 
-interface Quoted { value: string; length: number }
-function matchQuoted(s: string): Quoted | undefined {
-  if (!s) return undefined;
-  const open = s[0]!;
-  if (open !== '"' && open !== "「" && open !== "“" && open !== "『") return undefined;
-  const close = closingQuote(open);
-  const end = s.indexOf(close, 1);
-  if (end < 0) return undefined;
-  return { value: s.slice(1, end), length: end + 1 };
-}
-
-function closingQuote(open: string): string {
-  return open === "「" ? "」" : open === "『" ? "』" : open === "“" ? "”" : '"';
-}
 
 function afterColon(s: string): string {
   const i = s.indexOf(":");
   return i < 0 ? "" : s.slice(i + 1).trim();
-}
-
-function stripComment(line: string): string {
-  let inQ = false, qc = "";
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
-    if (inQ) { if (ch === qc) inQ = false; continue; }
-    if (ch === '"' || ch === "「" || ch === "“" || ch === "『") { inQ = true; qc = closingQuote(ch); continue; }
-    if (ch === "#") return line.slice(0, i);
-    if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
-  }
-  return line;
 }
 
 function truncate(s: string, n: number): string {

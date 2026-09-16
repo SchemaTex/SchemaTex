@@ -1,0 +1,87 @@
+{
+  "id": "erd-library-catalogue",
+  "type": "erd",
+  "title": "Library catalogue",
+  "goal": "Show library membership, loans, physical copies, titles, authors, and reservations.",
+  "rubric": [
+    {
+      "id": "loan-model",
+      "severity": "blocker",
+      "must": "Member visibly has many Loans and Copy visibly has many Loan records over time."
+    },
+    {
+      "id": "title-copy",
+      "severity": "blocker",
+      "must": "Title visibly has one or more physical Copy records."
+    },
+    {
+      "id": "author-association",
+      "severity": "major",
+      "must": "Author and Title visibly connect through the Title Author associative entity."
+    },
+    {
+      "id": "reservations",
+      "severity": "major",
+      "must": "Member and Title visibly both relate to Reservation."
+    },
+    {
+      "id": "catalogue-entities",
+      "severity": "major",
+      "must": "Member, Loan, Copy, Title, Author, Reservation, and Title Author are visible as distinct entities."
+    },
+    {
+      "id": "keys-visible",
+      "severity": "minor",
+      "must": "The associative and lending entities visibly show their key fields."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All seven requested entities and their key fields are visible. The relationships are traceable and match the source data: members and copies each relate to many loans, titles have one or more copies, reservations connect members and titles, and authors connect to titles through TITLE_AUTHOR. Labels are readable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:48.611Z",
+      "targetHash": "9fca40e2e98d",
+      "sourceHash": "71483d85cc71",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "loan-model",
+          "verdict": "pass",
+          "evidence": "MEMBER connects to LOAN with one member to many loans; COPY connects to LOAN with one copy to many loan records over time."
+        },
+        {
+          "id": "title-copy",
+          "verdict": "pass",
+          "evidence": "TITLE connects to COPY with one title to one or more copies."
+        },
+        {
+          "id": "author-association",
+          "verdict": "pass",
+          "evidence": "AUTHOR and TITLE connect through the visible TITLE_AUTHOR associative entity."
+        },
+        {
+          "id": "reservations",
+          "verdict": "pass",
+          "evidence": "RESERVATION connects to both MEMBER and TITLE."
+        },
+        {
+          "id": "catalogue-entities",
+          "verdict": "pass",
+          "evidence": "MEMBER, LOAN, COPY, TITLE, AUTHOR, RESERVATION, and TITLE_AUTHOR are visible as distinct entities."
+        },
+        {
+          "id": "keys-visible",
+          "verdict": "pass",
+          "evidence": "LOAN shows loan_id, member_id, and copy_id; TITLE_AUTHOR shows title_id and author_id, with its key fields visibly marked."
+        }
+      ]
+    }
+  }
+}

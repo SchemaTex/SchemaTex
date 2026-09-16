@@ -1,0 +1,26 @@
+pid "Vessel Level Control and Shutdown"
+
+equip TK-100 : tank_atm [tag: "Feed Tank"]
+equip XV-202 : valve_control [tag: "High-level Shutoff", actuator: "solenoid", fail: "FC"]
+equip V-101 : vessel_v [tag: "Level Vessel"]
+equip LV-101 : valve_control [tag: "Level Outlet Valve", actuator: "diaphragm", fail: "FO"]
+equip TK-102 : tank_atm [tag: "Product Tank"]
+
+line feed from TK-100.bottom to XV-202.in [type: process]
+line inlet from XV-202.out to V-101.top [type: process]
+line outlet from V-101.bottom to LV-101.in [type: process]
+line product from LV-101.out to TK-102.top [type: process]
+
+inst LT-101 : field_discrete
+  measures V-101
+inst LIC-101 : cr_shared
+  controls LV-101
+inst LSHH-202 : field_discrete
+  measures V-101
+  controls XV-202
+
+line level from V-101.right to LT-101 [type: capillary]
+line measurement from LT-101 to LIC-101 [type: electric]
+line control from LIC-101 to LV-101.signal [type: pneumatic]
+line highlevel from V-101.left to LSHH-202 [type: capillary]
+line shutdown from LSHH-202 to XV-202.signal [type: electric]

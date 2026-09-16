@@ -1,0 +1,41 @@
+{
+  "id": "matrix-clinical-risk",
+  "type": "matrix",
+  "variant": "heatmap",
+  "title": "Outpatient clinic risk register",
+  "goal": "A clinic quality lead can see which risks need immediate mitigation.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A visible 5 by 5 likelihood-impact grid contains the named clinical risks."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Likelihood and impact scales are visibly labelled."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The highest-severity sepsis risk is visibly in the high likelihood/high impact region."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Risk cells use a clear severity progression."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Cell labels and values are legible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/matrix/heatmap/ideal.svg (sha256 35b5710d2235), source sha256 7093c9faf0e6. Five-by-five likelihood-impact grid with monotonic labelled axes, all 25 products, four source risks in their exact cells, and an aligned risk register. Discrete rating bands match the exemplar and are explicitly identified as presentation thresholds. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

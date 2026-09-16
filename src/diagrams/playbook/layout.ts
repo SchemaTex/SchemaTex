@@ -97,6 +97,10 @@ export function layoutPlaybook(ast: PlaybookAst): PlaybookLayoutResult {
 
   const zones = mod.buildZones(ast, players);
 
+  // Court/pitch verbs describe successive actions. Keep initial roster symbols
+  // fixed while resolving later actions against the players' current positions.
+  // Football routes describe simultaneous snap assignments, so stay immutable.
+  const currentPlayers = players.map(player => ({ ...player }));
   const moves: MoveGeom[] = [];
   for (const m of ast.moves) {
     const srcIdx = findPlayer(m.player, byId);
@@ -104,14 +108,20 @@ export function layoutPlaybook(ast: PlaybookAst): PlaybookLayoutResult {
       warnings.push(`move on unknown player "${m.player}" — skipped`);
       continue;
     }
-    const src: Pt = { x: players[srcIdx]!.x, y: players[srcIdx]!.y };
+    const src: Pt = { x: currentPlayers[srcIdx]!.x, y: currentPlayers[srcIdx]!.y };
 
     // sport-specific named moves first (football routes, runs, pulls)
     const named = mod.resolveNamed?.(m, src, players, byId, warnings);
     if (named) { moves.push(named); continue; }
 
-    const geom = resolveGeneric(m, src, byId, players, mod, ast.sport, warnings);
-    if (geom) moves.push(geom);
+    const geom = resolveGeneric(m, src, byId, currentPlayers, mod, ast.sport, warnings);
+    if (geom) {
+      moves.push(geom);
+      if (ast.sport !== "football" && ["cut", "run", "move", "dribble", "screen", "block"].includes(m.kind)) {
+        const endpoint = geom.points.at(-1)!;
+        currentPlayers[srcIdx] = { ...currentPlayers[srcIdx]!, ...endpoint };
+      }
+    }
   }
 
   const bounds = mod.bounds(ast, players, moves, zones);
@@ -153,7 +163,14 @@ function resolveGeneric(
       if (p.ref) {
         const r = resolveRef(p.ref, byId, players, mod);
         if (!r) { warnings.push(`${m.kind} ${m.player}: unknown destination "${p.ref}" — skipped`); return null; }
-        cur = r;
+        // A movement to the basket means arriving within finishing range,
+        // not putting a player's body at the hoop's physical centre.
+        const rim = sport === "basketball" ? mod.resolveLandmark?.("rim") : null;
+        const approachesBasket = ["cut", "run", "move", "dribble"].includes(m.kind)
+          && findPlayer(p.ref, byId) === undefined && rim && r.x === rim.x && r.y === rim.y;
+        const distance = Math.hypot(r.x - cur.x, r.y - cur.y);
+        const stop = approachesBasket ? Math.min(3, distance) : 0;
+        cur = distance > 0 ? { x: r.x + (cur.x - r.x) / distance * stop, y: r.y + (cur.y - r.y) / distance * stop } : r;
       } else if (p.rel) {
         cur = { x: cur.x + (p.x ?? 0), y: cur.y + (p.y ?? 0) };
       } else {

@@ -1,0 +1,52 @@
+---
+title: Subscriber renewal classifier — three-class churn tree
+description: A trained classification tree predicting whether a subscriber renews, downgrades or cancels — split rules, sample counts, per-class counts and Gini impurity on every node, seven leaves.
+diagram: decisiontree
+standard: CART / scikit-learn plot_tree convention
+industry: [saas, product]
+persona: For the data scientist explaining a churn model
+complexity: 4
+tags: [decisiontree, ml, cart, churn, multiclass, gini]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  # Illustrative churn model: the counts are invented but internally consistent.
+  decisiontree:ml "Subscriber outcome at renewal"
+  classes: renews, downgrades, cancels
+  impurity: gini
+
+  split "Contract = month-to-month" samples=5000 value=[3280, 770, 950] gini=0.510
+    true split "Tenure <= 12 months" samples=2600 value=[1280, 480, 840] gini=0.619
+      true split "Support calls (90 days) <= 2" samples=1300 value=[500, 160, 640] gini=0.595
+        true leaf samples=780 value=[420, 110, 250] gini=0.587 class=renews
+        false leaf samples=520 value=[80, 50, 390] gini=0.405 class=cancels
+      false split "Monthly charge <= $70" samples=1300 value=[780, 320, 200] gini=0.556
+        true leaf samples=700 value=[560, 70, 70] gini=0.340 class=renews
+        false leaf samples=600 value=[220, 250, 130] gini=0.645 class=downgrades
+    false split "Monthly charge <= $90" samples=2400 value=[2000, 290, 110] gini=0.289
+      true leaf samples=1900 value=[1710, 120, 70] gini=0.185 class=renews
+      false split "Data used per month <= 20 GB" samples=500 value=[290, 170, 40] gini=0.542
+        true leaf samples=220 value=[60, 140, 20] gini=0.512 class=downgrades
+        false leaf samples=280 value=[230, 30, 20] gini=0.309 class=renews
+---
+
+## Scenario
+
+A classification tree that predicts what a subscriber does at renewal: renews, downgrades to a cheaper plan, or cancels. The features are plain business facts — contract type, tenure, support calls, monthly charge and data use — so the model can be explained to people who do not build models. The tree is three levels deep, with six splits and seven leaves. The counts are illustrative but add up consistently.
+
+## Annotation key
+
+- `decisiontree:ml` — machine-learning tree mode
+- `classes: renews, downgrades, cancels` — the class order used by every `value=[...]` list
+- `impurity: gini` — the impurity measure shown on each node
+- `split "Tenure <= 12 months"` — a split node; the quoted text is its rule
+- `samples=`, `value=[...]`, `gini=` — how many subscribers reach the node, how many fall in each class, and how mixed the node is
+- `true` / `false` — which branch of the parent split the node sits on
+- `leaf ... class=renews` — a prediction; the class is the majority in that leaf
+
+## How to read
+
+Start at the top and follow the branch where the rule holds (true) or fails (false). The first question is the contract: month-to-month subscribers go down the true branch, where tenure and support calls or monthly charge separate them further. The largest leaf is annual-contract subscribers paying $90 or less — 1,900 of them, 90% renewing. Some leaves are weak predictions: the "downgrades" leaf for longer-tenure month-to-month subscribers paying more than $70 holds only 42% downgraders. Reading the class counts, not just the label, shows how confident each prediction is.

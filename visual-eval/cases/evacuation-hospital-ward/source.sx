@@ -1,0 +1,30 @@
+# Scenario: ISO 23601 escape plan posted at the nurse station of a hospital ward, with fire-rated stair doors.
+evacuation "Ward 4B escape plan" unit m
+compliance iso
+sheet a3 landscape
+room bay1 "Bay 1" at 3,0 size 5x5
+room bay2 "Bay 2" at 8,0 size 5x5
+room nurses "Nurse Station" at 13,0 size 6x5
+room corridor "Ward Corridor" at 3,5 size 16x2.4
+room side "Side Rooms" at 3,7.4 size 8x4
+room utility "Clean Utility" at 11,7.4 size 8x4
+room stairW "Stair West" at 0,5 size 3x2.4
+room stairE "Stair East" at 19,5 size 3x2.4
+door between bay1 corridor at 50% width 1.4
+door between bay2 corridor at 50% width 1.4
+opening between nurses corridor at 50% width 2
+door between side corridor at 50% width 1.2
+door between utility corridor at 50% width 1
+door between corridor stairW at 50% width 1.2
+fire-door between corridor stairW rating "EI60"
+door between corridor stairE at 50% width 1.2
+fire-door between corridor stairE rating "EI60"
+here in nurses at 3,2.5 "YOU ARE HERE"
+exit-final xW in stairW at 0,1.2 side west "EXIT"
+exit-final xE in stairE at 3,1.2 side east "EXIT"
+extinguisher f1 in corridor at 8,0.3 class "ABC"
+safety first-aid aid1 in nurses at 5,4
+assembly muster outside at 24,12 "ASSEMBLY POINT"
+route primary here -> corridor -> stairE -> xE
+route secondary here -> corridor -> stairW -> xW
+legend auto

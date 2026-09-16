@@ -1,0 +1,27 @@
+# Patient referral between clinic and specialist.
+bpmn
+direction: LR
+title: "Patient Referral"
+pool "Clinic" {
+  lane "GP" {
+    A: start "Referral needed"
+    B: task user "Prepare referral"
+    C: task send "Send referral"
+    X: end "Referral sent"
+  }
+}
+pool "Specialist" {
+  lane "Intake" {
+    D: start message "Referral received"
+    E: task user "Triage referral"
+    G: gateway event "Appointment response"
+    F: task send "Confirm appointment"
+    Y: end "Booked"
+  }
+}
+flows
+A --> B --> C --> X
+C ~~> D : "Referral"
+D --> E --> G
+G --> F --> Y
+F ~~> "Clinic" : "Appointment"

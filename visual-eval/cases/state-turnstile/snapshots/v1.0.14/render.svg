@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="177" height="368" viewBox="0 0 177 368" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="67.5" cy="64" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="Locked"><rect x="31" y="180" width="73" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="67.5" y="206" text-anchor="middle" class="lt-state-name"><tspan x="67.5" dy="0">Locked</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Unlocked"><rect x="24" y="300" width="87" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="67.5" y="326" text-anchor="middle" class="lt-state-name"><tspan x="67.5" dy="0">Unlocked</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="Locked"><path d="M 67.5 72 L 67.5 142 L 67.5 142 L 67.5 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="Locked"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="Locked" data-to="Unlocked"><path d="M 67.5 224 L 67.5 262 L 67.5 262 L 67.5 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Locked" data-to="Unlocked"/>
+<rect x="73.5" y="254" width="30" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="73.5" y="265" text-anchor="start" class="lt-transition-label"><tspan x="73.5" dy="0">coin</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="Unlocked" data-to="Locked"><path d="M 67.5 224 L 67.5 262 L 67.5 262 L 67.5 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Unlocked" data-to="Locked"/>
+<rect x="73.5" y="254" width="32" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="73.5" y="265" text-anchor="start" class="lt-transition-label"><tspan x="73.5" dy="0">push</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="Locked" data-to="Locked"><path d="M 104 195.4 C 132 183.4, 106.45 152, 78.45 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Locked" data-to="Locked"/>
+<rect x="132" y="169.4" width="32" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="132" y="180.4" text-anchor="start" class="lt-transition-label"><tspan x="132" dy="0">push</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="Unlocked" data-to="Unlocked"><path d="M 111 315.4 C 139 303.4, 108.55 272, 80.55 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Unlocked" data-to="Unlocked"/>
+<rect x="139" y="289.4" width="30" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="139" y="300.4" text-anchor="start" class="lt-transition-label"><tspan x="139" dy="0">coin</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

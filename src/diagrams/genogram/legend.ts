@@ -1,3 +1,5 @@
+import { el, line, rect, text } from "../../core/svg";
+import { emotionalForm, renderEmotionalForm, twinPaths } from "./line-forms";
 /**
  * Auto-derive a LegendSpec from a genogram AST.
  *
@@ -24,12 +26,13 @@ import type {
   RelationshipType,
   Sex,
 } from "../../core/types";
-import type { PersonTokens } from "../../core/theme";
+import { resolveGenogramTheme, type PersonTokens } from "../../core/theme";
 
 type GenogramThemeLike = {
   stroke: string;
   fill: string;
   deceasedMark: string;
+  conditionFill?: string;
 } & Pick<PersonTokens, "maleFill" | "femaleFill" | "unknownFill">;
 
 const EMOTIONAL_TYPES: ReadonlySet<string> = new Set([
@@ -45,17 +48,14 @@ const EMOTIONAL_TYPES: ReadonlySet<string> = new Set([
 const STRUCTURAL_TYPES: ReadonlySet<string> = new Set([
   "married", "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
   "domestic-partnership", "consanguineous",
-  "parent-child", "adopted", "foster",
+  "parent-child", "adopted", "foster", "step",
   "twin-identical", "twin-fraternal",
 ]);
 
 // Heritage palette — cycles through the unified 8-color category palette
 // (see src/core/theme.ts DEFAULT_PALETTE). Kept local so heritage colors are
 // stable independent of theme switches.
-const HERITAGE_PALETTE = [
-  "#2563eb", "#059669", "#d97706", "#dc2626",
-  "#7c3aed", "#0891b2", "#ca8a04", "#db2777",
-];
+const HERITAGE_PALETTE = resolveGenogramTheme("default").palette;
 
 const SECTIONS: LegendSection[] = [
   { id: "symbols", title: "Symbols" },
@@ -73,9 +73,13 @@ export function buildGenogramLegend(
   const items: LegendItem[] = [];
 
   items.push(...buildSymbolItems(ast.individuals, theme));
+  if (ast.individuals.some(ind => ind.external)) {
+    items.push({ key: "external", label: "External contact", kind: "shape", shape: "square",
+      pattern: "dashed", color: theme?.stroke, fill: theme?.fill, section: "symbols" });
+  }
   items.push(...buildStructuralItems(ast.relationships, theme));
   items.push(...buildRelationshipItems(ast.relationships));
-  items.push(...buildConditionItems(ast.individuals));
+  items.push(...buildConditionItems(ast.individuals, theme?.conditionFill));
   items.push(...buildHeritageItems(ast.individuals));
   items.push(...buildMarkerItems(ast.individuals, theme));
 
@@ -97,6 +101,13 @@ export function buildGenogramLegend(
 // status overlays (deceased X, stillborn, miscarriage…) into the auto-derived
 // legend.
 const OBVIOUS_SEX: ReadonlySet<Sex> = new Set<Sex>(["male", "female"]);
+
+const STATUS_SYMBOL_ITEMS: Partial<Record<IndividualStatus, Partial<LegendItem>>> = {
+  stillborn: { kind: "shape", shape: "square", marker: "X" },
+  miscarriage: { kind: "shape", shape: "circle", fill: "none" },
+  abortion: { marker: "X" },
+  pregnancy: { kind: "shape", shape: "triangle", fill: "none" },
+};
 
 function buildSymbolItems(
   individuals: Individual[],
@@ -121,8 +132,9 @@ function buildSymbolItems(
     items.push({
       key: `sex.${s}`,
       label: sexLabel(s),
-      kind: "shape",
-      shape: sexShape(s),
+      ...(s === "unknown" || s === "other"
+        ? { kind: "marker" as const, marker: "?" }
+        : { kind: "shape" as const, shape: sexShape(s) }),
       fill: theme ? sexFill(s, theme) : undefined,
       color: theme?.stroke,
       section: "symbols",
@@ -140,8 +152,10 @@ function buildSymbolItems(
       label: statusLabel(st),
       kind: "marker",
       marker: statusMarker(st),
-      color: theme?.deceasedMark,
+      color: st === "pregnancy" || st === "miscarriage" ? theme?.stroke : theme?.deceasedMark,
+      fill: theme?.fill ?? resolveGenogramTheme("default").fill,
       section: "symbols",
+      ...STATUS_SYMBOL_ITEMS[st],
     });
   }
 
@@ -165,9 +179,6 @@ function sexShape(s: Sex): string {
       return "square";
     case "female":
       return "circle";
-    case "unknown":
-      return "diamond";
-    case "other":
     case "nonbinary":
       return "diamond";
     case "intersex":
@@ -199,9 +210,7 @@ function sexLabel(s: Sex): string {
 function statusMarker(s: IndividualStatus): string {
   switch (s) {
     case "deceased":
-    case "stillborn":
       return "X";
-    case "miscarriage":
     case "sab":
     case "tab":
     case "abortion":
@@ -257,7 +266,7 @@ function buildStructuralItems(
   const order: RelationshipType[] = [
     "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
     "domestic-partnership", "consanguineous",
-    "adopted", "foster",
+    "adopted", "foster", "step",
     "twin-identical", "twin-fraternal",
   ];
   const items: LegendItem[] = [];
@@ -296,6 +305,8 @@ function structuralItem(t: RelationshipType, theme?: GenogramThemeLike): LegendI
     case "adopted":
     case "foster":
       return { ...base, pattern: "dashed" };
+    case "step":
+      return { ...base, label: "Step-child", pattern: "step" };
     case "consanguineous":
       return { ...base, pattern: "double" };
     case "twin-identical":
@@ -327,51 +338,29 @@ function buildRelationshipItems(rels: { type: RelationshipType }[]): LegendItem[
   const items: LegendItem[] = [];
   for (const t of order) {
     if (!used.has(t)) continue;
+    const form = emotionalForm(t);
     items.push({
       key: t,
       label: humanize(t),
       kind: "line",
-      color: emotionalColor(t),
-      pattern: emotionalPattern(t),
-      strokeWidth: emotionalStrokeWidth(t),
+      color: form.color,
+      pattern: form.pattern,
+      strokeWidth: form.width,
       section: "relationships",
     });
   }
   return items;
 }
 
-function emotionalColor(t: RelationshipType): string {
-  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(t)) return "#4caf50";
-  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff"].includes(t)) return "#e53935";
-  if (["close-hostile", "fused", "fused-hostile"].includes(t)) return "#9c27b0";
-  if (["distant", "normal", "nevermet"].includes(t)) return "#9e9e9e";
-  if (["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect"].includes(t)) return "#b71c1c";
-  if (["manipulative", "controlling", "jealous"].includes(t)) return "#e65100";
-  return "#1565c0";
-}
-
-function emotionalPattern(t: RelationshipType): "solid" | "dashed" | "zigzag" | "broken" {
-  if (["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(t)) return "zigzag";
-  if (["distant", "nevermet"].includes(t)) return "dashed";
-  if (t === "cutoff") return "broken";
-  return "solid";
-}
-
-function emotionalStrokeWidth(t: RelationshipType): number {
-  if (["fused", "fused-hostile", "bestfriends"].includes(t)) return 4;
-  if (["close", "close-hostile", "love", "inlove"].includes(t)) return 3;
-  return 2;
-}
-
 // ─── Conditions ──────────────────────────────────────────────
 
-function buildConditionItems(individuals: Individual[]): LegendItem[] {
+function buildConditionItems(individuals: Individual[], defaultFill = resolveGenogramTheme("default").conditionFill): LegendItem[] {
   const seen = new Map<string, LegendItem>();
   for (const ind of individuals) {
     if (!ind.conditions) continue;
     for (const c of ind.conditions) {
       if (seen.has(c.label)) continue;
-      const color = c.color ?? defaultCategoryColor(c.category);
+      const color = c.color ?? defaultFill;
       const isFull = c.fill === "full";
       seen.set(c.label, {
         key: c.label,
@@ -384,35 +373,6 @@ function buildConditionItems(individuals: Individual[]): LegendItem[] {
     }
   }
   return Array.from(seen.values());
-}
-
-function defaultCategoryColor(cat: string | undefined): string {
-  if (!cat) return "#9ca3af";
-  const map: Record<string, string> = {
-    cardiovascular: "#dc2626",
-    cancer: "#a21caf",
-    diabetes: "#d97706",
-    "mental-health": "#2563eb",
-    depression: "#1d4ed8",
-    anxiety: "#0ea5e9",
-    bipolar: "#6366f1",
-    ptsd: "#475569",
-    "substance-alcohol": "#92400e",
-    "substance-drugs": "#7c2d12",
-    "substance-tobacco": "#854d0e",
-    neurological: "#7e22ce",
-    respiratory: "#0891b2",
-    autoimmune: "#be185d",
-    genetic: "#0f766e",
-    reproductive: "#db2777",
-    "eating-disorder": "#9333ea",
-    "learning-developmental": "#0369a1",
-    kidney: "#b45309",
-    "liver-gi": "#ca8a04",
-    obesity: "#ea580c",
-    other: "#9ca3af",
-  };
-  return map[cat] ?? "#9ca3af";
 }
 
 // ─── Heritage ────────────────────────────────────────────────
@@ -470,7 +430,7 @@ function markerItem(m: IndividualMarker, theme?: GenogramThemeLike): LegendItem 
         label: "Index person (focal subject)",
         kind: "shape",
         shape: "concentric-square",
-        fill: "#fef3c7",
+        fill: theme?.fill ?? resolveGenogramTheme("default").fill,
         color: theme?.stroke,
         section: "markers",
       };
@@ -501,4 +461,47 @@ function humanize(s: string): string {
   return s
     .replace(/[-_]+/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** The shared legend lays out rows; genogram supplies the clinical line forms.
+ * Its line swatches expose their endpoints, so no legend dimensions are copied.
+ */
+export function renderGenogramLegendForms(svg: string, spec: LegendSpec): string {
+  return svg.replace(/(<g[^>]*data-legend-key="([^"]+)"[^>]*>)([\s\S]*?)(<text[^>]*class="schematex-legend-label"[\s\S]*?<\/text>)(<\/g>)/g,
+    (row: string, open: string, key: string, swatch: string, label: string, close: string) => {
+      const item = spec.items.find(candidate => candidate.key === key);
+      if (key === "sex.unknown" || key === "sex.other") {
+        const center = /<circle cx="([^"]+)" cy="([^"]+)"/.exec(swatch);
+        if (!center) return row;
+        return open + text({ x: Number(center[1]), y: Number(center[2]) + 6.5,
+          class: "schematex-genogram-unknown-mark", "text-anchor": "middle", "font-size": 24,
+        }, "?") + label + close;
+      }
+      if (key === "external") {
+        return open + swatch.replace(/<rect /, '<rect rx="3" stroke-dasharray="4,3" ') + label + close;
+      }
+      if (key === "status.stillborn") {
+        const shape = /<rect x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)"/.exec(swatch);
+        if (!shape) return row;
+        const x = Number(shape[1]), y = Number(shape[2]), w = Number(shape[3]), h = Number(shape[4]);
+        const half = Math.min(w, h) / 2, cx = x + w / 2, cy = y + h / 2;
+        return open + rect({ x: cx - half, y: cy - half, width: half * 2, height: half * 2,
+          class: "schematex-genogram-condition-outline" }) + [-1, 1].map(sign => line({
+          x1: cx - half * sign, y1: cy - half, x2: cx + half * sign, y2: cy + half,
+          class: "schematex-genogram-status-cross", "data-mark": "stillbirth-cross",
+        })).join("") + label + close;
+      }
+      const twin = key === "twin-identical" || key === "twin-fraternal";
+      if (!item || (!EMOTIONAL_TYPES.has(key) && !twin)) return row;
+      const endpoints = /<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"/.exec(swatch);
+      if (!endpoints) return row;
+      if (twin) {
+        const x1 = Number(endpoints[1]), y = Number(endpoints[2]), x2 = Number(endpoints[3]);
+        const paths = twinPaths({ x: (x1 + x2) / 2, y: y - 6 }, [{ x: x1, y: y + 6 }, { x: x2, y: y + 6 }], key === "twin-identical");
+        return open + paths.map(d => el("path", { d, fill: "none", stroke: item.color, "stroke-width": 2 })).join("") + label + close;
+      }
+      // EMOTIONAL_TYPES is the genogram RelationshipType subset used above.
+      const type = key as RelationshipType;
+      return open + renderEmotionalForm(`M ${endpoints[1]} ${endpoints[2]} L ${endpoints[3]} ${endpoints[4]}`, type) + label + close;
+    });
 }

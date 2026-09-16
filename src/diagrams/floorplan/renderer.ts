@@ -58,7 +58,7 @@ const EVAC_KEEP = new Set([
   "column",
 ]);
 
-function buildCss(
+export function floorplanStylesheet(
   t: Theme,
   floorLabels = false,
   evacuationTheme?: EvacuationTheme
@@ -124,6 +124,7 @@ function buildCss(
 .sx-fp-chevron { fill: ${e.symbolKnockout}; stroke: none; }
 .sx-fp-access-glyph { fill: none; stroke: ${e.safeGreen}; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .sx-fp-access-glyph-fill { fill: ${e.safeGreen}; stroke: none; }
+.sx-fp-safety-location { fill: #005387; stroke: none; }
 .sx-fp-safety-plate-safe { fill: ${e.safeGreen}; stroke: none; }
 .sx-fp-safety-plate-fire { fill: ${e.fireRed}; stroke: none; }
 .sx-fp-safety-plate-mand { fill: ${e.mandBlue}; stroke: none; }
@@ -159,7 +160,7 @@ function renderErrorPanel(lay: FloorplanLayoutResult, t: Theme): string {
     [
       titleEl(lay.title),
       descEl(`Floor plan validation failed with ${lines.length} error${lines.length === 1 ? "" : "s"}.`),
-      el("style", {}, buildCss(t)),
+      el("style", {}, floorplanStylesheet(t)),
       rect({ class: "sx-fp-error-box", x: 1, y: 1, width: r2(w - 2), height: h - 2, rx: 6 }),
       textEl({ class: "sx-fp-error-title", x: 16, y: 26 }, `floorplan: ${lines.length} validation error${lines.length === 1 ? "" : "s"}`),
       ...panelLines.map((e, i) => textEl({ class: "sx-fp-error-line", x: 16, y: 50 + i * 19 }, `⚠ ${e}`)),
@@ -232,11 +233,11 @@ function windowSymbol(o: OpeningGeom, c: Ctx): string {
       parts.push(line({ class: "sx-fp-window", x1: r2(x + tpx * 0.22), y1: mid, x2: r2(x + tpx * 0.22), y2: c.Y(o.hi) }));
     } else {
       for (const k of [-1, 0, 1]) {
-        parts.push(line({ class: "sx-fp-window", x1: r2(x + k * tpx * 0.38), y1: c.Y(o.lo), x2: r2(x + k * tpx * 0.38), y2: c.Y(o.hi) }));
+        parts.push(line({ class: k === 0 ? "sx-fp-window" : "sx-fp-jamb", x1: r2(x + k * tpx / 2), y1: c.Y(o.lo), x2: r2(x + k * tpx / 2), y2: c.Y(o.hi) }));
       }
     }
     for (const yy of [o.lo, o.hi]) {
-      parts.push(line({ class: "sx-fp-window", x1: r2(x - tpx / 2), y1: c.Y(yy), x2: r2(x + tpx / 2), y2: c.Y(yy) }));
+      parts.push(line({ class: "sx-fp-jamb", x1: r2(x - tpx / 2), y1: c.Y(yy), x2: r2(x + tpx / 2), y2: c.Y(yy) }));
     }
     if (o.windowType === "casement") {
       // outward swing arc from the lo jamb
@@ -267,11 +268,11 @@ function windowSymbol(o: OpeningGeom, c: Ctx): string {
       parts.push(line({ class: "sx-fp-window", x1: mid, y1: r2(y + tpx * 0.22), x2: c.X(o.hi), y2: r2(y + tpx * 0.22) }));
     } else {
       for (const k of [-1, 0, 1]) {
-        parts.push(line({ class: "sx-fp-window", x1: c.X(o.lo), y1: r2(y + k * tpx * 0.38), x2: c.X(o.hi), y2: r2(y + k * tpx * 0.38) }));
+        parts.push(line({ class: k === 0 ? "sx-fp-window" : "sx-fp-jamb", x1: c.X(o.lo), y1: r2(y + k * tpx / 2), x2: c.X(o.hi), y2: r2(y + k * tpx / 2) }));
       }
     }
     for (const xx of [o.lo, o.hi]) {
-      parts.push(line({ class: "sx-fp-window", x1: c.X(xx), y1: r2(y - tpx / 2), x2: c.X(xx), y2: r2(y + tpx / 2) }));
+      parts.push(line({ class: "sx-fp-jamb", x1: c.X(xx), y1: r2(y - tpx / 2), x2: c.X(xx), y2: r2(y + tpx / 2) }));
     }
     if (o.windowType === "casement") {
       const wd = c.px(o.hi - o.lo);
@@ -581,7 +582,7 @@ function renderSafetySymbol(
         transform:
           `translate(${centerX},${centerY})` +
           `${symbol.rotate ? ` rotate(${r2(symbol.rotate)})` : ""}` +
-          ` scale(${r2(size / 24)}) translate(-12,-12)`,
+          ` scale(${r2(size / 24)}) translate(${r2(-(def.viewWidth ?? 24) / 2)},-12)`,
       },
       [def.draw({ hand: symbol.hand, profile })]
     ),
@@ -1277,7 +1278,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       el(
         "style",
         {},
-        buildCss(t, lay.plates.length > 1, evacuationTheme)
+        floorplanStylesheet(t, lay.plates.length > 1, evacuationTheme)
       ),
       rect({ fill: t.bg, x: 0, y: 0, width: W, height: H }),
       ...(config?.__scene

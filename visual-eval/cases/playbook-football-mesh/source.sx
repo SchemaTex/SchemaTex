@@ -1,0 +1,10 @@
+# Scenario: the mesh concept from trips: two shallow drags cross underneath a corner, a seam and a running-back wheel.
+playbook "Mesh Concept" sport football
+field down 1 distance 10 los 25 hash nfl
+formation trips right
+defense cover-1
+route X drag 2 right
+route Y drag 3 left
+route Z corner
+route H seam
+route RB wheel right

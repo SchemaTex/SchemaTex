@@ -1,0 +1,10 @@
+circuit "Emergency Lighting Changeover Unit" netlist
+# Mains energises K1 and selects the charger-fed lamp path; loss of mains releases K1 to battery operation.
+V1 LINE NEUT type=acsource value="230 V AC" label="MAINS INPUT"
+U1 LINE NEUT BATT GND type=ic pins="AC_L,AC_N,BAT+,BAT-" value="Mascot 2241" label="U1 BATTERY CHARGER"
+B1 BATT GND value="12 V, 7 Ah SLA" label="B1 SEALED BATTERY"
+K1 LINE NEUT value="230 VAC" label="K1 MAINS-SENSE COIL"
+U2 LAMP BATT LINE LINE NEUT type=ic pins="COM,NC,NO,COIL_A,COIL_B" value="SPDT, 10 A" label="K1 CHANGEOVER RELAY"
+L1 LAMP GND type=lamp value="12/230 V, 10 W LED" label="L1 EMERGENCY LAMP"
+S1 BATT TEST type=switch_spst value="momentary NO" label="S1 LAMP TEST"
+L2 TEST GND type=lamp value="12 V, 1 W" label="TEST INDICATOR"

@@ -1,0 +1,27 @@
+floorplan "Boutique Retail Shop" unit m
+north
+wall exterior thickness 0.3
+wall interior thickness 0.15
+room shop "Sales Floor" at 0,0 size 10.5x13.33
+room fitting "Fitting Rooms" right-of shop size 3.5x7.0
+room stock "Stockroom" below fitting size 3.5x6.33
+
+door shop south at 50% width 1.2 id entry hinge right swing out
+window shop south from start 0.7 width 2.6 id shopfront-a
+window shop south after entry gap 0.7 width 2.6 id shopfront-b
+door between shop fitting at 45% width 0.9 hinge left
+door between shop stock at 55% width 0.9 hinge right
+
+furniture checkout "Checkout" in shop at 7.9,1.0 size 1.8x0.75
+zone queue "Checkout Queue" in shop at 6.6,2.05 size 2.7x1.0 keep-clear
+furniture shelving "Perimeter Display" in shop at 0.35,0.45 size 0.55x8.3
+furniture shelving "Wall Display" in shop at 1.25,11.8 size 6.7x0.55
+furniture clothing-rack "Feature Rack" in shop at 2.1,3.1 size 1.25x1.25
+furniture clothing-rack "Feature Rack" in shop at 4.55,3.1 size 1.25x1.25
+furniture clothing-rack "Feature Rack" in shop at 2.1,6.35 size 1.25x1.25
+furniture clothing-rack "Feature Rack" in shop at 4.55,6.35 size 1.25x1.25
+furniture fitting-room "Try On 1" in fitting at 0.35,0.55 size 1.25x2.3
+furniture fitting-room "Try On 2" in fitting at 1.9,0.55 size 1.25x2.3
+furniture fitting-room "Try On 3" in fitting at 0.35,3.7 size 1.25x2.3
+furniture shelving "Stock Shelves" in stock at 0.35,0.45 size 0.7x4.8
+furniture shelving "Stock Shelves" in stock at 1.55,0.45 size 0.7x4.8

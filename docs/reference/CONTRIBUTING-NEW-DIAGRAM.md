@@ -28,6 +28,8 @@ Small diagrams (e.g. timing) may fuse layout into the renderer. Complex diagrams
 4. **Use the SVG builder.** Never concatenate raw SVG strings — use [`src/core/svg.ts`](../../src/core/svg.ts).
 5. **Test-first layout.** Write failing layout tests before writing the layout code.
 6. **Standards-compliant.** Each diagram implements a published domain standard — not our invention. Cite the reference in the standard doc (IEEE, IEC, ISO, McGoldrick, etc.).
+7. **Each diagram owns its own symbols.** There is no shared `Icon` interface and none will be added. Put your shapes in `src/diagrams/{type}/symbols.ts` and model them however your domain needs — circuit uses `SymbolDef.svg()` because its symbols carry pin semantics, SLD uses `SymbolGeometry` because its symbols attach to a vertical bus, logic uses `GateGeometry` because gates take a variable number of inputs. Those three are not the same thing and forcing one interface over them loses what each encodes. The only thing symbol files share is the SVG builder in [`src/core/svg.ts`](../../src/core/svg.ts).
+8. **A new symbol has to earn its place.** Before adding one, answer both: *which published standard requires it*, and *which group of professionals cannot draw their diagram correctly without it*. If neither has a concrete answer, don't add it. Breadth of clip art is the Mermaid / draw.io lane; standards compliance is ours.
 
 ---
 
@@ -165,14 +167,3 @@ Good examples to study, by complexity:
 | Medium | [`ecomap`](../../src/diagrams/ecomap) | Clean AST → layout → renderer split. |
 | Advanced | [`genogram`](../../src/diagrams/genogram) | Generational layout, multi-pass routing, rich symbol set. |
 | Advanced | [`sld`](../../src/diagrams/sld) | Voltage-level banding, bus routing, device clustering. |
-
----
-
-## 6. Candidate Diagrams on the Roadmap
-
-Not yet implemented — PRs welcome. Start with the standard doc (Step 1) and open a draft PR before coding.
-
-- **Sequence diagram** — UML sequence without depending on PlantUML/Mermaid conventions.
-- **Network topology** — L2/L3 network diagrams with device icons.
-
-If you're adding one of these, the standard doc is doing most of the work — don't skimp on it.

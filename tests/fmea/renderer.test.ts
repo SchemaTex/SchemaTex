@@ -43,7 +43,7 @@ describe("fmea renderer", () => {
   it("colour-fills the risk cells via class + data-risk", () => {
     const svg = renderFmea(DSL);
     expect(svg).toContain('data-risk="rpn-high"');
-    expect(svg).toContain('data-risk="ap-high"');
+    expect(svg).toContain('data-risk="ap-mid"');
   });
 
   it("renders the failure-mode text and computed RPN in the table", () => {
@@ -53,8 +53,8 @@ describe("fmea renderer", () => {
     expect(svg).toContain(">108<");
   });
 
-  it("marks flagged rows", () => {
-    const svg = renderFmea(DSL);
+  it("marks rows meeting the explicit threshold", () => {
+    const svg = renderFmea(DSL.replace("flag: ap >= High", "flag: ap >= Medium"));
     expect(svg).toContain('data-flagged="true"');
   });
 

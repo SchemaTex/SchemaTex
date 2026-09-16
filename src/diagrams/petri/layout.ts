@@ -20,6 +20,7 @@ import type {
   PetriPoint,
   PetriTransitionBox,
 } from "./types";
+import { orthogonalRoute, compactRoute, segmentEntersBox, type RouteBox } from "../logic/orthogonal-router";
 import { applyPins } from "../../core/editing";
 
 export const PETRI_CONST = {
@@ -35,9 +36,7 @@ export const PETRI_CONST = {
   TOKEN_COUNT_MAX_DOTS: 4,
   ARC_WEIGHT_OFFSET: 9,
   LABEL_GAP: 6,
-  ARROW_LEN: 8,
   MARGIN: 22,
-  BACKEDGE_BOW: 30,
   LABEL_LINE_H: 13,
   CHAR_W: 6.2,
 } as const;
@@ -187,7 +186,8 @@ export function layoutPetri(ast: PetriAst, pins?: Map<string, { x: number; y: nu
   // flow extent (along layer axis) half, per layer
   const flowHalf = (id: string): number => {
     const s = sizeOf(id);
-    return dir === "lr" ? s.halfW : s.halfH;
+    const item = [...ast.places, ...ast.transitions].find((n) => n.id === id)!;
+    return dir === "lr" ? Math.max(s.halfW, Math.max(id.length, item.label?.length ?? 0) * C.CHAR_W / 2 - 20) : s.halfH + C.LABEL_LINE_H * 2;
   };
   const crossHalf = (id: string): number => {
     const s = sizeOf(id);
@@ -195,7 +195,7 @@ export function layoutPetri(ast: PetriAst, pins?: Map<string, { x: number; y: nu
   };
 
   const layerHalf = layers.map((arr) => Math.max(0, ...arr.map(flowHalf)));
-  const slot = Math.max(0, ...ids.map(crossHalf)) * 2 + C.RANK_GAP;
+  const slot = Math.max(0, ...ids.map(crossHalf)) * 2 + C.RANK_GAP + C.LABEL_LINE_H * 2;
   const maxCount = Math.max(1, ...layers.map((a) => a.length));
   const crossCenter = C.MARGIN + C.LABEL_LINE_H * 2 + (maxCount * slot) / 2;
 
@@ -277,54 +277,11 @@ export function layoutPetri(ast: PetriAst, pins?: Map<string, { x: number; y: nu
   }
 
   // ── arc geometry ──
-  const boundary = (g: NodeGeom, dx: number, dy: number): PetriPoint => {
-    const len = Math.hypot(dx, dy) || 1;
-    const ux = dx / len;
-    const uy = dy / len;
-    if (g.kind === "place") return { x: g.cx + ux * g.r, y: g.cy + uy * g.r };
-    const tx = ux !== 0 ? g.halfW / Math.abs(ux) : Infinity;
-    const ty = uy !== 0 ? g.halfH / Math.abs(uy) : Infinity;
-    const t = Math.min(tx, ty);
-    return { x: g.cx + ux * t, y: g.cy + uy * t };
-  };
-
-  const bandMaxCross = Math.max(...[...geom.values()].map((g) => (dir === "lr" ? g.cy + g.halfH : g.cx + g.halfW)));
-
-  const arcGeoms: PetriArcGeom[] = ast.arcs.map((a, i) => {
-    const A = geom.get(a.from)!;
-    const B = geom.get(a.to)!;
-    const reversed = edges[i]!.reversed;
-    let points: PetriPoint[];
-    if (!reversed) {
-      const pA = boundary(A, B.cx - A.cx, B.cy - A.cy);
-      const pB = boundary(B, A.cx - B.cx, A.cy - B.cy);
-      points = [pA, pB];
-    } else {
-      // back-edge: bow around the outer side of the band
-      if (dir === "lr") {
-        const pA = boundary(A, 0, 1);
-        const pB = boundary(B, 0, 1);
-        const bowY = bandMaxCross + C.BACKEDGE_BOW;
-        points = [pA, { x: pA.x, y: bowY }, { x: pB.x, y: bowY }, pB];
-      } else {
-        const pA = boundary(A, 1, 0);
-        const pB = boundary(B, 1, 0);
-        const bowX = bandMaxCross + C.BACKEDGE_BOW;
-        points = [pA, { x: bowX, y: pA.y }, { x: bowX, y: pB.y }, pB];
-      }
-    }
-    // weight label anchor: arc midpoint, offset perpendicular
-    const p0 = points[0]!;
-    const p1 = points[points.length - 1]!;
-    const mx = (p0.x + p1.x) / 2;
-    const my = (p0.y + p1.y) / 2;
-    const ddx = p1.x - p0.x;
-    const ddy = p1.y - p0.y;
-    const dl = Math.hypot(ddx, ddy) || 1;
-    const labelX = mx - (ddy / dl) * C.ARC_WEIGHT_OFFSET;
-    const labelY = my + (ddx / dl) * C.ARC_WEIGHT_OFFSET;
-    return { arc: a, type: a.type, weight: a.weight, points, reversed, labelX, labelY };
-  });
+  // Routing is performed once, after node placement and interactive pins.
+  const arcGeoms: PetriArcGeom[] = ast.arcs.map((arc, i) => ({
+    arc, type: arc.type, weight: arc.weight, reversed: edges[i]!.reversed,
+    points: [] as PetriPoint[], labelX: 0, labelY: 0,
+  }));
 
   // ── place / transition boxes ──
   const hasIncoming = (pid: string): boolean => ast.arcs.some((a) => a.to === pid);
@@ -453,40 +410,63 @@ export function layoutPetri(ast: PetriAst, pins?: Map<string, { x: number; y: nu
       layer: 0,
     });
   }
-  const finalBandMaxCross = Math.max(
-    0,
-    ...[...finalGeom.values()].map((g) => dir === "lr" ? g.cy + g.halfH : g.cx + g.halfW),
-  );
+  const clearance = 10;
+  const nodes = [...finalGeom.values()];
+  const obstacles: RouteBox[] = nodes.map((g) => ({
+    left: g.cx - g.halfW - clearance, right: g.cx + g.halfW + clearance,
+    top: g.cy - g.halfH - clearance, bottom: g.cy + g.halfH + clearance,
+  }));
+  for (const g of nodes) {
+    const item = g.kind === "place" ? ast.places.find((p) => p.id === g.id)! : ast.transitions.find((t) => t.id === g.id)!;
+    const w = Math.max(labelW(g.id), labelW(item.label)) / 2 + 5;
+    obstacles.push({ left: g.cx - w, right: g.cx + w,
+      top: g.cy - g.halfH - C.LABEL_GAP - (item.label ? 2 : 1) * C.LABEL_LINE_H,
+      bottom: g.cy - g.halfH - 2 });
+  }
   for (const ag of arcGeoms) {
     const a = finalGeom.get(ag.arc.from)!;
     const b = finalGeom.get(ag.arc.to)!;
-    if (!ag.reversed) {
-      ag.points = [
-        boundary(a, b.cx - a.cx, b.cy - a.cy),
-        boundary(b, a.cx - b.cx, a.cy - b.cy),
-      ];
-    } else if (dir === "lr") {
-      const pA = boundary(a, 0, 1);
-      const pB = boundary(b, 0, 1);
-      const bowY = finalBandMaxCross + C.BACKEDGE_BOW;
-      ag.points = [pA, { x: pA.x, y: bowY }, { x: pB.x, y: bowY }, pB];
-    } else {
-      const pA = boundary(a, 1, 0);
-      const pB = boundary(b, 1, 0);
-      const bowX = finalBandMaxCross + C.BACKEDGE_BOW;
-      ag.points = [pA, { x: bowX, y: pA.y }, { x: bowX, y: pB.y }, pB];
+    const sign = (dir === "lr" ? b.cx - a.cx : b.cy - a.cy) >= 0 ? 1 : -1;
+    // Distinct input/output contacts keep opposite arcs distinguishable.
+    const port = (g: NodeGeom, outgoing: boolean): PetriPoint => {
+      const siblings = arcGeoms.filter((e) => outgoing ? e.arc.from === g.id : e.arc.to === g.id);
+      const offset = (siblings.indexOf(ag) - (siblings.length - 1) / 2) * Math.min(8, 24 / Math.max(1, siblings.length));
+      const side = sign * (outgoing ? 1 : -1);
+      const extent = g.r ? Math.sqrt(g.r * g.r - offset * offset) : dir === "lr" ? g.halfW : g.halfH;
+      return { x: g.cx + (dir === "lr" ? side * extent : offset),
+        y: g.cy + (dir === "lr" ? offset : side * extent) };
+    };
+    const start = port(a, true), end = port(b, false);
+    const escape = (p: PetriPoint, direction: number): PetriPoint => ({
+      x: p.x + (dir === "lr" ? direction * 20 : 0),
+      y: p.y + (dir === "tb" ? direction * 32 : 0),
+    });
+    const from = escape(start, sign), to = escape(end, -sign);
+    const others = obstacles.filter((_, i) => i >= nodes.length || (nodes[i] !== a && nodes[i] !== b));
+    const direct = !ag.reversed && !others.some((box) => segmentEntersBox(start, end, box));
+    ag.points = direct ? [start, end] : compactRoute([start, ...orthogonalRoute(from, to, obstacles), end]);
+    // A weight belongs beside an actual segment, including on feedback routes.
+    let longest = -1;
+    for (let i = 1; i < ag.points.length; i++) {
+      const p = ag.points[i - 1]!, q = ag.points[i]!;
+      const length = Math.hypot(q.x - p.x, q.y - p.y);
+      if (length <= longest) continue;
+      longest = length;
+      ag.labelX = (p.x + q.x) / 2 + (Math.abs(q.x - p.x) < 1 ? C.ARC_WEIGHT_OFFSET : 0);
+      ag.labelY = (p.y + q.y) / 2 - (Math.abs(q.x - p.x) < 1 ? 0 : C.ARC_WEIGHT_OFFSET);
     }
-    const p0 = ag.points[0]!;
-    const p1 = ag.points[ag.points.length - 1]!;
-    const ddx = p1.x - p0.x;
-    const ddy = p1.y - p0.y;
-    const dl = Math.hypot(ddx, ddy) || 1;
-    ag.labelX = (p0.x + p1.x) / 2 - (ddy / dl) * C.ARC_WEIGHT_OFFSET;
-    ag.labelY = (p0.y + p1.y) / 2 + (ddx / dl) * C.ARC_WEIGHT_OFFSET;
+  }
+  // Feedback routes may use space above or left of the placed graph.
+  const routeDx = Math.max(0, C.MARGIN - Math.min(...arcGeoms.flatMap((a) => a.points.map((p) => p.x))));
+  const routeDy = Math.max(0, C.MARGIN - Math.min(...arcGeoms.flatMap((a) => a.points.map((p) => p.y))));
+  for (const node of [...placeBoxes, ...transBoxes]) { node.cx += routeDx; node.cy += routeDy; }
+  for (const arc of arcGeoms) {
+    arc.points = arc.points.map((p) => ({ x: p.x + routeDx, y: p.y + routeDy }));
+    arc.labelX += routeDx; arc.labelY += routeDy;
   }
 
-  let width = bb.maxX - bb.minX + 2 * C.MARGIN;
-  let height = bb.maxY - bb.minY + 2 * C.MARGIN;
+  let width = bb.maxX - bb.minX + 2 * C.MARGIN + routeDx;
+  let height = bb.maxY - bb.minY + 2 * C.MARGIN + routeDy;
   width = Math.max(
     width,
     ...placeBoxes.map((pb) => pb.cx + pb.r + C.MARGIN),

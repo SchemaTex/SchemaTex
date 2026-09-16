@@ -75,9 +75,10 @@ describe("parseFrontmatter", () => {
     expect(r.body).toContain("---");
   });
 
-  it("treats a malformed line inside the block as not-frontmatter", () => {
+  it("strips frontmatter content without requiring key/value metadata", () => {
     const r = parseFrontmatter("---\nno colon here\n---\nbody\n");
     expect(r.data).toEqual({});
+    expect(r.body).toBe("body\n");
   });
 
   it("preserves the body trailing newline structure", () => {
@@ -130,4 +131,9 @@ describe("isBlankOrComment", () => {
     expect(isBlankOrComment("foo # x")).toBe(false);
     expect(isBlankOrComment("foo")).toBe(false);
   });
+});
+
+it("keeps comment markers inside smart quotes and closes strings after escaped backslashes", () => {
+  expect(stripLineComment('node 「Contains %% and #」 # comment')).toBe('node 「Contains %% and #」 ');
+  expect(stripLineComment(String.raw`node "ends in \\" # comment`)).toBe(String.raw`node "ends in \\" `);
 });

@@ -1,0 +1,49 @@
+# The whole company as a directory rather than the leadership as a tree. Forty-two
+# people across five levels would run past 4,000px wide as boxes and connectors;
+# indented rows put the same hierarchy on one readable page.
+# Solid indentation is the reporting line; the dashed edge at the foot is
+# design-system accountability that crosses from Product into Engineering.
+orgchart "Lumen Health · Company Directory, Q3 2026"
+config: layout = list
+CEO : "Amara Osei" | Chief Executive Officer | Executive | London
+  CoS : "Rowan Vale" | Chief of Staff | Executive | London [assistant-of: CEO]
+  CTO : "Dmitri Kovac" | Chief Technology Officer | Engineering | Berlin
+    Platform : "Lena Fischer" | Director, Platform | Engineering | Berlin
+      Backend : "Yusuf Rahman" | Backend Lead | Engineering | Lisbon
+        BE1 : "Anika Sharma" | Senior Backend Engineer | Engineering | Remote
+        BE2 : "Oskar Lind" | Backend Engineer | Engineering | Berlin
+        BE3 : "Wei Zhang" | Backend Engineer | Engineering | Singapore
+      SRE : "Marta Silva" | Site Reliability Lead | Engineering | Lisbon
+        SRE1 : "Diego Alvarez" | Site Reliability Engineer | Engineering | Remote
+        SRE2 : "Fatima Nasser" | Site Reliability Engineer | Engineering | Berlin
+    Apps : "Kai Tanaka" | Director, Applications | Engineering | Singapore
+      Web : "Ines Duarte" | Web Engineering Lead | Engineering | Lisbon
+        WEB1 : "Sam Oyelaran" | Senior Web Engineer | Engineering | London
+        WEB2 : "Clara Weiss" | Web Engineer | Engineering | Berlin
+      MobileLead : "Open position" | Mobile Platform Lead | Engineering | Singapore [open: true]
+        MOB1 : "Jonas Berg" | Senior iOS Engineer | Engineering | Remote
+        MOB2 : "Mei Lin" | Android Engineer | Engineering | Singapore
+  CPO : "Priya Raman" | VP Product | Product | London
+    GPM : "Noor Haddad" | Group Product Manager | Product | London
+      PM1 : "Luca Moretti" | Product Manager | Product | Remote
+      PM2 : "Zoe Adeyemi" | Product Manager | Product | London
+    Design : "Elias Brandt" | Head of Design | Product | Berlin
+      DES1 : "Hugo Lindqvist" | Product Designer | Product | Remote
+      DES2 : "Sara Oduya" | Product Designer | Product | London
+      DES3 : "Tom Baker" | UX Researcher | Product | London
+  CRO : "Sofia Ricci" | VP Revenue | Revenue | Toronto
+    Sales : "Tomas Neruda" | Director, Sales | Revenue | Toronto
+      AE1 : "Bilal Khan" | Account Executive | Revenue | Toronto
+      AE2 : "Grace Mbeki" | Account Executive | Revenue | London
+      SDR1 : "Henrik Dahl" | Sales Development Rep | Revenue | Remote
+    Success : "Hana Kim" | Director, Success | Revenue | Singapore
+      CSM1 : "Ayla Demir" | Customer Success Manager | Revenue | London
+      CSM2 : "Pedro Alves" | Customer Success Manager | Revenue | Lisbon
+      SUP1 : "Nina Petrov" | Support Engineer | Revenue | Remote
+  CFO : "Gabriel Costa" | VP Finance & Operations | Operations | Lisbon
+    People : "Aisha Bello" | Head of People | Operations | London
+      REC1 : "Ruth Nakato" | Recruiter | Operations | Remote
+    Finance : "Omar Farouk" | Financial Controller | Operations | Lisbon
+      FIN1 : "Lily Chen" | Accountant | Operations | Lisbon
+    Workplace : "Jonah Reed" | IT & Workplace Manager | Operations | London
+Design -.-> Web [label: "Design system"]

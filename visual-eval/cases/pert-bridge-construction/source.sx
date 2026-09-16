@@ -1,0 +1,19 @@
+# Bridge-construction schedule in days; foundations, substructure, and deck form the controlling sequence.
+pert
+title: "Bridge Construction"
+unit: days
+direction: LR
+layout: network
+task A "Notice to proceed" milestone
+task B "Survey and setting out" duration: 8 after: A tags: engineering
+task C "Environmental controls" duration: 6 after: A tags: compliance
+task D "Excavate foundations" duration: 12 after: B, C tags: civil
+task E "Pour foundations" duration: 10 after: D tags: civil
+task F "Build piers and abutments" duration: 18 after: E tags: civil
+task G "Fabricate girders" duration: 20 after: A tags: steel
+task H "Erect girders" duration: 8 after: F, G tags: steel
+task I "Cast bridge deck" duration: 14 after: H tags: civil
+task J "Install barriers and drainage" duration: 8 after: I tags: finishes
+task K "Pave approaches" duration: 7 after: J tags: finishes
+task L "Load test" duration: 3 after: K tags: quality
+task M "Open to traffic" milestone after: L

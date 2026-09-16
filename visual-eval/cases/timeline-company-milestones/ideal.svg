@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="640" viewBox="0 0 1600 640">
+  <title>Northstar Analytics Milestones</title>
+  <rect width="1600" height="640" fill="#ffffff"/>
+  <style>
+    text { font-family: Georgia, 'Times New Roman', serif; fill: #172c3d; }
+    .era { font-size: 25px; font-weight: bold; }
+    .range { font-size: 18px; fill: #536778; }
+    .event { font-size: 21px; }
+    .date { font-family: 'Courier New', monospace; font-size: 17px; fill: #536778; }
+    .stem { fill: none; stroke: #728593; stroke-width: 2; }
+  </style>
+  <text x="64" y="65" font-size="36" font-weight="bold">Northstar Analytics Milestones</text>
+  <!-- Era boundaries follow a proportional calendar scale, 2014–2026. -->
+  <rect x="100" y="108" width="437.5" height="462" fill="#f0f5f8"/>
+  <rect x="537.5" y="108" width="437.5" height="462" fill="#f4f5ed"/>
+  <rect x="975" y="108" width="525" height="462" fill="#eef5f2"/>
+  <path d="M537.5 108V570 M975 108V570" stroke="#b6c4cb" stroke-width="2" stroke-dasharray="6 6"/>
+  <text x="124" y="148" class="era">Founding Era</text>
+  <text x="124" y="177" class="range">2014–2017</text>
+  <text x="562" y="148" class="era">Growth Era</text>
+  <text x="562" y="177" class="range">2018–2021</text>
+  <text x="999" y="148" class="era">Platform Era</text>
+  <text x="999" y="177" class="range">2022–2026</text>
+  <text x="64" y="611" font-size="22" font-weight="bold">Company</text>
+  <path d="M100 350H1500" stroke="#263f51" stroke-width="3" fill="none"/>
+  <!-- Events are positioned by date. Label connectors are orthogonal. -->
+  <path class="stem" d="M117.7 350V253H124"/>
+  <text x="124" y="220" class="event" font-weight="bold">Company founded</text>
+  <text x="124" y="245" class="date">2014-03-01</text>
+  <path class="stem" d="M286.5 350V416"/>
+  <text x="286.5" y="444" class="event" text-anchor="middle">First enterprise</text>
+  <text x="286.5" y="469" class="event" text-anchor="middle">customer</text>
+  <text x="286.5" y="496" class="date" text-anchor="middle">2015-09-15</text>
+  <path class="stem" d="M482.1 350V283"/>
+  <text x="482.1" y="224" class="event" text-anchor="middle" font-weight="bold">Series A</text>
+  <text x="482.1" y="249" class="event" text-anchor="middle" font-weight="bold">financing</text>
+  <text x="482.1" y="276" class="date" text-anchor="middle">2017-06-30</text>
+  <path class="stem" d="M676.5 350V416"/>
+  <text x="676.5" y="444" class="event" text-anchor="middle">European office</text>
+  <text x="676.5" y="469" class="event" text-anchor="middle">opens</text>
+  <text x="676.5" y="496" class="date" text-anchor="middle">2019-04-10</text>
+  <path class="stem" d="M957.6 350V283H936"/>
+  <text x="936" y="224" class="event" text-anchor="end" font-weight="bold">One million</text>
+  <text x="936" y="249" class="event" text-anchor="end" font-weight="bold">active users</text>
+  <text x="936" y="276" class="date" text-anchor="end">2021-11-05</text>
+  <path class="stem" d="M1099.4 350V416"/>
+  <text x="1099.4" y="444" class="event" text-anchor="middle">Cloud platform</text>
+  <text x="1099.4" y="469" class="event" text-anchor="middle">launch</text>
+  <text x="1099.4" y="496" class="date" text-anchor="middle">2023-02-20</text>
+  <path class="stem" d="M1385.8 350V283"/>
+  <text x="1385.8" y="224" class="event" text-anchor="middle" font-weight="bold">AI operations</text>
+  <text x="1385.8" y="249" class="event" text-anchor="middle" font-weight="bold">suite released</text>
+  <text x="1385.8" y="276" class="date" text-anchor="middle">2025-10-01</text>
+  <path class="stem" d="M1458.5 350V416"/>
+  <text x="1474" y="444" class="event" text-anchor="end">Present operating</text>
+  <text x="1474" y="469" class="event" text-anchor="end">plan</text>
+  <text x="1474" y="496" class="date" text-anchor="end">2026-06-01</text>
+  <!-- Filled diamonds identify milestone events; circles identify ordinary events. -->
+  <g fill="#204c69" stroke="#ffffff" stroke-width="2">
+    <path d="M117.7 337L130.7 350L117.7 363L104.7 350Z"/>
+    <path d="M482.1 337L495.1 350L482.1 363L469.1 350Z"/>
+    <path d="M957.6 337L970.6 350L957.6 363L944.6 350Z"/>
+    <path d="M1385.8 337L1398.8 350L1385.8 363L1372.8 350Z"/>
+  </g>
+  <g fill="#ffffff" stroke="#263f51" stroke-width="2.5">
+    <circle cx="286.5" cy="350" r="6"/>
+    <circle cx="676.5" cy="350" r="6"/>
+    <circle cx="1099.4" cy="350" r="6"/>
+    <circle cx="1458.5" cy="350" r="6"/>
+  </g>
+</svg>

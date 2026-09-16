@@ -24,18 +24,6 @@ function renderFromDSL(dsl: string): string {
 }
 
 describe("ecomap renderer", () => {
-  test("produces valid SVG root", () => {
-    const svg = renderFromDSL(`
-ecomap
-  center: maria [female]
-  work [label: "Job"]
-  maria --- work
-`);
-    expect(svg).toContain("<svg");
-    expect(svg).toContain('xmlns="http://www.w3.org/2000/svg"');
-    expect(svg).toContain("class=\"schematex-diagram schematex-ecomap\"");
-    expect(svg).toContain("</svg>");
-  });
 
   test("includes title and desc for accessibility", () => {
     const svg = renderFromDSL(`

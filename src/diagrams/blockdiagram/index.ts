@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import type { SchematexDiagnostic } from "../../core/diagnostics";
 import { parseBlockDiagram } from "./parser";
@@ -6,7 +7,7 @@ import { renderBlockDiagram } from "./renderer";
 export const blockdiagram: DiagramPlugin = {
   type: "blockdiagram",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("blockdiagram");
   },
   parse: parseBlockDiagram,

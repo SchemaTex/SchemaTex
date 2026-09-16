@@ -107,7 +107,7 @@ describe("phylo renderer — SVG output", () => {
   });
 
   test("renders branch paths with M and H for rectangular", () => {
-    const svg = render(`phylo\n  newick: "(A:0.1,B:0.2);"`);
+    const svg = render(`phylo [layout: rectangular]\n  newick: "(A:0.1,B:0.2);"`);
     expect(svg).toMatch(/d="M\s/);
     expect(svg).toContain("H ");
   });
@@ -195,4 +195,18 @@ scale "substitutions/site"`);
     expect(svg).toContain("Pan troglodytes");
     expect(svg).toContain("italic");
   });
+});
+
+
+test("public API preserves layout after a leading comment", async () => {
+  const { renderResult } = await import("../../src/index");
+  for (const layout of ["slanted", "rectangular"]) {
+    const source = `# Tree description\nphylo "Ancestry" [layout: ${layout}]\n  newick: "(A:1,B:2);"`;
+    for (const config of [{}, { type: "phylo" as const }]) {
+      const result = renderResult(source, config);
+      expect(result.status).toBe("valid");
+      expect(result.svg).toContain(` ${layout} layout`);
+      expect(result.svg).toContain("Phylogenetic Tree: Ancestry");
+    }
+  }
 });

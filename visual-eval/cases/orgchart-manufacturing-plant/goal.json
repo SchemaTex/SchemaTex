@@ -1,0 +1,78 @@
+{
+  "id": "orgchart-manufacturing-plant",
+  "type": "orgchart",
+  "variant": "tree",
+  "title": "Manufacturing plant organisation",
+  "goal": "Show plant leadership with operational and assurance functions.",
+  "rubric": [
+    {
+      "id": "plant-root",
+      "severity": "blocker",
+      "must": "Renee Ford is visibly the plant-manager root."
+    },
+    {
+      "id": "functions",
+      "severity": "blocker",
+      "must": "Production, Quality, Maintenance, and EHS visibly report to the plant manager."
+    },
+    {
+      "id": "shifts",
+      "severity": "major",
+      "must": "Three separately labelled Shift A, B, and C supervisors appear beneath Production."
+    },
+    {
+      "id": "maintenance",
+      "severity": "major",
+      "must": "Mechanical and Electrical supervisors appear beneath Maintenance."
+    },
+    {
+      "id": "quality-overlay",
+      "severity": "minor",
+      "must": "A dashed Quality release line is visually distinguishable from direct reports."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram visibly shows Renee Ford as the plant-manager root, all four functions reporting to her, three separately labelled shift supervisors beneath Production, and Mechanical and Electrical supervisors beneath Maintenance. The dashed Quality release line is distinguishable from solid reporting lines and connects Quality to Shift A. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:28.631Z",
+      "targetHash": "e5ca3432bf0e",
+      "sourceHash": "6f58c30df7ad",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "plant-root",
+          "verdict": "pass",
+          "evidence": "Renee Ford, Plant Manager, appears at the top as the root."
+        },
+        {
+          "id": "functions",
+          "verdict": "pass",
+          "evidence": "Production, Quality, Maintenance, and EHS each connect directly to Renee Ford."
+        },
+        {
+          "id": "shifts",
+          "verdict": "pass",
+          "evidence": "Jamal Reed, Lena Moore, and Victor Tran are separately labelled Shift A, Shift B, and Shift C Supervisors beneath Production."
+        },
+        {
+          "id": "maintenance",
+          "verdict": "pass",
+          "evidence": "Tessa Ray, Mechanical Supervisor, and Ming Zhao, Electrical Supervisor, appear beneath Maintenance."
+        },
+        {
+          "id": "quality-overlay",
+          "verdict": "pass",
+          "evidence": "A dashed purple line labelled “Quality release” runs from Quality to Shift A and is visually distinct from the solid direct-report lines."
+        }
+      ]
+    }
+  }
+}

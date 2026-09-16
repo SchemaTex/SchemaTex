@@ -10,13 +10,15 @@
  * this folder-isolated plugin casts at the boundary so no shared file is edited.
  */
 
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseGitGraph } from "./parser";
 import { renderGitGraph } from "./renderer";
 
 export const gitgraph: DiagramPlugin = {
   type: "gitgraph" as DiagramPlugin["type"],
-  detect: (t) => /^\s*gitgraph\b/i.test(t),
+  isDirective: line => /^\s*%%\{/.test(line),
+  detect: (t) => /^\s*gitgraph\b/i.test(firstContentLine(t) ?? ""),
   parse: parseGitGraph,
   render: (text: string, config?: RenderConfig) => renderGitGraph(text, config),
 };

@@ -8,12 +8,73 @@ export interface GateGeometry {
   outputPins: Array<{ id: string; x: number; y: number; label?: string; bubble?: boolean }>;
   /** Body SVG path (ANSI) */
   ansiPath: string;
+  /** Layout expands crowded pin rows; bake this factor into artwork coordinates. */
+  bodyScaleY?: number;
   /** Output bubble? */
   outputBubble?: boolean;
   /** Clock triangle pin id (sequential) */
   clockPin?: string;
   /** IEC label inside rectangle */
   iecLabel?: string;
+}
+
+/** Output bubble radius; the output pin sits one diameter past the gate nose. */
+export const OUTPUT_BUBBLE_R = 4;
+
+/** X where an input wire meets a curved OR-family back (XOR's separate arc sits further left); null for straight backs. */
+export function curvedBackX(gateType: string, pinY: number, height: number, hasXorArc: boolean): number | null {
+  if (gateType !== "OR" && gateType !== "NOR" && !hasXorArc) return null;
+  const t = pinY / height;
+  return (hasXorArc ? 6 : 12) + 32 * t * (1 - t);
+}
+
+/** Artwork only: dimensions and connection anchors remain owned by getGateGeometry. */
+export function getGatePaths(
+  gateType: string,
+  width: number,
+  height: number,
+  scaleY = 1
+): { body: string; xorArc?: string; xorGap?: string } {
+  const y = (value: number): number => value * scaleY;
+  switch (gateType) {
+    case "AND":
+    case "NAND": {
+      const nose = width - (gateType === "NAND" ? 8 : 0);
+      const shoulder = nose - 30;
+      return { body: `M 20,0 H ${shoulder} A 30 ${y(30)} 0 0 1 ${shoulder},${y(60)} H 20 Z` };
+    }
+    case "OR":
+    case "NOR":
+    case "XOR":
+    case "XNOR": {
+      const nose = width - (gateType === "NOR" || gateType === "XNOR" ? 8 : 0);
+      const span = nose - 12;
+      const c1 = 12 + span * 26 / 60;
+      const c2 = 12 + span * 46 / 60;
+      const body = `M 12,0 Q 28,${y(30)} 12,${y(60)} C ${c1},${y(57.5)} ${c2},${y(47.5)} ${nose},${y(30)} C ${c2},${y(12.5)} ${c1},${y(2.5)} 12,0 Z`;
+      if (gateType === "XOR" || gateType === "XNOR") {
+        return {
+          body,
+          xorArc: `M 6,0 Q 22,${y(30)} 6,${y(60)}`,
+          // Mask routed wire ends that lie beyond the outer curve. The extra
+          // arc itself stays open and unfilled, including on dark themes.
+          xorGap: `M 6,0 Q 22,${y(30)} 6,${y(60)} L 12,${y(60)} Q 28,${y(30)} 12,0 Z`,
+        };
+      }
+      return { body };
+    }
+    case "NOT":
+    case "BUF":
+    case "SCHMITT":
+    case "TRISTATE_BUF":
+    case "TRISTATE_INV":
+    case "OPEN_DRAIN": {
+      const nose = width - (gateType === "NOT" || gateType === "TRISTATE_INV" ? 8 : 0);
+      return { body: `M 10,${y(55)} L ${nose},${y(30)} L 10,${y(5)} Z` };
+    }
+    default:
+      return { body: `M 0,0 H ${width} V ${height} H 0 Z` };
+  }
 }
 
 function combPins(nInputs: number, _width: number, leftX: number): Array<{ id: string; x: number; y: number }> {
@@ -45,7 +106,7 @@ export function getGateGeometry(
         height: 60,
         inputPins: combPins(inputCount, 80, 20).map((p) => ({ ...p, x: 20 })),
         outputPins: [{ id: "out", x: bubble ? 90 : 80, y: 30, bubble }],
-        ansiPath: "M 20,60 L 20,0 Q 80,0 80,30 Q 80,60 20,60 Z",
+        ansiPath: getGatePaths(gateType, bubble ? 90 : 80, 60).body,
         outputBubble: bubble,
         iecLabel: "&",
       };
@@ -58,7 +119,7 @@ export function getGateGeometry(
         height: 60,
         inputPins: combPins(inputCount, 80, 18).map((p) => ({ ...p, x: 18 })),
         outputPins: [{ id: "out", x: bubble ? 80 : 70, y: 30, bubble }],
-        ansiPath: "M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z",
+        ansiPath: getGatePaths(gateType, bubble ? 80 : 70, 60).body,
         outputBubble: bubble,
         iecLabel: "≥1",
       };
@@ -71,8 +132,7 @@ export function getGateGeometry(
         height: 60,
         inputPins: combPins(inputCount, 80, 12).map((p) => ({ ...p, x: 12 })),
         outputPins: [{ id: "out", x: bubble ? 80 : 70, y: 30, bubble }],
-        ansiPath:
-          "M 15,60 Q 10,30 15,0 Q 30,15 70,30 Q 30,45 15,60 Z M 8,60 Q 3,30 8,0",
+        ansiPath: getGatePaths(gateType, bubble ? 80 : 70, 60).body,
         outputBubble: bubble,
         iecLabel: "=1",
       };
@@ -83,7 +143,7 @@ export function getGateGeometry(
         height: 60,
         inputPins: [{ id: "in1", x: 10, y: 30 }],
         outputPins: [{ id: "out", x: 70, y: 30, bubble: true }],
-        ansiPath: "M 10,55 L 60,30 L 10,5 Z",
+        ansiPath: getGatePaths(gateType, 70, 60).body,
         outputBubble: true,
         iecLabel: "1",
       };
@@ -111,7 +171,7 @@ export function getGateGeometry(
           { id: "en", x: 35, y: 65, label: "EN" },
         ],
         outputPins: [{ id: "out", x: bubble ? 70 : 60, y: 30, bubble }],
-        ansiPath: "M 10,55 L 60,30 L 10,5 Z",
+        ansiPath: getGatePaths(gateType, bubble ? 70 : 60, 70).body,
         outputBubble: bubble,
         iecLabel: "1",
       };

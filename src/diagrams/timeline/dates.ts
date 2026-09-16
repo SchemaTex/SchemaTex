@@ -118,5 +118,5 @@ export function formatYear(value: number, span: number): string {
  * Format a TimelineDate for display in its original precision.
  */
 export function formatDate(d: TimelineDate): string {
-  return d.raw;
+  return d.precision === "year" ? formatYear(d.value, 1) : d.raw;
 }

@@ -1,0 +1,14 @@
+# Assumptions: utility and generator failures are independent; the common UPS-room fire is explicitly modelled.
+# The top event is loss of all power to the critical IT load.
+faulttree "Data centre critical power loss"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Critical IT load de-energised" = OR(UPS_OUTPUT_LOSS, DISTRIBUTION_LOSS)
+  gate UPS_OUTPUT_LOSS "UPS output unavailable" = OR(BOTH_UPS_FAIL, UPS_ROOM_FIRE)
+  gate BOTH_UPS_FAIL "Both UPS modules fail" = AND(UPS_A_FAIL, UPS_B_FAIL)
+  gate DISTRIBUTION_LOSS "Both upstream sources unavailable" = AND(UTILITY_FAIL, GENERATOR_FAIL)
+  basic UPS_A_FAIL "UPS module A fails on demand" p: 0.008
+  basic UPS_B_FAIL "UPS module B fails on demand" p: 0.008
+  basic UPS_ROOM_FIRE "UPS room fire disables both modules" p: 0.0005
+  basic UTILITY_FAIL "Utility feeder unavailable" p: 0.015
+  basic GENERATOR_FAIL "Standby generator fails to supply" p: 0.02

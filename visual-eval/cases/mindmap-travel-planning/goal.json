@@ -1,0 +1,88 @@
+{
+  "id": "mindmap-travel-planning",
+  "type": "mindmap",
+  "variant": "map",
+  "title": "International travel plan",
+  "goal": "Show the practical branches required to plan an international holiday.",
+  "rubric": [
+    {
+      "id": "central-root",
+      "severity": "blocker",
+      "must": "International Travel Plan is visibly the central root topic."
+    },
+    {
+      "id": "four-planning-branches",
+      "severity": "blocker",
+      "must": "Destination, Transport, Stay, and Itinerary visibly branch from the root."
+    },
+    {
+      "id": "entry-requirements",
+      "severity": "major",
+      "must": "Destination visibly expands to entry requirements and passport and visa."
+    },
+    {
+      "id": "transport-detail",
+      "severity": "major",
+      "must": "Transport visibly expands to Flights and Local Mobility with planning details."
+    },
+    {
+      "id": "stay-and-itinerary",
+      "severity": "major",
+      "must": "Stay and Itinerary visibly expand to accommodation, budget, priority sights, and food and culture."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "At least three visual hierarchy levels are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the mindmap/map exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The map visibly centers “International Travel Plan,” with four connected planning branches. Their sub-branches and detail labels are readable and traceable, with no material overlaps or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:17.308Z",
+      "targetHash": "bda89893e139",
+      "sourceHash": "e8e876c8a4c6",
+      "exemplarHash": "0bc04312aae8",
+      "items": [
+        {
+          "id": "central-root",
+          "verdict": "pass",
+          "evidence": "“International Travel Plan” is visibly centered as the root."
+        },
+        {
+          "id": "four-planning-branches",
+          "verdict": "pass",
+          "evidence": "Destination and Transport branch right from the root; Stay and Itinerary branch left."
+        },
+        {
+          "id": "entry-requirements",
+          "verdict": "pass",
+          "evidence": "Destination connects to Entry requirements, which connects to Passport and visa."
+        },
+        {
+          "id": "transport-detail",
+          "verdict": "pass",
+          "evidence": "Transport connects to Flights and Local mobility, with details “Compare baggage rules” and “Rail pass or transit card.”"
+        },
+        {
+          "id": "stay-and-itinerary",
+          "verdict": "pass",
+          "evidence": "Stay connects to Accommodation and Budget; Itinerary connects to Priority sights and Food and culture, with corresponding detail labels."
+        },
+        {
+          "id": "hierarchy",
+          "verdict": "pass",
+          "evidence": "The root, colored planning branches, sub-branches, and leaf details show at least three hierarchy levels."
+        }
+      ]
+    }
+  }
+}

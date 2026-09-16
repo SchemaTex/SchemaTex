@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="1060" viewBox="0 0 1260 1060" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Car wash cycle</title><desc>Independent reference target. Hand-composed steps, action compartments, transition conditions and correctly ordered branch bars.</desc><rect width="1260" height="1060" fill="white"/><text x="48" y="51" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Car wash cycle</text>
+<text x="48" y="77" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">IEC 61131-3  ·  Sequential function chart</text>
+<line x1="48" y1="96" x2="1212" y2="96" stroke="#CBD1D6" stroke-width="1"/>
+<rect x="385" y="140" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<rect x="390" y="145" width="100" height="44" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<text x="440" y="165" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S0</text>
+<line x1="495" y1="167" x2="523" y2="167" stroke="#20272B" stroke-width="1.5"/>
+<rect x="523" y="140" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="553" y1="140" x2="553" y2="176" stroke="#20272B" stroke-width="1"/>
+<text x="538" y="164" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="565" y="164" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">EntryLightGreen</text>
+<rect x="385" y="295" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="440" y="320" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S1</text>
+<text x="440" y="339" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Pre-soak</text>
+<line x1="495" y1="322" x2="523" y2="322" stroke="#20272B" stroke-width="1.5"/>
+<rect x="523" y="295" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="553" y1="295" x2="553" y2="331" stroke="#20272B" stroke-width="1"/>
+<text x="538" y="319" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">D</text>
+<text x="565" y="319" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">SoapPump</text>
+<line x1="714" y1="295" x2="714" y2="331" stroke="#20272B" stroke-width="1"/>
+<text x="749" y="319" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#20s</text>
+<line x1="440" y1="194" x2="440" y2="295" stroke="#20272B" stroke-width="1.5"/>
+<line x1="427" y1="244.5" x2="453" y2="244.5" stroke="#20272B" stroke-width="3"/>
+<text x="464" y="249.5" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">CarInBay</text>
+<line x1="440" y1="349" x2="440" y2="435" stroke="#20272B" stroke-width="1.5"/>
+<line x1="427" y1="390" x2="453" y2="390" stroke="#20272B" stroke-width="3"/>
+<text x="464" y="395" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">SoakDone</text>
+<line x1="218" y1="435" x2="862" y2="435" stroke="#20272B" stroke-width="2"/>
+<line x1="218" y1="442" x2="862" y2="442" stroke="#20272B" stroke-width="2"/>
+<line x1="230" y1="442" x2="230" y2="570" stroke="#20272B" stroke-width="1.5"/>
+<line x1="850" y1="442" x2="850" y2="570" stroke="#20272B" stroke-width="1.5"/>
+<rect x="175" y="570" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="230" y="595" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S2</text>
+<text x="230" y="614" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Brush body</text>
+<line x1="285" y1="597" x2="313" y2="597" stroke="#20272B" stroke-width="1.5"/>
+<rect x="313" y="570" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="343" y1="570" x2="343" y2="606" stroke="#20272B" stroke-width="1"/>
+<text x="328" y="594" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="355" y="594" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">BrushMotors</text>
+<rect x="795" y="570" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="850" y="595" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S3</text>
+<text x="850" y="614" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Wash wheels</text>
+<line x1="905" y1="597" x2="933" y2="597" stroke="#20272B" stroke-width="1.5"/>
+<rect x="933" y="570" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="963" y1="570" x2="963" y2="606" stroke="#20272B" stroke-width="1"/>
+<text x="948" y="594" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">L</text>
+<text x="975" y="594" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">WheelJets</text>
+<line x1="1124" y1="570" x2="1124" y2="606" stroke="#20272B" stroke-width="1"/>
+<text x="1159" y="594" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#30s</text>
+<line x1="230" y1="624" x2="230" y2="745" stroke="#20272B" stroke-width="1.5"/>
+<line x1="850" y1="624" x2="850" y2="745" stroke="#20272B" stroke-width="1.5"/>
+<line x1="218" y1="745" x2="862" y2="745" stroke="#20272B" stroke-width="2"/>
+<line x1="218" y1="752" x2="862" y2="752" stroke="#20272B" stroke-width="2"/>
+<line x1="440" y1="752" x2="440" y2="850" stroke="#20272B" stroke-width="1.5"/>
+<line x1="427" y1="805" x2="453" y2="805" stroke="#20272B" stroke-width="3"/>
+<text x="464" y="810" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">BrushDone AND WheelDone</text>
+<rect x="385" y="850" width="110" height="54" fill="#FFFFFF" stroke="#20272B" stroke-width="2"/>
+<text x="440" y="875" font-size="17" font-weight="600" text-anchor="middle" fill="#20272B">S4</text>
+<text x="440" y="894" font-size="12" font-weight="400" text-anchor="middle" fill="#20272B">Rinse and dry</text>
+<line x1="495" y1="877" x2="523" y2="877" stroke="#20272B" stroke-width="1.5"/>
+<rect x="523" y="850" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="553" y1="850" x2="553" y2="886" stroke="#20272B" stroke-width="1"/>
+<text x="538" y="874" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">N</text>
+<text x="565" y="874" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">RinseArch</text>
+<line x1="495" y1="877" x2="523" y2="877" stroke="#20272B" stroke-width="1.5"/>
+<line x1="523" y1="877" x2="523" y2="906" stroke="#20272B" stroke-width="1.5"/>
+<rect x="523" y="888" width="260" height="36" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="553" y1="888" x2="553" y2="924" stroke="#20272B" stroke-width="1"/>
+<text x="538" y="912" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">D</text>
+<text x="565" y="912" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">Blowers</text>
+<line x1="714" y1="888" x2="714" y2="924" stroke="#20272B" stroke-width="1"/>
+<text x="749" y="912" font-size="13" font-weight="400" text-anchor="middle" fill="#20272B">T#5s</text>
+<line x1="440" y1="904" x2="440" y2="960" stroke="#20272B" stroke-width="1.5"/>
+<line x1="427" y1="935" x2="453" y2="935" stroke="#20272B" stroke-width="3"/>
+<text x="464" y="940" font-size="14" font-weight="400" text-anchor="start" fill="#20272B">DryDone</text>
+<path d="M440 960 H100 V167 H385" stroke="#20272B" stroke-width="1.5" fill="none"/>
+<path d="M96 259 L100 250 L104 259" stroke="#20272B" stroke-width="1" fill="#20272B"/>
+<line x1="48" y1="988" x2="1212" y2="988" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="1012" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Double outline: initial step.  Thick bar: transition.  Single branch bar: alternative; double branch bar: simultaneous.</text>
+<text x="48" y="1032" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Action qualifiers: N = non-stored; P = pulse; D = delayed; L = time-limited.</text></svg>

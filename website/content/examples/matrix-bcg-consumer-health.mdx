@@ -1,0 +1,49 @@
+---
+title: BCG portfolio review — nine products sized by revenue
+description: BCG growth-share matrix for a consumer-health group — nine products placed by market share and growth, bubble area proportional to revenue, coloured by product category, with an action line in each quadrant.
+diagram: matrix
+standard: BCG Growth-Share (1970)
+industry: [strategy, consulting]
+persona: For the portfolio strategy lead
+complexity: 3
+tags: [matrix, bcg, portfolio, bubble-size, categories, strategy]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  # Scenario: consumer-health group's annual portfolio review. Bubble area = FY26 net revenue ($M).
+  matrix bcg "Consumer Health portfolio — FY26 review"
+
+  quadrant Q2 "Stars" description: "Invest to hold share"
+  quadrant Q1 "Question Marks" description: "Fund selectively or exit"
+  quadrant Q3 "Cash Cows" description: "Harvest to fund the Stars"
+  quadrant Q4 "Dogs" description: "Divest or discontinue"
+
+  "Electrolyte Water"  at (0.18, 0.84) size: 92  category: beverages
+  "Cold-Brew Coffee"   at (0.31, 0.70) size: 58  category: beverages
+  "Plant Protein Bars" at (0.71, 0.81) size: 34  category: snacks
+  "Sleep Gummies"      at (0.87, 0.65) size: 18  category: supplements
+  "Multivitamins"      at (0.22, 0.41) size: 64  category: supplements
+  "Laundry Pods"       at (0.13, 0.29) size: 140 category: home care
+  "Dish Spray"         at (0.29, 0.20) size: 76  category: home care
+  "Diet Soda"          at (0.74, 0.25) size: 46  category: beverages
+  "Bar Soap"           at (0.88, 0.12) size: 12  category: home care
+---
+
+## Scenario
+
+A consumer-health group reviews its nine products once a year and decides which to fund, which to run for cash, and which to drop. Each product is placed by relative market share and market growth rate, and its bubble area shows FY26 net revenue in $M. Four categories — beverages, snacks, supplements, home care — are told apart by colour.
+
+## Annotation key
+
+- `matrix bcg` — the BCG template with its axes and quadrant layout preset
+- `quadrant Q2 "Stars" description: "..."` — names a quadrant and adds the action it implies
+- `"Label" at (x, y)` — position in the plot from 0 to 1; BCG puts high market share on the left, so a small x means a large share
+- `size:` — the value the bubble area is proportional to (here, revenue)
+- `category:` — groups products; each category gets its own colour in the legend
+
+## How to read
+
+High market share is on the left, not the right — the original BCG convention. Top left are the Stars (Electrolyte Water, Cold-Brew Coffee): keep investing. Top right are Question Marks (Plant Protein Bars, Sleep Gummies): fund selectively or exit. Bottom left are Cash Cows (Laundry Pods, the largest bubble, plus Dish Spray and Multivitamins), which pay for the Stars. Bottom right are Dogs (Diet Soda, Bar Soap): divest candidates.

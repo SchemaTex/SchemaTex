@@ -1,0 +1,88 @@
+{
+  "id": "mindmap-startup-fundraising",
+  "type": "mindmap",
+  "variant": "map",
+  "title": "Seed fundraising",
+  "goal": "Show the founder workstreams required to prepare and run a seed fundraising process.",
+  "rubric": [
+    {
+      "id": "central-theme",
+      "severity": "blocker",
+      "must": "Seed Fundraising is visibly the central root of the map."
+    },
+    {
+      "id": "four-workstreams",
+      "severity": "blocker",
+      "must": "Narrative, Materials, Investor Process, and Company Readiness visibly branch from the central topic."
+    },
+    {
+      "id": "materials-depth",
+      "severity": "major",
+      "must": "Materials visibly expands to Pitch deck and Data room with concrete deliverables beneath them."
+    },
+    {
+      "id": "investor-process",
+      "severity": "major",
+      "must": "Investor Process visibly expands to Target list and Meetings with thesis-fit and partner-diligence details."
+    },
+    {
+      "id": "readiness",
+      "severity": "major",
+      "must": "Company Readiness visibly expands to Metrics and Legal with named evidence items."
+    },
+    {
+      "id": "hierarchy",
+      "severity": "minor",
+      "must": "At least three visual levels are distinguishable from root to detailed leaves."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the mindmap/map exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents Seed Fundraising as the central root and includes all four required workstreams, their specified subtopics, and detailed leaf items across three distinguishable hierarchy levels.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:28:14.923Z",
+      "targetHash": "1ea69aabf63b",
+      "sourceHash": "a167309b06da",
+      "exemplarHash": "0bc04312aae8",
+      "items": [
+        {
+          "id": "central-theme",
+          "verdict": "pass",
+          "evidence": "Seed Fundraising appears prominently in the central dark rounded node."
+        },
+        {
+          "id": "four-workstreams",
+          "verdict": "pass",
+          "evidence": "Narrative, Materials, Investor Process, and Company Readiness visibly branch from the central node."
+        },
+        {
+          "id": "materials-depth",
+          "verdict": "pass",
+          "evidence": "Materials expands to Pitch deck and Data room; Product demo and Financial model appear beneath them, respectively."
+        },
+        {
+          "id": "investor-process",
+          "verdict": "pass",
+          "evidence": "Investor Process expands to Target list and Meetings, with Thesis fit and Partner diligence as their visible details."
+        },
+        {
+          "id": "readiness",
+          "verdict": "pass",
+          "evidence": "Company Readiness expands to Metrics and Legal, with Growth and retention and Cap table and terms as named evidence items."
+        },
+        {
+          "id": "hierarchy",
+          "verdict": "pass",
+          "evidence": "The map clearly distinguishes at least three levels: central root, colored workstream nodes, subtopics, and terminal detail leaves."
+        }
+      ]
+    }
+  }
+}

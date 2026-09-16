@@ -62,12 +62,12 @@ function markers(t: Theme): string {
   return defs([
     el(
       "marker",
-      { id: "sx-petri-head", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: "auto-start-reverse" },
+      { id: "sx-petri-head", viewBox: "0 0 10 10", refX: 9, refY: 5, markerUnits: "userSpaceOnUse", markerWidth: 8, markerHeight: 8, orient: "auto-start-reverse" },
       [polygon({ points: "0,0 9,5 0,10", fill: t.arcStroke })],
     ),
     el(
       "marker",
-      { id: "sx-petri-head-reset", viewBox: "0 0 16 10", refX: 15, refY: 5, markerWidth: 13, markerHeight: 9, orient: "auto-start-reverse" },
+      { id: "sx-petri-head-reset", viewBox: "0 0 16 10", refX: 15, refY: 5, markerUnits: "userSpaceOnUse", markerWidth: 13, markerHeight: 9, orient: "auto-start-reverse" },
       [
         polygon({ points: "0,0 7,5 0,10", fill: t.inhibitorStroke }),
         polygon({ points: "7,0 14,5 7,10", fill: t.inhibitorStroke }),
@@ -225,10 +225,7 @@ function renderTransition(
 
 function arcPath(ag: PetriArcGeom): string {
   const p = ag.points;
-  if (p.length === 4) {
-    return `M ${p[0]!.x} ${p[0]!.y} C ${p[1]!.x} ${p[1]!.y} ${p[2]!.x} ${p[2]!.y} ${p[3]!.x} ${p[3]!.y}`;
-  }
-  return `M ${p[0]!.x} ${p[0]!.y} L ${p[p.length - 1]!.x} ${p[p.length - 1]!.y}`;
+  return p.map((point, i) => `${i ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
 }
 
 function renderArc(ag: PetriArcGeom, scene?: SceneItem[], index = 0): string {

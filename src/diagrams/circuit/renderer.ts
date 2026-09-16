@@ -1,6 +1,10 @@
+import { boxOf, flagBoxes, labelBox, placeLabels, routeNet } from "./schematic-layout";
+import { labelLeader } from "../../core/label-placement";
+import { estimateTextWidth } from "../../core/text-metrics";
 import type { CircuitAST, RenderConfig, SceneItem } from "../../core/types";
-import { layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
+import { componentCaption, layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
 import {
+  RAIL_LABEL,
   layoutCircuitNetlist,
   rerouteCircuitNetlist,
   type RoutedWire,
@@ -14,14 +18,18 @@ import {
   el,
   circle,
   rect,
+  line,
   text,
   title as titleEl,
   desc,
   escapeXml,
   path as pathEl,
 } from "../../core/svg";
-import { resolveIndustrialTheme } from "../../core/theme";
+import { resolveIndustrialTheme, type IndustrialTokens, type ResolvedTheme } from "../../core/theme";
 import { resolveSceneTitle } from "../../core/title-scene";
+
+// Three-pixel dashes distinguish caption leaders from electrical conductors.
+const LABEL_LEADER_DASH = 3;
 
 function itemBBox(
   it: LaidOutComponent,
@@ -163,24 +171,18 @@ function renderItem(
 
   // Label + value text: placed in non-rotated space using unrotated anchor endpoints.
   const labels: string[] = [];
-  if (comp.label || comp.value) {
-    // Keep labels above horizontal symbols and to the right of vertical ones,
-    // regardless of whether the component points forward or backward. Using a
-    // signed perpendicular here put left/up-facing labels below or outside the
-    // viewBox (notably mains sources and the second switch in a traveler pair).
-    const angle = (it.rotation * Math.PI) / 180;
-    const midpointX = it.x + offX + (it.length * Math.cos(angle)) / 2;
-    const midpointY = it.y + offY + (it.length * Math.sin(angle)) / 2;
-    const vertical = Math.abs(Math.sin(angle)) > 0.5;
-    // A layout that ran a label-avoidance pass hands us a vetted position; it
-    // saw the wires and the neighbouring parts, which this formula cannot.
-    const labelX = it.labelPos
-      ? it.labelPos.x + offX
-      : midpointX + (vertical ? 34 : 0) + (sym.labelOffset?.dx ?? 0);
-    const labelY = it.labelPos
-      ? it.labelPos.y + offY
-      : midpointY - (vertical ? 2 : 18) + (sym.labelOffset?.dy ?? 0);
-    if (comp.label) {
+  const caption = componentCaption(comp);
+  if (caption || comp.value) {
+    const labelX = it.labelPos!.x + offX;
+    const labelY = it.labelPos!.y + offY;
+    const bounds = labelBox(comp, { x: labelX, y: labelY });
+    const bodyBounds = boxOf(it, 0);
+    const centre = { x: labelX, y: (bounds.minY + bounds.maxY) / 2 };
+    const attachment = { x: Math.max(bodyBounds.minX, Math.min(bodyBounds.maxX, centre.x - offX)) + offX,
+      y: Math.max(bodyBounds.minY, Math.min(bodyBounds.maxY, centre.y - offY)) + offY };
+    const leader = labelLeader({ x: bounds.minX, y: bounds.minY, width: bounds.maxX - bounds.minX, height: bounds.maxY - bounds.minY }, [attachment, attachment]);
+    if (leader) labels.push(line({ x1: leader.from.x, y1: leader.from.y, x2: leader.to.x, y2: leader.to.y, class: "schematex-circuit-label-leader" }));
+    if (caption) {
       labels.push(
         text(
           {
@@ -190,7 +192,7 @@ function renderItem(
             "text-anchor": "middle",
             "data-sx-role": scene && comp.labelSourceRange ? "label" : undefined,
           },
-          comp.label
+          caption
         )
       );
     }
@@ -201,7 +203,7 @@ function renderItem(
         kind: "label",
         label: comp.value,
         sourceRange: comp.valueSourceRange,
-        bbox: { x: labelX - Math.max(24, comp.value.length * 3.2), y: labelY, width: Math.max(48, comp.value.length * 6.4), height: 14 },
+        bbox: { x: labelX - estimateTextWidth(comp.value, 10) / 2, y: labelY + 2, width: estimateTextWidth(comp.value, 10), height: 14 },
         editable: { label: comp.valueSourceRange !== undefined, position: "none" },
       });
       labels.push(
@@ -300,6 +302,35 @@ function renderRoute(
   }, [line, dots]);
 }
 
+export function circuitStylesheet(t: ResolvedTheme<IndustrialTokens>): string {
+  return `
+.schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-circuit-hit { fill: transparent; stroke: none; pointer-events: all; }
+.schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
+.schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
+.schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
+.schematex-circuit-label-leader { stroke: ${t.stroke}; stroke-width: 1; stroke-dasharray: ${LABEL_LEADER_DASH} ${LABEL_LEADER_DASH}; fill: none; }
+.schematex-circuit-label { font-size: 11px; font-weight: 600; fill: ${t.text}; }
+.schematex-circuit-value { font-size: 10px; font-style: italic; fill: ${t.textMuted}; }
+.schematex-circuit-net-label { font-size: 11px; font-weight: 600; fill: ${t.accent}; }
+.schematex-circuit-electrode { stroke: ${t.stroke}; stroke-width: 2.5; fill: none; stroke-linecap: round; }
+.schematex-circuit-pol { font-size: 9px; fill: ${t.stroke}; }
+.schematex-circuit-meter { font-size: 12px; font-weight: 700; fill: ${t.stroke}; }
+.schematex-circuit-title { font-size: 16px; font-weight: 700; fill: ${t.text}; }
+.schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
+.schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+.schematex-circuit-panel-label { font-size: 11px; font-weight: 700; fill: ${t.text}; }
+.schematex-circuit-din { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.4; }
+.schematex-circuit-din-slot { fill: ${t.textMuted}; opacity: 0.5; }
+.schematex-circuit-duct { fill: none; stroke: ${t.textMuted}; stroke-width: 1.2; stroke-dasharray: 3 2; }
+.schematex-circuit-duct-tooth { stroke: ${t.textMuted}; stroke-width: 0.8; opacity: 0.65; }
+.schematex-circuit-panel-led { fill: ${t.accent}; stroke: ${t.stroke}; stroke-width: 0.8; }
+.schematex-circuit-panel-light { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.5; }
+.schematex-circuit-estop { fill: ${t.error}; stroke: ${t.stroke}; stroke-width: 1.4; }
+`.trim();
+}
+
 export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const isNetlist = ast.mode === "netlist";
   const topOff = ast.title ? 24 : 0;
@@ -315,7 +346,40 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   if (isNetlist && config?.__pins?.size) {
     layout.routes = rerouteCircuitNetlist(ast, layout.items, baseRoutes);
   }
-  const { width, height, offsetX, offsetY } = layout;
+  // Conductor captions belong to their routed electrical net. Keeping them out
+  // of items prevents a zero-resistance connection from consuming a layout slot.
+  for (const net of ast.nets) {
+    if (!net.conductors?.length) continue;
+    const segments = (layout.routes ?? [])
+      .filter(route => routeNet(route.netId, ast.nets.map(n => n.id)) === net.id)
+      .flatMap(route => route.points.slice(1).map((b, i) => ({ a: route.points[i]!, b })))
+      .sort((a, b) => Math.hypot(b.b.x - b.a.x, b.b.y - b.a.y) -
+        Math.hypot(a.b.x - a.a.x, a.b.y - a.a.y));
+    const segment = segments[0];
+    const at = segment ? { x: (segment.a.x + segment.b.x) / 2, y: (segment.a.y + segment.b.y) / 2 } :
+      layout.items.flatMap(item => Object.entries(item.anchors)
+        .filter(([pin]) => ast.pinMap?.[item.component.id]?.[pin] === net.id).map(([, anchor]) => anchor))[0] ??
+      { x: 0, y: 0 };
+    for (const [index, conductor] of net.conductors.entries()) {
+      const x = segment && segment.a.y === segment.b.y
+        ? Math.min(segment.a.x, segment.b.x) + Math.abs(segment.b.x - segment.a.x) * index / net.conductors.length
+        : at.x;
+      (layout.flags ??= []).push({ kind: "label", at: { x, y: at.y - topOff },
+        label: [conductor.label ?? conductor.id, conductor.value].filter(Boolean).join(" · ") });
+    }
+  }
+  const positionalWires: RoutedWire[] = layout.items
+    .filter((item) => item.component.componentType === "wire")
+    .map((item) => ({ netId: item.component.id, points: [item.anchors.start, item.anchors.end] }));
+  placeLabels(layout.items, [...(layout.routes ?? []), ...positionalWires], layout.flags ?? [], topOff);
+  const labelBounds = layout.items.filter((item) => item.labelPos).map((item) => labelBox(item.component, item.labelPos!));
+  const painted = [...labelBounds, ...layout.items.map((item) => boxOf(item, 0)), ...flagBoxes(layout.flags ?? [], topOff)];
+  const padding = 8; // Match the existing label/canvas margin used by state diagrams.
+  const left = Math.min(0, ...painted.map((box) => box.minX + layout.offsetX - padding));
+  const top = Math.min(0, ...painted.map((box) => box.minY + layout.offsetY - padding));
+  const width = Math.max(layout.width, ...painted.map((box) => box.maxX + layout.offsetX + padding)) - left;
+  const height = Math.max(layout.height, ...painted.map((box) => box.maxY + layout.offsetY + padding)) - top;
+  const { offsetX, offsetY } = layout;
 
   const t = resolveIndustrialTheme(config?.theme ?? "default");
 
@@ -335,15 +399,15 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
       const rot = f.kind === "ground" ? 90 : 270;
       const x = f.at.x + offsetX;
       const y = f.at.y + offsetY + topOff;
-      const glyph = `<g transform="translate(${x}, ${y}) rotate(${rot})">${sym.svg()}</g>`;
+      const glyph = f.kind === "label" ? "" : `<g transform="translate(${x}, ${y}) rotate(${rot})">${sym.svg()}</g>`;
       if (!f.label) return glyph;
       return (
         glyph +
         text(
           {
-            x: x + 22,
-            y: y - 10,
-            class: "schematex-circuit-net-label",
+            x: x + RAIL_LABEL.x,
+            y: y + RAIL_LABEL.y,
+            class: f.purpose === "group" ? "schematex-circuit-label" : "schematex-circuit-net-label",
             "text-anchor": "start",
           },
           f.label
@@ -352,33 +416,10 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
     })
     .join("");
 
-  const css = `
-.schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-circuit-hit { fill: transparent; stroke: none; pointer-events: all; }
-.schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
-.schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
-.schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
-.schematex-circuit-label { font: 600 11px system-ui, sans-serif; fill: ${t.text}; }
-.schematex-circuit-value { font: italic 10px system-ui, sans-serif; fill: ${t.textMuted}; }
-.schematex-circuit-net-label { font: 600 11px system-ui, sans-serif; fill: ${t.accent}; }
-.schematex-circuit-pol { font: 9px sans-serif; fill: ${t.stroke}; }
-.schematex-circuit-meter { font: bold 12px sans-serif; fill: ${t.stroke}; }
-.schematex-circuit-title { font: 700 16px sans-serif; fill: ${t.text}; }
-.schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
-.schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
-.schematex-circuit-panel-label { font: 700 11px system-ui, sans-serif; fill: ${t.text}; }
-.schematex-circuit-din { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.4; }
-.schematex-circuit-din-slot { fill: ${t.textMuted}; opacity: 0.5; }
-.schematex-circuit-duct { fill: none; stroke: ${t.textMuted}; stroke-width: 1.2; stroke-dasharray: 3 2; }
-.schematex-circuit-duct-tooth { stroke: ${t.textMuted}; stroke-width: 0.8; opacity: 0.65; }
-.schematex-circuit-panel-led { fill: ${t.accent}; stroke: ${t.stroke}; stroke-width: 0.8; }
-.schematex-circuit-panel-light { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.5; }
-.schematex-circuit-estop { fill: ${t.error}; stroke: ${t.stroke}; stroke-width: 1.4; }
-`.trim();
+  const css = circuitStylesheet(t);
 
   const titleScene = ast.title
-    ? resolveSceneTitle(ast.title, ast.titleSourceRange, width / 2, 18, config)
+    ? resolveSceneTitle(ast.title, ast.titleSourceRange, left + width / 2, 18, config)
     : undefined;
   const titleBar = ast.title && titleScene
     ? text(
@@ -396,7 +437,7 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   return svgRoot(
     {
       class: "schematex-circuit",
-      viewBox: `0 0 ${Math.round(width)} ${Math.round(height + topOff)}`,
+      viewBox: `${left} ${top} ${Math.ceil(width)} ${Math.ceil(height + topOff)}`,
       width: Math.round(width),
       height: Math.round(height + topOff),
       role: "img",

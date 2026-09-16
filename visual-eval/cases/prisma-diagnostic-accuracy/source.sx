@@ -1,0 +1,23 @@
+# Scenario: diagnostic-accuracy review of a triage test; all exclusions sum to stage totals.
+prisma
+mode: 2020-single
+title: "Point-of-care troponin for emergency-department triage"
+kind: systematic-review
+identification:
+  databases:
+    n: 1260
+    sources: MEDLINE=480, Embase=420, Web of Science=360
+    duplicates-removed: 260
+screening:
+  records-screened: 1000
+  excluded:
+    n: 790
+    reasons: wrong index test=310, not diagnostic accuracy=280, abstract only=200
+eligibility:
+  full-text-assessed: 210
+  excluded:
+    n: 172
+    reasons: no reference standard=70, incomplete 2x2 data=54, wrong population=48
+included:
+  studies: 38
+  reports: 41

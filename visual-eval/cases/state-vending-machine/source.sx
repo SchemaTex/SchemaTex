@@ -1,0 +1,15 @@
+%% Vending machine transaction with a composite selection and dispensing state.
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> AcceptingCoins : insert coin
+  AcceptingCoins --> AcceptingCoins : insert coin / add credit
+  AcceptingCoins --> Selecting : select item [credit >= price]
+  AcceptingCoins --> Refunding : cancel
+  state Selecting {
+    [*] --> CheckStock
+    CheckStock --> Dispensing : item available
+    CheckStock --> Refunding : item unavailable
+    Dispensing --> [*] : deliver item
+  }
+  Selecting --> Idle : transaction complete
+  Refunding --> Idle : return credit

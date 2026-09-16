@@ -1,0 +1,44 @@
+{
+  "id": "pedigree-mitochondrial",
+  "type": "pedigree",
+  "title": "Mitochondrial transmission family",
+  "goal": "A reader can recognize maternal transmission because affected mothers pass the trait to all children and an affected father passes it to none.",
+  "rubric": [
+    {
+      "id": "three-numbered-generations",
+      "severity": "major",
+      "must": "Three aligned generation rows are visibly labeled I, II, and III."
+    },
+    {
+      "id": "affected-founder-mother",
+      "severity": "blocker",
+      "must": "The generation-I mother is fully filled and the generation-I father is empty."
+    },
+    {
+      "id": "all-founder-children-affected",
+      "severity": "blocker",
+      "must": "Both children descending from the affected generation-I mother are fully filled."
+    },
+    {
+      "id": "affected-father-no-transmission",
+      "severity": "blocker",
+      "must": "The affected generation-II father has two visibly empty children with his empty partner."
+    },
+    {
+      "id": "affected-mother-full-transmission",
+      "severity": "blocker",
+      "must": "The affected generation-II mother has two visibly fully filled children with her empty partner."
+    },
+    {
+      "id": "proband-marker",
+      "severity": "major",
+      "must": "Exactly one proband arrow labeled P points to the affected female III-3."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Three generations in strict left-to-right numeric order showing both children of each affected mother solid-filled and both children of affected father II-1 empty."
+  }
+}

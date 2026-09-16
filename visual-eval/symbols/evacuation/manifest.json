@@ -1,0 +1,837 @@
+{
+  "type": "evacuation",
+  "variant": "iso",
+  "exemplar": "evacuation/iso",
+  "style": "Every sign is a 30 px square plate (a 24-unit grid drawn at 1.25x, as on the exemplar plan) with 2.5 px corner radius, filled safe-condition green #00843D or fire-equipment red #C8102E, with no outline, border or text. Artwork is white #fff knockout: filled shapes plus round-capped strokes of 2.56 px for figures and fingers and 2.1 px for frames (1.75 px for hoses, water and outlines), with plate-colour cut-outs for inner detail; the flame is one shared shape on every fire sign, and E-series signs that carry a first-aid cross share one small cross in the top-right corner. An exit sign with a direction arrow is two such squares on one 60 x 30 px carrier with no divider, the arrow on the side of travel. The \"You are here\" marker is deliberately not a sign: a 33.9 px blue #005387 disc with a 2.2 px white ring and white centre dot; every file has 8 px padding.",
+  "symbols": [
+    {
+      "id": "you-are-here",
+      "label": "You are here (ISO 23601 location marker)",
+      "file": "you-are-here.svg",
+      "engine": "here",
+      "dsl": [
+        "here in <room> at x,y \"YOU ARE HERE\"",
+        "you-are-here",
+        "location-marker"
+      ],
+      "standard": "ISO 23601 (the viewer's position is required on every posted plan; the standard registers no graphic for it)",
+      "sourceUrl": "https://www.iso.org/obp/ui/#iso:std:iso:23601:ed-1:en",
+      "inExemplar": true,
+      "notes": "Copied exactly from the exemplar: a blue bull's-eye, kept out of the green and red sign colours so the reader's own position can't be mistaken for a safety sign. The engine draws a green crosshair plate, which reads as one more safe-condition sign.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-exit",
+      "label": "Emergency exit, right hand (ISO 7010 E002)",
+      "file": "emergency-exit.svg",
+      "engine": "exit",
+      "dsl": [
+        "exit <id> in <room> at x,y hand right",
+        "exit-final <id> in <room> at x,y hand right",
+        "emergency-exit",
+        "fire-exit"
+      ],
+      "standard": "ISO 7010:2019 E002 (E001 is the mirror image for left hand); ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E002",
+      "inExemplar": true,
+      "notes": "A figure running right through a doorway on the right, leaning into the run with a bent front knee and swinging arms; the doorway bracket and all stroke weights are the exemplar's. The exemplar's runner leans backwards and its standalone plates add a threshold bar that is not part of E002; the engine's runner is an upright stick figure that reads as walking. The separate exit-final target adds the engine's threshold qualifier for the plan.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-exit-left",
+      "label": "Emergency exit, left hand (ISO 7010 E001)",
+      "file": "emergency-exit-left.svg",
+      "engine": "exit",
+      "dsl": [
+        "exit <id> in <room> at x,y hand left",
+        "exit-final <id> in <room> at x,y hand left",
+        "emergency-exit",
+        "fire-exit"
+      ],
+      "standard": "ISO 7010:2019 E001; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E001",
+      "inExemplar": true,
+      "notes": "Registered image content: human figure moving to the left through a doorway. Drawn as the exact mirror image of the accepted E002 sample. The exemplar's left-hand final exit carries the same backwards-leaning runner and a threshold bar that E001 does not have; the engine mirrors its upright walking figure.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "exit-final",
+      "label": "Final exit",
+      "file": "exit-final.svg",
+      "engine": "exit-final",
+      "tier": 1,
+      "dsl": [
+        "evacuation \"Final exit\" unit m\ncompliance iso\nroom lobby \"Lobby\" at 0,0 size 8x6\nhere in lobby at 1,3\nexit-final final in lobby at 8,3 side east hand right\n"
+      ],
+      "standard": "ISO 23601 §6 / NFPA 170 Ch.11; ISO 7010 E002 base pictogram",
+      "sourceUrl": "https://www.iso.org/obp/ui/#iso:std:iso:23601:ed-1:en",
+      "inExemplar": false,
+      "notes": "Accepted 30 px green plate, white runner and 1.7-unit doorway frame, with the engine's threshold bar below the doorway to identify a final exit on the plan. The bar is a plan qualifier, not a separately registered ISO 7010 pictogram. Tier 1 because the evacuation validator uses final exits for exit coverage and route destinations.",
+      "usageUsers": null
+    },
+    {
+      "id": "exit-direction-right",
+      "label": "Emergency exit with direction arrow, right (ISO 7010 E002 + ISO 3864-3 arrow)",
+      "file": "exit-direction-right.svg",
+      "engine": "exit-direction",
+      "dsl": [
+        "exit-direction <id> in <room> at x,y hand right",
+        "exit-arrow",
+        "direction-arrow",
+        "escape-direction"
+      ],
+      "standard": "ISO 7010:2019 E002 combined with the ISO 3864-3 directional arrow as a supplementary sign on one carrier; ISO 7010 withdrew the stand-alone direction arrows E005 and E006, so an arrow is never shown on its own",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E002",
+      "inExemplar": true,
+      "notes": "The E002 sign with the arrow on the side the runner is heading, as the combination rule requires. Two full 30 px squares on one 60 x 30 px green carrier so the runner is the same size as on the stand-alone sign. The exemplar shrinks both halves to fit a 52 px carrier, splits them with a faint line that sits against the doorway and reads as a second door frame, uses the backwards-leaning runner and draws a plain triangle instead of an ISO 3864-3 shafted arrow. The engine squeezes a thin arrow into the top edge of an ordinary exit plate, above the runner's head.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "exit-direction-left",
+      "label": "Emergency exit with direction arrow, left (ISO 7010 E001 + ISO 3864-3 arrow)",
+      "file": "exit-direction-left.svg",
+      "engine": "exit-direction",
+      "dsl": [
+        "exit-direction <id> in <room> at x,y hand left",
+        "exit-arrow",
+        "direction-arrow",
+        "escape-direction"
+      ],
+      "standard": "ISO 7010:2019 E001 combined with the ISO 3864-3 directional arrow as a supplementary sign on one carrier (arrow first, on the side of travel)",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E001",
+      "inExemplar": true,
+      "notes": "Mirror image of the right-hand combination: arrow pointing left on the left square, E001 on the right square, so the arrow, runner and doorway all point the same way. Same departures from the exemplar and the engine as the right-hand version.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "assembly-point",
+      "label": "Evacuation assembly point (ISO 7010 E007)",
+      "file": "assembly-point.svg",
+      "engine": "assembly",
+      "dsl": [
+        "assembly <id> outside at x,y \"ASSEMBLY POINT\"",
+        "assembly-point",
+        "muster-point",
+        "muster"
+      ],
+      "standard": "ISO 7010:2019 E007; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E007",
+      "inExemplar": true,
+      "notes": "Registered image content: two human figures and the head of a third in a group, with four arrows coming from the corners pointing at them. The exemplar has four arrows pointing at an empty square from the middle of each side, and no people; the engine has four dots with plain diagonal lines and no people or arrowheads. ISO 7010 notes this pictogram tested below the comprehension threshold and should carry a text label such as ASSEMBLY POINT on the plan.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-extinguisher",
+      "label": "Fire extinguisher (ISO 7010 F001)",
+      "file": "fire-extinguisher.svg",
+      "engine": "extinguisher",
+      "dsl": [
+        "extinguisher <id> in <room> at x,y class \"ABC\"",
+        "fire-extinguisher"
+      ],
+      "standard": "ISO 7010:2019 F001; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F001",
+      "inExemplar": true,
+      "notes": "The registered pictogram is a cylinder extinguisher with a label and valve beside flames, so the exemplar's extinguisher is kept, moved left, given a red label cut-out, and a flame is added on its right. Neither the exemplar nor the engine has the flame, and the engine's outlined jug shape doesn't read as an extinguisher.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-alarm-call-point",
+      "label": "Fire alarm call point (ISO 7010 F005)",
+      "file": "fire-alarm-call-point.svg",
+      "engine": "call-point",
+      "dsl": [
+        "call-point <id> in <room> at x,y",
+        "fire-alarm",
+        "fire-alarm-call-point",
+        "alarm-call-point"
+      ],
+      "standard": "ISO 7010:2019 F005; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F005",
+      "inExemplar": true,
+      "notes": "Drawn to the registered composition: a hand seen from above with the index finger pressing the dot in a square that is open at the bottom, and a flame on the right. The exemplar's square and three bars don't read as a hand and it has no flame; the engine draws a framed circle that reads as a generic device.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "first-aid",
+      "label": "First aid (ISO 7010 E003)",
+      "file": "first-aid.svg",
+      "engine": "first-aid",
+      "dsl": [
+        "first-aid <id> in <room> at x,y",
+        "firstaid",
+        "first-aid-kit"
+      ],
+      "standard": "ISO 7010:2019 E003; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E003",
+      "inExemplar": true,
+      "notes": "Copied exactly from the exemplar: a white equal-armed cross centred on the green plate, arms 5.2 units wide with slightly rounded ends. The engine's cross is nearly the same; the visible difference is its heavier, square-ended arms.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "aed",
+      "label": "Automated external defibrillator (ISO 7010 E010)",
+      "file": "aed.svg",
+      "engine": "aed",
+      "dsl": [
+        "aed <id> in <room> at x,y",
+        "defibrillator",
+        "automated-external-defibrillator"
+      ],
+      "standard": "ISO 7010:2019 E010; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E010",
+      "inExemplar": false,
+      "notes": "Registered image content: a heart with a lightning bolt in the middle, and a first-aid cross. The bolt is cut out of the heart in plate green and the cross sits in the top-right corner, the same small cross used on every E-series sign that needs one. The engine has no cross and fills the bolt in near-black, a colour ISO 3864-1 does not allow on a safe-condition sign.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-hose-reel",
+      "label": "Fire hose reel (ISO 7010 F002)",
+      "file": "fire-hose-reel.svg",
+      "engine": "hose-reel",
+      "dsl": [
+        "hose-reel <id> in <room> at x,y",
+        "fire-hose-reel"
+      ],
+      "standard": "ISO 7010:2019 F002; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F002",
+      "inExemplar": false,
+      "notes": "Registered image content: seven vertical lines (the hose wound on the reel, seen side-on), one of them continuing down to a trapezoid nozzle, a circle with a cross (the handwheel) on a line from a vertical wall bar, and a flame. Drawn with five hose turns instead of seven so the gaps between them survive at 30 px. The engine draws the reel face-on as two circles with a trailing hose and has no flame.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-telephone",
+      "label": "Emergency telephone (ISO 7010 E004)",
+      "file": "emergency-telephone.svg",
+      "engine": "emergency-phone",
+      "dsl": [
+        "emergency-phone <id> in <room> at x,y"
+      ],
+      "standard": "ISO 7010:2019 E004; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E004",
+      "inExemplar": false,
+      "notes": "Registered image content: a telephone receiver in profile, and a first-aid cross. A filled handset tilted with its cups facing up-right, and the shared small cross top right; the fire emergency telephone F006 is the same handset with a flame on a red plate. The engine draws an outlined handset with no cross, which is identical to its fire-phone apart from the plate colour.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-equipment",
+      "label": "Collection of firefighting equipment (ISO 7010 F004)",
+      "file": "fire-equipment.svg",
+      "engine": "fire-equipment",
+      "dsl": [
+        "fire-equipment <id> in <room> at x,y"
+      ],
+      "standard": "ISO 7010:2019 F004; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F004",
+      "inExemplar": false,
+      "notes": "Registered image content: a fire helmet in profile, and a flame. A firefighter's helmet facing right, with a comb on top, a badge at the front and a long back brim, on the left; the shared flame on the right, as F001 places its extinguisher. The engine draws a large flame with a dark circled plus, which is not the registered helmet and uses a colour ISO 3864-1 does not allow on a fire-equipment sign.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "eyewash-station",
+      "label": "Eyewash station (ISO 7010 E011)",
+      "file": "eyewash-station.svg",
+      "engine": "eyewash",
+      "dsl": [
+        "eyewash <id> in <room> at x,y"
+      ],
+      "standard": "ISO 7010:2019 E011; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E011",
+      "inExemplar": false,
+      "notes": "Registered image content: an eye above running water coming out of a shower head, and a first-aid cross. An outlined eye with a solid iris, three jets rising from an upturned nozzle on a short stem, and the shared small cross top right. The engine has the eye and a single water drop but no nozzle and no cross.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "safety-shower",
+      "label": "Safety shower (ISO 7010 E012)",
+      "file": "safety-shower.svg",
+      "engine": "safety-shower",
+      "dsl": [
+        "safety-shower <id> in <room> at x,y"
+      ],
+      "standard": "ISO 7010:2019 E012; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E012",
+      "inExemplar": false,
+      "notes": "Registered image content: a human figure under running water coming out of a shower head, and a first-aid cross. A standing figure under a shower head fed by a pipe from the left, three falling jets, and the shared small cross top right. The engine draws the pipe, head and water but no person and no cross.",
+      "tier": 1,
+      "usageUsers": null
+    },
+    {
+      "id": "evacuation-temporary-refuge",
+      "label": "Evacuation temporary refuge (ISO 7010 E024)",
+      "file": "evacuation-temporary-refuge.svg",
+      "engine": "refuge",
+      "dsl": [
+        "refuge sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E024; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E024",
+      "inExemplar": false,
+      "notes": "Wheelchair user with the accepted four inward corner arrows; reduced central figure to keep the arrows separate.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "protection-shelter",
+      "label": "Protection shelter (ISO 7010 E021)",
+      "file": "protection-shelter.svg",
+      "engine": "shelter",
+      "dsl": [
+        "shelter sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E021; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E021",
+      "inExemplar": false,
+      "notes": "Four copies of the accepted standing figure inside an irregular hexagon, with a line and shield below.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "stretcher",
+      "label": "Stretcher (ISO 7010 E013)",
+      "file": "stretcher.svg",
+      "engine": "stretcher",
+      "dsl": [
+        "stretcher sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E013; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E013",
+      "inExemplar": false,
+      "notes": "Reclining person on a stretcher, with the shared top-right first-aid cross. Simplified at 30 px.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "doctor",
+      "label": "Doctor (ISO 7010 E009)",
+      "file": "doctor.svg",
+      "engine": "doctor",
+      "dsl": [
+        "doctor sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E009; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E009",
+      "inExemplar": false,
+      "notes": "Head and shoulders with stethoscope cut out in green, plus the shared first-aid cross.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "break-to-obtain-access",
+      "label": "Break to obtain access (ISO 7010 E008)",
+      "file": "break-to-obtain-access.svg",
+      "engine": "break-glass",
+      "dsl": [
+        "break-glass sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E008; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E008",
+      "inExemplar": false,
+      "notes": "Fist gripping a diagonal bar against a star-shaped break; original outline, simplified fingers.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-window-escape-ladder",
+      "label": "Emergency window with escape ladder (ISO 7010 E016)",
+      "file": "emergency-window-escape-ladder.svg",
+      "engine": "escape-ladder",
+      "dsl": [
+        "escape-ladder sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E016; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E016",
+      "inExemplar": false,
+      "notes": "Accepted runner adapted to a window above a ladder. This engine id denotes E016, not the permanently fixed E059 ladder.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "rescue-window",
+      "label": "Rescue window (ISO 7010 E017)",
+      "file": "rescue-window.svg",
+      "engine": "rescue-window",
+      "dsl": [
+        "rescue-window sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 E017; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E017",
+      "inExemplar": false,
+      "notes": "Window with the accepted runner and a fire-service vehicle carrying a rescue ladder below; vehicle details reduced for true size.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "door-opens-pushing-left",
+      "label": "Door opens by pushing on the left-hand side (ISO 7010 E022)",
+      "file": "door-opens-pushing-left.svg",
+      "engine": "emergency-door-push",
+      "dsl": [
+        "emergency-door-push sample in room1 at 2,2 hand left"
+      ],
+      "standard": "ISO 7010:2019 E022; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E022",
+      "inExemplar": false,
+      "notes": "Doorway with an outward-swinging door and curved arrow pointing left. This row selects E022; E023 is the opposite-hand variant.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "door-slides-right",
+      "label": "Door slides right to open (ISO 7010 E033)",
+      "file": "door-slides-right.svg",
+      "engine": "emergency-door-slide",
+      "dsl": [
+        "emergency-door-slide sample in room1 at 2,2 hand right"
+      ],
+      "standard": "ISO 7010:2019 E033; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E033",
+      "inExemplar": false,
+      "notes": "Sliding rectangle between top and bottom tracks, with the accepted shafted arrow pointing right. E034 left-hand variant is not drawn in this row.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-ladder",
+      "label": "Fire ladder (ISO 7010 F003)",
+      "file": "fire-ladder.svg",
+      "engine": "fire-ladder",
+      "dsl": [
+        "fire-ladder sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 F003; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F003",
+      "inExemplar": false,
+      "notes": "Converging rails with six rungs and the accepted shared flame on the right.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-emergency-telephone",
+      "label": "Fire emergency telephone (ISO 7010 F006)",
+      "file": "fire-emergency-telephone.svg",
+      "engine": "fire-phone",
+      "dsl": [
+        "fire-phone sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 F006; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F006",
+      "inExemplar": false,
+      "notes": "Accepted E004 handset with the shared fire flame on a red plate; no first-aid cross.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-service-riser",
+      "label": "Fire-service riser (unregistered text label)",
+      "file": "fire-service-riser.svg",
+      "engine": "riser",
+      "dsl": [
+        "riser sample in room1 at 2,2"
+      ],
+      "standard": "No ISO 7010 code; no ISO 3864-1 category: neutral text label, not a registered safety sign",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "No ISO 7010 sign or ISO 3864 safety category is registered. Neutral text label as the inventory allows; no national pictogram is asserted. Wider carrier preserves readable text.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "not-an-exit",
+      "label": "Not an exit (unregistered text label)",
+      "file": "not-an-exit.svg",
+      "engine": "not-an-exit",
+      "dsl": [
+        "not-an-exit sample in room1 at 2,2"
+      ],
+      "standard": "No ISO 7010 code; no ISO 3864-1 category: neutral text label, not a registered safety sign",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "notes": "No ISO 7010 sign or ISO 3864 safety category is registered. Neutral text label, not the engine red fire-equipment square or a claimed ISO prohibition. Wider carrier preserves readable text.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "no-elevator",
+      "label": "Do not use lift in the event of fire (ISO 7010 P020)",
+      "file": "no-elevator.svg",
+      "engine": "no-elevator",
+      "dsl": [
+        "no-elevator sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019 P020; ISO 3864-1 prohibition red ring and diagonal slash on white, black pictogram",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:P020",
+      "inExemplar": false,
+      "notes": "ISO 3864-1 prohibition: red ring and slash on white, black lift, people and fire. Reuses the accepted figure and flame in black; category convention overrides the square-plate style.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-alarm-flashing-light",
+      "label": "Fire alarm flashing light (ISO 7010 F018)",
+      "file": "fire-alarm-flashing-light.svg",
+      "engine": "alarm-sounder",
+      "dsl": [
+        "alarm-sounder sample in room1 at 2,2"
+      ],
+      "standard": "ISO 7010:2019/Amd 4:2021 F018; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F018",
+      "inExemplar": false,
+      "notes": "F018 identifies a visual flashing alarm, not an audible sounder. Mapped to the combined engine sounder/strobe entry only for its visual-alarm meaning; domed beacon and rays plus the shared flame. Three rays replace the registered nine to retain open gaps at 30 px.",
+      "tier": 2,
+      "usageUsers": null
+    },
+    {
+      "id": "accessible-emergency-exit-left",
+      "label": "Emergency exit for people unable to walk, left (ISO 7010 E026)",
+      "file": "accessible-emergency-exit-left.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 E026; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E026",
+      "inExemplar": false,
+      "notes": "Wheelchair user moving left through a left-hand doorway. This row selects E026; E030 is the right-hand variant. Accompany this sign on the plan with E001 or E002. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "evacuation-chair",
+      "label": "Evacuation chair (ISO 7010 E060)",
+      "file": "evacuation-chair.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 E060; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E060",
+      "inExemplar": false,
+      "notes": "Seated person, an attendant handling the chair and descending stairs, all facing right. Accepted runner adapted for the attendant; wheels and chair detail simplified at 30 px. Engine unsupported; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fixed-escape-ladder",
+      "label": "Escape ladder, permanently fixed (ISO 7010 E059)",
+      "file": "fixed-escape-ladder.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 E059; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E059",
+      "inExemplar": false,
+      "notes": "Six horizontal rungs between parallel vertical rails on green. Separate from E016 window-with-ladder. Engine unsupported; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "evacuation-lift",
+      "label": "Evacuation lift for people unable to use stairs (ISO 7010 E070)",
+      "file": "evacuation-lift.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E070; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E070",
+      "inExemplar": false,
+      "notes": "Accepted wheelchair inside a lift outline, with supplementary up and down arrows above and below; arrow and wheelchair geometry reused at reduced scale. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-blanket",
+      "label": "Fire blanket (ISO 7010 F016)",
+      "file": "fire-blanket.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 F016; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F016",
+      "inExemplar": false,
+      "notes": "Person holding a blanket in front of the body, feet visible below, with the shared flame at right. Simplified blanket edge and accepted figure stroke weights. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fire-protection-door",
+      "label": "Fire protection door (ISO 7010 F007)",
+      "file": "fire-protection-door.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 F007; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F007",
+      "inExemplar": false,
+      "notes": "Accepted angled door and curved closing arrow adapted to the left of the shared flame. This is the registered sign, separate from the engine structural fire-door mark. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "firefighters-lift",
+      "label": "Firefighters’ lift (ISO 7010 F017)",
+      "file": "firefighters-lift.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 F017; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F017",
+      "inExemplar": false,
+      "notes": "Lift outline enclosing an outlined left-facing head wearing the accepted fire helmet, mirrored and reduced; shared flame on the right. Helmet badge simplified at true size. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "wheeled-fire-extinguisher",
+      "label": "Wheeled fire extinguisher (ISO 7010 F009)",
+      "file": "wheeled-fire-extinguisher.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 F009; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F009",
+      "inExemplar": false,
+      "notes": "Accepted extinguisher cylinder, valve, label and hose mounted on a cart with a large visible wheel; shared flame at right. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-descent-device",
+      "label": "Emergency descent device (ISO 7010 E073)",
+      "file": "emergency-descent-device.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E073; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E073",
+      "inExemplar": false,
+      "notes": "Person leaning right in a body harness, holding a line from above, with the accepted arrow pointing down. Harness and hands simplified while preserving the rope and downward movement. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "evacuation-mattress",
+      "label": "Evacuation mattress (ISO 7010 E067)",
+      "file": "evacuation-mattress.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E067; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E067",
+      "inExemplar": false,
+      "notes": "Accepted reclining stretcher figure adapted to a sloping mattress, pulled by the accepted runner from stairs onto a floor; shared first-aid cross. Reduced details keep the mattress separate from the steps. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "evacuation-equipment",
+      "label": "Evacuation equipment (ISO 7010 E076)",
+      "file": "evacuation-equipment.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E076; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E076",
+      "inExemplar": false,
+      "notes": "Megaphone beside a high-visibility waistcoat with two vertical and two horizontal bands cut out in green; no medical cross because the registered sign has none. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "first-aid-responder",
+      "label": "First aid responder (ISO 7010 E064)",
+      "file": "first-aid-responder.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E064; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E064",
+      "inExemplar": false,
+      "notes": "Upper body with an armband on the person’s right arm (viewer’s left), plus the shared top-right first-aid cross. Distinct from the accepted doctor’s stethoscope. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "medical-grab-bag",
+      "label": "Medical grab bag (ISO 7010 E027)",
+      "file": "medical-grab-bag.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E027; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E027",
+      "inExemplar": false,
+      "notes": "Outlined bag and loop handles, with the shared first-aid cross in the top-right corner. Zippers and seams omitted to preserve open gaps at 30 px. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-escape-breathing-device",
+      "label": "Emergency escape breathing device (ISO 7010 E029)",
+      "file": "emergency-escape-breathing-device.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E029; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E029",
+      "inExemplar": false,
+      "notes": "Front-facing full-face mask with visor and circular regulator, plus the shared first-aid cross. Regulator grille reduced to one green slot. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "oxygen-resuscitator",
+      "label": "Oxygen resuscitator (ISO 7010 E028)",
+      "file": "oxygen-resuscitator.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E028; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E028",
+      "inExemplar": false,
+      "notes": "Oxygen cylinder with manual valve, hose and mask, plus the shared first-aid cross. Uses the accepted hose stroke and filled cylinder vocabulary. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-hammer",
+      "label": "Emergency hammer (ISO 7010 E025)",
+      "file": "emergency-hammer.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E025; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E025",
+      "inExemplar": false,
+      "notes": "Emergency hammer striking a star-shaped crack adapted from the accepted break-to-obtain-access sign. Hammer head and handle replace the fist and bar; green clearance isolates the tool from the break. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "door-opens-pulling-left",
+      "label": "Door opens by pulling on the left-hand side (ISO 7010 E057)",
+      "file": "door-opens-pulling-left.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E057; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E057",
+      "inExemplar": false,
+      "notes": "Inward-opening door with a curved arrow pointing right, using the accepted door frame and stroke weights. Selects E057; opposite-hand E058 is not drawn for this paired inventory row. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "turn-anticlockwise-to-open",
+      "label": "Turn anticlockwise to open (ISO 7010 E018)",
+      "file": "turn-anticlockwise-to-open.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E018; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E018",
+      "inExemplar": false,
+      "notes": "Doorknob on a door in perspective, with a semicircular anticlockwise arrow. Selects E018; clockwise E019 is not drawn for this paired row. Used on escape doors with a security opening mechanism. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "emergency-stop-button",
+      "label": "Emergency stop button (ISO 7010 E020)",
+      "file": "emergency-stop-button.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E020; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E020",
+      "inExemplar": false,
+      "notes": "Hand above a mushroom button with two flanking lines. Green safe-condition sign identifying the control’s location; the physical button colour does not change the sign category. Fingers reduced to one separation. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "natural-disaster-outdoor-refuge",
+      "label": "Natural disaster outdoor refuge area (ISO 7010 E065)",
+      "file": "natural-disaster-outdoor-refuge.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E065; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E065",
+      "inExemplar": false,
+      "notes": "Accepted moving figure stepping onto a filled oval area. No shelter roof, assembly arrows or medical cross: these would change the registered content. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "tsunami-evacuation-area",
+      "label": "Tsunami evacuation area (ISO 7010 E062)",
+      "file": "tsunami-evacuation-area.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010 E062; ISO 3864-1 safe-condition green square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:E062",
+      "inExemplar": false,
+      "notes": "Accepted right-moving runner between a curling tsunami wave and rising land. Selects E062 area; E063 building is not drawn for this paired row. Supplementary text or training is needed for comprehension. Engine has no corresponding sign; DSL examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fixed-fire-extinguishing-installation",
+      "label": "Fixed fire extinguishing installation (ISO 7010 F012)",
+      "file": "fixed-fire-extinguishing-installation.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 F012; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F012",
+      "inExemplar": false,
+      "notes": "Registered F012: horizontal tank on two supports and a frame, with the shared flame. Accepted cylinder body rotated into profile; frame uses the accepted stroke. Original geometry, simplified at 30 px. Engine has no corresponding sign and the DSL cannot express it; examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "remote-release-station",
+      "label": "Remote release station (ISO 7010 F014)",
+      "file": "remote-release-station.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 F014; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F014",
+      "inExemplar": false,
+      "notes": "Registered F014: bottle topped by a knob handle, with the shared flame. Reuses the accepted cylinder body; the round release knob distinguishes it from F001 and its lever, label and hose. Original geometry. Engine has no corresponding sign and the DSL cannot express it; examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "fixed-fire-extinguishing-battery",
+      "label": "Fixed fire extinguishing battery (ISO 7010 F008)",
+      "file": "fixed-fire-extinguishing-battery.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 F008; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F008",
+      "inExemplar": false,
+      "notes": "Registered F008: four bottles connected to one manifold, with the shared flame. Four reduced copies of the accepted cylinder body retain open gaps at 30 px. Selects F008 for the grouped battery / bottle inventory row; F013 is also registered, for a single bottle viewed end-on on two supports, and is not drawn here. Engine has no corresponding sign and the DSL cannot express it; examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "portable-foam-applicator",
+      "label": "Portable foam applicator unit (ISO 7010 F010)",
+      "file": "portable-foam-applicator.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019 F010; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F010",
+      "inExemplar": false,
+      "notes": "Registered F010: foam can with a gooseneck hose ending in a venturi nozzle, with the shared flame. Reuses the accepted cylinder body, hose stroke and tapered hose-reel nozzle; fine fittings omitted at 30 px. Selects F010 for the grouped applicator / monitor row; F011 water fog applicator and F015 fire monitor are also registered distinct signs, not interchangeable meanings or drawn variants here. Engine has no corresponding sign and the DSL cannot express it; examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    },
+    {
+      "id": "unconnected-fire-hose",
+      "label": "Unconnected fire hose (ISO 7010 F019)",
+      "file": "unconnected-fire-hose.svg",
+      "engine": null,
+      "dsl": [],
+      "standard": "ISO 7010:2019/Amd 3:2021 F019; ISO 3864-1 fire-equipment red square",
+      "sourceUrl": "https://www.iso.org/obp/ui#iso:grs:7010:F019",
+      "inExemplar": false,
+      "notes": "Registered F019: spirally coiled hose, nozzle and free end coupling, with the shared flame. Original open spiral using the accepted hose stroke and hose-reel nozzle; winding reduced for 30 px readability. Free coupling distinguishes this from the wall-mounted F002 reel. Engine has no corresponding sign and the DSL cannot express it; examples intentionally empty.",
+      "tier": 3,
+      "usageUsers": null
+    }
+  ]
+}

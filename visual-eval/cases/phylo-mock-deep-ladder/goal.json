@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-deep-ladder",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Deep sequential branching (mock)",
+  "goal": "Mock dataset (not empirical or user data). Follow twelve taxa in a deeply nested ladder while retaining the order of divergence.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "nested-order",
+      "severity": "blocker",
+      "must": "Lineages 01 and 02 are sisters; each successive lineage joins the previous group through 12."
+    },
+    {
+      "id": "all-tips",
+      "severity": "major",
+      "must": "All twelve labels are visible without merging into one text block."
+    },
+    {
+      "id": "trace-branches",
+      "severity": "major",
+      "must": "The deep sequence of slanted branches can be followed without confusing crossings."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows twelve distinct labels, Lineage 01 through Lineage 12, in divergence order. Lineages 01 and 02 are sisters at the deepest visible split; each later lineage branches from the accumulating group. The slanted ladder branches are traceable without crossings or material overlap.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:26:06.928Z",
+      "targetHash": "37897280962e",
+      "sourceHash": "d657129fcb88",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "nested-order",
+          "verdict": "pass",
+          "evidence": "Lineages 01 and 02 share the topmost split; Lineage 03 joins their group, then each successive lineage through Lineage 12 joins the preceding group."
+        },
+        {
+          "id": "all-tips",
+          "verdict": "pass",
+          "evidence": "All twelve labels, Lineage 01 through Lineage 12, are visible separately in the taxon column."
+        },
+        {
+          "id": "trace-branches",
+          "verdict": "pass",
+          "evidence": "The deep slanted branches form a continuous ladder with no confusing crossings; dashed guides connect tips to their corresponding labels."
+        }
+      ]
+    }
+  }
+}

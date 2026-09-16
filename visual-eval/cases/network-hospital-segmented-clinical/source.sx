@@ -1,0 +1,39 @@
+# Assumptions: clinical, biomedical, administrative, and guest services are VLAN-separated behind one firewall.
+# The diagram shows logical segmentation and selected endpoints, not every hospital device.
+network "Hospital segmented clinical network"
+  layout: tiered
+  direction: tb
+  internet inet "Internet and health exchange"
+  firewall fw "Healthcare NGFW" tier: edge
+  l3switch core "Clinical core switch" tier: core
+  switch clinical "Clinical access switch" tier: access
+  switch biomed "Biomedical access switch" tier: access
+  switch admin "Administrative access switch" tier: access
+  ap guest "Patient guest Wi-Fi" tier: access
+  pc ehr "EHR workstation" ip: 10.60.10.15
+  pc monitorgw "Patient monitor gateway" ip: 10.60.20.15
+  pc billing "Billing workstation" ip: 10.60.30.15
+  laptop visitor "Visitor device" ip: 10.60.40.15
+  vlan clinicalv "VLAN 10 Clinical" {
+    ehr
+  }
+  vlan biomedicalv "VLAN 20 Biomedical" {
+    monitorgw
+  }
+  vlan adminv "VLAN 30 Administration" {
+    billing
+  }
+  vlan guestv "VLAN 40 Guest" {
+    guest
+    visitor
+  }
+  inet -- fw : wan "1G"
+  fw -- core : fiber 10G
+  core -- clinical : trunk vlan: 10 1G
+  core -- biomed : trunk vlan: 20 1G
+  core -- admin : trunk vlan: 30,40 1G
+  clinical -- ehr : access vlan: 10 1G
+  biomed -- monitorgw : access vlan: 20 1G
+  admin -- billing : access vlan: 30 1G
+  admin -- guest : poe access vlan: 40 1G
+  guest -- visitor : wireless

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="436" height="696" viewBox="0 0 436 696" class="schematex-bpmn"><title>Insurance Claim</title>
+<desc>BPMN LR — 2 pool(s), 9 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#94a3b8"/></marker></defs>
+<g class="schematex-bpmn-pool blackbox"><rect x="16" y="16" width="404" height="60" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="60" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="46" transform="rotate(-90 29 46)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Policyholder</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="112" width="404" height="568" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="112" width="26" height="568" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="396" transform="rotate(-90 29 396)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Insurer</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="112" width="356" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="112" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="222" transform="rotate(-90 53 222)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Claims</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="332" width="356" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="332" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="396" transform="rotate(-90 53 396)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Fraud</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="460" width="356" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="460" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="570" transform="rotate(-90 53 570)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Settlement</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 218 46 L 218 111 L 167 111 L 167 176" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="192.5" y="105" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Claim</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 176 L 220.5 176 L 220.5 176 L 256 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 268 L 225.5 268 L 225.5 268 L 262 268" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,268 189,263 194,268 189,273" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="225.5" y="262" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 167 290 L 167 444 L 317 444 L 317 598" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 163 294 L 171 286" stroke="#334155" stroke-width="1.5"/>
+<text x="242" y="438" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 189 524 L 219.3 524 L 219.3 396 L 249.6 396" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<polygon points="184,524 189,519 194,524 189,529" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<text x="219.3" y="454" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">risk</text></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 189 524 L 224.1 524 L 224.1 524 L 259.2 524" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<path d="M 185 528 L 193 520" stroke="#334155" stroke-width="1.5"/>
+<text x="224.1" y="518" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">clear</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 167 616 L 167 331 L 218 331 L 218 46" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="192.5" y="325" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Settlement notice</text></g>
+<g class="schematex-bpmn-event kind-start trigger-message"><circle cx="167" cy="176" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<g class="trigger-message"><rect x="162.05" y="172.535" width="9.9" height="6.93" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<path d="M 162.05 172.535 L 167 176.3465 L 171.95000000000002 172.535" stroke="#334155" stroke-width="1" fill="none"/></g>
+<text x="167" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Claim received</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="256" y="146" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Validate policy</tspan></text>
+<g class="marker-user"><circle cx="269" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 264 165 Q 269 160 274 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,246 189,268 167,290 145,268" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 258.76 L 176.24 277.24 M 176.24 258.76 L 157.76 277.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="240" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Covered?</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="262" y="238" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="268" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Assess damage</tspan></text>
+<g class="marker-user"><circle cx="275" cy="250" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 270 257 Q 275 252 280 257" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="249.6" y="366" width="134.8" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="396" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Investigate fraud</tspan></text>
+<g class="marker-user"><circle cx="262.6" cy="378" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 257.6 385 Q 262.6 380 267.6 385" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="167,502 189,524 167,546 145,524" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 157.76 514.76 L 176.24 533.24 M 176.24 514.76 L 157.76 533.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="496" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Fraud risk?</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="259.2" y="494" width="115.60000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="524" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Pay settlement</tspan></text>
+<g class="marker-service"><circle cx="272.2" cy="507" r="4" fill="none" stroke="#334155" stroke-width="1"/>
+<circle cx="272.2" cy="507" r="1.5" fill="#334155"/>
+<path d="M 272.2 501 L 272.2 503 M 272.2 511 L 272.2 513 M 266.2 507 L 268.2 507 M 276.2 507 L 278.2 507" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="167" cy="616" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="167" y="648" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Settled</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="317" cy="616" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="317" y="648" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Declined</text></g></svg>

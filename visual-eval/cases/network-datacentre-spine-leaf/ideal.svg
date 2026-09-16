@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1760" height="1300" viewBox="0 0 1760 1300">
+<title>DC1 Spine-Leaf Fabric — Two spines, four leaves, a complete Clos mesh and a separate out-of-band management path</title>
+<desc>A two-spine, four-leaf Clos fabric. Both spine switches sit in one row above the four leaf switches, and every leaf carries an uplink to each spine, so the eight fabric links form a complete two-by-four mesh — the only crossings in the drawing, and the ones the topology requires. One named server hangs below each leaf on a 25G link: three compute nodes and one storage node. The out-of-band management path is drawn apart from the fabric as a thin dashed grey bus along the foot, with a riser to every spine and every leaf, an OOB management switch sitting on the bus and the management gateway below it.</desc>
+<defs><style>
+text{font-family:Verdana, sans-serif;fill:#182b3b;font-size:18px}
+.title{font-size:30px;font-weight:bold}
+.deck{font-size:18px;fill:#536979}
+.zone{font-size:23px;font-weight:bold}
+.name{font-size:18px;font-weight:bold}
+.small{font-size:16px;fill:#536979}
+.link{font-size:17px}
+.device{fill:white;stroke:#304b60;stroke-width:2.5}
+.wire{fill:none;stroke:#536979;stroke-width:3;stroke-linejoin:round}
+.fiber{fill:none;stroke:#087d92;stroke-width:5;stroke-linejoin:round}
+.poe{fill:none;stroke:#2f7d4f;stroke-width:3.5;stroke-linejoin:round}
+.wan{fill:none;stroke:#304b60;stroke-width:4;stroke-linejoin:round}
+.wireless{fill:none;stroke:#536979;stroke-width:4;stroke-linecap:round;stroke-dasharray:2 10}
+.oob{fill:none;stroke:#9aa9b4;stroke-width:2.5;stroke-linejoin:round;stroke-dasharray:9 6}
+.vpn{fill:none;stroke:#6b3fa0;stroke-width:4;stroke-linejoin:round;stroke-dasharray:15 9}
+.knock{stroke:none}
+</style>
+<g id="switch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z m20 0h12v12H-3z m20 0h12v12H17z" fill="#304b60"/><circle cx="43" cy="1" r="4" fill="#087d92"/></g>
+<g id="l3switch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z m20 0h12v12H-3z" fill="#304b60"/><rect x="23" y="-9" width="30" height="18" rx="4" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><text x="38" y="5" text-anchor="middle" font-size="13" font-weight="bold" fill="#304b60">L3</text></g>
+<g id="poeswitch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z" fill="#304b60"/><rect x="1" y="-9" width="52" height="18" rx="4" fill="#eaf5ee" stroke="#2f7d4f" stroke-width="1.5"/><text x="27" y="5" text-anchor="middle" font-size="13" font-weight="bold" fill="#2f7d4f">PoE</text></g>
+<g id="router"><circle class="device" cx="0" cy="0" r="38"/><path d="M-22 -9H14 M-14 9H22" stroke="#304b60" stroke-width="2.5" fill="none"/><path d="M14 -9l-8 -5 v10z M-14 9l8 5 v-10z" fill="#304b60"/><path d="M-9 -22V-4 M9 22V4" stroke="#304b60" stroke-width="2.5" fill="none"/><path d="M-9 -22l-5 8h10z M9 22l5 -8h-10z" fill="#304b60"/></g>
+<g id="firewall"><rect x="-54" y="-30" width="108" height="60" rx="2" fill="#fff2df" stroke="#985921" stroke-width="2.5"/><path d="M-54 -10H54 M-54 10H54 M-18 -30v20 M18 -30v20 M-36 -10v20 M0 -10v20 M36 -10v20 M-18 10v20 M18 10v20" fill="none" stroke="#985921" stroke-width="2"/></g>
+<g id="server"><rect class="device" x="-30" y="-38" width="60" height="76" rx="3"/><path d="M-21 -24h42v15h-42z M-21 -1h42v15h-42z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="16" cy="-17" r="2.5" fill="#087d92"/><circle cx="16" cy="6" r="2.5" fill="#087d92"/><path d="M-19 27h25" stroke="#304b60" stroke-width="2"/></g>
+<g id="storage"><rect class="device" x="-32" y="-40" width="64" height="80" rx="3"/><path d="M-22 -30h44v16h-44z M-22 -8h44v16h-44z M-22 14h44v16h-44z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="16" cy="-22" r="2.5" fill="#087d92"/><circle cx="16" cy="0" r="2.5" fill="#087d92"/><circle cx="16" cy="22" r="2.5" fill="#087d92"/></g>
+<g id="pc"><rect class="device" x="-45" y="-34" width="90" height="56" rx="3"/><rect x="-37" y="-26" width="74" height="40" fill="#e4edf2"/><path d="M0 22v15 M-25 38h50" stroke="#304b60" stroke-width="3"/></g>
+<g id="monitor"><rect class="device" x="-48" y="-32" width="96" height="54" rx="3"/><rect x="-40" y="-24" width="80" height="38" fill="#e4edf2"/><path d="M-16 22h32 v10h-32z" fill="none" stroke="#304b60" stroke-width="2.5"/><path d="M-28 32h56" stroke="#304b60" stroke-width="3"/></g>
+<g id="laptop"><path class="device" d="M-36 -26h72v42h-72z"/><rect x="-29" y="-19" width="58" height="28" fill="#e4edf2"/><path class="device" d="M-48 16h96l-6 12h-84z"/></g>
+<g id="printer"><rect class="device" x="-26" y="-30" width="52" height="16" rx="2"/><rect class="device" x="-36" y="-14" width="72" height="30" rx="3"/><rect x="-20" y="16" width="40" height="14" fill="#e4edf2" stroke="#304b60" stroke-width="2"/><circle cx="24" cy="-6" r="3.5" fill="#087d92"/></g>
+<g id="ipphone"><rect class="device" x="-32" y="-8" width="64" height="38" rx="4"/><rect x="-24" y="0" width="26" height="16" fill="#e4edf2"/><path class="device" d="M-30 -26h60v14h-60z" /><path d="M8 6h18 M8 14h18" stroke="#304b60" stroke-width="2"/></g>
+<g id="ap"><rect class="device" x="-30" y="0" width="60" height="20" rx="6"/><circle cx="0" cy="10" r="3" fill="#087d92"/><path d="M-14 -6a20 20 0 0 1 28 0 M-26 -18a37 37 0 0 1 52 0" fill="none" stroke="#304b60" stroke-width="2.5" stroke-linecap="round"/></g>
+<g id="internet"><path class="device" d="M-58 22a30 30 0 0 1 4 -59 a38 38 0 0 1 70 -14 a32 32 0 0 1 42 30 a26 26 0 0 1 -6 43z"/></g>
+<g id="nvr"><rect class="device" x="-52" y="-26" width="104" height="52" rx="3"/><path d="M-40 -12h44v10h-44z M-40 4h44v10h-44z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="32" cy="-6" r="7" fill="none" stroke="#304b60" stroke-width="2"/><circle cx="32" cy="12" r="3.5" fill="#a34a4a"/></g>
+<g id="camera-dome"><path d="M-30 -18h60" stroke="#304b60" stroke-width="3" stroke-linecap="round"/><path class="device" d="M-24 -18a24 24 0 0 0 48 0z"/><circle cx="0" cy="-8" r="7" fill="#304b60"/><path d="M0 6v14" stroke="#304b60" stroke-width="2.5"/></g>
+<g id="camera-bullet"><rect class="device" x="-30" y="-14" width="52" height="26" rx="12"/><rect class="device" x="22" y="-9" width="10" height="16" rx="2"/><circle cx="26" cy="-1" r="3" fill="#304b60"/><path d="M-16 -14v-6 h-12" fill="none" stroke="#304b60" stroke-width="3" stroke-linecap="round"/></g>
+<g id="camera-ptz"><path d="M-26 -22h52" stroke="#304b60" stroke-width="3" stroke-linecap="round"/><path d="M0 -22v6" stroke="#304b60" stroke-width="3"/><circle class="device" cx="0" cy="0" r="16"/><circle cx="0" cy="0" r="7" fill="#304b60"/><path d="M-27 4a27 27 0 0 0 54 0" fill="none" stroke="#304b60" stroke-width="2" stroke-dasharray="4 4"/><path d="M-27 4l6 -6 M27 4l-6 -6" stroke="#304b60" stroke-width="2" stroke-linecap="round"/></g>
+</defs>
+<rect width="1760" height="1300" fill="white"/>
+<text x="55" y="54" class="title">DC1 Spine-Leaf Fabric</text>
+<text x="55" y="87" class="deck">Two spines, four leaves, a complete Clos mesh and a separate out-of-band management path</text>
+<path class="oob" d="M 180 1030 L 1560 1030"/>
+<path class="oob" d="M 180 1030 L 180 260 L 464 260"/>
+<path class="oob" d="M 1560 1030 L 1560 260 L 1116 260"/>
+<path class="oob" d="M 460 1030 L 460 560 L 356 560"/>
+<path class="oob" d="M 800 1030 L 800 560 L 696 560"/>
+<path class="oob" d="M 1140 1030 L 1140 560 L 1036 560"/>
+<path class="oob" d="M 1480 1030 L 1480 560 L 1376 560"/>
+<circle cx="180" cy="1030" r="4.5" fill="#9aa9b4"/>
+<circle cx="1560" cy="1030" r="4.5" fill="#9aa9b4"/>
+<circle cx="460" cy="1030" r="4.5" fill="#9aa9b4"/>
+<circle cx="800" cy="1030" r="4.5" fill="#9aa9b4"/>
+<circle cx="1140" cy="1030" r="4.5" fill="#9aa9b4"/>
+<circle cx="1480" cy="1030" r="4.5" fill="#9aa9b4"/>
+<path class="fiber" d="M 520 281 L 300 539"/>
+<path class="fiber" d="M 520 281 L 640 539"/>
+<path class="fiber" d="M 520 281 L 980 539"/>
+<path class="fiber" d="M 520 281 L 1320 539"/>
+<path class="fiber" d="M 1060 281 L 300 539"/>
+<path class="fiber" d="M 1060 281 L 640 539"/>
+<path class="fiber" d="M 1060 281 L 980 539"/>
+<path class="fiber" d="M 1060 281 L 1320 539"/>
+<path class="fiber" d="M 300 581 L 300 802"/>
+<path class="fiber" d="M 640 581 L 640 802"/>
+<path class="fiber" d="M 980 581 L 980 802"/>
+<path class="fiber" d="M 1320 581 L 1320 800"/>
+<path class="oob" d="M 790 1051 L 790 1150"/>
+<use href="#switch" x="520" y="260"/>
+<use href="#switch" x="1060" y="260"/>
+<use href="#switch" x="300" y="560"/>
+<use href="#switch" x="640" y="560"/>
+<use href="#switch" x="980" y="560"/>
+<use href="#switch" x="1320" y="560"/>
+<use href="#server" x="300" y="840"/>
+<use href="#server" x="640" y="840"/>
+<use href="#server" x="980" y="840"/>
+<use href="#storage" x="1320" y="840"/>
+<use href="#switch" x="790" y="1030"/>
+<use href="#router" x="790" y="1190"/>
+<text x="520" y="213" class="name" text-anchor="middle">Spine 1</text>
+<text x="1060" y="213" class="name" text-anchor="middle">Spine 2</text>
+<rect class="knock" x="644" y="416.1" width="291.9" height="19.7" fill="white"/>
+<text x="790" y="430" class="link" text-anchor="middle">every leaf uplinks to both spines</text>
+<rect class="knock" x="262" y="596.2" width="76" height="20.9" fill="white"/>
+<text x="300" y="611" class="name" text-anchor="middle">Leaf 1</text>
+<text x="314" y="700" class="link">25G</text>
+<text x="300" y="908" class="name" text-anchor="middle">Compute 01</text>
+<rect class="knock" x="602" y="596.2" width="76" height="20.9" fill="white"/>
+<text x="640" y="611" class="name" text-anchor="middle">Leaf 2</text>
+<text x="654" y="700" class="link">25G</text>
+<text x="640" y="908" class="name" text-anchor="middle">Compute 02</text>
+<rect class="knock" x="942" y="596.2" width="76" height="20.9" fill="white"/>
+<text x="980" y="611" class="name" text-anchor="middle">Leaf 3</text>
+<text x="994" y="700" class="link">25G</text>
+<text x="980" y="908" class="name" text-anchor="middle">Compute 03</text>
+<rect class="knock" x="1282" y="596.2" width="76" height="20.9" fill="white"/>
+<text x="1320" y="611" class="name" text-anchor="middle">Leaf 4</text>
+<text x="1334" y="700" class="link">25G</text>
+<text x="1320" y="910" class="name" text-anchor="middle">Storage 01</text>
+<text x="805" y="1120" class="link">copper · 1G</text>
+<rect class="knock" x="655.4" y="968.2" width="269.3" height="20.9" fill="white"/>
+<text x="790" y="983" class="name" text-anchor="middle">OOB Management Switch</text>
+<text x="846" y="1196" class="name">Management Gateway</text>
+<text x="180" y="1072" class="small">out-of-band management</text>
+</svg>

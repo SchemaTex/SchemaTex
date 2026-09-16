@@ -1,0 +1,45 @@
+{
+  "id": "network-retail-store-chain",
+  "type": "network",
+  "title": "Retail store chain network",
+  "goal": "Show centrally connected stores with payment, management, and guest segmentation.",
+  "rubric": [
+    {
+      "id": "edge",
+      "severity": "blocker",
+      "must": "The drawing visibly includes Retail service hub at the network edge or core."
+    },
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The picture visibly distinguishes three store routers on managed WAN links."
+    },
+    {
+      "id": "segmentation",
+      "severity": "blocker",
+      "must": "Payment, Management, and Guest VLANs are visibly labelled as separate logical segments."
+    },
+    {
+      "id": "links",
+      "severity": "major",
+      "must": "Visible links show readable media, bandwidth, or VLAN/access annotations."
+    },
+    {
+      "id": "endpoints",
+      "severity": "major",
+      "must": "Representative user or service endpoints visibly attach to the appropriate access layer."
+    },
+    {
+      "id": "direction",
+      "severity": "minor",
+      "must": "The tiered layout makes the upstream WAN and downstream endpoint relationships readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. A retail chain drawn from the managed SD-WAN cloud at the top. The HQ security gateway and the retail service hub hang to the left of the cloud on an MPLS link; the north, south and west store routers hang below it on separate SD-WAN links. The north store is expanded to show its POS switch trunking three VLANs down to a POS terminal, a manager laptop and a guest Wi-Fi access point, each wearing a chip naming its VLAN, so payment, management and guest traffic are visibly separated. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

@@ -1,0 +1,23 @@
+ladder "Reversing Motor Starter"
+
+rung 0 "Forward start and hold":
+  XIO(Stop)
+  XIO(Overload)
+  parallel:
+    branch:
+      XIC(FwdStart)
+    branch:
+      XIC(Forward)
+  XIO(Reverse)
+  OTE(Forward)
+
+rung 1 "Reverse start and hold":
+  XIO(Stop)
+  XIO(Overload)
+  parallel:
+    branch:
+      XIC(RevStart)
+    branch:
+      XIC(Reverse)
+  XIO(Forward)
+  OTE(Reverse)

@@ -1,0 +1,45 @@
+{
+  "id": "faulttree-loss-of-cooling",
+  "type": "faulttree",
+  "title": "Loss of reactor cooling",
+  "goal": "Show the quantified failure logic for redundant cooling pumps and their electrical supply.",
+  "rubric": [
+    {
+      "id": "top-event",
+      "severity": "blocker",
+      "must": "The top rectangle visibly states loss of reactor/process cooling."
+    },
+    {
+      "id": "redundant-pumps",
+      "severity": "blocker",
+      "must": "Two cooling-pump basic events visibly meet at an AND gate for both-pumps failure."
+    },
+    {
+      "id": "shared-cause",
+      "severity": "blocker",
+      "must": "The pump-house flood basic event is visibly repeated beneath both the pump-train and power-supply branches."
+    },
+    {
+      "id": "power-redundancy",
+      "severity": "major",
+      "must": "Normal bus and standby diesel-generator failures visibly combine before the power-supply branch."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Every basic event visibly carries a plausible probability."
+    },
+    {
+      "id": "cutset-summary",
+      "severity": "minor",
+      "must": "A computed cut-set or probability summary is visible without obscuring the tree."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/faulttree/ideal.svg (sha256 7bffbe71b8bd). Corrected invalid relative arc in AND symbols. Exemplar green gate treatment and blue probabilities; existing gate logic retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

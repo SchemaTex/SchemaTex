@@ -19,6 +19,7 @@ import type { RenderConfig } from "../../core/types";
 import {
   el,
   group,
+  line,
   rect,
   svgRoot,
   text as svgText,
@@ -219,18 +220,15 @@ export function renderFmeaLayout(layout: FmeaLayoutResult, config?: RenderConfig
     });
   }
 
-  // 5. Flag outline around flagged rows (the red accent on the whole row edge).
+  // 5. Flag the row in the index margin; a full-row border crosses merged cells.
   analysis.rows.forEach((row, ri) => {
     if (!row.flagged) return;
     const y = layout.rowY[ri]!;
     const h = layout.rowHeights[ri]!;
     const first = layout.columns[0]!;
-    const last = layout.columns[layout.columns.length - 1]!;
-    const x = first.x;
-    const w = last.x + last.width - x;
     inner.push(
-      rect({
-        x, y, width: w, height: h,
+      line({
+        x1: first.x, y1: y, x2: first.x, y2: y + h,
         class: "sx-fmea-flag",
         "data-flagged": "true",
         "data-rpn": String(row.rpn),

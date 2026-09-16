@@ -28,17 +28,11 @@ function sceneItem(source: string, key: string): SceneItem {
 }
 
 describe("interactive safety invariants", () => {
-  it("advertises 21 parser-native diagram types and keeps the other 31 source-only", () => {
+  it("does not expose edit handles for source-only diagrams", () => {
     const diagrams = listDiagrams();
-    const native = diagrams.filter(
-      (entry) => getInteractiveCapabilities(entry.type as DiagramType).text.length > 0,
-    );
     const sourceOnly = diagrams.filter(
       (entry) => getInteractiveCapabilities(entry.type as DiagramType).text.length === 0,
     );
-
-    expect(native).toHaveLength(21);
-    expect(sourceOnly).toHaveLength(31);
 
     for (const entry of sourceOnly) {
       const result = renderResult(firstExample(entry.type), {

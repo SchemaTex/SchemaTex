@@ -6,6 +6,10 @@ import type {
   SLDStandard,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//", "%%"];
 
 export class SLDParseError extends Error {
   public line?: number;
@@ -23,7 +27,7 @@ const NODE_TYPES = new Set<SLDNodeType>([
   "transformer", "transformer_dy", "transformer_yd", "transformer_yy",
   "transformer_dd", "autotransformer", "transformer_3winding",
   "bus", "bus_tie", "hub",
-  "breaker", "breaker_vacuum", "switch", "switch_load", "ground_switch",
+  "breaker", "breaker_vacuum", "switch", "switch_load", "contactor", "ground_switch",
   "ats", "recloser", "sectionalizer", "fuse", "fuse_cl",
   "ct", "pt", "relay", "surge_arrester", "ground_fault",
   "rcd",
@@ -54,24 +58,6 @@ const TYPE_ALIASES: Record<string, SLDNodeType> = {
   panel: "consumer_unit",
   panelboard: "consumer_unit",
 };
-
-function stripComment(s: string): string {
-  // Strip `#`, `//`, or Mermaid `%%` comments. Quoted regions are respected
-  // so `"#fff"` (a CSS color) and `"https://…"` survive.
-  let out = "";
-  let inQuote = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i]!;
-    if (ch === '"') inQuote = !inQuote;
-    if (!inQuote) {
-      if (ch === "#") break;
-      if (ch === "/" && s[i + 1] === "/") break;
-      if (ch === "%" && s[i + 1] === "%") break;
-    }
-    out += ch;
-  }
-  return out;
-}
 
 function stripQuotes(v: string): string {
   const t = v.trim();
@@ -133,7 +119,7 @@ function joinBrackets(lines: string[]): string[] {
   let buf = "";
   let depth = 0;
   for (const raw of lines) {
-    const line = stripComment(raw);
+    const line = stripLineComment(raw, COMMENT_MARKERS);
     if (!line.trim() && depth === 0) {
       if (buf) {
         out.push(buf);

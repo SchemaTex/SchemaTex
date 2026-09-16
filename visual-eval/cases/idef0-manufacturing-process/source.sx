@@ -1,0 +1,15 @@
+# Scenario: IDEF0 context diagram for a manufacturing process.
+idef0 "Manufacturing Process"
+  node A0
+  function A1 "Plan production"
+  function A2 "Make parts"
+  function A3 "Assemble product"
+  control A1.C "Production schedule"
+  input A1.I "Sales orders"
+  A1 -> A2 : "Work plan"
+  input A2.I "Raw material"
+  mechanism A2.M "CNC machines"
+  A2 -> A3 : "Finished parts"
+  control A3.C "Quality standard"
+  output A3.O "Product"
+  mechanism A3.M "Assembly line"

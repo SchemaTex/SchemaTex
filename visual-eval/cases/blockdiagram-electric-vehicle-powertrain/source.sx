@@ -1,0 +1,17 @@
+# Assumptions: this functional architecture follows energy flow from charging source to traction and vehicle motion.
+# The battery-management system supervises battery and inverter operation.
+blockdiagram "Electric vehicle powertrain"
+grid = block("Charging Grid") [role: input]
+charger = block("On-board Charger") [role: generic]
+battery = block("High-Voltage Battery") [role: generic]
+inverter = block("Traction Inverter") [role: actuator]
+motor = block("Electric Traction Motor") [role: actuator]
+wheel = block("Drive Wheels") [role: output]
+bms = block("Battery Management System") [role: controller]
+grid -> charger ["AC power"]
+charger -> battery ["DC charge"]
+battery -> inverter ["HV DC"]
+inverter -> motor ["3-phase AC"]
+motor -> wheel ["wheel torque"]
+bms -> battery ["cell monitoring"]
+bms -> inverter ["torque limits"]

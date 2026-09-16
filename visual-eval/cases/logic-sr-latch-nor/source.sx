@@ -1,0 +1,12 @@
+# Active-high SR latch made from cross-coupled NOR gates; buffers make eight visible gates.
+logic "NOR SR Latch"
+input S, R
+output Q, Qbar
+sbuf = BUF(S)
+rbuf = BUF(R)
+Q = NOR(rbuf, Qbar)
+Qbar = NOR(sbuf, Q)
+qbuf = BUF(Q)
+qb1 = BUF(Qbar)
+qb2 = BUF(qb1)
+qmonitor = BUF(qbuf)

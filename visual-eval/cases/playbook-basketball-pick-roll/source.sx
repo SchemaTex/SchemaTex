@@ -1,0 +1,10 @@
+# Scenario: a high ball-screen: the centre screens for the point guard, rolls to the rim and receives the pocket pass.
+playbook "High pick and roll" sport basketball
+set spread-pnr
+defense man
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+cut 3 corner
+pass 1 5
+shot 5

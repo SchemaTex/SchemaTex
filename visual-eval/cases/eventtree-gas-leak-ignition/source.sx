@@ -1,0 +1,12 @@
+# Assumptions: probabilities are conditional failure probabilities at each safety function.
+# Detection leads to isolation and ignition control; branches are binary and mutually exhaustive.
+eventtree "Gas leak and ignition"
+  initiating LEAK "Pressurised gas leak" freq: 0.008
+  function DET "Gas detection and alarm" p: 0.08
+  function ISO "Automatic isolation" p: 0.06
+  function IGN "Ignition-source control" p: 0.15
+  outcome s s s -> "Leak isolated without ignition"
+  outcome s s f -> "Flash fire; limited damage"
+  outcome s f s -> "Unisolated leak; no ignition"
+  outcome s f f -> "Jet fire; major damage"
+  outcome f * * -> "Late-detected leak; escalation risk"

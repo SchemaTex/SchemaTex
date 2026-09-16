@@ -1,0 +1,16 @@
+# Scenario: IEC 61131-3 alarm annunciator: horn until acknowledged, flashing lamp until acknowledged, steady lamp while the fault stays.
+fbd "Pressure alarm annunciation"
+var HighPressure: bool
+var AckBtn: bool
+var FlashClock: bool
+var Unacked: bool
+var Horn: bool
+var Lamp: bool
+network 0 "Detect a new alarm":
+  NewAlarm = R_TRIG(CLK: HighPressure)
+network 1 "Hold until acknowledged":
+  Unacked = OR(NewAlarm.Q, AND(Unacked, ~AckBtn))
+network 2 "Sound horn":
+  Horn = MOVE(Unacked)
+network 3 "Flash while unacknowledged, steady while the fault remains":
+  Lamp = OR(AND(Unacked, FlashClock), AND(HighPressure, ~Unacked))

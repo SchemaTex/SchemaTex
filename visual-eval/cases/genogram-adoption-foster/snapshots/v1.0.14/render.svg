@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 872 370" class="schematex-diagram schematex-genogram" width="872" height="370"><title>Genogram</title>
+<desc>Genogram diagram with 9 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-cohabiting-ended" data-from="ben" data-to="lara"><path d="M 99.8 60 L 179.8 60" class="schematex-genogram-edge-path"/>
+<line x1="135.8" y1="54" x2="143.8" y2="66" class="schematex-genogram-separation-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="ben" data-to="lara"><path d="M 139.8 60 L 139.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="ben" data-to="lara"><path d="M 79.8 141 L 199.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="ben+lara" data-to="theo"><path d="M 79.8 141 L 79.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="ben+lara" data-to="ivy"><path d="M 199.8 141 L 199.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="adam" data-to="maya"><path d="M 379.8 60 L 459.8 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="noel" data-to="rae"><path d="M 659.8 60 L 739.8 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="noel" data-to="rae"><path d="M 699.8 60 L 699.8 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="noel+rae" data-to="finn"><path d="M 699.8 60 L 699.8 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-secondary schematex-genogram-edge-secondary-adopted" data-from="adam+maya" data-to="theo"><path d="M 419.8 84 L 419.8 143 L 79.8 143 L 79.8 202" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-secondary schematex-genogram-edge-secondary-foster" data-from="noel+rae" data-to="ivy"><path d="M 699.8 84 L 699.8 143 L 199.8 143 L 199.8 202" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="ben" transform="translate(79.8, 60)"><title>Ben Hughes (1985)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="lara" transform="translate(199.8, 60)"><title>Relationship ended 2018 (1987)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="adam" transform="translate(359.8, 60)"><title>Adam Cole (1979)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="maya" transform="translate(479.8, 60)"><title>Maya Cole (1981)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="noel" transform="translate(639.8, 60)"><title>Noel Grant (1976)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="rae" transform="translate(759.8, 60)"><title>Rae Grant (1978)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="finn" transform="translate(699.8, 226)"><title>Finn Grant (2011)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="theo" transform="translate(79.8, 226)"><title>Theo Hughes (2014)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="ivy" transform="translate(199.8, 226)"><title>Ivy Hughes (2017)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="79.8" y="98" class="schematex-genogram-label" data-individual-id="ben">Ben Hughes (b. 1985)</text>
+<text x="199.8" y="98" class="schematex-genogram-label" data-individual-id="lara">Relationship ended 2018 (b. 1987)</text>
+<text x="359.8" y="98" class="schematex-genogram-label" data-individual-id="adam">Adam Cole (b. 1979)</text>
+<text x="479.8" y="98" class="schematex-genogram-label" data-individual-id="maya">Maya Cole (b. 1981)</text>
+<text x="639.8" y="98" class="schematex-genogram-label" data-individual-id="noel">Noel Grant (b. 1976)</text>
+<text x="759.8" y="98" class="schematex-genogram-label" data-individual-id="rae">Rae Grant (b. 1978)</text>
+<text x="699.8" y="264" class="schematex-genogram-label" data-individual-id="finn">Finn Grant (b. 2011)</text>
+<text x="79.8" y="264" class="schematex-genogram-label" data-individual-id="theo">Theo Hughes (b. 2014)</text>
+<text x="199.8" y="264" class="schematex-genogram-label" data-individual-id="ivy">Ivy Hughes (b. 2017)</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="348.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="cohabiting-ended" data-legend-section="structural"><line x1="107.5" y1="345" x2="127.5" y2="345" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/><line x1="122.5" y1="350" x2="130.5" y2="340" stroke="#334155" stroke-width="1.6"/>
+<text x="136.5" y="348.5" class="schematex-legend-label">Cohabiting (ended)</text></g>
+<g class="schematex-legend-row" data-legend-key="adopted" data-legend-section="structural"><line x1="274.5" y1="345" x2="294.5" y2="345" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="303.5" y="348.5" class="schematex-legend-label">Adopted</text></g>
+<g class="schematex-legend-row" data-legend-key="foster" data-legend-section="structural"><line x1="369.5" y1="345" x2="389.5" y2="345" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="398.5" y="348.5" class="schematex-legend-label">Foster</text></g></g></svg>

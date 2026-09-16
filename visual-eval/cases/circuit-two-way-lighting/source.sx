@@ -1,0 +1,12 @@
+circuit "Three Position Lighting Control" netlist
+V1 LIVE NEUTRAL type=ac_source value="230 V AC, 50 Hz" label="V1 SUPPLY"
+F1 LIVE LIVE_F type=fuse value="6 A, BS 1361" label="F1 LIGHTING PROTECTION"
+S1 LIVE_F TRAV_A TRAV_B type=switch_spdt value="10 AX, 230 V" label="S1 TWO-WAY SWITCH"
+S2 TRAV_A TRAV_C TRAV_D TRAV_B TRAV_D TRAV_C type=switch_dpdt value="10 AX, 230 V" label="S2 INTERMEDIATE SWITCH"
+S3 SWITCHED_LIVE TRAV_C TRAV_D type=switch_spdt value="10 AX, 230 V" label="S3 TWO-WAY SWITCH"
+W1 SWITCHED_LIVE LAMP_L type=wire value="1.5 mm2 brown sleeve" label="W1 SWITCHED LIVE (SL)"
+L1 LAMP_L NEUTRAL type=lamp value="230 V, 12 W LED" label="L1 HALL LAMP"
+W2 NEUTRAL N_TERM type=wire value="1.5 mm2 blue" label="W2 NEUTRAL (N)"
+W3 PE EARTH type=wire value="1.5 mm2 green/yellow" label="W3 EARTH (PE)"
+T1 PE type=terminal_block pins="PE" value="16 A earth terminal" label="T1 LIGHTING EARTH TERMINAL"
+T2 N_TERM type=terminal_block pins="N" value="16 A neutral terminal" label="T2 LIGHTING NEUTRAL TERMINAL"

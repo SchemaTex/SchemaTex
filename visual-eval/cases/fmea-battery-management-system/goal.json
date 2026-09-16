@@ -1,0 +1,50 @@
+{
+  "id": "fmea-battery-management-system",
+  "type": "fmea",
+  "title": "Battery management system DFMEA",
+  "goal": "Present safety-relevant BMS failure modes, controls, and computed risk priorities.",
+  "rubric": [
+    {
+      "id": "bms-item",
+      "severity": "blocker",
+      "must": "The worksheet visibly identifies the battery management system and its safe-limit monitoring function."
+    },
+    {
+      "id": "thermal-runaway-chain",
+      "severity": "blocker",
+      "must": "Overcharge protection failure visibly links to thermal runaway or pack fire with severity 10."
+    },
+    {
+      "id": "risk-scores",
+      "severity": "blocker",
+      "must": "Each visible failure row has severity, occurrence, detection, and computed RPN or action-priority fields."
+    },
+    {
+      "id": "high-priority-safety",
+      "severity": "major",
+      "must": "The safety-critical overcharge rows are visibly highlighted as high priority."
+    },
+    {
+      "id": "other-modes",
+      "severity": "major",
+      "must": "Delayed overtemperature detection and incorrect state-of-charge estimation are visibly included as separate modes."
+    },
+    {
+      "id": "controls",
+      "severity": "major",
+      "must": "Redundant sensing, software assurance, diagnostics, or validation controls are visibly listed."
+    },
+    {
+      "id": "worksheet-readability",
+      "severity": "minor",
+      "must": "The worksheet uses readable aligned columns and distinguishes risk cells visually."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Independently authored against visual-eval/exemplars/fmea/ideal.svg (sha256 656f156ad4fb), source sha256 6ee8a3b46885. Independent worksheet with all causes, effects, controls and scores. Adjacent repeated cells merged; AP or RPN follows the source ranking method. AP values checked against the AIAG-VDA 2019 matrix documented by HBK ReliaSoft, https://reliasoftcloud.hbkworld.com/demo/help/content/risk_ranking_logic.htm, not the engine approximation. RPN is multiplied independently; no AP invented for the RPN-only case. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability. Provisional because existing rubric high-priority-safety incorrectly requires High AP for S10/O2/D3 and S10/O2/D4; verified matrix gives Low, while thermal calibration S8/O4/D5 gives Medium. Target preserves correct source-derived values; rubric needs correction."
+  }
+}

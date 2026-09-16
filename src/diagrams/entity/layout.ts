@@ -9,7 +9,14 @@ import type { EntityAST, EntityNode, EntityEdge, EntityType } from "../../core/t
  * - Edges routed orthogonally (down → across → down)
  */
 
+import { wrapTextToWidth, estimateMaxLineWidth } from "../../core/text-metrics";
+
+import { orthogonalRoute, compactRoute, intersectsBox, type RoutePoint, type RoutedNet } from "../logic/orthogonal-router";
+import { labelPathPoints, labelOverlap, edgeLabelObstacles } from "../../core/label-placement";
+
 export interface EntityLayoutNode {
+  nameLines: string[];
+  detailLines: string[];
   node: EntityNode;
   x: number;         // center x
   y: number;         // center y
@@ -27,6 +34,9 @@ export interface EntityLayoutEdge {
   /** Label anchor (horizontal mid of the branch segment) */
   labelX: number;
   labelY: number;
+  labelLines: string[];
+  labelWidth: number;
+  labelHeight: number;
 }
 
 export interface EntityLayoutCluster {
@@ -48,29 +58,16 @@ export interface EntityLayoutResult {
   clusters: EntityLayoutCluster[];
 }
 
-const TIER_GAP = 170;
 const H_GAP = 70;
 const PADDING = 40;
 const CLUSTER_PADDING = 26;
 const CLUSTER_V_GAP = 16;
 
-export function geometryFor(type: EntityType): { width: number; height: number } {
-  switch (type) {
-    case "trust":
-      return { width: 200, height: 80 }; // ellipse bbox
-    case "individual":
-      return { width: 80, height: 80 }; // circle bbox; label rendered below
-    case "foundation":
-      return { width: 150, height: 80 };
-    case "pool":
-    case "disregarded":
-    case "placeholder":
-    case "corp":
-    case "llc":
-    case "lp":
-    default:
-      return { width: 170, height: 62 };
-  }
+function geometryFor(type: EntityType): { width: number; height: number } {
+  if (type === "individual") return { width: 80, height: 80 };
+  if (type === "lp") return { width: 360, height: 110 };
+  if (type === "trust") return { width: 290, height: 84 };
+  return { width: 248, height: 84 };
 }
 
 function computeTiers(ast: EntityAST): Map<string, number> {
@@ -150,11 +147,30 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
   const byId = new Map<string, EntityLayoutNode>();
   for (const n of ast.entities) {
     const g = geometryFor(n.entityType);
+    const textWidth = n.entityType === "individual" ? 150 : 200;
+    const nameLines = wrapTextToWidth(n.name, 13, textWidth, { fontWeight: 600 });
+    const detailLines = [
+      [n.entityType === "lp" ? "Partnership" : n.entityType === "disregarded" ? "Disregarded entity" : n.entityType === "corp" ? "Corporation" : n.entityType === "llc" ? "LLC" : n.entityType === "pool" ? "Reserved pool" : n.entityType === "placeholder" ? "To be formed" : n.entityType.charAt(0).toUpperCase() + n.entityType.slice(1), n.jurisdiction].filter(Boolean).join(" · "),
+      n.role, n.note, n.formationDate ? `est. ${n.formationDate}` : undefined,
+    ].filter((v): v is string => !!v).flatMap(v => wrapTextToWidth(v, 11, textWidth));
+    if (n.entityType !== "individual") {
+      const rows = nameLines.length + detailLines.length;
+      g.height = n.entityType === "lp" ? Math.max(110, rows * 30 + 20) : Math.max(84, rows * 16 + 30);
+      if (n.entityType === "trust" || n.entityType === "disregarded") {
+        // Circumscribe the text rectangle with the ellipse, including the
+        // inset on disregarded entities. This protects multiline corner text.
+        const textWidth = Math.max(estimateMaxLineWidth(nameLines.join("\n"), 13, {fontWeight:600}), estimateMaxLineWidth(detailLines.join("\n"), 11));
+        g.width = Math.max(g.width, Math.ceil((textWidth + 8) * Math.SQRT2 + 20));
+        g.height = Math.max(g.height, Math.ceil((rows * 16 + 8) * Math.SQRT2 + 20));
+      }
+    }
     const t = tiers.get(n.id) ?? 0;
     const ln: EntityLayoutNode = {
       node: n,
+      nameLines,
+      detailLines,
       x: 0,
-      y: PADDING + t * TIER_GAP + g.height / 2,
+      y: PADDING + g.height / 2,
       tier: t,
       width: g.width,
       height: g.height,
@@ -167,6 +183,20 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
     byId.set(n.id, ln);
   }
 
+  let tierTop = PADDING;
+  for (let tier = 0; tier <= maxTier; tier++) {
+    const row = layoutNodes.filter(n => n.tier === tier);
+    for (const n of row) {
+      n.topY = tierTop;
+      n.y = tierTop + n.height / 2;
+      n.bottomY = tierTop + n.height;
+    }
+    tierTop += Math.max(0, ...row.map(n => n.height)) + 110;
+  }
+
+  const horizontalGap = Math.max(H_GAP, ...ast.edges.filter(e => tiers.get(e.from) === tiers.get(e.to)).map(e =>
+    Math.min(150, estimateMaxLineWidth([e.percentage, e.label, e.shareClass].filter(Boolean).join(" "), 11)) + 56));
+
   // Assign sequential X per tier (declaration order)
   for (let t = 0; t <= maxTier; t++) {
     const nodes = byTier.get(t) ?? [];
@@ -175,7 +205,7 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
       const ln = byId.get(n.id)!;
       cx += ln.width / 2;
       ln.x = cx;
-      cx += ln.width / 2 + H_GAP;
+      cx += ln.width / 2 + horizontalGap;
     }
   }
 
@@ -220,7 +250,7 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
               0
             );
             const spread = Math.max(
-              H_GAP + (effectiveHalfWidth(ln) + effectiveHalfWidth(siblingParents[0])) / 1,
+              horizontalGap + (effectiveHalfWidth(ln) + effectiveHalfWidth(siblingParents[0])) / 1,
               totalWidth / Math.max(1, siblingParents.length - 1)
             );
             const idx = siblingParents.indexOf(ln);
@@ -264,7 +294,7 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
       for (let i = 1; i < tierNodes.length; i++) {
         const prev = tierNodes[i - 1];
         const cur = tierNodes[i];
-        const gap = effectiveHalfWidth(prev) + effectiveHalfWidth(cur) + H_GAP;
+        const gap = effectiveHalfWidth(prev) + effectiveHalfWidth(cur) + horizontalGap;
         if (cur.x - prev.x < gap) cur.x = prev.x + gap;
       }
     }
@@ -281,75 +311,77 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
     for (const ln of layoutNodes) ln.x += shift;
   }
 
-  // Build edges with orthogonal routing.
-  //
-  // Label placement strategy for hierarchical (down) edges:
-  //   - fan-in (child has >1 parents, e.g. cap-table): label on child-side
-  //     vertical stub, just above child.topY. Owner-share reads naturally
-  //     as "X% of [child]".
-  //   - fan-out (parent has >1 children, e.g. holdco → subs): label on
-  //     parent-side vertical stub, just below parent.bottomY.
-  //   - 1:1 straight drop: label offset to the side of the vertical line.
-  //   - otherwise (branching both sides): label at midpoint of parent stub.
-  // This avoids stacking multiple labels on the shared horizontal bar.
+  // Ownership fans may share the same owner's trunk. Other relationships
+  // receive independent ports and routes so their strokes cannot imply ownership.
   const edges: EntityLayoutEdge[] = [];
+  const routes: RoutedNet[] = [];
+  const boxes = layoutNodes.map(n => ({ left: n.x - n.width / 2 - 16, right: n.x + n.width / 2 + 16, top: n.topY - 16, bottom: n.bottomY + 16 }));
   for (const e of ast.edges) {
-    const from = byId.get(e.from);
-    const to = byId.get(e.to);
+    const from = byId.get(e.from), to = byId.get(e.to);
     if (!from || !to) continue;
-
-    const sameTier = from.tier === to.tier;
-    let path: string;
-    let labelX: number;
-    let labelY: number;
-
-    if (sameTier) {
-      const leftFirst = from.x < to.x;
-      const sx = leftFirst ? from.x + from.width / 2 : from.x - from.width / 2;
-      const ex = leftFirst ? to.x - to.width / 2 : to.x + to.width / 2;
-      path = `M ${sx} ${from.y} L ${ex} ${to.y}`;
-      labelX = (sx + ex) / 2;
-      labelY = from.y - 6;
+    const ownership = e.op === "ownership";
+    const siblings = ast.edges.filter(other => other.to === e.to && other.op === "ownership");
+    const index = siblings.indexOf(e);
+    const verticalOwner = [...siblings].sort((a,b) => Math.abs(byId.get(a.from)!.x-to.x)-Math.abs(byId.get(b.from)!.x-to.x))[0];
+    let start: RoutePoint, end: RoutePoint, escapeStart: RoutePoint, escapeEnd: RoutePoint;
+    if (ownership && from.tier < to.tier) {
+      start = { x: from.x, y: from.bottomY };
+      escapeStart = { x: start.x, y: start.y + 24 };
+      const offset = to.node.entityType === "lp" ? 0 : (index - (siblings.length - 1) / 2) * 28;
+      end = { x: to.x + offset, y: to.topY };
+      if (to.node.entityType === "lp" && siblings.length > 1 && e !== verticalOwner) {
+        escapeEnd = { x: to.x + (from.x < to.x ? -1 : 1) * (to.width / 2 + 24), y: to.topY };
+      } else escapeEnd = { x: end.x, y: end.y - 24 };
     } else {
-      const sx = from.x;
-      const sy = from.bottomY;
-      const ex = to.x;
-      const ey = to.topY;
-      const straight = Math.abs(sx - ex) < 0.5;
-
-      if (straight) {
-        // No corners → midpoint of the vertical line.
-        path = `M ${sx} ${sy} L ${ex} ${ey}`;
-        labelX = sx;
-        labelY = (sy + ey) / 2;
-      } else {
-        // L-path has two corners: (sx, midY) top and (ex, midY) bottom.
-        // Each edge owns its corners uniquely, so placing the label at a
-        // corner avoids stacking on the shared horizontal branch.
-        const midY = (sy + ey) / 2;
-        path = `M ${sx} ${sy} L ${sx} ${midY} L ${ex} ${midY} L ${ex} ${ey}`;
-
-        const isHier =
-          e.op === "ownership" || e.op === "voting" || e.op === "pool";
-        const parentCount = isHier ? (parents.get(e.to) ?? []).length : 0;
-        const fanIn = parentCount > 1;
-
-        // fan-in (many parents → one child): top corner (parent side) is
-        //   unique per parent.
-        // fan-out (one parent → many children): bottom corner (child side)
-        //   is unique per child.
-        // 1:1 offset: bottom corner — reads naturally as "X% of [child]".
-        if (fanIn) {
-          labelX = sx;
-          labelY = midY;
-        } else {
-          labelX = ex;
-          labelY = midY;
-        }
+      const side = from.x <= to.x ? 1 : -1;
+      const parallel = ast.edges.filter(other => other.from === e.from && other.to === e.to && other.op !== "ownership");
+      const offset = (parallel.indexOf(e) - (parallel.length - 1) / 2) * 18;
+      start = { x: from.x + side * from.width / 2, y: from.y + offset };
+      end = { x: to.x - side * to.width / 2, y: to.y + offset };
+      // Triangles narrow towards their apex: meet the actual sloping edge.
+      if (from.node.entityType === "lp") start.x = from.x + side * from.width / 2 * ((start.y - from.topY) / from.height);
+      if (to.node.entityType === "lp") end.x = to.x - side * to.width / 2 * ((end.y - to.topY) / to.height);
+      escapeStart = { x: from.x + side * (from.width / 2 + 24), y: start.y };
+      escapeEnd = { x: to.x - side * (to.width / 2 + 24), y: end.y };
+    }
+    const net = ownership ? `ownership:${e.from}` : `relationship:${edges.length}`;
+    const midY = (from.bottomY + to.topY) / 2;
+    const fan = compactRoute([start, {x:start.x,y:midY}, {x:end.x,y:midY}, end]);
+    const hasClearOwnershipFan = ownership && siblings.length === 1 && from.tier < to.tier &&
+      fan.slice(1).every((p,i) => boxes.every((box,j) => layoutNodes[j] === from || layoutNodes[j] === to || !intersectsBox(fan[i]!,p,box)));
+    const points = hasClearOwnershipFan ? fan : compactRoute([start, ...orthogonalRoute(escapeStart, escapeEnd, boxes, routes, net), end]);
+    routes.push({ net, points });
+    const labelLines = [e.percentage, e.label, e.shareClass].filter((v): v is string => !!v).flatMap(v => wrapTextToWidth(v, 11, 150));
+    const labelWidth = labelLines.length ? estimateMaxLineWidth(labelLines.join("\n"), 11, { fontWeight: 600 }) + 4 : 0;
+    const labelHeight = labelLines.length * 14;
+    edges.push({ edge: e, path: points.map((p,i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" "), labelX: end.x, labelY: end.y - 32, labelLines, labelWidth, labelHeight });
+  }
+  const occupied = layoutNodes.map(n => ({ x: n.x - n.width/2 - 4, y: n.topY - 4, width:n.width+8, height:n.height+8 }));
+  const wires = edges.flatMap(e => edgeLabelObstacles(labelPathPoints(e.path)));
+  for (const edge of edges) {
+    if (!edge.labelLines.length) continue;
+    const points = labelPathPoints(edge.path), w = edge.labelWidth, h = edge.labelHeight;
+    const candidates: {x:number;y:number}[] = [];
+    const fanIn = edge.edge.op === "ownership" && ast.edges.filter(e => e.op === "ownership" && e.to === edge.edge.to).length > 1 && ast.edges.filter(e => e.op === "ownership" && e.from === edge.edge.from).length === 1;
+    for (let step = 1; step < points.length; step++) {
+      const i = fanIn ? step : points.length-step;
+      const a=points[i-1]!, b=points[i]!;
+      if (a.x===b.x) {
+        if (Math.abs(b.y-a.y)<h+6) continue;
+        for (const fraction of [0.7, 0.5, 0.3]) for (const sign of [1,-1]) candidates.push({x:a.x+sign*(w/2+8), y:a.y+(b.y-a.y)*fraction});
+      } else if (Math.abs(b.x-a.x)>=16) {
+        for (const sign of [-1,1]) candidates.push({x:(a.x+b.x)/2,y:a.y+sign*(h/2+7)});
       }
     }
-
-    edges.push({ edge: e, path, labelX, labelY });
+    let best = {x:edge.labelX,y:edge.labelY}, score=Infinity;
+    for (const p of candidates) {
+      const rect={x:p.x-w/2,y:p.y-h/2,width:w,height:h};
+      const overlap=[...occupied,...wires].reduce((sum,o)=>sum+labelOverlap(rect,o),0);
+      if (overlap<score) {best=p;score=overlap;}
+      if (!score) break;
+    }
+    edge.labelX=best.x;edge.labelY=best.y;
+    occupied.push({x:best.x-w/2-3,y:best.y-h/2-3,width:w+6,height:h+6});
   }
 
   // Build cluster rectangles (explicit members only, or auto by jurisdiction)
@@ -425,6 +457,16 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
     if (c.x + c.width > maxX) maxX = c.x + c.width;
     if (c.y + c.height > maxY) maxY = c.y + c.height;
   }
+  let minX = 0, minY = 0;
+  for (const e of edges) {
+    for (const p of labelPathPoints(e.path)) { minX=Math.min(minX,p.x-PADDING);minY=Math.min(minY,p.y-PADDING);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y); }
+    minX=Math.min(minX,e.labelX-e.labelWidth/2-PADDING);minY=Math.min(minY,e.labelY-e.labelHeight/2-PADDING);
+    maxX=Math.max(maxX,e.labelX+e.labelWidth/2);maxY=Math.max(maxY,e.labelY+e.labelHeight/2);
+  }
+  for (const n of layoutNodes) { n.x-=minX;n.y-=minY;n.topY-=minY;n.bottomY-=minY; }
+  for (const c of layoutClusters) {c.x-=minX;c.y-=minY;}
+  for (const e of edges) {e.path=labelPathPoints(e.path).map((p,i)=>`${i?"L":"M"} ${p.x-minX} ${p.y-minY}`).join(" ");e.labelX-=minX;e.labelY-=minY;}
+  maxX-=minX;maxY-=minY;
   const width = Math.max(400, maxX + PADDING);
   const height = Math.max(200, maxY + PADDING);
 

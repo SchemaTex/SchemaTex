@@ -1,0 +1,46 @@
+{
+  "id": "pert-office-fitout",
+  "type": "pert",
+  "variant": "network",
+  "title": "Office fit-out",
+  "goal": "Show a realistic office fit-out network with finish-to-start lag, milestones, and a critical completion chain.",
+  "rubric": [
+    {
+      "id": "fitout-chain",
+      "severity": "blocker",
+      "must": "The visible chain runs from strip-out through partitions, rough-in, finishes, furniture, practical completion, and move-in."
+    },
+    {
+      "id": "completion-gate",
+      "severity": "blocker",
+      "must": "Practical completion visibly waits for furniture installation, IT commissioning, and safety inspection."
+    },
+    {
+      "id": "lag-visible",
+      "severity": "major",
+      "must": "The dependency from strip-out to partitions visibly carries a one-day finish-to-start lag."
+    },
+    {
+      "id": "furniture-dependencies",
+      "severity": "major",
+      "must": "Furniture installation visibly depends on both long-lead furniture ordering and finishes."
+    },
+    {
+      "id": "milestones",
+      "severity": "major",
+      "must": "Lease handover and practical completion are visibly distinguished as milestones."
+    },
+    {
+      "id": "critical-path",
+      "severity": "minor",
+      "must": "A critical path is visually highlighted through the schedule network."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/pert/network/ideal.svg (sha256 63a6affd85e5), source sha256 36618592123e. Independent AON network with six-field schedule boxes, true SVG milestone diamonds and zero-float red spine. Forward/backward passes calculated independently including the office-fitout FS+1d lag. Long dependencies routed around intervening task bodies after visual inspection. No production placement coordinates or engine output reused. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability. Follow-up vision adjudication on 2026-09-14: Separated C→H top entry and I/J→K bottom entry ports; critical H→K arrow remains unobstructed. Revised SVG was rasterised and visually accepted; no task values or dependencies changed."
+  }
+}

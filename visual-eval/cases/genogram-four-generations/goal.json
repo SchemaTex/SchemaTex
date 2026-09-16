@@ -1,0 +1,44 @@
+{
+  "id": "genogram-four-generations",
+  "type": "genogram",
+  "title": "Four-generation Alvarez family",
+  "goal": "A reader can trace four generations of the Alvarez family and distinguish the uneven sibling groups at each branch.",
+  "rubric": [
+    {
+      "id": "four-generation-rows",
+      "severity": "blocker",
+      "must": "Manuel and Rosa appear at the top, their children appear on a second row, Miguel and Elena's children on a third row, and Nora and Leo on a fourth row."
+    },
+    {
+      "id": "three-siblings",
+      "severity": "major",
+      "must": "Sofia, Miguel, and Teresa visibly descend together from the Manuel-Rosa partnership bar."
+    },
+    {
+      "id": "four-siblings",
+      "severity": "blocker",
+      "must": "Lucia, Diego, Ines, and Tomas visibly descend together from the Miguel-Elena partnership bar."
+    },
+    {
+      "id": "two-youngest-children",
+      "severity": "major",
+      "must": "Nora and Leo visibly descend together from the Diego-Carlos partnership bar."
+    },
+    {
+      "id": "legible-parentage",
+      "severity": "blocker",
+      "must": "Every descent line reaches its intended partnership bar without passing through a person symbol or another label."
+    },
+    {
+      "id": "readable-labels",
+      "severity": "major",
+      "must": "Every displayed person has a readable name and birth year, with no overlapping labels."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Four evenly spaced Alvarez generations show the three-, four-, and two-child sibships centred beneath their own parental couples, including Diego and Carlos. Names, birth years, and ages are individually readable."
+  }
+}

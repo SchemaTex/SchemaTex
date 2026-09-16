@@ -1,0 +1,78 @@
+{
+  "id": "evacuation-office-floor",
+  "type": "evacuation",
+  "variant": "iso",
+  "title": "Office Floor",
+  "goal": "A practitioner can read the office floor artefact at a glance.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible YOU ARE HERE marker, legend, and two marked exits are present."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "Primary and secondary routes visibly lead from the marker to separate exits."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents a legible office escape plan with a YOU ARE HERE marker, distinct eastbound primary and westbound alternative routes, two final exits, and a complete legend. No material visible ambiguity or missing source requirement is apparent.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:46.784Z",
+      "targetHash": "c3e4022c64f8",
+      "sourceHash": "ad52b985cee8",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "A prominent YOU ARE HERE marker is visible in the Open Office, the legend is visible at right, and final-exit symbols and labels appear at both West Stair and East Stair."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The routes share the initial descent from the marker into the corridor, then visibly separate: the primary route runs east to the East Stair exit while the alternative route runs west to the West Stair exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Green route bands and directional arrowheads make the movement from the Open Office through the corridor to each exit easy to follow at a glance."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Open Office, Corridor, West Stair, East Stair, YOU ARE HERE, FINAL EXIT, extinguisher class ABC, and ASSEMBLY POINT labels are legible and positioned with their corresponding elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Route geometry and arrow directions consistently indicate the intended corridor split, with no visible line or symbol suggesting an unintended destination or connection."
+        }
+      ]
+    }
+  }
+}

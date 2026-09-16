@@ -1,0 +1,969 @@
+{
+  "type": "network",
+  "variant": null,
+  "exemplar": "network",
+  "style": "Every device is a white body outlined #304b60 at 2.5 with 3-unit corners; screens, drive bays and trays are #e4edf2 panels outlined #304b60 at 1.5; ports are solid #304b60 blocks and detail lines are #304b60 at 2 with round caps. Each icon carries at most one teal #087d92 accent (a status dot, wave or arrowhead) and only when it shows activity. Firewalls alone are brick: #fff2df fill, #985921 outline and courses. Icons have no lettering except conventional tags (NVR, DVR, PoE, GW) in bold Verdana #182b3b. Sizes follow the exemplar 1:1 — switch 112 x 42, server 60 x 76, PC 90 x 71, firewall 108 x 60 — rack equipment wide and short, standalone equipment upright.",
+  "symbols": [
+    {
+      "id": "server",
+      "label": "Server",
+      "file": "server.svg",
+      "engine": "server",
+      "dsl": [
+        "server"
+      ],
+      "standard": "Cisco icon convention (tower / rack server with face slots); no formal standard",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 530,
+      "notes": "Copied from the exemplar: an upright 60 x 76 body, two drive bays each with a teal activity light, and a bezel line. The engine draws this form."
+    },
+    {
+      "id": "pc",
+      "label": "Desktop workstation",
+      "file": "pc.svg",
+      "engine": "pc",
+      "dsl": [
+        "pc",
+        "workstation"
+      ],
+      "standard": "Cisco icon convention (monitor on a stand); no formal standard",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 408,
+      "notes": "Copied from the exemplar: a 90 x 56 monitor with an unframed screen panel, on a 3-unit stand and foot. No accent: a workstation has no status to show."
+    },
+    {
+      "id": "switch",
+      "label": "Layer 2 switch",
+      "file": "switch.svg",
+      "engine": "switch",
+      "dsl": [
+        "switch"
+      ],
+      "standard": "Cisco icon convention (rack face with port sockets); no formal standard",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 388,
+      "notes": "Copied from the exemplar: a wide 112 x 42 1U face with four solid port blocks and a teal link light. The engine draws this form."
+    },
+    {
+      "id": "firewall",
+      "label": "Firewall",
+      "file": "firewall.svg",
+      "engine": "firewall",
+      "dsl": [
+        "firewall"
+      ],
+      "standard": "Cisco icon convention (brick wall); no formal standard",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": 351,
+      "notes": "Copied from the exemplar: a 108 x 60 brick wall of three offset courses in the warm brick palette, the only icon allowed a colour other than slate and teal, so the security boundary is findable at a glance. The engine draws this form."
+    },
+    {
+      "id": "router",
+      "label": "Router",
+      "file": "router.svg",
+      "engine": "router",
+      "dsl": [
+        "router"
+      ],
+      "standard": "Cisco icon convention (puck with two arrows in and two arrows out); no formal standard",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 259,
+      "notes": "Not in the exemplar. The Cisco router puck seen from the front: an 84 x 48 rounded body the width of a PC, with the conventional crossed arrows, two pointing in and two out, in the slate 2 detail weight. Only the outbound heads are teal, the one accent: forwarding is what a router does. Rounded ends (rx 24) keep it from being mistaken for a switch face at a glance."
+    },
+    {
+      "id": "database",
+      "label": "Database server",
+      "file": "database.svg",
+      "engine": "database",
+      "dsl": [
+        "database",
+        "db",
+        "dbserver"
+      ],
+      "standard": "Flowchart and C4 convention (cylinder); ISO 5807 §9.2.2.2 direct-access storage is the same cylinder; no network-specific standard",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 146,
+      "notes": "A database server uses a 64 x 76 cylinder beside the 60 x 76 server, with a white body, two panel-weight disk rings and a teal activity dot. The engine draws this form; database, db and dbserver select it."
+    },
+    {
+      "id": "internet",
+      "label": "Internet",
+      "file": "internet.svg",
+      "engine": "internet",
+      "dsl": [
+        "internet"
+      ],
+      "standard": "Network cloud convention with a globe for the public Internet; §2.4 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 434,
+      "notes": "A broad cloud contains a small globe, so the public network reads without lettering. The engine draws a globe above the device name inside the cloud."
+    },
+    {
+      "id": "l3switch",
+      "label": "Layer 3 switch",
+      "file": "l3switch.svg",
+      "engine": "l3switch",
+      "dsl": [
+        "l3switch",
+        "multilayer"
+      ],
+      "standard": "Cisco convention: rack switch with routing arrows; §2.1 / §3",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 261,
+      "notes": "The seed switch face carries three sockets and opposing routing arrows. The engine draws this form."
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud network",
+      "file": "cloud.svg",
+      "engine": "cloud",
+      "dsl": [
+        "cloud"
+      ],
+      "standard": "Network cloud abstraction; §2.4 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 224,
+      "notes": "An unmarked cloud represents an unspecified provider or network. The engine draws a cloud with the device name inside it, using the theme cloud fill."
+    },
+    {
+      "id": "ap",
+      "label": "Wireless access point",
+      "file": "ap.svg",
+      "engine": "ap",
+      "dsl": [
+        "ap",
+        "wifi"
+      ],
+      "standard": "Cisco convention: access-point puck with radio arcs; §2.1 / §3",
+      "sourceUrl": "https://www.cisco.com/c/en/us/about/brand-center/network-topology-icons.html",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 209,
+      "notes": "A low rounded access-point puck sits below two radio arcs. Only the outer transmitting arc is teal in the library. The engine draws this form."
+    },
+    {
+      "id": "storage",
+      "label": "Rack storage array",
+      "file": "storage.svg",
+      "engine": "storage",
+      "dsl": [
+        "storage"
+      ],
+      "standard": "Rack storage array convention; §2.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 168,
+      "notes": "A wide rack face holds four tall removable drive caddies with pull handles. The engine draws this form."
+    },
+    {
+      "id": "laptop",
+      "label": "Laptop",
+      "file": "laptop.svg",
+      "engine": "laptop",
+      "dsl": [
+        "laptop"
+      ],
+      "standard": "Clamshell computer convention; §2.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 151,
+      "notes": "A screen hinges onto a flared keyboard deck, giving a clamshell outline smaller than the desktop PC. The engine draws this form."
+    },
+    {
+      "id": "camera-fixed",
+      "label": "Fixed box camera",
+      "file": "camera-fixed.svg",
+      "engine": "camera",
+      "dsl": [
+        "camera cam type: fixed"
+      ],
+      "standard": "Box camera silhouette; §2.3 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 115,
+      "notes": "A square-ended camera body projects a separate lens barrel and rests on a pedestal bracket. The engine draws this form. Usage is shared across the camera family."
+    },
+    {
+      "id": "camera-bullet",
+      "label": "Bullet camera",
+      "file": "camera-bullet.svg",
+      "engine": "camera",
+      "dsl": [
+        "camera cam type: bullet"
+      ],
+      "standard": "Weatherproof bullet camera silhouette; §2.3 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 115,
+      "notes": "A long angled barrel has a projecting sun hood and an articulated wall mount. The engine draws this form. Usage is shared across the camera family."
+    },
+    {
+      "id": "camera-dome",
+      "label": "Dome camera",
+      "file": "camera-dome.svg",
+      "engine": "camera",
+      "dsl": [
+        "camera cam type: dome"
+      ],
+      "standard": "Ceiling dome camera silhouette; §2.3 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 115,
+      "notes": "A shallow ceiling rim covers one smooth hemispherical bubble with a recessed lens. The engine draws this form. Usage is shared across the camera family."
+    },
+    {
+      "id": "camera-ptz",
+      "label": "Pan-tilt-zoom camera",
+      "file": "camera-ptz.svg",
+      "engine": "camera",
+      "dsl": [
+        "camera cam type: ptz"
+      ],
+      "standard": "Pendant PTZ camera with wall arm; §2.3 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 115,
+      "notes": "A wall arm suspends a tall motor housing above a rounded moving camera head. The engine draws this form. Usage is shared across the camera family."
+    },
+    {
+      "id": "camera-turret",
+      "label": "Turret camera",
+      "file": "camera-turret.svg",
+      "engine": "camera",
+      "dsl": [
+        "camera cam type: turret"
+      ],
+      "standard": "Exposed eyeball turret camera silhouette; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 115,
+      "notes": "An exposed spherical camera protrudes below a stepped socket mount, with its lens aimed off-center. The engine draws this form. Usage is shared across the camera family."
+    },
+    {
+      "id": "printer",
+      "label": "Network printer",
+      "file": "printer.svg",
+      "engine": "printer",
+      "dsl": [
+        "printer"
+      ],
+      "standard": "Printer body with paper and output tray; §2.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": 113,
+      "notes": "Paper rises above the printer body and an output sheet projects below its dark tray. The engine draws this form."
+    },
+    {
+      "id": "ipphone",
+      "label": "IP desk phone",
+      "file": "ipphone.svg",
+      "engine": "ipphone",
+      "dsl": [
+        "ipphone",
+        "voip"
+      ],
+      "standard": "Desk telephone with handset, display and keypad; §2.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 84,
+      "notes": "A sloping desk base carries a shaped handset, screen and keypad. The engine draws this form."
+    },
+    {
+      "id": "gateway",
+      "label": "Network gateway",
+      "file": "gateway.svg",
+      "engine": "gateway",
+      "dsl": [
+        "gateway"
+      ],
+      "standard": "Router puck with conventional GW tag; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 78,
+      "notes": "The seed router puck carries a bold GW tag between small forwarding arrows. The engine draws this form."
+    },
+    {
+      "id": "poeswitch",
+      "label": "Power-over-Ethernet switch",
+      "file": "poeswitch.svg",
+      "engine": "poeswitch",
+      "dsl": [
+        "poeswitch"
+      ],
+      "standard": "Switch face with conventional PoE tag; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 75,
+      "notes": "The seed switch face keeps three full-size sockets and a clear PoE tag. The engine draws this form."
+    },
+    {
+      "id": "loadbalancer",
+      "label": "Load balancer",
+      "file": "loadbalancer.svg",
+      "engine": "loadbalancer",
+      "dsl": [
+        "loadbalancer",
+        "lb"
+      ],
+      "standard": "Appliance with traffic fan-out arrows; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 74,
+      "notes": "A rack appliance splits one incoming path into three outgoing arrows. The engine draws this form."
+    },
+    {
+      "id": "monitor",
+      "label": "Security monitor",
+      "file": "monitor.svg",
+      "engine": "monitor",
+      "dsl": [
+        "monitor",
+        "videowall"
+      ],
+      "standard": "CCTV display with tiled feeds; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 67,
+      "notes": "A desktop security monitor shows four separate feed panels on a broad pedestal. The engine draws this form."
+    },
+    {
+      "id": "nvr",
+      "label": "Network video recorder",
+      "file": "nvr.svg",
+      "engine": "nvr",
+      "dsl": [
+        "nvr"
+      ],
+      "standard": "Recorder rack face with disk glyph and NVR tag; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 66,
+      "notes": "A low recorder face carries a disk platter, NVR tag and one Ethernet socket. The engine draws this form."
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile phone",
+      "file": "mobile.svg",
+      "engine": "mobile",
+      "dsl": [
+        "mobile",
+        "phone"
+      ],
+      "standard": "Portrait smartphone silhouette; §2.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 61,
+      "notes": "A 30 by 54 handset with an inset screen is visibly smaller than the seed PC. The engine draws this form."
+    },
+    {
+      "id": "vpngw",
+      "label": "VPN gateway",
+      "file": "vpngw.svg",
+      "engine": "vpngw",
+      "dsl": [
+        "vpngw"
+      ],
+      "standard": "Router puck with tunnel lock; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 51,
+      "notes": "A router puck encloses a padlock between two tunnel paths. The engine draws this form."
+    },
+    {
+      "id": "serverfarm",
+      "label": "Server farm",
+      "file": "serverfarm.svg",
+      "engine": "serverfarm",
+      "dsl": [
+        "serverfarm",
+        "servers"
+      ],
+      "standard": "Three offset server towers; §2.2 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 49,
+      "notes": "Three offset towers retain the exact seed server dimensions, drive bays and bezel line. The engine draws this form."
+    },
+    {
+      "id": "modem",
+      "label": "Modem",
+      "file": "modem.svg",
+      "engine": "modem",
+      "dsl": [
+        "modem"
+      ],
+      "standard": "Standalone modem with signal waveform; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 34,
+      "notes": "A slim upright modem on a foot carries a waveform and one cable socket. The engine draws this form."
+    },
+    {
+      "id": "wan",
+      "label": "Wide-area network",
+      "file": "wan.svg",
+      "engine": "wan",
+      "dsl": [
+        "wan"
+      ],
+      "standard": "Network cloud abstraction with connected remote sites; §2.4",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 21,
+      "notes": "A cloud contains three linked site nodes spread across its width. The engine draws three linked nodes above the device name inside the cloud."
+    },
+    {
+      "id": "wlc",
+      "label": "Wireless LAN controller",
+      "file": "wlc.svg",
+      "engine": "wlc",
+      "dsl": [
+        "wlc"
+      ],
+      "standard": "Controller rack with AP and radio glyph; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 20,
+      "notes": "A rack controller contains a miniature access-point puck under radio arcs, alongside two ports. The engine draws this form."
+    },
+    {
+      "id": "ids",
+      "label": "Intrusion detection appliance",
+      "file": "ids.svg",
+      "engine": "ids",
+      "dsl": [
+        "ids",
+        "ips"
+      ],
+      "standard": "Security appliance with shield and eye; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 20,
+      "notes": "A rack face holds a shield with a watching eye, expressing inspection and protection. The engine draws this form."
+    },
+    {
+      "id": "proxy",
+      "label": "Proxy appliance",
+      "file": "proxy.svg",
+      "engine": "proxy",
+      "dsl": [
+        "proxy"
+      ],
+      "standard": "Intermediary appliance with bidirectional traffic; §2.1",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 17,
+      "notes": "Two opposing paths cross a pale intermediary panel inside a rack face. The engine draws this form."
+    },
+    {
+      "id": "lan",
+      "label": "LAN segment",
+      "file": "lan.svg",
+      "engine": "lan",
+      "dsl": [
+        "lan",
+        "segment"
+      ],
+      "standard": "Shared Ethernet bus bar with host drops; §2.4 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 10,
+      "notes": "A horizontal bus has three perpendicular drops ending in small host attachment ticks. The engine draws this form."
+    },
+    {
+      "id": "dvr",
+      "label": "Digital video recorder",
+      "file": "dvr.svg",
+      "engine": "dvr",
+      "dsl": [
+        "dvr"
+      ],
+      "standard": "Recorder with disk glyph, DVR tag and coax connectors; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 5,
+      "notes": "A recorder face pairs a disk platter and DVR tag with two round coax sockets. The engine draws this form."
+    },
+    {
+      "id": "encoder",
+      "label": "Video encoder",
+      "file": "encoder.svg",
+      "engine": "encoder",
+      "dsl": [
+        "encoder",
+        "decoder"
+      ],
+      "standard": "Video conversion box with play triangle; §2.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 5,
+      "notes": "A compact inline box converts a round coax socket to a square network port around a video triangle. The engine draws this form."
+    },
+    {
+      "id": "pstn",
+      "label": "Public telephone network",
+      "file": "pstn.svg",
+      "engine": "pstn",
+      "dsl": [
+        "pstn"
+      ],
+      "standard": "Telephone network cloud with receiver; §2.4",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 4,
+      "notes": "A broad cloud encloses a telephone receiver, identifying the public voice network. The engine draws a receiver above the device name inside the cloud."
+    },
+    {
+      "id": "hypervisor",
+      "label": "Hypervisor host",
+      "file": "hypervisor.svg",
+      "engine": "hypervisor",
+      "dsl": [
+        "hypervisor"
+      ],
+      "standard": "Host enclosure carrying stacked virtual-machine tiles; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 66,
+      "notes": "An upright host enclosure carries three overlapping virtual-machine tiles above a physical drive bay. The combination reads as several guests on one host rather than three physical servers."
+    },
+    {
+      "id": "nas",
+      "label": "Desktop NAS",
+      "file": "nas.svg",
+      "engine": "nas",
+      "dsl": [
+        "nas"
+      ],
+      "standard": "Upright multi-bay desktop storage enclosure; proposed distinct NAS kind",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 56,
+      "notes": "A small upright enclosure holds three vertical drive caddies and two short feet. Its tower proportions and narrow bays separate it from the broad rack storage array and the connected SAN shelves."
+    },
+    {
+      "id": "wireless-bridge",
+      "label": "Point-to-point wireless bridge",
+      "file": "wireless-bridge.svg",
+      "engine": "wireless-bridge",
+      "dsl": [
+        "wireless-bridge"
+      ],
+      "standard": "Mast-mounted directional panel radio; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 51,
+      "notes": "A tall directional panel is clamped to a mast and emits a narrow pair of side-facing radio arcs. The panel and mast distinguish a point-to-point radio from a ceiling access point or satellite dish."
+    },
+    {
+      "id": "container",
+      "label": "Software container",
+      "file": "container.svg",
+      "engine": "container",
+      "dsl": [
+        "container"
+      ],
+      "standard": "Isometric ribbed container glyph; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 36,
+      "notes": "A compact isometric container has ribbed side panels and a closed lid. The crate silhouette represents an isolated software workload without adding another server tower or brand logo."
+    },
+    {
+      "id": "cellular-router",
+      "label": "Cellular router",
+      "file": "cellular-router.svg",
+      "engine": "cellular-router",
+      "dsl": [
+        "cellular-router"
+      ],
+      "standard": "Router puck with antenna and cellular signal; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 34,
+      "notes": "A router puck carries an external whip antenna and ascending signal bars. The antenna and cellular reception glyph distinguish it from both the seed router and the access point."
+    },
+    {
+      "id": "satellite-terminal",
+      "label": "Satellite terminal",
+      "file": "satellite-terminal.svg",
+      "engine": "satellite-terminal",
+      "dsl": [
+        "satellite-terminal"
+      ],
+      "standard": "Parabolic dish with feed arm and pedestal; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 34,
+      "notes": "A tilted parabolic dish points toward a feed horn above a tripod-like pedestal. Its curved bowl and offset feed separate it from the flat directional wireless panel."
+    },
+    {
+      "id": "access-control",
+      "label": "Door access controller",
+      "file": "access-control.svg",
+      "engine": "access-control",
+      "dsl": [
+        "access-control"
+      ],
+      "standard": "Door controller enclosure with separate card reader; §2.3 deferred role",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 27,
+      "notes": "An upright door controller is wired to a narrow card reader, with a card entering its slot. The two connected enclosures show access control rather than a generic server or handheld payment terminal."
+    },
+    {
+      "id": "iot-sensor",
+      "label": "IoT sensor",
+      "file": "iot-sensor.svg",
+      "engine": "iot-sensor",
+      "dsl": [
+        "iot-sensor"
+      ],
+      "standard": "Small sensing enclosure with probe and radio signal; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 26,
+      "notes": "A small upright sensor has a projecting probe, vent slots and one radio wave. Its 32-unit body stays smaller than a phone or computer, fitting an endpoint rather than infrastructure equipment."
+    },
+    {
+      "id": "display",
+      "label": "Wall display / TV",
+      "file": "display.svg",
+      "engine": "display",
+      "dsl": [
+        "display"
+      ],
+      "standard": "Wide standless wall display; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 23,
+      "notes": "A 110 by 54 wall display has a thin bezel and no stand. It is wider and shallower than the seed PC, and lacks the mounting ears and thick industrial bezel of the HMI."
+    },
+    {
+      "id": "san",
+      "label": "Storage area network",
+      "file": "san.svg",
+      "engine": "san",
+      "dsl": [
+        "san"
+      ],
+      "standard": "Connected storage shelves and fabric backbone; proposed distinct SAN kind",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 21,
+      "notes": "Two shallow storage shelves connect to an external fabric backbone, making a network of arrays rather than one box. This is deliberately broader and more complex than the single storage rack face or desktop NAS."
+    },
+    {
+      "id": "olt",
+      "label": "Optical line terminal",
+      "file": "olt.svg",
+      "engine": "olt",
+      "dsl": [
+        "olt"
+      ],
+      "standard": "Rack optical headend with PON fan-out; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 18,
+      "notes": "A rack headend has mounting ears, paired narrow optical cages and a one-to-many optical distribution mark. The cages and rack ears separate it from the seed Ethernet switch and small upright ONT."
+    },
+    {
+      "id": "ont",
+      "label": "Optical network terminal",
+      "file": "ont.svg",
+      "engine": "ont",
+      "dsl": [
+        "ont"
+      ],
+      "standard": "Compact subscriber optical terminal; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 18,
+      "notes": "A small upright subscriber box pairs a round optical termination with one Ethernet port. Its narrow enclosure and optical jack distinguish it from the rack OLT, switch and waveform-bearing modem."
+    },
+    {
+      "id": "pbx",
+      "label": "Private telephone exchange",
+      "file": "pbx.svg",
+      "engine": "pbx",
+      "dsl": [
+        "pbx"
+      ],
+      "standard": "Telephone exchange rack with receiver and extension ports; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 15,
+      "notes": "A rack exchange carries a horizontal telephone receiver and three extension sockets. The handset identifies voice switching without a device-name label."
+    },
+    {
+      "id": "tablet",
+      "label": "Tablet",
+      "file": "tablet.svg",
+      "engine": "tablet",
+      "dsl": [
+        "tablet"
+      ],
+      "standard": "Larger portrait touch slate; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 15,
+      "notes": "A broad portrait slate has a large inset screen and a small camera dot. It is larger than the narrow phone but smaller than the PC, with no stand or industrial mounting ears."
+    },
+    {
+      "id": "plc",
+      "label": "DIN-rail PLC",
+      "file": "plc.svg",
+      "engine": "plc",
+      "dsl": [
+        "plc"
+      ],
+      "standard": "Industrial DIN-rail controller with ribbed I/O modules; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 13,
+      "notes": "A controller and two narrow ribbed I/O modules clip onto a visible DIN rail. Top and bottom terminal blocks and the modular silhouette distinguish it from rack switches and server towers."
+    },
+    {
+      "id": "ups",
+      "label": "Uninterruptible power supply",
+      "file": "ups.svg",
+      "engine": "ups",
+      "dsl": [
+        "ups"
+      ],
+      "standard": "Upright battery backup enclosure; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 12,
+      "notes": "An upright UPS carries a small status display, a horizontal battery with its terminal nub and a lightning bolt, and lower ventilation slots. The battery face distinguishes power equipment from a server's drive bays."
+    },
+    {
+      "id": "hmi",
+      "label": "Industrial touch panel",
+      "file": "hmi.svg",
+      "engine": "hmi",
+      "dsl": [
+        "hmi"
+      ],
+      "standard": "Panel-mount industrial touchscreen with mounting ears; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 9,
+      "notes": "A thick industrial bezel with side mounting ears encloses a touch screen and two physical keys. Its compact panel proportions and lack of a stand separate it from the PC, while the heavy bezel separates it from the thin wall display."
+    },
+    {
+      "id": "media-converter",
+      "label": "Fiber media converter",
+      "file": "media-converter.svg",
+      "engine": "media-converter",
+      "dsl": [
+        "media-converter"
+      ],
+      "standard": "Small inline Ethernet-to-fiber conversion box; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 8,
+      "notes": "A small inline box has a large copper jack on one end and paired optical sockets on the other. A two-way arrow expresses media conversion and keeps it distinct from the video encoder."
+    },
+    {
+      "id": "pos-terminal",
+      "label": "Point-of-sale terminal",
+      "file": "pos-terminal.svg",
+      "engine": "pos-terminal",
+      "dsl": [
+        "pos-terminal"
+      ],
+      "standard": "Payment keypad terminal with inserted card; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 8,
+      "notes": "A tapered payment terminal has a screen, keypad and a card projecting from the bottom slot. The card and wedge outline distinguish it from the mobile phone and separate door-access reader."
+    },
+    {
+      "id": "patch-panel",
+      "label": "Passive patch panel",
+      "file": "patch-panel.svg",
+      "engine": "patch-panel",
+      "dsl": [
+        "patch-panel"
+      ],
+      "standard": "Passive rack patch field with mounting ears and sockets; proposed library convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": 5,
+      "notes": "A particularly shallow rack strip has mounting ears and a continuous row of six sockets. It has no activity accent because it is passive, and its 26-unit height separates it from the powered switch."
+    },
+    {
+      "id": "link-copper",
+      "label": "Copper Ethernet link",
+      "file": "link-copper.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : copper",
+        "a -- b : ethernet"
+      ],
+      "standard": "Solid copper link; §2.6 / §3, exemplar .wire",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A 120-unit solid slate wire joins two short end ticks. Its 3-unit weight and copper color are copied from the exemplar."
+    },
+    {
+      "id": "link-fiber",
+      "label": "Optical fiber link",
+      "file": "link-fiber.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : fiber"
+      ],
+      "standard": "Thicker optical fiber link; §2.6 / §3, exemplar .fiber",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A 120-unit teal line joins two short slate end ticks. The exemplar's 5-unit optical-link weight distinguishes fiber from copper."
+    },
+    {
+      "id": "link-wireless",
+      "label": "Wireless link",
+      "file": "link-wireless.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : wireless"
+      ],
+      "standard": "Dashed radio link; §2.6 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A 120-unit dashed path joins two short ticks. It uses the copper stroke weight, with open gaps identifying a radio connection."
+    },
+    {
+      "id": "link-vpn",
+      "label": "VPN tunnel link",
+      "file": "link-vpn.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : vpn"
+      ],
+      "standard": "Dashed encrypted tunnel with lock; §2.6 / §3, horizontal catalog sample",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two dashed runs span 120 units around a small central padlock. The lock identifies a tunnel rather than wireless transport; the catalog sample stays horizontal instead of the standard's routed arc."
+    },
+    {
+      "id": "link-lag",
+      "label": "Aggregated link",
+      "file": "link-lag.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : lag",
+        "a -- b : portchannel"
+      ],
+      "standard": "Double-line link aggregation; §2.6 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two parallel copper-weight lines span the same 120 units between shared end ticks. The visible gap distinguishes link aggregation from the single heavy fiber stroke."
+    },
+    {
+      "id": "link-poe",
+      "label": "Power-over-Ethernet link",
+      "file": "link-poe.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : poe"
+      ],
+      "standard": "Copper link with power bolt; §2.6 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A copper line spans 120 units with a small solid power bolt centered in a clear gap. The bolt distinguishes powered Ethernet without adding a second color or a text label."
+    },
+    {
+      "id": "link-serial",
+      "label": "Serial / leased circuit",
+      "file": "link-serial.svg",
+      "engine": null,
+      "dsl": [
+        "a -- b : serial",
+        "a -- b : wan"
+      ],
+      "standard": "Serial circuit with zigzag tick; §2.6 / §3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A continuous 120-unit copper path bends through a small central zigzag. The open stroked zigzag stays distinct from the filled power bolt on the PoE link."
+    }
+  ]
+}

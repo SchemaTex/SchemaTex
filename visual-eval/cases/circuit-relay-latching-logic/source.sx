@@ -1,0 +1,9 @@
+circuit "Latching Relay Start Stop Logic" netlist
+V1 L24 COM value="24 V DC" label="PS1 24 VDC"
+S0 L24 STOP type=push_nc value="STOP NC" label="S0 STOP"
+S1 STOP START type=push_no value="START NO" label="S1 START"
+K1 START COM type=relay_coil value="24 VDC" label="K1 LATCH COIL"
+K1A STOP START type=relay_no value="K1 seal-in" label="K1 NO SEAL-IN"
+K1B START COM L24 COM LOAD type=relay_spdt value="K1 changeover" label="K1 CO CONTACT"
+H1 LOAD COM type=pilot_light value="Green 24 VDC" label="H1 LATCHED"
+L1 LOAD COM type=lamp value="24 VDC, 2 W" label="L1 LOAD"

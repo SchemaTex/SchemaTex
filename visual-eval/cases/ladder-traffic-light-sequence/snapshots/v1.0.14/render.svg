@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="430.4" height="851" viewBox="0 0 430.4 851"><title>Traffic Light Sequence</title>
+<desc>PLC ladder logic diagram with 7 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="215.2" y="20" class="lt-ladder-title" text-anchor="middle">Traffic Light Sequence</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="821" class="lt-ladder-rail"/>
+<line x1="400.4" y1="0" x2="400.4" y2="821" class="lt-ladder-rail"/>
+<text x="54" y="132" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Green phase timer —</text>
+<text x="54" y="223" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="187" class="lt-ladder-comment">— Green lamp before timer done —</text>
+<text x="54" y="339" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="287" class="lt-ladder-comment">— Amber phase timer after green —</text>
+<text x="54" y="430" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="394" class="lt-ladder-comment">— Amber lamp during amber timer —</text>
+<text x="54" y="546" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="494" class="lt-ladder-comment">— Red phase timer after amber —</text>
+<text x="54" y="637" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="601" class="lt-ladder-comment">— Red lamp during red timer —</text>
+<text x="54" y="737" class="lt-ladder-rung-num">Rung 006</text>
+<text x="70" y="701" class="lt-ladder-comment">— Reset phase timers after red —</text>
+<path d="M 60 129 L 93.5 129" class="lt-ladder-wire"/>
+<path d="M 125.5 129 L 182.6 129" class="lt-ladder-wire"/>
+<path d="M 214.6 129 L 257.2 129" class="lt-ladder-wire"/>
+<path d="M 60 220 L 93.5 220" class="lt-ladder-wire"/>
+<path d="M 125.5 220 L 182.6 220" class="lt-ladder-wire"/>
+<path d="M 214.6 220 L 268.65 220" class="lt-ladder-wire"/>
+<path d="M 60 336 L 99.6 336" class="lt-ladder-wire"/>
+<path d="M 131.6 336 L 194.79999999999998 336" class="lt-ladder-wire"/>
+<path d="M 226.79999999999998 336 L 269.4 336" class="lt-ladder-wire"/>
+<path d="M 60 427 L 99.6 427" class="lt-ladder-wire"/>
+<path d="M 131.6 427 L 194.79999999999998 427" class="lt-ladder-wire"/>
+<path d="M 226.79999999999998 427 L 280.84999999999997 427" class="lt-ladder-wire"/>
+<path d="M 60 543 L 99.6 543" class="lt-ladder-wire"/>
+<path d="M 131.6 543 L 188.7 543" class="lt-ladder-wire"/>
+<path d="M 220.7 543 L 257.2 543" class="lt-ladder-wire"/>
+<path d="M 60 634 L 99.6 634" class="lt-ladder-wire"/>
+<path d="M 131.6 634 L 188.7 634" class="lt-ladder-wire"/>
+<path d="M 220.7 634 L 262.55 634" class="lt-ladder-wire"/>
+<path d="M 60 734 L 93.5 734" class="lt-ladder-wire"/>
+<path d="M 125.5 734 L 176.5 734" class="lt-ladder-wire"/>
+<path d="M 208.5 734 L 259.5 734" class="lt-ladder-wire"/>
+<path d="M 291.5 734 L 336.4 734" class="lt-ladder-wire"/>
+<path d="M 337.2 129 L 400.4 129" class="lt-ladder-wire"/>
+<path d="M 300.65 220 L 400.4 220" class="lt-ladder-wire"/>
+<path d="M 349.4 336 L 400.4 336" class="lt-ladder-wire"/>
+<path d="M 312.84999999999997 427 L 400.4 427" class="lt-ladder-wire"/>
+<path d="M 337.2 543 L 400.4 543" class="lt-ladder-wire"/>
+<path d="M 294.55 634 L 400.4 634" class="lt-ladder-wire"/>
+<path d="M 368.4 734 L 400.4 734" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="AutoEnable"><line x1="93.5" y1="129" x2="97.5" y2="129" class="lt-ladder-wire"/>
+<line x1="121.5" y1="129" x2="125.5" y2="129" class="lt-ladder-wire"/>
+<line x1="97.5" y1="117" x2="97.5" y2="141" class="lt-ladder-element"/>
+<line x1="121.5" y1="117" x2="121.5" y2="141" class="lt-ladder-element"/>
+<text x="109.5" y="113" class="lt-ladder-tag">AutoEnable</text></g>
+<g data-element="contact" data-tag="GreenTimer.Q"><line x1="182.6" y1="129" x2="186.6" y2="129" class="lt-ladder-wire"/>
+<line x1="210.6" y1="129" x2="214.6" y2="129" class="lt-ladder-wire"/>
+<line x1="186.6" y1="117" x2="186.6" y2="141" class="lt-ladder-element"/>
+<line x1="210.6" y1="117" x2="210.6" y2="141" class="lt-ladder-element"/>
+<line x1="188.6" y1="139" x2="208.6" y2="119" class="lt-ladder-element"/>
+<text x="198.6" y="113" class="lt-ladder-tag">GreenTimer.Q</text></g>
+<g data-element="function_block" data-tag="GreenTimer"><rect x="257.2" y="101" width="80" height="56" class="lt-ladder-fb"/>
+<text x="297.2" y="115" class="lt-ladder-fb-name">TON</text>
+<line x1="251.2" y1="129" x2="257.2" y2="129" class="lt-ladder-wire"/>
+<line x1="337.2" y1="129" x2="343.2" y2="129" class="lt-ladder-wire"/>
+<text x="261.2" y="129" class="lt-ladder-pin">PT=30000</text>
+<text x="297.2" y="97" class="lt-ladder-tag">GreenTimer</text></g>
+<g data-element="contact" data-tag="AutoEnable"><line x1="93.5" y1="220" x2="97.5" y2="220" class="lt-ladder-wire"/>
+<line x1="121.5" y1="220" x2="125.5" y2="220" class="lt-ladder-wire"/>
+<line x1="97.5" y1="208" x2="97.5" y2="232" class="lt-ladder-element"/>
+<line x1="121.5" y1="208" x2="121.5" y2="232" class="lt-ladder-element"/>
+<text x="109.5" y="204" class="lt-ladder-tag">AutoEnable</text></g>
+<g data-element="contact" data-tag="GreenTimer.Q"><line x1="182.6" y1="220" x2="186.6" y2="220" class="lt-ladder-wire"/>
+<line x1="210.6" y1="220" x2="214.6" y2="220" class="lt-ladder-wire"/>
+<line x1="186.6" y1="208" x2="186.6" y2="232" class="lt-ladder-element"/>
+<line x1="210.6" y1="208" x2="210.6" y2="232" class="lt-ladder-element"/>
+<line x1="188.6" y1="230" x2="208.6" y2="210" class="lt-ladder-element"/>
+<text x="198.6" y="204" class="lt-ladder-tag">GreenTimer.Q</text></g>
+<g data-element="coil" data-tag="GreenLamp"><path d="M 274.65 208 A 10 12 0 0 0 274.65 232" class="lt-ladder-coil"/>
+<path d="M 294.65 208 A 10 12 0 0 1 294.65 232" class="lt-ladder-coil"/>
+<line x1="268.65" y1="220" x2="274.65" y2="220" class="lt-ladder-wire"/>
+<line x1="294.65" y1="220" x2="300.65" y2="220" class="lt-ladder-wire"/>
+<text x="284.65" y="204" class="lt-ladder-tag">GreenLamp</text></g>
+<g data-element="contact" data-tag="GreenTimer.Q"><line x1="99.6" y1="336" x2="103.6" y2="336" class="lt-ladder-wire"/>
+<line x1="127.6" y1="336" x2="131.6" y2="336" class="lt-ladder-wire"/>
+<line x1="103.6" y1="324" x2="103.6" y2="348" class="lt-ladder-element"/>
+<line x1="127.6" y1="324" x2="127.6" y2="348" class="lt-ladder-element"/>
+<text x="115.6" y="320" class="lt-ladder-tag">GreenTimer.Q</text></g>
+<g data-element="contact" data-tag="AmberTimer.Q"><line x1="194.79999999999998" y1="336" x2="198.79999999999998" y2="336" class="lt-ladder-wire"/>
+<line x1="222.79999999999998" y1="336" x2="226.79999999999998" y2="336" class="lt-ladder-wire"/>
+<line x1="198.79999999999998" y1="324" x2="198.79999999999998" y2="348" class="lt-ladder-element"/>
+<line x1="222.79999999999998" y1="324" x2="222.79999999999998" y2="348" class="lt-ladder-element"/>
+<line x1="200.79999999999998" y1="346" x2="220.79999999999998" y2="326" class="lt-ladder-element"/>
+<text x="210.79999999999998" y="320" class="lt-ladder-tag">AmberTimer.Q</text></g>
+<g data-element="function_block" data-tag="AmberTimer"><rect x="269.4" y="308" width="80" height="56" class="lt-ladder-fb"/>
+<text x="309.4" y="322" class="lt-ladder-fb-name">TON</text>
+<line x1="263.4" y1="336" x2="269.4" y2="336" class="lt-ladder-wire"/>
+<line x1="349.4" y1="336" x2="355.4" y2="336" class="lt-ladder-wire"/>
+<text x="273.4" y="336" class="lt-ladder-pin">PT=4000</text>
+<text x="309.4" y="304" class="lt-ladder-tag">AmberTimer</text></g>
+<g data-element="contact" data-tag="GreenTimer.Q"><line x1="99.6" y1="427" x2="103.6" y2="427" class="lt-ladder-wire"/>
+<line x1="127.6" y1="427" x2="131.6" y2="427" class="lt-ladder-wire"/>
+<line x1="103.6" y1="415" x2="103.6" y2="439" class="lt-ladder-element"/>
+<line x1="127.6" y1="415" x2="127.6" y2="439" class="lt-ladder-element"/>
+<text x="115.6" y="411" class="lt-ladder-tag">GreenTimer.Q</text></g>
+<g data-element="contact" data-tag="AmberTimer.Q"><line x1="194.79999999999998" y1="427" x2="198.79999999999998" y2="427" class="lt-ladder-wire"/>
+<line x1="222.79999999999998" y1="427" x2="226.79999999999998" y2="427" class="lt-ladder-wire"/>
+<line x1="198.79999999999998" y1="415" x2="198.79999999999998" y2="439" class="lt-ladder-element"/>
+<line x1="222.79999999999998" y1="415" x2="222.79999999999998" y2="439" class="lt-ladder-element"/>
+<line x1="200.79999999999998" y1="437" x2="220.79999999999998" y2="417" class="lt-ladder-element"/>
+<text x="210.79999999999998" y="411" class="lt-ladder-tag">AmberTimer.Q</text></g>
+<g data-element="coil" data-tag="AmberLamp"><path d="M 286.84999999999997 415 A 10 12 0 0 0 286.84999999999997 439" class="lt-ladder-coil"/>
+<path d="M 306.84999999999997 415 A 10 12 0 0 1 306.84999999999997 439" class="lt-ladder-coil"/>
+<line x1="280.84999999999997" y1="427" x2="286.84999999999997" y2="427" class="lt-ladder-wire"/>
+<line x1="306.84999999999997" y1="427" x2="312.84999999999997" y2="427" class="lt-ladder-wire"/>
+<text x="296.84999999999997" y="411" class="lt-ladder-tag">AmberLamp</text></g>
+<g data-element="contact" data-tag="AmberTimer.Q"><line x1="99.6" y1="543" x2="103.6" y2="543" class="lt-ladder-wire"/>
+<line x1="127.6" y1="543" x2="131.6" y2="543" class="lt-ladder-wire"/>
+<line x1="103.6" y1="531" x2="103.6" y2="555" class="lt-ladder-element"/>
+<line x1="127.6" y1="531" x2="127.6" y2="555" class="lt-ladder-element"/>
+<text x="115.6" y="527" class="lt-ladder-tag">AmberTimer.Q</text></g>
+<g data-element="contact" data-tag="RedTimer.Q"><line x1="188.7" y1="543" x2="192.7" y2="543" class="lt-ladder-wire"/>
+<line x1="216.7" y1="543" x2="220.7" y2="543" class="lt-ladder-wire"/>
+<line x1="192.7" y1="531" x2="192.7" y2="555" class="lt-ladder-element"/>
+<line x1="216.7" y1="531" x2="216.7" y2="555" class="lt-ladder-element"/>
+<line x1="194.7" y1="553" x2="214.7" y2="533" class="lt-ladder-element"/>
+<text x="204.7" y="527" class="lt-ladder-tag">RedTimer.Q</text></g>
+<g data-element="function_block" data-tag="RedTimer"><rect x="257.2" y="515" width="80" height="56" class="lt-ladder-fb"/>
+<text x="297.2" y="529" class="lt-ladder-fb-name">TON</text>
+<line x1="251.2" y1="543" x2="257.2" y2="543" class="lt-ladder-wire"/>
+<line x1="337.2" y1="543" x2="343.2" y2="543" class="lt-ladder-wire"/>
+<text x="261.2" y="543" class="lt-ladder-pin">PT=30000</text>
+<text x="297.2" y="511" class="lt-ladder-tag">RedTimer</text></g>
+<g data-element="contact" data-tag="AmberTimer.Q"><line x1="99.6" y1="634" x2="103.6" y2="634" class="lt-ladder-wire"/>
+<line x1="127.6" y1="634" x2="131.6" y2="634" class="lt-ladder-wire"/>
+<line x1="103.6" y1="622" x2="103.6" y2="646" class="lt-ladder-element"/>
+<line x1="127.6" y1="622" x2="127.6" y2="646" class="lt-ladder-element"/>
+<text x="115.6" y="618" class="lt-ladder-tag">AmberTimer.Q</text></g>
+<g data-element="contact" data-tag="RedTimer.Q"><line x1="188.7" y1="634" x2="192.7" y2="634" class="lt-ladder-wire"/>
+<line x1="216.7" y1="634" x2="220.7" y2="634" class="lt-ladder-wire"/>
+<line x1="192.7" y1="622" x2="192.7" y2="646" class="lt-ladder-element"/>
+<line x1="216.7" y1="622" x2="216.7" y2="646" class="lt-ladder-element"/>
+<line x1="194.7" y1="644" x2="214.7" y2="624" class="lt-ladder-element"/>
+<text x="204.7" y="618" class="lt-ladder-tag">RedTimer.Q</text></g>
+<g data-element="coil" data-tag="RedLamp"><path d="M 268.55 622 A 10 12 0 0 0 268.55 646" class="lt-ladder-coil"/>
+<path d="M 288.55 622 A 10 12 0 0 1 288.55 646" class="lt-ladder-coil"/>
+<line x1="262.55" y1="634" x2="268.55" y2="634" class="lt-ladder-wire"/>
+<line x1="288.55" y1="634" x2="294.55" y2="634" class="lt-ladder-wire"/>
+<text x="278.55" y="618" class="lt-ladder-tag">RedLamp</text></g>
+<g data-element="contact" data-tag="RedTimer.Q"><line x1="93.5" y1="734" x2="97.5" y2="734" class="lt-ladder-wire"/>
+<line x1="121.5" y1="734" x2="125.5" y2="734" class="lt-ladder-wire"/>
+<line x1="97.5" y1="722" x2="97.5" y2="746" class="lt-ladder-element"/>
+<line x1="121.5" y1="722" x2="121.5" y2="746" class="lt-ladder-element"/>
+<text x="109.5" y="718" class="lt-ladder-tag">RedTimer.Q</text></g>
+<g data-element="coil" data-tag="GreenTimer"><path d="M 182.5 722 A 10 12 0 0 0 182.5 746" class="lt-ladder-coil"/>
+<path d="M 202.5 722 A 10 12 0 0 1 202.5 746" class="lt-ladder-coil"/>
+<line x1="176.5" y1="734" x2="182.5" y2="734" class="lt-ladder-wire"/>
+<line x1="202.5" y1="734" x2="208.5" y2="734" class="lt-ladder-wire"/>
+<text x="192.5" y="737" class="lt-ladder-symbol-label">R</text>
+<text x="192.5" y="718" class="lt-ladder-tag">GreenTimer</text></g>
+<g data-element="coil" data-tag="AmberTimer"><path d="M 265.5 722 A 10 12 0 0 0 265.5 746" class="lt-ladder-coil"/>
+<path d="M 285.5 722 A 10 12 0 0 1 285.5 746" class="lt-ladder-coil"/>
+<line x1="259.5" y1="734" x2="265.5" y2="734" class="lt-ladder-wire"/>
+<line x1="285.5" y1="734" x2="291.5" y2="734" class="lt-ladder-wire"/>
+<text x="275.5" y="737" class="lt-ladder-symbol-label">R</text>
+<text x="275.5" y="718" class="lt-ladder-tag">AmberTimer</text></g>
+<g data-element="coil" data-tag="RedTimer"><path d="M 342.4 722 A 10 12 0 0 0 342.4 746" class="lt-ladder-coil"/>
+<path d="M 362.4 722 A 10 12 0 0 1 362.4 746" class="lt-ladder-coil"/>
+<line x1="336.4" y1="734" x2="342.4" y2="734" class="lt-ladder-wire"/>
+<line x1="362.4" y1="734" x2="368.4" y2="734" class="lt-ladder-wire"/>
+<text x="352.4" y="737" class="lt-ladder-symbol-label">R</text>
+<text x="352.4" y="718" class="lt-ladder-tag">RedTimer</text></g></g></svg>

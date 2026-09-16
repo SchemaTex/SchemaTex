@@ -1,0 +1,18 @@
+# 74HC595 LED expander: Arduino drives serial data, clock and latch; each output feeds an LED through a resistor.
+breadboard
+board: half
+title: "74HC595 Eight LED Outputs"
+parts
+  uno: mcu uno @beside-left
+  ic1: dip pins=16 @15e
+  r1: resistor 220 @25a..29a
+  led1: led red @30a..30b
+wires
+  uno:5V --red-- ic1:16
+  uno:GND --black-- ic1:8
+  uno:11 --yellow-- ic1:14
+  uno:12 --green-- ic1:11
+  uno:10 --orange-- ic1:12
+  ic1:15 --purple-- @25a
+  @29a --purple-- @30a
+  led1:cathode --black-- uno:GND

@@ -39,6 +39,10 @@ import type {
   ThreatModelAst,
   TrustBoundary,
 } from "./types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#"];
 
 export class ThreatModelParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -64,17 +68,6 @@ function normalizeQuotes(text: string): string {
   let out = "";
   for (const ch of text) out += QUOTE_FOLD.get(ch) ?? ch;
   return out;
-}
-
-function stripComment(line: string): string {
-  // `#` starts a comment unless inside quotes.
-  let inQuote = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') inQuote = !inQuote;
-    else if (ch === "#" && !inQuote) return line.slice(0, i);
-  }
-  return line;
 }
 
 /** Strip a single layer of wrapping double quotes, if present. */
@@ -134,7 +127,7 @@ export function parseThreatModel(text: string): ThreatModelAst {
 
   // ── Header: `threatmodel`/`stride` (optional inline title) ──
   for (; i < rawLines.length; i++) {
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") continue;
     const h = /^(threatmodel|stride)\b(.*)$/i.exec(t);
     if (h) {
@@ -155,7 +148,7 @@ export function parseThreatModel(text: string): ThreatModelAst {
   // ── Body ──
   for (; i < rawLines.length; i++) {
     const lineNo = i + 1;
-    const t = stripComment(rawLines[i] ?? "").trim();
+    const t = stripLineComment(rawLines[i] ?? "", COMMENT_MARKERS).trim();
     if (t === "") continue;
 
     // title: "..."
@@ -228,7 +221,10 @@ export function parseThreatModel(text: string): ThreatModelAst {
       if (!name) {
         throw new ThreatModelParseError("Trust boundary has no name.", lineNo);
       }
-      const boundary: TrustBoundary = { name, members, line: lineNo };
+      if (ast.boundaries.some(boundary => boundary.name === name)) {
+        throw new ThreatModelParseError(`Duplicate trust boundary "${name}". Combine its members in one declaration.`, lineNo);
+      }
+      const boundary: TrustBoundary = { name, members: [...new Set(members)], line: lineNo };
       ast.boundaries.push(boundary);
       continue;
     }

@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { parseSLDDSL } from "../../src/diagrams/sld/parser";
 import { renderSLD } from "../../src/diagrams/sld/renderer";
+import { renderSymbol } from "../../src/diagrams/sld/symbols";
 import { lintSLD } from "../../src/diagrams/sld/lint";
 
 // ─── B-2: standard symbol switching (ANSI ↔ IEC ↔ ABNT ↔ AS-NZS) ──
@@ -38,21 +39,21 @@ describe("header parsing", () => {
 });
 
 describe("breaker glyph differs by standard", () => {
-  test("ANSI breaker draws the contact-arc (Q quarter-circle)", () => {
-    const svg = render("ansi");
-    expect(svg).toMatch(/Q\s*14\s*-12/);
+  test("ANSI breaker draws the contact-arc (A 4.5 4.5 hook)", () => {
+    const svg = renderSymbol("breaker", undefined, "ansi");
+    expect(svg).toMatch(/<path[^>]*d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125"/);
   });
   test("IEC breaker drops the arc and adds the × breaking mark", () => {
-    const svg = render("iec");
-    expect(svg).not.toMatch(/Q\s*14\s*-12/);
+    const svg = renderSymbol("breaker", undefined, "iec");
+    expect(svg).not.toMatch(/<path[^>]*d="[^"]*Q/);
     // the × is two crossing short strokes at the fixed contact
     expect(svg).toMatch(/y1="-13"/);
   });
 });
 
 describe("transformer glyph differs by standard", () => {
-  test("ANSI transformer uses coil humps (arc A 4 4)", () => {
-    expect(render("ansi")).toContain("A 4 4");
+  test("ANSI transformer uses coil humps (arc A 3 3)", () => {
+    expect(render("ansi")).toContain("A 3 3");
   });
   test("IEC transformer uses two interlinked circles (r=11)", () => {
     const svg = render("iec");
@@ -65,7 +66,7 @@ describe("fuse glyph differs by standard", () => {
   test("IEC fuse adds the conductor line through the body", () => {
     const ansi = render("ansi");
     const iec = render("iec");
-    // crude proxy: IEC fuse body is 22px tall (rect height 22), ANSI is 20
+    // crude proxy: IEC fuse body is 22px tall (rect height 22), ANSI is 30
     expect(iec).toContain('height="22"');
     expect(ansi).not.toContain('height="22"');
   });

@@ -1,0 +1,45 @@
+{
+  "id": "bowtie-confined-space-entry",
+  "type": "bowtie",
+  "title": "Confined-space entry",
+  "goal": "Show controls preventing hazardous-atmosphere exposure and mitigating its consequences.",
+  "rubric": [
+    {
+      "id": "hazard-event",
+      "severity": "blocker",
+      "must": "A named hazard and the central top event Entrant exposed to hazardous atmosphere are visible."
+    },
+    {
+      "id": "preventative",
+      "severity": "blocker",
+      "must": "Multiple labelled threats through preventative barriers visibly lead from the left to the top event."
+    },
+    {
+      "id": "mitigative",
+      "severity": "blocker",
+      "must": "Multiple labelled consequences through mitigative barriers visibly lead from the top event to the right."
+    },
+    {
+      "id": "escalation",
+      "severity": "major",
+      "must": "An escalation factor and its barrier are visibly attached beneath a named preventive barrier."
+    },
+    {
+      "id": "geometry",
+      "severity": "major",
+      "must": "The picture has a clear left-threat, central-event, right-consequence bowtie geometry."
+    },
+    {
+      "id": "barrier-labels",
+      "severity": "minor",
+      "must": "Individual barrier labels are readable and distinguish prevention from mitigation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/bowtie/ideal.svg (sha256 4484bd18b387). Exemplar role palette: orange threats, grey barriers, green top event, red consequences and yellow escalation factors. Existing scenario topology retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

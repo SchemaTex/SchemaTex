@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="656" viewBox="0 0 1600 656" role="img" aria-labelledby="title">
+  <title id="title">Database engine comparison</title>
+  <defs>
+    <g id="yes">
+      <circle r="16.5" fill="#E5F1EA" stroke="#2E7A4E" stroke-width="1.8"/>
+      <path d="M-7 0 L-2 5.5 L8 -6" fill="none" stroke="#2E7A4E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="partial">
+      <circle r="16.5" fill="#FAF0DC" stroke="#9A6A14" stroke-width="1.8"/>
+      <path d="M-8 2 C-5 -5 -2 -5 1 0 C4 5 6 4 8 -2" fill="none" stroke="#9A6A14" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="no">
+      <circle r="16.5" fill="#F7E5E5" stroke="#B03A3A" stroke-width="1.8"/>
+      <path d="M-5.5 -5.5 L5.5 5.5 M5.5 -5.5 L-5.5 5.5" fill="none" stroke="#B03A3A" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <rect width="1600" height="656" fill="#FFFFFF"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#1B2430">
+    <text x="80" y="96" font-size="37" font-weight="600">Database engine comparison</text>
+    <g font-size="24" font-weight="600" text-anchor="middle">
+      <text x="687" y="200">PostgreSQL</text>
+      <text x="1020" y="200">MongoDB</text>
+      <text x="1353" y="200">DynamoDB</text>
+    </g>
+    <path d="M80 228.5 H1520" stroke="#1B2430" stroke-width="2.4"/>
+    <rect x="80" y="304.5" width="1440" height="76.2" fill="#F4F6F9"/>
+    <rect x="80" y="457" width="1440" height="76.2" fill="#F4F6F9"/>
+    <g font-size="22" font-weight="500">
+      <text x="106" y="275">ACID transactions</text>
+      <text x="106" y="351">Flexible schema</text>
+      <text x="106" y="427.5">Complex joins</text>
+      <text x="106" y="503.5">Managed serverless option</text>
+    </g>
+    <g>
+      <use href="#yes" x="687" y="266.5"/>
+      <use href="#partial" x="1020" y="266.5"/>
+      <use href="#partial" x="1353" y="266.5"/>
+      <use href="#partial" x="687" y="342.6"/>
+      <use href="#yes" x="1020" y="342.6"/>
+      <use href="#yes" x="1353" y="342.6"/>
+      <use href="#yes" x="687" y="419"/>
+      <use href="#partial" x="1020" y="419"/>
+      <use href="#no" x="1353" y="419"/>
+      <use href="#partial" x="687" y="495.1"/>
+      <use href="#yes" x="1020" y="495.1"/>
+      <use href="#yes" x="1353" y="495.1"/>
+    </g>
+    <path d="M80 533.2 H1520" stroke="#CED6DF" stroke-width="1.5"/>
+    <g font-size="20" fill="#5F6B7A">
+      <use href="#yes" transform="translate(95 583) scale(.9)"/>
+      <text x="119" y="590">Yes</text>
+      <use href="#partial" transform="translate(207 583) scale(.9)"/>
+      <text x="231" y="590">Partly</text>
+      <use href="#no" transform="translate(339 583) scale(.9)"/>
+      <text x="363" y="590">No</text>
+    </g>
+  </g>
+</svg>

@@ -1,52 +1,29 @@
-import type { FishboneAST, FishboneCauseSide, FishboneNode } from "../../core/types";
-import { resolveFishboneTheme } from "../../core/theme";
-
-/**
- * Fishbone layout engine.
- *
- * Geometric contract (see 13-FISHBONE-STANDARD §5, §9):
- *  - Horizontal spine at `spineY`
- *  - Effect polygon at right (ltr) or left (rtl) end
- *  - Category ribs slant AWAY from the fish head (signature of Ishikawa form)
- *  - Ribs are paired top/bottom on the same X column for visual rhythm
- *  - Each rib hosts Level-1 causes as short horizontal branches toward the head
- *  - Rib length adapts to (max) cause count in its half so headers align
- *
- * This is an optimized v2 layout that improves on the naive fixed-slope design:
- *  1. Dynamic row heights — a Level-1 cause with N sub-causes reserves
- *     (baseRow + N·subRow) of vertical space so nothing overlaps.
- *  2. Per-half aligned headers — ribs in the same half share the same outer Y
- *     so category pills form a clean visual row.
- *  3. Column-pairing — top and bottom ribs share the same spine X.
- *  4. Smart canvas sizing — derives width/height from content, respecting
- *     optional user overrides from `config width = …` / `config height = …`.
- *  5. Label-aware extents — long cause labels extend the canvas rather than
- *     clipping, so multi-lingual / verbose content is first-class.
- *  6. Label bboxes exposed for the renderer to build a text-gap mask.
- */
-
-// ─── Public Types ─────────────────────────────────────────────
+import type { FishboneAST, FishboneNode } from "../../core/types";
+import { resolveFishboneTheme, TITLE } from "../../core/theme";
+import { estimateTextWidth, estimateMaxLineWidth, wrapTextToWidth } from "../../core/text-metrics";
+import { edgeLabelObstacles, placeLabel, type LabelBox } from "../../core/label-placement";
 
 export interface FishboneLayoutCause {
   label: string;
   sourceRange?: import("../../core/types").SourceRange;
   /** Rib index (0 = first category) */
   ribIndex: number;
-  /** Slot index on the rib (0 = closest to spine) */
+  /** Cause order from top to bottom on the page. */
   slotIndex: number;
-  /** Cause start point on the rib */
+  /** Horizontal rib start and end (the segment crosses the category bone). */
   ribX: number;
   ribY: number;
-  /** Horizontal branch end point (label starts just beyond) */
+  /** Horizontal rib end point. */
   branchX: number;
   branchY: number;
-  /** Label anchor (x where text starts, y baseline) */
+  /** Label anchor (x where text starts, y at the text centre). */
   labelX: number;
   labelY: number;
-  labelAnchor: "start" | "end";
+  labelLines: string[];
+  labelAnchor: "start";
   /** Direction this cause branch sticks out: "head" = toward head, "tail" = toward tail. */
   causeSide: "head" | "tail";
-  /** Sub-causes (Level 2) stacked below the main label */
+  /** Sub-causes extend outward from the parent branch. */
   subCauses: FishboneLayoutSubCause[];
 }
 
@@ -58,7 +35,9 @@ export interface FishboneLayoutSubCause {
   tickX1: number;
   tickX2: number;
   tickY: number;
-  anchor: "start" | "end";
+  stemY: number;
+  lines: string[];
+  anchor: "start";
 }
 
 export interface FishboneLayoutRib {
@@ -70,22 +49,15 @@ export interface FishboneLayoutRib {
   /** Where rib meets spine */
   spineX: number;
   spineY: number;
-  /** Far end of rib (where header pill sits) */
+  /** Far end of category bone. */
   endX: number;
   endY: number;
-  /** Header pill geometry */
+  /** Plain bold category text bounds. */
   headerX: number;
   headerY: number;
   headerW: number;
   headerH: number;
   causes: FishboneLayoutCause[];
-}
-
-export interface FishboneBBox {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
 }
 
 export interface FishboneLayoutResult {
@@ -95,482 +67,230 @@ export interface FishboneLayoutResult {
   spineY: number;
   spineStartX: number;
   spineEndX: number;
-  tailForkTipTop: { x: number; y: number };
-  tailForkTipBot: { x: number; y: number };
+  tail: { x: number; y: number; w: number; h: number };
   head: {
     x: number;          // spine-attached x
     y: number;          // spine-attached y (= spineY)
-    tipX: number;       // pointy tip
-    tipY: number;
     w: number;
     h: number;
     label: string;
+    lines: string[];
   };
   ribs: FishboneLayoutRib[];
-  /** Label bounding boxes (for text-gap mask) */
-  textBBoxes: FishboneBBox[];
   title?: string;
 }
 
-// ─── Geometry constants (tunable, exported for renderer parity) ──
-
+// Geometry is measured in SVG pixels at the existing 12px cause typography.
 export const FB_CONST = {
-  PADDING: 40,
-  HEAD_W: 90,
-  HEAD_H: 80,
-  TAIL_LEN: 40,
-  SPINE_OFFSET_FROM_TAIL: 40, // distance from canvas left to spine start
-  RIB_SLOPE: 0.6,             // dx/dy — consistent across all ribs
-  RIB_BASE_EXTENT_Y: 30,      // vertical distance of first slot from spine
-  ROW_HEIGHT: 30,             // vertical gap between Level-1 slots
-  SUB_ROW_HEIGHT: 17,
-  BRANCH_LEN: 30,             // horizontal Level-1 branch length
-  SUB_TICK_LEN: 10,
-  HEADER_W: 132,
-  HEADER_H: 34,
-  HEADER_GAP: 12,             // gap between rib endpoint and header pill
-  COL_STEP: 130,              // spine x gap between adjacent ribs
-  COL_FIRST_OFFSET: 170,      // first rib's distance from spine start
-  LABEL_FONT: 12,
-  HEADER_FONT: 14,
-  SUB_FONT: 11,
-  EFFECT_FONT: 14,
-  LABEL_GAP: 6,               // gap from branch end to label
-  MIN_ROWS_PER_HALF: 4,       // aesthetic minimum rib length
-  COL_GAP_BETWEEN_LABELS: 18, // min horizontal breathing between adjacent ribs' label columns
-  HEAD_PAD_X: 44,             // total horizontal padding around effect text inside head
-  HEAD_PAD_Y: 20,              // min vertical padding around effect text inside head
-  TITLE_CLEARANCE: 24,        // extra gap between title baseline and top header pill
-} as const;
-
-// ─── Default palette (13-FISHBONE-STANDARD §5.4) ─────────────
-
-
-// ─── Text measurement (CJK-aware approximation) ───────────────
-
-export function estimateTextWidth(s: string, fontSize: number): number {
-  let w = 0;
-  for (const ch of s) {
-    const cp = ch.codePointAt(0) ?? 0;
-    // CJK unified ideographs + kana + Hangul + fullwidth
-    const isWide =
-      (cp >= 0x3000 && cp <= 0x30ff) ||
-      (cp >= 0x3400 && cp <= 0x9fff) ||
-      (cp >= 0xac00 && cp <= 0xd7af) ||
-      (cp >= 0xff00 && cp <= 0xffef);
-    w += fontSize * (isWide ? 1.0 : 0.56);
-  }
-  return w;
-}
-
-// ─── Density presets ──────────────────────────────────────────
-
-interface DensityTunables {
-  rowHeight: number;
-  subRowHeight: number;
-  colStep: number;
-  headerW: number;
-  headerH: number;
-  headerGap: number;
-  minRowsPerHalf: number;
-  colFirstOffset: number;
-}
-
-const DENSITY: Record<"compact" | "normal" | "spacious", DensityTunables> = {
-  compact: {
-    rowHeight: 24,
-    subRowHeight: 15,
-    colStep: 110,
-    headerW: 118,
-    headerH: 30,
-    headerGap: 8,
-    minRowsPerHalf: 3,
-    colFirstOffset: 140,
-  },
-  normal: {
-    rowHeight: 30,
-    subRowHeight: 17,
-    colStep: 130,
-    headerW: 132,
-    headerH: 34,
-    headerGap: 12,
-    minRowsPerHalf: 4,
-    colFirstOffset: 170,
-  },
-  spacious: {
-    rowHeight: 36,
-    subRowHeight: 19,
-    colStep: 150,
-    headerW: 148,
-    headerH: 38,
-    headerGap: 16,
-    minRowsPerHalf: 5,
-    colFirstOffset: 200,
-  },
+  PADDING: 40, // Outer whitespace, including the tail and category labels.
+  HEAD_W: 274, // Width of the reusable effect symbol.
+  HEAD_H: 232,
+  EFFECT_TEXT_WIDTH: 144, // Interior clear of the gill and tapered nose.
+  EFFECT_LINE_HEIGHT: 22,
+  TAIL_LEN: 120, // Caudal fin extends left of the spine attachment.
+  TAIL_HALF_H: 58,
+  BONE_ANGLE_DEG: 45, // Equal horizontal and vertical reach.
+  BONE_MARGIN: 40, // Clear the spine and leave bone visible beyond the outer cause row.
+  ROW_GAP: 16, // Separate successive cause/sub-cause text rows and their ribs.
+  LINE_HEIGHT: 16, // Four pixels of leading for the existing 12px cause font.
+  SUB_LINE_HEIGHT: 14, // Three pixels of leading for the smaller 11px sub-cause font.
+  LABEL_WIDTH: 132, // About twenty Latin characters per cause line.
+  SUB_LABEL_WIDTH: 108, // Shorter wrapped text keeps sub-ribs shorter than their parent.
+  SUB_INDENT: 18, // A visible step inward from the parent rib's left end.
+  LABEL_GAP: 12, // Clears 4px shared padding plus the 8px sampled edge envelope.
+  RIB_CROSS: 8, // Extend beyond the category bone so contact is visibly unambiguous.
+  COLUMN_GAP: 24, // Whitespace between neighbouring parallel bone/text envelopes.
+  EFFECT_GAP: 48, // A short visible arrow run after the last V-junction.
+  HEADER_GAP: 12, // Separate plain category text from its bone tip.
+  LABEL_FONT: 12, // Preserve cause typography.
+  HEADER_FONT: 14, // Larger bold category names establish hierarchy.
+  SUB_FONT: 11, // Smaller text marks the subordinate level.
+  EFFECT_FONT: 15.5, // Semibold effect typography.
+  TITLE_BASELINE: 28, // Preserve the title position in the top margin.
+  TITLE_CLEARANCE: 44, // Reserve the title baseline above the category names.
 };
 
-// ─── Public API ───────────────────────────────────────────────
+// Density changes whitespace by 20%; text dimensions remain legible.
+const DENSITY = { compact: 0.8, normal: 1, spacious: 1.2 };
 
+/** Paired category bones share evenly spaced junctions and content-sized heights. */
 export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly string[] }): FishboneLayoutResult {
-  const majors = ast.majors.length > 0 ? ast.majors : [];
-  const nRibs = majors.length;
-
-  const density = ast.density ?? "normal";
-  const D = DENSITY[density];
-  const ribSlope = ast.ribSlope ?? FB_CONST.RIB_SLOPE;
-  const causeSideSetting: FishboneCauseSide = ast.causeSide ?? "head";
-  const sides = ast.sides ?? "both";
-
-  // Partition ribs into top/bottom halves honoring per-category `side` overrides
-  // and the `sides` setting. If a category has an explicit side, use it;
-  // otherwise fall back to the global `sides` default (single-sided layouts
-  // pin everything to that half; "both" alternates declaration order across
-  // the two halves as before).
-  const topMajors: FishboneNode[] = [];
-  const botMajors: FishboneNode[] = [];
-  if (sides === "top" || sides === "bottom") {
-    const bucket = sides === "top" ? topMajors : botMajors;
-    for (const m of majors) {
-      if (m.side === "top") topMajors.push(m);
-      else if (m.side === "bottom") botMajors.push(m);
-      else bucket.push(m);
-    }
-  } else {
-    const autoPool: FishboneNode[] = [];
-    for (const m of majors) {
-      if (m.side === "top") topMajors.push(m);
-      else if (m.side === "bottom") botMajors.push(m);
-      else autoPool.push(m);
-    }
-    // Greedy balance — push into whichever half currently has fewer ribs,
-    // ties → top (matches the prior "top gets the extra" rule).
-    for (const m of autoPool) {
-      if (topMajors.length <= botMajors.length) topMajors.push(m);
-      else botMajors.push(m);
-    }
-  }
-
-  // Respect per-rib `order` (lower = closer to tail). Stable sort within half.
-  const byOrder = (a: FishboneNode, b: FishboneNode): number => {
-    const ao = a.order ?? Number.POSITIVE_INFINITY;
-    const bo = b.order ?? Number.POSITIVE_INFINITY;
-    return ao - bo;
-  };
-  topMajors.sort(byOrder);
-  botMajors.sort(byOrder);
-
-  const nTop = topMajors.length;
-  const nBot = botMajors.length;
-  // Keep legacy var names alive
-  void nRibs;
-
-  // Row count per rib = max(subCauses) for that rib's Level-1 list.
-  // Extent per rib = sum of rowHeights for slots 0..n-1.
-  const ribRowHeights = (m: FishboneNode): number[] => {
-    if (m.children.length === 0) return [];
-    return m.children.map(
-      (c) => D.rowHeight + c.children.length * D.subRowHeight
-    );
-  };
-
-  const topExtents = topMajors.map((m) =>
-    sumOrMin(ribRowHeights(m), D.minRowsPerHalf * D.rowHeight)
-  );
-  const botExtents = botMajors.map((m) =>
-    sumOrMin(ribRowHeights(m), D.minRowsPerHalf * D.rowHeight)
-  );
-
-  // ── Head sizing (computed early so it can influence half-extent padding) ──
-  const effectTextW = estimateTextWidth(ast.effect, FB_CONST.EFFECT_FONT);
-  // Grow H proportionally with W to maintain ≈2:1 W:H ratio (avoids flat sliver).
-  const rawHeadW = effectTextW + FB_CONST.HEAD_PAD_X;
-  const headEffectiveH = Math.max(FB_CONST.HEAD_H, Math.ceil(rawHeadW / 2));
-  // At y ± font/2, available width = W * (1 − font/H) due to triangle taper.
-  const taperAtText = 1 - FB_CONST.EFFECT_FONT / headEffectiveH;
-  const headEffectiveW = Math.max(FB_CONST.HEAD_W, Math.ceil(rawHeadW / taperAtText));
-
-  // Head extends ±headEffectiveH/2 from spine — guarantee half extents cover it.
-  const minHalfFromHead = Math.ceil(headEffectiveH / 2) + 6;
-
-  const topHalfExtent =
-    nTop > 0
-      ? Math.max(
-          minHalfFromHead,
-          D.minRowsPerHalf * D.rowHeight,
-          ...(topExtents.length ? topExtents : [0])
-        )
-      : sides === "bottom"
-        ? Math.max(minHalfFromHead, 0)
-        : 0;
-  const botHalfExtent =
-    nBot > 0
-      ? Math.max(
-          minHalfFromHead,
-          D.minRowsPerHalf * D.rowHeight,
-          ...(botExtents.length ? botExtents : [0])
-        )
-      : sides === "top"
-        ? Math.max(minHalfFromHead, 0)
-        : 0;
-
-  const nCols = Math.max(nTop, nBot, 1);
-
-  // ── Adaptive column step: widest Level-1 label + branch + gap + breathing ──
-  let maxCauseLabelW = 0;
-  let maxSubLabelW = 0;
-  for (const m of majors) {
-    for (const c of m.children) {
-      maxCauseLabelW = Math.max(
-        maxCauseLabelW,
-        estimateTextWidth(c.label, FB_CONST.LABEL_FONT)
-      );
-      for (const sc of c.children) {
-        maxSubLabelW = Math.max(
-          maxSubLabelW,
-          estimateTextWidth(sc.label, FB_CONST.SUB_FONT)
-        );
-      }
-    }
-  }
-  // Label column needs to fit the widest Level-1 label AND any Level-2 tick+label
-  // that sits under it (sub causes are indented by SUB_TICK_LEN + 4 from labelX).
-  const subExtent = maxSubLabelW > 0 ? FB_CONST.SUB_TICK_LEN + 4 + maxSubLabelW : 0;
-  const labelColW = Math.max(maxCauseLabelW, subExtent);
-  // When causes can sit on both sides, each column must reserve label space on both sides.
-  const labelExtentsPerCol = causeSideSetting === "both" ? 2 : 1;
-  const minColStep =
-    FB_CONST.BRANCH_LEN + FB_CONST.LABEL_GAP + labelColW + FB_CONST.COL_GAP_BETWEEN_LABELS;
-  const colStep = Math.max(
-    D.colStep,
-    Math.ceil(minColStep * (labelExtentsPerCol === 2 ? 1.15 : 1))
-  );
-
-  // ── Canvas sizing ───────────────────────────────────────────
-  const spineStartX = FB_CONST.PADDING + FB_CONST.TAIL_LEN + FB_CONST.SPINE_OFFSET_FROM_TAIL;
-  const firstRibX = spineStartX + D.colFirstOffset;
-  const lastRibX = firstRibX + (nCols - 1) * colStep;
-  // Reserve room for the last rib's label column before the head begins.
-  const spineEndX = lastRibX + Math.max(40, FB_CONST.BRANCH_LEN + FB_CONST.LABEL_GAP + labelColW + 12);
-
-  const headX = spineEndX;
-  const headTipXAdj = headX + headEffectiveW;
-
-  const width =
-    ast.width ?? Math.ceil(headTipXAdj + FB_CONST.PADDING);
-
-  const title = ast.title;
-  const titleReserve = title ? FB_CONST.TITLE_CLEARANCE + 20 : 0;
-
-  const spineY =
-    FB_CONST.PADDING + titleReserve + topHalfExtent + D.headerH / 2 + 12;
-
-  const height =
-    ast.height ??
-    Math.ceil(
-      spineY + botHalfExtent + D.headerH / 2 + 12 + FB_CONST.PADDING
-    );
-
-  // ── Ribs ────────────────────────────────────────────────────
-  const ribs: FishboneLayoutRib[] = [];
+  const scale = DENSITY[ast.density ?? "normal"];
+  const rowGap = FB_CONST.ROW_GAP * scale;
+  const margin = FB_CONST.BONE_MARGIN * scale;
+  const slope = ast.ribSlope ?? 1 / Math.tan(FB_CONST.BONE_ANGLE_DEG * Math.PI / 180);
   const palette = opts?.palette ?? resolveFishboneTheme("default").palette;
-  const textBBoxes: FishboneBBox[] = [];
-
-  const buildHalfRibs = (
-    halfMajors: FishboneNode[],
-    startIndex: number,
-    half: "top" | "bottom",
-    halfExtent: number
-  ): void => {
-    for (let i = 0; i < halfMajors.length; i++) {
-      const major = halfMajors[i]!;
-      const globalIdx = startIndex + i;
-      const color = major.color ?? palette[globalIdx % palette.length]!;
-      const spineX = firstRibX + i * colStep;
-
-      // Aligned rib endpoint Y → same for all ribs in half.
-      const endY = half === "top" ? spineY - halfExtent : spineY + halfExtent;
-      const endX = spineX - halfExtent * ribSlope;
-
-      // Header pill positioned along the rib's slope extension.
-      // The rib direction: for every 1 unit of Y away from spine, X moves -ribSlope.
-      const extraDist = D.headerGap + D.headerH / 2;
-      const headerCenterY =
-        half === "top" ? endY - extraDist : endY + extraDist;
-      // Continue the slope: pill center X follows the same dx/dy as the rib.
-      const headerCenterX = endX - extraDist * ribSlope;
-      const headerW = Math.max(
-        D.headerW,
-        estimateTextWidth(major.label, FB_CONST.HEADER_FONT) + 28
-      );
-      const headerX = headerCenterX - headerW / 2;
-      const headerY = headerCenterY - D.headerH / 2;
-
-      textBBoxes.push({
-        x: headerX,
-        y: headerY,
-        w: headerW,
-        h: D.headerH,
-      });
-
-      // Cause slots — cumulative along rib from spine outward.
-      const causes: FishboneLayoutCause[] = [];
-      let accum = FB_CONST.RIB_BASE_EXTENT_Y; // distance from spine to first slot center
-      for (let s = 0; s < major.children.length; s++) {
-        const child = major.children[s]!;
-        const rowH =
-          D.rowHeight + child.children.length * D.subRowHeight;
-        // vertical offset for this slot (center of row)
-        const slotOffset = accum + rowH / 2 - D.rowHeight / 2;
-        const ribY =
-          half === "top" ? spineY - slotOffset : spineY + slotOffset;
-        const ribX = spineX - slotOffset * ribSlope;
-
-        // Resolve cause direction for this slot.
-        const causeDir: "head" | "tail" =
-          causeSideSetting === "tail"
-            ? "tail"
-            : causeSideSetting === "both"
-              ? s % 2 === 0
-                ? "head"
-                : "tail"
-              : "head";
-
-        const branchY = ribY;
-        const branchX =
-          causeDir === "head"
-            ? ribX + FB_CONST.BRANCH_LEN
-            : ribX - FB_CONST.BRANCH_LEN;
-        const labelX =
-          causeDir === "head"
-            ? branchX + FB_CONST.LABEL_GAP
-            : branchX - FB_CONST.LABEL_GAP;
-        const labelY = branchY;
-        const labelAnchor: "start" | "end" =
-          causeDir === "head" ? "start" : "end";
-
-        // Text bbox for mask
-        const labelW = estimateTextWidth(child.label, FB_CONST.LABEL_FONT);
-        textBBoxes.push({
-          x: causeDir === "head" ? labelX - 2 : labelX - labelW - 2,
-          y: labelY - FB_CONST.LABEL_FONT / 2 - 2,
-          w: labelW + 4,
-          h: FB_CONST.LABEL_FONT + 4,
-        });
-
-        // Sub-causes stack below the main label
-        const subCauses: FishboneLayoutSubCause[] = [];
-        for (let si = 0; si < child.children.length; si++) {
-          const sub = child.children[si]!;
-          const subY = labelY + (si + 1) * D.subRowHeight;
-          const tickX1 =
-            causeDir === "head" ? labelX + 2 : labelX - 2;
-          const tickX2 =
-            causeDir === "head"
-              ? tickX1 + FB_CONST.SUB_TICK_LEN
-              : tickX1 - FB_CONST.SUB_TICK_LEN;
-          const subX =
-            causeDir === "head" ? tickX2 + 4 : tickX2 - 4;
-          subCauses.push({
-            label: sub.label,
-            sourceRange: sub.sourceRange,
-            x: subX,
-            y: subY,
-            tickX1,
-            tickX2,
-            tickY: subY,
-            anchor: causeDir === "head" ? "start" : "end",
-          });
-          const subW = estimateTextWidth(sub.label, FB_CONST.SUB_FONT);
-          textBBoxes.push({
-            x: causeDir === "head" ? subX - 2 : subX - subW - 2,
-            y: subY - FB_CONST.SUB_FONT / 2 - 2,
-            w: subW + 4,
-            h: FB_CONST.SUB_FONT + 4,
-          });
-        }
-
-        causes.push({
-          label: child.label,
-          sourceRange: child.sourceRange,
-          ribIndex: globalIdx,
-          slotIndex: s,
-          ribX,
-          ribY,
-          branchX,
-          branchY,
-          labelX,
-          labelY,
-          labelAnchor,
-          causeSide: causeDir,
-          subCauses,
-        });
-
-        accum += rowH;
-      }
-
-      ribs.push({
-        index: globalIdx,
-        half,
-        label: major.label,
-        sourceRange: major.sourceRange,
-        color,
-        spineX,
-        spineY,
-        endX,
-        endY,
-        headerX,
-        headerY,
-        headerW,
-        headerH: D.headerH,
-        causes,
-      });
-    }
-  };
-
-  buildHalfRibs(topMajors, 0, "top", topHalfExtent);
-  buildHalfRibs(botMajors, nTop, "bottom", botHalfExtent);
-
-  // ── Head polygon (right-facing default) ─────────────────────
-  const head = {
-    x: headX,
-    y: spineY,
-    tipX: headTipXAdj,
-    tipY: spineY,
-    w: headEffectiveW,
-    h: headEffectiveH,
-    label: ast.effect,
-  };
-
-  // Effect label bbox (for mask around it — though usually effect sits in head
-  // which has its own fill, we still add it so any crossing line punches out).
-  textBBoxes.push({
-    x: headX + 4,
-    y: spineY - headEffectiveH / 2 + 4,
-    w: headEffectiveW - 8,
-    h: headEffectiveH - 8,
+  const halves: Record<"top" | "bottom", { node: FishboneNode; index: number }[]> = { top: [], bottom: [] };
+  ast.majors.forEach((node, index) => {
+    const automatic = halves.top.length <= halves.bottom.length ? "top" : "bottom";
+    const half = node.side ?? (ast.sides === "top" || ast.sides === "bottom" ? ast.sides : automatic);
+    halves[half].push({ node, index });
   });
-
-  // Note: rtl (head-on-left) support: mirror transform applied in renderer
-  // rather than recomputing coordinates — simpler and visually identical.
-
-  return {
-    width,
-    height,
-    orientation: ast.orientation,
-    spineY,
-    spineStartX,
-    spineEndX,
-    tailForkTipTop: { x: FB_CONST.PADDING, y: spineY - FB_CONST.TAIL_LEN },
-    tailForkTipBot: { x: FB_CONST.PADDING, y: spineY + FB_CONST.TAIL_LEN },
-    head,
-    ribs,
-    textBBoxes,
-    title,
+  for (const half of [halves.top, halves.bottom]) {
+    half.sort((a, b) => (a.node.order ?? Infinity) - (b.node.order ?? Infinity));
+  }
+  const measure = ({ node, index }: { node: FishboneNode; index: number }) => {
+    const causes = node.children.map(child => {
+      const lines = wrapTextToWidth(child.label, FB_CONST.LABEL_FONT, FB_CONST.LABEL_WIDTH);
+      const subs = child.children.map(sub => ({ node: sub,
+        lines: wrapTextToWidth(sub.label, FB_CONST.SUB_FONT, FB_CONST.SUB_LABEL_WIDTH) }));
+      const height = lines.length * FB_CONST.LINE_HEIGHT + FB_CONST.LABEL_GAP + rowGap +
+        subs.reduce((sum, sub) => sum + sub.lines.length * FB_CONST.SUB_LINE_HEIGHT + FB_CONST.LABEL_GAP + rowGap, 0);
+      return { node: child, lines, subs, height };
+    });
+    return { node, index, causes, height: causes.reduce((sum, cause) => sum + cause.height, 0) };
   };
-}
-
-function sumOrMin(arr: number[], min: number): number {
-  if (arr.length === 0) return min;
-  const s = arr.reduce((a, b) => a + b, 0);
-  return Math.max(s, min);
+  const top = halves.top.map(measure);
+  const bottom = halves.bottom.map(measure);
+  const extentOf = (half: typeof top) => margin * 2 + Math.max(0, ...half.map(m => m.height));
+  const topBoneExtent = extentOf(top), bottomBoneExtent = extentOf(bottom);
+  const titleReserve = ast.title ? FB_CONST.TITLE_CLEARANCE : 0;
+  const headerReserve = FB_CONST.HEADER_GAP + FB_CONST.HEADER_FONT;
+  const headW = FB_CONST.HEAD_W;
+  const headLines = wrapTextToWidth(ast.effect, FB_CONST.EFFECT_FONT, FB_CONST.EFFECT_TEXT_WIDTH, { fontWeight: 600 });
+  // Keep the text and eyebrow in the middle half of the curved outline.
+  const headH = Math.max(FB_CONST.HEAD_H, (headLines.length * FB_CONST.EFFECT_LINE_HEIGHT + 42) * 2);
+  const topExtent = Math.max(headH / 2, top.length ? topBoneExtent + headerReserve : 0);
+  const bottomExtent = Math.max(headH / 2, bottom.length ? bottomBoneExtent + headerReserve : 0);
+  const height = Math.max(ast.height ?? 0, FB_CONST.PADDING * 2 + titleReserve + topExtent + bottomExtent);
+  const spineY = FB_CONST.PADDING + titleReserve + topExtent +
+    (height - (FB_CONST.PADDING * 2 + titleReserve + topExtent + bottomExtent)) / 2;
+  const ribs: FishboneLayoutRib[] = [];
+  let headerWidth = 0;
+  let leftReach = 0;
+  let rightReach = 0;
+  // Keep the first bone outside the fin, including its curved attachment.
+  let firstReach = FB_CONST.TAIL_LEN + 5 + FB_CONST.LABEL_GAP + FB_CONST.TAIL_HALF_H * slope;
+  let lastReach = FB_CONST.EFFECT_GAP;
+  const columns = Math.max(top.length, bottom.length);
+  for (let column = 0; column < columns; column++) {
+    [top[column], bottom[column]].forEach((m, side) => {
+      if (!m) return;
+      const half = side === 0 ? "top" : "bottom";
+      const sign = side === 0 ? -1 : 1;
+      const extent = side === 0 ? topBoneExtent : bottomBoneExtent;
+      const endX = -extent * slope;
+      const endY = spineY + sign * extent;
+      const boneX = (y: number) => -Math.abs(y - spineY) * slope;
+      // Centre shorter stacks within the common bone length of their half.
+      let rowY = spineY + (side === 0 ? -extent : 0) + (extent - m.height) / 2;
+      const causes: FishboneLayoutCause[] = m.causes.map((child, slotIndex) => {
+        const labelHeight = child.lines.length * FB_CONST.LINE_HEIGHT;
+        const ribY = rowY + labelHeight + FB_CONST.LABEL_GAP;
+        const tail = ast.causeSide !== "head" && (ast.causeSide !== "both" || slotIndex % 2 === 1);
+        const groupBottom = rowY + child.height - rowGap;
+        const minBoneX = Math.min(boneX(rowY - FB_CONST.LABEL_GAP), boneX(groupBottom + FB_CONST.LABEL_GAP));
+        const maxBoneX = Math.max(boneX(rowY - FB_CONST.LABEL_GAP), boneX(groupBottom + FB_CONST.LABEL_GAP));
+        const labelWidth = estimateMaxLineWidth(child.lines.join("\n"), FB_CONST.LABEL_FONT);
+        const subWidth = Math.max(0, ...child.subs.map(sub =>
+          estimateMaxLineWidth(sub.lines.join("\n"), FB_CONST.SUB_FONT)));
+        const reach = Math.max(labelWidth, FB_CONST.SUB_INDENT + FB_CONST.LABEL_GAP + subWidth) + FB_CONST.LABEL_GAP;
+        const startX = tail ? minBoneX - reach : boneX(ribY) - FB_CONST.RIB_CROSS;
+        const labelX = tail ? startX : maxBoneX + FB_CONST.LABEL_GAP;
+        const end = tail ? boneX(ribY) + FB_CONST.RIB_CROSS : labelX + reach;
+        let subY = ribY + rowGap;
+        const subCauses = child.subs.map((sub): FishboneLayoutSubCause => {
+          const textY = subY;
+          const tickY = textY + sub.lines.length * FB_CONST.SUB_LINE_HEIGHT + FB_CONST.LABEL_GAP;
+          const tickX1 = labelX + FB_CONST.SUB_INDENT;
+          subY = tickY + rowGap;
+          return { label: sub.node.label, sourceRange: sub.node.sourceRange, lines: sub.lines,
+            x: tickX1 + FB_CONST.LABEL_GAP, y: textY + FB_CONST.SUB_LINE_HEIGHT / 2,
+            tickX1, tickX2: tickX1 + FB_CONST.LABEL_GAP + subWidth,
+            tickY, stemY: ribY, anchor: "start" };
+        });
+        // Measure an envelope relative to the slant, so lanes interlock instead of
+        // reserving a full rectangular bounding box for each diagonal bone.
+        leftReach = Math.max(leftReach, tail ? maxBoneX - startX : FB_CONST.RIB_CROSS);
+        rightReach = Math.max(rightReach, tail ? FB_CONST.RIB_CROSS : end - minBoneX);
+        firstReach = Math.max(firstReach, -startX);
+        if (column === 0 && rowY <= spineY + FB_CONST.TAIL_HALF_H + FB_CONST.LABEL_GAP &&
+            groupBottom >= spineY - FB_CONST.TAIL_HALF_H - FB_CONST.LABEL_GAP) {
+          firstReach = Math.max(firstReach, FB_CONST.TAIL_LEN + 5 + FB_CONST.LABEL_GAP - startX);
+        }
+        lastReach = Math.max(lastReach, end);
+        rowY += child.height;
+        return { label: child.node.label, sourceRange: child.node.sourceRange, ribIndex: m.index, slotIndex,
+          ribX: startX, ribY, branchX: end, branchY: ribY,
+          labelX, labelY: ribY - FB_CONST.LABEL_GAP - labelHeight + FB_CONST.LINE_HEIGHT / 2,
+          labelLines: child.lines, labelAnchor: "start", causeSide: tail ? "tail" : "head", subCauses };
+      });
+      const headerW = estimateTextWidth(m.node.label, FB_CONST.HEADER_FONT, { fontWeight: 700 });
+      headerWidth = Math.max(headerWidth, headerW);
+      firstReach = Math.max(firstReach, -endX + headerW / 2);
+      lastReach = Math.max(lastReach, endX + headerW / 2);
+      ribs.push({ index: m.index, half, label: m.node.label, sourceRange: m.node.sourceRange,
+        color: m.node.color ?? palette[m.index % palette.length]!, spineX: column, spineY, endX, endY,
+        headerX: endX - headerW / 2,
+        headerY: endY + (side === 0 ? -headerReserve : FB_CONST.HEADER_GAP),
+        headerW, headerH: FB_CONST.HEADER_FONT, causes });
+    });
+  }
+  const pitch = Math.max(leftReach + rightReach, headerWidth) + FB_CONST.COLUMN_GAP * scale;
+  const naturalWidth = FB_CONST.PADDING * 2 + firstReach + (columns - 1) * pitch + lastReach + headW;
+  const width = Math.max(ast.width ?? 0, naturalWidth,
+    estimateTextWidth(ast.title ?? "", TITLE.size, { fontWeight: TITLE.weight }) + FB_CONST.PADDING * 2);
+  const extraPitch = (width - naturalWidth) / columns;
+  for (const rib of ribs) {
+    const x = FB_CONST.PADDING + firstReach + extraPitch + rib.spineX * (pitch + extraPitch);
+    rib.spineX = x;
+    rib.endX += x;
+    rib.headerX += x;
+    for (const cause of rib.causes) {
+      cause.ribX += x;
+      cause.branchX += x;
+      cause.labelX += x;
+      for (const sub of cause.subCauses) {
+        sub.x += x;
+        sub.tickX1 += x;
+        sub.tickX2 += x;
+      }
+    }
+  }
+  ribs.sort((a, b) => a.index - b.index);
+  const spineStartX = FB_CONST.PADDING + FB_CONST.TAIL_LEN;
+  const spineEndX = width - FB_CONST.PADDING - headW - 2;
+  const head = { x: spineEndX + 2, y: spineY, w: headW, h: headH, label: ast.effect, lines: headLines };
+  const tail = { x: FB_CONST.PADDING, y: spineY - FB_CONST.TAIL_HALF_H,
+    w: FB_CONST.TAIL_LEN + 5, h: FB_CONST.TAIL_HALF_H * 2 };
+  const occupied: LabelBox[] = [
+    { x: tail.x, y: tail.y, width: tail.w, height: tail.h },
+    { x: head.x, y: head.y - head.h / 2, width: head.w, height: head.h },
+    ...edgeLabelObstacles([{ x: spineStartX, y: spineY }, { x: spineEndX, y: spineY }]),
+  ];
+  for (const rib of ribs) {
+    occupied.push({ x: rib.headerX, y: rib.headerY, width: rib.headerW, height: rib.headerH },
+      ...edgeLabelObstacles([{ x: rib.spineX, y: spineY }, { x: rib.endX, y: rib.endY }]));
+    for (const cause of rib.causes) {
+      occupied.push(...edgeLabelObstacles([
+        { x: cause.ribX, y: cause.ribY }, { x: cause.branchX, y: cause.branchY }]));
+      for (const sub of cause.subCauses) {
+        occupied.push(...edgeLabelObstacles([{ x: sub.tickX1, y: sub.stemY },
+          { x: sub.tickX1, y: sub.tickY }, { x: sub.tickX2, y: sub.tickY }]));
+      }
+    }
+  }
+  const place = (lines: string[], x: number, y: number, font: number, lineHeight: number) => {
+    const width = estimateMaxLineWidth(lines.join("\n"), font);
+    const height = lines.length * lineHeight;
+    const box = placeLabel({ x: x + width / 2, y: y - lineHeight / 2 + height / 2 },
+      { width, height }, occupied, { x: 1, y: 0 });
+    occupied.push(box);
+    return { x: box.x, y: box.y + lineHeight / 2 };
+  };
+  for (const rib of ribs) {
+    for (const cause of rib.causes) {
+      const label = place(cause.labelLines, cause.labelX, cause.labelY, FB_CONST.LABEL_FONT, FB_CONST.LINE_HEIGHT);
+      cause.labelX = label.x;
+      cause.labelY = label.y;
+      for (const sub of cause.subCauses) {
+        const label = place(sub.lines, sub.x, sub.y, FB_CONST.SUB_FONT, FB_CONST.SUB_LINE_HEIGHT);
+        sub.x = label.x;
+        sub.y = label.y;
+      }
+    }
+  }
+  return { width, height, orientation: ast.orientation, spineY, spineStartX, spineEndX, head, ribs,
+    tail,
+    title: ast.title };
 }

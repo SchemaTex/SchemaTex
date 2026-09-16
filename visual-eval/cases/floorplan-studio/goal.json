@@ -1,0 +1,86 @@
+{
+  "id": "floorplan-studio",
+  "type": "floorplan",
+  "title": "Studio apartment",
+  "goal": "A reader must be able to see sleeping, cooking, and living functions in one compact room with a separate bathroom.",
+  "rubric": [
+    {
+      "id": "single-main-room",
+      "severity": "blocker",
+      "must": "One large labeled studio room contains the bed, living furniture, and kitchen equipment."
+    },
+    {
+      "id": "separate-bathroom",
+      "severity": "blocker",
+      "must": "A separate enclosed bathroom with a door, toilet, sink, and shower is visible."
+    },
+    {
+      "id": "under-thirty-square-metres",
+      "severity": "major",
+      "must": "The displayed room areas add up to less than 30 square metres."
+    },
+    {
+      "id": "open-studio-layout",
+      "severity": "major",
+      "must": "The main studio space has no interior partitions dividing its sleeping, living, and cooking areas."
+    },
+    {
+      "id": "clear-entry-path",
+      "severity": "major",
+      "must": "The entry door opens into clear floor space without striking furniture."
+    },
+    {
+      "id": "daylight-visible",
+      "severity": "minor",
+      "must": "Windows are visible on the outside walls of both the studio and bathroom."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a compact 27.9 m² studio with sleeping, living, and cooking functions together in one open room, plus a separately enclosed and fully equipped bathroom. The entry circulation and required exterior windows are also clearly shown.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:14:04.571Z",
+      "targetHash": "b90b34d1e14a",
+      "sourceHash": "bb448c9e5b5e",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "single-main-room",
+          "verdict": "pass",
+          "evidence": "The large room labeled “STUDIO LIVING / SLEEP / COOK” visibly contains a double bed, sofa, coffee table, kitchen counter, sink, stove, and refrigerator."
+        },
+        {
+          "id": "separate-bathroom",
+          "verdict": "pass",
+          "evidence": "A separately enclosed room labeled “BATHROOM” is visible with its own inward-swinging door, toilet, sink, and shower."
+        },
+        {
+          "id": "under-thirty-square-metres",
+          "verdict": "pass",
+          "evidence": "The displayed areas are 23.9 m² for the studio and 4.0 m² for the bathroom, totaling 27.9 m²."
+        },
+        {
+          "id": "open-studio-layout",
+          "verdict": "pass",
+          "evidence": "No interior partitions divide the sleeping, living, and cooking furniture within the main studio room."
+        },
+        {
+          "id": "clear-entry-path",
+          "verdict": "pass",
+          "evidence": "The south entry door swings inward into visibly open floor space and does not strike the kitchen counter, wardrobe, or other furniture."
+        },
+        {
+          "id": "daylight-visible",
+          "verdict": "pass",
+          "evidence": "Exterior windows are visibly shown on the studio’s north and west walls and on the bathroom’s east wall."
+        }
+      ]
+    }
+  }
+}

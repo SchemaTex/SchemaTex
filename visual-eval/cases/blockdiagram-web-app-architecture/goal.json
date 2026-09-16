@@ -1,0 +1,40 @@
+{
+  "id": "blockdiagram-web-app-architecture",
+  "type": "blockdiagram",
+  "title": "Web application architecture",
+  "goal": "Show a scalable web application request path and asynchronous worker tier.",
+  "rubric": [
+    {
+      "id": "request-front-door",
+      "severity": "blocker",
+      "must": "Browser Client, CDN/WAF, and Load Balancer visibly form the entry request path."
+    },
+    {
+      "id": "two-app-servers",
+      "severity": "blocker",
+      "must": "The load balancer visibly fans out to two separate app-server blocks."
+    },
+    {
+      "id": "shared-data",
+      "severity": "major",
+      "must": "Both app servers visibly connect to the cache and database."
+    },
+    {
+      "id": "async-workers",
+      "severity": "major",
+      "must": "A job queue visibly feeds two workers, both of which connect to the database."
+    },
+    {
+      "id": "protocol-labels",
+      "severity": "minor",
+      "must": "HTTPS, SQL, cache, and job-message labels are visible on relevant paths."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Refreshed against the September 15 exemplar: role fills, ink signal lines, 4 px block corners and restrained typography. Each target retains its own functional topology; generic blocks are not assigned inferred hardware roles."
+  }
+}

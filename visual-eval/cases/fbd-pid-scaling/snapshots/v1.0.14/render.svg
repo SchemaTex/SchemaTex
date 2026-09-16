@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="460" height="904" viewBox="0 0 460 904" class="lt-fbd" data-diagram-type="fbd"><defs><style>
+.lt-fbd-bg { fill: #ffffff; }
+.lt-fbd-block-body { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+.lt-fbd-block-header { fill: #f0f0f0; stroke: #333; stroke-width: 1.5; }
+.lt-fbd-block-name { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; font-weight: 700; fill: #111; }
+.lt-fbd-inner-symbol { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 18px; font-weight: 700; fill: #111; }
+.lt-fbd-instance-tag { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-style: italic; font-size: 10px; fill: #555; }
+.lt-fbd-port-label { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #333; }
+.lt-fbd-const-box { fill: #fffde7; stroke: #c9b14b; stroke-width: 1; }
+.lt-fbd-const-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #5a4a00; }
+.lt-fbd-var-term { fill: #eef4ff; stroke: #3a5fbf; stroke-width: 1.2; }
+.lt-fbd-var-term-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; font-weight: 600; fill: #1a3380; }
+.lt-fbd-wire-bool   { stroke: #000;     stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-int    { stroke: #1976d2;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-real   { stroke: #f57c00;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-time   { stroke: #c2185b;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-string { stroke: #2e7d32;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-bits   { stroke: #000;     stroke-width: 1.5; stroke-dasharray: 5 3; fill: none; }
+.lt-fbd-wire-any    { stroke: #555;     stroke-width: 1.5; fill: none; }
+.lt-fbd-junction { fill: #000; }
+.lt-fbd-negation { fill: #fff; stroke: #333; stroke-width: 1; }
+.lt-fbd-port-stub { stroke: #333; stroke-width: 1.2; fill: none; }
+.lt-fbd-network-frame { fill: none; stroke: #bbb; stroke-dasharray: 4 3; }
+.lt-fbd-network-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #555; }
+.lt-fbd-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
+</style></defs>
+<title>FBD: PID level input scaling</title>
+<desc>FBD with 4 network(s).</desc>
+<rect class="lt-fbd-bg" x="0" y="0" width="460" height="904"/>
+<text x="230" y="22" class="lt-fbd-title" text-anchor="middle">PID level input scaling</text>
+<g transform="translate(24,54)"><g class="lt-fbd-network" data-network="0"><rect class="lt-fbd-network-frame" x="4" y="4" width="388" height="138" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="16">0 — Remove the 4 mA offset</text>
+<rect class="lt-fbd-var-term" x="16" y="46" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="61" text-anchor="middle">RawCounts</text>
+<rect class="lt-fbd-var-term" x="290" y="46" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="61" text-anchor="middle">Offset</text>
+<g><path class="lt-fbd-wire-real" d="M 106 57 L 130 57 L 130 69 L 154 69" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 242 69 L 266 69 L 266 57 L 290 57" data-wire-type="real"/></g>
+<g class="lt-fbd-block" data-block-type="SUB" data-instance="Offset"><rect class="lt-fbd-block-body" x="166" y="42" width="64" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="42" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="54.6" text-anchor="middle">SUB</text>
+<line class="lt-fbd-port-stub" x1="166" y1="69" x2="154" y2="69"/>
+<text class="lt-fbd-port-label" x="170" y="72">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="87" x2="154" y2="87"/>
+<text class="lt-fbd-port-label" x="170" y="90">IN2</text>
+<rect class="lt-fbd-const-box" x="108" y="79" width="44" height="14" rx="2" ry="2"/>
+<text class="lt-fbd-const-text" x="130" y="89" text-anchor="middle">5530.0</text>
+<line class="lt-fbd-port-stub" x1="230" y1="69" x2="242" y2="69"/>
+<text class="lt-fbd-port-label" x="226" y="72" text-anchor="end">OUT</text></g></g>
+<g class="lt-fbd-network" data-network="1"><rect class="lt-fbd-network-frame" x="4" y="186" width="388" height="236" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="198">1 — Convert counts to percent and clamp</text>
+<rect class="lt-fbd-var-term" x="16" y="228" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="243" text-anchor="middle">Offset</text>
+<rect class="lt-fbd-var-term" x="16" y="256" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="271" text-anchor="middle">Scaled</text>
+<rect class="lt-fbd-var-term" x="290" y="228" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="243" text-anchor="middle">Scaled</text>
+<rect class="lt-fbd-var-term" x="290" y="256" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="271" text-anchor="middle">LevelPct</text>
+<g><path class="lt-fbd-wire-real" d="M 106 239 L 130 239 L 130 251 L 154 251" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 380 239 L 267 239 L 267 349 L 154 349" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 242 251 L 266 251 L 266 239 L 290 239" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 242 331 L 266 331 L 266 267 L 290 267" data-wire-type="real"/></g>
+<g class="lt-fbd-block" data-block-type="DIV" data-instance="Scaled"><rect class="lt-fbd-block-body" x="166" y="224" width="64" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="224" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="236.6" text-anchor="middle">DIV</text>
+<line class="lt-fbd-port-stub" x1="166" y1="251" x2="154" y2="251"/>
+<text class="lt-fbd-port-label" x="170" y="254">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="269" x2="154" y2="269"/>
+<text class="lt-fbd-port-label" x="170" y="272">IN2</text>
+<rect class="lt-fbd-const-box" x="114" y="261" width="38" height="14" rx="2" ry="2"/>
+<text class="lt-fbd-const-text" x="133" y="271" text-anchor="middle">272.3</text>
+<line class="lt-fbd-port-stub" x1="230" y1="251" x2="242" y2="251"/>
+<text class="lt-fbd-port-label" x="226" y="254" text-anchor="end">OUT</text></g>
+<g class="lt-fbd-block" data-block-type="LIMIT" data-instance="LevelPct"><rect class="lt-fbd-block-body" x="166" y="304" width="64" height="78" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="304" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="316.6" text-anchor="middle">LIMIT</text>
+<line class="lt-fbd-port-stub" x1="166" y1="331" x2="154" y2="331"/>
+<text class="lt-fbd-port-label" x="170" y="334">MN</text>
+<rect class="lt-fbd-const-box" x="124" y="323" width="28" height="14" rx="2" ry="2"/>
+<text class="lt-fbd-const-text" x="138" y="333" text-anchor="middle">0.0</text>
+<line class="lt-fbd-port-stub" x1="166" y1="349" x2="154" y2="349"/>
+<text class="lt-fbd-port-label" x="170" y="352">IN</text>
+<line class="lt-fbd-port-stub" x1="166" y1="367" x2="154" y2="367"/>
+<text class="lt-fbd-port-label" x="170" y="370">MX</text>
+<rect class="lt-fbd-const-box" x="114" y="359" width="38" height="14" rx="2" ry="2"/>
+<text class="lt-fbd-const-text" x="133" y="369" text-anchor="middle">100.0</text>
+<line class="lt-fbd-port-stub" x1="230" y1="331" x2="242" y2="331"/>
+<text class="lt-fbd-port-label" x="226" y="334" text-anchor="end">OUT</text></g></g>
+<g class="lt-fbd-network" data-network="2"><rect class="lt-fbd-network-frame" x="4" y="466" width="388" height="138" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="478">2 — Loop error for the controller</text>
+<rect class="lt-fbd-var-term" x="16" y="508" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="523" text-anchor="middle">Setpoint</text>
+<rect class="lt-fbd-var-term" x="16" y="536" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="551" text-anchor="middle">LevelPct</text>
+<rect class="lt-fbd-var-term" x="290" y="508" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="523" text-anchor="middle">LoopError</text>
+<g><path class="lt-fbd-wire-real" d="M 106 519 L 130 519 L 130 531 L 154 531" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 106 547 L 130 547 L 130 549 L 154 549" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-real" d="M 242 531 L 266 531 L 266 519 L 290 519" data-wire-type="real"/></g>
+<g class="lt-fbd-block" data-block-type="SUB" data-instance="LoopError"><rect class="lt-fbd-block-body" x="166" y="504" width="64" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="504" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="516.6" text-anchor="middle">SUB</text>
+<line class="lt-fbd-port-stub" x1="166" y1="531" x2="154" y2="531"/>
+<text class="lt-fbd-port-label" x="170" y="534">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="549" x2="154" y2="549"/>
+<text class="lt-fbd-port-label" x="170" y="552">IN2</text>
+<line class="lt-fbd-port-stub" x1="230" y1="531" x2="242" y2="531"/>
+<text class="lt-fbd-port-label" x="226" y="534" text-anchor="end">OUT</text></g></g>
+<g class="lt-fbd-network" data-network="3"><rect class="lt-fbd-network-frame" x="4" y="648" width="388" height="138" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="660">3 — High level alarm</text>
+<rect class="lt-fbd-var-term" x="16" y="690" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="705" text-anchor="middle">LevelPct</text>
+<rect class="lt-fbd-var-term" x="290" y="690" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="705" text-anchor="middle">HighAlarm</text>
+<g><path class="lt-fbd-wire-real" d="M 106 701 L 130 701 L 130 713 L 154 713" data-wire-type="real"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 242 713 L 266 713 L 266 701 L 290 701" data-wire-type="bool"/></g>
+<g class="lt-fbd-block" data-block-type="GT" data-instance="HighAlarm"><rect class="lt-fbd-block-body" x="166" y="686" width="64" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="686" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="698.6" text-anchor="middle">GT</text>
+<line class="lt-fbd-port-stub" x1="166" y1="713" x2="154" y2="713"/>
+<text class="lt-fbd-port-label" x="170" y="716">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="731" x2="154" y2="731"/>
+<text class="lt-fbd-port-label" x="170" y="734">IN2</text>
+<rect class="lt-fbd-const-box" x="120" y="723" width="32" height="14" rx="2" ry="2"/>
+<text class="lt-fbd-const-text" x="136" y="733" text-anchor="middle">90.0</text>
+<line class="lt-fbd-port-stub" x1="230" y1="713" x2="242" y2="713"/>
+<text class="lt-fbd-port-label" x="226" y="716" text-anchor="end">OUT</text></g></g></g></svg>

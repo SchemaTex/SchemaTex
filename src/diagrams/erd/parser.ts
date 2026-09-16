@@ -9,6 +9,10 @@ import type {
 import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
 import type { SourceRange } from "../../core/types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["//", "#"];
 
 export class ErdParseError extends Error {
   constructor(message: string, public lineNumber?: number) {
@@ -18,21 +22,6 @@ export class ErdParseError extends Error {
 }
 
 // ─── Lexical helpers ──────────────────────────────────────────
-
-function stripComment(s: string): string {
-  let out = "";
-  let inQuote = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (ch === '"') inQuote = !inQuote;
-    if (!inQuote) {
-      if (ch === "/" && s[i + 1] === "/") break;
-      if (ch === "#") break;
-    }
-    out += ch;
-  }
-  return out;
-}
 
 function unquote(v: string): string {
   const t = v.trim();
@@ -99,7 +88,7 @@ function lex(text: string): RawLine[] {
   let lineStart = 0;
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i]!;
-    const stripped = stripComment(raw);
+    const stripped = stripLineComment(raw, COMMENT_MARKERS);
     const leading = stripped.length - stripped.trimStart().length;
     const value = stripped.trim();
     if (value) out.push({ text: value, lineNumber: i + 1, start: lineStart + leading });

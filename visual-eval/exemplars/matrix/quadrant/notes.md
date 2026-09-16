@@ -1,0 +1,15 @@
+# Matrix exemplar — BCG growth-share portfolio
+
+**Scenario.** A consumer-health group reviews nine products once a year and asks which to fund, which to milk for cash, and which to drop. Each product sits at its relative market share (horizontal) and its market growth rate (vertical); the circle's *area* is its FY26 net revenue. The four quadrants are the standard Boston Consulting Group names — Stars, Question Marks, Cash Cows, Dogs — each with the action it implies.
+
+**Reading direction.** Market share increases to the *left*, which is Henderson's original 1970 convention and what the engine's `bcg` template already encodes. It surprises people who expect every axis to increase rightward, so the arrowhead is placed at the high end of each axis (pointing left for share, up for growth) and the subtitle says it in words.
+
+**Palette.** Chrome is house ink `#1e293b` (titles, item names, axis titles), slate `#475569` (quadrant titles, secondary text, axis end labels) and rule `#e2e8f0` (frame, legend box, dividers). Categories get four muted, equal-weight hues so no product looks louder than another: beverages `#24618c`, snacks `#3f8f7a`, supplements `#c08a2e`, home care `#a1543f`, each filled at 85% with a 1.5px outline of the same hue darkened. Quadrant tints are one family, not four pastels: the two quadrants that earn (Stars `#E6E9ED`, Cash Cows `#F1F3F6`) are a cool slate wash, the two that cost you a decision (Question Marks `#F6F5F4`, Dogs `#FCFBFB`) are a warm one, and within each pair the more attractive quadrant is the stronger tint.
+
+**Type scale.** Title 22px semibold · subtitle 13px · quadrant title 13px semibold with an 11px action line · item name 12px medium with the revenue on a 10.5px second line · axis title 12px semibold · axis end label 11px · legend heads 11px semibold with wide letter-spacing.
+
+**Geometry.** The plot is a true 600×600 square inside a 1060×800 canvas (4:3). Bubble radius is `46 × √(size / 140)`, so area — not radius — is proportional to revenue, per Tufte and §5.5 of the standard; the smallest product still draws at 13.5px radius. The legend is a boxed panel outside the plot carrying the category key, a nested three-circle size key (140 / 70 / 20 sharing a bottom tangent, the standard bubble-chart convention), and the portfolio total.
+
+**Collisions.** Every text block is a measured box (0.55 × font-size per character, 0.6 for semibold). Quadrant titles are placed first, trying the plot's outer corner and falling back through the other three; item labels are then placed largest-bubble-first, testing eight positions around the circle and taking the first that clears all bubbles, all other text, every rule and the plot edge. The generator prints the collision count over labels, lines, bubbles and the canvas edge: **0**, and no leader line was needed.
+
+**Departure from the standard doc.** The one-line subtitle under the title is not something the DSL can express today — there is no `subtitle:` directive — but it is fully derivable from the source (which dimension `size:` encodes, plus the axis direction), so an engine could emit it without new syntax.

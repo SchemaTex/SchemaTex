@@ -1,0 +1,20 @@
+%% Context: Retail returns workflow for eligibility, inspection, and customer resolution.
+flowchart LR
+  A([Return requested]) --> B[Validate order and return window]
+  B --> C{Return eligible?}
+  C -->|No| D([Reject return])
+  C -->|Yes| E[Issue return label]
+  E --> F[Receive returned item]
+  F --> G[Inspect condition]
+  G --> H{Item resellable?}
+  H -->|Yes| I[(Restock inventory)]
+  H -->|No| J[Scrap or recycle item]
+  I --> K{Customer requested replacement?}
+  J --> K
+  K -->|Yes| L[[Create replacement shipment]]
+  L --> M([Replacement dispatched])
+  K -->|No| N[Refund original payment]
+  N --> O{Refund accepted?}
+  O -->|Yes| P([Refund confirmed])
+  O -->|No| Q[Investigate payment exception]
+  Q -.-> N

@@ -1,0 +1,25 @@
+floorplan "Neighbourhood Coffee Shop" unit m
+north
+wall exterior thickness 0.3
+wall interior thickness 0.15
+room cafe "Coffee Shop" at 0,0 size 8x10
+room prep "Prep / Wash" right-of cafe size 2x6
+room wc "Customer WC" below prep size 2x4
+
+door cafe south at 72% width 1.0 id entry hinge left swing out
+window cafe south from start 0.7 width 1.8 id front-window-a
+window cafe south after front-window-a gap 0.6 width 1.8 id front-window-b
+door between cafe prep at 28% width 0.9 hinge right
+door between cafe wc at 15% width 0.85 hinge left
+
+furniture counter "Espresso & Pastry Counter" in cafe at 0.45,0.45 size 4.8x0.7
+furniture counter "Order Pickup" in cafe at 5.65,0.45 size 1.55x0.7
+zone queue "Order Queue" in cafe at 1.0,1.45 size 4.6x1.0 keep-clear
+grid dining-table in cafe rows 2 cols 2 count 4 centers 1.35,4.0 3.7,6.5 itemsize 0.8x0.7
+furniture dining-table "Communal Table" in cafe at 4.8,8.25 size 2.5x0.8
+furniture counter "Condiments" in cafe at 6.6,8.25 size 0.9x0.45
+furniture prep-table "Pastry Prep" in prep at 0.3,0.5 size 1.4x0.75
+furniture commercial-sink in prep at 0.3,2.0 size 1.4x0.7
+furniture counter "Storage" in prep at 0.3,3.25 size 1.4x0.55
+furniture toilet in wc at 1.15,1.5 rotate 90
+furniture sink in wc at 0.25,0.25

@@ -1,0 +1,21 @@
+%% EV charging station lifecycle: RFID authorization, a composite charging session, and fault recovery.
+stateDiagram-v2
+  [*] --> Available
+  Available --> Available : heartbeat [linkUp] / reportStatus()
+  Available --> Authorizing : cablePluggedIn / readRFID()
+  Authorizing --> AuthCheck : authResponse
+  state AuthCheck <<choice>>
+  AuthCheck --> Charging : [tokenValid] / lockConnector()
+  AuthCheck --> Available : [!tokenValid] / showDenied()
+  state Charging {
+    [*] --> Ramping
+    Ramping --> Steady : targetCurrentReached
+    Steady --> Suspended : evPaused / holdCurrent()
+    Suspended --> Steady : evResumed
+    Steady --> [*] : stopRequested
+  }
+  Charging --> Finishing : cableUnplugged / unlockConnector()
+  Charging --> Faulted : groundFault / openContactor()
+  Finishing --> Available : meterValuesSent / clearSession()
+  Faulted --> Available : faultCleared [selfTestPass] / resetContactor()
+  Faulted --> [*] : serviceLockout [!selfTestPass]

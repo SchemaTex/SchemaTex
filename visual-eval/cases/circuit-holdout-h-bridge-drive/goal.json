@@ -1,0 +1,50 @@
+{
+  "id": "circuit-holdout-h-bridge-drive",
+  "type": "circuit",
+  "title": "N-channel MOSFET H-bridge drive",
+  "split": "holdout",
+  "goal": "A reader must be able to trace the 24 V H-bridge, its motor terminals, gate-drive blocks, bootstrap capacitors, and return current shunt.",
+  "rubric": [
+    {
+      "id": "four-switch-bridge",
+      "severity": "blocker",
+      "must": "Four N-channel MOSFETs are visibly arranged as two high-side and two low-side switches between the 24 V rail and the return."
+    },
+    {
+      "id": "motor-midpoints",
+      "severity": "blocker",
+      "must": "The DC motor is connected only across the two half-bridge midpoint nets OUTA and OUTB."
+    },
+    {
+      "id": "shared-shunt",
+      "severity": "blocker",
+      "must": "Both low-side MOSFET sources join at a current-sense shunt before reaching ground."
+    },
+    {
+      "id": "gate-drivers",
+      "severity": "major",
+      "must": "Separate left and right IR2104 gate-driver blocks have visible high-side and low-side gate connections."
+    },
+    {
+      "id": "bootstrap-paths",
+      "severity": "blocker",
+      "must": "A 100 nF bootstrap capacitor is shown from BOOT to the switching midpoint on each leg."
+    },
+    {
+      "id": "bulk-capacitor",
+      "severity": "major",
+      "must": "The 470 µF bulk capacitor is visibly across the 24 V supply and ground."
+    },
+    {
+      "id": "part-labels",
+      "severity": "minor",
+      "must": "MOSFETs read IRLZ44N and the shunt reads 10 mΩ, 3 W."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Q1/Q3 high side off VBUS, Q2/Q4 low side down to SENSE, motor across OUTA/OUTB, shunt from SENSE to GND, a gate driver per leg with its bootstrap capacitor from BOOT to SW."
+  }
+}

@@ -1,10 +1,11 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseEpc } from "./parser";
 import { renderEpc } from "./renderer";
 
 export const epc: DiagramPlugin = {
   type: "epc" as DiagramPlugin["type"],
-  detect: (t) => /^\s*epc\b/i.test(t),
+  detect: (t) => /^\s*epc\b/i.test(firstContentLine(t) ?? ""),
   parse: parseEpc,
   render: (text: string, config?: RenderConfig) => renderEpc(text, config),
 };

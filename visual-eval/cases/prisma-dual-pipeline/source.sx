@@ -1,0 +1,29 @@
+# Scenario: dual-pipeline systematic review merges databases and trial registers.
+prisma
+mode: 2020-dual
+title: "Community interventions for heat-health protection"
+kind: systematic-review
+identification:
+  databases:
+    n: 1800
+    sources: MEDLINE=700, Embase=600, Scopus=500
+    duplicates-removed: 360
+    ineligible-automation: 40
+  other:
+    n: 120
+    sources: trial-registers=70, citation-search=50
+screening:
+  records-screened: 1400
+  excluded:
+    n: 1100
+    reasons: irrelevant title=700, wrong geography=220, duplicate=180
+  reports-sought: 300
+  reports-not-retrieved: 20
+eligibility:
+  full-text-assessed: 280
+  excluded:
+    n: 230
+    reasons: wrong intervention=100, wrong outcome=75, wrong design=55
+included:
+  studies: 50
+  reports: 54

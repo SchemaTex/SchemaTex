@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="740" viewBox="0 0 1400 740">
+  <title>Employee Onboarding</title>
+  <defs>
+    <marker id="sequence" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L11 6 L1 11 Z" fill="#202832"/></marker>
+    <marker id="message" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2 L12 7 L2 12 Z" fill="white" stroke="#202832" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1400" height="740" fill="white"/>
+  <g font-family="Helvetica, Arial, sans-serif" fill="#202832">
+    <text x="700" y="49" text-anchor="middle" font-size="28" font-weight="600">Employee Onboarding</text>
+    <!-- Collapsed participant: no internal process is shown. -->
+    <rect x="60" y="85" width="1280" height="85" fill="white" stroke="#202832" stroke-width="2"/>
+    <text x="700" y="136" text-anchor="middle" font-size="23">Employee</text>
+    <!-- Company participant with two swimlanes. -->
+    <rect x="60" y="270" width="1280" height="420" fill="white" stroke="#202832" stroke-width="2"/>
+    <path d="M110 270 V690 M160 270 V690 M110 455 H1340" fill="none" stroke="#202832" stroke-width="1.6"/>
+    <text transform="translate(91 480) rotate(-90)" text-anchor="middle" font-size="22" font-weight="600">Company</text>
+    <text transform="translate(143 362) rotate(-90)" text-anchor="middle" font-size="20">HR</text>
+    <text transform="translate(143 572) rotate(-90)" text-anchor="middle" font-size="20">IT</text>
+    <!-- Solid sequence flows; the split and join have distinct branches. -->
+    <g fill="none" stroke="#202832" stroke-width="2" marker-end="url(#sequence)">
+      <path d="M267 355 H330"/>
+      <path d="M510 355 H569"/>
+      <path d="M631 355 H670 V510 H710"/>
+      <path d="M600 386 V620 H710"/>
+      <path d="M910 510 H970 V568 H1014"/>
+      <path d="M910 620 H970 V568 H1014"/>
+      <path d="M1076 568 H1190 V382"/>
+    </g>
+    <!-- HR events and activity. -->
+    <circle cx="240" cy="355" r="27" fill="white" stroke="#202832" stroke-width="2"/>
+    <text x="240" y="406" text-anchor="middle" font-size="18">Offer accepted</text>
+    <rect x="330" y="315" width="180" height="80" rx="11" fill="white" stroke="#202832" stroke-width="2"/>
+    <g transform="translate(343 327)" fill="none" stroke="#202832" stroke-width="1.6"><circle cx="7" cy="5" r="4"/><path d="M0 21 V16 Q0 11 7 11 Q14 11 14 16 V21 Z"/></g>
+    <text x="420" y="365" text-anchor="middle" font-size="18">Collect documents</text>
+    <path d="M600 324 L631 355 L600 386 L569 355 Z" fill="white" stroke="#202832" stroke-width="2"/>
+    <path d="M589 355 H611 M600 344 V366" stroke="#202832" stroke-width="3.5"/>
+    <text x="600" y="302" text-anchor="middle" font-size="18">Provision in parallel</text>
+    <circle cx="1190" cy="355" r="27" fill="white" stroke="#202832" stroke-width="5"/>
+    <text x="1190" y="406" text-anchor="middle" font-size="18">Onboarded</text>
+    <!-- IT parallel activities. -->
+    <rect x="710" y="475" width="200" height="70" rx="11" fill="white" stroke="#202832" stroke-width="2"/>
+    <g transform="translate(730 491)" fill="white" stroke="#202832" stroke-width="1.5"><path d="M-3-9 H3 L4-6 L7-5 L10-6 L13-1 L10 1 V4 L12 6 L9 11 L6 9 L3 10 L2 13 H-4 L-5 10 L-8 8 L-11 9 L-14 4 L-11 2 V-1 L-13-4 L-10-8 L-7-6 L-4-7 Z"/><circle cx="-1" cy="2" r="4"/></g>
+    <text x="810" y="522" text-anchor="middle" font-size="19">Create accounts</text>
+    <rect x="710" y="585" width="200" height="70" rx="11" fill="white" stroke="#202832" stroke-width="2"/>
+    <g transform="translate(722 595)" fill="none" stroke="#202832" stroke-width="1.6"><circle cx="7" cy="5" r="4"/><path d="M0 21 V16 Q0 11 7 11 Q14 11 14 16 V21 Z"/></g>
+    <text x="810" y="632" text-anchor="middle" font-size="19">Issue equipment</text>
+    <path d="M1045 537 L1076 568 L1045 599 L1014 568 Z" fill="white" stroke="#202832" stroke-width="2"/>
+    <path d="M1034 568 H1056 M1045 557 V579" stroke="#202832" stroke-width="3.5"/>
+    <text x="1045" y="629" text-anchor="middle" font-size="18">Ready</text>
+    <!-- Message flows cross participant boundaries. -->
+    <g fill="none" stroke="#202832" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#message)">
+      <path d="M240 175 V326"/>
+      <path d="M1190 323 V171"/>
+    </g>
+    <circle cx="240" cy="170" r="5" fill="white" stroke="#202832" stroke-width="1.8"/>
+    <circle cx="1190" cy="328" r="5" fill="white" stroke="#202832" stroke-width="1.8"/>
+    <text x="258" y="222" font-size="18">Accept offer</text>
+    <text x="1172" y="222" text-anchor="end" font-size="18">Welcome</text>
+  </g>
+</svg>

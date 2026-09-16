@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 1393 490" width="1393" height="490" role="img" data-diagram-type="blockdiagram"><title>Video streaming pipeline</title>
+<desc>Block diagram with 7 blocks, 0 summing junctions, 7 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #334155; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #0f172a; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #64748b; }
+.schematex-bd-sum { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #334155; }
+.schematex-bd-signal { stroke: #334155; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #334155; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #334155; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #0f172a; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: #0f172a; }
+.schematex-bd-branch { fill: #334155; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#334155"/></marker></defs>
+<text x="696.5" y="18" text-anchor="middle" class="schematex-bd-title">Video streaming pipeline</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 211 107 L 375 107 L 375 59 L 703 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="source" data-to="ingest"/>
+<rect x="507" y="43" width="64" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="539" y="55" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="539" dy="0">RTMP / SRT</tspan></text>
+<path d="M 768.5 86 L 768.5 408 L 768.5 408 L 768.5 182" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="ingest" data-to="encoder"/>
+<rect x="717.3" y="392" width="102.4" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="768.5" y="404" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="768.5" dy="0">mezzanine stream</tspan></text>
+<path d="M 870 155 L 989.3333333333334 155 L 989.3333333333334 347 L 1228 347" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="encoder" data-to="origin"/>
+<rect x="1063.8666666666668" y="331" width="89.60000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1108.6666666666667" y="343" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1108.6666666666667" dy="0">HLS renditions</tspan></text>
+<path d="M 1293.5 374 L 1293.5 436 L 768.5 436 L 768.5 278" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="origin" data-to="cdn"/>
+<rect x="995.8" y="420" width="70.4" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1031" y="432" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1031" dy="0">origin pull</tspan></text>
+<path d="M 871 251 L 1110 251 L 1110 155 L 1229.5 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="cdn" data-to="viewer"/>
+<rect x="1124.95" y="139" width="89.60000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1169.75" y="151" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1169.75" dy="0">adaptive video</tspan></text>
+<path d="M 231 194 L 521.6666666666666 194 L 521.6666666666666 164 L 667 164" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="control" data-to="encoder"/>
+<rect x="539.9333333333333" y="148" width="108.80000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="594.3333333333333" y="160" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="594.3333333333333" dy="0">encoding profiles</tspan></text>
+<path d="M 231 212 L 521 212 L 521 242 L 666 242" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="control" data-to="cdn"/>
+<rect x="532.7" y="226" width="121.60000000000001" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="593.5" y="238" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="593.5" dy="0">distribution policy</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(54, 80)" data-block-id="source" data-block-role="input"><rect width="157" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="2"/>
+<text x="78.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="78.5" dy="0">Live Video Source</tspan></text></g>
+<g transform="translate(703, 32)" data-block-id="ingest" data-block-role="generic"><rect width="131" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="65.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="65.5" dy="0">Ingest Gateway</tspan></text></g>
+<g transform="translate(667, 128)" data-block-id="encoder" data-block-role="generic"><rect width="203" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="101.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="101.5" dy="0">Adaptive Bitrate Encoder</tspan></text></g>
+<g transform="translate(1228, 320)" data-block-id="origin" data-block-role="generic"><rect width="131" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="65.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="65.5" dy="0">Origin Storage</tspan></text></g>
+<g transform="translate(666, 224)" data-block-id="cdn" data-block-role="generic"><rect width="205" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="102.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="102.5" dy="0">Content Delivery Network</tspan></text></g>
+<g transform="translate(1229.5, 128)" data-block-id="viewer" data-block-role="output"><rect width="128" height="54" fill="#ecfccb" class="schematex-bd-block" rx="2"/>
+<text x="64" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="64" dy="0">Viewer Player</tspan></text></g>
+<g transform="translate(34, 176)" data-block-id="control" data-block-role="controller"><rect width="197" height="54" fill="#dbeafe" class="schematex-bd-block" rx="2"/>
+<text x="98.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="98.5" dy="0">Streaming Control Plane</tspan></text></g></g>
+<g class="schematex-bd-branches"><circle cx="231" cy="203" r="3.5" class="schematex-bd-branch"/></g></g></svg>

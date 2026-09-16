@@ -1,0 +1,44 @@
+{
+  "id": "circuit-alternator-charging",
+  "type": "circuit",
+  "title": "Dual battery charging system",
+  "goal": "Show alternator charging of a starter battery and an isolated auxiliary battery supply.",
+  "rubric": [
+    {
+      "id": "alternator-rating",
+      "severity": "blocker",
+      "must": "A labelled alternator rated 14.4 VDC and 120 A is visible."
+    },
+    {
+      "id": "starter-battery-feed",
+      "severity": "major",
+      "must": "The alternator output passes through a visible 150 A fuse to the starter battery."
+    },
+    {
+      "id": "split-charge-relay",
+      "severity": "blocker",
+      "must": "A voltage-sensitive split-charge relay is visibly placed between the starter and auxiliary battery feeds."
+    },
+    {
+      "id": "auxiliary-isolator",
+      "severity": "major",
+      "must": "A 200 A auxiliary battery isolator switch is shown downstream of the split-charge relay."
+    },
+    {
+      "id": "auxiliary-fused-loads",
+      "severity": "blocker",
+      "must": "The auxiliary battery feeds auxiliary loads through a clearly labelled 80 A fuse."
+    },
+    {
+      "id": "common-chassis-return",
+      "severity": "major",
+      "must": "Both batteries and the auxiliary load visibly share a chassis earth return."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Alternator and starter battery on the fused main, the voltage-sensitive relay and isolator between the two batteries, and the auxiliary loads fused separately, all returning on the chassis."
+  }
+}

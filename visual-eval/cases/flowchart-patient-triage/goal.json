@@ -1,0 +1,87 @@
+{
+  "id": "flowchart-patient-triage",
+  "type": "flowchart",
+  "title": "Emergency department triage",
+  "goal": "Show a safe emergency-department triage process with acuity-based disposition.",
+  "rubric": [
+    {
+      "id": "life-threat-path",
+      "severity": "blocker",
+      "must": "An immediate-life-threat decision visibly routes Yes to a resuscitation bay and stabilisation."
+    },
+    {
+      "id": "dispositions",
+      "severity": "blocker",
+      "must": "The diagram visibly has separate terminators for admission-or-transfer and discharge-with-advice."
+    },
+    {
+      "id": "acuity-routing",
+      "severity": "major",
+      "must": "High-acuity symptoms visibly route to urgent clinician assessment while lower acuity enters standard assessment."
+    },
+    {
+      "id": "observation-loop",
+      "severity": "major",
+      "must": "Failure to meet discharge criteria visibly leads to observation and reassessment back toward clinical testing."
+    },
+    {
+      "id": "minor-stream",
+      "severity": "major",
+      "must": "A minor-treatment eligibility decision visibly separates minor treatment from urgent assessment."
+    },
+    {
+      "id": "readable-branching",
+      "severity": "minor",
+      "must": "Yes and No labels make the triage decisions visually legible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the flowchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows the requested triage paths and both distinct dispositions. Decision branches are labeled and traceable; the observation loop returns toward testing. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:15:15.783Z",
+      "targetHash": "a73962fc2d30",
+      "sourceHash": "1b2d4ea04195",
+      "exemplarHash": "9dd3173af796",
+      "items": [
+        {
+          "id": "life-threat-path",
+          "verdict": "pass",
+          "evidence": "“Immediate life threat?” routes Yes left to “Resuscitation bay,” then down to “Stabilise and investigate.”"
+        },
+        {
+          "id": "dispositions",
+          "verdict": "pass",
+          "evidence": "Separate end terminators are labeled “Admit or transfer” and “Discharge with advice.”"
+        },
+        {
+          "id": "acuity-routing",
+          "verdict": "pass",
+          "evidence": "“High-acuity symptoms?” routes Yes to “Urgent clinician assessment” and No to “Standard assessment queue.”"
+        },
+        {
+          "id": "observation-loop",
+          "verdict": "pass",
+          "evidence": "“Discharge criteria met?” routes No to “Observe and reassess”; a dashed loop returns toward “Tests and treatment.”"
+        },
+        {
+          "id": "minor-stream",
+          "verdict": "pass",
+          "evidence": "“Safe for minor-treatment stream?” routes Yes to “Minor treatment” and No back toward “Urgent clinician assessment.”"
+        },
+        {
+          "id": "readable-branching",
+          "verdict": "pass",
+          "evidence": "Yes and No labels are visibly placed at the decision branches; the routing is traceable."
+        }
+      ]
+    }
+  }
+}

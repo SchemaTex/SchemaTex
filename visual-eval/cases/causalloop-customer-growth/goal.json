@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-customer-growth",
+  "type": "causalloop",
+  "title": "Customer growth and capacity",
+  "goal": "A subscription team can see referral growth constrained by support capacity.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "All causal links visibly carry plus or minus polarity markers."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A named reinforcing referral-growth loop is visibly marked R."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "A named balancing capacity-constraint loop is visibly marked B."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Variables and curved directional arrows make both loops readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The capacity loop visibly includes the response-time and satisfaction chain."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/causalloop/ideal.svg (sha256 dd3e7464cebc). Delay hashes placed on their curve using the quadratic midpoint. Loop labels matched by polarity; unmatched source declarations are reported, not silently attached to the wrong loop. Footer and loop labels separated. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -1,3 +1,4 @@
+import { render } from "../../src/core/api";
 import { describe, test, expect } from "vitest";
 import { parseEntityDSL } from "../../src/diagrams/entity/parser";
 
@@ -40,8 +41,7 @@ describe("entity cluster parsing", () => {
     expect(ast.clusters[0].color).toBe("#abc");
   });
 
-  test("cluster members render a grouping box end-to-end", async () => {
-    const { render } = await import("../../src/core/api");
+  test("cluster members render a grouping box end-to-end", () => {
     const svg = render(
       `${HEADER}cluster "Group A" [members: [a, b], color: "#059669"]\na -> b : 100%`
     );

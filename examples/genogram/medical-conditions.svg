@@ -29,7 +29,7 @@
 .schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
 .schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
 .schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
-.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
 .schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
@@ -38,6 +38,7 @@
 .schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
 /* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
 .schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
 /* Sibling-of bracket (known relative, unknown ancestry) — dashed */
 .schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
 .schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
@@ -49,23 +50,23 @@
 .schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
 .schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
 </style>
-<g transform="translate(95.19999999999999, 0)"><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="father" data-to="mother"><path d="M 80.8 60 L 160.8 60" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father" data-to="mother"><path d="M 120.8 60 L 120.8 141" class="schematex-genogram-edge-path"/></g>
-<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father+mother" data-to="son"><path d="M 120.8 60 L 120.8 206" class="schematex-genogram-edge-path"/></g></g>
+<g transform="translate(102.24000000000001, 0)"><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="father" data-to="mother"><path d="M 80 60 L 160 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father" data-to="mother"><path d="M 120 60 L 120 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father+mother" data-to="son"><path d="M 120 141 L 120 206" class="schematex-genogram-edge-path"/></g></g>
 <g class="schematex-genogram-sibling-of-edges"></g>
 <g class="schematex-genogram-emotional-edges"></g>
-<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="father" transform="translate(60.8, 60)"><title>Father (1945)</title>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="father" data-status="alive" transform="translate(60, 60)"><title>Father (1945)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
-<rect x="-20" y="-20" width="40" height="40" fill="#333" class="schematex-genogram-condition-fill schematex-genogram-condition-heart-disease"/>
-<rect x="-20" y="-20" width="40" height="40" clip-path="url(#schematex-genogram-clip-half-left-rect)" fill="#333" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes"/></g>
-<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="mother" transform="translate(180.8, 60)"><title>Mother (1948)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-heart-disease" fill="#333"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes" clip-path="url(#schematex-genogram-clip-half-left-rect)" fill="#333"/></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="mother" data-status="alive" transform="translate(180, 60)"><title>Mother (1948)</title>
 <circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
-<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="son" transform="translate(120.8, 226)"><title>Son (1970)</title>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="son" data-status="alive" transform="translate(120, 226)"><title>Son (1970)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
-<rect x="-20" y="-20" width="40" height="40" fill="url(#schematex-genogram-pattern-striped)" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes"/></g></g>
-<g class="schematex-genogram-labels"><text x="60.8" y="98" class="schematex-genogram-label" data-individual-id="father">Father (b. 1945)</text>
-<text x="180.8" y="98" class="schematex-genogram-label" data-individual-id="mother">Mother (b. 1948)</text>
-<text x="120.8" y="264" class="schematex-genogram-label" data-individual-id="son">Son (b. 1970)</text></g>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-diabetes" fill="url(#schematex-genogram-pattern-striped)"/></g></g>
+<g class="schematex-genogram-labels"><text x="60" y="98" class="schematex-genogram-label" data-individual-id="father">Father (b. 1945)</text>
+<text x="180" y="98" class="schematex-genogram-label" data-individual-id="mother">Mother (b. 1948)</text>
+<text x="120" y="264" class="schematex-genogram-label" data-individual-id="son">Son (b. 1970)</text></g>
 <g class="schematex-genogram-edge-labels"></g></g></g>
 <g class="schematex-legend"><style>
 .schematex-legend { font-family: system-ui, -apple-system, sans-serif; }

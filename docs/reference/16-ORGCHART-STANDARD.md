@@ -924,6 +924,6 @@ Auto-downgrade 到 mini / iconOnly 的触发阈值 30 / 100 / 400 是经验值�
   5. 零 runtime dep → 可嵌入任何前端
 - **Key differentiators vs Lucidchart / Organimi / Pingboard：**
   1. Text DSL + diff-friendly（git commit 友好）
-  2. 开源 MIT
+  2. 开源 AGPL-3.0（商业授权双轨）
   3. ChatDiagram / MyMap AI 生成无缝集成
 - **集成路径：** ChatDiagram `/org-chart` 作为付费用户专属高级图表类型；MyMap "团队页" 视觉。

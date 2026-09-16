@@ -1,0 +1,12 @@
+circuit "Supervised Alarm Indicator Panel" netlist
+V1 L24 COM value="24 V DC" label="PS1 24 VDC"
+F1 L24 SAFE type=fuse value="500 mA" label="F1"
+S1 SAFE ZONE2 type=switch_nc value="Door NC" label="S1 DOOR"
+S2 ZONE2 ZONE3 type=switch_nc value="Window NC" label="S2 WINDOW"
+S3 ZONE3 LOOP type=switch_nc value="Smoke NC" label="S3 SMOKE"
+H1 LOOP COM type=pilot_light value="Green 24 VDC" label="H1 HEALTHY"
+K1 LOOP COM type=relay_coil value="24 VDC" label="K1 ALARM RELAY"
+K1A L24 ALARM type=relay_nc value="K1 alarm contact" label="K1 NC"
+B1 ALARM COM type=buzzer value="24 VDC, 85 dB" label="B1 BUZZER"
+H2 ALARM COM type=pilot_light value="Red 24 VDC" label="H2 ALARM"
+S4 ALARM COM type=push_no value="RESET NO" label="S4 RESET"
