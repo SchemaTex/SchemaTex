@@ -142,28 +142,41 @@ export function orthogonalRoute(
     )
       return path;
   }
+  // Building the visibility grid is the expensive half of this router: every
+  // obstacle edge and every point of every wire already drawn contributes a
+  // candidate line, so a dense schematic squares the search space. Search a
+  // window around the two ports first — an orthogonal route seldom detours far
+  // outside it — and widen only when that window holds no path. The last pass
+  // is unbounded, so the set of routes this function can find is unchanged.
+  const search = (margin: number): RoutePoint[] | undefined => {
+  const inX = (v: number) =>
+    v >= Math.min(start.x, end.x) - margin && v <= Math.max(start.x, end.x) + margin;
+  const inY = (v: number) =>
+    v >= Math.min(start.y, end.y) - margin && v <= Math.max(start.y, end.y) + margin;
   const xs = new Set([start.x, end.x]),
     ys = new Set([start.y, end.y]);
+  const addX = (v: number) => { if (inX(v)) xs.add(v); };
+  const addY = (v: number) => { if (inY(v)) ys.add(v); };
   for (const p of [start, end]) {
-    xs.add(p.x - 16);
-    xs.add(p.x + 16);
-    ys.add(p.y - 16);
-    ys.add(p.y + 16);
+    addX(p.x - 16);
+    addX(p.x + 16);
+    addY(p.y - 16);
+    addY(p.y + 16);
   }
   for (const b of boxes) {
-    xs.add(b.left - 8);
-    xs.add(b.right + 8);
-    ys.add(b.top - 8);
-    ys.add(b.bottom + 8);
+    addX(b.left - 8);
+    addX(b.right + 8);
+    addY(b.top - 8);
+    addY(b.bottom + 8);
   }
   for (const r of routes)
     for (const p of r.points) {
-      xs.add(p.x);
-      ys.add(p.y);
-      xs.add(p.x - 8);
-      xs.add(p.x + 8);
-      ys.add(p.y - 8);
-      ys.add(p.y + 8);
+      addX(p.x);
+      addY(p.y);
+      addX(p.x - 8);
+      addX(p.x + 8);
+      addY(p.y - 8);
+      addY(p.y + 8);
     }
   const xx = [...xs].sort((a, b) => a - b),
     yy = [...ys].sort((a, b) => a - b),
@@ -172,7 +185,11 @@ export function orthogonalRoute(
     x: xx[id % width]!,
     y: yy[Math.floor(id / width)]!,
   });
-  const index = (p: RoutePoint) => yy.indexOf(p.y) * width + xx.indexOf(p.x);
+  // Column and row lookup by coordinate; a linear scan here is walked once per
+  // expanded vertex and dominates the search on a large grid.
+  const columnOf = new Map(xx.map((v, i) => [v, i])),
+    rowOf = new Map(yy.map((v, i) => [v, i]));
+  const index = (p: RoutePoint) => rowOf.get(p.y)! * width + columnOf.get(p.x)!;
   const source = index(start),
     destination = index(end);
   const minStepCost = sameNet.length ? 0.35 : 1;
@@ -180,8 +197,13 @@ export function orthogonalRoute(
     const p = point(Math.floor(state / 3));
     return (Math.abs(p.x - end.x) + Math.abs(p.y - end.y)) * minStepCost;
   };
-  const distances = new Map<number, number>([[source * 3, 0]]),
-    previous = new Map<number, number>();
+  // One slot per (vertex, arrival direction). Flat arrays rather than maps:
+  // the search touches these once per relaxed edge, and on a dense drawing that
+  // is millions of lookups.
+  const states = xx.length * yy.length * 3;
+  const distances = new Float64Array(states).fill(Infinity);
+  const previous = new Int32Array(states).fill(-1);
+  distances[source * 3] = 0;
   type Entry = { state: number; cost: number; priority: number };
   const queue: Entry[] = [];
   const push = (entry: Entry) => {
@@ -253,7 +275,7 @@ export function orthogonalRoute(
   let finish: number | undefined;
   while (queue.length) {
     const current = pop();
-    if (current.cost !== distances.get(current.state)) continue;
+    if (current.cost !== distances[current.state]) continue;
     const id = Math.floor(current.state / 3),
       direction = current.state % 3;
     if (id === destination) {
@@ -320,22 +342,27 @@ export function orthogonalRoute(
       const cost =
         current.cost + edgeCost + (direction && direction !== axis ? 28 : 0);
       const state = next * 3 + axis;
-      if (cost >= (distances.get(state) ?? Infinity)) continue;
-      distances.set(state, cost);
-      previous.set(state, current.state);
+      if (cost >= distances[state]!) continue;
+      distances[state] = cost;
+      previous[state] = current.state;
       push({ state, cost, priority: cost + heuristic(state) });
     }
   }
-  if (finish === undefined)
-    throw new Error(
-      `No obstacle-free orthogonal route from (${start.x}, ${start.y}) to (${end.x}, ${end.y}); blocked ports: ${JSON.stringify(boxes.filter((b) => [start, end].some((p) => p.x > b.left && p.x < b.right && p.y > b.top && p.y < b.bottom)))}`,
-    );
+  if (finish === undefined) return undefined;
   const points: RoutePoint[] = [];
   for (
-    let state: number | undefined = finish;
-    state !== undefined;
-    state = previous.get(state)
+    let state: number = finish;
+    state >= 0;
+    state = previous[state]!
   )
     points.unshift(point(Math.floor(state / 3)));
   return compactRoute(points);
+  };
+  for (const margin of [64, 256, Infinity]) {
+    const found = search(margin);
+    if (found) return found;
+  }
+  throw new Error(
+    `No obstacle-free orthogonal route from (${start.x}, ${start.y}) to (${end.x}, ${end.y}); blocked ports: ${JSON.stringify(boxes.filter((b) => [start, end].some((p) => p.x > b.left && p.x < b.right && p.y > b.top && p.y < b.bottom)))}`,
+  );
 }

@@ -44,7 +44,7 @@ import type {
   SupplyFlagMark,
 } from "./autolayout";
 import { RAIL_LABEL } from "./autolayout";
-import { measureRouting, isBetterRouting } from "./layout-quality";
+import { measureRouting, isBetterRouting, routeSegments } from "./layout-quality";
 import { estimateTextWidth } from "../../core/text-metrics";
 import { compactRoute, intersectsBox, orthogonalRoute } from "../logic/orthogonal-router";
 
@@ -213,7 +213,23 @@ interface Box {
  * Curves use their control hull; circular arcs reserve their endpoint envelopes.
  * This deliberately includes polarity marks and text painted inside ICs.
  */
+/**
+ * Measuring a symbol means rendering its SVG and reading the geometry back out,
+ * which the router asks for thousands of times per drawing. The answer only
+ * depends on the part, so it is kept until the part's attributes are replaced —
+ * placement rewrites `attrs` wholesale, so comparing identity is enough.
+ */
+const symbolBoxCache = new WeakMap<CircuitComponent, { attrs: CircuitComponent["attrs"]; box: Box }>();
+
 function symbolBox(comp: CircuitComponent): Box {
+  const cached = symbolBoxCache.get(comp);
+  if (cached && cached.attrs === comp.attrs) return cached.box;
+  const box = measureSymbol(comp);
+  symbolBoxCache.set(comp, { attrs: comp.attrs, box });
+  return box;
+}
+
+function measureSymbol(comp: CircuitComponent): Box {
   const sym = effectiveSymbolDef(comp.componentType, comp.attrs);
   const points: PinAnchor[] = [];
   const add = (x: number, y: number) => points.push({ x, y });
@@ -426,9 +442,11 @@ function routerFor(items: LaidOutComponent[], pinMap: NonNullable<CircuitAST["pi
     }
     if (candidates.length) {
       // Use the same unique-ink/bend/crossing objective as whole-layout search,
-      // rather than accepting the first unobstructed template.
+      // rather than accepting the first unobstructed template. The ink already
+      // on the page is measured once and held fixed across the candidates.
+      const drawn = routeSegments(routes, [...nets]).segments;
       return candidates.map(points => ({ points, score: measureRouting(
-        [...routes, { netId: net, points }], [...nets]).cost,
+        [{ netId: net, points }], [...nets], { baseline: drawn }).cost,
       })).sort((a, b) => a.score - b.score)[0]!.points;
     }
     return compactRoute([from, ...orthogonalRoute(start, end, routingBoxes, occupied, net), to]);
@@ -1531,7 +1549,11 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
     // attachment alone makes parallel branches descend in a staircase.
     // Derive channels from terminals and their clear lead ends, never names.
     let bestTree = tree;
-    let bestCost = tree.length ? measureRouting([...routes, ...tree], ast.nets.map(n => n.id)).cost : Infinity;
+    // The nets routed so far are the same under every trunk option, so they are
+    // measured once here rather than re-walked for each candidate channel.
+    const netIds = ast.nets.map(n => n.id);
+    const drawn = routeSegments(routes, netIds).segments;
+    let bestCost = tree.length ? measureRouting(tree, netIds, { baseline: drawn }).cost : Infinity;
     const ends = terminalLeads(routingItems, pinMap).filter(lead => lead.net === net)
       .flatMap(lead => lead.points);
     for (const axis of ["x", "y"] as const) {
@@ -1551,7 +1573,7 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
             option.push({netId: `${net}.${pin.compId}`,
               points: routeSignal(pin.pt, taps[i]!, [...routes, ...option], net)});
           }
-          const cost = measureRouting([...routes, ...option], ast.nets.map(n => n.id)).cost;
+          const cost = measureRouting(option, netIds, { baseline: drawn }).cost;
           if (cost < bestCost) { bestTree = option; bestCost = cost; }
         } catch (error) {
           if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
@@ -1895,7 +1917,8 @@ export function schematicNetlistLayout(ast: CircuitAST, opts?: SchematicLayoutOp
     const connected = new Set(ast.nets.filter(net => net.anchors.length > 1).map(net => net.id));
     const leads = terminalLeads(layout.items.filter(item => !isGroundType(item.component)), ast.pinMap ?? {})
       .filter(lead => connected.has(lead.net));
-    const q = measureRouting(layout.routes, ast.nets.map(net => net.id), bodies.map(asObstacle), captions.map(asObstacle), leads);
+    const q = measureRouting(layout.routes, ast.nets.map(net => net.id),
+      { obstacles: bodies.map(asObstacle), captions: captions.map(asObstacle), terminals: leads });
     const aspect = Math.max(layout.width / layout.height, layout.height / layout.width);
     return { ...q, cost: q.cost + q.length * Math.max(0, aspect - MAX_ASPECT) ** 2 };
   };

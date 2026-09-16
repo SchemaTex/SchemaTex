@@ -28,22 +28,22 @@ test("bends exclude redundant collinear vertices and net prefixes stay distinct"
 
 test("body and caption collisions cannot substitute for each other", () => {
   const box = { left: 20, right: 40, top: -10, bottom: 10 };
-  const q = measureRouting([route("a", [[0, 0], [100, 0]])], ["a"], [box], [box]);
+  const q = measureRouting([route("a", [[0, 0], [100, 0]])], ["a"], { obstacles: [box], captions: [box] });
   expect(q.bodyHits).toBe(1);
   expect(q.captionHits).toBe(1);
 });
 
 test("terminal entry must extend outward along the pin axis", () => {
   const leads = [{ net: "a", points: [{ x: 0, y: 0 }, { x: -18, y: 0 }] }];
-  expect(measureRouting([route("a", [[0, 0], [0, 100]])], ["a"], [], [], leads).terminalTurns).toBe(1);
-  expect(measureRouting([route("a", [[0, 0], [100, 0]])], ["a"], [], [], leads).terminalTurns).toBe(1);
-  expect(measureRouting([route("a", [[-100, 0], [0, 0]])], ["a"], [], [], leads).terminalTurns).toBe(0);
+  expect(measureRouting([route("a", [[0, 0], [0, 100]])], ["a"], { terminals: leads }).terminalTurns).toBe(1);
+  expect(measureRouting([route("a", [[0, 0], [100, 0]])], ["a"], { terminals: leads }).terminalTurns).toBe(1);
+  expect(measureRouting([route("a", [[-100, 0], [0, 0]])], ["a"], { terminals: leads }).terminalTurns).toBe(0);
 });
 
 test('removing a body collision takes priority over shorter wiring', () => {
   const obstacle={left:4,right:6,top:-1,bottom:1};
-  const blocked=measureRouting([{netId:'n',points:[{x:0,y:0},{x:10,y:0}]}],['n'],[obstacle]);
-  const clear=measureRouting([{netId:'n',points:[{x:0,y:0},{x:0,y:3},{x:10,y:3},{x:10,y:0}]}],['n'],[obstacle]);
+  const blocked=measureRouting([{netId:'n',points:[{x:0,y:0},{x:10,y:0}]}],['n'],{obstacles:[obstacle]});
+  const clear=measureRouting([{netId:'n',points:[{x:0,y:0},{x:0,y:3},{x:10,y:3},{x:10,y:0}]}],['n'],{obstacles:[obstacle]});
   expect(clear.cost).toBeGreaterThan(blocked.cost);
   expect(isBetterRouting(clear,blocked)).toBe(true);
   expect(isBetterRouting(blocked,clear)).toBe(false);

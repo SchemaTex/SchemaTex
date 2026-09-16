@@ -377,3 +377,42 @@ state Payment {
     expect(result.status).toBe("valid");
   });
 });
+
+describe("22.2 dense circuit layout cost", () => {
+  it("lays out a dense selector graph without an algorithmic blow-up", () => {
+    // Two parallel resistor ladders off a centre-off selector: 74 components,
+    // every one of them wired, which is where circuit routing costs the most.
+    //
+    // The bound is a catastrophe guard, not a target. This case measures around
+    // eight seconds today; it once ran in nineteen milliseconds and regressed to
+    // forty-eight seconds when the router began rebuilding its visibility grid
+    // and re-scoring every wire already on the page for each new candidate. A
+    // generous ceiling still catches that class of regression, and nothing else
+    // in the suite times anything.
+    const depth = 18;
+    const lines = [
+      "V1 live 0 12V",
+      "S1 live left right type=switch_spdt_center_off",
+    ];
+    for (const side of ["left", "right"]) {
+      for (let layer = 0; layer < depth; layer++) {
+        const from = layer === 0 ? side : `${side}${layer}`;
+        const to = layer === depth - 1 ? "0" : `${side}${layer + 1}`;
+        const prefix = side[0]!.toUpperCase();
+        lines.push(`R${prefix}${layer}a ${from} ${to} 1k`);
+        lines.push(`R${prefix}${layer}b ${from} ${to} 1k`);
+      }
+    }
+    const ast = parseNetlist(lines.join("\n"));
+    // CPU time, not wall clock: the suite runs many files at once, and a loaded
+    // machine would otherwise fail this for reasons that have nothing to do
+    // with the layout.
+    const started = process.cpuUsage();
+    const layout = layoutCircuitNetlist(ast);
+    const spent = process.cpuUsage(started);
+    const seconds = (spent.user + spent.system) / 1e6;
+
+    expect(layout.items.length).toBe(ast.components.length);
+    expect(seconds).toBeLessThan(20);
+  }, 60_000);
+});
