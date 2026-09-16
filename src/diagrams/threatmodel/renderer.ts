@@ -35,8 +35,9 @@ import {
   STROKE_WIDTH,
   resolveBaseTheme,
 } from "../../core/theme";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { parseThreatModel } from "./parser";
-import { layoutThreatModel, TM_CONST as C } from "./layout";
+import { layoutThreatModel } from "./layout";
 import type {
   LaidOutFlow,
   LaidOutNode,
@@ -63,7 +64,7 @@ export function renderThreatModelLayout(
   const a11y = layout.ast.title ?? "Threat model (DFD + STRIDE)";
 
   // Security accent — red, reserved for boundaries and boundary-crossing flows.
-  const danger = "#c62828";
+  const danger = theme.negative;
 
   const styleBlock = el(
     "style",
@@ -77,14 +78,14 @@ export function renderThreatModelLayout(
 .sx-tm-store-bg { fill: ${theme.bg}; stroke: none; }
 .sx-tm-label { fill: ${theme.text}; font-size: ${FONT_SIZE.label}px; font-weight: 600; }
 .sx-tm-flow { fill: none; stroke: ${theme.stroke}; stroke-width: ${STROKE_WIDTH.normal}; }
-.sx-tm-flow[data-crossing="true"] { stroke: ${danger}; stroke-width: ${STROKE_WIDTH.thick}; }
+.sx-tm-flow[data-crossing="true"] { stroke: ${danger}; stroke-width: ${STROKE_WIDTH.normal}; }
 .sx-tm-arrow { fill: ${theme.stroke}; stroke: none; }
 .sx-tm-arrow[data-crossing="true"] { fill: ${danger}; }
 .sx-tm-flow-label { fill: ${theme.text}; font-size: ${FONT_SIZE.small}px; }
 .sx-tm-flow-label[data-crossing="true"] { fill: ${danger}; font-weight: 700; }
 .sx-tm-flow-halo { fill: ${theme.bg}; stroke: none; }
-.sx-tm-boundary { fill: none; stroke: ${danger}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6 4; }
-.sx-tm-boundary-label { fill: ${danger}; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
+.sx-tm-boundary { fill: none; stroke: ${theme.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6 4; }
+.sx-tm-boundary-label { fill: ${theme.textMuted}; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
 .sx-tm-badge { fill: ${theme.accent}; }
 .sx-tm-badge[data-cond-r="true"] { fill: ${danger}; }
 .sx-tm-badge-text { fill: #ffffff; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
@@ -127,7 +128,7 @@ export function renderThreatModelLayout(
             y: b.y,
             width: b.w,
             height: b.h,
-            rx: 14,
+            rx: 4,
             class: "sx-tm-boundary",
           }),
           svgText(
@@ -182,7 +183,7 @@ function renderNode(n: LaidOutNode, fontFamily: string): string {
 
   if (n.kind === "process") {
     parts.push(
-      circle({ cx: n.cx, cy: n.cy, r: C.PROCESS_R, class: "sx-tm-process" })
+      circle({ cx: n.cx, cy: n.cy, r: n.w / 2, class: "sx-tm-process" })
     );
     parts.push(idLabel(n, fontFamily));
   } else if (n.kind === "external") {
@@ -219,8 +220,8 @@ function renderNode(n: LaidOutNode, fontFamily: string): string {
 function idLabel(n: LaidOutNode, fontFamily: string): string {
   const text =
     n.kind === "process" && /^[\d.]+$/.test(n.id)
-      ? `${n.id}\n${n.label}`
-      : n.label;
+      ? `${n.id}\n${n.labelLines.join("\n")}`
+      : n.labelLines.join("\n");
   return multilineText(
     {
       x: n.cx,
@@ -277,7 +278,7 @@ function renderFlow(f: LaidOutFlow, fontFamily: string): string {
   const crossing = f.crossesBoundary ? "true" : undefined;
   const marker = f.crossesBoundary ? "url(#sx-tm-mk-x)" : "url(#sx-tm-mk)";
 
-  const labelHaloW = f.label.length * 5.4 + 8;
+  const labelHaloW = estimateTextWidth(f.label, FONT_SIZE.small) + 8;
   const parts: string[] = [
     svgPath({
       d,

@@ -1,0 +1,16 @@
+# Moreno sociogram: project communication choices identify a coordinator star and a weakly connected specialist.
+sociogram "Project Team Communication"
+  config: highlight = stars, isolates
+  ana
+  bo
+  cy
+  dion
+  erin
+  faye
+  ana -> cy
+  bo -> cy
+  dion -> cy
+  erin -> cy
+  cy <-> faye
+  ana <-> bo
+  dion -> faye

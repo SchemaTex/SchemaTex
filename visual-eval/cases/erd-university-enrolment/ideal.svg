@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1382" viewBox="0 0 1048 905">
+<title>University enrolment schema — course registration</title>
+<rect width="1048" height="905" fill="#ffffff"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#0f172a}.edge{fill:none;stroke:#334155;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.verb{font-size:10.5px;fill:#475569;paint-order:stroke;stroke:#ffffff;stroke-width:5;stroke-linejoin:round}.entity{font-size:13px;font-weight:600;letter-spacing:.45px}.field{font-size:12px}.type{font-size:12px;fill:#475569}.key{font-size:10px;font-weight:700;fill:#ffffff}</style>
+<text x="46" y="44" font-size="20" font-weight="600">University enrolment schema — course registration</text>
+<text x="46" y="66" font-size="10.5" fill="#475569" style="fill:#475569;letter-spacing:.2px">CROW'S-FOOT (IE) NOTATION · 7 TABLES · 7 RELATIONSHIPS</text>
+<path d="M46 76H1002" stroke="#94a3b8" stroke-width="1"/>
+
+<path class="edge" d="M300 206H400"/>
+<path class="edge" d="M311.0 199.5L311.0 212.5"/>
+<path class="edge" d="M400 213L388 206L400 199"/>
+<circle cx="377" cy="206" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="350" y="196" text-anchor="middle">owns</text>
+<path class="edge" d="M160 150V108H880V150"/>
+<path class="edge" d="M153.5 139.0L166.5 139.0"/>
+<path class="edge" d="M873 150L880 138L887 150"/>
+<circle cx="880" cy="127" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="520" y="101" text-anchor="middle">employs</text>
+<path class="edge" d="M654 250H704V446H754"/>
+<path class="edge" d="M665.0 243.5L665.0 256.5"/>
+<path class="edge" d="M754 453L742 446L754 439"/>
+<circle cx="731" cy="446" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="680" y="240" text-anchor="middle">offers</text>
+<path class="edge" d="M890 268V400"/>
+<path class="edge" d="M896.5 279.0L883.5 279.0"/>
+<path class="edge" d="M883 400L890 388L897 400"/>
+<circle cx="890" cy="377" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="919" y="337" text-anchor="middle">teaches</text>
+<path class="edge" d="M300 483H400"/>
+<path class="edge" d="M311.0 476.5L311.0 489.5"/>
+<path class="edge" d="M400 490L388 483L400 476"/>
+<circle cx="377" cy="483" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="350" y="472" text-anchor="middle">registers</text>
+<path class="edge" d="M754 520H654"/>
+<path class="edge" d="M743.0 526.5L743.0 513.5"/>
+<path class="edge" d="M654 513L666 520L654 527"/>
+<circle cx="677" cy="520" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="704" y="509" text-anchor="middle">receives</text>
+<path class="edge" d="M880 630V568"/>
+<path class="edge" d="M873.5 619.0L886.5 619.0"/>
+<path class="edge" d="M887 568L880 580L873 568"/>
+<circle cx="880" cy="591" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="920" y="608" text-anchor="middle">schedules</text>
+<rect x="46" y="150" width="254" height="93" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M46 182H300"/>
+<text class="entity" x="173.0" y="171" text-anchor="middle">DEPARTMENT</text>
+<text class="field" x="58" y="204" font-weight="600" text-decoration="underline">department_id</text>
+<text class="type" x="258" y="204" text-anchor="end">int</text>
+<rect x="266" y="193" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="277" y="204" text-anchor="middle">PK</text>
+<path d="M46 212H300" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="58" y="229">name</text>
+<text class="type" x="258" y="229" text-anchor="end">string</text>
+<rect x="400" y="150" width="254" height="143" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M400 182H654"/>
+<text class="entity" x="527.0" y="171" text-anchor="middle">COURSE</text>
+<text class="field" x="412" y="204" font-weight="600" text-decoration="underline">course_id</text>
+<text class="type" x="612" y="204" text-anchor="end">int</text>
+<rect x="620" y="193" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="631" y="204" text-anchor="middle">PK</text>
+<path d="M400 212H654" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="412" y="229">department_id</text>
+<text class="type" x="612" y="229" text-anchor="end">int</text>
+<rect x="620" y="218" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="631" y="229" text-anchor="middle">FK</text>
+<path d="M412 237H642" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="412" y="254">course_code</text>
+<text class="type" x="612" y="254" text-anchor="end">string</text>
+<path d="M412 262H642" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="412" y="279">title</text>
+<text class="type" x="612" y="279" text-anchor="end">string</text>
+<rect x="754" y="150" width="254" height="118" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M754 182H1008"/>
+<text class="entity" x="881.0" y="171" text-anchor="middle">INSTRUCTOR</text>
+<text class="field" x="766" y="204" font-weight="600" text-decoration="underline">instructor_id</text>
+<text class="type" x="966" y="204" text-anchor="end">int</text>
+<rect x="974" y="193" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="985" y="204" text-anchor="middle">PK</text>
+<path d="M754 212H1008" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="766" y="229">department_id</text>
+<text class="type" x="966" y="229" text-anchor="end">int</text>
+<rect x="974" y="218" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="229" text-anchor="middle">FK</text>
+<path d="M766 237H996" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="766" y="254">name</text>
+<text class="type" x="966" y="254" text-anchor="end">string</text>
+<rect x="46" y="420" width="254" height="118" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M46 452H300"/>
+<text class="entity" x="173.0" y="441" text-anchor="middle">STUDENT</text>
+<text class="field" x="58" y="474" font-weight="600" text-decoration="underline">student_id</text>
+<text class="type" x="258" y="474" text-anchor="end">int</text>
+<rect x="266" y="463" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="277" y="474" text-anchor="middle">PK</text>
+<path d="M46 482H300" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="58" y="499">email</text>
+<text class="type" x="258" y="499" text-anchor="end">string</text>
+<path d="M58 507H288" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="58" y="524">full_name</text>
+<text class="type" x="258" y="524" text-anchor="end">string</text>
+<rect x="400" y="420" width="254" height="143" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M400 452H654"/>
+<text class="entity" x="527.0" y="441" text-anchor="middle">ENROLMENT</text>
+<text class="field" x="412" y="474" font-weight="600" text-decoration="underline">enrolment_id</text>
+<text class="type" x="612" y="474" text-anchor="end">int</text>
+<rect x="620" y="463" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="631" y="474" text-anchor="middle">PK</text>
+<path d="M400 482H654" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="412" y="499">student_id</text>
+<text class="type" x="612" y="499" text-anchor="end">int</text>
+<rect x="620" y="488" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="631" y="499" text-anchor="middle">FK</text>
+<path d="M412 507H642" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="412" y="524">section_id</text>
+<text class="type" x="612" y="524" text-anchor="end">int</text>
+<rect x="620" y="513" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="631" y="524" text-anchor="middle">FK</text>
+<path d="M412 532H642" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="412" y="549">grade</text>
+<text class="type" x="612" y="549" text-anchor="end">string</text>
+<rect x="754" y="400" width="254" height="168" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M754 432H1008"/>
+<text class="entity" x="881.0" y="421" text-anchor="middle">SECTION</text>
+<text class="field" x="766" y="454" font-weight="600" text-decoration="underline">section_id</text>
+<text class="type" x="966" y="454" text-anchor="end">int</text>
+<rect x="974" y="443" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="985" y="454" text-anchor="middle">PK</text>
+<path d="M754 462H1008" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="766" y="479">course_id</text>
+<text class="type" x="966" y="479" text-anchor="end">int</text>
+<rect x="974" y="468" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="479" text-anchor="middle">FK</text>
+<path d="M766 487H996" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="766" y="504">instructor_id</text>
+<text class="type" x="966" y="504" text-anchor="end">int</text>
+<rect x="974" y="493" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="504" text-anchor="middle">FK</text>
+<path d="M766 512H996" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="766" y="529">term_id</text>
+<text class="type" x="966" y="529" text-anchor="end">int</text>
+<rect x="974" y="518" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="529" text-anchor="middle">FK</text>
+<path d="M766 537H996" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="766" y="554">room</text>
+<text class="type" x="966" y="554" text-anchor="end">string</text>
+<rect x="754" y="630" width="254" height="118" rx="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<path class="edge" d="M754 662H1008"/>
+<text class="entity" x="881.0" y="651" text-anchor="middle">TERM</text>
+<text class="field" x="766" y="684" font-weight="600" text-decoration="underline">term_id</text>
+<text class="type" x="966" y="684" text-anchor="end">int</text>
+<rect x="974" y="673" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="985" y="684" text-anchor="middle">PK</text>
+<path d="M754 692H1008" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="766" y="709">name</text>
+<text class="type" x="966" y="709" text-anchor="end">string</text>
+<path d="M766 717H996" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="766" y="734">starts_on</text>
+<text class="type" x="966" y="734" text-anchor="end">date</text>
+<rect x="787" y="768" width="215" height="108" rx="4" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/><text x="801" y="789" font-size="10.5" font-weight="600" style="fill:#475569;letter-spacing:.35px">CARDINALITY</text>
+<path class="edge" d="M801 808H845M845 800V816"/>
+<path class="edge" d="M834.0 814.5L834.0 801.5"/>
+<text x="857" y="811.5" font-size="10" style="fill:#475569">exactly one</text>
+<path class="edge" d="M801 826H845M845 818V834"/>
+<circle cx="834" cy="826" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text x="857" y="829.5" font-size="10" style="fill:#475569">zero or one</text>
+<path class="edge" d="M801 844H845M845 836V852"/>
+<path class="edge" d="M845 851L833 844L845 837"/>
+<path class="edge" d="M822.0 850.5L822.0 837.5"/>
+<text x="857" y="847.5" font-size="10" style="fill:#475569">one or many</text>
+<path class="edge" d="M801 862H845M845 854V870"/>
+<path class="edge" d="M845 869L833 862L845 855"/>
+<circle cx="822" cy="862" r="4" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text x="857" y="865.5" font-size="10" style="fill:#475569">zero or many</text>
+</svg>

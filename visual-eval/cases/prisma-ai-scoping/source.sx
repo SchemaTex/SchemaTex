@@ -1,0 +1,23 @@
+# Scenario: PRISMA-ScR mapping review; sources of evidence equal the final reports.
+prisma
+mode: 2020-single
+kind: scoping-review
+title: "AI-supported formative assessment in schools"
+identification:
+  databases:
+    n: 2100
+    sources: ERIC=650, Scopus=600, PsycINFO=450, IEEE Xplore=400
+    duplicates-removed: 420
+screening:
+  records-screened: 1680
+  excluded:
+    n: 1410
+    reasons: not education=500, not formative assessment=490, not AI=420
+eligibility:
+  full-text-assessed: 270
+  excluded:
+    n: 198
+    reasons: wrong publication type=72, no full text=51, wrong setting=75
+included:
+  studies: 72
+  reports: 72

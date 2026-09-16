@@ -1,0 +1,12 @@
+gitgraph
+  commit id: "a1"
+  commit id: "a2"
+  branch feature-export
+  checkout feature-export
+  commit id: "csv-export"
+  commit id: "pdf-export"
+  checkout main
+  commit id: "a3"
+  cherry-pick id: "csv-export"
+  cherry-pick id: "pdf-export"
+  commit id: "release" tag: "v3.1"

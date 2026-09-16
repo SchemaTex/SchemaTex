@@ -1,0 +1,17 @@
+# Assumptions: independent redundant control pods serve a subsea production tree; hydraulic supply is common.
+# The function succeeds if either complete pod path operates after the common supply is available.
+rbd "Subsea control system"
+  series {
+    block HPU "Hydraulic power unit" R=0.985
+    parallel {
+      series {
+        block POD_A "Control pod A" R=0.96
+        block UMB_A "Umbilical channel A" R=0.985
+      }
+      series {
+        block POD_B "Control pod B" R=0.96
+        block UMB_B "Umbilical channel B" R=0.985
+      }
+    }
+    block TREE "Tree valve actuator" R=0.975
+  }

@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 813.3 1204" width="813.3" height="1204" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>Flowchart</title>
+<desc>Flowchart with 16 nodes and 19 edges.</desc>
+<style>.sx-fc { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f1f5f9; stroke: #334155; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #334155; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #334155; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #334155; }
+.sx-fc-node-text { fill: #0f172a; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-icon { stroke: #0f172a; fill: none; }
+.sx-fc-icon-fill { fill: #0f172a; stroke: none; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #334155; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #475569; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #94a3b8; stroke-width: 0.5; }
+.sx-fc-title { fill: #0f172a; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Shape sub-elements */
+.sx-fc-node-subline { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-arc { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-ring { fill: none; stroke: #334155; stroke-width: 1.8; }
+/* Cluster (subgraph) */
+.sx-fc-cluster { fill: #f1f5f9; fill-opacity: 0.35; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 5,3; }
+.sx-fc-cluster-title { fill: #475569; font: 500 11px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+
+<g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-edge-index="0" data-kind="solid" data-from="A" data-to="B"><path d="M 409.35 68 L 409.35 106 L 409.35 106 L 409.35 144" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-edge-index="1" data-kind="solid" data-from="B" data-to="C"><path d="M 409.35 188 L 409.35 226 L 409.35 226 L 409.35 264" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C</title></g>
+<g data-edge-id="C-&gt;D" data-edge-index="2" data-kind="solid" data-from="C" data-to="D"><path d="M 409.35 316 L 409.35 354 L 137.4 354 L 137.4 396" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → D: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="258.625" y="338" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="273.375" y="346" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="D-&gt;E" data-edge-index="3" data-kind="solid" data-from="D" data-to="E"><path d="M 137.4 440 L 137.4 482 L 137.4 482 L 137.4 520" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>D → E</title></g>
+<g data-edge-id="E-&gt;F" data-edge-index="4" data-kind="solid" data-from="E" data-to="F"><path d="M 137.4 564 L 137.4 602 L 137.4 602 L 137.4 640" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>E → F</title></g>
+<g data-edge-id="C-&gt;G" data-edge-index="5" data-kind="solid" data-from="C" data-to="G"><path d="M 409.35 316 L 409.35 354 L 573.55 354 L 573.55 392" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → G: No</title>
+<g class="sx-fc-edge-label-g"><rect x="479.94999999999993" y="338" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="491.44999999999993" y="346" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="G-&gt;H" data-edge-index="6" data-kind="solid" data-from="G" data-to="H"><path d="M 573.55 444 L 573.55 482 L 681.3 482 L 681.3 542 L 681.3 602 L 681.3 602 L 681.3 666 L 681.3 730 L 681.3 730 L 681.3 768" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>G → H: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="612.675" y="466" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="627.425" y="474" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="H-&gt;I" data-edge-index="7" data-kind="solid" data-from="H" data-to="I"><path d="M 681.3 812 L 681.3 850 L 681.3 850 L 681.3 914 L 681.3 978 L 681.3 978 L 681.3 1038 L 681.3 1098 L 464.6 1098 L 464.6 1136" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → I</title></g>
+<g data-edge-id="I-&gt;F" data-edge-index="8" data-kind="solid" data-from="I" data-to="F"><path d="M 137.4 692 L 137.4 730 L 22.9 730 L 22.9 790 L 22.9 850 L 22.9 850 L 22.9 914 L 22.9 978 L 22.9 978 L 22.9 1038 L 22.9 1098 L 464.6 1098 L 464.6 1136" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>I → F</title></g>
+<g data-edge-id="G-&gt;J" data-edge-index="9" data-kind="solid" data-from="G" data-to="J"><path d="M 573.55 444 L 573.55 482 L 465.8 482 L 465.8 520" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>G → J: No</title>
+<g class="sx-fc-edge-label-g"><rect x="508.17499999999995" y="466" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="519.675" y="474" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="J-&gt;K" data-edge-index="10" data-kind="solid" data-from="J" data-to="K"><path d="M 465.8 564 L 465.8 602 L 465.8 602 L 465.8 640" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>J → K</title></g>
+<g data-edge-id="K-&gt;L" data-edge-index="11" data-kind="solid" data-from="K" data-to="L"><path d="M 465.8 692 L 465.8 730 L 465.8 730 L 465.8 768" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → L: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="471.79999999999995" y="722" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="471.79999999999995" y="730" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="K-&gt;H" data-edge-index="12" data-kind="solid" data-from="K" data-to="H"><path d="M 465.8 692 L 465.8 730 L 681.3 730 L 681.3 768" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → H: No</title>
+<g class="sx-fc-edge-label-g"><rect x="562.05" y="714" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="573.55" y="722" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="L-&gt;M" data-edge-index="13" data-kind="solid" data-from="L" data-to="M"><path d="M 465.8 812 L 465.8 850 L 358.85 850 L 358.85 888" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>L → M</title></g>
+<g data-edge-id="F-&gt;N" data-edge-index="14" data-kind="solid" data-from="F" data-to="N"><path d="M 137.4 692 L 137.4 730 L 137.4 730 L 137.4 768" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → N: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="143.39999999999998" y="722" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="143.39999999999998" y="730" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="F-&gt;M" data-edge-index="15" data-kind="solid" data-from="F" data-to="M"><path d="M 137.4 692 L 137.4 730 L 251.9 730 L 251.9 790 L 251.9 850 L 358.85 850 L 358.85 888" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → M: No</title>
+<g class="sx-fc-edge-label-g"><rect x="183.14999999999998" y="714" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="194.64999999999998" y="722" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="M-&gt;O" data-edge-index="16" data-kind="solid" data-from="M" data-to="O"><path d="M 358.85 940 L 358.85 978 L 253.1 978 L 253.1 1016" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>M → O: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="291.22499999999997" y="962" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="305.97499999999997" y="970" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="M-&gt;P" data-edge-index="17" data-kind="solid" data-from="M" data-to="P"><path d="M 358.85 940 L 358.85 978 L 464.6 978 L 464.6 1016" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>M → P: No</title>
+<g class="sx-fc-edge-label-g"><rect x="400.22499999999997" y="962" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="411.72499999999997" y="970" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="P-&gt;I" data-edge-index="18" data-kind="dotted" data-from="P" data-to="I"><path d="M 464.6 1060 L 464.6 1098 L 464.6 1098 L 464.6 1136" class="sx-fc-edge sx-fc-edge-dotted" marker-end="url(#sx-fc-arrow)"/>
+<title>P → I</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="A" data-shape="stadium" data-layer="0" class="sx-fc-node-g" transform="translate(342.35 24)"><rect x="0" y="0" width="134" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="67" dy="0">Patient arrives</tspan></text>
+<title>Patient arrives</title></g>
+<g data-node-id="B" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(287.85 144)"><rect x="0" y="0" width="243" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="121.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="121.5" dy="0">Register and assess vital signs</tspan></text>
+<title>Register and assess vital signs</title></g>
+<g data-node-id="C" data-shape="diamond" data-layer="2" class="sx-fc-node-g" transform="translate(281.95 264)"><polygon points="127.39999999999999,0 254.79999999999998,26 127.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="127.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="127.39999999999999" dy="0">Immediate life threat?</tspan></text>
+<title>Immediate life threat?</title></g>
+<g data-node-id="D" data-shape="subroutine" data-layer="3" class="sx-fc-node-g" transform="translate(45.4 396)"><rect x="0" y="0" width="184" height="44" rx="2" class="sx-fc-node"/><line x1="10" y1="0" x2="10" y2="44" class="sx-fc-node-subline"/><line x1="174" y1="0" x2="174" y2="44" class="sx-fc-node-subline"/>
+<text x="92" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="92" dy="0">Resuscitation bay</tspan></text>
+<title>Resuscitation bay</title></g>
+<g data-node-id="G" data-shape="diamond" data-layer="3" class="sx-fc-node-g" transform="translate(451.05 392)"><polygon points="122.49999999999999,0 244.99999999999997,26 122.49999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="122.49999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="122.49999999999999" dy="0">High-acuity symptoms?</tspan></text>
+<title>High-acuity symptoms?</title></g>
+<g data-node-id="E" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(35.9 520)"><rect x="0" y="0" width="203" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="101.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="101.5" dy="0">Stabilise and investigate</tspan></text>
+<title>Stabilise and investigate</title></g>
+<g data-node-id="J" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(364.3 520)"><rect x="0" y="0" width="203" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="101.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="101.5" dy="0">Standard assessment queue</tspan></text>
+<title>Standard assessment queue</title></g>
+<g data-node-id="F" data-shape="diamond" data-layer="5" class="sx-fc-node-g" transform="translate(24 640)"><polygon points="113.39999999999999,0 226.79999999999998,26 113.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="113.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="113.39999999999999" dy="0">Requires admission?</tspan></text>
+<title>Requires admission?</title></g>
+<g data-node-id="K" data-shape="diamond" data-layer="5" class="sx-fc-node-g" transform="translate(290.8 640)"><polygon points="175,0 350,26 175,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="175" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="175" dy="0">Safe for minor-treatment stream?</tspan></text>
+<title>Safe for minor-treatment stream?</title></g>
+<g data-node-id="N" data-shape="stadium" data-layer="6" class="sx-fc-node-g" transform="translate(63.4 768)"><rect x="0" y="0" width="148" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="74" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="74" dy="0">Admit or transfer</tspan></text>
+<title>Admit or transfer</title></g>
+<g data-node-id="L" data-shape="rect" data-layer="6" class="sx-fc-node-g" transform="translate(398.8 768)"><rect x="0" y="0" width="134" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="67" dy="0">Minor treatment</tspan></text>
+<title>Minor treatment</title></g>
+<g data-node-id="H" data-shape="rect" data-layer="6" class="sx-fc-node-g" transform="translate(573.3 768)"><rect x="0" y="0" width="216" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="108" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="108" dy="0">Urgent clinician assessment</tspan></text>
+<title>Urgent clinician assessment</title></g>
+<g data-node-id="M" data-shape="diamond" data-layer="7" class="sx-fc-node-g" transform="translate(226.55 888)"><polygon points="132.29999999999998,0 264.59999999999997,26 132.29999999999998,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="132.29999999999998" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="132.29999999999998" dy="0">Discharge criteria met?</tspan></text>
+<title>Discharge criteria met?</title></g>
+<g data-node-id="O" data-shape="stadium" data-layer="8" class="sx-fc-node-g" transform="translate(165.6 1016)"><rect x="0" y="0" width="175" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="87.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="87.5" dy="0">Discharge with advice</tspan></text>
+<title>Discharge with advice</title></g>
+<g data-node-id="P" data-shape="rect" data-layer="8" class="sx-fc-node-g" transform="translate(380.6 1016)"><rect x="0" y="0" width="168" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="84" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="84" dy="0">Observe and reassess</tspan></text>
+<title>Observe and reassess</title></g>
+<g data-node-id="I" data-shape="rect" data-layer="9" class="sx-fc-node-g" transform="translate(383.6 1136)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="81" dy="0">Tests and treatment</tspan></text>
+<title>Tests and treatment</title></g></g></svg>

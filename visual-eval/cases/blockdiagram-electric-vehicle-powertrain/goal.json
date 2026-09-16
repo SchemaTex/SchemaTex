@@ -1,0 +1,45 @@
+{
+  "id": "blockdiagram-electric-vehicle-powertrain",
+  "type": "blockdiagram",
+  "title": "Electric vehicle powertrain",
+  "goal": "Show energy flow from charging grid through battery and traction drive to wheels.",
+  "rubric": [
+    {
+      "id": "input",
+      "severity": "blocker",
+      "must": "A labelled input block Charging Grid is visibly shown."
+    },
+    {
+      "id": "flow",
+      "severity": "blocker",
+      "must": "The picture visibly shows a continuous charger-to-wheel energy path."
+    },
+    {
+      "id": "control",
+      "severity": "blocker",
+      "must": "battery management control links to battery and inverter are visibly distinct from the primary flow."
+    },
+    {
+      "id": "arrows",
+      "severity": "major",
+      "must": "All signal or energy connections visibly use directional arrowheads."
+    },
+    {
+      "id": "roles",
+      "severity": "major",
+      "must": "Input, control, processing, and output blocks are visibly differentiated by role or placement."
+    },
+    {
+      "id": "labels",
+      "severity": "minor",
+      "must": "Connection labels identify the principal signal, energy, or data transformations."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Refreshed against the September 15 exemplar: role fills, ink signal lines, 4 px block corners and restrained typography. Each target retains its own functional topology; generic blocks are not assigned inferred hardware roles."
+  }
+}

@@ -1,0 +1,18 @@
+gitgraph
+  commit id: "t1"
+  branch fix-header
+  checkout fix-header
+  commit id: "header-css"
+  checkout main
+  merge fix-header id: "m1"
+  branch add-search
+  checkout add-search
+  commit id: "search-box"
+  checkout main
+  commit id: "t2"
+  merge add-search id: "m2"
+  branch flag-billing
+  checkout flag-billing
+  commit id: "billing-flag"
+  checkout main
+  merge flag-billing id: "m3" tag: "deploy-42"

@@ -1,0 +1,46 @@
+{
+  "id": "pert-film-production",
+  "type": "pert",
+  "variant": "network",
+  "title": "Feature film production",
+  "goal": "Show a film schedule from greenlight through festival delivery with coordinated production and post-production dependencies.",
+  "rubric": [
+    {
+      "id": "photography-gate",
+      "severity": "blocker",
+      "must": "Principal photography visibly waits for both cast leads and built sets."
+    },
+    {
+      "id": "post-finish-gate",
+      "severity": "blocker",
+      "must": "Final colour grade visibly waits for both sound mix and visual effects before festival delivery."
+    },
+    {
+      "id": "development-to-production",
+      "severity": "major",
+      "must": "A visible chain runs from Greenlight through screenplay, casting or locations, and principal photography."
+    },
+    {
+      "id": "parallel-post",
+      "severity": "major",
+      "must": "Sound design and visual effects visibly branch in parallel after picture edit."
+    },
+    {
+      "id": "milestones",
+      "severity": "major",
+      "must": "Greenlight and Festival Delivery are visibly distinguished as milestones."
+    },
+    {
+      "id": "critical-path",
+      "severity": "minor",
+      "must": "The longest dependency chain is visibly highlighted as the critical path."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/pert/network/ideal.svg (sha256 63a6affd85e5). Exemplar six-value schedule cells. Early/late times and total float independently calculated from source dependencies. Original milestone symbols and topology retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

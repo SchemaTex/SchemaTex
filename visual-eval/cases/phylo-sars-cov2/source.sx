@@ -1,0 +1,5 @@
+# SARS-CoV-2 lineage tree: Alpha and Delta are distinct early branches; Omicron sublineages form a recent clade.
+phylo "SARS-CoV-2 Variant Tree" [layout: rectangular, mode: phylogram]
+  newick: "((Alpha:0.0018,Beta:0.0021):0.0008,(Delta:0.0025,(BA.1:0.0012,BA.2:0.0014):0.0011):0.0009);"
+  clade Omicron = (BA.1, BA.2) [color: "#E53935"]
+  scale "substitutions/site"

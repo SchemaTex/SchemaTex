@@ -1,0 +1,64 @@
+# MainTask (10 ms) / DrillStation / SpindleAndToolLife
+# AB instruction semantics: TIMER in ms; COUNTER in finished parts.
+# StopOK and SafetyOK are healthy-high; safety relay controls drive STO.
+# Start_OS is a dedicated BOOL storage bit, not an input alias.
+# CycleDone is held for at least one task scan and drops between parts.
+# DriveReady means available to run (not a stopped-only ready indication).
+# AtSpeed false is not a safe-standstill indication; tool service uses the machine isolation procedure.
+# FeedPermit is the new-cycle permissive to the separate drill sequencer.
+# PRE and ACC preserve AB operands; status pins and AB glyph style are not expressible in this DSL.
+ladder "Drill station · spindle control & tool life"
+
+rung 0 "Acknowledge spindle fault only with the run command off and the drive healthy.":
+  XIC(FaultResetPB)
+  XIO(SpindleRun)
+  XIO(DriveFault)
+  OTU(SpindleFault)
+
+rung 1 "Allow 3 s to prove spindle speed; also detect sustained loss of speed while running.":
+  XIC(SpindleRun)
+  XIO(AtSpeed)
+  TON(SpeedProof, PRE=3000, ACC=0)
+
+rung 2 "Latch a drive trip or speed timeout. Set follows reset, so an active fault wins.":
+  parallel:
+    branch:
+      XIC(DriveFault)
+    branch:
+      XIC(SpeedProof.DN)
+  OTL(SpindleFault)
+
+rung 3 "A fresh Start edge seals in the spindle; Stop or loss of any permissive drops the command.":
+  parallel:
+    branch:
+      XIC(StartPB)
+      ONS(Start_OS)
+    branch:
+      XIC(SpindleRun)
+  XIC(StopOK)
+  XIC(SafetyOK)
+  XIC(DriveReady)
+  XIO(SpindleFault)
+  OTE(SpindleRun)
+
+rung 4 "Count each completed part once. CTU detects the rising edge; tool life is 500 parts.":
+  XIC(CycleDone, name="From drill sequencer")
+  CTU(ToolLife, PRE=500, ACC=0)
+
+rung 5 "After replacing the tool, reset its count only with the spindle stopped and the cycle idle.":
+  XIC(ToolResetPB)
+  XIO(SpindleRun)
+  XIO(AtSpeed)
+  XIO(CycleActive)
+  RES(ToolLife)
+
+rung 6 "Permit a new drilling cycle only at speed and below the tool-life limit.":
+  XIC(SpindleRun)
+  XIC(AtSpeed)
+  XIO(SpindleFault)
+  XIO(ToolLife.DN)
+  OTE(FeedPermit)
+
+rung 7 "Warn at 450 parts so the operator can prepare a tool; the cycle inhibit takes effect at 500.":
+  GEQ(ToolLife.ACC, IN1=ToolLife.ACC, IN2=450)
+  OTE(ToolWarnLamp)

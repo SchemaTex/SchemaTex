@@ -1,0 +1,17 @@
+# Scenario: factory finance team compares acquiring a packaging line by purchase or lease.
+comparison "Buy versus lease a packaging line"
+mode: matrix
+option "Buy"
+option "Lease"
+criterion "Up-front cash"
+  Buy: "High capital outlay"
+  Lease: "Lower monthly payments"
+criterion "Maintenance responsibility"
+  Buy: "Internal team"
+  Lease: "Included service plan"
+criterion "Technology upgrade"
+  Buy: no
+  Lease: yes
+criterion "Asset ownership"
+  Buy: yes
+  Lease: no

@@ -1,0 +1,50 @@
+{
+  "id": "bowtie-loss-of-containment",
+  "type": "bowtie",
+  "title": "Hydrocarbon vessel loss of containment",
+  "goal": "Show preventative and mitigative barriers around a pressurised-hydrocarbon vessel release.",
+  "rubric": [
+    {
+      "id": "hazard-and-top-event",
+      "severity": "blocker",
+      "must": "A pressurised-hydrocarbon hazard header and a central loss-of-containment top event are visible."
+    },
+    {
+      "id": "preventative-wing",
+      "severity": "blocker",
+      "must": "Multiple labelled threats visibly pass through preventative barriers before reaching the top event."
+    },
+    {
+      "id": "mitigative-wing",
+      "severity": "blocker",
+      "must": "Multiple labelled consequences visibly sit beyond mitigative barriers from the top event."
+    },
+    {
+      "id": "inspection-escalation",
+      "severity": "major",
+      "must": "The ultrasonic inspection barrier visibly has an escalation factor and a risk-based-inspection barrier beneath it."
+    },
+    {
+      "id": "threat-variety",
+      "severity": "major",
+      "must": "Corrosion, overpressure, vehicle impact, and gasket degradation appear as separate threat paths."
+    },
+    {
+      "id": "consequence-variety",
+      "severity": "major",
+      "must": "Jet fire, vapour cloud explosion, and personnel exposure appear as separate consequence paths."
+    },
+    {
+      "id": "bowtie-geometry",
+      "severity": "minor",
+      "must": "The picture has a clear left-threat, central-event, right-consequence bowtie structure."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/bowtie/ideal.svg (sha256 4484bd18b387). Exemplar role palette: orange threats, grey barriers, green top event, red consequences and yellow escalation factors. Existing scenario topology retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -7,7 +7,7 @@ description: Failure Mode and Effects Analysis — die Engine berechnet RPN und 
 
 **FMEA** (Failure Mode and Effects Analysis — Fehlermöglichkeits- und Einflussanalyse) ist die am weitesten verbreitete proaktive Zuverlässigkeitsmethode in der Fertigung: Für jeden Teil eines Systems werden die möglichen Versagensarten (**Fehlermodi**), die Auswirkungen jedes Versagens (**Effekte**), die Ursachen (**Ursachen**) und die Erkennungsmaßnahmen (**Controls**) aufgelistet. Jede Zeile wird auf drei 1–10-Skalen bewertet — **Severity** (Schwere), **Occurrence** (Auftretenshäufigkeit), **Detection** (Entdeckungswahrscheinlichkeit) — und priorisiert. Standardisiert durch das **AIAG-VDA FMEA Handbook (2019)** und **IEC 60812**.
 
-Der Vorteil von Schematex besteht darin, dass die Engine **die Priorität berechnet**, nicht nur die Tabelle. Sie flacht die Fehlerkette auf eine Arbeitsblattzeile pro (Bauteil, Modus, Ursache) ab, berechnet **RPN = S × O × D** und — entscheidend — die AIAG-VDA **Action Priority** (schwerebasierte Bandeneinteilung), die absichtlich den Fehler behebt, den eine rohe RPN-Sortierung einführt: Ein Airbag-Versagen mit S10·O2·D3 ist *High*, obwohl sein RPN (60) niedrig erscheint.
+Die Engine berechnet pro Zeile **RPN = S × O × D** und **Action Priority (AP)**. AP hängt von allen drei Bewertungen ab, nicht allein vom RPN. Im implementierten Schema ergibt S10·O2·D3 Low AP und RPN 60; Low AP bedeutet keine geringe Schwere.
 
 <Playground initial={`fmea "Brake system DFMEA"
   type: design
@@ -65,7 +65,7 @@ Das ist der entscheidende Unterschied. Aus dem verschachtelten AST führt die En
 
 1. **Abflachen** auf eine Zeile pro (Bauteil, Modus, Ursache); die schlimmste Effektschwere des Modus gilt für jede Zeile dieses Modus.
 2. **RPN = S × O × D** (1–1000).
-3. **Action Priority** nach der AIAG-VDA-Bandenstruktur — **Severity ist die primäre Achse**, Occurrence zweite, Detection dritte. S = 9–10 (Sicherheit/Regulierung) ist High für *jede* O und D; mittlere Schwere degradiert High→Medium→Low mit sinkender Occurrence.
+3. **Action Priority** verwendet das DFMEA/PFMEA-S/O/D-Schema. Severity 9–10 bedeutet nicht automatisch High: Occurrence und Detection bestimmen das Ergebnis mit.
 4. **Sortieren** nach dem gewählten Schlüssel. Für `ap`: High > Medium > Low, bei Gleichstand nach Severity dann RPN aufgelöst — *nie* nur RPN, das würde den Fehler wieder einführen, den AP beheben soll.
 5. **Markieren** von Zeilen über dem Schwellenwert.
 
@@ -112,7 +112,7 @@ Bewertungen müssen Ganzzahlen von 1–10 sein; die Fehlerkette muss `item → m
 
 ## 6. Standardkonformität
 
-Die Fehlerkette und die Severity/Occurrence/Detection-Skalen folgen dem AIAG-VDA FMEA Handbook (2019) und IEC 60812. Die Action Priority implementiert die veröffentlichte Bandenstruktur (schwerebasiert), nicht die kostenpflichtige verbatim 1000-Zellen-Tabelle. RPN bleibt über `rank: rpn` für ältere Arbeitsblätter verfügbar.
+Die Engine verwendet das DFMEA/PFMEA-S/O/D-Schema für AP. Die separate FMEA-MSR-Tabelle für Schwere, Häufigkeit und Überwachung ist nicht implementiert. RPN bleibt über `rank: rpn` verfügbar.
 
 ## 7. Roadmap
 

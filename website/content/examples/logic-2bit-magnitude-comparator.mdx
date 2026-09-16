@@ -1,0 +1,49 @@
+---
+title: 2-bit magnitude comparator
+description: Gate-level comparator for two 2-bit numbers with GT, EQ and LT outputs — XOR, NOT, AND, OR and NOR gates in ANSI distinctive-shape symbols with real fan-out.
+diagram: logic
+standard: IEEE 91
+industry: [hardware, education]
+persona: For the digital logic instructor
+complexity: 3
+tags: [logic, comparator, ansi, fan-out, combinational]
+featured: false
+relatedLink:
+  label: Logic syntax
+  href: /docs/logic
+status: published
+dsl: |
+  # Gate-level 2-bit magnitude comparator (A1A0 vs B1B0).
+  # EQ is the NOR of the two bit-difference XORs; GT compares the high bit first
+  # and falls through to the low bit when the high bits match; LT is everything else.
+  logic "2-bit Magnitude Comparator"
+  input A1, A0, B1, B0
+  output GT, EQ, LT
+  nB1 = NOT(B1)
+  nB0 = NOT(B0)
+  d1 = XOR(A1, B1)
+  d0 = XOR(A0, B0)
+  EQ = NOR(d1, d0)
+  e1 = NOT(d1)
+  g1 = AND(A1, nB1)
+  g0 = AND(e1, A0, nB0)
+  GT = OR(g1, g0)
+  LT = NOR(GT, EQ)
+---
+
+## Scenario
+
+The circuit every digital-logic course draws at least once: compare A = A1A0 with B = B1B0 and raise exactly one of three outputs — A greater than B (GT), equal (EQ), or less than (LT). Ten gates cover most of the ANSI symbol set, and several signals feed two gates each.
+
+## Annotation key
+
+- `input` / `output` — the external pins on the left and right edges
+- `name = GATE(a, b)` — one gate; the name becomes the label of its output wire
+- Intermediate names (`nB1`, `d1`, `e1`, `g1`, `g0`) — internal nets that other gates reuse
+- `AND(e1, A0, nB0)` — a 3-input gate; any number of inputs is allowed
+- `NOT`, `XOR`, `AND`, `OR`, `NOR` — each gate type has its own outline, so no type text is printed
+- `#` lines — comments; they are not drawn
+
+## How to read
+
+Signals flow left to right. The two XORs flag which bit positions differ; EQ is the NOR of those flags, so it is true only when both bits match. GT is true when the high bit decides (A1 is 1 and B1 is 0) or when the high bits match and the low bit decides (A0 is 1 and B0 is 0). LT is whatever is left: the NOR of GT and EQ. A filled dot marks a wire that splits to feed several gates; wires that only cross have no dot.

@@ -1,0 +1,10 @@
+%% Total DFA for binary strings whose numeric value is divisible by three.
+stateDiagram-v2
+  [*] --> R0
+  state R0 <<accepting>>
+  R0 --> R0 : 0
+  R0 --> R1 : 1
+  R1 --> R2 : 0
+  R1 --> R0 : 1
+  R2 --> R1 : 0
+  R2 --> R2 : 1

@@ -1,0 +1,78 @@
+{
+  "id": "orgchart-holding-group-subsidiaries",
+  "type": "orgchart",
+  "variant": "tree",
+  "title": "Holding group subsidiaries",
+  "goal": "Show parent ownership of operating subsidiaries.",
+  "rubric": [
+    {
+      "id": "parent",
+      "severity": "blocker",
+      "must": "Harbour Group plc is visibly the single parent at the top."
+    },
+    {
+      "id": "subsidiaries",
+      "severity": "blocker",
+      "must": "Technology, Retail, Property, and Ventures subsidiaries visibly connect beneath the parent."
+    },
+    {
+      "id": "ownership",
+      "severity": "blocker",
+      "must": "Visible labels show 100%, 80%, and 60% ownership interests on the appropriate subsidiaries."
+    },
+    {
+      "id": "divisions",
+      "severity": "major",
+      "must": "Technology, Retail, and Property operating divisions visibly nest under their companies."
+    },
+    {
+      "id": "readability",
+      "severity": "minor",
+      "must": "Company names and ownership text are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The chart shows Harbour Group plc as the single parent, with all four subsidiaries connected beneath it. Ownership percentages and subsidiary descriptions are readable, and the Technology, Retail, and Property divisions visibly nest under their companies. No material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:28.075Z",
+      "targetHash": "67c8dfa00080",
+      "sourceHash": "a07ab0382eb5",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "parent",
+          "verdict": "pass",
+          "evidence": "Harbour Group plc is shown alone at the top, labeled Parent Company."
+        },
+        {
+          "id": "subsidiaries",
+          "verdict": "pass",
+          "evidence": "Harbour Technology Ltd, Harbour Retail Ltd, Harbour Property Ltd, and Harbour Ventures Ltd connect beneath the parent."
+        },
+        {
+          "id": "ownership",
+          "verdict": "pass",
+          "evidence": "The subsidiary labels show 100% for Technology, 80% for Retail, 100% for Property, and 60% for Ventures."
+        },
+        {
+          "id": "divisions",
+          "verdict": "pass",
+          "evidence": "Cloud Services Division and Data Products Division nest under Technology; Store Operations under Retail; Asset Management under Property."
+        },
+        {
+          "id": "readability",
+          "verdict": "pass",
+          "evidence": "Company names and ownership descriptions are visible and readable."
+        }
+      ]
+    }
+  }
+}

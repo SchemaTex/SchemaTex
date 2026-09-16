@@ -1,0 +1,77 @@
+{
+  "id": "siteplan-commercial-parking-and-access",
+  "type": "siteplan",
+  "title": "Cedar Point retail access",
+  "goal": "Show retail footprint, counted parking, accessible bays, and circulation.",
+  "rubric": [
+    {
+      "id": "footprint",
+      "severity": "blocker",
+      "must": "A clearly labelled retail building footprint is visible."
+    },
+    {
+      "id": "parking",
+      "severity": "blocker",
+      "must": "The north parking field visibly states 54 bays and includes a separate 4-bay accessible area."
+    },
+    {
+      "id": "circulation",
+      "severity": "blocker",
+      "must": "Primary entry aisle and service access visibly connect parking to Cedar Avenue."
+    },
+    {
+      "id": "accessible",
+      "severity": "major",
+      "must": "A labelled accessible route visibly joins the accessible bays to the customer entrance."
+    },
+    {
+      "id": "dimension",
+      "severity": "minor",
+      "must": "Frontage dimension, north arrow, scale, and legend are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All required site-plan elements are clearly visible and consistent with the source data: labelled retail footprint, counted parking and accessible bays, road connections, accessible route, dimensions, north arrow, scale, and legend.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:26.860Z",
+      "targetHash": "6aceb4c6d005",
+      "sourceHash": "8fa7e692c9be",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "footprint",
+          "verdict": "pass",
+          "evidence": "A distinct footprint is clearly labelled “RETAIL BUILDING” and “24,000 sf.”"
+        },
+        {
+          "id": "parking",
+          "verdict": "pass",
+          "evidence": "The parking field visibly states “NORTH PARKING · 54 BAYS,” with a separate blue area labelled “4 accessible bays.”"
+        },
+        {
+          "id": "circulation",
+          "verdict": "pass",
+          "evidence": "The labelled “PRIMARY ENTRY AISLE · 24′” and “Service access · 18′” are visibly drawn connecting the parking/building area to Cedar Avenue."
+        },
+        {
+          "id": "accessible",
+          "verdict": "pass",
+          "evidence": "A blue dashed accessible route visibly runs from the accessible bays along the building frontage to the marked and labelled customer entrance."
+        },
+        {
+          "id": "dimension",
+          "verdict": "pass",
+          "evidence": "The 440 ft frontage dimension, 310.00′ parcel depth, north arrow, graphic scale, and legend are all visible."
+        }
+      ]
+    }
+  }
+}

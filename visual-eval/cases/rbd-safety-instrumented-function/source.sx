@@ -1,0 +1,18 @@
+# Assumptions: stated values are proof-test-interval reliabilities and independent channel failures are assumed.
+# The SIF succeeds only when its 1oo2 sensors, 2oo3 logic solvers, and 1oo2 final elements succeed.
+rbd "Safety instrumented function"
+  series {
+    parallel {
+      block PSH_A "High-pressure sensor A" R=0.985
+      block PSH_B "High-pressure sensor B" R=0.985
+    }
+    kofn 2/3 {
+      block LS_A "Logic solver A" R=0.999
+      block LS_B "Logic solver B" R=0.999
+      block LS_C "Logic solver C" R=0.999
+    }
+    parallel {
+      block SDV_A "Shutdown valve A" R=0.960
+      block SDV_B "Shutdown valve B" R=0.960
+    }
+  }

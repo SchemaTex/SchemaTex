@@ -1,0 +1,18 @@
+# Residential garden concept in feet; planting and tree sizes are illustrative landscape-design notation.
+siteplan "Hawthorn Garden Landscape Plan" unit ft
+parcel garden "Garden Boundary" points 0,0 150,0 150,110 0,110 fill #F7F5EF
+structure house "Residence" points 45,0 115,0 115,38 45,38
+walkway path "Flagstone path" points 80,38 80,65 130,65 width 4
+landscape bed1 "Perennial border" points 5,12 40,12 40,85 5,85 fill #DCE775
+landscape bed2 "Shrub border" points 118,12 145,12 145,100 118,100 fill #C5E1A5
+landscape lawn "Lawn" points 42,45 112,45 112,102 42,102 fill #E8F5E9
+zone pond "Reflecting pond" points 65,68 100,68 108,88 58,88 fill #B3E5FC
+tree oak at 25,95 size 18 "Oak canopy"
+tree maple at 130,95 size 16 "Maple canopy"
+tree birch at 25,35 size 12 "Birch canopy"
+dim "150 ft" from 0,122 to 150,122
+dim "110 ft" from -14,0 to -14,110
+callout "Water feature" at 105,88 to 90,80
+north
+scale 20
+legend on

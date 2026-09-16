@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 3342.4 264" width="3342.4" height="264" class="sx-fc" data-diagram-type="flowchart" data-direction="LR" role="graphics-document"><title>Flowchart</title>
+<desc>Flowchart with 17 nodes and 18 edges.</desc>
+<style>.sx-fc { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f1f5f9; stroke: #334155; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #334155; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #334155; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #334155; }
+.sx-fc-node-text { fill: #0f172a; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-icon { stroke: #0f172a; fill: none; }
+.sx-fc-icon-fill { fill: #0f172a; stroke: none; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #334155; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #475569; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #94a3b8; stroke-width: 0.5; }
+.sx-fc-title { fill: #0f172a; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Shape sub-elements */
+.sx-fc-node-subline { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-arc { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-ring { fill: none; stroke: #334155; stroke-width: 1.8; }
+/* Cluster (subgraph) */
+.sx-fc-cluster { fill: #f1f5f9; fill-opacity: 0.35; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 5,3; }
+.sx-fc-cluster-title { fill: #475569; font: 500 11px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+
+<g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-edge-index="0" data-kind="solid" data-from="A" data-to="B"><path d="M 165 90 L 203 90 L 203 90 L 241 90" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-edge-index="1" data-kind="solid" data-from="B" data-to="C"><path d="M 491 90 L 529 90 L 529 90 L 567 90" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C</title></g>
+<g data-edge-id="C-&gt;D" data-edge-index="2" data-kind="solid" data-from="C" data-to="D"><path d="M 764.4 90 L 802.4 90 L 802.4 48 L 857.4 48" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → D: No</title>
+<g class="sx-fc-edge-label-g"><rect x="808.4000000000001" y="61" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="808.4000000000001" y="69" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="C-&gt;E" data-edge-index="3" data-kind="solid" data-from="C" data-to="E"><path d="M 764.4 90 L 802.4 90 L 802.4 132 L 840.4 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → E: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="808.4000000000001" y="103" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="808.4000000000001" y="111" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="E-&gt;F" data-edge-index="4" data-kind="solid" data-from="E" data-to="F"><path d="M 995.4 132 L 1033.4 132 L 1033.4 132 L 1071.4 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>E → F</title></g>
+<g data-edge-id="F-&gt;G" data-edge-index="5" data-kind="solid" data-from="F" data-to="G"><path d="M 1246.4 132 L 1284.4 132 L 1284.4 132 L 1322.4 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → G</title></g>
+<g data-edge-id="G-&gt;H" data-edge-index="6" data-kind="solid" data-from="G" data-to="H"><path d="M 1470.4 132 L 1508.4 132 L 1508.4 132 L 1546.4 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>G → H</title></g>
+<g data-edge-id="H-&gt;I" data-edge-index="7" data-kind="solid" data-from="H" data-to="I"><path d="M 1743.8 132 L 1781.8 132 L 1781.8 88 L 1833.3 88" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → I: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1787.8000000000002" y="102" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1787.8000000000002" y="110" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="H-&gt;J" data-edge-index="8" data-kind="solid" data-from="H" data-to="J"><path d="M 1743.8 132 L 1781.8 132 L 1781.8 176 L 1819.8 176" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → J: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1787.8000000000002" y="146" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1787.8000000000002" y="154" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="I-&gt;K" data-edge-index="9" data-kind="solid" data-from="I" data-to="K"><path d="M 1981.3 88 L 2032.8 88 L 2032.8 132 L 2070.8 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>I → K</title></g>
+<g data-edge-id="J-&gt;K" data-edge-index="10" data-kind="solid" data-from="J" data-to="K"><path d="M 1994.8 176 L 2032.8 176 L 2032.8 132 L 2070.8 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>J → K</title></g>
+<g data-edge-id="K-&gt;L" data-edge-index="11" data-kind="solid" data-from="K" data-to="L"><path d="M 2411 132 L 2449 132 L 2449 46 L 2487 46" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → L: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="2455" y="81" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="2455" y="89" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="L-&gt;M" data-edge-index="12" data-kind="solid" data-from="L" data-to="M"><path d="M 2739 46 L 2777 46 L 2777 46 L 2822.7 46" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>L → M</title></g>
+<g data-edge-id="K-&gt;N" data-edge-index="13" data-kind="solid" data-from="K" data-to="N"><path d="M 2411 132 L 2449 132 L 2449 176 L 2518.5 176" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → N: No</title>
+<g class="sx-fc-edge-label-g"><rect x="2455" y="146" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="2455" y="154" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="N-&gt;O" data-edge-index="14" data-kind="solid" data-from="N" data-to="O"><path d="M 2707.5 176 L 2777 176 L 2777 134 L 2815 134" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>N → O</title></g>
+<g data-edge-id="O-&gt;P" data-edge-index="15" data-kind="solid" data-from="O" data-to="P"><path d="M 3012.4 134 L 3050.4 134 L 3050.4 134 L 3132.9 134" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>O → P: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="3035.6499999999996" y="118" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="3050.3999999999996" y="126" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="O-&gt;Q" data-edge-index="16" data-kind="solid" data-from="O" data-to="Q"><path d="M 3012.4 134 L 3050.4 134 L 3050.4 218 L 3088.4 218" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>O → Q: No</title>
+<g class="sx-fc-edge-label-g"><rect x="3056.3999999999996" y="168" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="3056.3999999999996" y="176" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="Q-&gt;N" data-edge-index="17" data-kind="dotted" data-from="Q" data-to="N"><path d="M 2707.5 176 L 2777 176 L 2777 218 L 2913.7 218 L 3050.4 218 L 3050.4 218 L 3088.4 218" class="sx-fc-edge sx-fc-edge-dotted" marker-end="url(#sx-fc-arrow)"/>
+<title>Q → N</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="A" data-shape="stadium" data-layer="0" class="sx-fc-node-g" transform="translate(24 68)"><rect x="0" y="0" width="141" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="70.5" dy="0">Return requested</tspan></text>
+<title>Return requested</title></g>
+<g data-node-id="B" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(241 68)"><rect x="0" y="0" width="250" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="125" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="125" dy="0">Validate order and return window</tspan></text>
+<title>Validate order and return window</title></g>
+<g data-node-id="C" data-shape="diamond" data-layer="2" class="sx-fc-node-g" transform="translate(567 64)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Return eligible?</tspan></text>
+<title>Return eligible?</title></g>
+<g data-node-id="D" data-shape="stadium" data-layer="3" class="sx-fc-node-g" transform="translate(857.4 26)"><rect x="0" y="0" width="121" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="60.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="60.5" dy="0">Reject return</tspan></text>
+<title>Reject return</title></g>
+<g data-node-id="E" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(840.4 110)"><rect x="0" y="0" width="155" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="77.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="77.5" dy="0">Issue return label</tspan></text>
+<title>Issue return label</title></g>
+<g data-node-id="F" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(1071.4 110)"><rect x="0" y="0" width="175" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="87.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="87.5" dy="0">Receive returned item</tspan></text>
+<title>Receive returned item</title></g>
+<g data-node-id="G" data-shape="rect" data-layer="5" class="sx-fc-node-g" transform="translate(1322.4 110)"><rect x="0" y="0" width="148" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="74" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="74" dy="0">Inspect condition</tspan></text>
+<title>Inspect condition</title></g>
+<g data-node-id="H" data-shape="diamond" data-layer="6" class="sx-fc-node-g" transform="translate(1546.4 106)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Item resellable?</tspan></text>
+<title>Item resellable?</title></g>
+<g data-node-id="I" data-shape="cylinder" data-layer="7" class="sx-fc-node-g" transform="translate(1833.3 62)"><path d="M0,8 A74,8 0 0,1 148,8 L148,44 A74,8 0 0,1 0,44 Z" class="sx-fc-node"/><path d="M0,8 A74,8 0 0,0 148,8" class="sx-fc-node-arc"/>
+<text x="74" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="74" dy="0">Restock inventory</tspan></text>
+<title>Restock inventory</title></g>
+<g data-node-id="J" data-shape="rect" data-layer="7" class="sx-fc-node-g" transform="translate(1819.8 154)"><rect x="0" y="0" width="175" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="87.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="87.5" dy="0">Scrap or recycle item</tspan></text>
+<title>Scrap or recycle item</title></g>
+<g data-node-id="K" data-shape="diamond" data-layer="8" class="sx-fc-node-g" transform="translate(2070.8 106)"><polygon points="170.1,0 340.2,26 170.1,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="170.1" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="170.1" dy="0">Customer requested replacement?</tspan></text>
+<title>Customer requested replacement?</title></g>
+<g data-node-id="L" data-shape="subroutine" data-layer="9" class="sx-fc-node-g" transform="translate(2487 24)"><rect x="0" y="0" width="252" height="44" rx="2" class="sx-fc-node"/><line x1="10" y1="0" x2="10" y2="44" class="sx-fc-node-subline"/><line x1="242" y1="0" x2="242" y2="44" class="sx-fc-node-subline"/>
+<text x="126" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="126" dy="0">Create replacement shipment</tspan></text>
+<title>Create replacement shipment</title></g>
+<g data-node-id="N" data-shape="rect" data-layer="9" class="sx-fc-node-g" transform="translate(2518.5 154)"><rect x="0" y="0" width="189" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="94.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="94.5" dy="0">Refund original payment</tspan></text>
+<title>Refund original payment</title></g>
+<g data-node-id="M" data-shape="stadium" data-layer="10" class="sx-fc-node-g" transform="translate(2822.7 24)"><rect x="0" y="0" width="182" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="91" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="91" dy="0">Replacement dispatched</tspan></text>
+<title>Replacement dispatched</title></g>
+<g data-node-id="O" data-shape="diamond" data-layer="10" class="sx-fc-node-g" transform="translate(2815 108)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Refund accepted?</tspan></text>
+<title>Refund accepted?</title></g>
+<g data-node-id="P" data-shape="stadium" data-layer="11" class="sx-fc-node-g" transform="translate(3132.9 112)"><rect x="0" y="0" width="141" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="70.5" dy="0">Refund confirmed</tspan></text>
+<title>Refund confirmed</title></g>
+<g data-node-id="Q" data-shape="rect" data-layer="11" class="sx-fc-node-g" transform="translate(3088.4 196)"><rect x="0" y="0" width="230" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="115" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="115" dy="0">Investigate payment exception</tspan></text>
+<title>Investigate payment exception</title></g></g></svg>

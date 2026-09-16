@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin } from "../../core/types";
 import { parseEntityDSL } from "./parser";
 import { renderEntity } from "./renderer";
@@ -5,7 +6,7 @@ import { renderEntity } from "./renderer";
 export const entity: DiagramPlugin = {
   type: "entity",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("entity-structure");
   },
   parse: parseEntityDSL,

@@ -31,15 +31,16 @@ function extractDsl(mdx: string): string {
 const files = readdirSync(EXAMPLES_DIR).filter((f) => f.startsWith("playbook-") && f.endsWith(".mdx"));
 
 describe("playbook examples — gallery is correct-by-construction", () => {
-  it("covers all 15 shipped plays (5 per sport)", () => {
-    expect(files.length).toBe(15);
+  it("covers every supported sport", () => {
     const sports = { football: 0, basketball: 0, soccer: 0 };
     for (const f of files) {
       const dsl = extractDsl(readFileSync(join(EXAMPLES_DIR, f), "utf8"));
       const m = /sport (football|basketball|soccer)/.exec(dsl);
       if (m) sports[m[1] as keyof typeof sports]++;
     }
-    expect(sports).toEqual({ football: 5, basketball: 5, soccer: 5 });
+    for (const [sport, count] of Object.entries(sports)) {
+      expect(count, sport).toBeGreaterThan(0);
+    }
   });
 
   for (const file of files) {

@@ -1,0 +1,40 @@
+{
+  "id": "blockdiagram-radar-receiver",
+  "type": "blockdiagram",
+  "title": "Radar receiver",
+  "goal": "Show a complete superheterodyne radar receive and processing chain.",
+  "rubric": [
+    {
+      "id": "rf-chain",
+      "severity": "blocker",
+      "must": "A continuous receive path visibly runs from antenna through duplexer, LNA, mixer, IF chain, ADC, and processor."
+    },
+    {
+      "id": "lo-to-mixer",
+      "severity": "blocker",
+      "must": "A separate Local Oscillator block visibly feeds the downconversion mixer."
+    },
+    {
+      "id": "if-stages",
+      "severity": "major",
+      "must": "IF amplifier and IF band-pass filter are visibly between the mixer and ADC."
+    },
+    {
+      "id": "processed-output",
+      "severity": "major",
+      "must": "The signal processor visibly drives a track display."
+    },
+    {
+      "id": "signal-labels",
+      "severity": "minor",
+      "must": "RF, LO injection, intermediate-frequency, digital-sample, and track labels are visible."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Refreshed against the September 15 exemplar: role fills, ink signal lines, 4 px block corners and restrained typography. Each target retains its own functional topology; generic blocks are not assigned inferred hardware roles."
+  }
+}

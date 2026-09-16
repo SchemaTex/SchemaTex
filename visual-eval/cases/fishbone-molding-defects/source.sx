@@ -1,0 +1,47 @@
+# Scenario: quality team investigates sink marks in injection-molded housings.
+fishbone "Injection-molding defect analysis"
+
+effect "Excess sink marks in Model X housings"
+
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category measurement "Measurement"
+category environment "Mother Nature"
+
+man: "New operator ran setup unaided"
+  - "Cooling time not confirmed"
+man: "Shift handover skips process notes"
+man: "Hold pressure changed without approval"
+  - "Change not logged on setup sheet"
+man: "Mold-change checklist not signed"
+
+machine: "Barrel temperature drift"
+  - "Thermocouple overdue calibration"
+machine: "Worn check ring lets melt back-flow"
+machine: "Cooling channels partly blocked"
+  - "Chiller flow below spec"
+machine: "Screw recovery time inconsistent"
+
+material: "Resin moisture too high"
+  - "Dryer hopper left open"
+material: "Regrind ratio above 20 percent"
+material: "Resin lot changed without trial"
+  - "Higher melt-flow grade approved"
+
+method: "Pack pressure too low"
+method: "Hold time ends before gate freeze"
+  - "Gate-seal study never repeated"
+method: "Rib-to-wall ratio above 60 percent"
+method: "Cycle shortened to hit output target"
+
+measurement: "Visual inspection varies by shift"
+  - "No boundary samples at the line"
+measurement: "Sink depth never measured"
+measurement: "Cavity pressure not trended"
+
+environment: "High humidity at loading dock"
+  - "Resin sacks left open overnight"
+environment: "Chilled water warms in summer"
+environment: "Overnight ambient swing cools molds"

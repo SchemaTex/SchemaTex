@@ -1,0 +1,45 @@
+{
+  "id": "circuit-holdout-three-phase-distribution-board",
+  "type": "circuit",
+  "title": "Three-phase distribution board",
+  "split": "holdout",
+  "goal": "A reader must be able to trace a three-pole incomer to four phase-balanced RCBO final circuits and identify neutral and earth bars.",
+  "rubric": [
+    {
+      "id": "three-pole-incomer",
+      "severity": "blocker",
+      "must": "L1, L2, and L3 each pass through one visibly grouped 63 A main-breaker pole."
+    },
+    {
+      "id": "four-rcbos",
+      "severity": "blocker",
+      "must": "Four separate blocks labelled RCBO1 through RCBO4 each show a line, neutral, and load connection."
+    },
+    {
+      "id": "phase-balance",
+      "severity": "blocker",
+      "must": "The RCBO labels visibly assign circuits to L1, L2, L3, and L1 respectively."
+    },
+    {
+      "id": "final-loads",
+      "severity": "major",
+      "must": "Lighting, sockets, HVAC, and kitchen loads are separately shown downstream of their respective RCBOs."
+    },
+    {
+      "id": "neutral-bar",
+      "severity": "major",
+      "must": "A labelled NEUTRAL BAR is visible on the shared N return."
+    },
+    {
+      "id": "earth-bar",
+      "severity": "major",
+      "must": "A separate labelled EARTH BAR with PE marking is visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Three-pole incomer with a dashed common-operation link, four RCBOs fed from L1/L2/L3/L1, separate neutral and earth bars, TN-S and the phase assignment stated on the drawing."
+  }
+}

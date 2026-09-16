@@ -1,0 +1,23 @@
+# Typical customer substation: protected 11 kV incomer, metering, transformer differential protection, and LV main board.
+sld "Industrial 11 kV Customer Substation" [standard: ansi]
+GRID = utility [voltage: "11kV", rating: "250 MVA", label: "11 kV Utility Incomer"]
+VCB = breaker [rating: "630 A, 25 kA", label: "52-HV Incomer VCB"]
+CT1 = ct [rating: "200/1 A", label: "Protection CTs"]
+MTR = watthour_meter [rating: "11 kV", label: "Revenue Meter"]
+RLY = relay [rating: "50/51, 50N/51N", label: "Overcurrent/Earth Fault Relay"]
+TX = transformer [rating: "2500 kVA, 11kV/415V, Dyn11", label: "TX-1"]
+LV = breaker [rating: "4000 A, 50 kA", label: "52-LV Main ACB"]
+BUS = bus [voltage: "415V", label: "415 V Main LV Switchboard"]
+MCC = panel [rating: "1600 A", label: "MCC-1"]
+DB = panel [rating: "800 A", label: "Plant Distribution Board"]
+MOTOR = motor [rating: "315 kW, 415V, 3ph", label: "Process Motor"]
+GRID -> VCB
+VCB -> CT1
+CT1 -> MTR
+MTR -> TX
+TX -> LV
+LV -> BUS
+BUS -> MCC
+MCC -> MOTOR
+BUS -> DB
+RLY -> VCB

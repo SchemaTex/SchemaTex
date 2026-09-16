@@ -1,0 +1,13 @@
+# Arduino analog-input divider: potentiometer ends go to 5 V and ground, wiper goes to A0.
+breadboard
+board: half
+title: "Potentiometer Analog Input"
+parts
+  uno: mcu uno @beside-left
+  pot1: potentiometer @12a
+wires
+  uno:5V --red-- @+t12
+  @+t12 --red-- pot1:1
+  uno:GND --black-- @-t12
+  @-t12 --black-- pot1:3
+  uno:A0 --yellow-- pot1:2

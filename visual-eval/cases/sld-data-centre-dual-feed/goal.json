@@ -1,0 +1,41 @@
+{
+  "id": "sld-data-centre-dual-feed",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Data centre dual-feed power",
+  "goal": "Show dual utility paths, standby generation, UPS, and redundant PDUs.",
+  "rubric": [
+    {
+      "id": "feeds",
+      "severity": "blocker",
+      "must": "Two visibly separate utility feeds enter separate transformers and incomers."
+    },
+    {
+      "id": "transfer",
+      "severity": "blocker",
+      "must": "The generator and utility A path visibly converge at ATS Critical A."
+    },
+    {
+      "id": "critical",
+      "severity": "blocker",
+      "must": "ATS Critical A visibly feeds UPS A, then PDU A and Data Hall IT Load A."
+    },
+    {
+      "id": "redundancy",
+      "severity": "major",
+      "must": "PDU A and PDU B visibly serve separately labelled IT loads."
+    },
+    {
+      "id": "labels",
+      "severity": "minor",
+      "must": "Ratings and labels remain readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. Two independent 11 kV utility feeds, drawn as two columns that never share a conductor. On the critical side, feed A passes through transformer A and incomer A into the critical automatic transfer switch, whose emergency side is fed by the 1500 kVA standby generator; the transfer switch feeds the 500 kVA UPS, PDU A and data hall IT load A. On the redundant side, feed B passes through transformer B and incomer B straight to PDU B and data hall IT load B. There is no bus tie between the two systems. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

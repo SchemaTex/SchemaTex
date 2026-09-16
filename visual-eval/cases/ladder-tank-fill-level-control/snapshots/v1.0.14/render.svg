@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="403.79999999999995" height="877" viewBox="0 0 403.79999999999995 877"><title>Tank Fill Level Control</title>
+<desc>PLC ladder logic diagram with 7 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="201.89999999999998" y="20" class="lt-ladder-title" text-anchor="middle">Tank Fill Level Control</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="847" class="lt-ladder-rail"/>
+<line x1="373.79999999999995" y1="0" x2="373.79999999999995" y2="847" class="lt-ladder-rail"/>
+<text x="54" y="116" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Automatic fill latch at low level —</text>
+<text x="54" y="216" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="180" class="lt-ladder-comment">— Stop fill request at high level —</text>
+<text x="54" y="316" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="280" class="lt-ladder-comment">— Manual fill override —</text>
+<text x="54" y="452" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="380" class="lt-ladder-comment">— Fill pump from automatic or manual demand —</text>
+<text x="54" y="563" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="527" class="lt-ladder-comment">— Latch high-high alarm —</text>
+<text x="54" y="663" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="627" class="lt-ladder-comment">— High-high alarm horn —</text>
+<text x="54" y="763" class="lt-ladder-rung-num">Rung 006</text>
+<text x="70" y="727" class="lt-ladder-comment">— Reset high-high alarm —</text>
+<path d="M 60 113 L 87.4 113" class="lt-ladder-wire"/>
+<path d="M 119.4 113 L 161.25 113" class="lt-ladder-wire"/>
+<path d="M 193.25 113 L 244.25 113" class="lt-ladder-wire"/>
+<path d="M 60 213 L 90.45 213" class="lt-ladder-wire"/>
+<path d="M 122.45 213 L 173.45 213" class="lt-ladder-wire"/>
+<path d="M 60 313 L 105.69999999999999 313" class="lt-ladder-wire"/>
+<path d="M 137.7 313 L 210.04999999999998 313" class="lt-ladder-wire"/>
+<path d="M 242.04999999999998 313 L 302.2 313" class="lt-ladder-wire"/>
+<path d="M 60 449 L 102.65 449" class="lt-ladder-wire"/>
+<path d="M 134.65 449 L 177.3 449" class="lt-ladder-wire"/>
+<path d="M 177.3 401 L 177.3 497" class="lt-ladder-wire"/>
+<path d="M 282.4 401 L 282.4 497" class="lt-ladder-wire"/>
+<path d="M 177.3 424 L 213.85000000000002 424" class="lt-ladder-wire"/>
+<path d="M 245.85000000000002 424 L 282.4 424" class="lt-ladder-wire"/>
+<path d="M 177.3 479 L 213.85 479" class="lt-ladder-wire"/>
+<path d="M 245.85 479 L 282.4 479" class="lt-ladder-wire"/>
+<path d="M 282.4 449 L 309.79999999999995 449" class="lt-ladder-wire"/>
+<path d="M 60 560 L 102.65 560" class="lt-ladder-wire"/>
+<path d="M 134.65 560 L 203.95000000000002 560" class="lt-ladder-wire"/>
+<path d="M 60 660 L 102.65 660" class="lt-ladder-wire"/>
+<path d="M 134.65 660 L 191.75 660" class="lt-ladder-wire"/>
+<path d="M 60 760 L 99.6 760" class="lt-ladder-wire"/>
+<path d="M 131.6 760 L 197.85 760" class="lt-ladder-wire"/>
+<path d="M 229.85 760 L 299.15 760" class="lt-ladder-wire"/>
+<path d="M 276.25 113 L 373.79999999999995 113" class="lt-ladder-wire"/>
+<path d="M 205.45 213 L 373.79999999999995 213" class="lt-ladder-wire"/>
+<path d="M 334.2 313 L 373.79999999999995 313" class="lt-ladder-wire"/>
+<path d="M 341.79999999999995 449 L 373.79999999999995 449" class="lt-ladder-wire"/>
+<path d="M 235.95000000000002 560 L 373.79999999999995 560" class="lt-ladder-wire"/>
+<path d="M 223.75 660 L 373.79999999999995 660" class="lt-ladder-wire"/>
+<path d="M 331.15 760 L 373.79999999999995 760" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="LowLevel"><line x1="87.4" y1="113" x2="91.4" y2="113" class="lt-ladder-wire"/>
+<line x1="115.4" y1="113" x2="119.4" y2="113" class="lt-ladder-wire"/>
+<line x1="91.4" y1="101" x2="91.4" y2="125" class="lt-ladder-element"/>
+<line x1="115.4" y1="101" x2="115.4" y2="125" class="lt-ladder-element"/>
+<text x="103.4" y="97" class="lt-ladder-tag">LowLevel</text></g>
+<g data-element="contact" data-tag="HighLevel"><line x1="161.25" y1="113" x2="165.25" y2="113" class="lt-ladder-wire"/>
+<line x1="189.25" y1="113" x2="193.25" y2="113" class="lt-ladder-wire"/>
+<line x1="165.25" y1="101" x2="165.25" y2="125" class="lt-ladder-element"/>
+<line x1="189.25" y1="101" x2="189.25" y2="125" class="lt-ladder-element"/>
+<line x1="167.25" y1="123" x2="187.25" y2="103" class="lt-ladder-element"/>
+<text x="177.25" y="97" class="lt-ladder-tag">HighLevel</text></g>
+<g data-element="coil" data-tag="FillRequest"><path d="M 250.25 101 A 10 12 0 0 0 250.25 125" class="lt-ladder-coil"/>
+<path d="M 270.25 101 A 10 12 0 0 1 270.25 125" class="lt-ladder-coil"/>
+<line x1="244.25" y1="113" x2="250.25" y2="113" class="lt-ladder-wire"/>
+<line x1="270.25" y1="113" x2="276.25" y2="113" class="lt-ladder-wire"/>
+<text x="260.25" y="116" class="lt-ladder-symbol-label">S</text>
+<text x="260.25" y="97" class="lt-ladder-tag">FillRequest</text></g>
+<g data-element="contact" data-tag="HighLevel"><line x1="90.45" y1="213" x2="94.45" y2="213" class="lt-ladder-wire"/>
+<line x1="118.45" y1="213" x2="122.45" y2="213" class="lt-ladder-wire"/>
+<line x1="94.45" y1="201" x2="94.45" y2="225" class="lt-ladder-element"/>
+<line x1="118.45" y1="201" x2="118.45" y2="225" class="lt-ladder-element"/>
+<text x="106.45" y="197" class="lt-ladder-tag">HighLevel</text></g>
+<g data-element="coil" data-tag="FillRequest"><path d="M 179.45 201 A 10 12 0 0 0 179.45 225" class="lt-ladder-coil"/>
+<path d="M 199.45 201 A 10 12 0 0 1 199.45 225" class="lt-ladder-coil"/>
+<line x1="173.45" y1="213" x2="179.45" y2="213" class="lt-ladder-wire"/>
+<line x1="199.45" y1="213" x2="205.45" y2="213" class="lt-ladder-wire"/>
+<text x="189.45" y="216" class="lt-ladder-symbol-label">R</text>
+<text x="189.45" y="197" class="lt-ladder-tag">FillRequest</text></g>
+<g data-element="contact" data-tag="ManualOverride"><line x1="105.69999999999999" y1="313" x2="109.69999999999999" y2="313" class="lt-ladder-wire"/>
+<line x1="133.7" y1="313" x2="137.7" y2="313" class="lt-ladder-wire"/>
+<line x1="109.69999999999999" y1="301" x2="109.69999999999999" y2="325" class="lt-ladder-element"/>
+<line x1="133.7" y1="301" x2="133.7" y2="325" class="lt-ladder-element"/>
+<text x="121.69999999999999" y="297" class="lt-ladder-tag">ManualOverride</text></g>
+<g data-element="contact" data-tag="HighHighLevel"><line x1="210.04999999999998" y1="313" x2="214.04999999999998" y2="313" class="lt-ladder-wire"/>
+<line x1="238.04999999999998" y1="313" x2="242.04999999999998" y2="313" class="lt-ladder-wire"/>
+<line x1="214.04999999999998" y1="301" x2="214.04999999999998" y2="325" class="lt-ladder-element"/>
+<line x1="238.04999999999998" y1="301" x2="238.04999999999998" y2="325" class="lt-ladder-element"/>
+<line x1="216.04999999999998" y1="323" x2="236.04999999999998" y2="303" class="lt-ladder-element"/>
+<text x="226.04999999999998" y="297" class="lt-ladder-tag">HighHighLevel</text></g>
+<g data-element="coil" data-tag="ManualFill"><path d="M 308.2 301 A 10 12 0 0 0 308.2 325" class="lt-ladder-coil"/>
+<path d="M 328.2 301 A 10 12 0 0 1 328.2 325" class="lt-ladder-coil"/>
+<line x1="302.2" y1="313" x2="308.2" y2="313" class="lt-ladder-wire"/>
+<line x1="328.2" y1="313" x2="334.2" y2="313" class="lt-ladder-wire"/>
+<text x="318.2" y="297" class="lt-ladder-tag">ManualFill</text></g>
+<g data-element="contact" data-tag="HighHighLevel"><line x1="102.65" y1="449" x2="106.65" y2="449" class="lt-ladder-wire"/>
+<line x1="130.65" y1="449" x2="134.65" y2="449" class="lt-ladder-wire"/>
+<line x1="106.65" y1="437" x2="106.65" y2="461" class="lt-ladder-element"/>
+<line x1="130.65" y1="437" x2="130.65" y2="461" class="lt-ladder-element"/>
+<line x1="108.65" y1="459" x2="128.65" y2="439" class="lt-ladder-element"/>
+<text x="118.65" y="433" class="lt-ladder-tag">HighHighLevel</text></g>
+<g data-element="contact" data-tag="FillRequest"><line x1="213.85000000000002" y1="424" x2="217.85000000000002" y2="424" class="lt-ladder-wire"/>
+<line x1="241.85000000000002" y1="424" x2="245.85000000000002" y2="424" class="lt-ladder-wire"/>
+<line x1="217.85000000000002" y1="412" x2="217.85000000000002" y2="436" class="lt-ladder-element"/>
+<line x1="241.85000000000002" y1="412" x2="241.85000000000002" y2="436" class="lt-ladder-element"/>
+<text x="229.85000000000002" y="408" class="lt-ladder-tag">FillRequest</text></g>
+<g data-element="contact" data-tag="ManualFill"><line x1="213.85" y1="479" x2="217.85" y2="479" class="lt-ladder-wire"/>
+<line x1="241.85" y1="479" x2="245.85" y2="479" class="lt-ladder-wire"/>
+<line x1="217.85" y1="467" x2="217.85" y2="491" class="lt-ladder-element"/>
+<line x1="241.85" y1="467" x2="241.85" y2="491" class="lt-ladder-element"/>
+<text x="229.85" y="463" class="lt-ladder-tag">ManualFill</text></g>
+<g data-element="coil" data-tag="FillPump"><path d="M 315.79999999999995 437 A 10 12 0 0 0 315.79999999999995 461" class="lt-ladder-coil"/>
+<path d="M 335.79999999999995 437 A 10 12 0 0 1 335.79999999999995 461" class="lt-ladder-coil"/>
+<line x1="309.79999999999995" y1="449" x2="315.79999999999995" y2="449" class="lt-ladder-wire"/>
+<line x1="335.79999999999995" y1="449" x2="341.79999999999995" y2="449" class="lt-ladder-wire"/>
+<text x="325.79999999999995" y="433" class="lt-ladder-tag">FillPump</text></g>
+<g data-element="contact" data-tag="HighHighLevel"><line x1="102.65" y1="560" x2="106.65" y2="560" class="lt-ladder-wire"/>
+<line x1="130.65" y1="560" x2="134.65" y2="560" class="lt-ladder-wire"/>
+<line x1="106.65" y1="548" x2="106.65" y2="572" class="lt-ladder-element"/>
+<line x1="130.65" y1="548" x2="130.65" y2="572" class="lt-ladder-element"/>
+<text x="118.65" y="544" class="lt-ladder-tag">HighHighLevel</text></g>
+<g data-element="coil" data-tag="HighHighAlarm"><path d="M 209.95000000000002 548 A 10 12 0 0 0 209.95000000000002 572" class="lt-ladder-coil"/>
+<path d="M 229.95000000000002 548 A 10 12 0 0 1 229.95000000000002 572" class="lt-ladder-coil"/>
+<line x1="203.95000000000002" y1="560" x2="209.95000000000002" y2="560" class="lt-ladder-wire"/>
+<line x1="229.95000000000002" y1="560" x2="235.95000000000002" y2="560" class="lt-ladder-wire"/>
+<text x="219.95000000000002" y="563" class="lt-ladder-symbol-label">S</text>
+<text x="219.95000000000002" y="544" class="lt-ladder-tag">HighHighAlarm</text></g>
+<g data-element="contact" data-tag="HighHighAlarm"><line x1="102.65" y1="660" x2="106.65" y2="660" class="lt-ladder-wire"/>
+<line x1="130.65" y1="660" x2="134.65" y2="660" class="lt-ladder-wire"/>
+<line x1="106.65" y1="648" x2="106.65" y2="672" class="lt-ladder-element"/>
+<line x1="130.65" y1="648" x2="130.65" y2="672" class="lt-ladder-element"/>
+<text x="118.65" y="644" class="lt-ladder-tag">HighHighAlarm</text></g>
+<g data-element="coil" data-tag="AlarmHorn"><path d="M 197.75 648 A 10 12 0 0 0 197.75 672" class="lt-ladder-coil"/>
+<path d="M 217.75 648 A 10 12 0 0 1 217.75 672" class="lt-ladder-coil"/>
+<line x1="191.75" y1="660" x2="197.75" y2="660" class="lt-ladder-wire"/>
+<line x1="217.75" y1="660" x2="223.75" y2="660" class="lt-ladder-wire"/>
+<text x="207.75" y="644" class="lt-ladder-tag">AlarmHorn</text></g>
+<g data-element="contact" data-tag="AlarmResetPB"><line x1="99.6" y1="760" x2="103.6" y2="760" class="lt-ladder-wire"/>
+<line x1="127.6" y1="760" x2="131.6" y2="760" class="lt-ladder-wire"/>
+<line x1="103.6" y1="748" x2="103.6" y2="772" class="lt-ladder-element"/>
+<line x1="127.6" y1="748" x2="127.6" y2="772" class="lt-ladder-element"/>
+<text x="115.6" y="744" class="lt-ladder-tag">AlarmResetPB</text></g>
+<g data-element="contact" data-tag="HighHighLevel"><line x1="197.85" y1="760" x2="201.85" y2="760" class="lt-ladder-wire"/>
+<line x1="225.85" y1="760" x2="229.85" y2="760" class="lt-ladder-wire"/>
+<line x1="201.85" y1="748" x2="201.85" y2="772" class="lt-ladder-element"/>
+<line x1="225.85" y1="748" x2="225.85" y2="772" class="lt-ladder-element"/>
+<line x1="203.85" y1="770" x2="223.85" y2="750" class="lt-ladder-element"/>
+<text x="213.85" y="744" class="lt-ladder-tag">HighHighLevel</text></g>
+<g data-element="coil" data-tag="HighHighAlarm"><path d="M 305.15 748 A 10 12 0 0 0 305.15 772" class="lt-ladder-coil"/>
+<path d="M 325.15 748 A 10 12 0 0 1 325.15 772" class="lt-ladder-coil"/>
+<line x1="299.15" y1="760" x2="305.15" y2="760" class="lt-ladder-wire"/>
+<line x1="325.15" y1="760" x2="331.15" y2="760" class="lt-ladder-wire"/>
+<text x="315.15" y="763" class="lt-ladder-symbol-label">R</text>
+<text x="315.15" y="744" class="lt-ladder-tag">HighHighAlarm</text></g></g></svg>

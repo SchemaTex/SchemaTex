@@ -1,0 +1,45 @@
+{
+  "id": "eventtree-gas-leak-ignition",
+  "type": "eventtree",
+  "title": "Gas leak and ignition",
+  "goal": "Show conditional gas-leak outcomes through detection, isolation, and ignition control.",
+  "rubric": [
+    {
+      "id": "initiator",
+      "severity": "blocker",
+      "must": "The initiating event Pressurised gas leak and its frequency are visible at the left."
+    },
+    {
+      "id": "functions",
+      "severity": "blocker",
+      "must": "Ordered function columns visibly show gas detection, automatic isolation, and ignition-source control."
+    },
+    {
+      "id": "outcomes",
+      "severity": "blocker",
+      "must": "Terminal branches visibly distinguish safe isolation, fire, and escalation outcomes."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Each safety-function column visibly shows complementary success and failure branch probabilities."
+    },
+    {
+      "id": "branching",
+      "severity": "major",
+      "must": "Success and failure paths are visibly traceable from the initiator to terminal outcomes."
+    },
+    {
+      "id": "layout",
+      "severity": "minor",
+      "must": "The left-to-right event-tree sequence remains legible without ambiguous crossings."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/eventtree/ideal.svg (sha256 064a513719ee), source sha256 c527e1a22b87. Independent orthogonal event tree with success above failure, pruned wildcard branches, complementary probabilities, aligned outcome table, and independently multiplied sequence frequencies; their sum equals the initiating frequency. No invented severity classes. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

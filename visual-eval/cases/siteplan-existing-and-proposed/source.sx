@@ -1,0 +1,29 @@
+siteplan "Existing and Proposed Site Plan" unit m
+parcel lot "Development Parcel" points 0,0 72,0 72,58 8,64 -4,28
+road frontageRoad "Industrial Avenue" from -12,-12 to 84,-12 width 10
+frontage northFrontage "72 m road frontage" from 0,0 to 72,0
+
+structure existing "Existing Warehouse - retained" points 14,18 46,18 46,43 14,43
+structure proposed "Proposed Extension" points 46,24 63,24 63,43 46,43
+structure removed "Demolished Outbuilding" points 52,8 65,8 65,18 52,18
+
+driveway existingAccess "Existing access - removed" points 58,0 58,8 width 5
+driveway proposedAccess "Proposed vehicle access" points 25,0 25,18 width 7
+walkway pedestrian "Pedestrian route" points 25,0 18,18 width 2
+parking visitor "Revised visitor parking" points 7,6 22,6 22,14 7,14
+
+setback frontSetback "Front setback 8 m" from 8,8 to 65,8
+setback sideSetback "East setback 6 m" from 66,8 to 66,52
+fence boundaryFence "Existing boundary fence" points 0,0 72,0 72,58 8,64 -4,28 0,0
+
+tree retainedTree at 8,50 size 5 "Retained oak"
+entry mainEntry at 25,18 size 1.5 "New entry"
+dim "72 m parcel frontage" from 0,-7 to 72,-7
+dim "64 m maximum parcel depth" from -4,0 to -4,64
+dim "17 m proposed extension" from 46,47 to 63,47
+callout "Retained existing building" at 5,31 to 14,31
+callout "Demolish outbuilding" at 69,12 to 65,12
+callout "Proposed extension" at 68,38 to 63,34
+north 0
+scale 10
+legend on

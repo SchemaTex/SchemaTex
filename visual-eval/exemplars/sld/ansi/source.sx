@@ -1,0 +1,49 @@
+# Commercial building on a 12.47 kV primary service: utility metering, a 15 kV
+# main breaker with overcurrent relays, a 1500 kVA service transformer, a 2000 A
+# main switchboard with four feeders, and a standby generator through an ATS.
+sld "Distribution Center · 12.47 kV Primary Service" [standard: ansi]
+
+UTIL = utility [label: "Utility Service", voltage: "12.47 kV, 3Ø 4W", rating: "250 MVA SC, 11.6 kA sym, X/R 12"]
+MTR = watthour_meter [label: "Utility Revenue Meter M-1", rating: "Primary metering, CT 100:5, PT 7200:120 V"]
+CB52 = breaker_vacuum [label: "Main Breaker 52-M", rating: "15 kV vacuum, 600 A, 25 kA"]
+CT1 = ct [label: "CT-1", rating: "200:5 A, C200"]
+R51 = relay [device: "50/51", label: "Phase Overcurrent", ct: "CT1"]
+R51N = relay [device: "50/51N", label: "Ground Overcurrent", ct: "CT1"]
+T1 = transformer_dy [label: "Service Transformer T-1", rating: "1500 kVA, 12.47 kV–480Y/277 V", impedance: "5.75 %Z", grounding: "XO solidly grounded, GEC 3/0 Cu"]
+MB = breaker [label: "MSB Main Breaker", rating: "2000 AF / 2000 AT, LSIG, 65 kA"]
+MSB = bus [label: "Main Switchboard MSB", voltage: "480Y/277 V", rating: "2000 A, 65 kA"]
+
+F1 = breaker [label: "Panel HA Feeder", rating: "400 AF / 400 AT, 65 kA"]
+HA = panel [label: "Panel HA", rating: "400 A, 480Y/277 V"]
+F2 = breaker [label: "Chiller Feeder", rating: "400 AF / 350 AT, 65 kA"]
+CH1 = motor [label: "Chiller CH-1", rating: "300 kW, 480 V, 3Ø"]
+F3 = breaker [label: "T-2 Feeder", rating: "225 AF / 175 AT, 65 kA"]
+T2 = transformer_dy [label: "Transformer T-2", rating: "112.5 kVA, 480–208Y/120 V", impedance: "4.5 %Z", grounding: "XO grounded, GEC 1/0 Cu"]
+LA = panel [label: "Panel LA", rating: "400 A MCB, 208Y/120 V"]
+F4 = breaker [label: "ATS Normal Feeder", rating: "800 AF / 800 AT, 65 kA"]
+
+GEN = generator [label: "Standby Generator G-1", voltage: "480Y/277 V", rating: "500 kW / 625 kVA, 0.8 PF", grounding: "wye neutral grounded at generator, GEC 2/0 Cu"]
+CBG = breaker [label: "Generator Breaker", rating: "800 AF / 800 AT, LSI, 35 kA"]
+ATS = ats [label: "ATS-1", rating: "800 A, 4-pole, open transition"]
+SDP = panel [label: "Standby Panel SDP", rating: "800 A, 480Y/277 V"]
+
+UTIL -> MTR
+MTR -> CB52 [cable: "3-1/C #2 MV-105 15 kV"]
+CB52 -> CT1
+CT1 -> T1
+R51 -> CB52
+R51N -> CB52
+T1 -> MB [cable: "6 sets 4-600 kcmil Cu"]
+MB -> MSB
+MSB -> F1
+F1 -> HA [cable: "4-600 kcmil Cu, 1-#3 G"]
+MSB -> F2
+F2 -> CH1 [cable: "3-500 kcmil Cu, 1-#3 G"]
+MSB -> F3
+F3 -> T2 [cable: "3-2/0 Cu, 1-#6 G"]
+T2 -> LA
+MSB -> F4
+F4 -> ATS [cable: "3 sets 4-300 kcmil Cu"]
+GEN -> CBG
+CBG -> ATS [cable: "3 sets 4-300 kcmil Cu"]
+ATS -> SDP

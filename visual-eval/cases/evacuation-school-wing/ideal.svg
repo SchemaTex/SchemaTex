@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="834" viewBox="0 0 1600 834">
+<title>Science wing escape plan</title>
+<defs>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#1B2430;font-size:13px} .secondary{fill:#5A646E;font-size:12px}.caption{fill:#8A939C;font-size:10px}.section{font-size:13px;font-weight:700;letter-spacing:1.6px}.category{font-size:10.5px;font-weight:700;letter-spacing:1.1px;fill:#8A939C}.room{font-size:14px}.partition{fill:none;stroke:#B4BBC2;stroke-width:3.5}.swing{fill:none;stroke:#B4BBC2;stroke-width:1.2}.route{fill:none;stroke:#00A651;stroke-width:11.2}.legend-text{font-size:12.5px}
+</style>
+<g id="firstaid"><rect width="34" height="34" rx="2" fill="#00843D"/><path d="M14 7h7v7h7v7h-7v7h-7v-7H7v-7h7z" fill="white"/></g>
+<g id="extinguisher"><rect width="34" height="34" rx="2" fill="#C8102E"/><g fill="white"><rect x="12" y="11" width="10" height="18" rx="2"/><path d="M14 6h7v3h-3v3h-3V9h-5V7h4z"/><path d="M21 7q7 1 7 8v5h-3v-5q0-4-4-5z"/></g></g>
+<g id="exit"><rect width="34" height="34" rx="2" fill="#00843D"/><path d="M4 4h10v25H4M2 31h30" fill="none" stroke="white" stroke-width="2"/><circle cx="22" cy="7" r="3" fill="white"/><path d="m20 12-5 7 7 3-3 7m1-17 6 6 5 1M18 14l-7 1-3 5m14 2 7 7" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="assembly"><rect width="44" height="44" rx="3" fill="#00843D"/><g fill="white"><path d="m22 3-5 8h10zM22 41l-5-8h10zM3 22l8-5v10zM41 22l-8-5v10z"/><path d="M14 14h16v16H14zm3 3v10h10V17z" fill-rule="evenodd"/></g></g>
+<g id="here"><circle r="19" fill="#005387"/><circle r="11" fill="none" stroke="white" stroke-width="2.5"/><circle r="4" fill="white"/></g>
+<path id="chevron" d="M-5-5.5 7 0-5 5.5z" fill="white"/>
+</defs>
+<rect width="1600" height="834" fill="white"/><rect x="18" y="18" width="1564" height="798" fill="none" stroke="#D3D9DE"/>
+<text x="46" y="66" font-size="21" font-weight="700" style="font-size:21px">Science wing escape plan</text>
+<text x="46" y="92" class="secondary">Escape and evacuation plan to ISO 23601:2020 · signs to ISO 7010:2019 · colours to ISO 3864-1</text>
+<text x="1577" y="66" text-anchor="end" class="secondary" font-weight="700" letter-spacing=".8">SCIENCE WING · SHEET A3 · SCALE 1:100</text>
+<text x="1577" y="92" text-anchor="end" class="secondary">Posted at: Corridor, midpoint · Rev 1 · Issued 2026-09</text>
+<path d="M46 110H1577" stroke="#CDD3D9"/>
+<!-- Metre geometry: origin (240,160), 28 drawing units per metre. -->
+<path d="M240 160H828V328H240zM240 412H828V608H240z" fill="#F2F4F5"/>
+<path d="M240 351V160H828V351M240 389V608H828V389" fill="none" stroke="#8D959D" stroke-width="9" stroke-linejoin="miter"/>
+<path d="M436 160V328M632 160V328M520 412V608M240 328H324M352 328H520M548 328H716M744 328H828M240 412H307.2M340.8 412H640.4M707.6 412H828" class="partition"/>
+<!-- Classroom doors open into their own rooms. -->
+<path d="M324 328V300M520 328V300M716 328V300" class="partition"/>
+<path d="M324 300A28 28 0 0 1 352 328M520 300A28 28 0 0 1 548 328M716 300A28 28 0 0 1 744 328" class="swing"/>
+<!-- Science Lab door and open Library passage. -->
+<path d="M307.2 412V445.6" class="partition"/><path d="M307.2 445.6A33.6 33.6 0 0 0 340.8 412" class="swing"/>
+<text x="338" y="245" text-anchor="middle" class="room">Classroom 1</text><text x="534" y="245" text-anchor="middle" class="room">Classroom 2</text><text x="730" y="245" text-anchor="middle" class="room">Classroom 3</text>
+<text x="380" y="518" text-anchor="middle" class="room">Science Lab</text><text x="674" y="518" text-anchor="middle" class="room">Library</text>
+<text x="534" y="398" text-anchor="middle" class="secondary" letter-spacing="1.3">CORRIDOR</text>
+<!-- Both escape paths start at the location marker and discharge through distinct exterior openings. -->
+<path d="M534 370H860" class="route"/><path d="M534 370H208" class="route" stroke-dasharray="68 18"/>
+<use href="#chevron" transform="translate(580 370)"/><use href="#chevron" transform="translate(636 370)"/><use href="#chevron" transform="translate(692 370)"/><use href="#chevron" transform="translate(748 370)"/><use href="#chevron" transform="translate(804 370)"/><use href="#chevron" transform="translate(850 370)"/>
+<use href="#chevron" transform="translate(493 370) rotate(180)"/><use href="#chevron" transform="translate(407 370) rotate(180)"/><use href="#chevron" transform="translate(321 370) rotate(180)"/><use href="#chevron" transform="translate(235 370) rotate(180)"/>
+<text x="534" y="340" text-anchor="middle" fill="#005387" style="fill:#005387;font-weight:700">YOU ARE HERE</text><use href="#here" transform="translate(534 370)"/>
+<use href="#exit" transform="translate(228 318) scale(-1 1)"/><use href="#exit" transform="translate(840 318)"/>
+<text x="190" y="375" text-anchor="end" style="fill:#00843D;font-size:11px;font-weight:700">EXIT</text><text x="878" y="375" style="fill:#00843D;font-size:11px;font-weight:700">EXIT</text>
+<text x="194" y="400" text-anchor="end" class="caption">Playground</text><text x="878" y="400" class="caption">Playground</text>
+<use href="#extinguisher" transform="translate(492 420) scale(.82)"/><text x="506" y="468" text-anchor="middle" style="fill:#C8102E;font-size:10px">ABC</text>
+<use href="#firstaid" transform="translate(534 566) scale(.82)"/>
+<!-- Assembly at the specified outside coordinate (26,4). -->
+<rect x="901" y="235" width="134" height="100" rx="7" fill="#EAF3EE" stroke="#00843D" stroke-width="1.5" stroke-dasharray="8 6"/>
+<use href="#assembly" transform="translate(946 250)"/><text x="968" y="311" text-anchor="middle" style="fill:#00843D;font-weight:700">ASSEMBLY POINT</text><text x="968" y="325" text-anchor="middle" class="secondary" style="font-size:11px">Playground</text>
+<!-- North point -->
+<circle cx="1109" cy="259" r="33" fill="white" stroke="#B4BBC2"/><path d="M1109 234 1098 281 1109 270 1120 281z" fill="#1B2430"/><path d="M1109 237 1100 277 1109 268z" fill="white"/><text x="1109" y="308" text-anchor="middle" class="secondary" font-weight="700">N</text>
+<!-- Scale bar -->
+<g transform="translate(139 628)"><text x="0" y="-6" text-anchor="middle" class="caption">0</text><text x="56" y="-6" text-anchor="middle" class="caption">2</text><text x="112" y="-6" text-anchor="middle" class="caption">4</text><text x="168" y="-6" text-anchor="middle" class="caption">6 m</text><path d="M0 0h168v7H0z" fill="white" stroke="#1B2430"/><path d="M0 0h56v7H0zM112 0h56v7h-56z" fill="#1B2430"/><text x="0" y="25" class="secondary" style="font-size:11px">Scale 1:100 at A3 · safety signs 11 mm</text></g>
+<!-- Emergency action panel -->
+<rect x="457" y="640" width="572" height="151" rx="4" fill="white" stroke="#CDD3D9"/><text x="475" y="665" class="section">IF YOU DISCOVER A FIRE</text><path d="M475 674H1010" stroke="#CDD3D9"/>
+<g fill="#1B2430"><circle cx="483" cy="694" r="8.5"/><circle cx="483" cy="718" r="8.5"/><circle cx="483" cy="742" r="8.5"/><circle cx="483" cy="766" r="8.5"/></g>
+<g text-anchor="middle" style="font-size:10px;font-weight:700"><text x="483" y="698" style="fill:white">1</text><text x="483" y="722" style="fill:white">2</text><text x="483" y="746" style="fill:white">3</text><text x="483" y="770" style="fill:white">4</text></g>
+<text x="503" y="698" class="legend-text">Raise the alarm and alert a member of staff.</text><text x="503" y="722" class="legend-text">Leave by the green route shown — never use a lift.</text><text x="503" y="746" class="legend-text">Close every door behind you.</text><text x="503" y="770" class="legend-text">Go to the assembly point and report to your teacher.</text>
+<!-- Automatic legend: only symbols used in this plan. -->
+<rect x="1209" y="169" width="368" height="608" rx="4" fill="white" stroke="#CDD3D9"/><text x="1227" y="194" class="section">LEGEND</text><path d="M1227 203H1559" stroke="#CDD3D9"/>
+<text x="1227" y="221" class="category">ESCAPE ROUTES</text><path d="M1227 257H1275" stroke="#00A651" stroke-width="10"/><use href="#chevron" transform="translate(1252 257) scale(.8)"/><text x="1287" y="262" class="legend-text">Primary escape route</text>
+<path d="M1227 287H1275" stroke="#00A651" stroke-width="10" stroke-dasharray="20 6"/><use href="#chevron" transform="translate(1240 287) rotate(180) scale(.8)"/><text x="1287" y="292" class="legend-text">Alternative escape route</text>
+<text x="1227" y="323" class="category">EXITS AND ASSEMBLY</text><use href="#exit" transform="translate(1239 345) scale(.73)"/><text x="1287" y="362" class="legend-text">Final exit (ISO 7010 E001/E002)</text><use href="#assembly" transform="translate(1239 389) scale(.565)"/><text x="1287" y="406" class="legend-text">Assembly point (E007)</text>
+<text x="1227" y="443" class="category">FIRE EQUIPMENT</text><use href="#extinguisher" transform="translate(1239 464) scale(.73)"/><text x="1287" y="481" class="legend-text">Fire extinguisher (F001), class marked</text>
+<text x="1227" y="522" class="category">FIRST AID</text><use href="#firstaid" transform="translate(1239 544) scale(.73)"/><text x="1287" y="561" class="legend-text">First aid point (E003)</text>
+<text x="1227" y="603" class="category">YOUR POSITION</text><use href="#here" transform="translate(1251 636) scale(.6)"/><text x="1287" y="640" class="legend-text">You are here (ISO 23601 marker)</text>
+<text x="1227" y="681" class="category">BUILDING</text><path d="M1239 722v-24" class="partition"/><path d="M1239 698a24 24 0 0 1 24 24" class="swing"/><text x="1287" y="716" class="legend-text">Door and opening direction</text>
+<text x="1227" y="764" class="caption">Lists every symbol used on this plan (ISO 23601 §6).</text>
+<text x="46" y="807" class="caption">Original symbol geometry drawn to the visual grammar described in ISO 7010 and ISO 3864-1. Occupant information only — not a fire-service pre-incident plan.</text><text x="1577" y="807" text-anchor="end" class="caption">Sheet 1 of 1</text>
+</svg>

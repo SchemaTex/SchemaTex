@@ -1,0 +1,86 @@
+{
+  "id": "floorplan-office-open-plan",
+  "type": "floorplan",
+  "title": "Open-plan office plan",
+  "goal": "Let a visitor identify the entrance, reception, workstations, meeting rooms, phone booth, kitchenette, and routes through the office.",
+  "rubric": [
+    {
+      "id": "reception-at-entrance",
+      "severity": "blocker",
+      "must": "The entrance door leads directly into a labeled reception area with a reception desk."
+    },
+    {
+      "id": "desk-banks-visible",
+      "severity": "blocker",
+      "must": "The open workspace visibly contains multiple orderly banks of office desks."
+    },
+    {
+      "id": "circulation-reaches-desks",
+      "severity": "blocker",
+      "must": "Clear floor space visibly reaches every bank of desks without passing through a desk."
+    },
+    {
+      "id": "different-meeting-rooms",
+      "severity": "major",
+      "must": "Two enclosed meeting rooms of visibly different sizes are labeled and contain meeting tables."
+    },
+    {
+      "id": "support-amenities",
+      "severity": "major",
+      "must": "A kitchenette and a separately labeled phone booth are both visible in the support area."
+    },
+    {
+      "id": "doors-clear",
+      "severity": "major",
+      "must": "Every door leaf and swing arc is clear of furniture and opens into usable floor space."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly identifies the entrance, reception, 12 workstations, two meeting rooms, kitchenette, and phone booth. Open floor areas and four unobstructed internal doors visibly connect the workspace to every enclosed area.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:12:29.209Z",
+      "targetHash": "4e84b9333fa6",
+      "sourceHash": "1cad64001953",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "reception-at-entrance",
+          "verdict": "pass",
+          "evidence": "The north ENTRY door leads directly into the labeled RECEPTION, which contains a clearly labeled RECEPTION DESK."
+        },
+        {
+          "id": "desk-banks-visible",
+          "verdict": "pass",
+          "evidence": "The OPEN PLAN WORKSPACE visibly contains 12 desks arranged as three orderly rows of four."
+        },
+        {
+          "id": "circulation-reaches-desks",
+          "verdict": "pass",
+          "evidence": "Wide, continuous clear floor space surrounds the three desk rows and provides unobstructed approaches to every desk bank."
+        },
+        {
+          "id": "different-meeting-rooms",
+          "verdict": "pass",
+          "evidence": "Two enclosed rooms are labeled LARGE MEETING 20.0 m² and SMALL MEETING 14.0 m²; each visibly contains a meeting table and chairs."
+        },
+        {
+          "id": "support-amenities",
+          "verdict": "pass",
+          "evidence": "The bottom support area visibly includes a labeled KITCHENETTE with counter and refrigerator, plus a separately labeled PHONE BOOTH with its own desk and chair."
+        },
+        {
+          "id": "doors-clear",
+          "verdict": "pass",
+          "evidence": "The entrance and all four internal door leaves and swing arcs are clearly drawn, do not intersect furniture, and open into visible usable floor space."
+        }
+      ]
+    }
+  }
+}

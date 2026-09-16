@@ -1,0 +1,78 @@
+{
+  "id": "phylo-bacterial-16s",
+  "type": "phylo",
+  "title": "Bacterial 16S rRNA Tree",
+  "goal": "A practitioner can visually assess the Bacterial 16S rRNA Tree scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "tree-topology",
+      "severity": "blocker",
+      "must": "A rooted branching tree visibly shows the stated sister taxa and their clade relationships."
+    },
+    {
+      "id": "branch-lengths",
+      "severity": "blocker",
+      "must": "Horizontal branch lengths visibly vary to encode the supplied evolutionary distances."
+    },
+    {
+      "id": "tip-labels",
+      "severity": "major",
+      "must": "The named taxa are legible at the tree tips."
+    },
+    {
+      "id": "highlighted-clade",
+      "severity": "major",
+      "must": "The named clade is visibly highlighted distinctly from the rest of the tree."
+    },
+    {
+      "id": "scale",
+      "severity": "minor",
+      "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents a rooted rectangular phylogram with the required topology, proportional horizontal branch lengths, five legible taxa, distinct Proteobacteria highlighting, and an explicit substitutions/site scale.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:25:15.500Z",
+      "targetHash": "fa533b59c4f0",
+      "sourceHash": "79dde3eb5d95",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "Escherichia coli and Pseudomonas aeruginosa form one sister pair; Bacillus subtilis and Staphylococcus aureus form another; Mycobacterium tuberculosis branches separately from the same rooted backbone."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Solid horizontal branches visibly vary in length consistently with the supplied distances; dashed label-alignment extensions are explicitly identified as adding no branch length."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "All five named taxa are large, legible, and aligned with their corresponding tree tips."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "The Escherichia coli–Pseudomonas aeruginosa clade is distinctly shown in blue and labeled Proteobacteria with a blue bracket."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled “0.05 substitutions/site,” and the diagram also states that horizontal distance represents substitutions/site."
+        }
+      ]
+    }
+  },
+  "variant": "rectangular"
+}

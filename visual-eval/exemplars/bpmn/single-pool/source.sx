@@ -1,0 +1,45 @@
+# Closest supported DSL. See notes.md for explicitly documented losses.
+bpmn
+direction: LR
+title: "Customer return and refund"
+pool "Online store" {
+  lane "Customer service" {
+    req: start message "Return request received"
+    check: task user "Check return eligibility"
+    eligible: gateway xor "Eligible?"
+    labelSent: intermediate message "Label e-mailed"
+    reject: task send "Send rejection notice"
+    rejected: end "Return rejected"
+  }
+  lane "Warehouse" {
+    receive: task receive "Receive returned parcel"
+    expiry: intermediate timer "14 days"
+    close: task send "Send expiry notice"
+    expired: end "Return expired"
+    inspect: task user "Inspect returned item"
+    fork: gateway and ""
+    restock: task service "Restock item"
+    join: gateway and ""
+    done: end "Return completed"
+  }
+  lane "Finance" {
+    refund: task service "Refund payment"
+    declined: gateway xor "Payment declined?"
+    manual: task user "Refund manually"
+    merged: gateway xor ""
+  }
+}
+flows
+req --> check --> eligible
+eligible --? "Yes" --> labelSent --> receive
+eligible --* "No" --> reject --> rejected
+receive --> inspect --> fork
+# Approximation only: the 14-day boundary timer becomes a free-standing branch.
+receive --> expiry --> close --> expired
+fork --> restock --> join
+fork --> refund --> declined
+# Approximation only: the error boundary becomes an exclusive gateway.
+declined --* "No" --> merged
+declined --? "Yes" --> manual --> merged
+merged --> join
+join --> done

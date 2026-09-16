@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1030" width="1440" height="1030">
+<title>Loss of reactor/process cooling — quantified fault tree</title>
+<desc>Top OR gate combines cooling-pump train loss and electrical supply loss. Each branch includes the same pump-house flood event. Pump A and pump B failures combine at an AND gate, as do normal bus and standby diesel failures. Exact top-event probability is 0.001263718737280.</desc>
+<rect width="1440" height="1030" fill="white"/>
+<style>text{font-family:Helvetica,Arial,sans-serif;fill:#334155;text-anchor:middle} .label{font-size:19px;font-weight:500}.id{font-size:12px;letter-spacing:.6px;fill:#526574}.wire{fill:none;stroke:#334155;stroke-width:2.3;stroke-linejoin:round}.box{fill:#fff;stroke:#334155;stroke-width:2}.gate { fill: #dcfce7; stroke: #059669; stroke-width: 2.2; }.prob{font-size:17px;font-weight:600;fill:#2563eb} .prob text { fill: #2563eb; } .event:not(g), .box { fill: #eef2f7; }</style>
+<text x="720" y="29" class="id">FAULT TREE  /  EXACT PROBABILITY ANALYSIS</text>
+<rect class="box" x="510.0" y="50" width="420" height="75" rx="7" fill="#eef2f7"/>
+<text x="720" y="86.5" class="label">Loss of reactor/process cooling</text>
+<text x="720" y="115" class="id">TOP</text>
+<path class="wire" d="M 720 125 V 146"/>
+<path class="gate" d="M 686 212 Q 686 169 720 146 Q 754 169 754 212 Q 720 194 686 212 Z"/>
+<text x="720" y="189" class="prob">OR</text>
+<path class="wire" d="M 720 203 V 235 M 355 260 V 235 H 1075 V 260"/>
+<rect class="box" x="180.0" y="260" width="350" height="76" rx="7" fill="#eef2f7"/>
+<text x="355" y="297.0" class="label">Cooling-pump train unavailable</text>
+<text x="355" y="326" class="id">PUMP_TRAIN_LOSS</text>
+<rect class="box" x="900.0" y="260" width="350" height="76" rx="7" fill="#eef2f7"/>
+<text x="1075" y="297.0" class="label">Pump power supply unavailable</text>
+<text x="1075" y="326" class="id">POWER_SUPPLY_LOSS</text>
+<path class="wire" d="M 355 336 V 355"/>
+<path class="gate" d="M 321 421 Q 321 378 355 355 Q 389 378 389 421 Q 355 403 321 421 Z"/>
+<text x="355" y="398" class="prob">OR</text>
+<path class="wire" d="M 1075 336 V 355"/>
+<path class="gate" d="M 1041 421 Q 1041 378 1075 355 Q 1109 378 1109 421 Q 1075 403 1041 421 Z"/>
+<text x="1075" y="398" class="prob">OR</text>
+<path class="wire" d="M 355 412 V 441 M 245 475 V 441 H 565 V 475"/>
+<path class="wire" d="M 1075 412 V 441 M 965 475 V 441 H 1285 V 475"/>
+<rect class="box" x="100.0" y="475" width="290" height="80" rx="7" fill="#eef2f7"/>
+<text x="245" y="502.5" class="label">Both duty/standby</text>
+<text x="245" y="525.5" class="label">pumps fail</text>
+<text x="245" y="545" class="id">BOTH_PUMPS_FAIL</text>
+<rect class="box" x="810.0" y="475" width="310" height="80" rx="7" fill="#eef2f7"/>
+<text x="965" y="502.5" class="label">Normal and standby</text>
+<text x="965" y="525.5" class="label">power fail</text>
+<text x="965" y="545" class="id">NORMAL_AND_EMERGENCY_POWER_FAIL</text>
+<path class="wire" d="M 245 555 V 575"/>
+<path class="gate" d="M 213 641 L 213 607 A 32 32 0 0 1 277 607 L 277 641 Z"/>
+<text x="245" y="618" class="prob">AND</text>
+<path class="wire" d="M 965 555 V 575"/>
+<path class="gate" d="M 933 641 L 933 607 A 32 32 0 0 1 997 607 L 997 641 Z"/>
+<text x="965" y="618" class="prob">AND</text>
+<path class="wire" d="M 245 641 V 668 M 130 695 V 668 H 360 V 695"/>
+<path class="wire" d="M 965 641 V 668 M 850 695 V 668 H 1080 V 695"/>
+<rect class="box" x="27.5" y="695" width="205" height="100" rx="7" fill="#eef2f7"/>
+<text x="130" y="732.5" class="label">Cooling pump A</text>
+<text x="130" y="755.5" class="label">fails to start</text>
+<text x="130" y="785" class="id">PUMP_A_FAIL</text>
+<path class="wire" d="M 130 795 V 809"/>
+<circle class="box" cx="130" cy="831" r="22"/>
+<text x="130" y="878" class="prob">p = 0.012</text>
+<rect class="box" x="257.5" y="695" width="205" height="100" rx="7" fill="#eef2f7"/>
+<text x="360" y="732.5" class="label">Cooling pump B</text>
+<text x="360" y="755.5" class="label">fails to start</text>
+<text x="360" y="785" class="id">PUMP_B_FAIL</text>
+<path class="wire" d="M 360 795 V 809"/>
+<circle class="box" cx="360" cy="831" r="22"/>
+<text x="360" y="878" class="prob">p = 0.012</text>
+<rect class="box" x="740.0" y="695" width="220" height="100" rx="7" fill="#eef2f7"/>
+<text x="850" y="732.5" class="label">Normal motor-control</text>
+<text x="850" y="755.5" class="label">bus unavailable</text>
+<text x="850" y="785" class="id">NORMAL_BUS_FAIL</text>
+<path class="wire" d="M 850 795 V 809"/>
+<circle class="box" cx="850" cy="831" r="22"/>
+<text x="850" y="878" class="prob">p = 0.008</text>
+<rect class="box" x="967.5" y="695" width="225" height="100" rx="7" fill="#eef2f7"/>
+<text x="1080" y="732.5" class="label">Standby diesel generator</text>
+<text x="1080" y="755.5" class="label">fails to supply</text>
+<text x="1080" y="785" class="id">DG_FAIL</text>
+<path class="wire" d="M 1080 795 V 809"/>
+<circle class="box" cx="1080" cy="831" r="22"/>
+<text x="1080" y="878" class="prob">p = 0.015</text>
+<rect class="box" x="447.5" y="475" width="235" height="100" rx="7" fill="#eef2f7"/>
+<text x="565" y="501.0" class="label">Pump-house flood</text>
+<text x="565" y="524.0" class="label">disables pumps</text>
+<text x="565" y="547.0" class="label">and switchgear</text>
+<text x="565" y="565" class="id">PUMP_HOUSE_FLOOD</text>
+<path class="wire" d="M 565 575 V 589"/>
+<circle class="box" cx="565" cy="611" r="22"/>
+<text x="565" y="658" class="prob">p = 0.001</text>
+<rect class="box" x="1167.5" y="475" width="235" height="100" rx="7" fill="#eef2f7"/>
+<text x="1285" y="501.0" class="label">Pump-house flood</text>
+<text x="1285" y="524.0" class="label">disables pumps</text>
+<text x="1285" y="547.0" class="label">and switchgear</text>
+<text x="1285" y="565" class="id">PUMP_HOUSE_FLOOD</text>
+<path class="wire" d="M 1285 575 V 589"/>
+<circle class="box" cx="1285" cy="611" r="22"/>
+<text x="1285" y="658" class="prob">p = 0.001</text>
+<text x="565" y="686" class="id">Same shared event F</text>
+<text x="1285" y="686" class="id">Same shared event F</text>
+<rect x="40" y="909" width="1360" height="96" rx="4" fill="#eef4f6" stroke="#cedbe1"/>
+<text x="720" y="936" class="label">Minimal cut sets: {F}, {Pump A, Pump B}, {Normal bus, Standby diesel}</text>
+<text x="720" y="964" class="prob">P(TOP) = 1 − (1 − 0.001)(1 − 0.012²)(1 − 0.008 × 0.015) = 0.001263718737280 ≈ 0.126372%</text>
+<text x="720" y="989" class="id">Demand failures are independent except for shared flood F; the repeated flood symbol is counted once.</text>
+</svg>

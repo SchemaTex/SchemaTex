@@ -1,0 +1,55 @@
+{
+  "id": "genogram-caregiver-burden-elderly",
+  "type": "genogram",
+  "title": "Eleanor's family caregiving",
+  "goal": "A reader can identify Eleanor as an elderly parent needing daily care, distinguish her resident and nonresident adult-child caregivers, and recognize Dana's caregiving burden alongside support for Eleanor and conflict over the division of care.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "family-generations",
+      "severity": "blocker",
+      "must": "Arthur and Eleanor occupy the parent generation and connect as parents of Dana and Paul on the adult-child generation, with Dana to the left of Paul and all four people appearing exactly once."
+    },
+    {
+      "id": "residential-household",
+      "severity": "blocker",
+      "must": "A closed dotted or dashed household boundary encloses Eleanor and Dana together, excludes Paul and Arthur, and is clearly distinguishable from partnership, descent and emotional relationship lines."
+    },
+    {
+      "id": "elderly-care-recipient",
+      "severity": "blocker",
+      "must": "Eleanor is shown as a living woman aged 84, with readable text identifying dementia and the need for daily care; Arthur alone has a deceased cross and a readable death year of 2019."
+    },
+    {
+      "id": "caregiver-roles-and-burden",
+      "severity": "blocker",
+      "must": "Dana's annotations identify her as living with Eleanor, providing daily personal care, exhausted and without regular respite; Paul's annotations identify separate residence and weekly transport assistance."
+    },
+    {
+      "id": "support-overlays",
+      "severity": "major",
+      "must": "Dana and Eleanor, and Paul and Eleanor, each have a close/support overlay drawn as two parallel lines, with readable labels identifying daily care and support versus weekly transport; these overlays are distinct from biological descent lines."
+    },
+    {
+      "id": "care-workload-conflict",
+      "severity": "blocker",
+      "must": "A conflict overlay between Dana and Paul uses a zigzag with hash marks and carries the readable label Unequal care workload; its endpoints clearly identify the two caregivers rather than Eleanor or Arthur."
+    },
+    {
+      "id": "index-and-legend",
+      "severity": "major",
+      "must": "Dana alone has the double-outline index-person marker, and readable legend entries explain the deceased marker, index marker, close relationship and conflict relationship using distinguishable swatches."
+    },
+    {
+      "id": "unobstructed-annotations",
+      "severity": "major",
+      "must": "All four names, ages, caregiving annotations and relationship labels are readable without overlapping other text, and the household boundary does not cross a person symbol or obscure its status marking."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Arthur (1940–2019) and Eleanor (84, dementia and daily care needs) are the parents of Dana and Paul, with only Eleanor and index person Dana inside the dashed shared household. Dana provides daily personal care and is exhausted without regular respite; Paul lives separately and provides weekly transport, with two-line support arcs to Eleanor and a labelled zigzag conflict over unequal care workload."
+  }
+}

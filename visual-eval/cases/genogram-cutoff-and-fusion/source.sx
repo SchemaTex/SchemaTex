@@ -1,0 +1,16 @@
+# Bowen-oriented assessment. Emotional relationship symbols describe the reported relational process, not diagnosis.
+genogram "Nguyen Family · Emotional Process" [asOf: 2026]
+minh [male, 1950, label: "Minh Nguyen"]
+lan [female, 1953, label: "Lan Nguyen"]
+minh -- lan
+  anh [female, 1978, label: "Anh Nguyen"]
+  bao [male, 1981, label: "Bao Nguyen"]
+  chi [female, 1985, label: "Chi Nguyen", index]
+david [male, 1977, label: "David Stone"]
+anh -- david
+  oliver [male, 2008, label: "Oliver Stone"]
+minh -cutoff- anh [label: "Estranged"]
+lan -fused- chi [label: "Over-involved"]
+bao -conflict- minh
+chi -distant- bao
+anh -close- oliver

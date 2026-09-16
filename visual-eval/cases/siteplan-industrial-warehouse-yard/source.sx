@@ -1,0 +1,18 @@
+# Assumptions: this is an early operational site concept in metres, not a survey or construction drawing.
+# Heavy-vehicle circulation separates from visitor parking and includes a marked fire route.
+siteplan "Industrial warehouse yard" unit m
+parcel lot "Operational site boundary" points 0,0 220,0 220,150 0,150 fill #F7F5EF
+road frontage "Logistics Parkway" from -20,130 to 240,130 width 12
+structure warehouse "Warehouse" points 35,20 160,20 160,80 35,80
+structure office "Operations Office" points 170,25 210,25 210,65 170,65
+parking visitors "Visitor Parking · 32 spaces" points 165,75 215,75 215,115 165,115 fill #E3F2FD
+zone staging "Trailer staging yard" points 20,90 145,90 145,120 20,120 fill #FFF8E1
+driveway truck "Heavy-vehicle loop" points 10,135 10,85 25,85 25,15 165,15 165,90 width 14
+walkway ped "Pedestrian route" points 190,130 190,115 185,75 width 3
+entry gate at 35,130 size 10 "Truck gate"
+hydrant h1 at 20,85 size 8 "Fire hydrant"
+fence secure "Security fence" points 5,5 215,5 215,125 5,125
+callout "Loading docks" at 150,95 to 145,75
+north
+scale 25
+legend on

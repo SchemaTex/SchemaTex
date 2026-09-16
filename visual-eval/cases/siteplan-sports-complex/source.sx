@@ -1,0 +1,18 @@
+# Assumptions: this is a concept site plan in metres for circulation and facility relationships, not a permit drawing.
+# Pedestrian routes connect parking, field facilities, and the main spectator entrance.
+siteplan "Community sports complex" unit m
+parcel campus "Sports complex boundary" points 0,0 260,0 260,180 0,180 fill #F7F5EF
+road access "Stadium Avenue" from -25,155 to 285,155 width 14
+structure arena "Multi-use Arena" points 35,25 125,25 125,85 35,85
+structure pavilion "Changing Pavilion" points 145,30 205,30 205,65 145,65
+zone field1 "Football Pitch" points 25,100 125,100 125,145 25,145 fill #E8F5E9
+zone field2 "Training Field" points 140,90 240,90 240,135 140,135 fill #E8F5E9
+parking public "Spectator Parking · 180 spaces" points 145,140 245,140 245,170 145,170 fill #E3F2FD
+driveway loop "Vehicle access loop" points 15,160 15,15 220,15 220,80 width 12
+walkway concourse "Pedestrian concourse" points 80,155 80,85 175,85 175,65 width 5
+entry main at 80,155 size 10 "Main spectator entry"
+hydrant h1 at 130,85 size 8 "Hydrant"
+callout "Team coach drop-off" at 220,80 to 205,65
+north
+scale 25
+legend on

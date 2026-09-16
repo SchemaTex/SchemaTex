@@ -1,0 +1,28 @@
+%% OAuth authorization code with PKCE.
+sequenceDiagram
+actor User
+participant Browser
+participant Client
+participant Auth
+participant Resource
+User->>Browser: Sign in
+Browser->>Client: GET login
+Client-->>Browser: Redirect with PKCE challenge
+Browser->>Auth: Authorization request
+activate Auth
+Auth-->>User: Consent screen
+User->>Auth: Authenticate and approve
+Auth-->>Browser: Redirect with code
+deactivate Auth
+Browser->>Client: Callback code
+activate Client
+Client->>Auth: Token request code and verifier
+Auth-->>Client: Access token
+opt [profile required]
+Client->>Resource: Userinfo
+Resource-->>Client: Claims
+end
+Client-->>Browser: Session cookie
+Browser-->>User: Signed in
+deactivate Client
+Note over Client,Auth: Back-channel code exchange

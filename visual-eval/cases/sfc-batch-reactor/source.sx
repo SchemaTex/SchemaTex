@@ -1,0 +1,18 @@
+# Scenario: IEC 61131-3 batch reactor charge, react, and discharge sequence.
+sfc "Batch Reactor Sequence"
+var StartBtn: bool
+var LevelHigh: bool
+var ReactionDone: bool
+var Empty: bool
+step S0 [initial]
+  N AllValvesClosed
+step S1 [label: "Charge reactor"]
+  N ChargeValveOpen
+step S2 [label: "React"]
+  D AgitatorRun T#30m
+step S3 [label: "Discharge"]
+  N DischargeValveOpen
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: LevelHigh
+transition from: S2 to: S3: ReactionDone
+transition from: S3 to: S0: Empty

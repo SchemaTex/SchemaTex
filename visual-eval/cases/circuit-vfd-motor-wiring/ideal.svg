@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200">
+<title>VFD Motor Power and Control Wiring</title>
+<rect width="1600" height="1200" fill="white"/>
+<defs>
+<style>text{font-family:Helvetica,Arial,sans-serif;fill:#172532;font-size:18px}.title{font-size:30px;font-weight:bold}.head{font-size:21px;font-weight:bold}.small{font-size:15px}.wire{fill:none;stroke:#172532;stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter}.symbol{fill:white;stroke:#172532;stroke-width:2.5}.dash{fill:none;stroke:#72808a;stroke-width:1.5;stroke-dasharray:7 6}.pin{fill:white;stroke:#172532;stroke-width:2}.dot{fill:#172532}</style>
+<g id="source"><circle class="symbol" r="23"/><path class="wire" d="M-14 0 Q-7 -15 0 0 Q7 15 14 0"/></g>
+<g id="breaker"><circle class="pin" cy="-23" r="4"/><circle class="pin" cy="23" r="4"/><path class="wire" d="M0 23 L-15 -14"/></g>
+<g id="reactor"><path class="wire" d="M0 -40 V-30 C24 -30 24 -10 0 -10 C24 -10 24 10 0 10 C24 10 24 30 0 30 V40 M28 -30 V30 M34 -30 V30"/></g>
+<g id="earth"><path class="wire" d="M0 0 V12 M-15 12 H15 M-10 18 H10 M-5 24 H5"/></g>
+</defs>
+<text class="title" x="55" y="55">VFD Motor Power and Control Wiring</text>
+<text x="55" y="86" fill="#526675">Three-phase power • 400 VAC, 50 Hz • 4 kW drive and motor</text>
+<path d="M55 106 H1545" stroke="#172532" stroke-width="2"/>
+<text class="head" x="65" y="145">01 / POWER</text>
+<!-- Supply sources, each referenced to PE as specified -->
+<path class="wire" d="M170 189 H570 M220 189 V207 M380 189 V207 M540 189 V207"/>
+<text x="175" y="177">PE</text><use href="#earth" x="170" y="189"/>
+<use href="#source" x="220" y="230"/><use href="#source" x="380" y="230"/><use href="#source" x="540" y="230"/>
+<text class="small" x="232" y="278" text-anchor="start">V1 L1 SUPPLY</text><text class="small" x="392" y="278" text-anchor="start">V2 L2 SUPPLY</text><text class="small" x="552" y="278" text-anchor="start">V3 L3 SUPPLY</text>
+<text class="small" x="625" y="234">V1–V3</text><text x="625" y="259">400 VAC, 50 Hz</text>
+<path class="wire" d="M220 253 V327 M380 253 V327 M540 253 V327"/>
+
+
+<text x="230" y="313">L1</text><text x="390" y="313">L2</text><text x="550" y="313">L3</text>
+<rect class="dash" x="175" y="320" width="415" height="94"/>
+<use href="#breaker" x="220" y="350"/><use href="#breaker" x="380" y="350"/><use href="#breaker" x="540" y="350"/>
+<path class="dash" d="M205 349 H525"/>
+<text class="small" x="232" y="403" text-anchor="start">Q1 / L1</text><text class="small" x="392" y="403" text-anchor="start">Q2 / L2</text><text class="small" x="552" y="403" text-anchor="start">Q3 / L3</text>
+<text class="head" x="625" y="349">QF1 BREAKER</text><text x="625" y="379">16 A, 3-pole, 400 VAC</text>
+<path class="wire" d="M220 373 V450 M380 373 V450 M540 373 V450"/>
+<use href="#reactor" x="220" y="490"/><use href="#reactor" x="380" y="490"/><use href="#reactor" x="540" y="490"/>
+<text class="small" x="204" y="475" text-anchor="end">QL1</text><text class="small" x="364" y="475" text-anchor="end">QL2</text><text class="small" x="524" y="475" text-anchor="end">QL3</text>
+<text class="small" x="232" y="561" text-anchor="start">LR1 L1 (L1)</text><text class="small" x="392" y="561" text-anchor="start">LR1 L2 (L2)</text><text class="small" x="552" y="561" text-anchor="start">LR1 L3 (L3)</text>
+<text class="head" x="625" y="481">LR1 LINE REACTOR</text><text x="625" y="511">16 A, 3%, 400 VAC</text>
+<path class="wire" d="M220 530 V610 M380 530 V610 M540 530 V610"/>
+<!-- Drive -->
+<rect class="symbol" x="135" y="610" width="635" height="255"/>
+<circle class="pin" cx="220" cy="610" r="5"/><circle class="pin" cx="380" cy="610" r="5"/><circle class="pin" cx="540" cy="610" r="5"/>
+<text x="220" y="639" text-anchor="middle">R/L1</text><text x="380" y="639" text-anchor="middle">S/L2</text><text x="540" y="639" text-anchor="middle">T/L3</text>
+<text class="head" x="175" y="712">VFD1 VARIABLE FREQUENCY DRIVE</text><text class="title" x="175" y="754">400 VAC, 4 kW</text><text class="small" x="175" y="783">U1</text>
+<text x="220" y="845" text-anchor="middle">U/T1</text><text x="380" y="845" text-anchor="middle">V/T2</text><text x="540" y="845" text-anchor="middle">W/T3</text>
+<path class="wire" d="M220 865 V932 H285 V980 M380 865 V980 M540 865 V932 H475 V980"/>
+<text x="232" y="904">U</text><text x="392" y="904">V</text><text x="552" y="904">W</text>
+<rect class="symbol" x="240" y="980" width="280" height="140"/>
+<text x="285" y="1005" text-anchor="middle">U1</text><text x="380" y="1005" text-anchor="middle">V1</text><text x="475" y="1005" text-anchor="middle">W1</text>
+<circle class="symbol" cx="380" cy="1061" r="39"/><text x="380" y="1058" text-anchor="middle" class="head">M</text><text x="380" y="1083" text-anchor="middle">3~</text>
+<text class="head" x="550" y="1035">M1 3-PH MOTOR</text><text x="550" y="1068">400 VAC, 4 kW, 8.5 A</text>
+<!-- Braking -->
+<text class="head" x="930" y="145">02 / BRAKING</text>
+<text class="head" x="1020" y="193">RB1 BRAKING RESISTOR</text><text x="1020" y="222">R4 • 100 ohm, 300 W</text>
+<path class="wire" d="M770 650 H890 V265 H1100 M770 683 H920 V305 H1310 V265 H1240"/>
+<rect class="symbol" x="1100" y="253" width="140" height="24"/>
+<text x="1040" y="286">BRP</text><text x="1325" y="280">BRN</text>
+<text x="753" y="656" text-anchor="end">P+</text><text x="753" y="689" text-anchor="end">PB</text>
+<!-- Controls -->
+<text class="head" x="985" y="367">03 / CONTROL</text>
+<text class="small" x="1510" y="399" text-anchor="middle">COM</text>
+<path class="wire" d="M1510 420 V1040 H820 V842 H770"/>
+<text x="752" y="848" text-anchor="end">AC</text>
+<!-- run pushbutton -->
+<path class="wire" d="M770 723 H955 V450 H1170 M1240 450 H1510 M1180 434 H1230 M1205 434 V417 M1195 417 H1215"/>
+<circle class="pin" cx="1175" cy="450" r="5"/><circle class="pin" cx="1235" cy="450" r="5"/>
+<text x="752" y="729" text-anchor="end">DI1</text><text class="small" x="976" y="444">RUN</text>
+<text class="head" x="1100" y="395">S1 RUN COMMAND</text><text class="small" x="1280" y="440">24 VDC, 1 A</text><circle class="dot" cx="1510" cy="450" r="4"/>
+<!-- selector -->
+<path class="wire" d="M770 758 H980 V550 H1170 M1240 550 H1510 M1175 550 L1229 529 M1202 527 V508 M1195 515 L1202 508 L1209 515"/>
+<circle class="pin" cx="1175" cy="550" r="5"/><circle class="pin" cx="1235" cy="550" r="5"/>
+<text x="752" y="764" text-anchor="end">DI2</text><text class="small" x="995" y="542">FWD</text>
+<text class="head" x="1100" y="496">S2 FORWARD REVERSE</text><text class="small" x="1280" y="540">24 VDC, 1 A</text><circle class="dot" cx="1510" cy="550" r="4"/>
+<!-- speed pot: separate VREF net intentionally not attached to nonexistent drive pin -->
+<text class="head" x="1100" y="622">P1 SPEED POT</text><text x="1100" y="649">10 kohm, 0.25 W</text>
+<path class="wire" d="M1240 695 V680 H1430 M1240 785 V810 H1510 M770 793 H1040 V740 H1217"/>
+<circle class="pin" cx="1430" cy="680" r="5"/><text class="small" x="1430" y="666" text-anchor="middle">VREF10</text>
+<rect class="symbol" x="1228" y="695" width="24" height="90"/>
+<path class="wire" d="M1209 732 L1225 740 L1209 748"/>
+<text x="752" y="799" text-anchor="end">AI1</text><text class="small" x="1060" y="729">AI</text><circle class="dot" cx="1510" cy="810" r="4"/>
+<text class="small" x="1110" y="843">VREF10: net only; no drive pin in netlist</text>
+<!-- relay contact -->
+<path class="wire" d="M770 821 H1005 V940 H1170 M1240 940 H1510 M1175 940 L1228 914"/>
+<circle class="pin" cx="1175" cy="940" r="5"/><circle class="pin" cx="1235" cy="940" r="5"/>
+<text x="752" y="827" text-anchor="end">RA</text><text class="small" x="1030" y="930">FAULT</text>
+<text class="head" x="1100" y="893">K1 VFD FAULT RELAY</text><text class="small" x="1280" y="930">250 VAC, 2 A</text><circle class="dot" cx="1510" cy="940" r="4"/>
+<text class="small" x="1080" y="1016">Contacts shown in normal / unactuated state</text>
+<path d="M55 1150 H1545" stroke="#a1aab0"/>
+<text class="small" x="55" y="1178">POWER &amp; CONTROL SCHEMATIC • Component and terminal names follow the supplied netlist</text><text class="small" x="1545" y="1178" text-anchor="end">01 / 01</text>
+</svg>

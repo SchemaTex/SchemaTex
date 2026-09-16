@@ -1,0 +1,30 @@
+%% WebSocket chat fan-out and offline notification.
+sequenceDiagram
+actor Sender
+participant WebApp
+participant Gateway
+participant Chat
+participant Presence
+participant Recipient
+participant Push
+Sender->>WebApp: Send message
+WebApp->>Gateway: WebSocket frame
+activate Gateway
+Gateway->>Chat: Persist and publish
+activate Chat
+Chat->>Presence: Find members
+Presence-->>Chat: Recipients
+loop [each recipient]
+Chat->>Recipient: Deliver
+Recipient-->>Chat: Acknowledge
+end
+opt [offline]
+Chat->>Push: Push notification
+Push-->>Chat: Accepted
+end
+Chat-->>Gateway: Accepted
+deactivate Chat
+Gateway-->>WebApp: Receipt
+deactivate Gateway
+WebApp-->>Sender: Sent
+Note over Gateway,Chat: Persist before receipt

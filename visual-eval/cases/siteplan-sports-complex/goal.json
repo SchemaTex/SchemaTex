@@ -1,0 +1,87 @@
+{
+  "id": "siteplan-sports-complex",
+  "type": "siteplan",
+  "title": "Community sports complex",
+  "goal": "Show sports facilities, parking, vehicle access, and pedestrian circulation.",
+  "rubric": [
+    {
+      "id": "footprints",
+      "severity": "blocker",
+      "must": "The plan visibly shows the Multi-use Arena and Changing Pavilion footprints."
+    },
+    {
+      "id": "circulation",
+      "severity": "blocker",
+      "must": "The plan visibly shows Football Pitch and Training Field areas."
+    },
+    {
+      "id": "areas",
+      "severity": "blocker",
+      "must": "The plan visibly shows the vehicle loop, spectator parking, and main entry."
+    },
+    {
+      "id": "orientation",
+      "severity": "major",
+      "must": "A north arrow and scale bar are visible."
+    },
+    {
+      "id": "boundaries",
+      "severity": "major",
+      "must": "A closed site boundary and street frontage are visibly distinguishable."
+    },
+    {
+      "id": "annotations",
+      "severity": "minor",
+      "must": "Supporting callouts, markers, and a legend are visible and readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents the complete concept site plan: both building footprints, both sports fields, vehicle access loop, spectator parking, pedestrian concourse and main entry, closed site boundary, Stadium Avenue frontage, north arrow, graphic scale, callouts, markers, and readable legend.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:53.144Z",
+      "targetHash": "06ce74a72503",
+      "sourceHash": "35082fa8bc95",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "footprints",
+          "verdict": "pass",
+          "evidence": "Multi-use Arena and Changing Pavilion are clearly shown as labeled building footprints with dimensions and areas."
+        },
+        {
+          "id": "circulation",
+          "verdict": "pass",
+          "evidence": "Football Pitch and Training Field are visibly distinguished, labeled, and connected to the pedestrian circulation layout."
+        },
+        {
+          "id": "areas",
+          "verdict": "pass",
+          "evidence": "The vehicle access loop, 180-space spectator parking area, pedestrian concourse, and main spectator entry are visibly shown and labeled."
+        },
+        {
+          "id": "orientation",
+          "verdict": "pass",
+          "evidence": "A north arrow and a labeled 0–100 m graphic scale with 25 m intervals are visible."
+        },
+        {
+          "id": "boundaries",
+          "verdict": "pass",
+          "evidence": "A closed dash-dot Sports Complex Boundary is clearly distinguishable from the Stadium Avenue street frontage."
+        },
+        {
+          "id": "annotations",
+          "verdict": "pass",
+          "evidence": "The Team coach drop-off callout, hydrant marker, facility labels, dimensions, site-data table, and symbol legend are visible and readable."
+        }
+      ]
+    }
+  }
+}

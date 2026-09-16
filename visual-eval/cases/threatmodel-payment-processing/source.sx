@@ -1,0 +1,17 @@
+# STRIDE DFD: checkout data crosses merchant, payment-gateway, and processor trust zones to token and audit stores.
+threatmodel "Payment Processing STRIDE"
+external Shopper: Online Shopper
+external Acquirer: Card Acquirer
+process Checkout: Merchant Checkout
+process Gateway: Payment Gateway
+datastore Tokens: Payment Token Store
+datastore Audit: Payment Audit Log
+Shopper -> Checkout : checkout request
+Checkout -> Gateway : payment authorization
+Gateway -> Acquirer : card authorization
+Gateway -> Tokens : token lookup
+Gateway -> Audit : payment event
+Checkout -> Audit : order event
+boundary "Public Internet" { Shopper, Acquirer }
+boundary "Merchant" { Checkout }
+boundary "PCI Zone" { Gateway, Tokens, Audit }

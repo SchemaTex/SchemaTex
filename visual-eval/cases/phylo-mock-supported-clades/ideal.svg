@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="770" viewBox="0 0 1140 549">
+  <title>Clade support comparison (mock)</title>
+  <desc>Authored mock phylogram, not empirical data or inferred analysis. North contains sister samples A and B with support 99, joined by C at support 88. South contains sister samples D and E with support 74, joined by F at support 96. Horizontal branch displacement represents substitutions per site.</desc>
+  <rect width="1140" height="549" fill="#ffffff"/>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size:28px; font-weight:700; }
+    .subtitle { font-size:13px; fill:#64748b; letter-spacing:.3px; }
+    .heading { font-size:12px; fill:#64748b; letter-spacing:1px; }
+    .sample { font-size:16px; }
+    .support { font-size:12px; }
+    .clade { font-size:12px; font-weight:700; }
+    .note { font-size:11px; fill:#64748b; }
+    .north { stroke:#0f766e; }
+    .south { stroke:#2563eb; }
+    .branch { fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .guide { stroke:#b5c2d5; stroke-width:1; stroke-dasharray:2 5; stroke-linecap:round; }
+  </style>
+  <text class="title" x="48" y="48">Clade support comparison (mock)</text>
+  <text class="subtitle" x="48" y="76">Slanted phylogram · branch distances and clade support</text>
+  <path d="M48 99H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="heading" x="80" y="133">PHYLOGENY</text>
+  <text class="heading" x="654" y="133">TAXON</text>
+  <text class="heading" x="968" y="133">CLADE</text>
+  <rect x="638" y="148" width="454" height="132" rx="3" fill="#0f766e" fill-opacity=".045"/>
+  <rect x="638" y="312" width="454" height="132" rx="3" fill="#2563eb" fill-opacity=".045"/>
+  <!-- Linear distance scale: 1800 SVG units per substitution/site. -->
+  <!-- Internal ancestor ordinates are the midpoint of their two children. -->
+  <g class="guide">
+    <path d="M440 170H640"/><path d="M476 214H640"/><path d="M476 258H640"/>
+    <path d="M494 334H640"/><path d="M512 378H640"/><path d="M530 422H640"/>
+  </g>
+  <g class="branch north">
+    <path d="M80 307L260 225L368 192L440 170"/>
+    <path d="M368 192L476 214"/>
+    <path d="M260 225L476 258"/>
+  </g>
+  <g class="branch south">
+    <path d="M80 307L260 389L350 356L494 334"/>
+    <path d="M350 356L512 378"/>
+    <path d="M260 389L530 422"/>
+  </g>
+  <g class="support">
+    <text x="376" y="180" style="fill:#0f766e">99</text>
+    <text x="268" y="213" style="fill:#0f766e">88</text>
+    <text x="358" y="344" style="fill:#2563eb">74</text>
+    <text x="268" y="377" style="fill:#2563eb">96</text>
+  </g>
+  <g class="sample" dominant-baseline="middle">
+    <text x="654" y="170">Sample A</text>
+    <text x="654" y="214">Sample B</text>
+    <text x="654" y="258">Sample C</text>
+    <text x="654" y="334">Sample D</text>
+    <text x="654" y="378">Sample E</text>
+    <text x="654" y="422">Sample F</text>
+  </g>
+  <g fill="none" stroke-width="1.4">
+    <path class="north" d="M946 158H953V270H946"/>
+    <path class="south" d="M946 322H953V434H946"/>
+  </g>
+  <text class="clade" x="968" y="218" style="fill:#0f766e">North</text>
+  <text class="clade" x="968" y="382" style="fill:#2563eb">South</text>
+  <path d="M80 478H170M80 473V483M170 473V483" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="503" font-size="12">0.05 substitutions/site</text>
+  <text class="note" x="466" y="479">Horizontal distance: substitutions/site · node values: bootstrap (%)</text>
+  <text class="note" x="466" y="502">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 519H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="note" x="48" y="544">Mock dataset · topology, branch distances and support values are authored examples, not an inferred analysis.</text>
+</svg>

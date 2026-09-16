@@ -1,0 +1,40 @@
+{
+  "id": "sequence-password-reset",
+  "type": "sequence",
+  "title": "Password reset",
+  "goal": "Show email token reset with expiry branch.",
+  "rubric": [
+    {
+      "id": "token",
+      "severity": "blocker",
+      "must": "Token creation and reset email visibly occur before new password submission."
+    },
+    {
+      "id": "validation",
+      "severity": "blocker",
+      "must": "Token validation visibly precedes the valid and expired outcomes."
+    },
+    {
+      "id": "alt",
+      "severity": "major",
+      "must": "An alt frame separates valid from expired token."
+    },
+    {
+      "id": "self",
+      "severity": "major",
+      "must": "Account has a self-message for Hash and save password."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Tokens are single use."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture lacks the required Account self-message and single-use token note."
+  }
+}

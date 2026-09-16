@@ -1,0 +1,31 @@
+# Airline passenger booking, payment, and disruption notification.
+usecase
+title: "Airline Booking"
+system: "Airline Reservation System"
+actor: Traveller as T
+actor: "Frequent Flyer" as FF
+actor: Agent as A (business)
+actor: "Payment Processor" as PP (external)
+actor: "Departure Control" as DC (external)
+usecase: "Search Flights" as Search
+usecase: "Select Itinerary" as Select
+usecase: "Book Flight" as Book { 
+  extension point: payment declined
+}
+usecase: "Price Itinerary" as Price
+usecase: "Collect Payment" as Pay
+usecase: "Issue Ticket" as Ticket
+usecase: "Cancel Booking" as Cancel
+usecase: "Notify Schedule Change" as Notify
+FF --|> T
+T -- Search
+T -- Book
+A -- Book
+Book ..> Select : «include»
+Book ..> Price : «include»
+Book ..> Pay : «include»
+Book ..> Ticket : «include»
+Pay -- PP
+Ticket -- DC
+Cancel <.. Book : «extend» [payment declined] (extension point: payment declined)
+T -- Notify

@@ -1,0 +1,26 @@
+%% Illustrative figures. Payoffs are net present value in US dollars; every test-market payoff already has the $1M test cost taken off.
+decisiontree:decision "New product launch: test the market first?"
+
+decision "Launch strategy"
+  choice "Launch now"
+    chance "Demand"
+      prob 0.3 end payoff=12000000 "High demand"
+      prob 0.4 end payoff=4000000 "Medium demand"
+      prob 0.3 end payoff=-12000000 "Low demand"
+  choice "Test market"
+    chance "Test result"
+      prob 0.5 decision "Favourable"
+        choice "Launch"
+          chance "Demand"
+            prob 0.5 end payoff=11000000 "High demand"
+            prob 0.4 end payoff=3000000 "Medium demand"
+            prob 0.1 end payoff=-13000000 "Low demand"
+        choice "Abandon" end payoff=-1000000
+      prob 0.5 decision "Unfavourable"
+        choice "Launch"
+          chance "Demand"
+            prob 0.1 end payoff=11000000 "High demand"
+            prob 0.4 end payoff=3000000 "Medium demand"
+            prob 0.5 end payoff=-13000000 "Low demand"
+        choice "Abandon" end payoff=-1000000
+  choice "Don't launch" end payoff=0

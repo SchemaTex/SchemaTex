@@ -1,0 +1,24 @@
+%% Elevator controller with composite motion and door states; calls are queued while moving.
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Moving : call received
+  state Moving {
+    [*] --> SelectingDirection
+    SelectingDirection --> GoingUp : target above
+    SelectingDirection --> GoingDown : target below
+    GoingUp --> SelectingDirection : floor reached / next call
+    GoingDown --> SelectingDirection : floor reached / next call
+  }
+  Moving --> DoorCycle : target floor reached
+  state DoorCycle {
+    [*] --> Opening
+    Opening --> Open : door fully open
+    Open --> Closing : dwell timeout
+    Closing --> Open : obstruction detected
+    Closing --> [*] : door fully closed
+  }
+  DoorCycle --> Idle : no queued calls
+  DoorCycle --> Moving : queued call
+  Idle --> EmergencyStop : emergency pressed
+  Moving --> EmergencyStop : emergency pressed
+  EmergencyStop --> Idle : reset acknowledged

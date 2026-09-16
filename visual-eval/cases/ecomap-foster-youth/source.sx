@@ -1,0 +1,15 @@
+# Social-work ecomap: adolescent in foster care with foster parents, school, therapist, and stressful family-court ties.
+ecomap "Ari's Foster Care Network"
+  center: ari [female, age: 15, label: "Ari"]
+  foster [label: "Foster Parents", category: family, importance: major]
+  caseworker [label: "Child Welfare Worker", category: government]
+  school [label: "High School", category: education]
+  therapist [label: "Trauma Therapist", category: mental-health]
+  birthmother [label: "Birth Mother", category: family]
+  court [label: "Family Court", category: legal]
+  ari === foster
+  caseworker --> ari
+  ari == school
+  therapist <-> ari
+  ari --- birthmother
+  ari ~~~ court

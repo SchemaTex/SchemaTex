@@ -1,0 +1,23 @@
+# Scenario: a mall shop unit that escapes to the concourse at the front or the service corridor at the back.
+evacuation "Unit 14 escape plan" unit m
+compliance iso
+sheet a3 landscape
+room mall "Mall Concourse" at 0,0 size 17x3
+room shop "Shop Floor" at 0,3 size 10x8
+room fitting "Fitting Rooms" at 10,3 size 4x4
+room stock "Stockroom" at 10,7 size 4x4
+room staff "Staff Room" at 14,3 size 3x8
+room service "Service Corridor" at 0,11 size 17x2
+opening between shop mall at 50% width 4
+door between shop fitting at 50% width 0.9
+door between shop stock at 50% width 1.2
+door between stock staff at 50% width 0.9
+door between stock service at 50% width 1.2
+here in shop at 5,6 "YOU ARE HERE"
+exit-final xMall in mall at 0,1.5 side west "EXIT"
+exit-final xService in service at 17,1 side east "EXIT"
+extinguisher f1 in stock at 3.5,0.5 class "ABC"
+assembly car outside at 22,16 "ASSEMBLY POINT"
+route primary here -> mall -> xMall
+route secondary here -> stock -> service -> xService
+legend auto

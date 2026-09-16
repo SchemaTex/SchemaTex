@@ -1,0 +1,33 @@
+# Purchase-to-pay between buyer and supplier.
+bpmn
+direction: LR
+title: "Purchase to Pay"
+pool "Supplier" blackbox
+pool "Buyer" {
+ lane "Requester" {
+   A: start "Need identified"
+   B: task user "Create requisition"
+   G: gateway xor "Approved?"
+ }
+ lane "Procurement" {
+   C: task user "Issue purchase order"
+   D: task receive "Receive invoice"
+ }
+ lane "Finance" {
+   E: task service "Match invoice"
+   H: gateway xor "Match?"
+   F: task service "Pay supplier"
+   X: end "Paid"
+   Y: end "Exception"
+ }
+}
+flows
+A --> B --> G
+G --? "yes" --> C
+G --* "no" --> Y
+C ~~> "Supplier" : "Purchase order"
+"Supplier" ~~> D : "Invoice"
+D --> E --> H
+H --? "matched" --> F --> X
+H --* "mismatch" --> Y
+F ~~> "Supplier" : "Payment advice"

@@ -133,7 +133,8 @@ function parseNewickSubtree(): PhyloNode {
       skipWhitespace();
     }
     skipWhitespace();
-    if (peek() === ")") advance();
+    if (peek() !== ")") throw new PhyloParseError(`Expected closing parenthesis at position ${_pos + 1}.`);
+    advance();
   }
 
   const name = parseNewickName();
@@ -167,6 +168,8 @@ export function parseNewick(newick: string): PhyloNode {
   }
 
   const root = parseNewickSubtree();
+  skipWhitespace();
+  if (_pos !== _src.length) throw new PhyloParseError(`Unexpected content at position ${_pos + 1}; enclose all sibling subtrees in parentheses.`);
   return root;
 }
 
@@ -295,7 +298,7 @@ function parseHeaderProps(propsStr: string): {
   dendrogram?: boolean;
 } {
   const result: ReturnType<typeof parseHeaderProps> = {
-    layout: "rectangular",
+    layout: "slanted",
     mode: "phylogram",
     unrooted: false,
   };
@@ -381,8 +384,8 @@ export function parsePhylo(text: string): PhyloTreeAST {
   const lines = text.split("\n");
   let lineIdx = 0;
 
-  // Skip empty lines
-  while (lineIdx < lines.length && !lines[lineIdx].trim()) lineIdx++;
+  // A document may introduce its tree with comments before the header.
+  while (lineIdx < lines.length && (!lines[lineIdx].trim() || lines[lineIdx].trim().startsWith("#"))) lineIdx++;
 
   // Parse header: phylo "title" [props]
   const headerLine = lines[lineIdx]?.trim() ?? "";
@@ -394,7 +397,7 @@ export function parsePhylo(text: string): PhyloTreeAST {
   const title: string | undefined = matchQuotedTitle(headerLine);
 
   let headerProps: ReturnType<typeof parseHeaderProps> = {
-    layout: "rectangular",
+    layout: "slanted",
     mode: "phylogram",
     unrooted: false,
   };

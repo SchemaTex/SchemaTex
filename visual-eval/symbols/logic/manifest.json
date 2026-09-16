@@ -1,0 +1,1134 @@
+{
+  "type": "logic",
+  "variant": "ansi",
+  "exemplar": "logic/ansi",
+  "style": "IEEE Std 91 distinctive-shape gates, all on one 60 x 48 body box outlined #1E293B at 1.5 and filled white; AND is a flat back and a true r = 24 semicircle, OR a concave back and two curves meeting at the nose, XOR adds a second back arc 9 units out. Inversion bubbles are r = 5, white, tangent to the nose. Wires are #1E293B at 1.25 with square caps, inputs on a 24-unit pitch, 12-unit stubs; junctions are r = 3.5 solid dots and plain crossings are not connections. No gate carries its name as text.",
+  "symbols": [
+    {
+      "id": "and",
+      "label": "AND gate",
+      "file": "and.svg",
+      "engine": "AND",
+      "dsl": [
+        "AND"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1 distinctive-shape AND; IEC 60617-12 12-27-01 is the rectangular equivalent",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a flat back and a true r = 24 semicircle on the 60 x 48 box, not a rounded rectangle. Inputs meet the flat back at the 24-unit pitch."
+    },
+    {
+      "id": "or",
+      "label": "OR gate",
+      "file": "or.svg",
+      "engine": "OR",
+      "dsl": [
+        "OR"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1 distinctive-shape OR",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a concave back arc and two curves meeting at a pointed nose. Inputs stop on the curved back, not at a straight line behind it."
+    },
+    {
+      "id": "xor",
+      "label": "Exclusive-OR gate",
+      "file": "xor.svg",
+      "engine": "XOR",
+      "dsl": [
+        "XOR"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1 distinctive-shape exclusive-OR",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the OR body with a second back arc 9 units behind it. Inputs stop on the outer arc; the gap between the arcs stays clear."
+    },
+    {
+      "id": "not",
+      "label": "Inverter (NOT)",
+      "file": "not.svg",
+      "engine": "NOT",
+      "dsl": [
+        "NOT"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1 buffer with negation indicator",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 42-unit triangle, 44 high, with its r = 5 bubble tangent to the point. The output stub leaves from the far side of the bubble."
+    },
+    {
+      "id": "nor",
+      "label": "NOR gate",
+      "file": "nor.svg",
+      "engine": "NOR",
+      "dsl": [
+        "NOR"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1 OR with negation indicator at the output",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: the OR body with an r = 5 bubble tangent to the nose; the output stub starts beyond the bubble."
+    },
+    {
+      "id": "junction",
+      "label": "Junction (connected wires)",
+      "file": "junction.svg",
+      "engine": null,
+      "dsl": [
+        "fan-out of a net"
+      ],
+      "standard": "IEEE Std 315-1975 §3.3.1 connection dot; wires crossing without a dot are not connected",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: an r = 3.5 solid dot on a tee. A plain crossing beside it shows the contrast the exemplar's legend explains: no dot, no connection."
+    },
+    {
+      "id": "ansi-buffer",
+      "label": "ANSI buffer",
+      "file": "ansi-buffer.svg",
+      "engine": "BUF",
+      "dsl": [
+        "BUF(A)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.1; specific symbol clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The unbubbled triangle copies the inverter seed at the same 42 by 44 scale. Its plain output denotes a noninverting buffer."
+    },
+    {
+      "id": "ansi-nand",
+      "label": "ANSI NAND gate / output negation",
+      "file": "ansi-nand.svg",
+      "engine": "NAND",
+      "dsl": [
+        "NAND(A,B,…)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.1, 5.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The AND outline has a tangent output bubble and a stub leaving its far edge, indicating logical negation. Merged id: output-negation-bubble, demonstrated here in context. The engine draws tangent external bubbles in ANSI and IEC; storage complementary outputs cannot be referenced independently."
+    },
+    {
+      "id": "ansi-xnor",
+      "label": "ANSI XNOR gate",
+      "file": "ansi-xnor.svg",
+      "engine": "XNOR",
+      "dsl": [
+        "XNOR(A,B,…)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.1, 5.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The extra unfilled back arc identifies exclusive-OR and the tangent bubble negates its result. The engine draws the concave OR body, a separate unfilled back arc and a tangent output bubble."
+    },
+    {
+      "id": "iec-basic-gate",
+      "label": "IEC basic gate",
+      "file": "iec-basic-gate.svg",
+      "engine": null,
+      "dsl": [
+        "logic [style: iec]",
+        "AND(A,B,…) / OR(A,B,…) / XOR(A,B,…) / BUF(A)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.1; IEC 60617-12, specific clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A 60 by 48 rectangle contains the standard function qualifier, shown as & for AND. The ≥1, =1 and 1 qualifiers are merged text variants, not names printed on ANSI gates."
+    },
+    {
+      "id": "iec-inverted-gate",
+      "label": "IEC inverted gate",
+      "file": "iec-inverted-gate.svg",
+      "engine": null,
+      "dsl": [
+        "logic [style: iec]",
+        "NAND(A,B,…) / NOR(A,B,…) / XNOR(A,B,…) / NOT(A)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.1, 5.1; IEC 60617-12, specific clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A function-qualified rectangle has an external negation bubble tangent to its output edge. The engine draws this form."
+    },
+    {
+      "id": "input-negation-bubble",
+      "label": "Input negation bubble",
+      "file": "input-negation-bubble.svg",
+      "engine": null,
+      "dsl": [
+        "AND(~A,B)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A tangent bubble on the upper AND input reverses its logical state before the gate acts. The circle denotes negation; identifying it with a low voltage also requires a logic convention."
+    },
+    {
+      "id": "signal-wire",
+      "label": "Single-signal wire",
+      "file": "signal-wire.svg",
+      "engine": null,
+      "dsl": [
+        "gate argument references",
+        "output Y; Y <- G"
+      ],
+      "standard": "IEEE Std 91-1984 §2.1; IEEE 315 / IEC 60617-3 wiring, clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A continuous thin line connects two exemplar-size buffers. The same line form carries ordinary signals and feedback; the DSL creates it from net references."
+    },
+    {
+      "id": "unconnected-plain-crossing",
+      "label": "Unconnected plain crossing",
+      "file": "unconnected-plain-crossing.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE 315 / IEC 60617-3, clause not verified; ANSI exemplar convention",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Two continuous signal lines cross without a junction dot, following the exemplar legend. The engine does not offer this crossing form."
+    },
+    {
+      "id": "unconnected-gap-crossing",
+      "label": "Unconnected gap crossing",
+      "file": "unconnected-gap-crossing.svg",
+      "engine": null,
+      "dsl": [
+        "automatic crossing of different routed nets"
+      ],
+      "standard": "IEEE 315 / IEC 60617-3, clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "One wire is interrupted on both sides of a continuous crossing wire. The open gap makes the absence of an electrical connection explicit."
+    },
+    {
+      "id": "signal-terminal",
+      "label": "External signal terminal",
+      "file": "signal-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "input A",
+        "output Y"
+      ],
+      "standard": "General logic diagram convention; IEEE/IEC clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A signal name sits beside a short input stub attached to an exemplar-size buffer. Input and output terminal labels share this form and are merged here."
+    },
+    {
+      "id": "controlled-buffer",
+      "label": "Controlled ANSI buffer",
+      "file": "controlled-buffer.svg",
+      "engine": "TRISTATE_BUF",
+      "dsl": [
+        "TRISTATE_BUF(A,EN)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.2; specific symbol clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A control input reaches the sloping edge of the buffer triangle. The engine joins the enable pin to that edge with a wire."
+    },
+    {
+      "id": "controlled-inverter",
+      "label": "Controlled ANSI inverter",
+      "file": "controlled-inverter.svg",
+      "engine": null,
+      "dsl": [
+        "TRISTATE_INV(A,EN)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.1, 5.2; specific symbol clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The controlled triangle includes a tangent output negation bubble. The engine draws both the enable wire and the output bubble touching the body."
+    },
+    {
+      "id": "iec-three-state-gate",
+      "label": "IEC three-state gate / output marker",
+      "file": "iec-three-state-gate.svg",
+      "engine": null,
+      "dsl": [
+        "logic [style: iec]",
+        "TRISTATE_BUF(A,EN) / TRISTATE_INV(A,EN)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.3, 5.2; IEC 60617-12, clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The rectangle carries a data qualifier, EN control, and a downward open triangle beside the output to identify the high-impedance state. Merged id: three-state-output-marker, shown at that output. The engine omits the three-state marker; its inverted variant has a tangent external output bubble."
+    },
+    {
+      "id": "open-drain-output-marker",
+      "label": "Open-drain output marker",
+      "file": "open-drain-output-marker.svg",
+      "engine": "OPEN_DRAIN",
+      "dsl": [
+        "OPEN_DRAIN(A)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A small diamond above a lower bar sits inside the output edge, identifying an output that can pull low but needs an external pull-up. The engine draws an ordinary buffer with an EN pin and no open-drain mark."
+    },
+    {
+      "id": "hysteresis-marker",
+      "label": "Hysteresis (Schmitt) marker",
+      "file": "hysteresis-marker.svg",
+      "engine": "SCHMITT",
+      "dsl": [
+        "SCHMITT(A)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.3, symbols 5.3-1 to 5.3-3",
+      "sourceUrl": "https://www.normsplash.com/Samples/IEEE/182894918/IEEE-91-1984-IEEE-91a-1991-en-2.pdf#page=1",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The triangle contains a two-threshold hysteresis trace, so it reads as a Schmitt element rather than a plain buffer. The engine draws SCHMITT with the BUF outline and no qualifier."
+    },
+    {
+      "id": "level-sensitive-storage",
+      "label": "Level-sensitive storage / complementary output",
+      "file": "level-sensitive-storage.svg",
+      "engine": "LATCH_D",
+      "dsl": [
+        "LATCH_D(D,E)",
+        "LATCH_SR(S,R)",
+        "SRFF(S,R)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.9",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A D latch has level control C1, dependent data 1D, and independently wired normal and bubbled complementary outputs. Merged id: complementary-output-terminal; the engine shows its label and bubble but cannot route it, and SRFF has no clock."
+    },
+    {
+      "id": "edge-triggered-storage",
+      "label": "Edge-triggered storage / rising-edge marker",
+      "file": "edge-triggered-storage.svg",
+      "engine": "DFF",
+      "dsl": [
+        "DFF(D,CLK)",
+        "JKFF(J,CLK,K)",
+        "TFF(T,CLK)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.1, 5.9",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The storage rectangle adds an inward clock triangle at C1, indicating response to the active transition rather than the sustained level. Merged id: rising-edge-marker; the engine draws that triangle but cannot wire the complementary output or express IEC control dependencies."
+    },
+    {
+      "id": "falling-edge-marker",
+      "label": "Falling-edge clock marker",
+      "file": "falling-edge-marker.svg",
+      "engine": null,
+      "dsl": [
+        "DFF(D,~CLK)",
+        "JKFF(J,~CLK,K)",
+        "TFF(T,~CLK)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "An external negation bubble directly precedes the inward clock triangle on a storage element. Under positive logic this identifies the falling edge; the body and terminal pitch match the rising-edge sibling."
+    },
+    {
+      "id": "asynchronous-control-pin",
+      "label": "Asynchronous storage control",
+      "file": "asynchronous-control-pin.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.3, 5.9",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Independent S and R stubs enter the top and bottom of an edge-triggered storage body without a C1 dependency prefix. They denote asynchronous set and reset, which the engine cannot add."
+    },
+    {
+      "id": "rectangular-function-block",
+      "label": "Rectangular function block",
+      "file": "rectangular-function-block.svg",
+      "engine": null,
+      "dsl": [
+        "MUX",
+        "DEMUX",
+        "DECODER",
+        "ENCODER",
+        "COUNTER",
+        "SHIFT_REG"
+      ],
+      "standard": "IEEE Std 91-1984 §§2.1, 5.4, 5.6, 5.7, 5.13, 5.14; coder symbol 5.4-1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A two-output binary decoder demonstrates the rectangular family with individually labeled outputs and a BIN/1 function qualifier. The engine collapses MUX, DEMUX, coder, counter and register interfaces to generic inputs and one output instead of exposing their distinct data and control ports."
+    },
+    {
+      "id": "bus-line",
+      "label": "Bus line",
+      "file": "bus-line.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §6.2.2; IEC 60617-12, specific clause not verified; repo §3.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A bus is visibly heavier than an adjacent single-signal wire, identifying a bundle of conductors. A 3-unit ink stroke is the sole new weight because the draft requires a thick bus and the exemplar has no bus equivalent; the engine has no bus line."
+    },
+    {
+      "id": "bus-width-marker",
+      "label": "Bus width marker",
+      "file": "bus-width-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §6.1.9; specific graphic clause not verified; repo §3.3",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A diagonal slash and bit count qualify the heavy bus. The bus uses the same necessary 3-unit exception as bus-line, and the engine cannot express either the width or the mark."
+    },
+    {
+      "id": "bus-breakout",
+      "label": "Single-bit bus breakout",
+      "file": "bus-breakout.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §6.2.2; IEC 60617-12, specific clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A thin diagonal tap leaves a heavy DATA bus and continues as the labeled single bit D0. The bus repeats the necessary 3-unit bus-line exception; the exact breakout convention remains clause not verified and the engine has no bit taps."
+    },
+    {
+      "id": "signal-flow-arrow",
+      "label": "Signal-flow arrow",
+      "file": "signal-flow-arrow.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.4",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A solid arrowhead on a wire entering a rectangular element from the right makes reverse signal flow explicit. The engine has no independently expressible flow arrow."
+    },
+    {
+      "id": "bidirectional-flow-marker",
+      "label": "Bidirectional signal flow",
+      "file": "bidirectional-flow-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.4",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Opposed filled arrowheads on the same external connection indicate flow in both directions. Their opposed orientation distinguishes this from a one-way signal; the engine cannot express it."
+    },
+    {
+      "id": "signal-negation-overbar",
+      "label": "Signal negation overbar",
+      "file": "signal-negation-overbar.svg",
+      "engine": null,
+      "dsl": [
+        "fixed Q̄ label on storage elements"
+      ],
+      "standard": "IEEE Std 91-1984 §3.1; general signal-label clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A bar spans Q above an external terminal stub to denote the complemented signal name. The engine only emits the fixed storage Q̄ text, not a general label qualifier."
+    },
+    {
+      "id": "binary-grouping-bracket",
+      "label": "Binary grouping bracket",
+      "file": "binary-grouping-bracket.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A pointed grouping bracket gathers ordered bit inputs inside the rectangle, with endpoint exponents 0 and 1. It encodes binary weights rather than joining the wires; the engine has no binary grouping marker."
+    },
+    {
+      "id": "dependency-annotation",
+      "label": "Dependency annotation",
+      "file": "dependency-annotation.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§4.2–4.4",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "G1 at the affecting input pairs with 1 at the affected input to specify their AND dependency inside the element. Other dependency letters are text variants of this pairing; the engine cannot specify the relationship."
+    },
+    {
+      "id": "dependency-negation-overbar",
+      "label": "Complemented dependency annotation",
+      "file": "dependency-negation-overbar.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §4.3; specific subclause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "The overbar covers the affected identifying number 1 while its affecting label remains G1. This uses the complement in that dependency instead of negating a terminal, and the engine cannot express it."
+    },
+    {
+      "id": "fixed-state-output",
+      "label": "Fixed logic-state output",
+      "file": "fixed-state-output.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A quoted 1 inside the output edge denotes a permanently asserted internal state, not the unquoted buffer function qualifier. The 0 form is a text variant; the engine cannot express logic constants."
+    },
+    {
+      "id": "power-rail-terminal",
+      "label": "Power rail terminal",
+      "file": "power-rail-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE 315 / IEC 60617-2, clause not verified; repo §3.5; supporting schematic convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A labeled VCC rail cap terminates a descending supply line at a device. It is supporting schematic vocabulary rather than an IEEE 91 logic function, and the engine has no power terminal."
+    },
+    {
+      "id": "ground-terminal",
+      "label": "Ground terminal",
+      "file": "ground-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE 315 / IEC 60617-2, clause not verified; repo §3.5",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Three progressively shorter horizontal bars terminate the descent from a device. This is the conventional ground mark; the engine has no ground terminal."
+    },
+    {
+      "id": "logic-polarity-marker",
+      "label": "Logic-polarity wedge",
+      "file": "logic-polarity-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A right-angle wedge sits outside the input edge, with its diagonal descending toward the body along the input. It directly identifies an active-low voltage level rather than logical negation; the engine only supports circular bubbles."
+    },
+    {
+      "id": "polarity-dynamic-input",
+      "label": "Polarity and dynamic input",
+      "file": "polarity-dynamic-input.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An external polarity wedge directly precedes the inward dynamic-input triangle on a clock pin. Together they denote an active high-to-low transition without an assumed positive-logic convention, and the engine cannot draw the wedge."
+    },
+    {
+      "id": "input-amplification-marker",
+      "label": "Input special-amplification marker",
+      "file": "input-amplification-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91a-1991 symbol 3.3-9.5; IEC 12-09-08B illustrated in JIS C 0617-12:2011 p.48",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small closed triangle is detached from the inside input edge and points with signal flow, indicating special input sensitivity. The gap distinguishes it from the dynamic-input triangle attached to the boundary; the engine cannot add it."
+    },
+    {
+      "id": "output-amplification-marker",
+      "label": "Output special-amplification marker",
+      "file": "output-amplification-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.3, 5.2; specific symbol clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small closed triangle immediately inside the output points in the direction of signal flow and denotes extra drive capability. Its rightward orientation distinguishes it from the downward three-state mark; the engine cannot add it."
+    },
+    {
+      "id": "open-source-output-marker",
+      "label": "Open-source output marker",
+      "file": "open-source-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A diamond below an upper bar marks an output that drives high and requires an external pull-down. The bar position distinguishes it from open-drain, and the engine has no such output qualifier."
+    },
+    {
+      "id": "passive-pullup-output-marker",
+      "label": "Passive pull-up output marker",
+      "file": "passive-pullup-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The diamond has a bar through its lower half, marking an internally pulled-up output. Unlike the separated lower bar on open-drain, this indicates a built-in passive pull-up; the engine cannot express it."
+    },
+    {
+      "id": "passive-pulldown-output-marker",
+      "label": "Passive pull-down output marker",
+      "file": "passive-pulldown-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The diamond has a bar through its upper half, marking an internally pulled-down output. Its upper crossing bar distinguishes it from passive pull-up and open-source; the engine cannot express it."
+    },
+    {
+      "id": "postponed-output-marker",
+      "label": "Postponed output marker",
+      "file": "postponed-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.3, 5.10",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small step falls toward the output connection inside a pulse-triggered storage element. It indicates that the output waits for the controlling pulse to return to its initial state, a behavior the engine cannot qualify."
+    },
+    {
+      "id": "input-line-grouping",
+      "label": "Input line grouping",
+      "file": "input-line-grouping.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.3; specific symbol clause not verified; TI Table 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A square bracket inside the body groups two separate terminals into one logical input E. It carries no binary weights and does not connect the external wires; the engine cannot express this grouping."
+    },
+    {
+      "id": "shift-direction-marker",
+      "label": "Shift-direction marker",
+      "file": "shift-direction-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§3.3, 5.13",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A filled rightward arrow beside the control pin denotes shifting the register by one position. The mirrored leftward form and other counts are variants, and the engine does not expose this qualifier."
+    },
+    {
+      "id": "initial-state-qualifier",
+      "label": "Power-up state qualifier",
+      "file": "initial-state-qualifier.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §§5.9–5.10; specific clause not verified",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "I = 0 inside the storage body states that it powers up cleared, while normal data and control pins remain present. I = 1 is the set-state text variant; the engine cannot express either initial condition."
+    },
+    {
+      "id": "common-control-outline",
+      "label": "Common-control outline",
+      "file": "common-control-outline.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §2.3; TI Figure 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The control block has inset lower shoulders where it meets two ordinary elements underneath. That distinctive neck applies its control to the array below; a module enclosure cannot convey this relationship and the engine has no such outline."
+    },
+    {
+      "id": "common-output-boundary",
+      "label": "Common-output boundary",
+      "file": "common-output-boundary.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §2.3; TI Figure 3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two ordinary array elements sit above an output element separated by a double horizontal boundary. The output element carries its own OR qualifier because it combines the array results; the engine cannot represent this boundary."
+    },
+    {
+      "id": "element-array-outline",
+      "label": "Element array outline",
+      "file": "element-array-outline.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §2.3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two full-size rectangles share one horizontal edge and retain their separate input and output lines. The shared boundary runs with signal flow and implies no connection between these elements; the engine has no array outline."
+    },
+    {
+      "id": "embedded-element-outline",
+      "label": "Embedded element outline",
+      "file": "embedded-element-outline.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §2.3",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A full-size qualified element is embedded at the input edge of a larger containing element. Its inset outline makes the subordinate function explicit while retaining exemplar-scale geometry; the engine has no embedded-element representation."
+    },
+    {
+      "id": "array-omission-marker",
+      "label": "Array omission marker",
+      "file": "array-omission-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §2.3.1.2; specific graphic clause not verified",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The first repeated compound element shows two subdivided sections; the next retains its full outline and terminals while omitting repeated subdivisions and qualifiers. This is the array simplification illustrated by IEC A00271, not a broken wire or an invented ellipsis; the exact IEEE graphic clause remains not verified and the engine cannot express it."
+    },
+    {
+      "id": "internal-connection-marker",
+      "label": "Internal connection",
+      "file": "internal-connection-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.2; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A short horizontal mark crosses the common vertical boundary of two adjacent elements. It identifies a single internal logical connection without an external wire; the engine cannot represent it."
+    },
+    {
+      "id": "internal-negation-marker",
+      "label": "Negated internal connection",
+      "file": "internal-negation-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.2; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A negation circle is centered on the common boundary between two adjacent elements. The internal 1 state on the left produces 0 on the right; the engine has no internal negation mark."
+    },
+    {
+      "id": "internal-dynamic-marker",
+      "label": "Dynamic internal connection",
+      "file": "internal-dynamic-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.2; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An inward triangle sits on the common boundary of adjacent elements. It identifies a transient active state in the receiving element on the indicated transition, which the engine cannot express."
+    },
+    {
+      "id": "virtual-input-marker",
+      "label": "Virtual input",
+      "file": "virtual-input-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.2; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A short inward tick starts at the input edge without an external terminal, accompanied by its dependency number. This virtual input is controlled internally rather than by a directly wired pin; the engine cannot express it."
+    },
+    {
+      "id": "virtual-output-marker",
+      "label": "Virtual output",
+      "file": "virtual-output-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.2; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A short inward tick at the output edge has no external wire, and its G1 label pairs with an affected input. This is a virtual output used for internal dependency, which the engine cannot express."
+    },
+    {
+      "id": "nonlogic-connection-marker",
+      "label": "Subsidiary / nonlogic connection",
+      "file": "nonlogic-connection-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.4",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An X overlays an external pin line and a VCC label inside the rectangle states the pin purpose. Unlike a no-connect mark, its wire reaches the body and denotes a nonlogic connection; the engine cannot add this qualifier."
+    },
+    {
+      "id": "analog-signal-marker",
+      "label": "Analog signal qualifier",
+      "file": "analog-signal-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.4; specific symbol clause not verified; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small arch above the external input wire qualifies it as an analog signal entering a digital element. The arch is outside the body, and the engine has no analog interface qualifier."
+    },
+    {
+      "id": "digital-signal-marker",
+      "label": "Digital signal qualifier",
+      "file": "digital-signal-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §3.4; specific symbol clause not verified; TI Table 2",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A # above the input wire identifies a digital signal at an analog interface. It qualifies the line rather than naming the element, and the engine cannot express it."
+    },
+    {
+      "id": "electrical-isolation-marker",
+      "label": "Electrical-isolation separator",
+      "file": "electrical-isolation-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.5; specific symbol clause not verified; IEC 60617-12 signal-level converter, JIS C 0617-12:2011 p.177",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A double solidus between the converter signal-level designations indicates electrical isolation, using the X//Y construction corroborated by the IEC figure. The exact IEEE symbol clause remains not verified, and the engine has no isolation qualifier."
+    },
+    {
+      "id": "transmission-gate",
+      "label": "Bidirectional transmission gate",
+      "file": "transmission-gate.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.2; specific symbol clause not verified; IEC 12-29-09, JIS C 0617-12:2011 p.158",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "X1 at the control input pairs with 1 at both signal ports to define a controlled bidirectional transmission path, with opposed external flow arrows. This follows the IEC bidirectional-switch construction; the exact IEEE symbol clause remains not verified and the engine cannot express the switch."
+    },
+    {
+      "id": "monostable-pulse-marker",
+      "label": "Monostable pulse qualifier",
+      "file": "monostable-pulse-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.11; specific symbol clause not verified; TI Table 1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A single pulse trace preceded by 1 inside a rectangle identifies a nonretriggerable one-shot. The engine cannot express this timing qualifier."
+    },
+    {
+      "id": "retriggerable-pulse-marker",
+      "label": "Retriggerable monostable qualifier",
+      "file": "retriggerable-pulse-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.11; specific symbol clause not verified; TI Table 1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The single pulse qualifier without the leading 1 identifies the retriggerable monostable form. It is distinct from both the numbered one-shot and the repeated astable waveform; the engine has no such qualifier."
+    },
+    {
+      "id": "astable-waveform-marker",
+      "label": "Astable waveform qualifier",
+      "file": "astable-waveform-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.12; specific symbol clause not verified; TI Table 1",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "G above a repeated square-wave trace denotes an astable generator. The repeated waveform distinguishes it from either single-pulse symbol, and the engine cannot express it."
+    },
+    {
+      "id": "binary-delay-marker",
+      "label": "Binary delay qualifier",
+      "file": "binary-delay-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.8; specific symbol clause not verified; IEC 12-40-01 illustrated in JIS C 0617-12:2011 p.211",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A horizontal segment capped by two vertical bars carries separate delay values for the two transitions inside the rectangle. This is the binary delay qualifier rather than a pulse waveform; the engine cannot express it."
+    },
+    {
+      "id": "display-segment-symbol",
+      "label": "Display segment element",
+      "file": "display-segment-symbol.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §5.15; specific symbol clause not verified; IEC 12-53-02, JIS C 0617-12:2011 p.290",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A DPY display contains seven separate segments with independently wired a–g inputs, matching the IEC display construction while retaining the exemplar terminal pitch. The exact IEEE symbol clause remains not verified and the engine has no display element."
+    },
+    {
+      "id": "internal-data-path",
+      "label": "Internal data path",
+      "file": "internal-data-path.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE Std 91-1984 §6.2.2; IEC data-path illustration A00318 in JIS C 0617-12:2011 p.404",
+      "sourceUrl": "https://kikakurui.com/c0/C0617-12-2011-01.html",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A hollow double-line path with a direction chevron connects two internal function elements within one enclosure. It is a data path rather than a thin electrical net and reuses the exemplar stroke weights; the engine cannot express it."
+    },
+    {
+      "id": "nonstandard-annotation-brackets",
+      "label": "Nonstandard annotation brackets",
+      "file": "nonstandard-annotation-brackets.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "IEEE/IEC symbol-construction convention; clause not verified; TI explanatory text",
+      "sourceUrl": "https://www.ti.com/lit/ml/sdyz001a/sdyz001a.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Square brackets enclose nonstandard explanatory text within the element. They flag the annotation as explanatory rather than a standardized function qualifier; the engine has no dedicated notation for it."
+    },
+    {
+      "id": "subcircuit-enclosure",
+      "label": "Subcircuit enclosure",
+      "file": "subcircuit-enclosure.svg",
+      "engine": null,
+      "dsl": [
+        "module \"Label\" { … }"
+      ],
+      "standard": "Schematex grouping convention; not IEEE Std 91-1984 §2.3 common control or array",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dashed enclosure surrounds an exemplar-size buffer and its stubs, grouping it as a named module. The dashed boundary follows the engine grouping convention and has no common-control or array semantics."
+    },
+    {
+      "id": "off-page-connector",
+      "label": "Off-page signal connector",
+      "file": "off-page-connector.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "General schematic convention; IEEE 315 / IEC 60617-3, specific clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A signal wire enters a pointed connector containing a page reference, showing that the net continues on another sheet. The exact IEEE/IEC connector clause remains unverified, and the engine has no off-page connector."
+    },
+    {
+      "id": "no-connect-marker",
+      "label": "Explicit no-connect terminal",
+      "file": "no-connect-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "General schematic convention; IEEE/IEC clause not verified",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An X terminates an otherwise unused pin stub outside the body. Its position at the free end, with no continuing wire, distinguishes it from the subsidiary-connection X; the engine has no no-connect marker."
+    }
+  ]
+}

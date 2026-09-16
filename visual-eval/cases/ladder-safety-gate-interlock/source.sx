@@ -1,0 +1,41 @@
+# Machine permit requires both closed gate channels, guard lock feedback, and reset.
+# Opening either gate channel drops the safe-state output and guard-lock solenoid.
+ladder "Safety Gate Interlock"
+
+rung 0 "Energise guard lock when gates are closed":
+  XIC(GateChannelA)
+  XIC(GateChannelB)
+  XIO(EStop)
+  OTE(GuardLockSolenoid)
+
+rung 1 "Latch reset permit with dual channels":
+  XIC(GateChannelA)
+  XIC(GateChannelB)
+  XIC(GuardLockFeedback)
+  XIC(ResetPB)
+  OTL(SafePermit)
+
+rung 2 "Drop permit on gate channel A open":
+  XIO(GateChannelA)
+  OTU(SafePermit)
+
+rung 3 "Drop permit on gate channel B open":
+  XIO(GateChannelB)
+  OTU(SafePermit)
+
+rung 4 "Drop permit on emergency stop":
+  XIC(EStop)
+  OTU(SafePermit)
+
+rung 5 "Safe state output":
+  XIC(SafePermit)
+  XIC(GuardLockFeedback)
+  OTE(SafeStateOutput)
+
+rung 6 "Gate open indication":
+  parallel:
+    branch:
+      XIO(GateChannelA)
+    branch:
+      XIO(GateChannelB)
+  OTE(GateOpenLamp)

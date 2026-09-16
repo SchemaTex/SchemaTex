@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="660" viewBox="0 0 780 660">
+  <title>Order to Cash — Event-driven process chain</title>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L7 2.5 L0 5 Z" fill="#1F1B2E"/></marker>
+  </defs>
+  <rect width="780" height="660" fill="#FFFFFF"/>
+  <g font-family="Inter, Helvetica, Arial, sans-serif">
+    <text x="52" y="40" fill="#1F1B2E" font-size="22" font-weight="700">Order to Cash</text>
+    <text x="52" y="60" fill="#6B7280" font-size="10">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+    <path d="M52 70 H728" stroke="#E5E7EB" stroke-width="1"/>
+    <g fill="none" stroke="#1F1B2E" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M390 129 V168" marker-end="url(#arrow)"/>
+      <path d="M390 218 V257" marker-end="url(#arrow)"/>
+      <path d="M390 285 V311 H260 V350" marker-end="url(#arrow)"/>
+      <path d="M390 311 H520 V350" marker-end="url(#arrow)"/>
+      <path d="M260 396 V435" marker-end="url(#arrow)"/>
+      <path d="M520 396 V435" marker-end="url(#arrow)"/>
+      <path d="M260 485 V524" marker-end="url(#arrow)"/>
+      <path d="M520 485 V524" marker-end="url(#arrow)"/>
+    </g>
+    <g stroke="#1F1B2E" stroke-width="1.4" stroke-linejoin="round">
+      <path d="M280 83 H500 L515 106 L500 129 H280 L265 106 Z" fill="#E9D5FF"/>
+      <rect x="265" y="168" width="250" height="50" rx="9" fill="#BBF7D0"/>
+      <circle cx="390" cy="271" r="14" fill="#E5E7EB"/>
+      <path d="M170 350 H350 L365 373 L350 396 H170 L155 373 Z" fill="#E9D5FF"/>
+      <path d="M430 350 H610 L625 373 L610 396 H430 L415 373 Z" fill="#E9D5FF"/>
+      <rect x="155" y="435" width="210" height="50" rx="9" fill="#BBF7D0"/>
+      <rect x="415" y="435" width="210" height="50" rx="9" fill="#BBF7D0"/>
+      <path d="M170 524 H350 L365 547 L350 570 H170 L155 547 Z" fill="#E9D5FF"/>
+      <path d="M430 524 H610 L625 547 L610 570 H430 L415 547 Z" fill="#E9D5FF"/>
+    </g>
+    <path d="M384 265 L396 277 M396 265 L384 277" fill="none" stroke="#1F1B2E" stroke-width="2"/>
+    <g fill="#1F1B2E" font-size="12" text-anchor="middle" dominant-baseline="central">
+      <text x="390" y="106">Order received</text>
+      <text x="390" y="193">Check credit</text>
+      <text x="260" y="373">Credit approved</text>
+      <text x="520" y="373">Credit declined</text>
+      <text x="260" y="460">Ship goods</text>
+      <text x="520" y="460">Notify customer</text>
+      <text x="260" y="547">Goods shipped</text>
+      <text x="520" y="547">Order cancelled</text>
+    </g>
+  </g>
+</svg>

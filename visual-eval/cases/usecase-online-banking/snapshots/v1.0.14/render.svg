@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Online Banking" width="1043" height="722" viewBox="0 0 1043 722" data-diagram-type="usecase"><title>Use Case Diagram — Online Banking</title>
+<desc>Subject: Retail Banking Portal. 4 actors, 7 use cases, 3 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="521.5" y="24" class="sx-uc-title" text-anchor="middle">Online Banking</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="155.20000000000002" y="58" width="672" height="640" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="491.20000000000005" y="82" text-anchor="middle">Retail Banking Portal</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 59.2 430 L 39.2 430 L 39.2 310 L 59.2 310" data-source="PC" data-target="C" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 95.2 312 L 266.91 169.6" data-source="C" data-target="View"/>
+<path class="sx-uc-assoc" d="M 95.2 312 L 200.46 288.38" data-source="C" data-target="Transfer"/>
+<path class="sx-uc-assoc" d="M 95.2 312 L 236.12 365.62" data-source="C" data-target="Statement"/>
+<path class="sx-uc-include" d="M 411.2 266 L 520.2 266" data-source="Transfer" data-target="Auth" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 387.53 297.48 L 583.1 367.97" data-source="Transfer" data-target="Payee" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 359.86 309.01 L 605.78 486.3" data-source="Transfer" data-target="Approve" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 679.06 485.88 L 887.2 318" data-source="Approve" data-target="CB"/>
+<path class="sx-uc-extend" d="M 616.93 608.51 L 343.61 312.94" data-source="Review" data-target="Transfer" marker-end="url(#sx-uc-open-arrow-accent)"/>
+<path class="sx-uc-assoc" d="M 679.61 608.86 L 887.2 438" data-source="Review" data-target="FS"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="C" transform="translate(55.20000000000002, 288)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Customer</text></g>
+<g class="sx-uc-actor" data-id="PC" transform="translate(55.20000000000002, 408)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Premium Customer</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="CB" transform="translate(887.2, 294)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Core Banking</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="FS" transform="translate(887.2, 414)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Fraud Service</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="View"><ellipse cx="300.20000000000005" cy="142" rx="85" ry="30"/>
+<text class="sx-uc-name" x="300.20000000000005" y="146" text-anchor="middle">View Accounts</text></g>
+<g class="sx-uc-usecase" data-id="Transfer"><ellipse cx="300.20000000000005" cy="266" rx="111" ry="51"/>
+<text class="sx-uc-name" x="300.20000000000005" y="233" text-anchor="middle">Transfer Funds</text>
+<line class="sx-uc-div" x1="197.20000000000005" y1="241" x2="403.20000000000005" y2="241"/>
+<text class="sx-uc-extpoint-head" x="205.20000000000005" y="255">extension points</text>
+<text class="sx-uc-extpoint" x="205.20000000000005" y="268">suspicious transfer</text></g>
+<g class="sx-uc-usecase" data-id="Statement"><ellipse cx="300.20000000000005" cy="390" rx="110" ry="30"/>
+<text class="sx-uc-name" x="300.20000000000005" y="394" text-anchor="middle">Download Statement</text></g>
+<g class="sx-uc-usecase" data-id="Auth"><ellipse cx="644.2" cy="266" rx="124" ry="30"/>
+<text class="sx-uc-name" x="644.2" y="270" text-anchor="middle">Authenticate Customer</text></g>
+<g class="sx-uc-usecase" data-id="Payee"><ellipse cx="644.2" cy="390" rx="90" ry="30"/>
+<text class="sx-uc-name" x="644.2" y="394" text-anchor="middle">Validate Payee</text></g>
+<g class="sx-uc-usecase" data-id="Approve"><ellipse cx="644.2" cy="514" rx="100" ry="30"/>
+<text class="sx-uc-name" x="644.2" y="518" text-anchor="middle">Approve Transfer</text></g>
+<g class="sx-uc-usecase" data-id="Review"><ellipse cx="644.2" cy="638" rx="149" ry="30"/>
+<text class="sx-uc-name" x="644.2" y="642" text-anchor="middle">Review Suspicious Transfer</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="434.70000000000005" y="258" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="465.70000000000005" y="269" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="454.3134271380826" y="324.726933038146" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="485.3134271380826" y="335.726933038146" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="451.81864670073765" y="389.6553034354155" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="482.81864670073765" y="400.6553034354155" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="362.2663422582016" y="440.72290500014816" width="236" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="480.2663422582016" y="451.72290500014816" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="480.2663422582016" y="463.72290500014816" text-anchor="middle">[risk score high]</text>
+<text class="sx-uc-edge-label" x="480.2663422582016" y="475.72290500014816" text-anchor="middle">(extension point: suspicious transfer)</text></g></g></svg>

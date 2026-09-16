@@ -1,0 +1,24 @@
+# Scenario: IEC 61131-3 car wash: pre-soak, then brushes and wheel wash run together, then rinse and dry.
+sfc "Car wash cycle"
+var CarInBay: bool
+var SoakDone: bool
+var BrushDone: bool
+var WheelDone: bool
+var DryDone: bool
+step S0 [initial]
+  N EntryLightGreen
+step S1 [label: "Pre-soak"]
+  D SoapPump T#20s
+sim from: S1: SoakDone
+  branch:
+    step S2 [label: "Brush body"]
+      N BrushMotors
+  branch:
+    step S3 [label: "Wash wheels"]
+      L WheelJets T#30s
+merge_to: S4: BrushDone AND WheelDone
+step S4 [label: "Rinse and dry"]
+  N RinseArch
+  D Blowers T#5s
+transition from: S0 to: S1: CarInBay
+transition from: S4 to: S0: DryDone

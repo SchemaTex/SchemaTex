@@ -1,0 +1,45 @@
+%% Context: Library lending catalogue with titles, physical copies, authors, and reservations.
+erDiagram
+  MEMBER ||--o{ LOAN : borrows
+  COPY ||--o{ LOAN : is_loaned_on
+  TITLE ||--|{ COPY : has
+  TITLE ||--o{ RESERVATION : is_reserved_for
+  MEMBER ||--o{ RESERVATION : makes
+  AUTHOR ||--o{ TITLE_AUTHOR : contributes
+  TITLE ||--|{ TITLE_AUTHOR : credits
+  MEMBER {
+    int member_id PK
+    string name
+    string email
+  }
+  LOAN {
+    int loan_id PK
+    int member_id FK
+    int copy_id FK
+    date due_date
+  }
+  COPY {
+    int copy_id PK
+    int title_id FK
+    string barcode
+    string condition
+  }
+  TITLE {
+    int title_id PK
+    string isbn
+    string title
+  }
+  AUTHOR {
+    int author_id PK
+    string name
+  }
+  RESERVATION {
+    int reservation_id PK
+    int member_id FK
+    int title_id FK
+    date requested_at
+  }
+  TITLE_AUTHOR {
+    int title_id PK
+    int author_id PK
+  }

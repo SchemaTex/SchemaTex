@@ -10,6 +10,8 @@
  * an SVG rotation transform around (0,0) and the layout rotates the anchor
  * coordinates accordingly.
  */
+import { escapeXml, line as svgLine, text as svgText, path as svgPath, circle as svgCircle, polygon as svgPolygon } from "../../core/svg";
+import { edgeLabelObstacles, placeLabel, type LabelBox } from "../../core/label-placement";
 import type { CircuitComponentType } from "../../core/types";
 import { estimateTextWidth } from "../../core/text-metrics";
 
@@ -27,6 +29,8 @@ export interface SymbolDef {
   netlistPins?: string[];
   /** Pins that are valid when intentionally left open (for example a flasher's pilot output). */
   optionalNetlistPins?: string[];
+  /** Keep named box text upright during automatic placement. */
+  keepUpright?: boolean;
   /** Per-symbol adjustment for the renderer-owned component label. */
   labelOffset?: { dx?: number; dy?: number };
   /** SVG fragment drawn from (0,0); caller wraps in <g transform="translate()+rotate()">. */
@@ -49,7 +53,7 @@ const resistor: SymbolDef = {
   length: 40,
   anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
   svg: () =>
-    `<path d="M 0,0 L 5,0 L 8,-8 L 12,8 L 16,-8 L 20,8 L 24,-8 L 28,8 L 32,-8 L 35,0 L 40,0" ${BODY}/>`,
+    svgPath({ d: "M 0 0 H 5 L 7.5 -5.5 L 12.5 5.5 L 17.5 -5.5 L 22.5 5.5 L 27.5 -5.5 L 32.5 5.5 L 35 0 H 40", class: "schematex-circuit-body" }),
 };
 
 const capacitor: SymbolDef = {
@@ -67,15 +71,14 @@ const capacitor: SymbolDef = {
 const electrolytic_cap: SymbolDef = {
   length: 20,
   anchors: { start: { x: 0, y: 0 }, end: { x: 20, y: 0 } },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<line x1="8" y1="-10" x2="8" y2="10" ${BODY}/>`,
-      `<path d="M 12,-10 Q 16,0 12,10" fill="none" class="schematex-circuit-body"/>`,
-      lineWire(12, 0, 20, 0),
-      `<text x="5" y="-12" class="schematex-circuit-pol">−</text>`,
-      `<text x="15" y="-12" class="schematex-circuit-pol">+</text>`,
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 8, 0),
+    svgLine({ x1: 8, y1: -10, x2: 8, y2: 10, class: "schematex-circuit-body" }),
+    // The negative lead meets the curved plate at its midpoint, without crossing it.
+    svgPath({ d: "M 16 -10 Q 8 0 16 10", class: "schematex-circuit-body" }),
+    lineWire(12, 0, 20, 0),
+    svgText({ x: 6, y: -12, class: "schematex-circuit-pol" }, "+"),
+  ].join(""),
 };
 
 const inductor: SymbolDef = {
@@ -114,25 +117,19 @@ const transformer: SymbolDef = {
   length: 60,
   netlistPins: ["p1", "p2", "s1", "s2"],
   anchors: {
-    start: { x: 0, y: 0 },
-    end: { x: 60, y: 0 },
-    p1: { x: 0, y: 0 },
-    p2: { x: 0, y: 0 },
-    s1: { x: 60, y: 0 },
-    s2: { x: 60, y: 0 },
+    start: { x: 0, y: -20 }, end: { x: 60, y: -20 },
+    p1: { x: 0, y: -20 }, p2: { x: 0, y: 20 },
+    s1: { x: 60, y: -20 }, s2: { x: 60, y: 20 },
   },
-  svg: () =>
-    [
-      // Primary coils (left)
-      `<path d="M 5,-18 A 5,5 0 0 1 5,-8 A 5,5 0 0 1 5,2 A 5,5 0 0 1 5,12 A 5,5 0 0 1 5,22" fill="none" ${BODY}/>`,
-      lineWire(0, 0, 5, 0),
-      // Core lines
-      `<line x1="28" y1="-20" x2="28" y2="22" ${BODY}/>`,
-      `<line x1="32" y1="-20" x2="32" y2="22" ${BODY}/>`,
-      // Secondary coils (right)
-      `<path d="M 55,-18 A 5,5 0 0 0 55,-8 A 5,5 0 0 0 55,2 A 5,5 0 0 0 55,12 A 5,5 0 0 0 55,22" fill="none" ${BODY}/>`,
-      lineWire(55, 0, 60, 0),
-    ].join(""),
+  svg: (_label, _value, attrs) => [
+    `<path d="M 10,-20 A 5,5 0 0 1 10,-10 A 5,5 0 0 1 10,0 A 5,5 0 0 1 10,10 A 5,5 0 0 1 10,20" fill="none" ${BODY}/>`,
+    lineWire(0, -20, 10, -20), lineWire(0, 20, 10, 20),
+    `<line x1="28" y1="-20" x2="28" y2="20" ${BODY}/>`,
+    `<line x1="32" y1="-20" x2="32" y2="20" ${BODY}/>`,
+    `<path d="M 50,-20 A 5,5 0 0 0 50,-10 A 5,5 0 0 0 50,0 A 5,5 0 0 0 50,10 A 5,5 0 0 0 50,20" fill="none" ${BODY}/>`,
+    lineWire(50, -20, 60, -20), lineWire(50, 20, 60, 20),
+    attrs?.pins === "5" ? lineWire(50, 0, 60, 0) : "",
+  ].join(""),
 };
 
 // ─── Sources ──────────────────────────────────────────────────
@@ -203,15 +200,14 @@ const battery: SymbolDef = {
     minus: { x: 0, y: 0 },
     plus: { x: 24, y: 0 },
   },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<line x1="8" y1="-8" x2="8" y2="8" ${BODY}/>`,
-      `<line x1="12" y1="-4" x2="12" y2="4" ${BODY}/>`,
-      `<line x1="14" y1="-8" x2="14" y2="8" ${BODY}/>`,
-      `<line x1="18" y1="-4" x2="18" y2="4" ${BODY}/>`,
-      lineWire(18, 0, 24, 0),
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 5.5, 0),
+    // Short, heavy plates face minus; long plates face the named plus pin.
+    ...[5.5, 14.5].map((x) => svgLine({ x1: x, y1: -5.5, x2: x, y2: 5.5, class: "schematex-circuit-electrode" })),
+    ...[9.5, 18.5].map((x) => svgLine({ x1: x, y1: -11, x2: x, y2: 11, class: "schematex-circuit-body" })),
+    lineWire(18.5, 0, 24, 0),
+    svgText({ x: 16, y: -14, class: "schematex-circuit-pol" }, "+"),
+  ].join(""),
 };
 
 // IEC 60617 photovoltaic cell: cell plates with incident-light arrows.
@@ -308,16 +304,16 @@ const schottky: SymbolDef = {
 const led: SymbolDef = {
   length: 30,
   anchors: { start: { x: 0, y: 0 }, end: { x: 30, y: 0 } },
-  svg: () =>
-    [
-      lineWire(0, 0, 8, 0),
-      `<polygon points="8,-8 8,8 22,0" ${FILL}/>`,
-      `<line x1="22" y1="-8" x2="22" y2="8" ${BODY}/>`,
-      lineWire(22, 0, 30, 0),
-      // outward light arrows
-      `<path d="M 12,-10 L 20,-18 M 18,-18 L 20,-18 L 20,-16" fill="none" ${BODY}/>`,
-      `<path d="M 16,-10 L 24,-18 M 22,-18 L 24,-18 L 24,-16" fill="none" ${BODY}/>`,
-    ].join(""),
+  svg: () => [
+    lineWire(0, 0, 8, 0),
+    svgPolygon({ points: "8,-8 8,8 22,0", class: "schematex-circuit-fill" }),
+    svgLine({ x1: 22, y1: -8, x2: 22, y2: 8, class: "schematex-circuit-body" }),
+    lineWire(22, 0, 30, 0),
+    ...[0, 7].flatMap((offset) => [
+      svgLine({ x1: 15 + offset, y1: -10, x2: 7 + offset, y2: -19, class: "schematex-circuit-body" }),
+      svgPolygon({ points: `${7 + offset},-19 ${11.15 + offset},-17.34 ${8.16 + offset},-14.68`, class: "schematex-circuit-fill" }),
+    ]),
+  ].join(""),
 };
 
 const photodiode: SymbolDef = {
@@ -351,18 +347,20 @@ const npn: SymbolDef = {
     c: { x: 40, y: -16 },
     e: { x: 40, y: 16 },
   },
-  svg: () =>
-    [
-      `<circle cx="20" cy="0" r="16" fill="white" ${BODY}/>`,
-      `<line x1="14" y1="-10" x2="14" y2="10" ${BODY}/>`,
-      lineWire(0, 0, 14, 0),
-      `<line x1="14" y1="-6" x2="30" y2="-12" ${BODY}/>`,
-      lineWire(30, -12, 40, -16),
-      `<line x1="14" y1="6" x2="30" y2="12" ${BODY}/>`,
-      lineWire(30, 12, 40, 16),
-      // NPN arrow (outward on emitter)
-      `<polygon points="30,12 24,10 26,16" ${FILL}/>`,
-    ].join(""),
+  svg: () => {
+    const dx = 19, dy = 10.5, length = Math.hypot(dx, dy);
+    const ux = dx / length, uy = dy / length;
+    const tipX = 21 + ux * 12, tipY = 5.5 + uy * 12;
+    const backX = tipX - ux * 6.5, backY = tipY - uy * 6.5;
+    return [
+      svgCircle({ cx: 24, cy: 0, r: 15, class: "schematex-circuit-body" }),
+      lineWire(0, 0, 21, 0),
+      svgLine({ x1: 21, y1: -11, x2: 21, y2: 11, class: "schematex-circuit-electrode" }),
+      svgLine({ x1: 21, y1: -5.5, x2: 40, y2: -16, class: "schematex-circuit-body" }),
+      svgLine({ x1: 21, y1: 5.5, x2: 40, y2: 16, class: "schematex-circuit-body" }),
+      svgPolygon({ points: `${tipX},${tipY} ${backX - uy * 3},${backY + ux * 3} ${backX + uy * 3},${backY - ux * 3}`, class: "schematex-circuit-fill" }),
+    ].join("");
+  },
 };
 
 const pnp: SymbolDef = {
@@ -827,6 +825,36 @@ const switch_nc: SymbolDef = {
   ].join(""),
 };
 
+/** Selector markings share the label search; reserve their actual contacts and strokes. */
+function placeSelectorLabels(symbol: SymbolDef): SymbolDef {
+  return { ...symbol, svg: (label, value, attrs) => {
+    const svg = symbol.svg(label, value, attrs);
+    const occupied: LabelBox[] = [];
+    for (const tag of svg.matchAll(/<(line|circle)\b([^>]*)>/g)) {
+      const attrs = Object.fromEntries([...tag[2].matchAll(/([\w-]+)="([^"]*)"/g)].map((match) => [match[1], match[2]]));
+      const n = (key: string) => Number(attrs[key]);
+      if (tag[1] === "circle") {
+        occupied.push({ x: n("cx") - n("r"), y: n("cy") - n("r"), width: n("r") * 2, height: n("r") * 2 });
+      } else {
+        occupied.push(...edgeLabelObstacles([{ x: n("x1"), y: n("y1") }, { x: n("x2"), y: n("y2") }]));
+      }
+    }
+    return svg.replace(/<text\b([^>]*)>([^<]*)<\/text>/g, (_match: string, attributes: string, content: string) => {
+      const attrs = Object.fromEntries([...attributes.matchAll(/([\w-]+)="([^"]*)"/g)].map((match) => [match[1], match[2]]));
+      // These selector markings use the existing 9px polarity/position font.
+      const fontSize = 9;
+      const verticalPadding = 4; // Two pixels above and below the font envelope.
+      const width = estimateTextWidth(content, fontSize);
+      const x = Number(attrs.x), y = Number(attrs.y);
+      const shift = attrs["text-anchor"] === "middle" ? width / 2 : 0;
+      const box = placeLabel({ x: x - shift + width / 2, y: y - fontSize / 2 },
+        { width, height: fontSize + verticalPadding }, occupied, { x: 1, y: 0 });
+      occupied.push(box);
+      return `<text${attributes.replace(/\bx="[^"]*"/, `x="${box.x + shift}"`).replace(/\by="[^"]*"/, `y="${box.y + box.height / 2 + fontSize / 2}"`)}>${content}</text>`;
+    });
+  } };
+}
+
 const switch_spdt_center_off: SymbolDef = {
   length: 54,
   netlistPins: ["common", "left", "right"],
@@ -923,6 +951,7 @@ const test_point: SymbolDef = {
   svg: () =>
     [
       lineWire(0, 0, 6, 0),
+      lineWire(14, 0, 16, 0),
       `<circle cx="10" cy="0" r="4" fill="white" ${BODY}/>`,
     ].join(""),
 };
@@ -952,14 +981,11 @@ const antenna: SymbolDef = {
 
 const IC_BODY_W = 80;
 
-/**
- * How wide an IC body must be to hold its own part number, with room for the
- * pin numbers printed inside both edges. Widening is one-directional: a short
- * label keeps the standard body so ordinary schematics do not change shape.
- */
-function icBodyWidth(label: string): number {
-  if (!label) return IC_BODY_W;
-  return Math.max(IC_BODY_W, Math.ceil(estimateTextWidth(label, 12) + 44));
+/** Keep the identity footprint and enough width for both pin-text columns. */
+function icBodyWidth(label: string, sides: IcPinSides): number {
+  const left = Math.max(0, ...sides.left.map(pin => estimateTextWidth(pin, 9)));
+  const right = Math.max(0, ...sides.right.map(pin => estimateTextWidth(pin, 9)));
+  return Math.max(IC_BODY_W, Math.ceil(estimateTextWidth(label, 12) + 44), Math.ceil(left + right + 16), ...[sides.top, sides.bottom].map(pins => pins.reduce((sum, pin) => sum + estimateTextWidth(pin, 9) + IC_PIN_PITCH, IC_PIN_PITCH)));
 }
 const IC_PIN_PITCH = 16;
 const GENERIC_IC_LEFT = ["1", "2", "3", "4"];
@@ -968,6 +994,8 @@ const GENERIC_IC_RIGHT = ["8", "7", "6", "5"];
 interface IcPinSides {
   left: string[];
   right: string[];
+  top: string[];
+  bottom: string[];
 }
 
 function pinLabels(value: string | undefined, fallback: string[]): string[] {
@@ -984,25 +1012,38 @@ function resolveIcPinSides(
   return {
     left: pinLabels(attrs?.pins_left, defaultLeft),
     right: pinLabels(attrs?.pins_right, defaultRight),
+    top: pinLabels(attrs?.pins_top, []),
+    bottom: pinLabels(attrs?.pins_bottom, []),
   };
 }
 
 export function normalizePinName(label: string, fallback: string): string {
-  return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || fallback;
+  return label.toLowerCase().replace(/[^a-z0-9+-]+/g, "_").replace(/^_+|_+$/g, "") || fallback;
 }
 
 export function getGenericIcPinSides(attrs?: Record<string, string>): IcPinSides {
   return resolveIcPinSides(GENERIC_IC_LEFT, GENERIC_IC_RIGHT, attrs);
 }
 
+function icBodyHeight(sides: IcPinSides): number {
+  return IC_PIN_PITCH * (Math.max(sides.left.length, sides.right.length, 2) + 1 + Number(!!sides.top.length) + Number(!!sides.bottom.length));
+}
+
+function icEdgePinX(labels: string[], index: number, bodyW: number): number {
+  const widths = labels.map(label => estimateTextWidth(label, 9) + IC_PIN_PITCH);
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  return (bodyW - total) / 2 + widths.slice(0, index).reduce((sum, width) => sum + width, 0) + widths[index] / 2;
+}
+
 function icPinAnchors(
   sides: IcPinSides,
   leftNames?: string[],
   rightNames?: string[],
-  bodyW: number = IC_BODY_W
+  bodyW: number = IC_BODY_W,
+  orderedLabels?: string[]
 ): Record<string, PinAnchor> {
-  const rowCount = Math.max(sides.left.length, sides.right.length, 2);
-  const bodyH = IC_PIN_PITCH * (rowCount + 1);
+  const pinName = (label: string, fallback: string) => normalizePinName(label, orderedLabels?.includes(label) ? `pin_${orderedLabels.indexOf(label) + 1}` : fallback);
+  const bodyH = icBodyHeight(sides);
   const topY = -bodyH / 2;
   const anchors: Record<string, PinAnchor> = {
     start: { x: 0, y: 0 },
@@ -1010,14 +1051,19 @@ function icPinAnchors(
   };
 
   for (let i = 0; i < sides.left.length; i++) {
-    const name = leftNames?.[i] ?? normalizePinName(sides.left[i], `pin_${i + 1}`);
-    anchors[name] = { x: -8, y: topY + IC_PIN_PITCH * (i + 1) };
+    const name = leftNames?.[i] ?? pinName(sides.left[i], `pin_${i + 1}`);
+    anchors[name] = { x: -8, y: topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length)) };
   }
   for (let i = 0; i < sides.right.length; i++) {
     const spicePosition = sides.left.length + sides.right.length - i;
-    const name = rightNames?.[i] ?? normalizePinName(sides.right[i], `pin_${spicePosition}`);
-    anchors[name] = { x: bodyW + 8, y: topY + IC_PIN_PITCH * (i + 1) };
+    const name = rightNames?.[i] ?? pinName(sides.right[i], `pin_${spicePosition}`);
+    anchors[name] = { x: bodyW + 8, y: topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length)) };
   }
+  for (const side of ["top", "bottom"] as const) sides[side].forEach((label, index) => {
+    anchors[pinName(label, `pin_${side}_${index + 1}`)] = {
+      x: icEdgePinX(sides[side], index, bodyW), y: side === "top" ? topY - 8 : -topY + 8,
+    };
+  });
   return anchors;
 }
 
@@ -1034,36 +1080,44 @@ function icSymbol(
 ): SymbolDef {
   return {
     length: IC_BODY_W,
+    keepUpright: true,
     netlistPins: [],
     anchors: {
       start: { x: 0, y: 0 },
       end: { x: IC_BODY_W, y: 0 },
     },
     svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
-      const { left, right } = resolveIcPinSides(defaultLeft, defaultRight, attrs);
-      const n = Math.max(left.length, right.length, 2);
-      const bodyH = IC_PIN_PITCH * (n + 1);
+      const sides = resolveIcPinSides(defaultLeft, defaultRight, attrs);
+      const { left, right } = sides;
+      const bodyH = icBodyHeight(sides);
       const topY = -bodyH / 2;
       const parts: string[] = [];
-      const labelText = attrs?.ic_label ?? bodyLabel ?? "";
-      // The body has to fit its own part number. A fixed width let a label
-      // like MAX17048 run out past the pin numbers on both sides, which reads
-      // as a broken symbol rather than a long name.
-      const bodyW = icBodyWidth(labelText);
+      const identity = attrs?.ic_label ?? bodyLabel ?? "";
+      const labelText = identity === _label ? "" : identity;
+      // Keep the identity footprint stable while giving both pin columns room.
+      // Paint a body marking only when it differs from the exterior caption.
+      const bodyW = icBodyWidth(identity, sides);
       parts.push(`<rect x="0" y="${topY}" width="${bodyW}" height="${bodyH}" fill="white" ${BODY}/>`);
       if (labelText) {
-        parts.push(`<text x="${bodyW / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${labelText}</text>`);
+        parts.push(`<text x="${(bodyW + Math.max(0, ...left.map(pin => estimateTextWidth(pin, 9))) - Math.max(0, ...right.map(pin => estimateTextWidth(pin, 9)))) / 2}" y="3" text-anchor="middle" class="schematex-circuit-meter">${escapeXml(labelText)}</text>`);
       }
       for (let i = 0; i < left.length; i++) {
-        const y = topY + IC_PIN_PITCH * (i + 1);
+        const y = topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length));
         parts.push(`<line x1="-8" y1="${y}" x2="0" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="4" y="${y + 3}" class="schematex-circuit-pol">${left[i]}</text>`);
+        parts.push(`<text x="4" y="${y + 3}" class="schematex-circuit-pol">${escapeXml(left[i])}</text>`);
       }
       for (let i = 0; i < right.length; i++) {
-        const y = topY + IC_PIN_PITCH * (i + 1);
+        const y = topY + IC_PIN_PITCH * (i + 1 + Number(!!sides.top.length));
         parts.push(`<line x1="${bodyW}" y1="${y}" x2="${bodyW + 8}" y2="${y}" ${WIRE}/>`);
-        parts.push(`<text x="${bodyW - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${right[i]}</text>`);
+        parts.push(`<text x="${bodyW - 4}" y="${y + 3}" text-anchor="end" class="schematex-circuit-pol">${escapeXml(right[i])}</text>`);
       }
+      for (const side of ["top", "bottom"] as const) sides[side].forEach((label, index) => {
+        const x = icEdgePinX(sides[side], index, bodyW);
+        const y = side === "top" ? topY : -topY;
+        const outward = side === "top" ? -1 : 1;
+        parts.push(svgLine({ x1: x, y1: y, x2: x, y2: y + outward * 8, class: "schematex-circuit-wire" }));
+        parts.push(svgText({ x, y: y - outward * 11 + 3, "text-anchor": "middle", class: "schematex-circuit-pol" }, label));
+      });
       return parts.join("");
     },
   };
@@ -1193,7 +1247,9 @@ export function getTerminalBlockPinLabels(attrs?: Record<string, string>): strin
 
 function terminalBlockGeometry(attrs?: Record<string, string>): TerminalBlockGeometry {
   const labels = getTerminalBlockPinLabels(attrs);
-  const bodyHeight = TERMINAL_BLOCK_PIN_PITCH * (labels.length + 1);
+  const pitch = numAttr(attrs, "_terminal_pitch", TERMINAL_BLOCK_PIN_PITCH);
+  const split = Number(attrs?._terminal_split) || labels.length;
+  const bodyHeight = pitch * (Math.max(split, labels.length - split) + 1);
   const topY = -bodyHeight / 2;
   return {
     bodyWidth: TERMINAL_BLOCK_BODY_W,
@@ -1202,12 +1258,8 @@ function terminalBlockGeometry(attrs?: Record<string, string>): TerminalBlockGeo
     pins: labels.map((label, index) => ({
       label,
       anchorName: normalizePinName(label, `t${index + 1}`),
-      x: -8,
-      // Reserve the label band for every instance so labels never move pins.
-      y:
-        topY +
-        TERMINAL_BLOCK_PIN_PITCH * (index + 1) +
-        TERMINAL_BLOCK_LABEL_BAND,
+      x: (attrs?._terminal_side === "right" || index >= split) ? TERMINAL_BLOCK_BODY_W + 8 : -8,
+      y: topY + pitch * ((index < split ? index : index - split) + 1) + TERMINAL_BLOCK_LABEL_BAND,
     })),
   };
 }
@@ -1228,29 +1280,31 @@ function terminalBlockAnchors(
 // Terminal block / junction box. Pin anchors are dynamic per-instance from
 // `pins="..."` or `terminals="..."`; static start/end remain cursor anchors.
 const terminal_block: SymbolDef = {
+  keepUpright: true,
   length: TERMINAL_BLOCK_BODY_W,
   netlistPins: [],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: TERMINAL_BLOCK_BODY_W, y: 0 },
   },
-  svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
+  svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
     const geometry = terminalBlockGeometry(attrs);
     const parts: string[] = [];
     parts.push(
       `<rect x="0" y="${geometry.topY}" width="${geometry.bodyWidth}" height="${geometry.bodyHeight}" rx="3" fill="white" stroke-width="2" ${BODY}/>`
     );
-    if (label) {
-      parts.push(
-        `<text x="${geometry.bodyWidth / 2}" y="${geometry.topY + 14}" text-anchor="middle" class="schematex-circuit-meter">${label}</text>`
-      );
-    }
     for (const pin of geometry.pins) {
-      parts.push(`<line x1="${pin.x}" y1="${pin.y}" x2="0" y2="${pin.y}" ${WIRE}/>`);
-      parts.push(`<circle cx="6" cy="${pin.y}" r="2" ${FILL}/>`);
-      parts.push(
-        `<text x="12" y="${pin.y + 3}" class="schematex-circuit-pol">${pin.label}</text>`
-      );
+      const edge = pin.x < 0 ? 0 : geometry.bodyWidth;
+      const centre = attrs?._terminal_split ? (pin.x < 0 ? geometry.bodyWidth / 4 : geometry.bodyWidth * 3 / 4) : geometry.bodyWidth / 2;
+      parts.push(`<line x1="${pin.x}" y1="${pin.y}" x2="${edge}" y2="${pin.y}" ${WIRE}/>`);
+      parts.push(lineWire(edge, pin.y, centre, pin.y));
+      if (!attrs?._terminal_split) {
+        const fieldEdge = geometry.bodyWidth - edge;
+        parts.push(lineWire(centre, pin.y, fieldEdge, pin.y));
+        parts.push(lineWire(fieldEdge, pin.y, fieldEdge + (fieldEdge ? 8 : -8), pin.y));
+      }
+      parts.push(`<circle cx="${centre}" cy="${pin.y}" r="7" fill="white" ${BODY}/>`);
+      parts.push(`<text x="${centre}" y="${pin.y + 3}" text-anchor="middle" class="schematex-circuit-pol">${pin.label}</text>`);
     }
     return parts.join("");
   },
@@ -1271,7 +1325,7 @@ export function effectiveSymbolDef(type: string, attrs?: Record<string, string>)
     // Body width follows the part number, and `length` plus the pin anchors
     // must follow it too — widening the drawn box while leaving the anchors at
     // the old width would hang every wire in the wrong place.
-    const fallbackW = icBodyWidth(fallbackAttrs.ic_label ?? "");
+    const fallbackW = icBodyWidth(fallbackAttrs.ic_label ?? "", getGenericIcPinSides(fallbackAttrs));
     return {
       ...generic_ic,
       length: fallbackW,
@@ -1284,12 +1338,16 @@ export function effectiveSymbolDef(type: string, attrs?: Record<string, string>)
       svg: (label, value) => generic_ic.svg(label, value, fallbackAttrs),
     };
   }
+  if (type === "transformer" && attrs?.pins === "5") {
+    return { ...sym, netlistPins: ["p1", "p2", "s1", "ct", "s2"],
+      anchors: { ...sym.anchors, ct: { x: 60, y: 0 } } };
+  }
   if (type === "generic_ic") {
-    const w = icBodyWidth(attrs?.ic_label ?? "");
+    const w = icBodyWidth(attrs?.ic_label ?? "", getGenericIcPinSides(attrs));
     return {
       ...sym,
       length: w,
-      anchors: icPinAnchors(getGenericIcPinSides(attrs), undefined, undefined, w),
+      anchors: icPinAnchors(getGenericIcPinSides(attrs), undefined, undefined, w, attrs?.pins?.split(",").map(label => label.trim())),
     };
   }
   if (type === "terminal_block") {
@@ -1376,6 +1434,7 @@ const wire_duct: SymbolDef = {
 };
 
 const plc: SymbolDef = {
+  keepUpright: true,
   length: 70,
   anchors: { start: { x: 0, y: 0 }, end: { x: 70, y: 0 }, pwr: { x: 0, y: 24 }, out: { x: 70, y: 24 } },
   svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
@@ -1391,36 +1450,34 @@ const plc: SymbolDef = {
   },
 };
 
+// Authored names use the renderer's upright caption layer, outside glyph rotation.
 const pilot_light: SymbolDef = {
   length: 22,
   anchors: { start: { x: 0, y: 0 }, end: { x: 22, y: 0 } },
-  svg: (label?: string, _value?: string) =>
+  svg: () =>
     [
       `<circle cx="11" cy="0" r="10" class="schematex-circuit-panel-light"/>`,
       `<circle cx="11" cy="0" r="4" class="schematex-circuit-panel-led"/>`,
-      label ? `<text x="11" y="20" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
     ].join(""),
 };
 
 const selector_switch: SymbolDef = {
   length: 26,
   anchors: { start: { x: 0, y: 0 }, end: { x: 26, y: 0 } },
-  svg: (label?: string) =>
+  svg: () =>
     [
       `<circle cx="13" cy="0" r="12" fill="white" ${BODY}/>`,
       `<line x1="7" y1="5" x2="19" y2="-5" ${BODY}/>`,
-      label ? `<text x="13" y="22" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
     ].join(""),
 };
 
 const emergency_stop: SymbolDef = {
   length: 30,
   anchors: { start: { x: 0, y: 0 }, end: { x: 30, y: 0 } },
-  svg: (label?: string) =>
+  svg: () =>
     [
       `<circle cx="15" cy="0" r="14" class="schematex-circuit-estop"/>`,
       `<text x="15" y="4" text-anchor="middle" class="schematex-circuit-meter">E</text>`,
-      label ? `<text x="15" y="25" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
     ].join(""),
 };
 
@@ -2158,7 +2215,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   variable_cap,
   variable_inductor,
   switch_spdt,
-  switch_spdt_center_off,
+  switch_spdt_center_off: placeSelectorLabels(switch_spdt_center_off),
   push_nc,
   gnd_chassis,
   gnd_digital,
@@ -2172,7 +2229,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   wire_duct,
   plc,
   pilot_light,
-  selector_switch,
+  selector_switch: placeSelectorLabels(selector_switch),
   emergency_stop,
   "555_timer": timer_555,
   voltage_regulator,

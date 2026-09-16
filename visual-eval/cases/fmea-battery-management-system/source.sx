@@ -1,0 +1,24 @@
+# Assumptions: this DFMEA covers the BMS supervisory functions for a lithium-ion traction battery pack.
+# Detection scores rate controls before vehicle release; safety effects retain high severity even at low occurrence.
+fmea "Battery management system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  number: DFMEA-BMS-042
+  item "Battery management system" fn "Monitor cells and prevent operation outside safe limits"
+    mode "Overcharge protection does not trip"
+      effect "Cell thermal runaway and pack fire" sev: 10
+      cause "Voltage-sense channel stuck low" occ: 2
+        controls prevention: "Redundant cell-voltage sensing", detection: "End-of-line BMS diagnostic test" det: 3
+      cause "Charge-limit software defect" occ: 2
+        controls prevention: "Requirements traceability and code review", detection: "Hardware-in-the-loop test" det: 4
+    mode "Overtemperature detection delayed"
+      effect "Cell damage and reduced pack life" sev: 8
+      cause "Temperature sensor open circuit" occ: 3
+        controls prevention: "Sensor plausibility diagnostics", detection: "Diagnostic fault-injection test" det: 3
+      cause "Thermal-model calibration error" occ: 4
+        controls prevention: "Calibration control plan", detection: "Environmental chamber validation" det: 5
+    mode "State-of-charge estimate incorrect"
+      effect "Unexpected vehicle power limitation" sev: 6
+      cause "Current-sensor offset drift" occ: 4
+        controls prevention: "Offset compensation algorithm", detection: "End-of-line calibration check" det: 4

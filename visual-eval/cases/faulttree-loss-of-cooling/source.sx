@@ -1,0 +1,15 @@
+# Assumptions: demand failures are independent except for the explicitly modelled pump-house flood.
+# Cooling is unavailable if either the pump train or its electrical supply cannot provide service.
+faulttree "Loss of reactor cooling"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Loss of reactor/process cooling" = OR(PUMP_TRAIN_LOSS, POWER_SUPPLY_LOSS)
+  gate PUMP_TRAIN_LOSS "Cooling-pump train unavailable" = OR(BOTH_PUMPS_FAIL, PUMP_HOUSE_FLOOD)
+  gate BOTH_PUMPS_FAIL "Both duty/standby pumps fail" = AND(PUMP_A_FAIL, PUMP_B_FAIL)
+  gate POWER_SUPPLY_LOSS "Pump power supply unavailable" = OR(NORMAL_AND_EMERGENCY_POWER_FAIL, PUMP_HOUSE_FLOOD)
+  gate NORMAL_AND_EMERGENCY_POWER_FAIL "Normal and standby power fail" = AND(NORMAL_BUS_FAIL, DG_FAIL)
+  basic PUMP_A_FAIL "Cooling pump A fails to start" p: 0.012
+  basic PUMP_B_FAIL "Cooling pump B fails to start" p: 0.012
+  basic NORMAL_BUS_FAIL "Normal motor-control bus unavailable" p: 0.008
+  basic DG_FAIL "Standby diesel generator fails to supply" p: 0.015
+  basic PUMP_HOUSE_FLOOD "Pump-house flood disables pumps and switchgear" p: 0.001

@@ -1,0 +1,41 @@
+{
+  "id": "sld-industrial-11kv-substation",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Industrial 11 kV substation",
+  "goal": "Show protected 11 kV intake transformed to a metered LV switchboard.",
+  "rubric": [
+    {
+      "id": "incomer",
+      "severity": "blocker",
+      "must": "The 11 kV utility, VCB, protection CTs, and revenue meter read as a continuous incomer sequence."
+    },
+    {
+      "id": "transform",
+      "severity": "blocker",
+      "must": "TX-1 visibly sits between the 11 kV intake and the LV main ACB."
+    },
+    {
+      "id": "lv-bus",
+      "severity": "blocker",
+      "must": "The 415 V main LV switchboard visibly feeds MCC-1 and the plant distribution board."
+    },
+    {
+      "id": "protection",
+      "severity": "major",
+      "must": "The overcurrent/earth-fault relay is visibly associated with the HV breaker."
+    },
+    {
+      "id": "motor",
+      "severity": "minor",
+      "must": "The process motor visibly follows MCC-1."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. The 11 kV utility incomer runs through the 52-HV vacuum circuit breaker, the protection current transformers and the revenue meter into the 2500 kVA Dyn11 transformer. The overcurrent and earth-fault relay sits off to the side and trips the breaker over a dashed control link rather than a power conductor. On the low-voltage side the 4000 A main air circuit breaker feeds the 415 V main switchboard, which serves MCC-1 — and through it a 315 kW process motor — and the plant distribution board. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

@@ -1,0 +1,10 @@
+# Scenario: software architecture class contrasts event-driven and request-response integration.
+tchart "Event-driven versus request-response integration"
+column "Event-driven"
+- Asynchronous communication
+- Loose coupling between services
+- Requires observability and replay handling
+column "Request-response"
+- Immediate synchronous reply
+- Simple for direct queries
+- Caller waits for dependency availability

@@ -1,0 +1,64 @@
+---
+title: Haemophilia A — four generations with a first-cousin union
+description: Four-generation X-linked recessive pedigree with obligate and confirmed carriers, a consanguineous first-cousin couple, a pregnancy loss, identical twin carriers, and the proband.
+diagram: pedigree
+standard: NSGC
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 4
+tags: [x-linked, haemophilia, obligate-carrier, consanguinity, twins, pregnancy-loss, proband, NSGC]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  # Haemophilia A (factor VIII deficiency) — X-linked recessive.
+  # Every daughter of an affected man inherits his X, so II-2 and II-3 are obligate
+  # carriers by deduction; III-3 was confirmed by factor VIII assay.
+  # III-2 and III-3 are first cousins: their mothers are sisters.
+  pedigree "Haemophilia A — Four-Generation Family"
+    I-1 [male, affected, deceased]
+    I-2 [female, unaffected]
+    I-1 -- I-2
+      II-2 [female, obligate-carrier]
+      II-3 [female, obligate-carrier]
+
+    II-1 [male, unaffected]
+    II-4 [male, unaffected]
+
+    II-1 -- II-2
+      III-1 [male, affected]
+      III-2 [male, unaffected]
+
+    II-3 -- II-4
+      III-3 [female, carrier-x]
+      III-4 [male, unaffected]
+
+    III-2 == III-3
+      IV-1 [male, affected, proband]
+      IV-2 [unknown, sab]
+      IV-3 [female, carrier-x, twin-mz]
+      IV-4 [female, carrier-x, twin-mz]
+---
+
+## Scenario
+
+A genetic-counselling chart for haemophilia A (factor VIII deficiency), an X-linked recessive bleeding disorder. The affected great-grandfather passes his only X chromosome to every daughter, so both of his daughters are obligate carriers — known by deduction, never tested. One granddaughter was confirmed as a carrier by factor VIII assay. She married her first cousin, and their affected son is the proband whose referral opened the file.
+
+## Annotation key
+
+- `affected`, `unaffected` — filled or open symbol
+- `deceased` — diagonal slash through the symbol
+- `obligate-carrier` — a carrier inferred from the family structure rather than tested
+- `carrier-x` — a carrier of an X-linked condition
+- `--` — a couple; indented people below are their children
+- `==` — a consanguineous couple (related by blood), drawn as a double line
+- `proband` — the person whose referral started the investigation, marked with an arrow
+- `[unknown, sab]` — a spontaneous pregnancy loss of unknown sex
+- `twin-mz` — identical (monozygotic) twins
+- `#` lines — comments; they are not drawn
+
+## How to read
+
+Read top to bottom, one generation per row. I-1 is affected, so his daughters II-2 and II-3 must be carriers. II-2's son III-1 is affected. II-3's daughter III-3 is a carrier; she and her cousin III-2 (II-2's son) are joined by the double line. Their four pregnancies are the affected proband IV-1, a pregnancy loss, and identical twin daughters who are both carriers — identical twins share a genotype, so they carry the same mark.

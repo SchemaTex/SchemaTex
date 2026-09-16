@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Circuit netlists can describe optional functional groups, flow, pin roles and ordered physical buses. Placement and routing remain engine responsibilities.
+- Phylogenetic trees support slanted (default) and rectangular presentation; symbol catalogs share the artwork used by production renderers.
+- Visual evaluation includes per-variant exemplars, case targets, paired version judgments and freshness checks.
+
+### Changed
+- Improve layout, routing, captions and symbols across relationship, electrical, process, tree, graph and sports diagrams.
+- Refresh the reviewed symbol libraries, including network equipment, circuit components, industrial symbols and floorplan assets.
+- Separate relationship labels from wires and improve transfer-switch source separation, graph arrows, field markings and chart readability.
+- Move the local visual evaluation UI to /eval/ and remove superseded engineering-review pages.
+
+### Fixed
+- Preserve parser-owned %% directives through preprocessing; consume IDEF0 role suffixes and flow separators; prevent a phantom sociogram header node.
+- Reject malformed phylogenetic trees and retain domain semantics such as pedigree twins and stillbirth.
+- Share quoted-prefix parsing across five parsers and preserve literal comment markers inside smart/escaped quotes.
+- Replace the previous approximate FMEA action-priority bands with the documented S/O/D matrix.
+- Repair incomplete agent copyable patterns and keep alternative modes in separate documents. Align FMEA reference guidance with the implemented S/O/D lookup.
+
+### Maintenance
+- Remove obsolete review tools and tests that freeze SVG artwork hashes; retain semantic and terminal-connectivity checks.
+- Regenerate published examples from the current engines. Visual scores document remaining weaknesses and do not imply standards certification or perfect automatic layout.
+
 ---
 
 ## [1.0.14] — 2026-09-05

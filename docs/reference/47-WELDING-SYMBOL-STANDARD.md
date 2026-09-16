@@ -8,12 +8,12 @@ Engine: `src/diagrams/welding/`. Type: `welding`. Cluster: ⚡ Electrical & Indu
 
 ## What this is
 
-A welding symbol is a **fixed-skeleton glyph system**, not a graph: a horizontal **reference line** + a **leader arrow** to the joint + a small library of **weld-symbol glyphs** snapped above/below the line, with dimension text in fixed slots. There is **no graph-layout problem** — placement is 100% determined by the skeleton. That is why this is a "light" diagram type (a glyph catalog + a near-trivial layout), and it fills the only gap in the EE cluster next to circuit / ladder / SLD.
+A welding symbol is a **fixed-skeleton glyph system**, not a graph: a horizontal **reference line** + a **leader arrow** to the joint + a small library of **weld-symbol glyphs** snapped above/below the line, with dimension text in conventional slots. There is **no graph-layout problem** — text and symbol measurements determine spacing within the skeleton. That is why this is a "light" diagram type (a glyph catalog + a near-trivial layout), and it fills the only gap in the EE cluster next to circuit / ladder / SLD.
 
 Two standards, differing only in the reference-line convention:
 
 - **AWS A2.4** (US, default): one reference line. Symbol **below** the line = arrow side; **above** = other side.
-- **ISO 2553** System A (`iso-a`): a **solid + dashed** dual line. Arrow-side weld on the **solid** line, other-side on the **dashed** line. A symmetric weld is drawn on the solid line only, dashed line suppressed.
+- **ISO 2553** System A (`iso-a`): a **solid + dashed** dual line. Arrow-side weld on the **solid** line, other-side on the **dashed** line. For identical specifications on both sides, the dashed line is suppressed and both weld glyphs remain on the solid reference line. Unequal dimensions retain the dashed line even when the weld types match.
 - **ISO 2553** System B (`iso-b`): no dashed line, AWS-compatible (below = arrow, above = other).
 
 ---
@@ -50,8 +50,8 @@ One `joint` block per joint; joints stack vertically as independent bands. Inlin
 | left of symbol | `size=` (leg / depth / diameter), `throat=` in parentheses | `8`, `12 (10)` |
 | right of symbol | `len=` / `len`-`pitch` (intermittent), ISO `count×len(pitch)` | `50-150`, `3×50 (150)` |
 | at the symbol opening | `angle=` (groove included angle) | `60°` |
-| between symbol & line | `root=` (root opening) | `root 3` |
-| above the symbol | `contour=` (flush bar / convex / concave arc) + `finish=` letter | flush + `G` |
+| inside the groove opening | `root=` (root opening) | `3` |
+| outside the weld face | `contour=` (flush bar / convex / concave arc) + `finish=` letter | flush + `G` |
 
 ### Supplementary symbols
 
@@ -77,7 +77,7 @@ What is implemented today:
 
 - ✅ AWS A2.4 single reference line; ISO 2553 System A (dual solid+dashed) and System B
 - ✅ Full weld-glyph catalog (16 types: fillet, all groove types, plug/slot, spot/seam, back/backing, surfacing, edge)
-- ✅ Dimension slots — size, throat `(E)`, length, length-pitch, count×length, groove angle, root opening
+- ✅ Dimension slots — size, throat `(E)`, length, length-pitch, count×length for ISO-A intermittent notation, separate parenthesized counts for AWS, groove angle, root opening
 - ✅ Supplementary symbols — weld-all-around circle, field-weld flag, tail process/spec/NDE
 - ✅ Contour (flush / convex / concave) + finish letter (G/M/C/R/H/U)
 - ✅ Arrow-side / other-side / both, with per-standard side convention
@@ -95,4 +95,6 @@ References:
 
 ## Layout (deterministic, no graph)
 
-Each joint is a horizontal band. The reference line runs left→right; the leader arrow leaves the right end down to the joint; the tail `>` sits at the left end. The weld-symbol slot is a fixed x on the line; arrow-side glyphs draw below, other-side above (ISO-A: arrow on solid, other on dashed). Dimension text anchors to fixed offsets off the glyph bounding box. Joints stack with a fixed vertical pitch — no collision solving.
+Each joint is a horizontal band. The leader descends from the left end toward the joint name; the process tail sits at the right end. The name identifies the callout endpoint; no pipe, plate or joint geometry is inferred from free text. The weld-symbol slot is measured from the left endpoint; arrow-side glyphs draw below, other-side above (ISO-A: arrow on solid, other on dashed). Dimension text anchors to measured glyph bounds. The glyph expands when needed to contain a root-opening value; the reference line expands for size and length annotations. Angle, contour, finish and count reserve separate space. Tail notes and joint names wrap to measured widths, and each joint reserves its full height before the next begins.
+
+Glyph orientation and dimension placement are checked against [Miller’s AWS symbol chart](https://contenthub.itwwelding.com/api/public/content/miller-electric-mfg-llc/how-to-guide/52bb4e-welding-symbol-chart.pdf). Fillet contours follow the hypotenuse; U/J grooves retain the standard stem/straight member, and back/backing and surfacing arcs stay on their declared side. This is a callout renderer, not a dimensioned workpiece/CAD renderer.

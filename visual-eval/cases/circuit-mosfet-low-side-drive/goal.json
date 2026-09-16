@@ -1,0 +1,44 @@
+{
+  "id": "circuit-mosfet-low-side-drive",
+  "type": "circuit",
+  "title": "MOSFET low-side relay drive",
+  "goal": "A reader must be able to trace a microcontroller GPIO signal through a MOSFET that switches a protected relay coil to ground.",
+  "rubric": [
+    {
+      "id": "mosfet-low-side",
+      "severity": "blocker",
+      "must": "The N-channel MOSFET is visibly between the relay coil and ground."
+    },
+    {
+      "id": "gate-resistor",
+      "severity": "major",
+      "must": "A 100 Ω gate resistor is visibly between the MCU output and the MOSFET gate."
+    },
+    {
+      "id": "gate-pulldown",
+      "severity": "major",
+      "must": "A 100 kΩ pull-down resistor visibly connects the gate to ground."
+    },
+    {
+      "id": "flyback-across-coil",
+      "severity": "blocker",
+      "must": "A diode labelled D1 FLYBACK is visibly connected across the relay coil."
+    },
+    {
+      "id": "supply-and-coil-rating",
+      "severity": "major",
+      "must": "The 12 V supply and the relay coil 12 VDC 400 Ω rating are legible."
+    },
+    {
+      "id": "distinct-mcu",
+      "severity": "minor",
+      "must": "A separate MCU output block is visible ahead of the gate network."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The coil sits between the supply and the drain with the flyback diode across it, cathode to the supply; the gate has its series resistor and a pull-down to ground, and the MOSFET's gate, drain and source are lettered."
+  }
+}

@@ -92,7 +92,7 @@ Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ Layout
                              (sociogram: circular/force-directed)
                              (timing: row-based trivial)
                              (logic gate: DAG topo-sort layers)
-                             (circuit: DSL-positional, no solver)
+                             (circuit: netlist topology + optional functional groups, automatic placement/routing)
                              (block: fixed L-R + feedback route)
                              (ladder: fixed power-rail per rung)
                              (sld: top-down voltage hierarchy)
@@ -121,6 +121,15 @@ interface DiagramPlugin {
 - `schematex/browser` — `renderToElement()` + `renderToContainer()`（需要 DOM）
 - `schematex/react` — `<SchematexDiagram dsl="..." />` React 组件（需要 React ≥18）
 - `schematex/export` — `svgToPngBlob()` + `downloadBlob()` + `printSvgAsPdf()`（浏览器 Canvas）
+
+---
+
+## Agent authoring guidance
+
+- `getSyntax(type)` returns the compact generation profile from `src/ai/profiles.ts`: one complete copyable pattern plus vocabulary and repair rules. Keep alternative modes out of the same pattern.
+- `getSyntax(type, { detail: "reference" })` returns the English website reference from `website/content/docs/*.mdx`, compiled into `src/ai/_generated.ts` by `npm run build:ai`. Editing only this directory's standards documents does not update agent reference text.
+- MCP and AI SDK adapters share these tools. After changing DSL semantics, update the profile, website reference and published examples that actually changed, then regenerate AI content. Appearance-only improvements do not require extra DSL settings.
+- Validate copyable patterns through the public `validateDsl` path. This catches broken authoring guidance; it does not measure an LLM's first-attempt success rate or visual quality.
 
 ---
 
@@ -171,7 +180,7 @@ schematex/
 │   │   │  ── Electrical Engineering Diagrams ──
 │   │   ├── 6.0-timing.md            # Digital timing diagram
 │   │   ├── 7.0-logic-gate.md        # Logic gate + DAG layout
-│   │   ├── 8.0-circuit-schematic.md # Positional DSL + component library
+│   │   ├── 8.0-circuit-schematic.md # Netlist DSL + semantic groups + component library
 │   │   ├── 9.0-block-diagram.md     # Control systems + feedback routing
 │   │   ├── 10.0-ladder-logic.md     # PLC ladder + function blocks
 │   │   ├── 11.0-single-line.md      # Power SLD + voltage hierarchy
@@ -253,7 +262,7 @@ schematex/
 1. **零 runtime dependency** — 无 D3、无 dagre、无外部 parser。手写一切。Bundle 小 + 无供应链风险。
 2. **输出必须是有效语义 SVG** — 可访问性（title/desc）、CSS class 可主题化（通过 `src/core/theme.ts` 统一主题系统）、data-* 属性可交互。
 3. **Strict TypeScript** — 无 `any`，无未注释的 `as` cast。
-4. **Test-first for layout** — 布局算法先写测试再写实现。
+4. **按风险补测试** — 先复用现有覆盖；仅对未覆盖的功能错误新增测试。视觉微调用 vision 验收，不新增文案、固定坐标或图标路径快照。
 5. **标准合规** — Genogram: McGoldrick 2020, Ecomap: Hartman 1978, Pedigree: genetics standard, Sociogram: Moreno 1934 + Brandes 2011, Timing: WaveDrom + IEEE 1497, Logic Gate: IEEE Std 91-1984/91a + IEC 60617-12, Circuit: IEEE 315/ANSI Y32.2 + IEC 60617, Block: Ogata/Franklin control systems convention, Ladder: IEC 61131-3:2013 + NEMA ICS 1, SLD: IEEE Std 315-1975 + ANSI device numbering, State diagram: UML 2.5 + Harel 1987 statechart, P&ID: ISA-5.1-2009 + ISO 10628-1:2014。
 
 ---

@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="897" viewBox="0 0 1600 897">
+<title>Software Architecture Decisions</title>
+<desc>A balanced architecture decision mind map with System Boundaries, Data and Integration, Reliability, and Security, each with two decisions and their supporting details.</desc>
+<rect width="1600" height="897" fill="#FFFFFF"/>
+<style>text{font-family:Helvetica,Arial,sans-serif} .root{font-size:18px;font-weight:700;fill:#FFFFFF}.branch{font-size:14px;font-weight:600;fill:#FFFFFF}.decision{font-size:13px;fill:#2B3440}.detail{font-size:12px;fill:#5A6472}</style>
+<path fill="#3A6EA5" d="M 970,428.5 C 1004.0,428.5 1004.0,240.5 1038,240.5 L 1038,243.5 C 1004.0,243.5 1004.0,439.5 970,439.5 Z"/>
+<rect x="1038" y="227" width="174" height="30" rx="15" fill="#3A6EA5"/>
+<text x="1125.0" y="247" class="branch" text-anchor="middle">
+<tspan x="1125.0" dy="0">System Boundaries</tspan>
+</text>
+<path fill="#3A6EA5" d="M 1212,240.7 C 1233.0,240.7 1233.0,174.15 1254,174.15 L 1254,175.85 C 1233.0,175.85 1233.0,243.3 1212,243.3 Z"/>
+<path d="M 1254 175 H 1370.8" fill="none" stroke="#3A6EA5" stroke-width="2"/>
+<text x="1254" y="167" class="decision" text-anchor="start">
+<tspan x="1254" dy="0">Modular monolith</tspan>
+</text>
+<path fill="#3A6EA5" d="M 1370.8,174.2 C 1410.4,174.2 1410.4,182.4 1450,182.4 L 1450,183.6 C 1410.4,183.6 1410.4,175.8 1370.8,175.8 Z"/>
+<path d="M 1450 183 H 1543.0" fill="none" stroke="#3A6EA5" stroke-width="1.3"/>
+<text x="1450" y="159" class="detail" text-anchor="start">
+<tspan x="1450" dy="0">Extract only</tspan>
+<tspan x="1450" dy="16">proven hotspots</tspan>
+</text>
+<path fill="#3A6EA5" d="M 1212,240.7 C 1233.0,240.7 1233.0,308.15 1254,308.15 L 1254,309.85 C 1233.0,309.85 1233.0,243.3 1212,243.3 Z"/>
+<path d="M 1254 309 H 1330.0" fill="none" stroke="#3A6EA5" stroke-width="2"/>
+<text x="1254" y="301" class="decision" text-anchor="start">
+<tspan x="1254" dy="0">Public API</tspan>
+</text>
+<path fill="#3A6EA5" d="M 1330.0,308.2 C 1390.0,308.2 1390.0,316.4 1450,316.4 L 1450,317.6 C 1390.0,317.6 1390.0,309.8 1330.0,309.8 Z"/>
+<path d="M 1450 317 H 1505.8" fill="none" stroke="#3A6EA5" stroke-width="1.3"/>
+<text x="1450" y="293" class="detail" text-anchor="start">
+<tspan x="1450" dy="0">Versioned</tspan>
+<tspan x="1450" dy="16">contracts</tspan>
+</text>
+<path fill="#2F8B77" d="M 970,458.5 C 1004.0,458.5 1004.0,654.5 1038,654.5 L 1038,657.5 C 1004.0,657.5 1004.0,469.5 970,469.5 Z"/>
+<rect x="1038" y="641" width="184" height="30" rx="15" fill="#2F8B77"/>
+<text x="1130.0" y="661" class="branch" text-anchor="middle">
+<tspan x="1130.0" dy="0">Data and Integration</tspan>
+</text>
+<path fill="#2F8B77" d="M 1222,654.7 C 1238.0,654.7 1238.0,588.15 1254,588.15 L 1254,589.85 C 1238.0,589.85 1238.0,657.3 1222,657.3 Z"/>
+<path d="M 1254 589 H 1330.0" fill="none" stroke="#2F8B77" stroke-width="2"/>
+<text x="1254" y="581" class="decision" text-anchor="start">
+<tspan x="1254" dy="0">PostgreSQL</tspan>
+</text>
+<path fill="#2F8B77" d="M 1330.0,588.2 C 1390.0,588.2 1390.0,596.4 1450,596.4 L 1450,597.6 C 1390.0,597.6 1390.0,589.8 1330.0,589.8 Z"/>
+<path d="M 1450 597 H 1543.0" fill="none" stroke="#2F8B77" stroke-width="1.3"/>
+<text x="1450" y="573" class="detail" text-anchor="start">
+<tspan x="1450" dy="0">Transactional</tspan>
+<tspan x="1450" dy="16">source of truth</tspan>
+</text>
+<path fill="#2F8B77" d="M 1222,654.7 C 1238.0,654.7 1238.0,722.15 1254,722.15 L 1254,723.85 C 1238.0,723.85 1238.0,657.3 1222,657.3 Z"/>
+<path d="M 1254 723 H 1323.2" fill="none" stroke="#2F8B77" stroke-width="2"/>
+<text x="1254" y="715" class="decision" text-anchor="start">
+<tspan x="1254" dy="0">Event bus</tspan>
+</text>
+<path fill="#2F8B77" d="M 1323.2,722.2 C 1386.6,722.2 1386.6,730.4 1450,730.4 L 1450,731.6 C 1386.6,731.6 1386.6,723.8 1323.2,723.8 Z"/>
+<path d="M 1450 731 H 1530.6" fill="none" stroke="#2F8B77" stroke-width="1.3"/>
+<text x="1450" y="707" class="detail" text-anchor="start">
+<tspan x="1450" dy="0">Asynchronous</tspan>
+<tspan x="1450" dy="16">domain events</tspan>
+</text>
+<path fill="#6E8B3D" d="M 630,428.5 C 596.0,428.5 596.0,240.5 562,240.5 L 562,243.5 C 596.0,243.5 596.0,439.5 630,439.5 Z"/>
+<rect x="448" y="227" width="114" height="30" rx="15" fill="#6E8B3D"/>
+<text x="505.0" y="247" class="branch" text-anchor="middle">
+<tspan x="505.0" dy="0">Reliability</tspan>
+</text>
+<path fill="#6E8B3D" d="M 448,240.7 C 397.0,240.7 397.0,174.15 346,174.15 L 346,175.85 C 397.0,175.85 397.0,243.3 448,243.3 Z"/>
+<path d="M 249.60000000000002 175 H 346" fill="none" stroke="#6E8B3D" stroke-width="2"/>
+<text x="346" y="167" class="decision" text-anchor="end">
+<tspan x="346" dy="0">Observability</tspan>
+</text>
+<path fill="#6E8B3D" d="M 249.60000000000002,174.2 C 201.8,174.2 201.8,182.4 154,182.4 L 154,183.6 C 201.8,183.6 201.8,175.8 249.60000000000002,175.8 Z"/>
+<path d="M 54.8 183 H 154" fill="none" stroke="#6E8B3D" stroke-width="1.3"/>
+<text x="154" y="159" class="detail" text-anchor="end">
+<tspan x="154" dy="0">Traces, metrics,</tspan>
+<tspan x="154" dy="16">and logs</tspan>
+</text>
+<path fill="#6E8B3D" d="M 448,240.7 C 397.0,240.7 397.0,308.15 346,308.15 L 346,309.85 C 397.0,309.85 397.0,243.3 448,243.3 Z"/>
+<path d="M 270.0 309 H 346" fill="none" stroke="#6E8B3D" stroke-width="2"/>
+<text x="346" y="301" class="decision" text-anchor="end">
+<tspan x="346" dy="0">Resilience</tspan>
+</text>
+<path fill="#6E8B3D" d="M 270.0,308.2 C 212.0,308.2 212.0,316.4 154,316.4 L 154,317.6 C 212.0,317.6 212.0,309.8 270.0,309.8 Z"/>
+<path d="M 85.8 317 H 154" fill="none" stroke="#6E8B3D" stroke-width="1.3"/>
+<text x="154" y="293" class="detail" text-anchor="end">
+<tspan x="154" dy="0">Timeouts</tspan>
+<tspan x="154" dy="16">and retries</tspan>
+</text>
+<path fill="#C08A2E" d="M 630,458.5 C 596.0,458.5 596.0,654.5 562,654.5 L 562,657.5 C 596.0,657.5 596.0,469.5 630,469.5 Z"/>
+<rect x="468" y="641" width="94" height="30" rx="15" fill="#C08A2E"/>
+<text x="515.0" y="661" class="branch" text-anchor="middle">
+<tspan x="515.0" dy="0">Security</tspan>
+</text>
+<path fill="#C08A2E" d="M 468,654.7 C 407.0,654.7 407.0,588.15 346,588.15 L 346,589.85 C 407.0,589.85 407.0,657.3 468,657.3 Z"/>
+<path d="M 283.6 589 H 346" fill="none" stroke="#C08A2E" stroke-width="2"/>
+<text x="346" y="581" class="decision" text-anchor="end">
+<tspan x="346" dy="0">Identity</tspan>
+</text>
+<path fill="#C08A2E" d="M 283.6,588.2 C 218.8,588.2 218.8,596.4 154,596.4 L 154,597.6 C 218.8,597.6 218.8,589.8 283.6,589.8 Z"/>
+<path d="M 98.19999999999999 597 H 154" fill="none" stroke="#C08A2E" stroke-width="1.3"/>
+<text x="154" y="573" class="detail" text-anchor="end">
+<tspan x="154" dy="0">OAuth 2.0</tspan>
+<tspan x="154" dy="16">and OIDC</tspan>
+</text>
+<path fill="#C08A2E" d="M 468,654.7 C 407.0,654.7 407.0,722.15 346,722.15 L 346,723.85 C 407.0,723.85 407.0,657.3 468,657.3 Z"/>
+<path d="M 290.4 723 H 346" fill="none" stroke="#C08A2E" stroke-width="2"/>
+<text x="346" y="715" class="decision" text-anchor="end">
+<tspan x="346" dy="0">Secrets</tspan>
+</text>
+<path fill="#C08A2E" d="M 290.4,722.2 C 222.2,722.2 222.2,730.4 154,730.4 L 154,731.6 C 222.2,731.6 222.2,723.8 290.4,723.8 Z"/>
+<path d="M 73.39999999999999 731 H 154" fill="none" stroke="#C08A2E" stroke-width="1.3"/>
+<text x="154" y="723" class="detail" text-anchor="end">
+<tspan x="154" dy="0">Managed vault</tspan>
+</text>
+<rect x="615" y="422" width="370" height="54" rx="27" fill="#1F2933"/>
+<text x="800" y="455" class="root" text-anchor="middle">
+<tspan x="800" dy="0">Software Architecture Decisions</tspan>
+</text>
+</svg>

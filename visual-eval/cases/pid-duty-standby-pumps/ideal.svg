@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+<title>Duty and Standby Pump Set — parallel pump paths with minimum-flow bypass</title>
+<desc>Two independent pump trains connect TK-101 to TK-102. Each contains suction and discharge gate valves and a downstream check valve. A DN25 bypass returns from NRV-101 outlet through XV-301 to TK-101. PI-101 senses the discharge header. A jumper marks the unconnected crossing of the standby discharge and duty header.</desc>
+<rect width="1600" height="985" fill="#FFFFFF"/>
+<defs>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#1E293B} .tag{font-size:12px;font-weight:600;text-anchor:middle}.service{font-size:11.5px;fill:#64748B;text-anchor:middle}.pipe{fill:none;stroke:#1E293B;stroke-width:2.5;stroke-linejoin:miter}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.symbol{fill:#FFFFFF;stroke:#1E293B;stroke-width:1.6;stroke-linejoin:round}.note{font-size:11.5px;fill:#64748B}.linebox{fill:#FFFFFF;stroke:#1E293B;stroke-width:1}.linetag{font-size:9.5px;letter-spacing:.2px;text-anchor:middle}
+</style>
+<g id="gate"><path class="symbol" d="M-22-14 22 14V-14L-22 14Z"/></g>
+<g id="check"><use href="#gate"/><path d="M4 13 15-14" fill="none" stroke="#1E293B" stroke-width="1.6"/></g>
+<g id="pump"><circle class="symbol" r="30"/><path class="symbol" d="M-14-16 18 0-14 16Z"/></g>
+</defs>
+<!-- Header and field boundary retain the exemplar's sheet furniture. -->
+<text x="47" y="45" font-size="20" font-weight="600">Duty and Standby Pump Set</text>
+<text class="note" x="47" y="70">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text class="note" x="1553" y="70" text-anchor="end">solid dot = connection · jumper = crossing, not connected</text>
+<path d="M47 98.5H1553" stroke="#E2E8F0" stroke-width="1"/>
+<path d="M47 256.5H1553" fill="none" stroke="#64748B" stroke-width="1" stroke-dasharray="12 4 3 4"/>
+<text x="1553" y="246" font-size="10" letter-spacing="1" fill="#64748B" style="fill:#64748B" text-anchor="end">CONTROL ROOM / DCS</text>
+<text x="1553" y="279" font-size="10" letter-spacing="1" style="fill:#64748B" text-anchor="end">FIELD</text>
+<!-- Duty train: right nozzle, suction isolation, pump, discharge isolation, check, left nozzle. -->
+<path class="pipe" d="M256 500H590 M620 470V430H1170V500H1333"/>
+<!-- Standby train: bottom nozzle, suction isolation, pump, discharge isolation, check, top nozzle. -->
+<path class="pipe" d="M174 626V740H590 M620 710V670H1260V509 C1248 509 1248 491 1260 491 V365H1415V455"/>
+<!-- Minimum-flow return, deliberately finer than the main piping. -->
+<path class="minor" d="M1100 430V330H174V455"/>
+<circle cx="1100" cy="430" r="3.2" fill="#1E293B"/>
+<!-- Discharge pressure sensing branch shares the destination's left-nozzle connection. -->
+<path d="M1290 500V458" fill="none" stroke="#1E293B" stroke-width="1.4"/>
+<g fill="#1E293B"><circle cx="1290" cy="500" r="3.2"/><circle cx="1290" cy="486" r="2"/><circle cx="1290" cy="472" r="2"/><circle cx="1290" cy="458" r="2"/></g>
+<!-- Tanks: flat base, domed roof, opaque white interior. -->
+<path class="symbol" d="M92 481C92 447 256 447 256 481V626H92Z"/>
+<text class="tag" x="174" y="550">TK-101</text>
+<text class="service" x="174" y="571">Suction Source</text>
+<path class="symbol" d="M1333 481C1333 447 1497 447 1497 481V626H1333Z"/>
+<text class="tag" x="1415" y="550">TK-102</text>
+<text class="service" x="1415" y="571">Discharge Header</text>
+<text class="service" x="1415" y="588">Destination</text>
+<!-- Gate and check symbols use the same 44 by 28 bowtie. -->
+<use href="#gate" x="430" y="500"/>
+<text class="tag" x="430" y="550">XV-101</text><text class="service" x="430" y="571">P-101 Suction Isolation</text>
+<use href="#pump" x="620" y="500"/>
+<text class="tag" x="620" y="557">P-101</text><text class="service" x="620" y="578">Duty Pump 45 m³/h</text>
+<use href="#gate" x="820" y="430"/>
+<text class="tag" x="820" y="481">XV-102</text><text class="service" x="820" y="502">P-101 Discharge Isolation</text>
+<use href="#check" x="1025" y="430"/>
+<text class="tag" x="1025" y="481">NRV-101</text><text class="service" x="1025" y="502">P-101 Non-return Valve</text>
+<use href="#gate" x="430" y="740"/>
+<text class="tag" x="430" y="795">XV-201</text><text class="service" x="430" y="816">P-102 Suction Isolation</text>
+<use href="#pump" x="620" y="740"/>
+<text class="tag" x="620" y="795">P-102</text><text class="service" x="620" y="816">Standby Pump 45 m³/h</text>
+<use href="#gate" x="820" y="670"/>
+<text class="tag" x="820" y="720">XV-202</text><text class="service" x="820" y="741">P-102 Discharge Isolation</text>
+<use href="#check" x="1025" y="670"/>
+<text class="tag" x="1025" y="720">NRV-201</text><text class="service" x="1025" y="741">P-102 Non-return Valve</text>
+<use href="#gate" x="740" y="330"/>
+<text class="tag" x="740" y="372">XV-301</text><text class="service" x="740" y="393">Minimum-flow Bypass</text>
+<!-- Field pressure indicator. -->
+<circle class="symbol" cx="1290" cy="440" r="18"/>
+<text x="1290" y="437" font-size="11.5" font-weight="600" text-anchor="middle">PI</text>
+<text x="1290" y="452" font-size="11.5" text-anchor="middle">101</text>
+<!-- Boxed nominal pipe sizes. -->
+<g><rect class="linebox" x="302" y="490" width="60" height="20" rx="1.5"/><text class="linetag" x="332" y="503.5">DN100</text>
+<rect class="linebox" x="302" y="730" width="60" height="20" rx="1.5"/><text class="linetag" x="332" y="743.5">DN100</text>
+<rect class="linebox" x="685" y="420" width="60" height="20" rx="1.5"/><text class="linetag" x="715" y="433.5">DN80</text>
+<rect class="linebox" x="685" y="660" width="60" height="20" rx="1.5"/><text class="linetag" x="715" y="673.5">DN80</text>
+<rect class="linebox" x="445" y="320" width="60" height="20" rx="1.5"/><text class="linetag" x="475" y="333.5">DN25</text></g>
+<!-- Bottom legend, at actual drawing weights. -->
+<path d="M47 859.5H1553" stroke="#E2E8F0" stroke-width="1"/>
+<path d="M47 901H92" class="pipe"/><text class="note" x="102" y="905">Process</text>
+<path d="M188 901H233" class="minor"/><text class="note" x="243" y="905">Process, minor</text>
+<path d="M366 901H411" fill="none" stroke="#1E293B" stroke-width="1.4" stroke-dasharray="7 5"/><text class="note" x="421" y="905">Electric signal</text>
+<path d="M537 901H582 M551 897 559 905" fill="none" stroke="#1E293B" stroke-width="1.4"/><text class="note" x="592" y="905">Pneumatic signal</text>
+<path d="M726 901H771" fill="none" stroke="#1E293B" stroke-width="1.4"/><g fill="#1E293B"><circle cx="733" cy="901" r="2"/><circle cx="748" cy="901" r="2"/><circle cx="763" cy="901" r="2"/></g><text class="note" x="781" y="905">Capillary / filled system</text>
+<text class="note" x="47" y="944">P-101 is the duty pump; P-102 is the standby pump. The DN25 minimum-flow bypass returns from downstream of NRV-101 through XV-301 to TK-101.</text>
+</svg>

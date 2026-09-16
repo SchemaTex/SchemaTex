@@ -1,0 +1,19 @@
+gitgraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit id: "setup-ci"
+  branch feature-login
+  checkout feature-login
+  commit id: "login-form"
+  commit id: "login-api"
+  checkout develop
+  merge feature-login id: "merge-login"
+  branch release-1.2
+  checkout release-1.2
+  commit id: "bump-version"
+  commit id: "fix-copy"
+  checkout main
+  merge release-1.2 id: "release-1.2" tag: "v1.2.0"
+  checkout develop
+  merge release-1.2 id: "back-merge"

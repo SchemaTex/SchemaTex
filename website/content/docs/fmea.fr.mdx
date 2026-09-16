@@ -7,7 +7,7 @@ description: Analyse des modes de défaillance et de leurs effets — le moteur 
 
 La **FMEA** (Failure Mode and Effects Analysis — Analyse des modes de défaillance et de leurs effets) est la méthode de fiabilité proactive la plus répandue dans la fabrication : pour chaque composant d'un système, elle liste comment il peut défaillir (**modes de défaillance**), ce que chaque défaillance produit (**effets**), pourquoi elle survient (**causes**) et comment elle est détectée (**contrôles**). Chaque ligne est évaluée selon trois échelles de 1 à 10 — **Gravité**, **Occurrence**, **Détection** — et classée par priorité. Standardisée par le **Manuel FMEA AIAG-VDA (2019)** et la norme **IEC 60812**.
 
-L'avantage de Schematex est que le moteur **calcule la priorité**, et ne se contente pas de générer le tableau. Il aplatit la chaîne de défaillance en une ligne de fiche par (élément, mode, cause), calcule le **RPN = G × O × D**, et — point crucial — la **Priorité d'action** AIAG-VDA (banding à primauté de la gravité), qui corrige délibérément le problème qu'introduit un tri sur le RPN brut : une défaillance d'airbag à G10·O2·D3 est *Haute* même si son RPN (60) paraît faible.
+Le moteur calcule **RPN = S × O × D** et **Action Priority (AP)** pour chaque ligne. AP dépend des trois valeurs, pas du seul RPN. Dans la table implémentée, S10·O2·D3 donne AP Low et RPN 60 ; AP Low ne signifie pas une faible gravité.
 
 <Playground initial={`fmea "Brake system DFMEA"
   type: design
@@ -65,7 +65,7 @@ C'est ici que réside la différence. À partir de l'AST imbriqué, le moteur :
 
 1. **Aplatit** en une ligne par (élément, mode, cause) ; la gravité de l'effet le plus défavorable du mode gouverne chaque ligne de ce mode.
 2. **RPN = G × O × D** (1–1000).
-3. **Priorité d'action** selon la structure de banding AIAG-VDA — **la Gravité est l'axe principal**, l'Occurrence en second, la Détection en troisième. G = 9–10 (sécurité/réglementaire) est Haute pour *toute* valeur de O et D ; une gravité intermédiaire dégrade Haute→Moyenne→Faible à mesure que l'Occurrence diminue.
+3. **Action Priority** utilise la table S/O/D DFMEA/PFMEA. Une gravité de 9–10 ne signifie pas automatiquement High : l'occurrence et la détection déterminent aussi le résultat.
 4. **Trie** selon la clé choisie. Pour `ap` : Haute > Moyenne > Faible, départagées par Gravité puis RPN — *jamais* par RPN seul, ce qui réintroduirait le problème que l'AP a été conçue pour corriger.
 5. **Met en évidence** les lignes dépassant le seuil.
 
@@ -112,7 +112,7 @@ Les notes doivent être des entiers compris entre 1 et 10 ; la chaîne de défai
 
 ## 6. Conformité aux normes
 
-La chaîne de défaillance et les échelles Gravité/Occurrence/Détection suivent le Manuel FMEA AIAG-VDA (2019) et la norme IEC 60812. La Priorité d'action implémente la **structure** de banding publiée (à primauté de la gravité), et non le tableau verbatim de 1000 cellules soumis à droits d'accès. Le RPN reste disponible via `rank: rpn` pour les fiches héritées.
+Le moteur utilise la table S/O/D DFMEA/PFMEA pour AP. La table distincte de gravité/fréquence/surveillance FMEA-MSR n’est pas implémentée. Le RPN reste disponible via `rank: rpn`.
 
 ## 7. Feuille de route
 

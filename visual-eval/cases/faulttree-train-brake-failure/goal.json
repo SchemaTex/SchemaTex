@@ -1,0 +1,45 @@
+{
+  "id": "faulttree-train-brake-failure",
+  "type": "faulttree",
+  "title": "Train braking failure",
+  "goal": "Show the logic by which pneumatic and dynamic braking can both be unavailable.",
+  "rubric": [
+    {
+      "id": "top-event",
+      "severity": "blocker",
+      "must": "A top event labelled Train unable to achieve required braking is visibly at the head of the tree."
+    },
+    {
+      "id": "logic-gate",
+      "severity": "blocker",
+      "must": "The tree visibly shows both bogie brake-controller failures at an AND gate."
+    },
+    {
+      "id": "branches",
+      "severity": "major",
+      "must": "The picture visibly separates pneumatic and dynamic brake loss branches."
+    },
+    {
+      "id": "basic-events",
+      "severity": "major",
+      "must": "Every leaf-level basic event visibly carries a plausible probability."
+    },
+    {
+      "id": "gate-symbols",
+      "severity": "major",
+      "must": "OR and AND gate symbols visibly distinguish the stated failure logic."
+    },
+    {
+      "id": "analysis",
+      "severity": "minor",
+      "must": "A computed probability or cut-set summary is visible without obscuring the tree."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/faulttree/ideal.svg (sha256 7bffbe71b8bd), source sha256 211776a792b2. Independent top-down fault tree, exact boolean-state enumeration and minimal cut-set extraction, slate event boxes, green AND/OR/INHIBIT gates, blue probabilities. Output stems and the single-child inhibit connection corrected following visual inspection; all declared conditions and basic probabilities retained. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

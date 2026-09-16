@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="432" height="484" viewBox="0 0 432 484" class="lt-sfc" data-diagram-type="sfc"><defs><style>
+.lt-sfc-bg { fill: #ffffff; }
+.lt-sfc-step-body { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+.lt-sfc-step-inner { fill: none; stroke: #333; stroke-width: 1.2; }
+.lt-sfc-step-name { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; fill: #111; }
+.lt-sfc-transition-bar { fill: #000; }
+.lt-sfc-transition-condition { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #333; }
+.lt-sfc-transition-id { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #888; }
+.lt-sfc-branch-bar { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-wire { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-action-block { fill: #fafafa; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier { fill: #f0f0f0; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-weight: 700; font-size: 11px; fill: #111; }
+.lt-sfc-action-body { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #222; }
+.lt-sfc-action-time { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
+.lt-sfc-jump { stroke: #000; stroke-width: 1.5; fill: none; marker-end: url(#sfc-arrow); }
+.lt-sfc-jump-label { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
+.lt-sfc-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
+</style>
+<marker id="sfc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs>
+<title>SFC: Compressor start-up interlock</title>
+<desc>SFC with 5 step(s), 4 transition(s).</desc>
+<rect class="lt-sfc-bg" x="0" y="0" width="432" height="484"/>
+<text class="lt-sfc-title" x="216" y="22" text-anchor="middle">Compressor start-up interlock</text>
+<path class="lt-sfc-wire" d="M 140 76 L 140 132"/>
+<path class="lt-sfc-wire" d="M 140 168 L 140 224"/>
+<path class="lt-sfc-wire" d="M 140 260 L 140 316"/>
+<path class="lt-sfc-wire" d="M 140 352 L 140 408"/>
+<rect class="lt-sfc-transition-bar" x="116" y="102.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="112" y="106.5" text-anchor="end">T0</text>
+<text class="lt-sfc-transition-condition" x="170" y="106.5">StartBtn</text>
+<rect class="lt-sfc-transition-bar" x="116" y="194.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="112" y="198.5" text-anchor="end">T1</text>
+<text class="lt-sfc-transition-condition" x="170" y="198.5">PermissivesOK</text>
+<rect class="lt-sfc-transition-bar" x="116" y="286.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="112" y="290.5" text-anchor="end">T2</text>
+<text class="lt-sfc-transition-condition" x="170" y="290.5">LubePressureOK</text>
+<rect class="lt-sfc-transition-bar" x="116" y="378.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="112" y="382.5" text-anchor="end">T3</text>
+<text class="lt-sfc-transition-condition" x="170" y="382.5">MotorAtSpeed</text>
+<g class="lt-sfc-step" data-step-id="S0" data-step-kind="initial"><rect class="lt-sfc-step-body" x="60" y="40" width="160" height="36"/>
+<rect class="lt-sfc-step-inner" x="64" y="44" width="152" height="28"/>
+<text class="lt-sfc-step-name" x="140" y="62" text-anchor="middle">S0</text></g>
+<line class="lt-sfc-wire" x1="220" y1="58" x2="228" y2="58"/>
+<g class="lt-sfc-step" data-step-id="S1" data-step-kind="normal"><rect class="lt-sfc-step-body" x="60" y="132" width="160" height="36"/>
+<text class="lt-sfc-step-name" x="140" y="154" text-anchor="middle">Check permissives</text></g>
+<line class="lt-sfc-wire" x1="220" y1="150" x2="228" y2="150"/>
+<g class="lt-sfc-step" data-step-id="S2" data-step-kind="normal"><rect class="lt-sfc-step-body" x="60" y="224" width="160" height="36"/>
+<text class="lt-sfc-step-name" x="140" y="246" text-anchor="middle">Start lube pump</text></g>
+<line class="lt-sfc-wire" x1="220" y1="242" x2="228" y2="242"/>
+<g class="lt-sfc-step" data-step-id="S3" data-step-kind="normal"><rect class="lt-sfc-step-body" x="60" y="316" width="160" height="36"/>
+<text class="lt-sfc-step-name" x="140" y="338" text-anchor="middle">Start main motor</text></g>
+<line class="lt-sfc-wire" x1="220" y1="334" x2="228" y2="334"/>
+<g class="lt-sfc-step" data-step-id="S4" data-step-kind="normal"><rect class="lt-sfc-step-body" x="60" y="408" width="160" height="36"/>
+<text class="lt-sfc-step-name" x="140" y="430" text-anchor="middle">Running</text></g>
+<line class="lt-sfc-wire" x1="220" y1="426" x2="228" y2="426"/>
+<g class="lt-sfc-action-block-g" data-step-id="S0" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="228" y="40" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="40" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="56" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="260" y="56">MotorOff</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S1" data-action-index="0" data-qualifier="P"><rect class="lt-sfc-action-qualifier" x="228" y="132" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="132" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="148" text-anchor="middle">P</text>
+<text class="lt-sfc-action-body" x="260" y="148">RunChecks</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S2" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="228" y="224" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="224" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="240" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="260" y="240">LubePump</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S3" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="228" y="316" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="316" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="332" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="260" y="332">LubePump</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S3" data-action-index="1" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="228" y="340" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="340" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="356" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="260" y="356">MainMotor</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S3" data-action-index="2" data-qualifier="L"><rect class="lt-sfc-action-qualifier" x="228" y="364" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="364" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="380" text-anchor="middle">L</text>
+<text class="lt-sfc-action-body" x="260" y="380">StartHorn</text>
+<rect class="lt-sfc-action-block" x="228" y="388" width="200" height="14"/>
+<text class="lt-sfc-action-time" x="234" y="399">T#3s</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S4" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="228" y="408" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="254" y="408" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="241" y="424" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="260" y="424">MainMotor</text></g>
+<path class="lt-sfc-jump" d="M 60 242 L 24 242 L 24 58 L 60 58"/>
+<text class="lt-sfc-jump-label" x="16" y="150" text-anchor="middle">Trip  → S0</text>
+<path class="lt-sfc-jump" d="M 220 426 L 256 426 L 256 58 L 220 58"/>
+<text class="lt-sfc-jump-label" x="264" y="242" text-anchor="middle">Trip OR StopBtn  → S0</text></svg>

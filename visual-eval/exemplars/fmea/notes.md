@@ -1,0 +1,11 @@
+A design FMEA worksheet for an electric-vehicle battery pack, laid out as the AIAG & VDA *FMEA Handbook* (2019) Design FMEA form, steps 2 to 5. Two parts of the pack are analysed: a cell module and a busbar joint. The cell module has two failure modes, thermal runaway (two causes) and capacity fade (one cause). The busbar joint has one failure mode, a high-resistance connection. Each cause is rated for Severity, Occurrence and Detection, and those three ratings give its Action Priority: High, Medium or Low.
+
+Why it works as the exemplar for this type:
+
+- The columns follow the AIAG-VDA form in order: focus element, function, failure effect, severity, failure mode, failure cause, prevention control, occurrence, detection control, detection, Action Priority. A band above them groups the columns by handbook step (structure, function, failure analysis, risk analysis), so a reader who knows the handbook recognises the form at a glance. There is no RPN column, because AIAG-VDA replaced RPN with Action Priority.
+- One row is one failure cause. Cells that repeat down the chain are merged instead of repeated: focus element, function, failure effect, severity and failure mode. The sheet reads as a tree inside a table, and a heavier rule marks where one focus element ends and the next begins.
+- Merged text cells are top-aligned, so a label sits beside the first cause it covers. Single-row cells and all ratings are vertically centred. Ratings are bold and centred in narrow columns, and a missing prevention control is written as a muted "None" rather than left blank.
+- Action Priority is the only colour in the table. It is a rounded chip that spells out the full word in a tinted fill with a border of the same hue: red High, amber Medium, green Low, the same accents as the bowtie and event tree. The legend below repeats each chip with the handbook's plain-English meaning.
+- Text wraps by measured width at word boundaries, so no word is ever split. Column widths are set so the longest cause and control phrases fit on two lines.
+
+Palette: ink #0f172a, frame and item rules #334155, muted text #64748b, grid #cbd5e1, step band #e2e8f0, column header #f1f5f9, High #fecaca / #dc2626 / #991b1b, Medium #fde68a / #d97706 / #92400e, Low #dcfce7 / #16a34a / #166534, paper #ffffff.

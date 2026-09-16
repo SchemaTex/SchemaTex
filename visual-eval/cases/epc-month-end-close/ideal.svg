@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="920" viewBox="0 0 1080 920">
+  <title>Month-end close</title>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3L0 6Z" fill="#1F1B2E"/></marker>
+    <style>
+      text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1F1B2E}
+      .label{font-size:12px;text-anchor:middle;dominant-baseline:middle}
+      .event{fill:#E9D5FF;stroke:#1F1B2E;stroke-width:1.4}
+      .function{fill:#BBF7D0;stroke:#1F1B2E;stroke-width:1.4}
+      .flow{fill:none;stroke:#1F1B2E;stroke-width:1.5;stroke-linejoin:round;marker-end:url(#arrow)}
+      .bus{fill:none;stroke:#1F1B2E;stroke-width:1.5;stroke-linejoin:round}
+      .connector{fill:#E5E7EB;stroke:#1F1B2E;stroke-width:1.4}
+      .operator{fill:none;stroke:#1F1B2E;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="1080" height="920" fill="white"/>
+  <text x="65" y="40" font-size="22" font-weight="700">Month-end close</text>
+  <text x="65" y="60" font-size="10" fill="#6B7280" style="fill:#6B7280">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+  <path d="M65 70H1015" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Control flow -->
+  <path class="flow" d="M540 124V150"/>
+  <path class="flow" d="M540 200V226"/>
+  <path class="flow" d="M540 272V298"/>
+  <path class="bus" d="M540 326V352M215 352H865"/>
+  <path class="flow" d="M215 352V378"/>
+  <path class="flow" d="M540 352V378"/>
+  <path class="flow" d="M865 352V378"/>
+  <path class="flow" d="M215 428V454"/>
+  <path class="flow" d="M540 428V454"/>
+  <path class="flow" d="M865 428V454"/>
+  <path class="bus" d="M215 500V526H865V500M540 500V526"/>
+  <path class="flow" d="M540 526V552"/>
+  <path class="flow" d="M540 580V606"/>
+  <path class="flow" d="M540 656V682"/>
+  <path class="flow" d="M540 728V754"/>
+  <path class="flow" d="M540 804V830"/>
+
+  <!-- Events -->
+  <path class="event" d="M432 78H648L663 101L648 124H432L417 101Z"/>
+  <text class="label" x="540" y="101">Period ended</text>
+  <path class="event" d="M432 226H648L663 249L648 272H432L417 249Z"/>
+  <text class="label" x="540" y="249">Sub-ledgers locked</text>
+  <path class="event" d="M107 454H323L338 477L323 500H107L92 477Z"/>
+  <text class="label" x="215" y="477">Bank reconciled</text>
+  <path class="event" d="M432 454H648L663 477L648 500H432L417 477Z"/>
+  <text class="label" x="540" y="477">Accruals posted</text>
+  <path class="event" d="M757 454H973L988 477L973 500H757L742 477Z"/>
+  <text class="label" x="865" y="477">Intercompany agreed</text>
+  <path class="event" d="M432 682H648L663 705L648 728H432L417 705Z"/>
+  <text class="label" x="540" y="705">Trial balance ready</text>
+  <path class="event" d="M432 830H648L663 853L648 876H432L417 853Z"/>
+  <text class="label" x="540" y="853">Books closed</text>
+
+  <!-- Functions -->
+  <rect class="function" x="417" y="150" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="175">Lock sub-ledgers</text>
+  <rect class="function" x="92" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="215" y="403">Reconcile bank accounts</text>
+  <rect class="function" x="417" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="403">Post accruals</text>
+  <rect class="function" x="742" y="378" width="246" height="50" rx="9"/>
+  <text class="label" x="865" y="403">Agree intercompany balances</text>
+  <rect class="function" x="417" y="606" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="631">Prepare trial balance</text>
+  <rect class="function" x="417" y="754" width="246" height="50" rx="9"/>
+  <text class="label" x="540" y="779">Approve financial statements</text>
+
+  <!-- AND split and AND join -->
+  <circle class="connector" cx="540" cy="312" r="14"/>
+  <path class="operator" d="M534 317L540 306L546 317"/>
+  <circle class="connector" cx="540" cy="566" r="14"/>
+  <path class="operator" d="M534 571L540 560L546 571"/>
+</svg>

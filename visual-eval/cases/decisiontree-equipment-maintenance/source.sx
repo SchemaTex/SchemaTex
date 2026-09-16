@@ -1,0 +1,13 @@
+# Maintenance disposition tree for a production asset with safety and condition gates.
+decisiontree "Equipment Maintenance Decision"
+q "Is the equipment safe to operate?"
+  yes: q "Is condition monitoring within alarm limits?"
+    yes: q "Is preventive maintenance due this month?"
+      yes: a "Schedule planned maintenance"
+      no: a "Continue operation and monitor"
+    no: q "Can the fault be corrected during a planned stop?"
+      yes: a "Plan corrective work package"
+      no: a "Reduce load and arrange urgent repair"
+  no: q "Can the hazard be isolated immediately?"
+    yes: a "Isolate, lock out, and inspect"
+    no: a "Emergency shutdown and escalation"

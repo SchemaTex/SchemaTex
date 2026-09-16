@@ -1,0 +1,22 @@
+# Security incident escalation with timer.
+bpmn
+direction: LR
+title: "Incident Escalation"
+pool "Security Operations" {
+  lane "Analyst" {
+    A: start signal "Alert received"
+    B: task user "Triage incident"
+    G: gateway xor "Critical?"
+    C: task user "Contain incident"
+  }
+  lane "Manager" {
+    D: intermediate timer "15 minutes"
+    E: task user "Escalate commander"
+    F: end "Resolved"
+  }
+}
+flows
+A --> B --> G
+G --? "yes" --> E --> C --> F
+G --* "no" --> C --> F
+B --> D --> E

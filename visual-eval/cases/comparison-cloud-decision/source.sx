@@ -1,0 +1,22 @@
+# Scenario: platform team selects a cloud provider; weighted total should select AWS.
+comparison "Cloud provider selection"
+mode: decision
+option "AWS"
+option "Azure"
+option "GCP"
+criterion "Security and compliance" weight: 5
+  AWS: 5
+  Azure: 5
+  GCP: 4
+criterion "Managed data services" weight: 4
+  AWS: 5
+  Azure: 4
+  GCP: 5
+criterion "Team familiarity" weight: 3
+  AWS: 5
+  Azure: 3
+  GCP: 2
+criterion "Three-year cost" weight: 2
+  AWS: 3
+  Azure: 4
+  GCP: 4

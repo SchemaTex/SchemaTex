@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1182 755" width="1182" height="755" role="img">
+<title>Mobile Banking STRIDE</title>
+<desc>A STRIDE threat model of Mobile Banking STRIDE, drawn as a data-flow diagram over 3 trust zones: Mobile Network, Bank Edge, Core Banking. 2 external entities are drawn as rectangles, 2 processes as circles, and 2 data stores as two parallel horizontal lines with the label between them. Each element carries the STRIDE letters that apply to its kind. Of the 6 data flows, 5 cross a trust boundary — Mobile Customer to Mobile App Backend, Identity Service to Core Accounts Store, Mobile App Backend to Core Accounts Store, Mobile App Backend to Transaction Audit Log, Mobile App Backend to SMS Gateway — and those are the only ones drawn in red, because a boundary crossing is where the spoofing, tampering and disclosure threats actually bite.</desc>
+<rect x="0" y="0" width="1182" height="755" fill="#ffffff"/>
+<text x="46" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">Mobile Banking STRIDE</text>
+<text x="46" y="65" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="1.3">STRIDE THREAT MODEL · DATA-FLOW DIAGRAM</text>
+<line x1="46" y1="78" x2="1136" y2="78" stroke="#dbe2ea" stroke-width="1"/>
+<rect x="60" y="152" width="220" height="454.06" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="494" y="152" width="207.57" height="454.06" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="915.57" y="152" width="220" height="454.06" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M 254 302 L 510 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 597.79 379.79 L 597.79 425.94" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 659.85 498 L 774.57 498 L 774.57 302 L 931.57 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 675.57 302 L 931.57 302" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 675.57 302 L 826.57 302 L 826.57 498 L 931.57 498" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 520 302 L 421 302 L 421 498 L 264 498" fill="none" stroke="#b02a37" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 941.57 276 L 1109.57 276" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 941.57 328 L 1109.57 328" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 941.57 472 L 1109.57 472" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 941.57 524 L 1109.57 524" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<rect x="342.17" y="281.76" width="89.66" height="13.2" fill="#ffffff"/>
+<path d="M 520 302 L 510 305.6 L 510 298.4 Z" fill="#b02a37"/>
+<path d="M 597.79 435.94 L 594.19 425.94 L 601.39 425.94 Z" fill="#1e293b"/>
+<rect x="682.57" y="397.62" width="64.2" height="13.2" fill="#ffffff"/>
+<rect x="733.41" y="368.76" width="82.34" height="13.2" fill="#ffffff"/>
+<path d="M 941.57 302 L 931.57 305.6 L 931.57 298.4 Z" fill="#b02a37"/>
+<rect x="757.53" y="281.76" width="102.08" height="13.2" fill="#ffffff"/>
+<path d="M 941.57 302 L 931.57 305.6 L 931.57 298.4 Z" fill="#b02a37"/>
+<rect x="779.2" y="420.76" width="94.75" height="13.2" fill="#ffffff"/>
+<path d="M 941.57 498 L 931.57 501.6 L 931.57 494.4 Z" fill="#b02a37"/>
+<rect x="385.13" y="368.76" width="71.74" height="13.2" fill="#ffffff"/>
+<path d="M 254 498 L 264 494.4 L 264 501.6 Z" fill="#b02a37"/>
+<rect x="86" y="268" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="237" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="86" y="464" width="168" height="68" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="151.63" y="433" width="36.74" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="597.79" cy="302" r="77.79" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="555.48" y="193.21" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<circle cx="597.79" cy="498" r="62.06" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+<rect x="555.48" y="404.94" width="84.61" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="941.57" y="276" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="993.51" y="245" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<rect x="941.57" y="472" width="168" height="52" fill="#ffffff" stroke="none"/>
+<rect x="993.51" y="441" width="64.13" height="18" rx="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1"/>
+<text x="170" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">MOBILE NETWORK</text>
+<text x="597.79" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">BANK EDGE</text>
+<text x="1025.57" y="178" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1.2">CORE BANKING</text>
+<text x="387" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">TLS API request</text>
+<text x="687.57" y="406.86" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">login token</text>
+<text x="774.57" y="378" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">identity lookup</text>
+<text x="808.57" y="291" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">transfer instruction</text>
+<text x="826.57" y="430" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">transaction event</text>
+<text x="421" y="378" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#b02a37" text-anchor="middle">OTP request</text>
+<text x="170" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Mobile Customer</text>
+<text x="170" y="249.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="170" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">SMS Gateway</text>
+<text x="170" y="445.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · R</text>
+<text x="597.79" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Mobile App Backend</text>
+<text x="597.79" y="205.71" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="597.79" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Identity Service</text>
+<text x="597.79" y="417.44" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">S · T · R · I · D · E</text>
+<text x="1025.57" y="306.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Core Accounts Store</text>
+<text x="1025.57" y="257.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="1025.57" y="502.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Transaction Audit Log</text>
+<text x="1025.57" y="453.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="0.6">T · R? · I · D</text>
+<text x="46" y="648.06" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#b02a37">5 of 6 flows cross a trust boundary</text>
+<text x="46" y="666.06" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#475569">Mobile Customer → Mobile App Backend   ·   Identity Service → Core Accounts Store   ·   Mobile App Backend → Core Accounts Store   ·   Mobile App Backend → Transaction Audit Log   ·   Mobile App Backend → SMS Gateway</text>
+<text x="46" y="690.06" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Rectangle = external entity (S·R)  —  Circle = process (S·T·R·I·D·E)  —  Parallel lines = data store (T·R?·I·D)  —  Every data flow carries T·I·D</text>
+<text x="46" y="708.06" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748b">Trust boundaries are drawn neutral; red is reserved for the flows that cross one, which is where spoofing, tampering and disclosure bite.</text>
+</svg>

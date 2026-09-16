@@ -1,0 +1,36 @@
+%% Context: Clinical record schema connecting patients, encounters, care teams, and results.
+erDiagram
+  PATIENT ||--o{ ENCOUNTER : has
+  CLINICIAN ||--o{ ENCOUNTER : attends
+  ENCOUNTER ||--o{ PRESCRIPTION : generates
+  CLINICIAN ||--o{ PRESCRIPTION : authorises
+  ENCOUNTER ||--o{ LAB_RESULT : records
+  PATIENT {
+    int patient_id PK
+    string medical_record_number
+    date date_of_birth
+  }
+  ENCOUNTER {
+    int encounter_id PK
+    int patient_id FK
+    int clinician_id FK
+    datetime admitted_at
+    string encounter_type
+  }
+  CLINICIAN {
+    int clinician_id PK
+    string name
+    string specialty
+  }
+  PRESCRIPTION {
+    int prescription_id PK
+    int encounter_id FK
+    int clinician_id FK
+    string medication
+  }
+  LAB_RESULT {
+    int lab_result_id PK
+    int encounter_id FK
+    string test_name
+    string result_value
+  }

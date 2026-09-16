@@ -1,0 +1,29 @@
+# Online course enrolment, assessment, and proctoring exception scope.
+usecase
+title: "E-learning Platform"
+system: "Learning Management System"
+actor: Learner as L
+actor: Instructor as I
+actor: "Proctored Learner" as PL
+actor: "Identity Provider" as IDP (external)
+usecase: "Browse Courses" as Browse
+usecase: "Enroll in Course" as Enroll
+usecase: "Authenticate" as Auth
+usecase: "Access Learning Content" as Content
+usecase: "Submit Assessment" as Submit { 
+  extension point: proctoring required
+}
+usecase: "Grade Assessment" as Grade
+usecase: "Run Remote Proctoring" as Proctor
+PL --|> L
+L -- Browse
+L -- Enroll
+L -- Content
+L -- Submit
+I -- Grade
+Enroll ..> Auth : «include»
+Content ..> Auth : «include»
+Submit ..> Auth : «include»
+Submit ..> Grade : «include»
+Auth -- IDP
+Proctor <.. Submit : «extend» [high-stakes exam] (extension point: proctoring required)

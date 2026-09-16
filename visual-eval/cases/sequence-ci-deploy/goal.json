@@ -1,0 +1,40 @@
+{
+  "id": "sequence-ci-deploy",
+  "type": "sequence",
+  "title": "CI deploy",
+  "goal": "Show approved deployment and rollback.",
+  "rubric": [
+    {
+      "id": "approval",
+      "severity": "blocker",
+      "must": "An alt frame separates approved and rejected release."
+    },
+    {
+      "id": "rollback",
+      "severity": "blocker",
+      "must": "Failed health check visibly causes Roll back before Rolled back."
+    },
+    {
+      "id": "nested-alt",
+      "severity": "major",
+      "must": "A nested alt separates healthy and unhealthy outcomes."
+    },
+    {
+      "id": "self",
+      "severity": "major",
+      "must": "CI has a self-message for Test and scan."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Human approval required."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/sequence/ideal.svg (sha256 c97704a0e340). Vision reviewed all six rasterized targets: distinct call/reply arrowheads, nested frames and operand separators, activation bars, message labels and notes remain readable. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

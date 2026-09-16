@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Clinical appointments — persistent entities and relationships</title>
+<desc>Eight UML classifiers. Patient, Practitioner, Appointment and Clinic inherit BaseEntity. Appointment points to Patient and Practitioner, owns AppointmentNote, and references AppointmentStatus. AppointmentRepository depends on Appointment.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0F172A}
+.title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}
+.name{font-size:13.5px;font-weight:600}.keyword{font-size:11px;fill:#2563EB}.abstract{font-size:11px;fill:#64748B}
+.member{font-size:12px}.visibility{fill:#64748B}.type{fill:#475569}.role{font-size:11.5px;fill:#475569}.mult{font-size:12px;font-weight:500}.legend{font-size:11.5px;fill:#475569}
+.edge{fill:none;stroke:#334155;stroke-width:1.4;stroke-linejoin:miter}.rule{stroke:#334155;stroke-width:1}.dash{stroke-dasharray:6 4}
+</style>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<text x="46" y="50" class="title">Clinical appointments — persistent entities</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 8 CLASSIFIERS · 9 RELATIONSHIPS</text>
+<path d="M46 91H1554" stroke="#94A3B8" stroke-width="1.25"/>
+
+<path d="M206 420V330H1399V420 M550 420V330 M980 420V330 M800 330V291" class="edge"/>
+<path d="M800 276L791 291H809Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M850 472H680 M692 466L680 472L692 478" class="edge"/>
+<text x="839" y="462" class="mult" text-anchor="end">0..*</text>
+<text x="689" y="462" class="mult">1</text>
+<text x="689" y="492" class="role">clinician</text>
+<path d="M880 523V609H206V499 M200 511L206 499L212 511" class="edge"/>
+<text x="889" y="546" class="mult">0..*</text>
+<text x="214" y="521" class="mult">1</text>
+<text x="196" y="543" class="role" text-anchor="end">patient</text>
+<path d="M1040 547V730" class="edge"/>
+<path d="M1040 523L1033.5 535L1040 547L1046.5 535Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="1048" y="719" class="mult">0..*</text>
+<text x="1029" y="719" class="role" text-anchor="end">notes</text>
+<path d="M940 523V660H550V730 M544 718L550 730L556 718" class="edge"/>
+<text x="539" y="716" class="role" text-anchor="end">status</text>
+<path d="M1360 730V618H1180V493H1110" class="edge dash"/>
+<path d="M1122 487L1110 493L1122 499" class="edge"/>
+<text x="1170" y="513" class="role" text-anchor="end">persists</text>
+<g><rect x="670" y="160" width="260" height="116" fill="#FFFFFF"/><rect x="670" y="160" width="260" height="52" fill="#EEF2F7"/><rect x="670" y="160" width="260" height="116" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="800.0" y="184" class="name" font-style="italic" text-anchor="middle">BaseEntity</text>
+<text x="800.0" y="202" class="abstract" text-anchor="middle">{abstract}</text>
+<path d="M670 212H930" class="rule"/>
+<path d="M670 266H930" class="rule"/>
+<text x="683" y="233" class="member"><tspan class="visibility"># </tspan>id<tspan class="type">: UUID</tspan></text>
+<text x="683" y="253" class="member"><tspan class="visibility"># </tspan>createdAt<tspan class="type">: Instant</tspan></text>
+</g>
+<g><rect x="76" y="420" width="260" height="79" fill="#FFFFFF"/><rect x="76" y="420" width="260" height="35" fill="#EEF2F7"/><rect x="76" y="420" width="260" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="206.0" y="443" class="name" text-anchor="middle">Patient</text>
+<path d="M76 455H336" class="rule"/>
+<path d="M76 489H336" class="rule"/>
+<text x="89" y="476" class="member"><tspan class="visibility">+ </tspan>medicalRecordNumber<tspan class="type">: String</tspan></text>
+</g>
+<g><rect x="420" y="420" width="260" height="79" fill="#FFFFFF"/><rect x="420" y="420" width="260" height="35" fill="#EEF2F7"/><rect x="420" y="420" width="260" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="550.0" y="443" class="name" text-anchor="middle">Practitioner</text>
+<path d="M420 455H680" class="rule"/>
+<path d="M420 489H680" class="rule"/>
+<text x="433" y="476" class="member"><tspan class="visibility">+ </tspan>licenseNumber<tspan class="type">: String</tspan></text>
+</g>
+<g><rect x="850" y="420" width="260" height="103" fill="#FFFFFF"/><rect x="850" y="420" width="260" height="35" fill="#EEF2F7"/><rect x="850" y="420" width="260" height="103" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="980.0" y="443" class="name" text-anchor="middle">Appointment</text>
+<path d="M850 455H1110" class="rule"/>
+<path d="M850 489H1110" class="rule"/>
+<text x="863" y="476" class="member"><tspan class="visibility">- </tspan>startsAt<tspan class="type">: Instant</tspan></text>
+<text x="863" y="510" class="member"><tspan class="visibility">+ </tspan>cancel()<tspan class="type">: void</tspan></text>
+</g>
+<g><rect x="1274" y="420" width="250" height="79" fill="#FFFFFF"/><rect x="1274" y="420" width="250" height="35" fill="#EEF2F7"/><rect x="1274" y="420" width="250" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1399.0" y="443" class="name" text-anchor="middle">Clinic</text>
+<path d="M1274 455H1524" class="rule"/>
+<path d="M1274 489H1524" class="rule"/>
+<text x="1287" y="476" class="member"><tspan class="visibility">+ </tspan>name<tspan class="type">: String</tspan></text>
+</g>
+<g><rect x="420" y="730" width="260" height="136" fill="#FFFFFF"/><rect x="420" y="730" width="260" height="52" fill="#EEF2F7"/><rect x="420" y="730" width="260" height="136" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="550.0" y="750" class="keyword" text-anchor="middle">«enumeration»</text>
+<text x="550.0" y="768" class="name" text-anchor="middle">AppointmentStatus</text>
+<path d="M420 782H680" class="rule"/>
+<path d="M420 856H680" class="rule"/>
+<text x="433" y="803" class="member">SCHEDULED</text>
+<text x="433" y="823" class="member">CANCELLED</text>
+<text x="433" y="843" class="member">COMPLETED</text>
+</g>
+<g><rect x="850" y="730" width="260" height="79" fill="#FFFFFF"/><rect x="850" y="730" width="260" height="35" fill="#EEF2F7"/><rect x="850" y="730" width="260" height="79" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="980.0" y="753" class="name" text-anchor="middle">AppointmentNote</text>
+<path d="M850 765H1110" class="rule"/>
+<path d="M850 799H1110" class="rule"/>
+<text x="863" y="786" class="member"><tspan class="visibility">- </tspan>body<tspan class="type">: Text</tspan></text>
+</g>
+<g><rect x="1185" y="730" width="350" height="96" fill="#FFFFFF"/><rect x="1185" y="730" width="350" height="52" fill="#EEF2F7"/><rect x="1185" y="730" width="350" height="96" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1360.0" y="750" class="keyword" text-anchor="middle">«interface»</text>
+<text x="1360.0" y="768" class="name" text-anchor="middle">AppointmentRepository</text>
+<path d="M1185 782H1535" class="rule"/>
+<path d="M1185 792H1535" class="rule"/>
+<text x="1198" y="813" class="member"><tspan class="visibility">+ </tspan>findByPatient(id<tspan class="type">: UUID): Appointment[]</tspan></text>
+</g>
+<path d="M46 916H1554" class="frame"/>
+<style>.frame{stroke:#94A3B8;stroke-width:1.25}</style>
+<path d="M46 947H98 M98 938V956" class="edge"/>
+<text x="110" y="951" class="legend">association</text>
+<path d="M212 947H264 M252 941L264 947L252 953 M264 938V956" class="edge"/>
+<text x="276" y="951" class="legend">navigable association</text>
+<path d="M433 947H460 M484 938V956" class="edge"/>
+<path d="M460 947L472 940.5L484 947L472 953.5Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="497" y="951" class="legend">aggregation</text>
+<path d="M602 947H630 M654 938V956" class="edge"/>
+<path d="M630 947L642 940.5L654 947L642 953.5Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="951" class="legend">composition</text>
+<path d="M774 947H810 M826 938V956" class="edge"/>
+<path d="M825 947L810 938V956Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="838" y="951" class="legend">generalization</text>
+<path d="M954 947H990" class="edge dash"/>
+<path d="M1006 938V956" class="edge"/>
+<path d="M1005 947L990 938V956Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="1018" y="951" class="legend">realization</text>
+<path d="M1113 947H1165" class="edge dash"/>
+<path d="M1153 941L1165 947L1153 953 M1165 938V956" class="edge"/>
+<text x="1178" y="951" class="legend">dependency</text>
+</svg>

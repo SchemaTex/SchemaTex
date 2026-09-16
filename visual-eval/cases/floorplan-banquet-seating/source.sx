@@ -1,0 +1,20 @@
+floorplan "Wedding Reception Seating Chart" unit m
+north
+wall exterior thickness 0.24
+room hall "Reception Hall" at 0,0 size 16x16
+
+door hall north at 50% width 1.5 type double hinge right swing in
+door hall east at 20% width 1.2 hinge left swing in
+window hall north at 20% width 2.0
+window hall north at 80% width 2.0
+window hall west at 50% width 2.0
+
+furniture head-table "Head table" in hall at 6.7,13.24 size 2.6x0.76 seats "Anna" "Ben" "Clara" "David"
+furniture round-table-8 "Table 1" in hall at 2,6 seats "Emma" "Jack" "Lucy" "Tom" "Grace" "Sam" "Alice" "James"
+furniture round-table-8 "Table 2" in hall at 11.58,6 seats "Sarah" "John" "Mary" "Paul" "Jane" "Mark" "Kate" "Luke"
+furniture round-table-8 "Table 3" in hall at 2,11 seats "Amy" "Dan" "Rose" "Joe" "Helen" "Peter" "Laura" "Adam"
+furniture round-table-8 "Table 4" in hall at 11.58,11 seats "Lisa" "Mike" "Ruth" "Nick" "Susan" "Eric" "Julia" "Alex"
+furniture dance-floor "Dance floor" in hall at 5.95,6.5 size 4.1x4.1
+
+zone entry "Guest entrance" in hall at 7.25,0.2 size 1.5x3.8 keep-clear
+zone service "Service entrance" in hall at 12,2.4 size 3.8x1.6 keep-clear

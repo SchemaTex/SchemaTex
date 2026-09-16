@@ -1,3 +1,4 @@
+
 import type {
   ErdAttribute,
   ErdCardinality,
@@ -47,7 +48,6 @@ function buildCss(t: BaseTheme): string {
 .lt-erd-edge-non-identifying { stroke-dasharray: 5,4; }
 .lt-erd-glyph { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
 .lt-erd-glyph-circle { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.bg}; }
-.lt-erd-edge-label-bg { fill: ${t.bg}; stroke: ${t.fillMuted}; stroke-width: 1; }
 .lt-erd-edge-label { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: middle; }
 `.trim();
 }
@@ -414,17 +414,6 @@ function renderEdge(edge: ErdLayoutEdge, scene?: SceneItem[], index = 0): string
 
   if (edge.ref.label && edge.labelAt) {
     const label = edge.ref.label;
-    const w = label.length * 6 + 14;
-    parts.push(
-      rect({
-        x: edge.labelAt.x - w / 2,
-        y: edge.labelAt.y - 9,
-        width: w,
-        height: 16,
-        rx: 3,
-        class: "lt-erd-edge-label-bg",
-      })
-    );
     parts.push(
       textEl(
         {

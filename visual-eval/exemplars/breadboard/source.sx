@@ -1,0 +1,23 @@
+# Arduino Uno: a pushbutton on pin 2 (10 kΩ pull-down) switches an LED on PWM pin 3
+# through a 220 Ω resistor, and a 10 kΩ potentiometer on A0 sets the LED's brightness.
+breadboard
+board: half
+title: "Button, Knob and LED"
+parts
+  uno: mcu uno @above
+  pot1: potentiometer 10k @7e
+  r1: resistor 10k @13c..17c
+  sw1: button @17e
+  r2: resistor 220 @22h..26h
+  led1: led red @26f..26e
+wires
+  uno:5V --red-- @+t3
+  uno:GND --black-- @-t4
+  @+t7 --red-- @7a
+  @-t9 --black-- @9a
+  uno:A0 --yellow-- @8a
+  @-t13 --black-- @13a
+  uno:2 --green-- @17a
+  @+t19 --red-- @19a
+  uno:3 --orange-- @22f
+  @-t26 --black-- @26a

@@ -1,0 +1,19 @@
+# Assumptions: a ground terminal sends a modulated uplink through a communications satellite to a remote terminal.
+# Network control supervises satellite payload allocation and terminal pointing.
+blockdiagram "Satellite communications link"
+source = block("Ground Data Source") [role: input]
+modem = block("Uplink Modem") [role: generic]
+antennatx = block("Ground Uplink Antenna") [role: actuator]
+satellite = block("Communications Satellite") [role: generic]
+antennarx = block("Remote Downlink Antenna") [role: generic]
+receiver = block("Remote Receiver") [role: generic]
+destination = block("Remote Network") [role: output]
+control = block("Network Control Centre") [role: controller]
+source -> modem ["baseband data"]
+modem -> antennatx ["modulated RF"]
+antennatx -> satellite ["uplink"]
+satellite -> antennarx ["downlink"]
+antennarx -> receiver ["received RF"]
+receiver -> destination ["decoded data"]
+control -> satellite ["payload allocation"]
+control -> antennatx ["pointing command"]

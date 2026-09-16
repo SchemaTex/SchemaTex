@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="426.375" height="1208" viewBox="0 0 426.375 1208" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="64" cy="64" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="FIN_WAIT_1"><rect x="267" y="42" width="100" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="317" y="68" text-anchor="middle" class="lt-state-name"><tspan x="317" dy="0">FIN_WAIT_1</tspan></text></g>
+<g class="lt-state lt-simple" data-id="FIN_WAIT_2"><rect x="124.25" y="180" width="100" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="174.25" y="206" text-anchor="middle" class="lt-state-name"><tspan x="174.25" dy="0">FIN_WAIT_2</tspan></text></g>
+<g class="lt-state lt-simple" data-id="CLOSING"><rect x="264.25" y="180" width="80" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="304.25" y="206" text-anchor="middle" class="lt-state-name"><tspan x="304.25" dy="0">CLOSING</tspan></text></g>
+<g class="lt-state lt-simple" data-id="TIME_WAIT"><rect x="247.75" y="300" width="94" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="294.75" y="326" text-anchor="middle" class="lt-state-name"><tspan x="294.75" dy="0">TIME_WAIT</tspan></text></g>
+<g class="lt-state lt-simple" data-id="CLOSED"><rect x="170.25" y="420" width="73" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="206.75" y="446" text-anchor="middle" class="lt-state-name"><tspan x="206.75" dy="0">CLOSED</tspan></text></g>
+<g class="lt-state lt-simple" data-id="LISTEN"><rect x="86.25" y="540" width="73" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="122.75" y="566" text-anchor="middle" class="lt-state-name"><tspan x="122.75" dy="0">LISTEN</tspan></text></g>
+<g class="lt-state lt-simple" data-id="SYN_SENT"><rect x="163.25" y="660" width="87" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="206.75" y="686" text-anchor="middle" class="lt-state-name"><tspan x="206.75" dy="0">SYN_SENT</tspan></text></g>
+<g class="lt-state lt-simple" data-id="SYN_RCVD"><rect x="79.25" y="780" width="87" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="122.75" y="806" text-anchor="middle" class="lt-state-name"><tspan x="122.75" dy="0">SYN_RCVD</tspan></text></g>
+<g class="lt-state lt-simple" data-id="ESTABLISHED"><rect x="162.75" y="900" width="107" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="216.25" y="926" text-anchor="middle" class="lt-state-name"><tspan x="216.25" dy="0">ESTABLISHED</tspan></text></g>
+<g class="lt-state lt-simple" data-id="CLOSE_WAIT"><rect x="166.25" y="1020" width="100" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="216.25" y="1046" text-anchor="middle" class="lt-state-name"><tspan x="216.25" dy="0">CLOSE_WAIT</tspan></text></g>
+<g class="lt-state lt-simple" data-id="LAST_ACK"><rect x="254" y="1140" width="87" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="297.5" y="1166" text-anchor="middle" class="lt-state-name"><tspan x="297.5" dy="0">LAST_ACK</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="CLOSED"><path d="M 64 72 L 64 142 L 64 142 L 64 202 L 64 262 L 64 262 L 64 322 L 64 382 L 206.75 382 L 206.75 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="CLOSED"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="CLOSED" data-to="LISTEN"><path d="M 206.75 464 L 206.75 502 L 122.75 502 L 122.75 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CLOSED" data-to="LISTEN"/>
+<rect x="127.25" y="486" width="75" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="164.75" y="497" text-anchor="middle" class="lt-transition-label"><tspan x="164.75" dy="0">passive open</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="CLOSED" data-to="SYN_SENT"><path d="M 206.75 464 L 206.75 502 L 206.75 502 L 206.75 562 L 206.75 622 L 206.75 622 L 206.75 660" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CLOSED" data-to="SYN_SENT"/>
+<rect x="212.75" y="494" width="129" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="212.75" y="505" text-anchor="start" class="lt-transition-label"><tspan x="212.75" dy="0">active open / send SYN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="LISTEN" data-to="SYN_RCVD"><path d="M 122.75 584 L 122.75 622 L 122.75 622 L 122.75 682 L 122.75 742 L 122.75 742 L 122.75 780" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="LISTEN" data-to="SYN_RCVD"/>
+<rect x="128.75" y="614" width="139" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="128.75" y="625" text-anchor="start" class="lt-transition-label"><tspan x="128.75" dy="0">rcv SYN / send SYN,ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="LISTEN" data-to="SYN_SENT"><path d="M 122.75 584 L 122.75 622 L 206.75 622 L 206.75 660" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="LISTEN" data-to="SYN_SENT"/>
+<rect x="135.75" y="606" width="58" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="164.75" y="617" text-anchor="middle" class="lt-transition-label"><tspan x="164.75" dy="0">send SYN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="SYN_SENT" data-to="SYN_RCVD"><path d="M 206.75 704 L 206.75 742 L 122.75 742 L 122.75 780" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SYN_SENT" data-to="SYN_RCVD"/>
+<rect x="95.25" y="726" width="139" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="164.75" y="737" text-anchor="middle" class="lt-transition-label"><tspan x="164.75" dy="0">rcv SYN / send SYN,ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t7" data-from="SYN_SENT" data-to="ESTABLISHED"><path d="M 206.75 704 L 206.75 742 L 206.75 742 L 206.75 802 L 206.75 862 L 216.25 862 L 216.25 900" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SYN_SENT" data-to="ESTABLISHED"/>
+<rect x="212.75" y="734" width="139" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="212.75" y="745" text-anchor="start" class="lt-transition-label"><tspan x="212.75" dy="0">rcv SYN,ACK / send ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t8" data-from="SYN_RCVD" data-to="ESTABLISHED"><path d="M 122.75 824 L 122.75 862 L 216.25 862 L 216.25 900" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SYN_RCVD" data-to="ESTABLISHED"/>
+<rect x="143.5" y="846" width="52" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="169.5" y="857" text-anchor="middle" class="lt-transition-label"><tspan x="169.5" dy="0">rcv ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t9" data-from="ESTABLISHED" data-to="FIN_WAIT_1"><path d="M 317 86 L 317 142 L 425.75 142 L 425.75 202 L 425.75 262 L 425.75 262 L 425.75 322 L 425.75 382 L 425.75 382 L 425.75 442 L 425.75 502 L 425.75 502 L 425.75 562 L 425.75 622 L 425.75 622 L 425.75 682 L 425.75 742 L 425.75 742 L 425.75 802 L 425.75 862 L 216.25 862 L 216.25 900" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="ESTABLISHED" data-to="FIN_WAIT_1"/>
+<rect x="324.375" y="126" width="94" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="371.375" y="137" text-anchor="middle" class="lt-transition-label"><tspan x="371.375" dy="0">close / send FIN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t10" data-from="ESTABLISHED" data-to="CLOSE_WAIT"><path d="M 216.25 944 L 216.25 982 L 216.25 982 L 216.25 1020" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="ESTABLISHED" data-to="CLOSE_WAIT"/>
+<rect x="222.25" y="974" width="110" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="222.25" y="985" text-anchor="start" class="lt-transition-label"><tspan x="222.25" dy="0">rcv FIN / send ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t11" data-from="FIN_WAIT_1" data-to="FIN_WAIT_2"><path d="M 317 86 L 317 142 L 174.25 142 L 174.25 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="FIN_WAIT_1" data-to="FIN_WAIT_2"/>
+<rect x="202.625" y="126" width="86" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="245.625" y="137" text-anchor="middle" class="lt-transition-label"><tspan x="245.625" dy="0">rcv ACK of FIN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t12" data-from="FIN_WAIT_1" data-to="CLOSING"><path d="M 317 86 L 317 142 L 304.25 142 L 304.25 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="FIN_WAIT_1" data-to="CLOSING"/>
+<rect x="255.625" y="126" width="110" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="310.625" y="137" text-anchor="middle" class="lt-transition-label"><tspan x="310.625" dy="0">rcv FIN / send ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t13" data-from="FIN_WAIT_1" data-to="TIME_WAIT"><path d="M 317 86 L 317 142 L 384.75 142 L 384.75 202 L 384.75 262 L 294.75 262 L 294.75 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="FIN_WAIT_1" data-to="TIME_WAIT"/>
+<rect x="283.375" y="126" width="135" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="350.875" y="137" text-anchor="middle" class="lt-transition-label"><tspan x="350.875" dy="0">rcv FIN,ACK / send ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t14" data-from="FIN_WAIT_2" data-to="TIME_WAIT"><path d="M 174.25 224 L 174.25 262 L 294.75 262 L 294.75 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="FIN_WAIT_2" data-to="TIME_WAIT"/>
+<rect x="179.5" y="246" width="110" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="234.5" y="257" text-anchor="middle" class="lt-transition-label"><tspan x="234.5" dy="0">rcv FIN / send ACK</tspan></text></g>
+<g class="lt-edge" data-edge-id="t15" data-from="CLOSING" data-to="TIME_WAIT"><path d="M 304.25 224 L 304.25 262 L 294.75 262 L 294.75 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CLOSING" data-to="TIME_WAIT"/>
+<rect x="256.5" y="246" width="86" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="299.5" y="257" text-anchor="middle" class="lt-transition-label"><tspan x="299.5" dy="0">rcv ACK of FIN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t16" data-from="CLOSE_WAIT" data-to="LAST_ACK"><path d="M 216.25 1064 L 216.25 1102 L 297.5 1102 L 297.5 1140" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="CLOSE_WAIT" data-to="LAST_ACK"/>
+<rect x="209.875" y="1086" width="94" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="256.875" y="1097" text-anchor="middle" class="lt-transition-label"><tspan x="256.875" dy="0">close / send FIN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t17" data-from="LAST_ACK" data-to="CLOSED"><path d="M 206.75 464 L 206.75 502 L 466.75 502 L 466.75 562 L 466.75 622 L 466.75 622 L 466.75 682 L 466.75 742 L 466.75 742 L 466.75 802 L 466.75 862 L 466.75 862 L 466.75 922 L 466.75 982 L 466.75 982 L 466.75 1042 L 466.75 1102 L 297.5 1102 L 297.5 1140" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="LAST_ACK" data-to="CLOSED"/>
+<rect x="293.75" y="486" width="86" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="336.75" y="497" text-anchor="middle" class="lt-transition-label"><tspan x="336.75" dy="0">rcv ACK of FIN</tspan></text></g>
+<g class="lt-edge" data-edge-id="t18" data-from="TIME_WAIT" data-to="CLOSED"><path d="M 294.75 344 L 294.75 382 L 206.75 382 L 206.75 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="TIME_WAIT" data-to="CLOSED"/>
+<rect x="212.25" y="366" width="77" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="250.75" y="377" text-anchor="middle" class="lt-transition-label"><tspan x="250.75" dy="0">2MSL timeout</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

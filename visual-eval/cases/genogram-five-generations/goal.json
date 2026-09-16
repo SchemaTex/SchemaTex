@@ -1,0 +1,44 @@
+{
+  "id": "genogram-five-generations",
+  "type": "genogram",
+  "title": "Five-generation Montgomery-Harrington family",
+  "goal": "A reader can trace five generations while reading each person's full given and family name.",
+  "rubric": [
+    {
+      "id": "five-generation-rows",
+      "severity": "blocker",
+      "must": "The drawing contains five distinct ancestral rows, from Christopher and Eleanor at the top to Sophia and Henry at the bottom."
+    },
+    {
+      "id": "continuous-main-line",
+      "severity": "blocker",
+      "must": "A visible chain of parent-child connections runs from Christopher and Eleanor through Jonathan, Daniel, Alexander, and Sophia and Henry."
+    },
+    {
+      "id": "long-names-readable",
+      "severity": "blocker",
+      "must": "All displayed labels show full given and family names and remain readable without overlapping another label or symbol."
+    },
+    {
+      "id": "second-generation-siblings",
+      "severity": "major",
+      "must": "Jonathan Theodore Montgomery and Claire Annabelle Montgomery visibly descend from the Christopher-Eleanor partnership."
+    },
+    {
+      "id": "third-and-fourth-branches",
+      "severity": "major",
+      "must": "Daniel Christopher Montgomery and Julian Sebastian Montgomery share one sibship line under Jonathan and Margaret, while Alexander James Montgomery and Lydia Margaret Montgomery share the next under Daniel and Beatrice."
+    },
+    {
+      "id": "unobstructed-structure",
+      "severity": "major",
+      "must": "Partnership and descent lines are visually separate from the long person labels and do not cross through symbols."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Five evenly pitched Montgomery generations preserve every full given and family name, with each sibship centred beneath its own couple and Sophia identified by a teal double outline. Birth years remain visible for everyone."
+  }
+}

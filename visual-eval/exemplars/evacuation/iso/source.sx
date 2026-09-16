@@ -1,0 +1,51 @@
+# Scenario: Meridian House Level 2 office wing — posted ISO 23601 escape plan.
+evacuation "Meridian House — Level 2 Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+show furniture
+
+room reception "Reception" at 3.6,0 size 5.4x5
+room openoffice "Open Office" at 9,0 size 8.6x5
+room meeting "Meeting Room" at 17.6,0 size 4.4x5
+room server "Server Room" at 22,0 size 3.6x5
+room stairW "Stair 1" at 0,5 size 3.6x2.6
+room corridor "Corridor" at 3.6,5 size 22x2.6
+room stairE "Stair 2" at 25.6,5 size 3.6x2.6
+room breakroom "Break Room" at 3.6,7.6 size 5.4x5
+room office1 "Office 2.01" at 9,7.6 size 4.3x5
+room office2 "Office 2.02" at 13.3,7.6 size 4.3x5
+room wc "Washrooms" at 17.6,7.6 size 4.4x5
+room store "Store" at 22,7.6 size 3.6x5
+
+opening between reception corridor at 50% width 2
+door between openoffice corridor at 50% width 1.2
+door between meeting corridor at 50% width 0.9
+door between server corridor at 50% width 0.9
+door between breakroom corridor at 50% width 1
+door between office1 corridor at 50% width 0.9
+door between office2 corridor at 50% width 0.9
+door between wc corridor at 50% width 0.9
+door between store corridor at 50% width 0.9
+door between corridor stairW at 50% width 1.2
+door between corridor stairE at 50% width 1.2
+fire-door between corridor stairW rating "EI30"
+fire-door between corridor stairE rating "EI30"
+
+furniture stairs sw in stairW at 0.6,1.2 size 2.4x1
+furniture stairs se in stairE at 0.6,1.2 size 2.4x1
+
+here in openoffice at 4.3,2.6 "YOU ARE HERE"
+exit-final exitW in stairW at 1.3,0.6 side west "EXIT"
+exit-final exitE in stairE at 2.3,0.6 side east "EXIT"
+exit-direction dW in corridor at 7.5,0.6 hand left "EXIT"
+exit-direction dE in corridor at 13.8,0.6 hand right "EXIT"
+extinguisher f1 in corridor at 0.8,0.6 class "ABC"
+extinguisher f2 in corridor at 17.6,0.6 class "CO2"
+call-point cp1 in corridor at 19.1,0.6
+first-aid fa1 in breakroom at 0.7,0.55
+assembly muster outside at 31,12.6 "ASSEMBLY POINT"
+
+route primary here -> openoffice -> corridor -> stairE -> exitE
+route secondary here -> openoffice -> corridor -> stairW -> exitW
+route primary exitE -> muster
+legend auto

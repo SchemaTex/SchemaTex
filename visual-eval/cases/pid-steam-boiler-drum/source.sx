@@ -1,0 +1,36 @@
+# Boiler drum normal level is 50%; three-element control balances drum level, steam flow, and feedwater flow.
+# Feedwater valve fails closed and safety relief valves protect the steam space.
+pid "Steam Boiler Drum Three-element Control" [direction: LR, units: metric]
+
+equip B-401 : boiler [tag: "B-401 Steam Boiler"]
+equip D-401 : vessel_h [tag: "D-401 Steam Drum"]
+equip FT-401E : filter [tag: "FE-401 Steam Flow Element"]
+equip FT-402E : filter [tag: "FE-402 Feedwater Flow Element"]
+equip LV-401 : valve_control [tag: "LV-401 Feedwater Control Valve", actuator: "diaphragm", fail: "FC"]
+equip PSV-401 : valve_psv [tag: "PSV-401 Drum Safety Valve", set_pressure: "12 barg"]
+equip XV-401 : valve_gate [tag: "XV-401 Main Steam Isolation"]
+
+line boilerToDrum from B-401.out to D-401.in [type: process, size: "DN250", service: "steam-water mixture"]
+line mainSteam from D-401.out to FT-401E.in [type: process, size: "DN200", service: "main steam"]
+line steamIsolation from FT-401E.out to XV-401.in [type: process, size: "DN200", service: "main steam"]
+line steamExport from XV-401.out to SteamHeader [type: process, size: "DN200", service: "main steam"]
+line feedwater from FeedwaterHeader to FT-402E.in [type: process, size: "DN80", service: "feedwater"]
+line feedFlow from FT-402E.out to LV-401.in [type: process, size: "DN80", service: "feedwater"]
+line feedToDrum from LV-401.out to D-401.bottom [type: process, size: "DN80", service: "feedwater"]
+line safetyRelief from D-401.top to PSV-401.in [type: process_minor, size: "DN50", service: "steam relief"]
+
+inst LT-401 : field_discrete
+  measures D-401
+inst FT-401 : field_discrete
+  measures FT-401E
+inst FT-402 : field_discrete
+  measures FT-402E
+inst LIC-401 : cr_shared
+  controls LV-401
+inst FIC-402 : cr_shared
+  controls LV-401
+
+line levelSignal from LT-401 to LIC-401 [type: electric]
+line steamFlowSignal from FT-401 to LIC-401 [type: electric]
+line feedFlowSignal from FT-402 to FIC-402 [type: electric]
+line feedCommand from LIC-401 to LV-401.signal [type: pneumatic]

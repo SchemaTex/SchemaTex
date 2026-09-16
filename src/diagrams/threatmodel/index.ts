@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseThreatModel } from "./parser";
 import { renderThreatModel } from "./renderer";
@@ -8,7 +9,7 @@ export const threatmodel: DiagramPlugin = {
   // shipping a conforming plugin. Registration in api.ts is a separate step.
   type: "threatmodel" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*(threatmodel|stride)\b/i.test(text);
+    return /^\s*(threatmodel|stride)\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseThreatModel,
   render(text, config?: RenderConfig) {

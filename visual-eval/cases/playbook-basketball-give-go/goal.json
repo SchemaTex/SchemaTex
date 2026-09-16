@@ -1,0 +1,78 @@
+{
+  "id": "playbook-basketball-give-go",
+  "type": "playbook",
+  "variant": "basketball",
+  "title": "Give and go from the wing",
+  "goal": "A practitioner can read this play at a glance: Give and go from the wing.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/basketball exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents “Give and go from the wing” on a standard half-court. Numbered players, ball, directional arrows, and four legible step labels show player 1 passing to player 2 on the wing, cutting toward the rim, receiving the return pass, and finishing with a layup.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:30:49.567Z",
+      "targetHash": "1af1d7001b78",
+      "sourceHash": "46af25d40b8b",
+      "exemplarHash": "dd7d605bd8ac",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "The title names the play, the subtitle states the complete sequence, and the court visibly shows the give-and-go action."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "A recognizable basketball half-court contains five numbered offensive players, a ball marker, basket, and distinct movement/pass/shot arrows explained by the legend."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The numbered labels and arrowheads make the sequence readable from 1: pass to wing, through 2: cut to rim and 3: return pass, to 4: layup."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "The title, subtitle, player numbers, four action labels, and legend are visibly legible and positioned beside their corresponding actions."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Solid and dashed paths use visible arrowheads and distinct styles; their endpoints support the intended pass, cut, return pass, and layup without visibly implying an unintended player connection."
+        }
+      ]
+    }
+  }
+}

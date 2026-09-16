@@ -1,0 +1,17 @@
+%% Document-management records where pages cannot outlive their document.
+classDiagram
+class Document { -id : UUID +publish() : void }
+class Page { -number : int +render() : Image }
+class Version { -number : int }
+class Folder { +name : String }
+class User { +displayName : String }
+class Permission { <<enumeration>> READ WRITE ADMIN }
+class AccessGrant { +permission : Permission }
+class SearchIndex { +index(document : Document) : void }
+Document "1" *-- "1..*" Page : pages
+Document "1" *-- "1..*" Version : versions
+Folder o-- "0..*" Document : contains
+User "1" -- "0..*" AccessGrant : receives
+AccessGrant --> Permission
+AccessGrant --> Document : grants access to
+SearchIndex ..> Document : indexes

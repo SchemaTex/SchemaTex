@@ -1,0 +1,16 @@
+# Traffic-light controller: one state token cycles red to green to yellow and back to red.
+petri "Traffic Light Cycle"
+  layout: lr
+  place Red *1
+  place Green
+  place Yellow
+  transition ToGreen
+  transition ToYellow
+  transition ToRed
+  Red -> ToGreen
+  ToGreen -> Green
+  Green -> ToYellow
+  ToYellow -> Yellow
+  Yellow -> ToRed
+  ToRed -> Red
+  fire: ToGreen, ToYellow, ToRed

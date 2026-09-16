@@ -1,0 +1,24 @@
+# Vessel power concept: generators parallel on main switchboard; shore supply is interlocked and emergency board has independent generator supply.
+sld "Offshore Support Vessel · Main Power" [standard: ansi]
+DG1 = generator [voltage: "440V", rating: "1000 kW", label: "Diesel Generator 1"]
+DG2 = generator [voltage: "440V", rating: "1000 kW", label: "Diesel Generator 2"]
+SHORE = utility [voltage: "440V", rating: "500 A", label: "Shore Connection"]
+GCB1 = breaker [rating: "1600 A, 50 kA", label: "Generator Breaker 1"]
+GCB2 = breaker [rating: "1600 A, 50 kA", label: "Generator Breaker 2"]
+SCB = breaker [rating: "500 A, 50 kA", label: "Shore Breaker (Interlocked)"]
+MSB = bus [voltage: "440V", label: "Main Switchboard"]
+PROP = motor [rating: "750 kW, 440V", label: "Propulsion Drive"]
+HOTEL = panel [rating: "400 A", label: "Hotel Services Board"]
+EMG = generator [voltage: "440V", rating: "250 kW", label: "Emergency Generator"]
+ESB = bus [voltage: "440V", label: "Emergency Switchboard"]
+SAFE = load [rating: "100 kW", label: "Emergency Lighting / Navigation"]
+DG1 -> GCB1
+GCB1 -> MSB
+DG2 -> GCB2
+GCB2 -> MSB
+SHORE -> SCB
+SCB -> MSB
+MSB -> PROP
+MSB -> HOTEL
+EMG -> ESB
+ESB -> SAFE

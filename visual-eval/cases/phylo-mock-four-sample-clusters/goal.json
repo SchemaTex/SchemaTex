@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-four-sample-clusters",
+  "type": "phylo",
+  "variant": "rectangular",
+  "title": "Four sample clusters (mock)",
+  "goal": "Mock dataset (not empirical or user data). Use merge height and a cut at 1.5 to identify four clusters among eight synthetic samples.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "merge-height",
+      "severity": "blocker",
+      "must": "A, B, C and D pairs merge at 0.4, 0.8, 1.0 and 1.2; the root merge is 5.0."
+    },
+    {
+      "id": "four-clusters",
+      "severity": "blocker",
+      "must": "The cut at 1.5 separates four pairs, not eight singletons or one whole-tree cluster."
+    },
+    {
+      "id": "clustering-convention",
+      "severity": "major",
+      "must": "A merge-height axis, cut line and aligned leaf baseline use rectangular clustering conventions."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows all eight samples in four labeled pairs, with merge heights and root value matching the source. The cut at 1.5 separates the four pairs, and the reversed merge-height axis, dashed cut line, and aligned leaf baseline are coherent and readable.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:26:05.058Z",
+      "targetHash": "624d9abbbea7",
+      "sourceHash": "8d09eafd995b",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "merge-height",
+          "verdict": "pass",
+          "evidence": "Pair merges are labeled A 0.4, B 0.8, C 1.0, and D 1.2; the root merge is labeled 5.0."
+        },
+        {
+          "id": "four-clusters",
+          "verdict": "pass",
+          "evidence": "The dashed cut at 1.5 lies above all four pair merges and below the root merge; the diagram identifies four clusters, each containing two samples."
+        },
+        {
+          "id": "clustering-convention",
+          "verdict": "pass",
+          "evidence": "The merge-height axis runs from 5 to 0, the cut is shown as a vertical dashed line, and leaves align at the zero baseline with dashed label guides."
+        }
+      ]
+    }
+  }
+}

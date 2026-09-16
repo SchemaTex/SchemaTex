@@ -1,0 +1,6 @@
+# Scenario: SPI mode-0 transaction: data changes on falling edges and samples on rising edges.
+timing "SPI Mode 0 Transaction" [hscale: 2]
+SCLK: pppppppp
+CS_N: 10000001
+MOSI: x=======x data: ["1", "0", "1", "0", "0", "1", "1", "0"]
+MISO: x=======x data: ["0", "1", "0", "1", "1", "0", "0", "1"]

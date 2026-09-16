@@ -1,0 +1,23 @@
+# Scenario: systematic review of tutoring programmes; screening arithmetic is explicit.
+prisma
+mode: 2020-single
+title: "High-dosage tutoring for middle-school mathematics"
+kind: systematic-review
+identification:
+  databases:
+    n: 980
+    sources: ERIC=340, Education Source=260, Scopus=220, ProQuest=160
+    duplicates-removed: 180
+screening:
+  records-screened: 800
+  excluded:
+    n: 640
+    reasons: not randomized=250, wrong grade=180, wrong subject=210
+eligibility:
+  full-text-assessed: 160
+  excluded:
+    n: 126
+    reasons: insufficient outcome data=50, wrong comparator=40, duplicate report=36
+included:
+  studies: 34
+  reports: 39

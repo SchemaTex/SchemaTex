@@ -1,0 +1,44 @@
+{
+  "id": "circuit-consumer-unit",
+  "type": "circuit",
+  "title": "Domestic consumer unit",
+  "goal": "Show a domestic distribution board with protected outgoing final circuits and clearly identifiable neutral and earth bars.",
+  "rubric": [
+    {
+      "id": "incoming-main-switch",
+      "severity": "blocker",
+      "must": "An incoming 230 V supply and a labelled S0 MAIN SWITCH are visible."
+    },
+    {
+      "id": "rcd-upstream-of-feeders",
+      "severity": "blocker",
+      "must": "A labelled Q1 RCD rated 63 A, 30 mA, Type A is visible upstream of the outgoing breakers."
+    },
+    {
+      "id": "six-mcbs",
+      "severity": "blocker",
+      "must": "Six distinct QF miniature circuit breakers with different stated ratings are visible."
+    },
+    {
+      "id": "final-circuit-labels",
+      "severity": "major",
+      "must": "Lighting, sockets, cooker, shower, outside, and spare final circuits are each visibly labelled."
+    },
+    {
+      "id": "neutral-bar-visible",
+      "severity": "major",
+      "must": "A TN1 NEUTRAL BAR with multiple numbered terminals is visible."
+    },
+    {
+      "id": "earth-bar-visible",
+      "severity": "major",
+      "must": "A TE1 EARTH BAR with multiple PE terminals is visible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Main switch, residual current device, busbar and six outgoing breakers at real ratings, each final circuit returning to a numbered way on the neutral bar with its protective conductor on the earth bar at the correct cross-section."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "network-cctv-installation",
+  "type": "network",
+  "title": "Warehouse CCTV installation",
+  "goal": "Show a professionally segmented PoE surveillance network with recording and viewing equipment.",
+  "rubric": [
+    {
+      "id": "camera-types",
+      "severity": "blocker",
+      "must": "Dome, bullet, and PTZ camera types are visibly distinguishable and labelled."
+    },
+    {
+      "id": "poe-camera-paths",
+      "severity": "blocker",
+      "must": "Every camera visibly connects to a PoE switch with powered-link styling."
+    },
+    {
+      "id": "recording-chain",
+      "severity": "major",
+      "must": "The NVR visibly connects to both video storage and a guard monitor."
+    },
+    {
+      "id": "security-core",
+      "severity": "major",
+      "must": "A security firewall, core switch, and two PoE access switches form a readable hierarchy."
+    },
+    {
+      "id": "segmented-subnets",
+      "severity": "major",
+      "must": "Video-camera and recording network boundaries are visibly labelled with their CIDRs."
+    },
+    {
+      "id": "cable-labels",
+      "severity": "minor",
+      "must": "Camera links visibly show varied cable-type labels."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. A warehouse surveillance network split across two labelled addressing boundaries. The video boundary, 192.168.60.0/24, holds the two PoE access switches and four cameras drawn as three distinguishable types: two ceiling domes, a bullet and a pan-tilt-zoom. Every camera drop is a green PoE link carrying its own cable type. The recording boundary, 192.168.50.0/24, holds the NVR, which feeds the video storage array over fiber and drives both a guard desk monitor and a guard workstation over copper. A security firewall and the security core switch above the two boundaries form the hierarchy into them. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

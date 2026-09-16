@@ -1,0 +1,11 @@
+eventtree "Large LOCA"
+  initiating LOCA "Large-break LOCA" freq: 1e-4
+  function RT "Reactor trip" p: 0.001
+  function ECCS "ECCS injection" p: 0.01
+  function CHR "Containment heat removal" p: 0.02
+  function CI "Containment integrity" p: 0.005
+  outcome s s s s -> "No release"
+  outcome s s s f -> "Late release"
+  outcome s s f * -> "Late release"
+  outcome s f * * -> "Early release"
+  outcome f * * * -> "Core damage"

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1120" viewBox="0 0 1320 1120">
+<title>Emergency ambulance dispatch and hospital pre-alert</title>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4 L0 8" fill="none" stroke="#18212b" stroke-width="1.6"/></marker></defs>
+<rect width="1320" height="1120" fill="white"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17" fill="#18212b" stroke="#18212b" stroke-width="1.5">
+<!-- Participant heads -->
+<g fill="white"><circle cx="95" cy="40" r="12"/><path d="M95 52 V80 M75 64 H115 M95 80 L78 99 M95 80 L112 99" fill="none"/>
+<rect x="215" y="40" width="170" height="54" rx="2"/><rect x="440" y="40" width="160" height="54" rx="2"/><rect x="660" y="40" width="130" height="54" rx="2"/><rect x="865" y="40" width="160" height="54" rx="2"/><rect x="1100" y="40" width="150" height="54" rx="2"/></g>
+<g stroke="none" text-anchor="middle"><text x="95" y="124">Caller</text><text x="300" y="73">EmergencyLine</text><text x="520" y="73">Dispatcher</text><text x="725" y="73">CAD</text><text x="945" y="73">Ambulance</text><text x="1175" y="73">Hospital</text></g>
+<!-- Lifelines -->
+<g stroke="#87909a" stroke-dasharray="6 6"><path d="M95 140 V1065"/><path d="M300 94 V1065"/><path d="M520 94 V1065"/><path d="M725 94 V1065"/><path d="M945 94 V1065"/><path d="M1175 94 V1065"/></g>
+<!-- Active participants -->
+<g fill="#edf1f5"><rect x="512" y="230" width="16" height="752"/><rect x="937" y="410" width="16" height="518"/></g>
+<!-- Initial report and dispatch -->
+<g fill="none" marker-end="url(#arrow)"><path d="M95 170 H300"/><path d="M300 230 H512"/><path d="M528 290 H725"/><path d="M725 350 H528" stroke-dasharray="6 4"/><path d="M528 410 H937"/></g>
+<g stroke="none" text-anchor="middle"><text x="197" y="158">Report emergency</text><text x="406" y="218">Incident details</text><text x="627" y="278">Create incident</text><text x="627" y="338">Available units</text><text x="732" y="398">Dispatch</text></g>
+<!-- Parallel combined fragment -->
+<rect x="465" y="444" width="800" height="300" fill="none"/>
+<path d="M465 476 H516 L530 462 V444" fill="white"/>
+<text x="482" y="466" stroke="none" font-weight="bold">par</text>
+<path d="M465 589 H1265" stroke-dasharray="7 5"/>
+<g fill="none" marker-end="url(#arrow)"><path d="M528 509 H1175"/><path d="M1175 561 H528" stroke-dasharray="6 4"/><path d="M953 630 H1000 V665 H953"/><path d="M937 717 H528" stroke-dasharray="6 4"/></g>
+<g stroke="none" text-anchor="middle"><text x="842" y="497">Pre-alert</text><text x="842" y="549">Bed status</text><text x="732" y="705">Condition</text></g>
+<text x="1015" y="638" stroke="none">Assess patient</text>
+<!-- Optional transport -->
+<rect x="465" y="769" width="800" height="124" fill="none"/>
+<path d="M465 801 H516 L530 787 V769" fill="white"/>
+<text x="482" y="791" stroke="none" font-weight="bold">opt</text>
+<text x="549" y="792" stroke="none">[transport required]</text>
+<g fill="none" marker-end="url(#arrow)"><path d="M528 829 H1175"/><path d="M1175 874 H528" stroke-dasharray="6 4"/></g>
+<g stroke="none" text-anchor="middle"><text x="842" y="817">Confirm destination</text><text x="842" y="862">Accept</text></g>
+<!-- Handover and closure -->
+<g fill="none" marker-end="url(#arrow)"><path d="M953 928 H1175"/><path d="M512 982 H300" stroke-dasharray="6 4"/></g>
+<g stroke="none" text-anchor="middle"><text x="1064" y="916">Handover</text><text x="406" y="970">Managed</text></g>
+<!-- Note spanning Dispatcher and Ambulance -->
+<path d="M485 1010 H965 L982 1027 V1060 H485 Z" fill="#fff9dc"/><path d="M965 1010 V1027 H982" fill="none"/>
+<text x="733" y="1042" text-anchor="middle" stroke="none">Updates recorded</text>
+</g>
+</svg>

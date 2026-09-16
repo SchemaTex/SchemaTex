@@ -298,6 +298,7 @@ export function parseCircuit(text: string): CircuitAST {
       const norm = normalized ?? "generic_ic";
       const rest = colonMatch[3] ?? "";
       const parsed = parseAttrs(rest, absoluteStrippedStart + stripped.length - rest.length, locator);
+      if (norm === "generic_ic" && parsed.label !== undefined) parsed.attrs.ic_label = parsed.label;
       if (!normalized) {
         warnings.push({
           severity: "warning",
@@ -350,6 +351,7 @@ export function parseCircuit(text: string): CircuitAST {
       }
       const rest = bareMatch[2] ?? "";
       const parsed = parseAttrs(rest, absoluteStrippedStart + stripped.length - rest.length, locator);
+      if (norm === "generic_ic" && parsed.label !== undefined) parsed.attrs.ic_label = parsed.label;
       const id = mkId(norm);
       const comp: CircuitComponent = {
         id,

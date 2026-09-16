@@ -1,0 +1,18 @@
+genogram "Divorce, remarriage and stepchildren" [asOf: 2026]
+  alex [male, 1980, label: "Alex"]
+  jordan [female, 1982, label: "Jordan"]
+  alex -x- jordan "div. 2018"
+    maya [female, 2010, label: "Maya"]
+    leo [male, 2013, label: "Leo"]
+
+  casey [male, 1979, label: "Casey"]
+  sam [female, 1983, label: "Sam"]
+  casey -x- sam "div. 2019"
+    ella [female, 2012, label: "Ella"]
+
+  alex -- sam "m. 2020"
+    noah [male, 2022, label: "Noah"]
+    ivy [female, 2024, label: "Ivy"]
+    maya [step]
+    leo [step]
+    ella [step]

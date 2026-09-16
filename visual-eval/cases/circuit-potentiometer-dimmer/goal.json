@@ -1,0 +1,44 @@
+{
+  "id": "circuit-potentiometer-dimmer",
+  "type": "circuit",
+  "title": "Potentiometer LED dimmer",
+  "goal": "A reader must be able to follow the potentiometer wiper into a transistor driver that varies current through an LED string.",
+  "rubric": [
+    {
+      "id": "three-terminal-potentiometer",
+      "severity": "blocker",
+      "must": "P1 is visibly a three-terminal potentiometer with a readable wiper connection."
+    },
+    {
+      "id": "divider-rails",
+      "severity": "major",
+      "must": "The two outer potentiometer terminals visibly connect to 12 V and ground."
+    },
+    {
+      "id": "base-network",
+      "severity": "major",
+      "must": "A 4.7 kΩ base resistor and 100 kΩ pull-down are visible between the wiper, transistor base, and ground."
+    },
+    {
+      "id": "transistor-led-path",
+      "severity": "blocker",
+      "must": "The NPN transistor visibly switches the LED string on the low side."
+    },
+    {
+      "id": "current-limiter",
+      "severity": "major",
+      "must": "A 330 Ω current-limiting resistor is visible in series with the LED string."
+    },
+    {
+      "id": "component-values",
+      "severity": "minor",
+      "must": "The 12 V source, 10 kΩ potentiometer, and three-LED string labels are legible."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The potentiometer's track spans supply and return with its wiper feeding the base resistor, the base carries a pull-down, and the LED string with its limiting resistor sits between the supply and the collector."
+  }
+}

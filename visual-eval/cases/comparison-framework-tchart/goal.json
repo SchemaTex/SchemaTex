@@ -1,0 +1,78 @@
+{
+  "id": "comparison-framework-tchart",
+  "type": "comparison",
+  "variant": "tchart",
+  "title": "Integration pattern T-chart",
+  "goal": "A software architecture class can contrast event-driven and request-response integration.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Two clearly headed columns for the integration patterns are visible."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Each side contains multiple readable comparison statements."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The two columns have equal visual status."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The T-chart separation is clear."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The title identifies the comparison."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/tchart exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target is a readable, balanced T-chart titled “Event-driven versus request-response integration.” Both columns show their headings and all three source statements, with a clear central divider and no visible clipping or overlap.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:04:08.456Z",
+      "targetHash": "c9e0a1e96b31",
+      "sourceHash": "107af8149ef4",
+      "exemplarHash": "6efa4b5b6588",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Two clearly headed columns are labeled “Event-driven” and “Request-response.”"
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Each column contains three readable statements matching the source data."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "The two columns have matching panel size, heading treatment, and visual weight."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "A prominent vertical divider separates the columns, with a horizontal rule across their top."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "The title clearly identifies the comparison; headings and statements are readable."
+        }
+      ]
+    }
+  }
+}

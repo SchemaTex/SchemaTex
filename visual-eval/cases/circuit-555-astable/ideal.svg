@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<title>555 Astable LED Flasher</title>
+<rect width="1400" height="1000" fill="white"/>
+<style>
+.w{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.t{font-family:Helvetica,Arial,sans-serif;font-size:24px;fill:#222}.v{font-family:Helvetica,Arial,sans-serif;font-size:22px;fill:#555}.p{font-family:Helvetica,Arial,sans-serif;font-size:21px;fill:#222}.n{fill:#222}
+</style>
+<text class="t" x="700" y="52" text-anchor="middle" font-size="30">555 Astable LED Flasher</text>
+<!-- Supply and ground rails -->
+<path class="w" d="M130 150H1260 M130 860H1260"/>
+<text class="t" x="1260" y="130" text-anchor="end">VCC · 9 V</text>
+<!-- Battery -->
+<path class="w" d="M170 150V447 M170 513V860"/>
+<circle class="w" cx="170" cy="480" r="33"/>
+<path class="w" d="M159 465H181 M170 454V476 M159 495H181"/>
+<text class="t" x="100" y="473" text-anchor="end">BAT1</text>
+<text class="v" x="100" y="503" text-anchor="end">9 V</text>
+<!-- Timing resistors and capacitor -->
+<path class="w" d="M390 150V285 M390 285L380 293L400 305L380 317L400 329L380 341L400 353L390 361V390 M390 390V425 M390 425L380 433L400 445L380 457L400 469L380 481L400 493L390 501V560 M390 560V636 M368 636H412 M368 648H412 M390 648V860"/>
+<text class="t" x="345" y="318" text-anchor="end">R1</text>
+<text class="v" x="345" y="346" text-anchor="end">10 kΩ</text>
+<text class="t" x="345" y="458" text-anchor="end">R2</text>
+<text class="v" x="345" y="486" text-anchor="end">100 kΩ</text>
+<text class="t" x="345" y="637" text-anchor="end">C1</text>
+<text class="v" x="345" y="665" text-anchor="end">10 µF</text>
+<!-- IC body. All conductive leads terminate at its boundary. -->
+<rect class="w" x="570" y="300" width="300" height="370"/>
+<text class="t" x="720" y="453" text-anchor="middle" font-weight="bold">U1</text>
+<text class="t" x="720" y="488" text-anchor="middle">555</text>
+<!-- Power and reset enter at top, ground exits at bottom -->
+<path class="w" d="M640 150V300 M800 150V300 M720 670V860"/>
+<text class="p" x="640" y="330" text-anchor="middle">VCC</text>
+<text class="p" x="800" y="330" text-anchor="middle">RESET</text>
+<text class="p" x="624" y="284" text-anchor="end">8</text>
+<text class="p" x="784" y="284" text-anchor="end">4</text>
+<text class="p" x="720" y="650" text-anchor="middle">GND</text>
+<text class="p" x="704" y="702" text-anchor="end">1</text>
+<!-- Discharge and timing inputs -->
+<path class="w" d="M390 390H570 M390 560H490 M490 510H570 M490 510V600H570"/>
+<text class="p" x="585" y="398">DISCH</text>
+<text class="p" x="585" y="518">TRIG</text>
+<text class="p" x="585" y="608">THR</text>
+<text class="p" x="550" y="378" text-anchor="end">7</text>
+<text class="p" x="550" y="498" text-anchor="end">2</text>
+<text class="p" x="550" y="588" text-anchor="end">6</text>
+<!-- Output and LED branch -->
+<path class="w" d="M870 390H1160V445 M1160 445L1150 453L1170 465L1150 477L1170 489L1150 501L1170 513L1160 521V660 M1160 697V860"/>
+<text class="p" x="855" y="398" text-anchor="end">OUT</text>
+<text class="p" x="890" y="378">3</text>
+<text class="t" x="1200" y="478">R3</text>
+<text class="v" x="1200" y="508">470 Ω</text>
+<path d="M1141 660H1179L1160 693Z" fill="#222"/>
+<path class="w" d="M1140 697H1180 M1184 658L1204 678 M1184 673L1204 693 M1197 678H1204V671 M1197 693H1204V686"/>
+<text class="t" x="1220" y="689">LED1</text>
+<!-- Control voltage bypass -->
+<path class="w" d="M870 570H990V636 M968 636H1012 M968 648H1012 M990 648V860"/>
+<text class="p" x="855" y="578" text-anchor="end">CTRL</text>
+<text class="p" x="890" y="558">5</text>
+<text class="t" x="1030" y="637">C2</text>
+<text class="v" x="1030" y="665">10 nF</text>
+<!-- Electrical junctions -->
+<g class="n">
+<circle cx="170" cy="150" r="5"/><circle cx="390" cy="150" r="5"/><circle cx="640" cy="150" r="5"/><circle cx="800" cy="150" r="5"/>
+<circle cx="390" cy="390" r="5"/><circle cx="390" cy="560" r="5"/><circle cx="490" cy="560" r="5"/>
+<circle cx="170" cy="860" r="5"/><circle cx="390" cy="860" r="5"/><circle cx="720" cy="860" r="5"/><circle cx="990" cy="860" r="5"/><circle cx="1160" cy="860" r="5"/>
+</g>
+<path class="w" d="M1260 860V891 M1240 891H1280 M1247 901H1273 M1254 911H1266"/>
+<text class="p" x="1220" y="944">GND</text>
+</svg>

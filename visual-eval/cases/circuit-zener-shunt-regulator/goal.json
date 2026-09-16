@@ -1,0 +1,44 @@
+{
+  "id": "circuit-zener-shunt-regulator",
+  "type": "circuit",
+  "title": "Zener shunt regulator",
+  "goal": "A reader must be able to identify reverse protection, series current limiting, and the zener shunt regulating a grounded load.",
+  "rubric": [
+    {
+      "id": "unregulated-input",
+      "severity": "blocker",
+      "must": "A source labelled 15 V unregulated is visible at the input."
+    },
+    {
+      "id": "schottky-protection",
+      "severity": "major",
+      "must": "An SS14 Schottky diode is visibly in series with the input."
+    },
+    {
+      "id": "series-resistor",
+      "severity": "blocker",
+      "must": "A 330 Ω 1 W series resistor visibly feeds the regulated output node."
+    },
+    {
+      "id": "zener-shunt",
+      "severity": "blocker",
+      "must": "A 5.1 V zener diode visibly connects from the output node to ground."
+    },
+    {
+      "id": "grounded-load",
+      "severity": "major",
+      "must": "A 1 kΩ load resistor is visibly connected from output to ground."
+    },
+    {
+      "id": "output-capacitor",
+      "severity": "minor",
+      "must": "A 47 µF output capacitor is visible across the load."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Reverse-protection diode then the series resistor, with the zener shunting to the return, its cathode to the positive rail, and the load and output capacitor across the regulated node."
+  }
+}

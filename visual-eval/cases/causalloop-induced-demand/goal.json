@@ -1,0 +1,40 @@
+{
+  "id": "causalloop-induced-demand",
+  "type": "causalloop",
+  "title": "Urban traffic induced demand",
+  "goal": "A transport planner can see the balancing induced-demand feedback of road expansion.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Every causal arrow visibly has a polarity marker."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A named induced-demand loop is visibly marked balancing (B)."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "The closed loop visibly links capacity, travel time, attractiveness, trips, and congestion."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Arrowheads make causal direction readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The loop label is placed in a readable open loop area."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/causalloop/ideal.svg (sha256 dd3e7464cebc). Delay hashes placed on their curve using the quadratic midpoint. Loop labels matched by polarity; unmatched source declarations are reported, not silently attached to the wrong loop. Footer and loop labels separated. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

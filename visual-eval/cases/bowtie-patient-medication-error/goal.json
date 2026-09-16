@@ -1,0 +1,45 @@
+{
+  "id": "bowtie-patient-medication-error",
+  "type": "bowtie",
+  "title": "Patient medication error",
+  "goal": "Show clinical barriers around incorrect intravenous medication administration.",
+  "rubric": [
+    {
+      "id": "hazard-event",
+      "severity": "blocker",
+      "must": "A named hazard and the central top event Incorrect medication or dose administered are visible."
+    },
+    {
+      "id": "preventative",
+      "severity": "blocker",
+      "must": "Multiple labelled threats through preventative barriers visibly lead from the left to the top event."
+    },
+    {
+      "id": "mitigative",
+      "severity": "blocker",
+      "must": "Multiple labelled consequences through mitigative barriers visibly lead from the top event to the right."
+    },
+    {
+      "id": "escalation",
+      "severity": "major",
+      "must": "An escalation factor and its barrier are visibly attached beneath a named preventive barrier."
+    },
+    {
+      "id": "geometry",
+      "severity": "major",
+      "must": "The picture has a clear left-threat, central-event, right-consequence bowtie geometry."
+    },
+    {
+      "id": "barrier-labels",
+      "severity": "minor",
+      "must": "Individual barrier labels are readable and distinguish prevention from mitigation."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/bowtie/ideal.svg (sha256 4484bd18b387), source sha256 e26d6fafbc4e. Role-coloured threats and consequences, neutral prevention/mitigation chains, green top-event disc, hazard header, and a separately attached escalation/control chain; all declared barriers retained. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

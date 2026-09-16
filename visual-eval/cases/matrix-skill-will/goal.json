@@ -1,0 +1,78 @@
+{
+  "id": "matrix-skill-will",
+  "type": "matrix",
+  "variant": "quadrant",
+  "title": "Warehouse skill-will coaching",
+  "goal": "A shift supervisor can match coaching action to each employee's skill and motivation.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "The four coaching actions are visibly labelled in the correct skill-will quadrants."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "All four named employees are visibly placed in different coaching quadrants."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Skill and will axes are visibly directional."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Quadrant boundaries are clear."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Employee labels are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the matrix/quadrant exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly matches the source data and case intent: all four coaching actions and all four employees occupy their correct skill-will quadrants, with clear directional axes, quadrant boundaries, and readable labels.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:46.384Z",
+      "targetHash": "60eb540b41aa",
+      "sourceHash": "5c9794bc8b7b",
+      "exemplarHash": "5acf2cd6396c",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Top-right is labelled “Delegate and develop,” top-left “Coach skills,” bottom-right “Address motivation,” and bottom-left “Direct closely.”"
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Rina is in the high-skill/high-will quadrant, Mateo in low-skill/high-will, Jordan in high-skill/low-will, and Sam in low-skill/low-will."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Skill is shown increasing from “Low skill” to “High skill” with a right-pointing arrow; will is shown increasing from “Low will” to “High will” with an upward-pointing arrow."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "Visible horizontal and vertical midpoint lines clearly divide the matrix into four quadrants."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "All employee names and role labels are clearly readable."
+        }
+      ]
+    }
+  }
+}

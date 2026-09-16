@@ -73,21 +73,17 @@
   <line x1="0" y1="6" x2="8" y2="-6" stroke="#333" stroke-width="2"/>
   ```
 
-#### Positive Transition Contact (ONS / 上升沿)
-- **符号**: 两竖线 + 上升边箭头（↑）
-- **SVG**: NO + `<polygon points="4,-6 4,0 8,-3"/>` inside gap
+#### One-Shot Rising Instruction (ONS / 上升沿)
+- **符号**: Allen-Bradley bracketed inline instruction `[ONS]`
+- **SVG**: 两侧 bracket paths，中间 `ONS` 文字，两端接 rung wire
 
-#### Negative Transition Contact (ONF / 下降沿)
-- **符号**: 两竖线 + 下降边箭头（↓）
-- **SVG**: NO + `<polygon points="4,6 4,0 8,3"/>` inside gap
+#### Negative Transition Contact (OSF / 下降沿)
+- **符号**: 两竖线之间显示 `N`
+- **SVG**: NO contact blades + centered `N` text
 
-#### Comparison Contact (EQU, GRT, LES, etc.)
-- **符号**: 矩形盒（24×18px）内含比较符（`=`, `>`, `<`, `≥`, `≤`, `≠`）
-  ```svg
-  <rect x="0" y="-9" width="24" height="18" fill="white" stroke="#333" stroke-width="1.5"/>
-  <text x="12" y="5" font-size="11" text-anchor="middle">≥</text>
-  <!-- Input/output label references outside the box -->
-  ```
+#### Comparison Instructions (EQU, GRT, LES, etc.)
+- **符号**: 两条 contact blades 之间显示比较符（`=`, `>`, `<`, `≥`, `≤`, `≠`）。
+- **Labels**: tag 位于上方；`IN1`、`IN2` operands 按上、下顺序显示。Parser 将 comparisons 归在 function blocks，renderer 使用 contact-style drawing。
 
 ### 2.2 Coils (Outputs — 设置输出)
 
@@ -113,19 +109,20 @@
 - **SVG**: `<line x1="8" y1="8" x2="16" y2="-8" stroke="#333" stroke-width="1.5"/>`
 
 #### Set Coil / Latch (OTL)
-- 同 OTE，内部加 `S` 文字
-- **SVG**: `<text x="12" y="5" font-size="12" font-weight="bold" text-anchor="middle">S</text>`
+- 同 OTE，内部加 `L` 文字（Allen-Bradley latch convention）
+- **SVG**: `<text x="12" y="5" font-size="12" font-weight="bold" text-anchor="middle">L</text>`
 
 #### Reset / Unlatch Coil (OTU)
-- 同 OTE，内部加 `R` 文字
-- **SVG**: 同上，文字 `R`
+- 同 OTE，内部加 `U` 文字（Allen-Bradley unlatch convention）
+- **SVG**: 同上，文字 `U`
 
-#### Transition Coils (ONS/ONR)
-- 上升沿/下降沿触发，内部加箭头标记
+#### Counter / Timer Reset Instruction (RES)
+- **符号**: Allen-Bradley bracketed inline instruction `[RES]`，使用与 `[ONS]` 相同的 bracket paths + mnemonic text
+- DSL 为 `RES(tag)`；parser 将其归在 coil elements，但 renderer 绘制 reset instruction
 
 ### 2.3 Function Blocks (复杂功能块)
 
-function block 在梯级中间，矩形盒包含输入/输出 pins。
+Timer / counter function blocks 使用矩形盒，instruction name 位于 header，横向 rule 将 header 与参数区分开。
 
 **标准尺寸**: 60px wide × 50px tall（最小），根据 pin 数量扩展。
 
@@ -271,12 +268,11 @@ rung_element   = series_element
 series_element = contact | coil | function_block | jump
 
 parallel_block = "parallel:" NEWLINE INDENT
-                   (series_element+)
                    ("branch:" NEWLINE INDENT series_element+ DEDENT)+
                  DEDENT
 
 contact        = contact_type "(" IDENTIFIER ")" NEWLINE
-contact_type   = "XIC" | "XIO" | "ONS" | "ONF"    # NO, NC, rising, falling edge
+contact_type   = "XIC" | "XIO" | "ONS" | "OSF"    # NO, NC, rising, falling edge
                | "EQU" | "NEQ" | "GRT" | "GEQ" | "LES" | "LEQ"  # compare
 
 coil           = coil_type "(" IDENTIFIER ")" NEWLINE
@@ -305,13 +301,6 @@ NEWLINE        = /\n/
 ```
 ladder "Motor Control"
 
-var StartBtn: bool
-var StopBtn: bool
-var EmergencyStop: bool = false
-var MotorLatch: bool = false
-var MotorRun: bool = false
-var RunIndicator: bool = false
-
 rung 0 "Start latch with stop condition":
   XIC(StartBtn)
   XIO(StopBtn)
@@ -334,11 +323,6 @@ rung 3 "Run indicator":
 **DSL 示例（Timer + Counter）：**
 ```
 ladder "Timer Counter Example"
-
-var RunSignal: bool
-var RunTimer: timer
-var CycleCounter: counter
-var AlarmOut: bool
 
 rung 0 "TON timer when running":
   XIC(RunSignal)
@@ -459,7 +443,6 @@ rung 0:
 ### Case 4: TON Timer
 ```
 ladder
-var RunTimer: timer
 rung 0:
   XIC(StartSignal)
   TON(RunTimer, StartSignal, T#10s)
@@ -479,12 +462,11 @@ rung 1:
   XIC(ResetBtn)
   OTU(MotorLatch)
 ```
-验证：OTL 线圈内显示 `S`，OTU 线圈内显示 `R`。
+验证：OTL 线圈内显示 `L`，OTU 线圈内显示 `U`（Allen-Bradley）；ONS / RES 为 bracketed inline instructions，timer / counter block 的 header 下有横向 rule。
 
 ### Case 6: Counter
 ```
 ladder
-var PulseCnt: counter
 rung 0:
   XIC(PulseInput)
   CTU(PulseCnt, PulseInput, 50)
@@ -508,7 +490,7 @@ rung 1:
 | P1 | Parallel branch (OR logic) | Medium | High — 工业逻辑必须 |
 | P1 | TON / TOFF timer blocks | Medium | High |
 | P1 | CTU counter block | Medium | High |
-| P1 | ONS / ONF transition contacts | Low | Medium |
+| P1 | ONS instruction / OSF transition contact | Low | Medium |
 | P2 | Comparison contacts (EQU, GRT, etc.) | Medium | Medium |
 | P2 | Math blocks (ADD, SUB, MOV) | Medium | Medium |
 | P2 | Rung comments + rung numbers | Low | Medium |

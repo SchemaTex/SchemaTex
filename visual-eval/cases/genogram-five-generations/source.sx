@@ -1,0 +1,22 @@
+genogram "Five Generations of the Montgomery Family" [asOf: 2026]
+  christopher [male, 1930, label: "Christopher Montgomery"]
+  eleanor [female, 1933, label: "Eleanor Harrington Montgomery"]
+  margaret [female, 1956, label: "Margaret Eleanor Whitmore"]
+  beatrice [female, 1980, label: "Beatrice Adelaide Caldwell"]
+  victoria [female, 2001, label: "Victoria Josephine Prescott"]
+
+  christopher -- eleanor
+    jonathan [male, 1953, label: "Jonathan Theodore Montgomery"]
+    claire [female, 1958, label: "Claire Annabelle Montgomery"]
+
+  jonathan -- margaret
+    daniel [male, 1977, label: "Daniel Christopher Montgomery"]
+    julian [male, 1982, label: "Julian Sebastian Montgomery"]
+
+  daniel -- beatrice
+    alexander [male, 1999, label: "Alexander James Montgomery"]
+    lydia [female, 2004, label: "Lydia Margaret Montgomery"]
+
+  alexander -- victoria
+    sophia [female, 2021, label: "Sophia Eleanor Montgomery", index]
+    henry [male, 2024, label: "Henry Nathaniel Montgomery"]

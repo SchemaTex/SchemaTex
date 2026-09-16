@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Payment gateway adapters — provider contracts and transaction states</title>
+<defs>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0F172A} .title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}.name{font-size:13.5px;font-weight:600;text-anchor:middle}.keyword{font-size:11px;fill:#2563EB;text-anchor:middle}.member{font-size:12px}.type,.role,.legend{fill:#475569}.visibility{fill:#64748B}.role{font-size:11.5px}.label{font-size:12px;fill:#475569;font-style:italic}.multi{font-size:12px;font-weight:500}.legend{font-size:11.5px}.box{fill:#FFFFFF;stroke:#334155;stroke-width:1.5}.head{fill:#EEF2F7}.rule{stroke:#334155;stroke-width:1}.edge{fill:none;stroke:#334155;stroke-width:1.4}.dash{stroke-dasharray:6 4}
+</style>
+<marker id="arrow" markerWidth="13" markerHeight="13" refX="12" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L12 6 L0 12" fill="none" stroke="#334155" stroke-width="1.4"/></marker>
+<marker id="triangle" markerWidth="17" markerHeight="20" refX="16" refY="10" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L16 10 L1 19 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/></marker>
+</defs>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<text class="title" x="46" y="50">Payment gateway adapters — contracts and transaction states</text>
+<text class="subtitle" x="46" y="75">UML 2.5.1 CLASS DIAGRAM · 8 CLASSIFIERS · 7 RELATIONSHIPS</text>
+<path d="M46 91 H1554" stroke="#94A3B8" stroke-width="1.25"/>
+
+<!-- Orthogonal relationships, with symbols at the corresponding classifier ends. -->
+<path class="edge" d="M460 240 H760" marker-end="url(#arrow)"/>
+<text class="label" x="586" y="227">selects</text>
+<path d="M630 219 L638 223 L630 227 Z" fill="#475569"/>
+<path class="edge dash" d="M290 276 V494" marker-end="url(#arrow)"/>
+<text class="label" x="252" y="389">uses</text>
+<path class="edge dash" d="M850 715 V309" marker-end="url(#triangle)"/>
+<path class="edge dash" d="M1220 715 V398 H1010 V309" marker-end="url(#triangle)"/>
+<path class="edge" d="M1100 240 H1260" marker-end="url(#arrow)"/>
+<text class="label" x="1152" y="227">returns</text>
+<path class="edge" d="M280 715 V605"/>
+<path d="M280 715 L273.5 703 L280 691 L286.5 703 Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text class="multi" x="288" y="624">1</text>
+<text class="multi" x="288" y="687">1</text>
+<text class="label" x="228" y="658">records</text>
+<path class="edge" d="M440 777 H550 V870 H1540 V550 H1510" marker-end="url(#arrow)"/>
+<text class="label" x="1100" y="858">state</text>
+
+<!-- PaymentService -->
+<rect class="box" x="120" y="195" width="340" height="81"/>
+<rect class="head" x="120.75" y="195.75" width="338.5" height="34.25"/>
+<path class="rule" d="M120 230 H460 M120 240 H460"/>
+<text class="name" x="290" y="218">PaymentService</text>
+<text class="member" x="133" y="262"><tspan class="visibility">+ </tspan>authorize(request: <tspan class="type">PaymentRequest</tspan>): <tspan class="type">Payment</tspan></text>
+
+<!-- PaymentProvider interface -->
+<rect class="box" x="760" y="172" width="340" height="137"/>
+<rect class="head" x="760.75" y="172.75" width="338.5" height="51.25"/>
+<path class="rule" d="M760 224 H1100 M760 234 H1100"/>
+<text class="keyword" x="930" y="192">«interface»</text>
+<text class="name" x="930" y="211">PaymentProvider</text>
+<text class="member" x="773" y="258"><tspan class="visibility">+ </tspan>authorize(request: <tspan class="type">PaymentRequest</tspan>):</text>
+<text class="member type" x="786" y="278">ProviderResult</text>
+
+<!-- ProviderResult -->
+<rect class="box" x="1260" y="195" width="250" height="91"/>
+<rect class="head" x="1260.75" y="195.75" width="248.5" height="34.25"/>
+<path class="rule" d="M1260 230 H1510 M1260 276 H1510"/>
+<text class="name" x="1385" y="218">ProviderResult</text>
+<text class="member" x="1273" y="254"><tspan class="visibility">+ </tspan>approved: <tspan class="type">boolean</tspan></text>
+
+<!-- PaymentRequest -->
+<rect class="box" x="120" y="494" width="340" height="111"/>
+<rect class="head" x="120.75" y="494.75" width="338.5" height="34.25"/>
+<path class="rule" d="M120 529 H460 M120 595 H460"/>
+<text class="name" x="290" y="517">PaymentRequest</text>
+<text class="member" x="133" y="552"><tspan class="visibility">+ </tspan>amount: <tspan class="type">Money</tspan></text>
+<text class="member" x="133" y="572"><tspan class="visibility">+ </tspan>currency: <tspan class="type">String</tspan></text>
+
+<!-- Payment -->
+<rect class="box" x="120.0" y="715.0" width="320" height="124"/>
+<rect class="head" x="120.75" y="715.75" width="318.5" height="34.25"/>
+<path class="rule" d="M120 750 H440 M120 799 H440"/>
+<text class="name" x="280.0" y="738.0">Payment</text>
+<text class="member" x="133.0" y="774.0"><tspan class="visibility">- </tspan>id: <tspan class="type">UUID</tspan></text>
+<text class="member" x="133.0" y="822.0"><tspan class="visibility">+ </tspan>capture(): <tspan class="type">Receipt</tspan></text>
+
+<!-- PaymentStatus enumeration -->
+<rect class="box" x="1260" y="468" width="250" height="156"/>
+<rect class="head" x="1260.75" y="468.75" width="248.5" height="51.25"/>
+<path class="rule" d="M1260 520 H1510 M1260 614 H1510"/>
+<text class="keyword" x="1385" y="488">«enumeration»</text>
+<text class="name" x="1385" y="507">PaymentStatus</text>
+<text class="member" x="1273" y="543">PENDING</text>
+<text class="member" x="1273" y="563">AUTHORIZED</text>
+<text class="member" x="1273" y="583">DECLINED</text>
+
+<!-- Implementations -->
+<rect class="box" x="680" y="715" width="340" height="117"/>
+<rect class="head" x="680.75" y="715.75" width="338.5" height="34.25"/>
+<path class="rule" d="M680 750 H1020 M680 760 H1020"/>
+<text class="name" x="850" y="738">CardProvider</text>
+<text class="member" x="693" y="784"><tspan class="visibility">+ </tspan>authorize(request: <tspan class="type">PaymentRequest</tspan>):</text>
+<text class="member type" x="706" y="804">ProviderResult</text>
+<rect class="box" x="1050" y="715" width="340" height="117"/>
+<rect class="head" x="1050.75" y="715.75" width="338.5" height="34.25"/>
+<path class="rule" d="M1050 750 H1390 M1050 760 H1390"/>
+<text class="name" x="1220" y="738">WalletProvider</text>
+<text class="member" x="1063" y="784"><tspan class="visibility">+ </tspan>authorize(request: <tspan class="type">PaymentRequest</tspan>):</text>
+<text class="member type" x="1076" y="804">ProviderResult</text>
+
+<!-- Notation legend -->
+<path d="M46 915 H1554" stroke="#94A3B8" stroke-width="1"/>
+<g class="edge">
+<path d="M46 947 H98 M98 938 V956"/>
+<path d="M212 947 H264 M264 938 V956 M252 941 L264 947 L252 953"/>
+<path d="M433 947 H460 M484 938 V956 M460 947 L472 940.5 L484 947 L472 953.5 Z"/>
+<path d="M602 947 H630 M654 938 V956"/>
+<path d="M630 947 L642 940.5 L654 947 L642 953.5 Z" fill="#334155"/>
+<path d="M774 947 H810 M826 938 V956 M810 938 L825 947 L810 956 Z"/>
+<path class="dash" d="M954 947 H990"/>
+<path d="M1006 938 V956 M990 938 L1005 947 L990 956 Z"/>
+<path class="dash" d="M1113 947 H1165"/>
+<path d="M1165 938 V956 M1153 941 L1165 947 L1153 953"/>
+</g>
+<g class="legend"><text x="110" y="951">association</text><text x="276" y="951">navigable association</text><text x="497" y="951">aggregation</text><text x="666" y="951">composition</text><text x="838" y="951">generalization</text><text x="1018" y="951">realization</text><text x="1178" y="951">dependency</text></g>
+</svg>

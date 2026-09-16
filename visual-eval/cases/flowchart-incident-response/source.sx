@@ -1,0 +1,26 @@
+%% Context: Production incident runbook spanning on-call, engineering, and communications teams.
+flowchart LR
+  A([Alert fired]) --> B[On-call acknowledges]
+  B --> C{Customer impact?}
+  subgraph OnCall [On-call]
+    C -->|No| D[Investigate and close]
+    C -->|Yes| E{Severity 1 or 2?}
+    E -->|No| F[Create incident channel]
+    E -->|Yes| G[[Page incident commander]]
+  end
+  subgraph Engineering [Engineering]
+    F --> H[Assign service owner]
+    G --> H
+    H --> I[Mitigate service]
+    I --> J{Service restored?}
+    J -->|No| K[Escalate specialist]
+    K -.-> I
+  end
+  subgraph Communications [Communications]
+    G --> L[Publish status update]
+    J -->|Yes| M[Send resolution update]
+  end
+  J -->|Yes| N([Resolve incident])
+  N --> O[Schedule postmortem]
+  D --> N
+  M --- N

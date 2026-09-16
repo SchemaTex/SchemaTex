@@ -1,0 +1,7 @@
+# Scenario: retailer replenishment responds to perceived stock gaps with a delayed supply loop.
+causalloop "Retail inventory oscillation"
+"Inventory" -> "Perceived stock gap" : -
+"Perceived stock gap" -> "Order rate" : +
+"Order rate" -> "Inbound deliveries" : + delay
+"Inbound deliveries" -> "Inventory" : +
+loop B1 "Replenishment with delay"

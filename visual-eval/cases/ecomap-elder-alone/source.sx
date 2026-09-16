@@ -1,0 +1,13 @@
+# Social-work ecomap: an older adult living alone with health care, neighbors, and a tenuous transport connection.
+ecomap "Mr. Lewis Living Independently"
+  center: lewis [male, age: 82, label: "Mr. Lewis"]
+  daughter [label: "Daughter", category: family, importance: major]
+  homecare [label: "Home Health Nurse", category: health]
+  seniors [label: "Senior Center", category: community]
+  neighbors [label: "Next-door Neighbors", category: friends]
+  transit [label: "Paratransit", category: government]
+  lewis === daughter
+  homecare --> lewis
+  lewis == seniors
+  lewis == neighbors
+  lewis --- transit

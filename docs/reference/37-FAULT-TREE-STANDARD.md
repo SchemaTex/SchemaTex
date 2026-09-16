@@ -28,7 +28,7 @@ Fault tree and bowtie are natural siblings: a bowtie is literally *a fault tree 
 
 **Naming: the keyword is `faulttree`.** Schematex keywords are single lowercase words (`bpmn`, `sld`, `usecase`, `petri`, `sequence`). `faulttree` follows that rule, is unambiguous, and is SEO-aligned with the search term "fault tree." `detect()` also accepts **`fta`** as an alias (the universal acronym), but the canonical header is `faulttree`. We reject the shorter `tree` (collides with phylo / decisiontree / taxonomy) and `ft` (too cryptic).
 
-**The differentiator is the cut sets, not the dome.** Anyone can draw a dome and a circle — draw.io and Lucidchart ship a fault-tree shape stencil and stop there; the result is a picture, not a model. A *real* FTA engine knows that the tree is a Boolean function and **computes its minimal cut sets** (the irreducible combinations of basic-event failures that cause the top event) and the **top-event probability** from per-event probabilities. That is the whole point of drawing a fault tree, and it is precisely the stance `pert` takes toward scheduling and `petri` toward the marking: the render is downstream of the semantics. The reference image Victor supplied — green gates, circular basic events, **minimal cut sets boxed in red** — makes "highlight the computed cut sets" a first-class render feature, driven by `analysis:` directives (§2.4, §4, §5.6).
+**The differentiator is the cut sets, not the dome.** Anyone can draw a dome and a circle — draw.io and Lucidchart ship a fault-tree shape stencil and stop there; the result is a picture, not a model. A *real* FTA engine knows that the tree is a Boolean function and **computes its minimal cut sets** (the irreducible combinations of basic-event failures that cause the top event) and the **top-event probability** from per-event probabilities. That is the whole point of drawing a fault tree, and it is precisely the stance `pert` takes toward scheduling and `petri` toward the marking: the render is downstream of the semantics. The render uses green gates, circular basic events, red single-point-of-failure rings, and a compact cut-set summary, driven by `analysis:` directives (§2.4, §4, §5.6).
 
 ---
 
@@ -98,7 +98,7 @@ This is the point of the engine — the equivalent of `pert`'s critical path and
 
 | Concept | Meaning | Rendering | v0.1 |
 |---|---|---|:--:|
-| **Minimal cut set (MCS)** | a set of basic events whose *simultaneous* occurrence causes the top event, such that **no proper subset is also a cut set** | each MCS **boxed in red** (the reference-image look); listed in `<desc>` + exposed via `data-cutset` | ✅ |
+| **Minimal cut set (MCS)** | a set of basic events whose *simultaneous* occurrence causes the top event, such that **no proper subset is also a cut set** | counted by order in the footer; full membership listed in `<desc>`; single points of failure ringed in red | ✅ |
 | **Cut-set order** | the cardinality of an MCS (a 1-event MCS = a single point of failure) | order-1 MCS flagged as SPOF in `<desc>` | ✅ |
 | **Top-event probability** `P(top)` | computed from per-basic-event probabilities via the cut sets (rare-event approx; MCUB; note exact inclusion-exclusion) | annotated near the top event when `show: probability`; per-event `p` rendered beside circles | ✅ |
 | **Repeated / shared basic event** | a basic event appearing under more than one gate — the case naive algorithms get wrong | drawn once or duplicated with a shared-id tag; cut-set engine applies Boolean **absorption / idempotence** | ✅ |
@@ -188,9 +188,7 @@ TRANSFER
         ──────
 
 COMPUTED ANALYSIS
-   Minimal cut set    boxed in RED:  ┏━━━━━━━━━━━━┓
-                                     ┃ {MSF, CDM} ┃   ← order-2 MCS
-                                     ┗━━━━━━━━━━━━┛
+   Minimal cut sets: counts by order in the footer; membership in SVG description
    Single point of failure (order-1 MCS)  → red box around one circle + SPOF tag
    P(top) = 0.0041  annotated beside the top rectangle (show: probability)
 ```
@@ -366,12 +364,10 @@ Either way, **the cut-set math sees one variable** — this is the correctness p
 
 After layout, the engine runs MOCUS (§2.4) and, when `analysis: cutsets` is active:
 
-1. Each **minimal cut set** is rendered as a **red rounded box** (`CUTSET_PAD` padding) enclosing the basic-event instances that form it — matching the reference image. When a cut set's members are not adjacent, the box wraps the smallest enclosing region and is tagged `data-cutset="MSF,CDM"`.
-2. **Order-1 cut sets (single points of failure)** get the red box around a single circle plus a `data-spof="true"` tag and a `<desc>` note.
-3. Overlapping cut-set boxes (a shared event in several MCS) are drawn with slight offset + distinct `data-cutset-index`, so each is individually inspectable.
-4. When `show: probability`, `P(top)` is annotated beside the top rectangle and each cut set's `P(Cⱼ)` is available via `data-cutset-prob`.
-
-This is exactly the `pert` stance: the **red accent is reserved for the computed-critical thing** — there, the critical path; here, the cut sets / SPOFs.
+1. **Order-1 cut sets (single points of failure)** receive a compact red ring around the event with `data-spof="true"`, cut-set membership, and probability metadata.
+2. Multi-event cut sets do not create enclosing regions: proximity on the page does not define the logical combination, and overlapping boxes obscure unrelated branches.
+3. A footer reports the total count and counts by order. Complete membership and available probabilities remain in the analysis result and SVG description.
+4. When probability analysis is enabled, `P(top)` is annotated beside the top rectangle.
 
 ---
 
@@ -525,7 +521,7 @@ faulttree "Both pumps fail"
   basic PA "Pump A fails" p: 0.01
   basic PB "Pump B fails" p: 0.01
 ```
-*Assert:* 1 top, 1 AND gate, 2 basic events; the **single minimal cut set is `{PA, PB}`** (order 2) → one red box around both circles; **no SPOF**; `P(top) ≈ 0.01·0.01 = 1.0e-4` (rare-event). Layout: T at level 0, gate below it, PA/PB at level 1.
+*Assert:* 1 top, 1 AND gate, 2 basic events; the **single minimal cut set is `{PA, PB}`** (order 2) → counted in the footer with membership in the SVG description; **no SPOF**; `P(top) ≈ 0.01·0.01 = 1.0e-4` (rare-event). Layout: T at level 0, gate below it, PA/PB at level 1.
 
 ### TC-2 — OR tree (each input is its own cut set + SPOFs)
 ```
@@ -610,3 +606,8 @@ Each has a slot in §2 so adding it is additive — no DSL or type breakage:
 - **Common-cause / uncertainty propagation** — Monte-Carlo over lognormal event-probability distributions to produce a P(top) confidence interval.
 - **Multi-file / multi-page transfers** — true transfer-in/out across documents for very large trees.
 - **Bowtie integration** — splice this fault tree's top event into the sibling bowtie's central hazard event (shared `ReliabilityTokens`).
+
+
+### Library rendering update (2026-09-14)
+
+Minimal cut sets are logical event combinations, not spatial regions. The tree now uses compact rings only for single points of failure; a footer reports the cut-set count by order. Full cut-set membership and probabilities remain available in the analysis result and SVG description. Multiple sets no longer paint overlapping rectangles across unrelated branches. Leaf captions and long event IDs participate in subtree width and canvas-height measurement; labels wrap without silently truncating their meaning.

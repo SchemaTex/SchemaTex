@@ -1,0 +1,49 @@
+{
+  "id": "circuit-automotive-fusebox",
+  "type": "circuit",
+  "title": "Vehicle accessory fuse box",
+  "goal": "Show a protected 12 V accessory system with switched relay loads and clearly visible chassis returns.",
+  "rubric": [
+    {
+      "id": "battery-and-isolator",
+      "severity": "blocker",
+      "must": "A 12 V battery feeds a labelled 300 A main isolator switch."
+    },
+    {
+      "id": "five-fused-ways",
+      "severity": "blocker",
+      "must": "Five separately labelled fused ways with different visible current ratings are shown after the main feed."
+    },
+    {
+      "id": "main-fuse-protection",
+      "severity": "major",
+      "must": "A clearly labelled 100 A main fuse is visible between the isolator and the fused ways."
+    },
+    {
+      "id": "two-relay-loads",
+      "severity": "major",
+      "must": "Two labelled relays drive the driving lights and air compressor loads."
+    },
+    {
+      "id": "dashboard-controls",
+      "severity": "major",
+      "must": "A dashboard light switch, compressor switch, and two indicator lamps are visible."
+    },
+    {
+      "id": "chassis-returns",
+      "severity": "blocker",
+      "must": "The battery and each accessory load visibly return to a chassis earth connection."
+    },
+    {
+      "id": "readable-ratings",
+      "severity": "minor",
+      "must": "Reference designators and electrical ratings are legible beside the corresponding parts."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Battery, isolator, main fuse and a fused bus with five ways at real automotive ratings; each relay's coil and contact are tied by a dashed association line, the dash switches are grouped, and every load returns to the chassis. One flaw left in place: the 'Battery & main protection' section caption overlaps the isolator's label."
+  }
+}

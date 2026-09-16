@@ -1,0 +1,16 @@
+# Scenario: Customer lifecycle transition model; outgoing probabilities sum to one at every state.
+markov "Customer Lifecycle"
+  analysis: stationary, classify
+  state Prospect
+  state Active
+  state AtRisk
+  state Churned absorbing
+  Prospect -> Prospect : 0.40
+  Prospect -> Active : 0.60
+  Active -> Active : 0.75
+  Active -> AtRisk : 0.15
+  Active -> Churned : 0.10
+  AtRisk -> Active : 0.35
+  AtRisk -> AtRisk : 0.35
+  AtRisk -> Churned : 0.30
+  Churned -> Churned : 1.0

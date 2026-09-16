@@ -1,0 +1,42 @@
+# EHR migration project risk register, scored per ISO 31000 / IEC 31010 consequence-likelihood matrix.
+# cell (col,row) is zero-based: col = consequence level - 1, row = likelihood level - 1 (row 0 at the bottom).
+# value = likelihood x consequence; label = risk IDs in that cell.
+# R1 Medication lists mis-mapped: L4 x C5 = 20
+# R2 Cut-over downtime over 48 h: L3 x C4 = 12
+# R3 Lab interface vendor slips: L4 x C3 = 12
+# R4 Lead clinical analyst leaves: L3 x C3 = 9
+# R5 Nurses untrained at go-live: L4 x C2 = 8
+# R6 Budget overrun above 10%: L2 x C3 = 6
+# R7 Ransomware during cut-over: L2 x C5 = 10
+# R8 Label printers misconfigured: L5 x C1 = 5
+# R9 Legacy archive access lost: L1 x C4 = 4
+# R10 Downtime drills not rehearsed: L3 x C4 = 12
+# R11 Patient records wrongly merged: L3 x C5 = 15
+matrix heatmap 5x5 "EHR migration — project risk matrix"
+rows: [Rare, Unlikely, Possible, Likely, Almost certain]
+cols: [Insignificant, Minor, Moderate, Major, Severe]
+cell (0,0) value: 1
+cell (1,0) value: 2
+cell (2,0) value: 3
+cell (3,0) value: 4 label: "R9"
+cell (4,0) value: 5
+cell (0,1) value: 2
+cell (1,1) value: 4
+cell (2,1) value: 6 label: "R6"
+cell (3,1) value: 8
+cell (4,1) value: 10 label: "R7"
+cell (0,2) value: 3
+cell (1,2) value: 6
+cell (2,2) value: 9 label: "R4"
+cell (3,2) value: 12 label: "R2, R10"
+cell (4,2) value: 15 label: "R11"
+cell (0,3) value: 4
+cell (1,3) value: 8 label: "R5"
+cell (2,3) value: 12 label: "R3"
+cell (3,3) value: 16
+cell (4,3) value: 20 label: "R1"
+cell (0,4) value: 5 label: "R8"
+cell (1,4) value: 10
+cell (2,4) value: 15
+cell (3,4) value: 20
+cell (4,4) value: 25

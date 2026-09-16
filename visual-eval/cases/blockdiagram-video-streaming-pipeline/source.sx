@@ -1,0 +1,17 @@
+# Assumptions: one live source is encoded into adaptive bitrate renditions before CDN delivery.
+# The control plane manages encoding profiles and distribution health.
+blockdiagram "Video streaming pipeline"
+source = block("Live Video Source") [role: input]
+ingest = block("Ingest Gateway") [role: generic]
+encoder = block("Adaptive Bitrate Encoder") [role: generic]
+origin = block("Origin Storage") [role: generic]
+cdn = block("Content Delivery Network") [role: generic]
+viewer = block("Viewer Player") [role: output]
+control = block("Streaming Control Plane") [role: controller]
+source -> ingest ["RTMP / SRT"]
+ingest -> encoder ["mezzanine stream"]
+encoder -> origin ["HLS renditions"]
+origin -> cdn ["origin pull"]
+cdn -> viewer ["adaptive video"]
+control -> encoder ["encoding profiles"]
+control -> cdn ["distribution policy"]

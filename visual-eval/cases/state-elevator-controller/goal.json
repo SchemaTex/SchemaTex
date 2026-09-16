@@ -1,0 +1,87 @@
+{
+  "id": "state-elevator-controller",
+  "type": "state",
+  "title": "Elevator controller",
+  "goal": "Show an elevator controller with composite travel and door-cycle states.",
+  "rubric": [
+    {
+      "id": "composite-motion",
+      "severity": "blocker",
+      "must": "A visible composite Moving state contains direction-selection, Going Up, and Going Down substates."
+    },
+    {
+      "id": "composite-door-cycle",
+      "severity": "blocker",
+      "must": "A visible composite Door Cycle state contains Opening, Open, and Closing substates."
+    },
+    {
+      "id": "call-handling",
+      "severity": "major",
+      "must": "A call visibly takes Idle into Moving, and a queued call visibly takes the controller from Door Cycle back to Moving."
+    },
+    {
+      "id": "door-obstruction",
+      "severity": "major",
+      "must": "Closing visibly returns to Open on an obstruction-detected transition."
+    },
+    {
+      "id": "emergency-path",
+      "severity": "major",
+      "must": "Idle and Moving visibly lead to Emergency Stop, with reset acknowledged returning to Idle."
+    },
+    {
+      "id": "initial-state",
+      "severity": "minor",
+      "must": "The initial marker visibly enters Idle."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows the requested Moving and Door Cycle composite states, traces the call, queued-call, obstruction, and emergency transitions, and shows the initial marker entering Idle. Labels and connectors are readable and traceable; no material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:05.910Z",
+      "targetHash": "bf64ed08503d",
+      "sourceHash": "4396581c4114",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "composite-motion",
+          "verdict": "pass",
+          "evidence": "Moving contains Selecting Direction, Going Up, and Going Down, with target-above/target-below transitions and floor-reached returns."
+        },
+        {
+          "id": "composite-door-cycle",
+          "verdict": "pass",
+          "evidence": "Door Cycle contains Opening, Open, and Closing, and its initial and final markers are visible."
+        },
+        {
+          "id": "call-handling",
+          "verdict": "pass",
+          "evidence": "Idle transitions to Moving on “call received”; Door Cycle returns to Moving on “queued call.”"
+        },
+        {
+          "id": "door-obstruction",
+          "verdict": "pass",
+          "evidence": "A visible transition from Closing returns to Open, labeled “obstruction detected.”"
+        },
+        {
+          "id": "emergency-path",
+          "verdict": "pass",
+          "evidence": "Idle and Moving each lead to Emergency Stop on “emergency pressed”; “reset acknowledged” returns to Idle."
+        },
+        {
+          "id": "initial-state",
+          "verdict": "pass",
+          "evidence": "The initial marker above Idle has a visible arrow entering Idle."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "bpmn-purchase-to-pay",
+  "type": "bpmn",
+  "variant": "collaboration",
+  "title": "Purchase to pay",
+  "goal": "Show requisition approval, supplier exchange, invoice match, and payment.",
+  "rubric": [
+    {
+      "id": "supplier-messages",
+      "severity": "blocker",
+      "must": "Purchase order, Invoice, and Payment advice are dashed message flows crossing Buyer and Supplier pools."
+    },
+    {
+      "id": "xor",
+      "severity": "blocker",
+      "must": "Approved? and Match? are exclusive gateways with labelled alternative paths."
+    },
+    {
+      "id": "lanes",
+      "severity": "major",
+      "must": "Buyer has Requester, Procurement, and Finance lanes."
+    },
+    {
+      "id": "ends",
+      "severity": "major",
+      "must": "Paid and Exception are visibly end events."
+    },
+    {
+      "id": "sequence",
+      "severity": "minor",
+      "must": "Invoice matching visibly precedes payment."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/bpmn/collaboration/ideal.svg (sha256 8de8bd2f08be). Vision reviewed all six rasterized targets: neutral process palette, event and task markers, swimlanes, separate conditional/default routes and pool-boundary message arrows; fixed wire-body overlaps and gateway caption collisions. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

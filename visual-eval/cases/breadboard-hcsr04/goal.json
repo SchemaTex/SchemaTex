@@ -1,0 +1,40 @@
+{
+  "id": "breadboard-hcsr04",
+  "type": "breadboard",
+  "title": "HC-SR04 Ultrasonic Sensor",
+  "goal": "A practitioner can visually assess the HC-SR04 Ultrasonic Sensor scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "physical-board",
+      "severity": "blocker",
+      "must": "The Arduino Uno and named module are visible with identifiable connection headers."
+    },
+    {
+      "id": "power-ground",
+      "severity": "blocker",
+      "must": "Red positive-supply wiring and black ground-return wiring are visibly distinct."
+    },
+    {
+      "id": "signal-path",
+      "severity": "major",
+      "must": "The visible signal path connects the controller or IC to the named load or module."
+    },
+    {
+      "id": "series-correctness",
+      "severity": "major",
+      "must": "All four declared module connections are visible as separate wires landing on the appropriate pins; no unconnected or invented series component is shown."
+    },
+    {
+      "id": "buildable-layout",
+      "severity": "minor",
+      "must": "Wire endpoints visibly land on controller and module headers without ambiguous floating connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/breadboard/ideal.svg (sha256 c5804491ffdc). Updated physical Arduino/module symbols from the reviewed symbol library, 18 px hole pitch, and dressed rounded jumpers. Wire endpoints and net colours follow source. Unused breadboards are omitted in direct module assemblies. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

@@ -1,0 +1,18 @@
+# Assumptions: path components fail independently; the core switch and firewall are shared series elements.
+# Either complete access path may carry the service, but both traverse the shared single points of failure.
+rbd "Redundant network service path"
+  series {
+    block CORE "Core switch" R=0.999
+    block FIREWALL "Perimeter firewall" R=0.998
+    parallel {
+      series {
+        block ROUTER_A "WAN router A" R=0.990
+        block CARRIER_A "Carrier A circuit" R=0.985
+      }
+      series {
+        block ROUTER_B "WAN router B" R=0.990
+        block CARRIER_B "Carrier B circuit" R=0.985
+      }
+    }
+    block SERVICE "Network service endpoint" R=0.999
+  }

@@ -35,9 +35,9 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 - **Pin**: `start`（左/入方向端）, `end`（右/出方向端）
 - **SVG Path (ANSI, 水平)**:
   ```
-  M 0,0 L 5,0 L 8,-8 L 12,8 L 16,-8 L 20,8 L 24,-8 L 28,8 L 32,-8 L 35,0 L 40,0
+  M 0 0 H 5 L 7.5 -5.5 L 12.5 5.5 L 17.5 -5.5 L 22.5 5.5 L 27.5 -5.5 L 32.5 5.5 L 35 0 H 40
   ```
-  其中 y 偏移 ±8px 为锯齿幅度
+  其中 y 偏移 ±5.5px 为锯齿幅度
 
 #### Capacitor (非极性)
 - **符号**: 两条平行线，间距 4px，两端引线
@@ -55,7 +55,7 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 
 #### Capacitor (极性/电解)
 - 右板改为弧形（curved plate）或标注 `+`
-- 弧形右板: `<path d="M 12,-12 Q 16,0 12,12" fill="none"/>`
+- 弧形右板: `<path d="M 16,-10 Q 8,0 16,10" fill="none"/>`
 - `+` 标注: 在左板外侧添加 `+` 文字
 
 #### Inductor
@@ -469,6 +469,12 @@ Anything else (e.g. `N1`, `MyComponent`) → must declare with `type=<...>`.
 
 > **Scope note:** Schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617 conventions). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar. An id with no inferable prefix and no `type=` remains an error. An explicit but unknown `type=` is well-formed, so it renders as a neutral labeled generic-IC box with all declared nets bound to numbered pins and emits a structured `circuit/unknown-component-type` warning (`token`, `line`). It is never rendered as an error-coloured `?` placeholder.
 
+Netlist `W` declarations are ideal conductors, not placed two-pin components. Both
+`W1 NET_A NET_B` and `W1 U1.out U2.in` merge their endpoint nets transitively.
+Labels and values remain visible as annotations on the resulting net, including
+redundant ground bonds. Terminal-block pins remain independent unless explicitly
+connected. A shared net does not specify physical cable order or device location.
+
 ### 4.5.2 Ground nets
 
 Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd | vss | com)` (case-insensitive, with optional `_<word>` or `<digit>` suffix) canonicalize to ground. Examples: `0`, `GND`, `gnd_ref`, `AGND`, `DGND_DIG`, `EARTH1`, `PE`, `VSS`, `COM`.
@@ -487,16 +493,81 @@ After the pin nets, the parser interprets extras in this order:
 
 ### 4.5.5 Auto-layout
 
-Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layout is computed by [autolayout.ts](../../src/diagrams/circuit/autolayout.ts). The engine first checks for common readable idioms:
+Netlist mode separates topology classification, placement and routing through
+[autolayout.ts](../../src/diagrams/circuit/autolayout.ts) and
+[schematic-layout.ts](../../src/diagrams/circuit/schematic-layout.ts). It derives
+source/return nets, signal layers, shunt branches and pin orientations from
+connectivity and symbol geometry. Household lighting, repeated loads and single
+IC circuits use this same pipeline; they do not dispatch to separate templates.
 
-- single-phase source + protection/control + lamp/load + neutral return → a two-rail household loop (`L` path above, `N` return below);
-- two `switch_spdt` devices sharing two traveler nets → a two-way / stair-lighting layout with the two travelers drawn between switches;
-- source + series protection/control + three-way selector + repeated loads → a topology-derived parallel load bank. Each selector output owns a separate positive rail, repeated branches receive independent lanes, and all return pins share one continuous ground rail;
-- otherwise, the generic electronic schematic layout uses a top spine row, shunt band, and ground rail.
+A bounded search compares alternative traversals and folds. Body, caption and
+junction clearance improvements take precedence over wire length and bend cost;
+no candidate may worsen those constraints to lower its ink cost. The result still
+requires visual review: these measurements do not define aesthetic quality.
+
+Junction clearance and nearby caption placement are engine responsibilities. No
+per-wire coordinates, curve selection or caption offsets are required from the DSL.
 
 For exact publication drawings, positional DSL is still available, but generated ordinary schematics should prefer netlist mode.
 
-### 4.5.6 Common AI-generation pitfalls
+### 4.5.6 Functional structure (optional)
+
+A netlist says what is connected. Add functional information when a circuit has
+several stages or a physical cable bus. Simple circuits do not need groups.
+
+For LLM generation, start with components and connections. Add groups only for
+distinct functional stages; do not split every small circuit into input/core/output
+groups. Prefer an existing component type with its defined pins. Use generic IC
+pin roles only when representing a custom device, keeping net order and pin order
+aligned. Choose roles from the device's function, never to move a pin on the page.
+
+```text
+circuit "Sensor interface" netlist
+V1 VP GND 5V
+U1 VP GND IN MID type=ic pins="VCC:power,GND:return,IN:input,OUT:output" label="Sensor"
+U2 VP GND MID OUT type=ic pins="VCC:power,GND:return,IN:input,OUT:output" label="Processor"
+R1 IN GND 10k
+R2 OUT GND 1k
+group sense "Sensing": U1 R1
+group compute "Processing": U2 R2
+flow sense -> compute
+```
+
+- `group id "Caption": componentIds` keeps the named components together. The caption
+  is optional. Every component belongs to at most one group; ungrouped components
+  remain in a separate unit. Include a stage's supporting parts in its group.
+- `flow sense -> compute -> output` states the reading order of groups. Branching
+  flows can use several lines. Flow must be acyclic; electrical feedback remains
+  in the netlist and does not require a reverse flow statement. Without `flow`,
+  groups follow declaration order. The engine can fold complete groups onto another row.
+- Generic IC pins can declare `input`, `output`, `bidirectional`, `power` or `return`.
+  When using roles, annotate every pin. Pin order still binds to the positional nets;
+  roles never change connectivity. The engine derives pin sides and symbol size.
+  `return` means a supply reference, not any pin with a minus sign: a differential
+  input's negative terminal is still `input`.
+
+A physical bus additionally declares the component order along its main run:
+
+```text
+circuit "Field bus" netlist
+U1 A B type=ic pins="A:bidirectional,B:bidirectional" label="Controller"
+U2 A B type=ic pins="A:bidirectional,B:bidirectional" label="Remote node"
+R1 A B 120
+R2 A B 120
+bus A,B: R1 -> U1 -> U2 -> R2
+```
+
+Each listed component must connect to every listed net. Components and nets cannot
+belong to multiple physical bus declarations. A bus must fit within one group, or
+have all its members ungrouped. The engine reserves the main run and connects its
+interfaces with the same obstacle-avoiding router used for ordinary nets.
+
+For LLM-generated diagrams, describe function and connectivity. Do not add
+coordinates, bend points, spacing values or pin-side settings to repair a drawing.
+The engine owns those decisions. A group is not a promise of textbook composition:
+bridge symmetry, dense feedback and folded supply distribution still need visual review.
+
+### 4.5.7 Common AI-generation pitfalls
 
 - **`W1`/`W2` for wires** — supported (see prefix table). Real SPICE has no `W` device; this is a textbook/AI convention that schematex accepts as a quality-of-life feature.
 - **Household lamps** — write `L1 switched neutral type=lamp label="Lamp"`; bare `L1` is an inductor by SPICE convention.

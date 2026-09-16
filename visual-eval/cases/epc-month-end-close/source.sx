@@ -1,0 +1,23 @@
+# Scenario: a finance team's month-end close with three reconciliations run in parallel.
+epc "Month-end close"
+  layout: tb
+  event E1 "Period ended"
+  function F1 "Lock sub-ledgers"
+  event E2 "Sub-ledgers locked"
+  and A1
+  function F2 "Reconcile bank accounts"
+  function F3 "Post accruals"
+  function F4 "Agree intercompany balances"
+  event E3 "Bank reconciled"
+  event E4 "Accruals posted"
+  event E5 "Intercompany agreed"
+  and A2
+  function F5 "Prepare trial balance"
+  event E6 "Trial balance ready"
+  function F6 "Approve financial statements"
+  event E7 "Books closed"
+  E1 -> F1 -> E2 -> A1
+  A1 -> F2 -> E3 -> A2
+  A1 -> F3 -> E4 -> A2
+  A1 -> F4 -> E5 -> A2
+  A2 -> F5 -> E6 -> F6 -> E7

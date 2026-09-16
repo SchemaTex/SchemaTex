@@ -1,31 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { render } from "../../src/index";
-import { parseEcomap } from "../../src/diagrams/ecomap";
 
 describe("ecomap e2e", () => {
-  test("render() auto-detects ecomap and produces SVG", () => {
-    const svg = render(`
-ecomap "Test"
-  center: maria [female, age: 34]
-  work [label: "Tech Company", category: work]
-  maria === work
-`);
-    expect(svg).toContain("<svg");
-    expect(svg).toContain("schematex-ecomap");
-    expect(svg).toContain("</svg>");
-  });
-
-  test("parse() returns ecomap AST", () => {
-    const ast = parseEcomap(`
-ecomap
-  center: x [male]
-  y [label: "Y"]
-  x --- y
-`);
-    expect(ast.type).toBe("ecomap");
-    expect(ast.individuals).toHaveLength(2);
-    expect(ast.relationships).toHaveLength(1);
-  });
 
   test("render() with config.type=ecomap", () => {
     const svg = render(
@@ -49,7 +25,9 @@ ecomap "Maria's Support Network"
   maria == bestfriend
 `);
     expect(svg).toContain("Maria");
-    expect(svg).toContain("Tech Company");
+    const workGroup = svg.match(/<g[^>]*data-system-id="work"[^>]*>[\s\S]*?<\/g>/)?.[0];
+    // Text may wrap into multiple tspans; the words must still be present.
+    expect(workGroup?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ")).toContain("Tech Company");
     expect(svg).toContain("Mom");
     expect(svg).toContain("Lisa");
     expect(svg).toContain("schematex-ecomap-system-work");

@@ -1,0 +1,78 @@
+{
+  "id": "phylo-plant-family",
+  "type": "phylo",
+  "title": "Flowering Plant Families",
+  "goal": "A practitioner can visually assess the Flowering Plant Families scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "tree-topology",
+      "severity": "blocker",
+      "must": "A rooted branching tree visibly shows the stated sister taxa and their clade relationships."
+    },
+    {
+      "id": "branch-lengths",
+      "severity": "blocker",
+      "must": "Horizontal branch lengths visibly vary to encode the supplied evolutionary distances."
+    },
+    {
+      "id": "tip-labels",
+      "severity": "major",
+      "must": "The named taxa are legible at the tree tips."
+    },
+    {
+      "id": "highlighted-clade",
+      "severity": "major",
+      "must": "The named clade is visibly highlighted distinctly from the rest of the tree."
+    },
+    {
+      "id": "scale",
+      "severity": "minor",
+      "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
+    }
+  ],
+  "split": "holdout",
+  "variant": "rectangular",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly presents a complete rectangular phylogram matching the supplied Newick topology, with variable horizontal branch lengths, legible tip labels, a distinct green Rosids highlight, and a substitutions/site scale.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:01.718Z",
+      "targetHash": "c043e3d36850",
+      "sourceHash": "6c05a7f4a1ea",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "Fabaceae and Rosaceae are visibly paired as sister taxa, Asteraceae and Lamiaceae form the other sister pair, and both pairs join at the rooted split."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Horizontal branches visibly differ in length, including the unequal terminal branches within both sister pairs."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "Fabaceae, Rosaceae, Asteraceae, and Lamiaceae are all clearly legible beside their respective tips."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "The Fabaceae–Rosaceae branches are green and the corresponding taxa are enclosed in a pale-green region with a green bracket labeled Rosids."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled 0.05 substitutions/site, with supporting text identifying horizontal distance as substitutions/site."
+        }
+      ]
+    }
+  }
+}

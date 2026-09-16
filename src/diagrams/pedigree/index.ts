@@ -47,6 +47,13 @@ export const pedigree: DiagramPlugin = {
       const ast = parsePedigree(text);
       const layout = layoutPedigree(ast, PEDIGREE_LAYOUT_CONFIG);
       return [
+        ...ast.individuals.filter(ind => ind.childType?.startsWith("donor-")).map(ind => ({
+          severity: "warning" as const,
+          code: "PEDIGREE_DONOR_LINK_UNSPECIFIED",
+          message: `${ind.id}: donor-assisted birth is annotated; donor identity and genetic linkage are unspecified.`,
+          hint: "An annotation does not identify the donor or establish genetic parentage.",
+          fatal: false,
+        })),
         ...findPedigreeCoupleCollisions(layout).map(({ edge, node }) => ({
           severity: "error" as const,
           code: "PEDIGREE_COUPLE_EDGE_NODE_COLLISION",

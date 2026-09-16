@@ -85,6 +85,12 @@ describe("parsePhylo", () => {
     expect(ast.type).toBe("phylo");
     expect(ast.root.children).toHaveLength(2);
     expect(ast.mode).toBe("phylogram");
+    expect(ast.layout).toBe("slanted");
+  });
+
+  test("leading comments do not hide the selected layout or title", () => {
+    const ast = parsePhylo('# Context\n\nphylo "Ancestry" [layout: rectangular]\n  newick: "(A:1,B:2);"');
+    expect(ast.title).toBe("Ancestry");
     expect(ast.layout).toBe("rectangular");
   });
 
@@ -204,4 +210,10 @@ scale "substitutions/site"`);
     expect(ast.clades[0].members).toEqual(["Human", "Chimp", "Gorilla"]);
     expect(ast.scaleLabel).toBe("substitutions/site");
   });
+});
+
+test("rejects incomplete or trailing Newick subtrees instead of dropping taxa", () => {
+  for (const source of ["(A:1,B:2):1,C:3;", "((A,B),C;", "(A,B));"]) {
+    expect(() => parseNewick(source)).toThrow(PhyloParseError);
+  }
 });

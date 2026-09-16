@@ -1,0 +1,18 @@
+# Scenario: bracket assembly — a stiffener with unequal fillets, a pipe support welded all around in the field, and a V-groove splice on a backing bar.
+welding standard: aws "Bracket assembly"
+joint "Stiffener to base plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  tail: "GMAW"
+}
+joint "Pipe support to base plate" {
+  arrow: fillet size=6
+  around
+  field
+  tail: "SMAW"
+}
+joint "Splice plate butt joint" {
+  arrow: vgroove size=12 angle=60 root=3 contour=flush finish=G
+  other: backing
+  tail: "SMAW; E7018"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "genogram-cutoff-and-fusion",
+  "type": "genogram",
+  "title": "Nguyen emotional process",
+  "goal": "Show a Bowen-oriented map of cutoff, fusion, conflict, distance, and closeness.",
+  "rubric": [
+    {
+      "id": "family",
+      "severity": "blocker",
+      "must": "Minh and Lan visibly connect as parents of Anh, Bao, and Chi."
+    },
+    {
+      "id": "cutoff",
+      "severity": "blocker",
+      "must": "A visibly broken cutoff line labelled Estranged connects Minh and Anh."
+    },
+    {
+      "id": "fusion",
+      "severity": "blocker",
+      "must": "A visibly multi-line fused relationship labelled Over-involved connects Lan and Chi."
+    },
+    {
+      "id": "other-overlays",
+      "severity": "major",
+      "must": "Conflict, distant, and close relationships are visually distinguishable for the named pairs."
+    },
+    {
+      "id": "index",
+      "severity": "minor",
+      "must": "Chi alone visibly carries the index-person marker."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Minh and Lan are the parents of Anh, Bao and index person Chi; Anh and David are the parents of Oliver. Smooth emotional arcs show Minh–Anh cutoff labelled Estranged, Lan–Chi three-line fusion labelled Over-involved, Minh–Bao conflict, Bao–Chi distance and Anh–Oliver closeness."
+  }
+}

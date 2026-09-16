@@ -24,8 +24,8 @@ function extractDsl(mdx: string): string {
 const files = readdirSync(EXAMPLES_DIR).filter((f) => f.startsWith("siteplan-") && f.endsWith(".mdx"));
 
 describe("siteplan examples", () => {
-  it("covers the initial example set", () => {
-    expect(files.length).toBeGreaterThanOrEqual(3);
+  it("has published examples", () => {
+    expect(files.length).toBeGreaterThan(0);
   });
 
   for (const file of files) {

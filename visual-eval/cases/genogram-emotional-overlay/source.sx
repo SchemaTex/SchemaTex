@@ -1,0 +1,16 @@
+genogram "The Carter Family Relationships" [asOf: 2026]
+  arthur [male, 1942, label: "Arthur Carter"]
+  ruth [female, 1945, label: "Ruth Carter"]
+  claire [female, 1973, label: "Claire Carter"]
+
+  arthur -- ruth
+    michael [male, 1970, label: "Michael Carter"]
+
+  michael -- claire
+    anna [female, 1996, label: "Anna Carter", index]
+    ben [male, 1999, label: "Ben Carter"]
+    grace [female, 2003, label: "Grace Carter"]
+
+  arthur -cutoff- anna
+  ruth -fused- michael
+  michael -conflict- grace

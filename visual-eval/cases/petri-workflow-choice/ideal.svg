@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067">
+  <title>Review Workflow Choice and Merge</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#000"/></marker>
+  </defs>
+  <rect width="1600" height="1067" fill="#fff"/>
+  <text x="800" y="70" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="46" fill="#000">Review Workflow Choice and Merge</text>
+  <g fill="none" stroke="#000" stroke-width="3.3" stroke-linejoin="round" marker-end="url(#arrow)">
+    <path d="M232 510 H300 V310 H399"/>
+    <path d="M232 510 H300 V710 H399"/>
+    <path d="M421 310 H548"/>
+    <path d="M421 710 H548"/>
+    <path d="M652 310 H789"/>
+    <path d="M652 710 H789"/>
+    <path d="M811 310 H970 V480 H1057.5"/>
+    <path d="M811 710 H970 V540 H1057.5"/>
+    <path d="M1152 510 H1269"/>
+    <path d="M1291 510 H1408"/>
+  </g>
+  <g fill="#fff" stroke="#000" stroke-width="3.3">
+    <circle cx="180" cy="510" r="52"/>
+    <circle cx="600" cy="310" r="52"/>
+    <circle cx="600" cy="710" r="52"/>
+    <circle cx="1100" cy="510" r="52"/>
+    <circle cx="1460" cy="510" r="52"/>
+  </g>
+  <g fill="#000">
+    <circle cx="180" cy="510" r="13.5"/>
+    <rect x="399" y="255" width="22" height="110"/>
+    <rect x="399" y="655" width="22" height="110"/>
+    <rect x="789" y="255" width="22" height="110"/>
+    <rect x="789" y="655" width="22" height="110"/>
+    <rect x="1269" y="455" width="22" height="110"/>
+  </g>
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" text-anchor="middle" fill="#000">
+    <text x="180" y="435">Start</text>
+    <text x="600" y="397">Standard</text>
+    <text x="600" y="620">Expedite</text>
+    <text x="1100" y="435">Reviewed</text>
+    <text x="1460" y="435">Complete</text>
+    <text x="410" y="220">ChooseStandard</text>
+    <text x="410" y="815">ChooseExpedite</text>
+    <text x="800" y="220">ReviewStandard</text>
+    <text x="800" y="815">ReviewExpedite</text>
+    <text x="1280" y="420">Close</text>
+  </g>
+  <text x="800" y="982" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-style="italic" fill="#000">Firing sequence: ChooseStandard → ReviewStandard → Close</text>
+</svg>

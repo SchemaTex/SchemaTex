@@ -1,0 +1,16 @@
+# Closed-loop temperature controller with a negative feedback summing junction.
+blockdiagram "Heat Exchanger Temperature Control Loop"
+setpoint = block("Temperature Setpoint") [role: reference]
+controller = block("PID Controller") [role: controller]
+actuator = block("Control Valve Actuator") [role: actuator]
+plant = block("Heat Exchanger Plant") [role: plant]
+sensor = block("Outlet Temperature Sensor") [role: sensor]
+display = block("Operator Display") [role: output]
+err = sum(+setpoint, -sensor)
+setpoint -> err ["setpoint"]
+err -> controller ["temperature error"]
+controller -> actuator ["valve command"]
+actuator -> plant ["steam flow"]
+plant -> display ["controlled outlet temperature"]
+plant -> sensor ["measured temperature"]
+sensor -> err ["negative feedback"]

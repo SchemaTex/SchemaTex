@@ -1,0 +1,16 @@
+sld "Generator Transfer Distribution" [standard: ansi]
+
+UTIL = utility [voltage: "480 V", label: "Utility Supply"]
+GEN = generator [voltage: "480 V", rating: "250 kVA", label: "Standby Generator"]
+CB_U = breaker [rating: "400 A", icn: "35 kA", label: "Utility Breaker"]
+CB_G = breaker [rating: "300 A", icn: "25 kA", label: "Generator Breaker"]
+ATS = ats [rating: "400 A / 480 V", label: "Open-transition Transfer"]
+NORMAL = bus [voltage: "480 V", label: "Normal-load Bus"]
+ESSENTIAL = bus [voltage: "480 V", label: "Essential-load Bus"]
+
+UTIL -> CB_U
+GEN -> CB_G
+CB_U -> ATS
+CB_G -> ATS
+ATS -> NORMAL
+ATS -> ESSENTIAL

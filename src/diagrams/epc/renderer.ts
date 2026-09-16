@@ -13,6 +13,9 @@
  * data-* for interactivity, svg.ts builder only.
  */
 
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
+
 import type { RenderConfig } from "../../core/types";
 import {
   circle,
@@ -130,7 +133,7 @@ export function renderEpcLayout(layout: EpcLayoutResult, config?: RenderConfig):
 .sx-epc-arrow { fill: ${pal.edge}; stroke: none; }
 .sx-epc-arrow-back { fill: ${pal.backEdge}; stroke: none; }
 .sx-epc-edge-label { fill: ${pal.edgeLabel}; font-size: ${FONT_SIZE.small}px; }
-.sx-epc-title { fill: ${pal.labelText}; font-size: ${FONT_SIZE.title}px; font-weight: 700; }
+.sx-epc-title { fill: ${pal.labelText}; font-size: ${TITLE.size}px; font-weight: ${TITLE.weight}; }
 `.trim()
   );
 
@@ -154,7 +157,8 @@ export function renderEpcLayout(layout: EpcLayoutResult, config?: RenderConfig):
   const inner: string[] = [];
 
   if (ast.title) {
-    inner.push(svgText({ x: layout.width / 2, y: 22, class: "sx-epc-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
+    const title = resolveSceneTitle(ast.title, undefined, layout.width / 2, TITLE.y, config);
+    inner.push(svgText({ x: title.x, y: title.y, ...title.attrs, class: "sx-epc-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
   }
 
   // 1. Edges (behind nodes).

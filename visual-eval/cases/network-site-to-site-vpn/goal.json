@@ -1,0 +1,40 @@
+{
+  "id": "network-site-to-site-vpn",
+  "type": "network",
+  "title": "Site-to-site VPN",
+  "goal": "Show two independently segmented sites joined by a secure IPsec tunnel over the Internet.",
+  "rubric": [
+    {
+      "id": "two-sites",
+      "severity": "blocker",
+      "must": "Headquarters and branch are visibly separate site boundaries with local LAN devices."
+    },
+    {
+      "id": "vpn-tunnel",
+      "severity": "blocker",
+      "must": "The two firewalls are joined by a clearly labelled VPN tunnel crossing the Internet."
+    },
+    {
+      "id": "edge-paths",
+      "severity": "major",
+      "must": "Each site visibly has LAN switch, firewall, router, and ISP path to the Internet."
+    },
+    {
+      "id": "local-subnets",
+      "severity": "major",
+      "must": "The 10.10.0.0/24 and 10.20.0.0/24 local subnet boundaries are visibly labelled."
+    },
+    {
+      "id": "branch-endpoints",
+      "severity": "minor",
+      "must": "The branch visibly includes an analyst workstation and printer."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. Two site boundaries drawn side by side with the public Internet between them. Each site holds the same chain read bottom to top: analyst workstation, LAN switch, firewall, edge router, then out to the Internet on its own ISP link; the branch also has a printer. Inside each site a dashed boundary marks the local subnet, 10.10.0.0/24 at headquarters and 10.20.0.0/24 at the branch, around the switch and the devices behind it. The two firewalls are joined by a violet dashed IPsec tunnel that runs up out of each site and across the gap under the Internet cloud, so the encrypted path is visibly separate from the two plain ISP links. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

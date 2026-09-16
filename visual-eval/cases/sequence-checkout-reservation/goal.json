@@ -1,0 +1,40 @@
+{
+  "id": "sequence-checkout-reservation",
+  "type": "sequence",
+  "title": "Checkout reservation",
+  "goal": "Show reservation before payment and a stock exception.",
+  "rubric": [
+    {
+      "id": "order",
+      "severity": "blocker",
+      "must": "Reserve items visibly occurs before Authorize."
+    },
+    {
+      "id": "alt",
+      "severity": "blocker",
+      "must": "An alt frame separates available and unavailable stock."
+    },
+    {
+      "id": "success",
+      "severity": "major",
+      "must": "Available branch creates Order after payment approval."
+    },
+    {
+      "id": "activation",
+      "severity": "major",
+      "must": "Checkout and Inventory have activation bars."
+    },
+    {
+      "id": "note",
+      "severity": "minor",
+      "must": "A note says Reservation precedes charge."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/sequence/ideal.svg (sha256 c97704a0e340). Vision reviewed all six rasterized targets: distinct call/reply arrowheads, nested frames and operand separators, activation bars, message labels and notes remain readable. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "sld-three-phase-board",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Three-phase distribution board",
+  "goal": "An electrician can trace the incomer through protection and metering to each of six distinctly rated final circuits.",
+  "rubric": [
+    {
+      "id": "incomer-sequence-visible",
+      "severity": "blocker",
+      "must": "The utility supply, main breaker, meter and busbar read as one continuous incomer sequence."
+    },
+    {
+      "id": "six-outgoing-ways",
+      "severity": "blocker",
+      "must": "Exactly six outgoing protective-device branches leave the distribution busbar."
+    },
+    {
+      "id": "way-ratings-attached",
+      "severity": "major",
+      "must": "Each outgoing breaker has a readable rating placed with its own branch rather than a neighbouring branch."
+    },
+    {
+      "id": "final-circuits-labelled",
+      "severity": "major",
+      "must": "Every outgoing way ends at a labelled final circuit or panel."
+    },
+    {
+      "id": "bus-taps-clear",
+      "severity": "major",
+      "must": "The six branches visibly meet the busbar as separate right-angle taps without ambiguous joins."
+    },
+    {
+      "id": "no-text-collisions",
+      "severity": "minor",
+      "must": "No labels or ratings overlap one another or are crossed by wiring."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. A 400 V utility supply runs down through the 250 A main breaker and the multifunction meter onto the DB-1 three-phase busbar. Six outgoing ways tap the bus, each through its own C-curve breaker and each labelled with its cable: lighting, socket outlets, an AHU fan motor, a kitchen distribution board, a workshop panel and a spare feeder. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

@@ -1,3 +1,6 @@
+import { systemCaption } from "./labels";
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   DiagramAST,
   LayoutResult,
@@ -55,7 +58,7 @@ export function renderEcomap(
   const labelsStr = renderConnectionLabels(layout.edges, layout.nodes, t);
 
   const layers: string[] = [
-    title("Ecomap"),
+    title(ast?.metadata?.title ?? "Ecomap"),
     desc(`Ecomap diagram with ${systemNodes.length} external systems`),
     defsStr,
     styleStr,
@@ -70,6 +73,8 @@ export function renderEcomap(
     labelsStr,
   ];
 
+  const chartTitle = ast?.metadata?.title;
+  const titleHeight = chartTitle ? TITLE.bandH : 0;
   let finalWidth = layout.width;
   let finalHeight = layout.height;
   let legendSvg = "";
@@ -101,11 +106,18 @@ export function renderEcomap(
   const chartXOffset = Math.max(0, (finalWidth - layout.width) / 2);
   layers.push(
     group(
-      { transform: chartXOffset > 0 ? `translate(${chartXOffset}, 0)` : undefined },
+      { transform: `translate(${chartXOffset}, ${titleHeight})` },
       chartContent
     )
   );
-  if (legendSvg) layers.push(legendSvg);
+  if (legendSvg) layers.push(group({ transform: `translate(0, ${titleHeight})` }, [legendSvg]));
+  finalHeight += titleHeight;
+  if (chartTitle) {
+    const resolved = resolveSceneTitle(chartTitle, ast?.titleSourceRange, finalWidth / 2, TITLE.y, config);
+    layers.push(text({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": config.fontFamily,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: t.text }, chartTitle));
+  }
 
   return svgRoot(
     {
@@ -128,31 +140,36 @@ function buildDefs(t: BaseTheme): string {
       viewBox: "0 0 10 10",
       refX: "10",
       refY: "5",
-      markerWidth: "8",
-      markerHeight: "8",
-      orient: "auto-start-reverse",
+      markerWidth: "5",
+      markerHeight: "5",
+      orient: "auto",
     },
-    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: t.neutral })]
+    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: t.stroke })]
   );
 
-  return el("defs", {}, [arrowMarker]);
+  const startMarker = el("marker", {
+    id: "schematex-ecomap-eco-arrow-start", viewBox: "0 0 10 10", refX: 0, refY: 5,
+    markerWidth: 5, markerHeight: 5, orient: "auto",
+  }, [el("path", { d: "M 10 0 L 0 5 L 10 10 z", fill: t.stroke })]);
+  return el("defs", {}, [arrowMarker, startMarker]);
 }
 
 // ─── Styles ────────────────────────────────────────────────
 
 function buildStyles(config: RenderConfig, t: BaseTheme): string {
   let css = `
-.schematex-ecomap {${cssCustomProperties(t)}
+.schematex-ecomap {${cssCustomProperties(t)} color: ${t.text};
 }
 .schematex-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
 .schematex-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }
-.schematex-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
-.schematex-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: ${t.text}; }
-.schematex-ecomap-eco-line { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-parallel { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-stressful { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-center-age { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; font-weight: 400; text-anchor: middle; dominant-baseline: central; fill: ${t.textMuted}; }
+.schematex-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
+.schematex-ecomap-eco-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-parallel { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-weak { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-broken { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-stressful { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
 .schematex-ecomap-eco-arrow { fill: ${t.neutral}; }
 .schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
@@ -178,6 +195,8 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
   const ind = node.individual;
 
   const label = ind.label !== ind.id ? ind.label : capitalize(ind.id);
+  const hasAge = ind.age !== undefined;
+  const captionGap = 4;
   const elements: string[] = [
     el("circle", {
       cx,
@@ -188,27 +207,18 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
     text(
       {
         x: cx,
-        y: cy,
+        y: hasAge ? cy - (config.fontSize + captionGap) / 2 : cy,
         class: "schematex-ecomap-center-label",
       },
       label
     ),
   ];
 
-  if (ind.age) {
-    elements.push(
-      text(
-        {
-          x: cx,
-          y: cy + config.fontSize + 4,
-          class: "schematex-ecomap-center-label",
-          "font-size": `${config.fontSize}px`,
-          "font-weight": "normal",
-        },
-        `Age ${ind.age}`
-      )
-    );
-  }
+  if (hasAge) elements.push(text({
+    x: cx,
+    y: cy + (config.fontSize + 2 + captionGap) / 2,
+    class: "schematex-ecomap-center-age",
+  }, `Age ${ind.age}`));
 
   return group(
     { class: "schematex-ecomap-center", "data-id": ind.id },
@@ -230,18 +240,16 @@ function renderSystems(
     const r = node.width / 2;
     const ind = node.individual;
     const cat = ind.properties?.category ?? "other";
-    const label = ind.label !== ind.id ? ind.label : capitalize(ind.id);
-
-    const labelLines = wrapLabel(label, 12);
+    const labelLines = systemCaption(ind, config.fontSize).lines;
     const labelElements: string[] = [];
-    const labelStartY = cy + r + config.fontSize + 2;
+    const labelStartY = cy - (labelLines.length - 1) * (config.fontSize + 3) / 2 + config.fontSize * 0.35;
 
     for (let li = 0; li < labelLines.length; li++) {
       labelElements.push(
         text(
           {
             x: cx,
-            y: labelStartY + li * (config.fontSize + 1),
+            y: labelStartY + li * (config.fontSize + 3),
             class: "schematex-ecomap-system-label",
           },
           labelLines[li]
@@ -282,6 +290,10 @@ function renderConnections(edges: LayoutEdge[], centerId?: string): string {
 
     const relType = edge.relationship.type;
     const flow = edge.relationship.energyFlow;
+    const length = Math.hypot(coords.x2 - coords.x1, coords.y2 - coords.y1);
+    const ux = (coords.x2 - coords.x1) / length, uy = (coords.y2 - coords.y1) / length;
+    if (flow === "to" || flow === "mutual") { coords.x1 += ux * 4; coords.y1 += uy * 4; }
+    if (flow === "from" || flow === "mutual") { coords.x2 -= ux * 4; coords.y2 -= uy * 4; }
     const lineElements: string[] = [];
 
     const arrowAttrs = getArrowAttrs(flow);
@@ -357,17 +369,15 @@ function renderConnections(edges: LayoutEdge[], centerId?: string): string {
         );
         break;
 
-      case "broken":
-        lineElements.push(
-          el("line", {
-            x1: coords.x1,
-            y1: coords.y1,
-            x2: coords.x2,
-            y2: coords.y2,
-            class: "schematex-ecomap-eco-line-broken",
-            ...arrowAttrs,
-          })
-        );
+      case "broken": {
+        const mx = (coords.x1+coords.x2)/2, my = (coords.y1+coords.y2)/2;
+        lineElements.push(el("line", { ...coords, class: "schematex-ecomap-eco-line" }));
+        for(const offset of [-3,3]) lineElements.push(el("line", {
+          x1:mx+ux*offset-uy*6,y1:my+uy*offset+ux*6,
+          x2:mx+ux*offset+uy*6,y2:my+uy*offset-ux*6,
+          class:"schematex-ecomap-eco-line",
+        }));
+      }
         break;
 
       default:
@@ -591,10 +601,10 @@ function getArrowAttrs(
     case "from":
       return { "marker-end": "url(#schematex-ecomap-eco-arrow)" };
     case "to":
-      return { "marker-start": "url(#schematex-ecomap-eco-arrow)" };
+      return { "marker-start": "url(#schematex-ecomap-eco-arrow-start)" };
     case "mutual":
       return {
-        "marker-start": "url(#schematex-ecomap-eco-arrow)",
+        "marker-start": "url(#schematex-ecomap-eco-arrow-start)",
         "marker-end": "url(#schematex-ecomap-eco-arrow)",
       };
     default:
@@ -606,22 +616,4 @@ function getArrowAttrs(
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function wrapLabel(label: string, maxChars: number): string[] {
-  if (label.length <= maxChars) return [label];
-  const words = label.split(/\s+/);
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    if (current && current.length + word.length + 1 > maxChars) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = current ? current + " " + word : word;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
 }

@@ -1,0 +1,46 @@
+{
+  "id": "pert-product-launch",
+  "type": "pert",
+  "variant": "network",
+  "title": "Product launch",
+  "goal": "Show coordinated engineering, marketing, and enablement tracks ending at a launch milestone.",
+  "rubric": [
+    {
+      "id": "engineering-gate",
+      "severity": "blocker",
+      "must": "Release approval visibly waits for both security review and user acceptance testing."
+    },
+    {
+      "id": "launch-gate",
+      "severity": "blocker",
+      "must": "Public launch visibly follows a go/no-go review that waits for release approval, communications, and support training."
+    },
+    {
+      "id": "marketing-track",
+      "severity": "major",
+      "must": "The visible marketing track runs from positioning through campaign assets to launch communications."
+    },
+    {
+      "id": "engineering-track",
+      "severity": "major",
+      "must": "The visible engineering track runs from scope through release candidate, security review, testing, and approval."
+    },
+    {
+      "id": "milestones",
+      "severity": "major",
+      "must": "Kickoff, release approval, go/no-go review, and public launch are visibly distinguished as milestones."
+    },
+    {
+      "id": "critical-path",
+      "severity": "minor",
+      "must": "A critical path is visibly highlighted across the longest schedule chain."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/pert/network/ideal.svg (sha256 63a6affd85e5), source sha256 3316ceaf2605. Independent AON network with six-field schedule boxes, true SVG milestone diamonds and zero-float red spine. Forward/backward passes calculated independently including the office-fitout FS+1d lag. Long dependencies routed around intervening task bodies after visual inspection. No production placement coordinates or engine output reused. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability. Follow-up vision adjudication on 2026-09-14: Separated D→F top entry and I/J→K bottom entry ports; C→D and D→F are now easier to trace independently. Revised SVG was rasterised and visually accepted; no task values or dependencies changed."
+  }
+}

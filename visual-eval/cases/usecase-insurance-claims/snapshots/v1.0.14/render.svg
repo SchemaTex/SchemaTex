@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Insurance Claims" width="940" height="619" viewBox="0 0 940 619" data-diagram-type="usecase"><title>Use Case Diagram — Insurance Claims</title>
+<desc>Subject: Claims Management Platform. 4 actors, 7 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="470" y="24" class="sx-uc-title" text-anchor="middle">Insurance Claims</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="142.4" y="58" width="582" height="537" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="433.4" y="82" text-anchor="middle">Claims Management Platform</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 820.4 318.5 L 840.4 318.5 L 840.4 198.5 L 820.4 198.5" data-source="FA" data-target="AD" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 82.4 320.5 L 219.95 205.87" data-source="PH" data-target="Lodge"/>
+<path class="sx-uc-assoc" d="M 82.4 320.5 L 468.31 294.01" data-source="PH" data-target="Docs"/>
+<path class="sx-uc-assoc" d="M 784.4 200.5 L 348.1 274.07" data-source="AD" data-target="Assess"/>
+<path class="sx-uc-assoc" d="M 784.4 200.5 L 326.83 388.26" data-source="AD" data-target="Approve"/>
+<path class="sx-uc-include" d="M 366.4 163 L 475.4 163" data-source="Lodge" data-target="Policy" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 346.58 194.18 L 510.83 262.3" data-source="Lodge" data-target="Docs" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 304.68 314.6 L 535.77 506.28" data-source="Assess" data-target="Settle" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 326.49 433.85 L 508.45 509.31" data-source="Approve" data-target="Settle" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 592.43 192.18 L 784.4 446.5" data-source="Policy" data-target="PA"/>
+<path class="sx-uc-extend" d="M 536.2 382.64 L 323.02 205.81" data-source="Fraud" data-target="Lodge" marker-end="url(#sx-uc-open-arrow-accent)"/>
+<path class="sx-uc-assoc" d="M 784.4 320.5 L 629.18 386.14" data-source="FA" data-target="Fraud"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="PH" transform="translate(42.400000000000006, 296.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Policyholder</text></g>
+<g class="sx-uc-actor" data-id="AD" transform="translate(784.4, 176.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Adjuster</text></g>
+<g class="sx-uc-actor" data-id="FA" transform="translate(784.4, 296.5)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Fraud Analyst</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="PA" transform="translate(784.4, 422.5)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Policy Administration</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Lodge"><ellipse cx="271.4" cy="163" rx="95" ry="51"/>
+<text class="sx-uc-name" x="271.4" y="130" text-anchor="middle">Lodge Claim</text>
+<line class="sx-uc-div" x1="184.39999999999998" y1="138" x2="358.4" y2="138"/>
+<text class="sx-uc-extpoint-head" x="192.39999999999998" y="152">extension points</text>
+<text class="sx-uc-extpoint" x="192.39999999999998" y="165">suspected fraud</text></g>
+<g class="sx-uc-usecase" data-id="Assess"><ellipse cx="271.4" cy="287" rx="85" ry="30"/>
+<text class="sx-uc-name" x="271.4" y="291" text-anchor="middle">Assess Damage</text></g>
+<g class="sx-uc-usecase" data-id="Approve"><ellipse cx="271.4" cy="411" rx="85" ry="30"/>
+<text class="sx-uc-name" x="271.4" y="415" text-anchor="middle">Approve Claim</text></g>
+<g class="sx-uc-usecase" data-id="Policy"><ellipse cx="570.4" cy="163" rx="95" ry="30"/>
+<text class="sx-uc-name" x="570.4" y="167" text-anchor="middle">Validate Policy</text></g>
+<g class="sx-uc-usecase" data-id="Docs"><ellipse cx="570.4" cy="287" rx="105" ry="30"/>
+<text class="sx-uc-name" x="570.4" y="291" text-anchor="middle">Request Documents</text></g>
+<g class="sx-uc-usecase" data-id="Fraud"><ellipse cx="570.4" cy="411" rx="105" ry="30"/>
+<text class="sx-uc-name" x="570.4" y="415" text-anchor="middle">Investigate Fraud</text></g>
+<g class="sx-uc-usecase" data-id="Settle"><ellipse cx="570.4" cy="535" rx="120" ry="30"/>
+<text class="sx-uc-name" x="570.4" y="539" text-anchor="middle">Calculate Settlement</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="389.9" y="155" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="420.9" y="166" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="397.7049686147296" y="220.236843171326" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="428.7049686147296" y="231.236843171326" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="389.2255211239567" y="402.44056601585703" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="420.2255211239567" y="413.44056601585703" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="386.46833703628874" y="463.57683542642076" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="417.46833703628874" y="474.57683542642076" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="323.6109099307723" y="274.225102551276" width="212" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="429.6109099307723" y="285.225102551276" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="429.6109099307723" y="297.225102551276" text-anchor="middle">[fraud indicators]</text>
+<text class="sx-uc-edge-label" x="429.6109099307723" y="309.225102551276" text-anchor="middle">(extension point: suspected fraud)</text></g></g></svg>

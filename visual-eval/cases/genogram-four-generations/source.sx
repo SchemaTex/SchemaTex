@@ -1,0 +1,20 @@
+genogram "Four Generations of the Alvarez Family" [asOf: 2026]
+  manuel [male, 1938, label: "Manuel Alvarez"]
+  rosa [female, 1940, label: "Rosa Alvarez"]
+  elena [female, 1963, label: "Elena Alvarez"]
+  carlos [male, 1986, label: "Carlos Mendoza"]
+
+  manuel -- rosa
+    sofia [female, 1960, label: "Sofia Alvarez"]
+    miguel [male, 1962, label: "Miguel Alvarez"]
+    teresa [female, 1967, label: "Teresa Alvarez"]
+
+  miguel -- elena
+    lucia [female, 1987, label: "Lucia Alvarez"]
+    diego [male, 1989, label: "Diego Alvarez"]
+    ines [female, 1992, label: "Ines Alvarez"]
+    tomas [male, 1995, label: "Tomas Alvarez"]
+
+  diego -- carlos
+    nora [female, 2015, label: "Nora Alvarez"]
+    leo [male, 2018, label: "Leo Alvarez"]

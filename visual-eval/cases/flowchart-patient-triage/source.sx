@@ -1,0 +1,21 @@
+%% Context: Emergency department triage from arrival through safe disposition.
+flowchart TD
+  A([Patient arrives]) --> B[Register and assess vital signs]
+  B --> C{Immediate life threat?}
+  C -->|Yes| D[[Resuscitation bay]]
+  D --> E[Stabilise and investigate]
+  E --> F{Requires admission?}
+  C -->|No| G{High-acuity symptoms?}
+  G -->|Yes| H[Urgent clinician assessment]
+  H --> I[Tests and treatment]
+  I --> F
+  G -->|No| J[Standard assessment queue]
+  J --> K{Safe for minor-treatment stream?}
+  K -->|Yes| L[Minor treatment]
+  K -->|No| H
+  L --> M{Discharge criteria met?}
+  F -->|Yes| N([Admit or transfer])
+  F -->|No| M
+  M -->|Yes| O([Discharge with advice])
+  M -->|No| P[Observe and reassess]
+  P -.-> I

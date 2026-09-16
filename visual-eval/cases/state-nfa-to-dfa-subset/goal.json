@@ -1,0 +1,77 @@
+{
+  "id": "state-nfa-to-dfa-subset",
+  "type": "state",
+  "title": "DFA for ab or ba",
+  "goal": "Show a total DFA over a and b that accepts exactly the two words ab and ba.",
+  "rubric": [
+    {
+      "id": "initial-and-accepting",
+      "severity": "blocker",
+      "must": "The initial marker visibly enters Start and Accept is visibly marked accepting."
+    },
+    {
+      "id": "two-word-paths",
+      "severity": "blocker",
+      "must": "Visible labelled paths Start-a-SeenA-b-Accept and Start-b-SeenB-a-Accept exist."
+    },
+    {
+      "id": "total-transitions",
+      "severity": "blocker",
+      "must": "Each visible state has an outgoing transition labelled a and an outgoing transition labelled b."
+    },
+    {
+      "id": "dead-state",
+      "severity": "major",
+      "must": "Dead is visible with both a and b self-transitions."
+    },
+    {
+      "id": "wrong-prefixes",
+      "severity": "major",
+      "must": "SeenA on a and SeenB on b visibly go to Dead."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly shows a complete DFA over {a,b} accepting exactly ab and ba. Start is initial, Accept is double-bordered, all required labelled transitions are present, and Dead visibly absorbs both symbols.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:32:13.433Z",
+      "targetHash": "9143cfd10c43",
+      "sourceHash": "80669fda076f",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "initial-and-accepting",
+          "verdict": "pass",
+          "evidence": "A filled initial marker visibly points into Start, and Accept is visibly drawn with a double border."
+        },
+        {
+          "id": "two-word-paths",
+          "verdict": "pass",
+          "evidence": "The labelled paths Start —a→ SeenA —b→ Accept and Start —b→ SeenB —a→ Accept are both visible."
+        },
+        {
+          "id": "total-transitions",
+          "verdict": "pass",
+          "evidence": "Each visible state—Start, SeenA, SeenB, Accept, and Dead—has visible outgoing transitions labelled a and b."
+        },
+        {
+          "id": "dead-state",
+          "verdict": "pass",
+          "evidence": "Dead is visible and has two distinct self-loops labelled a and b."
+        },
+        {
+          "id": "wrong-prefixes",
+          "verdict": "pass",
+          "evidence": "SeenA visibly transitions to Dead on a via the upper route, and SeenB visibly transitions to Dead on b via the lower route."
+        }
+      ]
+    }
+  }
+}

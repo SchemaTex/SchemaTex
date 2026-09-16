@@ -1,0 +1,11 @@
+# Scenario: a data platform lead weighs moving the on-premises warehouse to a managed cloud warehouse.
+comparison "Move the data warehouse to a managed cloud service?"
+mode: pros-cons
+pro "Storage and compute scale independently"
+pro "No hardware refresh in the 2027 budget"
+pro "The vendor handles patching, backups and failover"
+pro "Analysts can create sandboxes in minutes"
+pro "Pay-per-query absorbs the month-end spike"
+con "Egress fees on every dataset that leaves the platform"
+con "Twelve years of ETL jobs need rewriting"
+con "Monthly query costs are harder to forecast"

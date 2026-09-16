@@ -26,6 +26,7 @@ import {
   unionBBox,
   type Box,
 } from "./geometry";
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 import { formatRegionValue } from "./layout";
 
 /** Minimum interior area (sq px) for an inside label. */
@@ -34,12 +35,12 @@ const MIN_AREA = 400;
 const MIN_AREA_DENSE = 900;
 /** Approximate label bbox padding for collision tests. */
 const LABEL_H = 14;
-const CHAR_W = 6.2;
+
 /** Minimum gap (px) between any two interior label bboxes. */
 const LABEL_GAP = 4;
 
 function labelWidth(text: string): number {
-  return text.length * CHAR_W + 8;
+  return estimateTextWidth(text, 12) + 8;
 }
 
 function bboxesOverlap(
@@ -94,6 +95,9 @@ interface Candidate {
   area: number;
   interior: readonly { x: number; y: number }[];
   width: number;
+  height: number;
+  lines: string[];
+  contains: (x: number, y: number) => boolean;
 }
 
 export function placeLabels(ast: VennAST, shapes: VennShape[]): VennLabelPosition[] {
@@ -113,21 +117,27 @@ export function placeLabels(ast: VennAST, shapes: VennShape[]): VennLabelPositio
   ast.regions.forEach((region, regionIdx) => {
     const included = region.sets.map((id) => byId.get(id)).filter(isDefined);
     if (included.length === 0) return;
-    const excluded = region.only
-      ? entries.filter((e) => !region.sets.includes(e.id))
-      : [];
+    const excluded = entries.filter((e) => !region.sets.includes(e.id));
     const bounds = unionBBox(included.map((e) => e.bbox));
     const seed = 0x1337 + regionIdx * 0x9e3779b9;
-    const { cx, cy, area, interior } = regionCentroid(
+    let { cx, cy, area, interior } = regionCentroid(
       bounds,
       included,
       excluded,
       1500,
       seed
     );
+    // Prefer the distinct compartment; inclusive labels may use the full
+    // intersection only when that compartment does not exist (e.g. subsets).
+    let effectiveExcluded = excluded;
+    if (area === 0 && !region.only) {
+      effectiveExcluded = [];
+      ({ cx, cy, area, interior } = regionCentroid(bounds, included, [], 1500, seed));
+    }
     const text = regionLabelText(region);
     if (!text) return;
     if (!Number.isFinite(cx) || !Number.isFinite(cy) || area === 0) return;
+    const lines = wrapTextToWidth(text, 12, Math.min(120, Math.max(60, Math.sqrt(area) * 0.65)));
     candidates.push({
       region,
       text,
@@ -135,7 +145,10 @@ export function placeLabels(ast: VennAST, shapes: VennShape[]): VennLabelPositio
       cy,
       area,
       interior,
-      width: labelWidth(text),
+      width: Math.max(...lines.map(labelWidth)),
+      height: lines.length * LABEL_H,
+      lines,
+      contains: (x, y) => included.every(e => e.inside(x, y)) && effectiveExcluded.every(e => !e.inside(x, y)),
     });
   });
 
@@ -150,16 +163,33 @@ export function placeLabels(ast: VennAST, shapes: VennShape[]): VennLabelPositio
       externalQueue.push(c);
       continue;
     }
-    // Check collision against already-placed internal labels.
-    const x = c.cx - c.width / 2;
-    const y = c.cy - LABEL_H / 2;
-    const collides = placedInternal.some(({ c: p, x: px, y: py }) =>
-      bboxesOverlap(x, y, c.width, LABEL_H, px, py, p.width, LABEL_H)
-    );
-    if (collides) {
-      externalQueue.push(c);
-    } else {
-      placedInternal.push({ c, x, y });
+    // A centroid alone can fall outside a crescent. Fit the complete text
+    // rectangle in the compartment, then prefer the most central valid sample.
+    const fits = (cx: number, cy: number): boolean => {
+      for (const dx of [-c.width / 2, 0, c.width / 2]) {
+        for (const dy of [-c.height / 2 - 3, 0, c.height / 2 + 3]) {
+          if (!c.contains(cx + dx, cy + dy)) return false;
+        }
+      }
+      return !placedInternal.some(({ c: p, x, y }) =>
+        bboxesOverlap(cx - c.width / 2, cy - c.height / 2, c.width, c.height, x, y, p.width, p.height));
+    };
+    let point: { x: number; y: number } | undefined;
+    // Try wider, fewer-line paragraphs before narrow wrapping; never split a
+    // word merely because a fixed label-width preset was too small.
+    const wordWidth = Math.max(...c.text.split(/\s+/).map(labelWidth));
+    for (const factor of [1.4, 1.1, 0.85, 0.65, 0.5]) {
+      c.lines = wrapTextToWidth(c.text, 12, Math.max(wordWidth, Math.sqrt(c.area) * factor));
+      c.width = Math.max(...c.lines.map(labelWidth)); c.height = c.lines.length * LABEL_H;
+      point = [{ x: c.cx, y: c.cy }, ...c.interior]
+        .filter(p => fits(p.x, p.y))
+        .sort((a, b) => Math.hypot(a.x - c.cx, a.y - c.cy) - Math.hypot(b.x - c.cx, b.y - c.cy))[0];
+      if (point) break;
+    }
+    if (!point) externalQueue.push(c);
+    else {
+      c.cx = point.x; c.cy = point.y;
+      placedInternal.push({ c, x: c.cx - c.width / 2, y: c.cy - c.height / 2 });
     }
   }
 
@@ -178,6 +208,7 @@ export function placeLabels(ast: VennAST, shapes: VennShape[]): VennLabelPositio
     placedMap.set(c.region, {
       sets: c.region.sets,
       label: c.text,
+      lines: c.lines,
       x: c.cx,
       y: c.cy,
       external: false,
@@ -250,6 +281,7 @@ function layoutExternal(
       label: {
         sets: c.region.sets,
         label: c.text,
+        lines: c.lines,
         x: ex,
         y: ey,
         external: true,

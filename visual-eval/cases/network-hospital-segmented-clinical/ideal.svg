@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1620" height="1260" viewBox="0 0 1620 1260">
+<title>Hospital Segmented Clinical Network — One NGFW, one clinical core, four separated segments</title>
+<desc>A hospital network drawn as three labelled tier bands — edge, core and access — with the Internet and health-exchange WAN above and representative endpoints below. A single healthcare next-generation firewall sits in the edge band and the clinical core switch in the core band; the clinical, biomedical and administrative access switches and the patient guest Wi-Fi access point sit in the access band. Each downlink is annotated with its VLAN and speed, and each endpoint wears a chip naming the segment it belongs to, so clinical, biomedical, administrative and guest traffic can be told apart at a glance.</desc>
+<defs><style>
+text{font-family:Verdana, sans-serif;fill:#182b3b;font-size:18px}
+.title{font-size:30px;font-weight:bold}
+.deck{font-size:18px;fill:#536979}
+.zone{font-size:23px;font-weight:bold}
+.name{font-size:18px;font-weight:bold}
+.small{font-size:16px;fill:#536979}
+.link{font-size:17px}
+.device{fill:white;stroke:#304b60;stroke-width:2.5}
+.wire{fill:none;stroke:#536979;stroke-width:3;stroke-linejoin:round}
+.fiber{fill:none;stroke:#087d92;stroke-width:5;stroke-linejoin:round}
+.poe{fill:none;stroke:#2f7d4f;stroke-width:3.5;stroke-linejoin:round}
+.wan{fill:none;stroke:#304b60;stroke-width:4;stroke-linejoin:round}
+.wireless{fill:none;stroke:#536979;stroke-width:4;stroke-linecap:round;stroke-dasharray:2 10}
+.oob{fill:none;stroke:#9aa9b4;stroke-width:2.5;stroke-linejoin:round;stroke-dasharray:9 6}
+.vpn{fill:none;stroke:#6b3fa0;stroke-width:4;stroke-linejoin:round;stroke-dasharray:15 9}
+.knock{stroke:none}
+</style>
+<g id="switch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z m20 0h12v12H-3z m20 0h12v12H17z" fill="#304b60"/><circle cx="43" cy="1" r="4" fill="#087d92"/></g>
+<g id="l3switch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z m20 0h12v12H-3z" fill="#304b60"/><rect x="23" y="-9" width="30" height="18" rx="4" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><text x="38" y="5" text-anchor="middle" font-size="13" font-weight="bold" fill="#304b60">L3</text></g>
+<g id="poeswitch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z" fill="#304b60"/><rect x="1" y="-9" width="52" height="18" rx="4" fill="#eaf5ee" stroke="#2f7d4f" stroke-width="1.5"/><text x="27" y="5" text-anchor="middle" font-size="13" font-weight="bold" fill="#2f7d4f">PoE</text></g>
+<g id="router"><circle class="device" cx="0" cy="0" r="38"/><path d="M-22 -9H14 M-14 9H22" stroke="#304b60" stroke-width="2.5" fill="none"/><path d="M14 -9l-8 -5 v10z M-14 9l8 5 v-10z" fill="#304b60"/><path d="M-9 -22V-4 M9 22V4" stroke="#304b60" stroke-width="2.5" fill="none"/><path d="M-9 -22l-5 8h10z M9 22l5 -8h-10z" fill="#304b60"/></g>
+<g id="firewall"><rect x="-54" y="-30" width="108" height="60" rx="2" fill="#fff2df" stroke="#985921" stroke-width="2.5"/><path d="M-54 -10H54 M-54 10H54 M-18 -30v20 M18 -30v20 M-36 -10v20 M0 -10v20 M36 -10v20 M-18 10v20 M18 10v20" fill="none" stroke="#985921" stroke-width="2"/></g>
+<g id="server"><rect class="device" x="-30" y="-38" width="60" height="76" rx="3"/><path d="M-21 -24h42v15h-42z M-21 -1h42v15h-42z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="16" cy="-17" r="2.5" fill="#087d92"/><circle cx="16" cy="6" r="2.5" fill="#087d92"/><path d="M-19 27h25" stroke="#304b60" stroke-width="2"/></g>
+<g id="storage"><rect class="device" x="-32" y="-40" width="64" height="80" rx="3"/><path d="M-22 -30h44v16h-44z M-22 -8h44v16h-44z M-22 14h44v16h-44z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="16" cy="-22" r="2.5" fill="#087d92"/><circle cx="16" cy="0" r="2.5" fill="#087d92"/><circle cx="16" cy="22" r="2.5" fill="#087d92"/></g>
+<g id="pc"><rect class="device" x="-45" y="-34" width="90" height="56" rx="3"/><rect x="-37" y="-26" width="74" height="40" fill="#e4edf2"/><path d="M0 22v15 M-25 38h50" stroke="#304b60" stroke-width="3"/></g>
+<g id="monitor"><rect class="device" x="-48" y="-32" width="96" height="54" rx="3"/><rect x="-40" y="-24" width="80" height="38" fill="#e4edf2"/><path d="M-16 22h32 v10h-32z" fill="none" stroke="#304b60" stroke-width="2.5"/><path d="M-28 32h56" stroke="#304b60" stroke-width="3"/></g>
+<g id="laptop"><path class="device" d="M-36 -26h72v42h-72z"/><rect x="-29" y="-19" width="58" height="28" fill="#e4edf2"/><path class="device" d="M-48 16h96l-6 12h-84z"/></g>
+<g id="printer"><rect class="device" x="-26" y="-30" width="52" height="16" rx="2"/><rect class="device" x="-36" y="-14" width="72" height="30" rx="3"/><rect x="-20" y="16" width="40" height="14" fill="#e4edf2" stroke="#304b60" stroke-width="2"/><circle cx="24" cy="-6" r="3.5" fill="#087d92"/></g>
+<g id="ipphone"><rect class="device" x="-32" y="-8" width="64" height="38" rx="4"/><rect x="-24" y="0" width="26" height="16" fill="#e4edf2"/><path class="device" d="M-30 -26h60v14h-60z" /><path d="M8 6h18 M8 14h18" stroke="#304b60" stroke-width="2"/></g>
+<g id="ap"><rect class="device" x="-30" y="0" width="60" height="20" rx="6"/><circle cx="0" cy="10" r="3" fill="#087d92"/><path d="M-14 -6a20 20 0 0 1 28 0 M-26 -18a37 37 0 0 1 52 0" fill="none" stroke="#304b60" stroke-width="2.5" stroke-linecap="round"/></g>
+<g id="internet"><path class="device" d="M-58 22a30 30 0 0 1 4 -59 a38 38 0 0 1 70 -14 a32 32 0 0 1 42 30 a26 26 0 0 1 -6 43z"/></g>
+<g id="nvr"><rect class="device" x="-52" y="-26" width="104" height="52" rx="3"/><path d="M-40 -12h44v10h-44z M-40 4h44v10h-44z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="32" cy="-6" r="7" fill="none" stroke="#304b60" stroke-width="2"/><circle cx="32" cy="12" r="3.5" fill="#a34a4a"/></g>
+<g id="camera-dome"><path d="M-30 -18h60" stroke="#304b60" stroke-width="3" stroke-linecap="round"/><path class="device" d="M-24 -18a24 24 0 0 0 48 0z"/><circle cx="0" cy="-8" r="7" fill="#304b60"/><path d="M0 6v14" stroke="#304b60" stroke-width="2.5"/></g>
+<g id="camera-bullet"><rect class="device" x="-30" y="-14" width="52" height="26" rx="12"/><rect class="device" x="22" y="-9" width="10" height="16" rx="2"/><circle cx="26" cy="-1" r="3" fill="#304b60"/><path d="M-16 -14v-6 h-12" fill="none" stroke="#304b60" stroke-width="3" stroke-linecap="round"/></g>
+<g id="camera-ptz"><path d="M-26 -22h52" stroke="#304b60" stroke-width="3" stroke-linecap="round"/><path d="M0 -22v6" stroke="#304b60" stroke-width="3"/><circle class="device" cx="0" cy="0" r="16"/><circle cx="0" cy="0" r="7" fill="#304b60"/><path d="M-27 4a27 27 0 0 0 54 0" fill="none" stroke="#304b60" stroke-width="2" stroke-dasharray="4 4"/><path d="M-27 4l6 -6 M27 4l-6 -6" stroke="#304b60" stroke-width="2" stroke-linecap="round"/></g>
+</defs>
+<rect width="1620" height="1260" fill="white"/>
+<text x="55" y="54" class="title">Hospital Segmented Clinical Network</text>
+<text x="55" y="87" class="deck">One NGFW, one clinical core, four separated segments</text>
+<rect x="55" y="300" width="1510" height="160" rx="8" fill="#f8fafc" stroke="#cbd8e0" stroke-width="2.5"/>
+<text x="79" y="336" class="zone">Edge</text>
+<rect x="55" y="500" width="1510" height="160" rx="8" fill="#f8fafc" stroke="#cbd8e0" stroke-width="2.5"/>
+<text x="79" y="536" class="zone">Core</text>
+<rect x="55" y="700" width="1510" height="200" rx="8" fill="#f8fafc" stroke="#cbd8e0" stroke-width="2.5"/>
+<text x="79" y="736" class="zone">Access</text>
+<path class="wan" d="M 720 248 L 720 350"/>
+<path class="fiber" d="M 720 410 L 720 559"/>
+<path class="wire" d="M 680.8 601 L 680.8 668 L 300 668 L 300 769"/>
+<path class="wire" d="M 720 601 L 720 686 L 700 686 L 700 769"/>
+<path class="wire" d="M 759.2 601 L 759.2 668 L 1100 668 L 1100 769"/>
+<path class="poe" d="M 1156 790 L 1394 790"/>
+<path class="wire" d="M 300 811 L 300 982"/>
+<path class="wire" d="M 700 811 L 700 982"/>
+<path class="wire" d="M 1100 811 L 1100 982"/>
+<path class="wireless" d="M 1430 805 L 1430 1000"/>
+<use href="#internet" x="720" y="196"/>
+<use href="#firewall" x="720" y="380"/>
+<use href="#l3switch" x="720" y="580"/>
+<use href="#switch" x="300" y="790"/>
+<use href="#switch" x="700" y="790"/>
+<use href="#switch" x="1100" y="790"/>
+<use href="#ap" x="1430" y="785"/>
+<use href="#pc" x="300" y="1020"/>
+<use href="#pc" x="700" y="1020"/>
+<use href="#pc" x="1100" y="1020"/>
+<use href="#laptop" x="1430" y="1030"/>
+<text x="55" y="122" fill="#536979">VLANs</text>
+<rect x="138.9" y="104" width="159.8" height="26" rx="13" fill="#e8f2f6" stroke="#1f6f8b" stroke-width="1.5"/>
+<text x="218.8" y="122" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f6f8b">VLAN 10 Clinical</text>
+<rect x="326.7" y="104" width="191.2" height="26" rx="13" fill="#fbf0e2" stroke="#985921" stroke-width="1.5"/>
+<text x="422.3" y="122" text-anchor="middle" font-size="15" font-weight="bold" fill="#985921">VLAN 20 Biomedical</text>
+<rect x="545.9" y="104" width="224" height="26" rx="13" fill="#edf5e9" stroke="#4a7a3a" stroke-width="1.5"/>
+<text x="657.9" y="122" text-anchor="middle" font-size="15" font-weight="bold" fill="#4a7a3a">VLAN 30 Administration</text>
+<rect x="798" y="104" width="147.5" height="26" rx="13" fill="#f0ebf8" stroke="#6b3fa0" stroke-width="1.5"/>
+<text x="871.7" y="122" text-anchor="middle" font-size="15" font-weight="bold" fill="#6b3fa0">VLAN 40 Guest</text>
+<text x="735" y="300" class="link">wan · 1G</text>
+<text x="735" y="490" class="link">fiber · 10G</text>
+<rect class="knock" x="373.6" y="654.1" width="192.8" height="19.7" fill="white"/>
+<text x="470" y="668" class="link" text-anchor="middle">trunk · VLAN 10 · 1G</text>
+<text x="715" y="740" class="link">trunk · VLAN 20 · 1G</text>
+<rect class="knock" x="819.7" y="654.1" width="220.6" height="19.7" fill="white"/>
+<text x="930" y="668" class="link" text-anchor="middle">trunk · VLAN 30,40 · 1G</text>
+<rect class="knock" x="1185.9" y="768.1" width="178.2" height="19.7" fill="white"/>
+<text x="1275" y="782" class="link" text-anchor="middle">PoE · VLAN 40 · 1G</text>
+<text x="315" y="940" class="link">access · 1G</text>
+<text x="715" y="940" class="link">access · 1G</text>
+<text x="1115" y="940" class="link">access · 1G</text>
+<text x="1445" y="945" class="link">wireless</text>
+<text x="604" y="202" class="name" text-anchor="end">Internet and health exchange</text>
+<text x="790" y="386" class="name">Healthcare NGFW</text>
+<text x="792" y="586" class="name">Clinical core switch</text>
+<rect class="knock" x="184" y="822.2" width="232" height="20.9" fill="white"/>
+<text x="300" y="837" class="name" text-anchor="middle">Clinical access switch</text>
+<rect class="knock" x="565.2" y="822.2" width="269.6" height="20.9" fill="white"/>
+<text x="700" y="837" class="name" text-anchor="middle">Biomedical access switch</text>
+<rect class="knock" x="946.3" y="822.2" width="307.5" height="20.9" fill="white"/>
+<text x="1100" y="837" class="name" text-anchor="middle">Administrative access switch</text>
+<rect class="knock" x="1326" y="828.2" width="208.1" height="20.9" fill="white"/>
+<text x="1430" y="843" class="name" text-anchor="middle">Patient guest Wi-Fi</text>
+<text x="300" y="1084" class="name" text-anchor="middle">EHR workstation</text>
+<text x="300" y="1108" class="small" text-anchor="middle">10.60.10.15</text>
+<rect x="220.1" y="1125" width="159.8" height="26" rx="13" fill="#e8f2f6" stroke="#1f6f8b" stroke-width="1.5"/>
+<text x="300" y="1143" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f6f8b">VLAN 10 Clinical</text>
+<text x="700" y="1084" class="name" text-anchor="middle">Patient monitor gateway</text>
+<text x="700" y="1108" class="small" text-anchor="middle">10.60.20.15</text>
+<rect x="604.4" y="1125" width="191.2" height="26" rx="13" fill="#fbf0e2" stroke="#985921" stroke-width="1.5"/>
+<text x="700" y="1143" text-anchor="middle" font-size="15" font-weight="bold" fill="#985921">VLAN 20 Biomedical</text>
+<text x="1100" y="1084" class="name" text-anchor="middle">Billing workstation</text>
+<text x="1100" y="1108" class="small" text-anchor="middle">10.60.30.15</text>
+<rect x="988" y="1125" width="224" height="26" rx="13" fill="#edf5e9" stroke="#4a7a3a" stroke-width="1.5"/>
+<text x="1100" y="1143" text-anchor="middle" font-size="15" font-weight="bold" fill="#4a7a3a">VLAN 30 Administration</text>
+<text x="1430" y="1086" class="name" text-anchor="middle">Visitor device</text>
+<text x="1430" y="1110" class="small" text-anchor="middle">10.60.40.15</text>
+<rect x="1356.3" y="1127" width="147.5" height="26" rx="13" fill="#f0ebf8" stroke="#6b3fa0" stroke-width="1.5"/>
+<text x="1430" y="1145" text-anchor="middle" font-size="15" font-weight="bold" fill="#6b3fa0">VLAN 40 Guest</text>
+</svg>

@@ -1,0 +1,45 @@
+{
+  "id": "ladder-batch-counter-packaging",
+  "type": "ladder",
+  "title": "Batch counter packaging",
+  "goal": "A packer can see the product count, full-package divert action, and guarded counter reset.",
+  "rubric": [
+    {
+      "id": "counter-preset",
+      "severity": "blocker",
+      "must": "A CTU block labelled PackageCounter visibly shows a preset of 12 and is preceded by ProductPhotoeye."
+    },
+    {
+      "id": "done-divert",
+      "severity": "blocker",
+      "must": "A PackageCounter.Q contact visibly energises the DivertGate coil."
+    },
+    {
+      "id": "full-lamp",
+      "severity": "major",
+      "must": "PackageCounter.Q visibly drives the BatchFullLamp coil on a separate rung."
+    },
+    {
+      "id": "run-inhibit",
+      "severity": "major",
+      "must": "A normally closed PackageCounter.Q contact visibly drives PackageRun."
+    },
+    {
+      "id": "guarded-reset",
+      "severity": "major",
+      "must": "ResetPB and PackageClear contacts visibly precede the PackageCounter reset coil."
+    },
+    {
+      "id": "edge-count",
+      "severity": "minor",
+      "must": "An ONS symbol labelled ProductPhotoeye is visibly placed on the counting rung."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: Image 1 visibly satisfies all six rules, while image 2 uses different labels and omits the required PackageRun rung."
+  }
+}

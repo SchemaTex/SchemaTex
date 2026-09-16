@@ -1,0 +1,41 @@
+{
+  "id": "sld-battery-storage-plant",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Battery energy storage plant",
+  "goal": "Show grid interconnection, inverter PCS, and protected battery strings.",
+  "rubric": [
+    {
+      "id": "grid",
+      "severity": "blocker",
+      "must": "The grid point of connection breaker visibly feeds the 33 kV collector bus."
+    },
+    {
+      "id": "ac-chain",
+      "severity": "blocker",
+      "must": "Collector bus, transformer, PCS AC breaker, and bidirectional PCS inverter form one visible AC path."
+    },
+    {
+      "id": "strings",
+      "severity": "blocker",
+      "must": "Two separately labelled battery strings each visibly connect through a DC isolator to the PCS."
+    },
+    {
+      "id": "ratings",
+      "severity": "major",
+      "must": "Grid, transformer, PCS, and battery ratings are visibly readable."
+    },
+    {
+      "id": "clarity",
+      "severity": "minor",
+      "must": "No branch joins are ambiguous."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. A 33 kV grid point of connection feeds the POC breaker and the 33 kV collector bus. A 10 MVA 33 kV / 690 V step-up transformer and the PCS AC breaker carry the AC side down to the bidirectional 5 MW / 10 MWh power conversion system. Below it, on the DC side of the section divide, the plant splits into two 1000 V DC battery strings, each through its own 1600 A DC isolator. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

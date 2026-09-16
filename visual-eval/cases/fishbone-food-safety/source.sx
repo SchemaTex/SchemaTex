@@ -1,0 +1,44 @@
+# Scenario: food-safety team investigates a positive Listeria environmental swab.
+fishbone "Listeria environmental swab investigation"
+
+effect "Positive Listeria swab in ready-to-eat packing area"
+
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category measurement "Measurement"
+category environment "Mother Nature"
+
+man: "Sanitation crew training gap"
+  - "New hires not verified on SSOP"
+man: "Hygiene zones crossed at shift change"
+man: "Gowning steps skipped when line runs late"
+
+machine: "Conveyor belt has cracked roller"
+  - "Belt not opened for deep clean"
+machine: "Hollow rollers retain water"
+machine: "Drip pan under filler cracked"
+machine: "Slicer housing hard to disassemble"
+
+material: "Raw produce wash water contaminated"
+  - "Chlorine dosing not verified"
+material: "Incoming pallets stored on wet dock"
+material: "Packaging film stored uncovered"
+
+method: "Sanitation sequence omits underside"
+  - "Master cleaning schedule outdated"
+method: "High-pressure hose used near the line"
+  - "Spray aerosols over open product"
+method: "No pre-op check after deep clean"
+method: "Post-clean drying step skipped"
+
+measurement: "Swab sites sampled inconsistently"
+  - "Zone 2 and 3 sites never rotated"
+measurement: "ATP results not trended"
+measurement: "No seek-and-destroy sampling"
+
+environment: "Condensation above packing line"
+  - "HVAC drain blocked"
+environment: "Floor drains back up at washdown"
+environment: "Traffic flows from raw side to RTE"

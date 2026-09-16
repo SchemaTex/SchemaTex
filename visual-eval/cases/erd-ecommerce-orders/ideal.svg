@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1140" viewBox="0 0 1040 760">
+<title>Storefront schema — core e-commerce orders</title>
+<desc>Six entities and six relationships. Customer places zero or many orders and saves zero or many addresses. Each order contains one or more line items and has zero or many payments. Each product appears in zero or many line items. Each address is the shipping address for zero or many orders.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0f172a;font-size:12px}
+.structure{fill:none;stroke:#334155;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.entity{fill:white;stroke:#334155;stroke-width:1.5}
+.name{font-size:13px;font-weight:600;letter-spacing:.5px}
+.dtype{fill:#475569}.pk{font-weight:600;text-decoration:underline}
+.key{fill:#fff;font-size:10px;font-weight:700;text-anchor:middle}
+.caption{font-size:10.5px;fill:#475569;paint-order:stroke;stroke:white;stroke-width:4px;stroke-linejoin:round}
+</style>
+<rect width="1040" height="760" fill="white"/>
+<text x="46" y="44" style="font-size:20px;font-weight:600">Storefront schema — order to fulfilment</text>
+<text x="46" y="66" class="caption" style="letter-spacing:.2px">CROW’S-FOOT (IE) NOTATION · 6 TABLES · 6 RELATIONSHIPS</text>
+<path d="M46 76H1008" stroke="#94a3b8" stroke-width="1"/>
+
+<path class="structure" d="M294 196H340V372H400"/>
+<path class="structure" d="M305 189.5L305 202.5"/>
+<path class="structure" d="M400 379L388 372L400 365M400 372L388 372"/>
+<circle cx="377" cy="372" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="351" y="286" text-anchor="start">places</text>
+<path class="structure" d="M106 220V336"/>
+<path class="structure" d="M112.5 231L99.5 231"/>
+<path class="structure" d="M99 336L106 324L113 336M106 336L106 324"/>
+<circle cx="106" cy="313" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="118" y="282" text-anchor="start">saves</text>
+<path class="structure" d="M294 428H400"/>
+<path class="structure" d="M305 421.5L305 434.5"/>
+<path class="structure" d="M400 435L388 428L400 421M400 428L388 428"/>
+<circle cx="377" cy="428" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="347" y="417" text-anchor="middle">ships_to</text>
+<path class="structure" d="M464 324V232"/>
+<path class="structure" d="M457.5 313L470.5 313"/>
+<path class="structure" d="M471 232L464 244L457 232M464 232L464 244"/>
+<circle cx="464" cy="255" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="476" y="280" text-anchor="start">has</text>
+<path class="structure" d="M648 396H760"/>
+<path class="structure" d="M659 389.5L659 402.5"/>
+<path class="structure" d="M760 403L748 396L760 389M760 396L748 396"/>
+<path class="structure" d="M737 402.5L737 389.5"/>
+<text class="caption" x="704" y="385" text-anchor="middle">contains</text>
+<path class="structure" d="M648 622H724V452H760"/>
+<path class="structure" d="M659 615.5L659 628.5"/>
+<path class="structure" d="M760 459L748 452L760 445M760 452L748 452"/>
+<circle cx="737" cy="452" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="713" y="548" text-anchor="end">appears_in</text>
+<g aria-label="CUSTOMER"><rect class="entity" x="46" y="104" width="248" height="116" rx="4"/>
+<path class="structure" d="M46 136H294"/>
+<text class="name" x="170.0" y="125" text-anchor="middle">CUSTOMER</text>
+<text x="58" y="157" class="pk">customer_id</text><text class="dtype" x="252" y="157" text-anchor="end">int</text>
+<rect x="260" y="145" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="271" y="156">PK</text>
+<path d="M46 165H294" stroke="#94a3b8" stroke-width="1"/>
+<text x="58" y="182">email</text><text class="dtype" x="252" y="182" text-anchor="end">string</text>
+<path d="M58 190H282" stroke="#f1f5f9" stroke-width="1"/>
+<text x="58" y="207">full_name</text><text class="dtype" x="252" y="207" text-anchor="end">string</text>
+</g>
+<g aria-label="PAYMENT"><rect class="entity" x="400" y="91" width="248" height="141" rx="4"/>
+<path class="structure" d="M400 123H648"/>
+<text class="name" x="524.0" y="112" text-anchor="middle">PAYMENT</text>
+<text x="412" y="144" class="pk">payment_id</text><text class="dtype" x="606" y="144" text-anchor="end">int</text>
+<rect x="614" y="132" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="625" y="143">PK</text>
+<path d="M400 152H648" stroke="#94a3b8" stroke-width="1"/>
+<text x="412" y="169">order_id</text><text class="dtype" x="606" y="169" text-anchor="end">int</text>
+<rect x="614" y="157" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="625" y="168">FK</text>
+<path d="M412 177H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="194">amount</text><text class="dtype" x="606" y="194" text-anchor="end">decimal</text>
+<path d="M412 202H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="219">status</text><text class="dtype" x="606" y="219" text-anchor="end">string</text>
+</g>
+<g aria-label="ADDRESS"><rect class="entity" x="46" y="336" width="248" height="141" rx="4"/>
+<path class="structure" d="M46 368H294"/>
+<text class="name" x="170.0" y="357" text-anchor="middle">ADDRESS</text>
+<text x="58" y="389" class="pk">address_id</text><text class="dtype" x="252" y="389" text-anchor="end">int</text>
+<rect x="260" y="377" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="271" y="388">PK</text>
+<path d="M46 397H294" stroke="#94a3b8" stroke-width="1"/>
+<text x="58" y="414">customer_id</text><text class="dtype" x="252" y="414" text-anchor="end">int</text>
+<rect x="260" y="402" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="271" y="413">FK</text>
+<path d="M58 422H282" stroke="#f1f5f9" stroke-width="1"/>
+<text x="58" y="439">postal_code</text><text class="dtype" x="252" y="439" text-anchor="end">string</text>
+<path d="M58 447H282" stroke="#f1f5f9" stroke-width="1"/>
+<text x="58" y="464">country</text><text class="dtype" x="252" y="464" text-anchor="end">string</text>
+</g>
+<g aria-label="ORDER"><rect class="entity" x="400" y="324" width="248" height="166" rx="4"/>
+<path class="structure" d="M400 356H648"/>
+<text class="name" x="524.0" y="345" text-anchor="middle">ORDER</text>
+<text x="412" y="377" class="pk">order_id</text><text class="dtype" x="606" y="377" text-anchor="end">int</text>
+<rect x="614" y="365" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="625" y="376">PK</text>
+<path d="M400 385H648" stroke="#94a3b8" stroke-width="1"/>
+<text x="412" y="402">customer_id</text><text class="dtype" x="606" y="402" text-anchor="end">int</text>
+<rect x="614" y="390" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="625" y="401">FK</text>
+<path d="M412 410H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="427">shipping_address_id</text><text class="dtype" x="606" y="427" text-anchor="end">int</text>
+<rect x="614" y="415" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="625" y="426">FK</text>
+<path d="M412 435H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="452">ordered_at</text><text class="dtype" x="606" y="452" text-anchor="end">date</text>
+<path d="M412 460H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="477">status</text><text class="dtype" x="606" y="477" text-anchor="end">string</text>
+</g>
+<g aria-label="LINE_ITEM"><rect class="entity" x="760" y="336" width="248" height="141" rx="4"/>
+<path class="structure" d="M760 368H1008"/>
+<text class="name" x="884.0" y="357" text-anchor="middle">LINE_ITEM</text>
+<text x="772" y="389" class="pk">line_item_id</text><text class="dtype" x="966" y="389" text-anchor="end">int</text>
+<rect x="974" y="377" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="985" y="388">PK</text>
+<path d="M760 397H1008" stroke="#94a3b8" stroke-width="1"/>
+<text x="772" y="414">order_id</text><text class="dtype" x="966" y="414" text-anchor="end">int</text>
+<rect x="974" y="402" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="413">FK</text>
+<path d="M772 422H996" stroke="#f1f5f9" stroke-width="1"/>
+<text x="772" y="439">product_id</text><text class="dtype" x="966" y="439" text-anchor="end">int</text>
+<rect x="974" y="427" width="22" height="15" rx="3" fill="#d97706"/><text class="key" x="985" y="438">FK</text>
+<path d="M772 447H996" stroke="#f1f5f9" stroke-width="1"/>
+<text x="772" y="464">quantity</text><text class="dtype" x="966" y="464" text-anchor="end">int</text>
+</g>
+<g aria-label="PRODUCT"><rect class="entity" x="400" y="568" width="248" height="141" rx="4"/>
+<path class="structure" d="M400 600H648"/>
+<text class="name" x="524.0" y="589" text-anchor="middle">PRODUCT</text>
+<text x="412" y="621" class="pk">product_id</text><text class="dtype" x="606" y="621" text-anchor="end">int</text>
+<rect x="614" y="609" width="22" height="15" rx="3" fill="#2563eb"/><text class="key" x="625" y="620">PK</text>
+<path d="M400 629H648" stroke="#94a3b8" stroke-width="1"/>
+<text x="412" y="646">sku</text><text class="dtype" x="606" y="646" text-anchor="end">string</text>
+<path d="M412 654H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="671">name</text><text class="dtype" x="606" y="671" text-anchor="end">string</text>
+<path d="M412 679H636" stroke="#f1f5f9" stroke-width="1"/>
+<text x="412" y="696">unit_price</text><text class="dtype" x="606" y="696" text-anchor="end">decimal</text>
+</g>
+<rect x="792" y="588" width="216" height="109" rx="4" fill="white" stroke="#94a3b8" stroke-width="1"/><text x="806" y="609" class="caption" style="font-weight:600;letter-spacing:.4px">CARDINALITY</text>
+<path class="structure" d="M806 628H850M850 619V637"/>
+<path class="structure" d="M839 634.5L839 621.5"/>
+<text class="caption" x="862" y="631.5">exactly one</text>
+<path class="structure" d="M806 646H850M850 637V655"/>
+<circle cx="839" cy="646" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="862" y="649.5">zero or one</text>
+<path class="structure" d="M806 664H850M850 655V673"/>
+<path class="structure" d="M850 671L838 664L850 657M850 664L838 664"/>
+<path class="structure" d="M827 670.5L827 657.5"/>
+<text class="caption" x="862" y="667.5">one or many</text>
+<path class="structure" d="M806 682H850M850 673V691"/>
+<path class="structure" d="M850 689L838 682L850 675M850 682L838 682"/>
+<circle cx="827" cy="682" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="caption" x="862" y="685.5">zero or many</text>
+</svg>

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1120" viewBox="0 0 1400 1120">
+  <title>Timed Start and Fault Reset — Ladder Diagram</title>
+  <rect width="1400" height="1120" fill="white"/>
+  <style>
+    text { font-family: 'DejaVu Sans', Helvetica, sans-serif; fill: #15202b; }
+    .wire { fill: none; stroke: #15202b; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    .tag { font-size: 23px; text-anchor: middle; }
+    .desc { font-size: 21px; font-weight: 600; }
+    .num { font-size: 21px; text-anchor: middle; }
+    .coil { font-size: 23px; text-anchor: middle; dominant-baseline: middle; }
+  </style>
+  <text x="70" y="61" font-size="34" font-weight="700">Timed Start and Fault Reset</text>
+  <text x="70" y="98" font-size="19">LADDER LOGIC</text>
+  <!-- Power rails -->
+  <path class="wire" d="M110 145 V1040 M1290 145 V1040"/>
+
+  <!-- Rung 0: normally closed stop and fault, parallel start / holding path, latch -->
+  <text class="num" x="55" y="230">0</text>
+  <text class="desc" x="135" y="163">Latch start request</text>
+  <path class="wire" d="M110 225 H242 M258 225 H402 M418 225 H530 M530 225 H642 M658 225 H790 M790 225 H1080 M1120 225 H1290"/>
+  <path class="wire" d="M242 205 V245 M258 205 V245 M235 245 L265 205 M402 205 V245 M418 205 V245 M395 245 L425 205"/>
+  <text class="tag" x="250" y="193">StopPB</text>
+  <text class="tag" x="410" y="193">FaultLatch</text>
+  <path class="wire" d="M642 205 V245 M658 205 V245 M530 225 V305 H642 M658 305 H790 V225 M642 285 V325 M658 285 V325"/>
+  <text class="tag" x="650" y="193">StartPB</text>
+  <text class="tag" x="650" y="275">StartRequest</text>
+  <circle cx="530" cy="225" r="4" fill="#15202b"/>
+  <circle cx="790" cy="225" r="4" fill="#15202b"/>
+  <path class="wire" d="M1090 201 Q1070 225 1090 249 M1110 201 Q1130 225 1110 249"/>
+  <text class="coil" x="1100" y="226">L</text>
+  <text class="tag" x="1100" y="189">StartRequest</text>
+
+  <!-- Rung 1: TON -->
+  <text class="num" x="55" y="420">1</text>
+  <text class="desc" x="135" y="365">Five-second on-delay timer</text>
+  <path class="wire" d="M110 415 H292 M308 415 H552 M568 415 H940 M1210 415 H1290 M292 395 V435 M308 395 V435 M552 395 V435 M568 395 V435 M545 435 L575 395"/>
+  <text class="tag" x="300" y="389">StartRequest</text>
+  <text class="tag" x="560" y="389">FaultLatch</text>
+  <rect class="wire" x="940" y="385" width="270" height="126"/>
+  <path class="wire" d="M940 431 H1210"/>
+  <text x="1075" y="416" text-anchor="middle" font-size="25" font-weight="700">TON</text>
+  <text x="1075" y="463" text-anchor="middle" font-size="24">StartDelay</text>
+  <text x="1075" y="495" text-anchor="middle" font-size="21">PT = 5000 ms (5 s)</text>
+
+  <!-- Rung 2: motor output -->
+  <text class="num" x="55" y="590">2</text>
+  <text class="desc" x="135" y="533">Motor energises after timer done</text>
+  <path class="wire" d="M110 585 H292 M308 585 H552 M568 585 H1080 M1120 585 H1290 M292 565 V605 M308 565 V605 M552 565 V605 M568 565 V605 M545 605 L575 565 M1090 561 Q1070 585 1090 609 M1110 561 Q1130 585 1110 609"/>
+  <text class="tag" x="300" y="558">StartDelay.Q</text>
+  <text class="tag" x="560" y="558">FaultLatch</text>
+  <text class="tag" x="1100" y="549">MotorRun</text>
+
+  <!-- Rung 3: fault latch -->
+  <text class="num" x="55" y="730">3</text>
+  <text class="desc" x="135" y="671">Latch overload fault</text>
+  <path class="wire" d="M110 725 H292 M308 725 H1080 M1120 725 H1290 M292 705 V745 M308 705 V745 M1090 701 Q1070 725 1090 749 M1110 701 Q1130 725 1110 749"/>
+  <text class="tag" x="300" y="698">OverloadTrip</text>
+  <text class="tag" x="1100" y="689">FaultLatch</text>
+  <text class="coil" x="1100" y="726">L</text>
+
+  <!-- Rung 4: both unlatch instructions in series as specified -->
+  <text class="num" x="55" y="870">4</text>
+  <text class="desc" x="135" y="811">Reset fault and start request</text>
+  <path class="wire" d="M110 865 H292 M308 865 H800 M840 865 H1080 M1120 865 H1290 M292 845 V885 M308 845 V885 M810 841 Q790 865 810 889 M830 841 Q850 865 830 889 M1090 841 Q1070 865 1090 889 M1110 841 Q1130 865 1110 889"/>
+  <text class="tag" x="300" y="838">ResetPB</text>
+  <text class="tag" x="820" y="829">FaultLatch</text>
+  <text class="tag" x="1100" y="829">StartRequest</text>
+  <text class="coil" x="820" y="866">U</text>
+  <text class="coil" x="1100" y="866">U</text>
+
+  <!-- Rung 5: timer reset -->
+  <text class="num" x="55" y="1010">5</text>
+  <text class="desc" x="135" y="951">Reset timer on fault reset</text>
+  <path class="wire" d="M110 1005 H292 M308 1005 H940 M1210 1005 H1290 M292 985 V1025 M308 985 V1025"/>
+  <text class="tag" x="300" y="978">ResetPB</text>
+  <rect class="wire" x="940" y="975" width="270" height="60"/>
+  <text x="1075" y="1013" text-anchor="middle" font-size="23">RES  StartDelay</text>
+  <text x="135" y="1085" font-size="18">L = latch / set (OTL)     U = unlatch / reset (OTU)     Plain coil = output (OTE)</text>
+</svg>

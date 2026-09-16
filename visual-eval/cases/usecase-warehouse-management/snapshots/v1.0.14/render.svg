@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Warehouse Management" width="956" height="474" viewBox="0 0 956 474" data-diagram-type="usecase"><title>Use Case Diagram — Warehouse Management</title>
+<desc>Subject: Warehouse Management System. 4 actors, 7 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="478" y="24" class="sx-uc-title" text-anchor="middle">Warehouse Management</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="158.4" y="58" width="582" height="392" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="449.4" y="82" text-anchor="middle">Warehouse Management System</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 62.4 306 L 42.4 306 L 42.4 186 L 62.4 186" data-source="FO" data-target="P" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 98.4 188 L 218.19 160.31" data-source="P" data-target="Receive"/>
+<path class="sx-uc-assoc" d="M 98.4 188 L 224.51 237.43" data-source="P" data-target="Pick"/>
+<path class="sx-uc-assoc" d="M 800.4 188 L 358.27 365.56" data-source="S" data-target="Release"/>
+<path class="sx-uc-include" d="M 371.21 162.24 L 536.84 207.67" data-source="Receive" data-target="Scan" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 397.4 142 L 506.4 142" data-source="Receive" data-target="Putaway" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 382.92 253.99 L 529.03 233.46" data-source="Pick" data-target="Scan" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 383.15 277.47 L 505.07 293.78" data-source="Pick" data-target="Ship" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 390.22 375.98 L 800.4 314" data-source="Release" data-target="ERP"/>
+<path class="sx-uc-assoc" d="M 695.56 309.89 L 800.4 314" data-source="Ship" data-target="ERP"/>
+<path class="sx-uc-extend" d="M 535.96 364.93 L 368.96 295.68" data-source="Short" data-target="Pick" marker-end="url(#sx-uc-open-arrow-accent)"/>
+<path class="sx-uc-assoc" d="M 800.4 188 L 625.61 361.08" data-source="S" data-target="Short"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="P" transform="translate(58.400000000000006, 164)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Picker</text></g>
+<g class="sx-uc-actor" data-id="FO" transform="translate(58.400000000000006, 284)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Forklift Operator</text></g>
+<g class="sx-uc-actor" data-id="S" transform="translate(800.4, 164)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Supervisor</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="ERP" transform="translate(800.4, 290)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">ERP System</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Receive"><ellipse cx="297.4" cy="142" rx="100" ry="30"/>
+<text class="sx-uc-name" x="297.4" y="146" text-anchor="middle">Receive Shipment</text></g>
+<g class="sx-uc-usecase" data-id="Pick"><ellipse cx="297.4" cy="266" rx="88" ry="51"/>
+<text class="sx-uc-name" x="297.4" y="233" text-anchor="middle">Pick Order</text>
+<line class="sx-uc-div" x1="217.39999999999998" y1="241" x2="377.4" y2="241"/>
+<text class="sx-uc-extpoint-head" x="225.39999999999998" y="255">extension points</text>
+<text class="sx-uc-extpoint" x="225.39999999999998" y="268">short pick</text></g>
+<g class="sx-uc-usecase" data-id="Release"><ellipse cx="297.4" cy="390" rx="105" ry="30"/>
+<text class="sx-uc-name" x="297.4" y="394" text-anchor="middle">Release Pick Wave</text></g>
+<g class="sx-uc-usecase" data-id="Putaway"><ellipse cx="596.4" cy="142" rx="90" ry="30"/>
+<text class="sx-uc-name" x="596.4" y="146" text-anchor="middle">Put Away Stock</text></g>
+<g class="sx-uc-usecase" data-id="Scan"><ellipse cx="596.4" cy="224" rx="71" ry="30"/>
+<text class="sx-uc-name" x="596.4" y="228" text-anchor="middle">Scan Goods</text></g>
+<g class="sx-uc-usecase" data-id="Ship"><ellipse cx="596.4" cy="306" rx="100" ry="30"/>
+<text class="sx-uc-name" x="596.4" y="310" text-anchor="middle">Confirm Shipment</text></g>
+<g class="sx-uc-usecase" data-id="Short"><ellipse cx="596.4" cy="390" rx="110" ry="30"/>
+<text class="sx-uc-name" x="596.4" y="394" text-anchor="middle">Resolve Short Pick</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="423.02614656199796" y="176.95432781967838" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="454.02614656199796" y="187.95432781967838" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="420.9" y="134" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="451.9" y="145" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="424.97461203574017" y="235.72530533277228" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="455.97461203574017" y="246.72530533277228" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="413.1072463220455" y="277.62638746783216" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="444.1072463220455" y="288.62638746783216" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="361.4619768161348" y="310.3066392147181" width="182" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="452.4619768161348" y="321.3066392147181" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="452.4619768161348" y="333.3066392147181" text-anchor="middle">[location empty]</text>
+<text class="sx-uc-edge-label" x="452.4619768161348" y="345.3066392147181" text-anchor="middle">(extension point: short pick)</text></g></g></svg>

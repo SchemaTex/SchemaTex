@@ -42,7 +42,7 @@ function buildCSS(ast: SociogramAST, t: BaseTheme): string {
 .schematex-sociogram {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
 }
-.schematex-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-sociogram-node { fill: ${t.fill}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }
 .schematex-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4 3; }
 .schematex-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4 3; }
@@ -80,7 +80,8 @@ function buildDefs(t: BaseTheme): string {
         refY: "5",
         markerWidth: "8",
         markerHeight: "8",
-        orient: "auto",
+        orient: "auto-start-reverse",
+        markerUnits: "userSpaceOnUse",
       },
       el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: m.fill })
     )
@@ -390,7 +391,7 @@ export function renderSociogram(
   // Compose legend
   let finalWidth = totalWidth;
   let finalHeight = totalHeight;
-  const autoSpec = buildSociogramLegend(ast, t);
+  const autoSpec = buildSociogramLegend(ast, t, layout.nodes.map(n => n.computedRole).filter((role): role is NodeRole => role !== undefined));
   const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
   if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
     const { svg: legendSvg, bbox: lb } = renderLegend(

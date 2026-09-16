@@ -1,0 +1,6 @@
+# Scenario: AWS plug weld on the arrow side of a lap joint.
+welding "Plug Weld" [standard: aws]
+joint "Lap joint" {
+  arrow: plug size=12 count=4 pitch=50 len=20
+  tail: "GMAW; WPS-22"
+}

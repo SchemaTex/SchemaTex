@@ -1,0 +1,22 @@
+%% Context: Continuous delivery pipeline with quality gates and production rollback.
+flowchart LR
+  A([Commit merged]) ==> B[Build artifact]
+  B --> C{Build succeeds?}
+  C -->|No| D[Notify developer]
+  D -.-> A
+  C -->|Yes| E[Run unit tests]
+  E --> F{Tests pass?}
+  F -->|No| D
+  F -->|Yes| G{{Security scan}}
+  G --> H{Findings acceptable?}
+  H -->|No| D
+  H -->|Yes| I[Deploy to staging]
+  I --> J[Run integration tests]
+  J --> K{Release approved?}
+  K -->|No| L[Hold release]
+  L -.-> K
+  K -->|Yes| M[Deploy production]
+  M --> N{Health checks pass?}
+  N -->|Yes| O([Release complete])
+  N -->|No| P[Rollback production]
+  P --> Q([Incident opened])

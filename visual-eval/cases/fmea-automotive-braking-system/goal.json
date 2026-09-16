@@ -1,0 +1,45 @@
+{
+  "id": "fmea-automotive-braking-system",
+  "type": "fmea",
+  "title": "Automotive braking system DFMEA",
+  "goal": "Show a risk-ranked DFMEA for vehicle hydraulic braking functions.",
+  "rubric": [
+    {
+      "id": "item",
+      "severity": "blocker",
+      "must": "A visible FMEA worksheet identifies Hydraulic braking system and its function."
+    },
+    {
+      "id": "scores",
+      "severity": "blocker",
+      "must": "Each visible risk row presents severity, occurrence, detection, and RPN values."
+    },
+    {
+      "id": "modes",
+      "severity": "blocker",
+      "must": "The worksheet visibly includes reduced pressure, uneven force, and lost assist modes."
+    },
+    {
+      "id": "controls",
+      "severity": "major",
+      "must": "Each cause row visibly associates prevention and detection controls with the risk."
+    },
+    {
+      "id": "risk-priority",
+      "severity": "major",
+      "must": "Higher-risk rows are visibly flagged or ranked distinctly from lower-risk rows."
+    },
+    {
+      "id": "worksheet",
+      "severity": "minor",
+      "must": "Narrow numeric score columns remain visually distinct from descriptive failure-analysis columns."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all six rules, while the picture omits required failure modes and separate prevention controls."
+  }
+}

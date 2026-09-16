@@ -1,0 +1,19 @@
+%% Logistics shipment schema covering orders, consignments, legs, and delivery proof.
+erDiagram
+  CUSTOMER ||--o{ SALES_ORDER : places
+  SALES_ORDER ||--|{ SHIPMENT : fulfils
+  SHIPMENT ||--|{ PACKAGE : contains
+  SHIPMENT ||--|{ SHIPMENT_LEG : moves_by
+  CARRIER ||--o{ SHIPMENT_LEG : operates
+  WAREHOUSE ||--o{ SHIPMENT : dispatches
+  ADDRESS ||--o{ SALES_ORDER : delivers_to
+  SHIPMENT ||--o| DELIVERY_PROOF : confirms
+  CUSTOMER { int customer_id PK string name }
+  SALES_ORDER { int order_id PK int customer_id FK int address_id FK date ordered_at }
+  SHIPMENT { int shipment_id PK int order_id FK int warehouse_id FK string tracking_no }
+  PACKAGE { int package_id PK int shipment_id FK decimal weight_kg }
+  SHIPMENT_LEG { int leg_id PK int shipment_id FK int carrier_id FK string mode }
+  CARRIER { int carrier_id PK string name }
+  WAREHOUSE { int warehouse_id PK string code }
+  ADDRESS { int address_id PK string city string country }
+  DELIVERY_PROOF { int proof_id PK int shipment_id FK datetime signed_at }

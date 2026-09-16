@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+<title>Three Position Lighting Control — three-location lighting circuit</title>
+<rect width="1600" height="1050" fill="white"/>
+<defs>
+<style>
+text{font-family:'Helvetica Neue',Helvetica,sans-serif;fill:#17212b;font-size:20px} .title{font-size:34px;font-weight:700}.head{font-size:22px;font-weight:700}.small{font-size:18px}.wire{fill:none;stroke:#17212b;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.live{stroke:#894422}.neutral{stroke:#1769aa}.earth{stroke:#328044}.contact{fill:white;stroke:#17212b;stroke-width:3}.gang{fill:none;stroke:#687580;stroke-width:2;stroke-dasharray:8 6}.box{fill:none;stroke:#a2abb3;stroke-width:1.5;stroke-dasharray:6 6}
+</style>
+</defs>
+<text x="70" y="65" class="title">Three Position Lighting Control</text>
+<text x="70" y="100">230 V AC · 50 Hz · Two-way / intermediate / two-way switching</text>
+
+<!-- Source and series fuse -->
+<text x="70" y="190" class="head">V1 SUPPLY</text>
+<text x="70" y="220">230 V AC, 50 Hz</text>
+<path class="wire live" d="M150 470 V300 H250 M320 300 H400 V390 H430"/>
+<text x="172" y="282">LIVE</text>
+<rect x="250" y="286" width="70" height="28" fill="white" stroke="#17212b" stroke-width="3"/>
+<path class="wire" d="M250 300 H320"/>
+<text x="265" y="175" class="head">F1 LIGHTING</text>
+<text x="265" y="202" class="head">PROTECTION</text>
+<text x="265" y="233">6 A, BS 1361</text>
+<circle cx="150" cy="510" r="40" fill="white" stroke="#17212b" stroke-width="3"/>
+<path class="wire" d="M124 510 C132 481 142 481 150 510 C158 539 168 539 176 510"/>
+<path class="wire neutral" d="M150 550 V740 H1400 V550"/>
+
+<!-- S1 SPDT -->
+<rect class="box" x="415" y="280" width="150" height="230" rx="4"/>
+<text x="430" y="175" class="head">S1</text>
+<text x="430" y="204" class="head">TWO-WAY SWITCH</text>
+<text x="430" y="233">10 AX, 230 V</text>
+<path class="wire" d="M430 390 L518 334"/>
+<circle class="contact" cx="430" cy="390" r="5"/>
+<circle class="contact" cx="530" cy="320" r="5"/>
+<circle class="contact" cx="530" cy="460" r="5"/>
+<text x="438" y="420" class="small">COM</text>
+
+<!-- Two travelers and intermediate crossover wiring -->
+<path class="wire live" d="M535 320 H720 M535 460 H720"/>
+<text x="582" y="303" class="small">TRAV_A</text>
+<text x="582" y="489" class="small">TRAV_B</text>
+<rect class="box" x="695" y="280" width="330" height="270" rx="4"/>
+<text x="710" y="175" class="head">S2</text>
+<text x="710" y="204" class="head">INTERMEDIATE SWITCH</text>
+<text x="710" y="233">10 AX, 230 V · ganged DPDT</text>
+<!-- Common terminals, two moving poles -->
+<circle class="contact" cx="720" cy="320" r="5"/>
+<circle class="contact" cx="720" cy="460" r="5"/>
+<path class="wire" d="M725 320 L809 316 M725 460 L809 456"/>
+<path class="gang" d="M770 318 V458"/>
+<circle class="contact" cx="820" cy="320" r="5"/>
+<circle class="contact" cx="820" cy="370" r="5"/>
+<circle class="contact" cx="820" cy="460" r="5"/>
+<circle class="contact" cx="820" cy="510" r="5"/>
+<!-- Cross-straps: upper alternate to D, lower alternate to C. -->
+<path class="wire live" d="M825 460 H1100"/>
+<path class="wire live" d="M825 370 H870 V460 H1100 M825 510 H980 V320 H1100"/>
+<path class="wire live" d="M825 320 H1100"/>
+<!-- C strap bridge over D at y460 -->
+<path d="M980 443 V477" stroke="white" stroke-width="9"/>
+<path class="wire live" d="M980 443 V448 Q998 460 980 472 V477"/>
+<circle cx="870" cy="460" r="5" fill="#894422"/>
+<circle cx="980" cy="320" r="5" fill="#894422"/>
+<text x="1037" y="303" class="small">TRAV_C</text>
+<text x="1037" y="489" class="small">TRAV_D</text>
+
+<!-- S3 reversed SPDT -->
+<rect class="box" x="1130" y="280" width="150" height="230" rx="4"/>
+<text x="1135" y="175" class="head">S3</text>
+<text x="1135" y="204" class="head">TWO-WAY SWITCH</text>
+<text x="1135" y="233">10 AX, 230 V</text>
+<path class="wire live" d="M1100 320 H1150 M1100 460 H1150 M1250 390 H1400 V470"/>
+<circle class="contact" cx="1150" cy="320" r="5"/>
+<circle class="contact" cx="1150" cy="460" r="5"/>
+<path class="wire" d="M1250 390 L1162 334"/>
+<circle class="contact" cx="1250" cy="390" r="5"/>
+<text x="1200" y="420" class="small">COM</text>
+<text x="1315" y="285" class="head">W1</text>
+<text x="1315" y="315" class="small">SWITCHED</text>
+<text x="1315" y="339" class="small">LIVE (SL)</text>
+<text x="1315" y="365" class="small">1.5 mm² brown sleeve</text>
+<circle cx="1400" cy="510" r="40" fill="white" stroke="#17212b" stroke-width="3"/>
+<path class="wire" d="M1372 482 L1428 538 M1372 538 L1428 482"/>
+<text x="1290" y="602" class="head">L1 HALL LAMP</text>
+<text x="1290" y="632">230 V, 12 W LED</text>
+
+<!-- Neutral continuation to terminal -->
+<circle cx="430" cy="740" r="5" fill="#1769aa"/>
+<path class="wire neutral" d="M430 740 V815 H670"/>
+<text x="470" y="705" class="head">W2 NEUTRAL (N)</text>
+<text x="470" y="733" class="small">1.5 mm² blue</text>
+<rect x="670" y="794" width="65" height="42" fill="white" stroke="#17212b" stroke-width="3"/>
+<circle cx="687" cy="815" r="8" fill="none" stroke="#17212b" stroke-width="2"/>
+<text x="706" y="822" class="small">N</text>
+<text x="755" y="808" class="head">T2 LIGHTING NEUTRAL TERMINAL</text>
+<text x="755" y="835">16 A neutral terminal</text>
+
+<!-- Protective earth, separate from neutral -->
+<text x="180" y="894" class="head">W3 EARTH (PE)</text>
+<text x="180" y="922" class="small">1.5 mm² green/yellow</text>
+<path class="wire earth" d="M150 975 V950 H670"/>
+<path d="M150 950 H670" fill="none" stroke="#c6a629" stroke-width="2" stroke-dasharray="12 12"/>
+<path class="wire" d="M128 975 H172 M135 984 H165 M143 993 H157"/>
+<text x="70" y="949" class="small">EARTH</text>
+<rect x="670" y="929" width="65" height="42" fill="white" stroke="#17212b" stroke-width="3"/>
+<circle cx="685" cy="950" r="7" fill="none" stroke="#17212b" stroke-width="2"/>
+<text x="699" y="957" class="small">PE</text>
+<text x="755" y="943" class="head">T1 LIGHTING EARTH TERMINAL</text>
+<text x="755" y="971">16 A earth terminal</text>
+<text x="70" y="1030" class="small">Dashed link = mechanically ganged poles · Solid dot = junction · Wire bridge = no connection</text>
+</svg>

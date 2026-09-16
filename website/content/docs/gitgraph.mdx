@@ -73,7 +73,7 @@ gitGraph TB:
   merge feature
 ```
 
-`LR` (default), `TB`, and `BT` are accepted. Config can also be supplied via a leading `%%{init: {'gitGraph': {...}}}%%` directive or a YAML frontmatter `config:` block for Mermaid compatibility (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
+`LR` (default), `TB`, and `BT` are accepted. Commit labels are horizontal by default (`rotateCommitLabel: false`); enable rotation explicitly when needed. Config can also be supplied via a leading `%%{init: {'gitGraph': {...}}}%%` directive or a YAML frontmatter `config:` block for Mermaid compatibility (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
 
 ---
 

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1105" height="1088" viewBox="0 0 1105 1088" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img"><title>3-D Secure payment</title><desc>Independent sequence target following current exemplar; all source messages, activations, guards and notes retained.</desc><defs><marker id="solid" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#334155"/></marker><marker id="open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#334155" stroke-width="1.3"/></marker><marker id="triangle" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="white" stroke="#334155"/></marker></defs><rect x="0" y="0" width="1105" height="1088" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="40" y="43" font-size="22" text-anchor="start" fill="#0F172A" font-weight="600">3-D Secure payment</text>
+<text x="40" y="68" font-size="11" text-anchor="start" fill="#64748B" font-weight="400">UML 2.5.1 · SEQUENCE DIAGRAM</text>
+<path d="M40 84 L1065 84" fill="none" stroke="#CBD5E1" stroke-width="1.5"  />
+<rect x="56" y="328" width="1011" height="352" fill="none" stroke="#94A3B8" rx="0" stroke-width="1.5" />
+<path d="M56 328h52v15l-8 8h-44Z" fill="#EEF2F7" stroke="#94A3B8"/>
+<text x="64" y="344" font-size="12" text-anchor="start" fill="#334155" font-weight="600">alt</text>
+<text x="131" y="345" font-size="12" text-anchor="start" fill="#475569" font-weight="400">[challenge required]</text>
+<path d="M56 556 L1067 556" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4" />
+<text x="131" y="576" font-size="12" text-anchor="start" fill="#475569" font-weight="400">[frictionless]</text>
+<ellipse cx="110" cy="98" rx="9" ry="9" fill="white" stroke="#334155" stroke-width="1.5"/>
+<path d="M110 107 L110 136" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M93 117 L127 117" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M110 136 L95 157" fill="none" stroke="#334155" stroke-width="1.5"  />
+<path d="M110 136 L125 157" fill="none" stroke="#334155" stroke-width="1.5"  />
+<text x="110" y="180" font-size="13" text-anchor="middle" fill="#0F172A" font-weight="600">Shopper</text>
+<path d="M110 175 L110 983" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+<rect x="243" y="112" width="164" height="42" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="325" y="139" font-size="14" text-anchor="middle" fill="#0F172A" font-weight="600">Store</text>
+<path d="M325 175 L325 983" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+<rect x="458" y="112" width="164" height="42" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="540" y="139" font-size="14" text-anchor="middle" fill="#0F172A" font-weight="600">PSP</text>
+<path d="M540 175 L540 983" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+<rect x="673" y="112" width="164" height="42" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="755" y="139" font-size="14" text-anchor="middle" fill="#0F172A" font-weight="600">ACS</text>
+<path d="M755 175 L755 983" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+<rect x="888" y="112" width="164" height="42" fill="#EEF2F7" stroke="#334155" rx="0" stroke-width="1.5" />
+<text x="970" y="139" font-size="14" text-anchor="middle" fill="#0F172A" font-weight="600">Issuer</text>
+<path d="M970 175 L970 983" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+<rect x="750" y="294" width="10" height="445" fill="white" stroke="#334155" rx="0" stroke-width="1.5" />
+<rect x="535" y="248" width="10" height="629" fill="white" stroke="#334155" rx="0" stroke-width="1.5" />
+<path d="M110 190 L325 190" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="178.85" y="165" width="77.3" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="217.5" y="180" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Place order</text>
+<path d="M325 236 L540 236" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="384.4" y="211" width="96.2" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="432.5" y="226" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Authorize card</text>
+<path d="M545 282 L755 282" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="615.15" y="257" width="64.69999999999999" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="647.5" y="272" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Start 3DS</text>
+<path d="M750 372 L110 372" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="400.15" y="347" width="64.69999999999999" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="432.5" y="362" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Challenge</text>
+<path d="M110 418 L750 418" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="419.05" y="393" width="26.9" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="432.5" y="408" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">OTP</text>
+<path d="M760 464 L970 464" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="839.6" y="439" width="45.8" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="862.5" y="454" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Verify</text>
+<path d="M970 510 L760 510" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="839.6" y="485" width="45.8" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="862.5" y="500" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Result</text>
+<path d="M760 600 L970 600" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="839.6" y="575" width="45.8" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="862.5" y="590" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Assess</text>
+<path d="M970 646 L760 646" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="839.6" y="621" width="45.8" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="862.5" y="636" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Result</text>
+<path d="M750 718 L545 718" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="605.7" y="693" width="83.6" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="647.5" y="708" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">CAVV and ECI</text>
+<path d="M545 764 L970 764" fill="none" stroke="#334155" stroke-width="1.5"  marker-end="url(#solid)"/>
+<rect x="552" y="739" width="89.89999999999999" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="556" y="754" font-size="12" text-anchor="start" fill="#0F172A" font-weight="400">Authorization</text>
+<path d="M970 810 L545 810" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="552" y="785" width="134" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="556" y="800" font-size="12" text-anchor="start" fill="#0F172A" font-weight="400">Approved or declined</text>
+<path d="M535 856 L325 856" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="409.6" y="831" width="45.8" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="432.5" y="846" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Result</text>
+<path d="M325 902 L110 902" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="175.7" y="877" width="83.6" height="20" fill="white" stroke="none" rx="0" stroke-width="1.5" />
+<text x="217.5" y="892" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Confirmation</text>
+<rect x="512.5" y="936" width="270" height="34" fill="#F8FAFC" stroke="#94A3B8" rx="0" stroke-width="1.5" />
+<text x="647.5" y="958" font-size="12" text-anchor="middle" fill="#0F172A" font-weight="400">Authenticate before authorize</text>
+<path d="M40 1012 L1065 1012" fill="none" stroke="#CBD5E1" stroke-width="1.5"  />
+<text x="40" y="1039" font-size="12" text-anchor="start" fill="#475569" font-weight="400">Solid filled arrow: call    ·    Dashed open arrow: reply    ·    Narrow bar: activation    ·    Frame: combined fragment</text></svg>

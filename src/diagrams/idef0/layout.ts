@@ -13,6 +13,9 @@
  * Pure + deterministic: same AST → identical geometry.
  */
 
+import { estimateTextWidth } from "../../core/text-metrics";
+import { TITLE } from "../../core/theme";
+
 import { analyseIdef0 } from "./analysis";
 import type {
   BoxSide,
@@ -38,7 +41,6 @@ export const IDEF0_CONST = {
   ARROW_HEAD: 9,
   /** Horizontal lead-in so a feedback arrow enters the input (left) edge cleanly. */
   FEEDBACK_LEADIN: 28,
-  TITLE_H: 30,
   /** Title-block strip height at the page bottom. */
   TITLEBLOCK_H: 34,
 } as const;
@@ -48,8 +50,10 @@ export function layoutIdef0(astIn: Idef0Ast): Idef0LayoutResult {
   const C = IDEF0_CONST;
 
   // ── 1. Place boxes on the diagonal staircase ──
-  const ox = C.MARGIN;
-  const oy = C.MARGIN + C.TITLE_H;
+  const inputWidth = Math.max(0, ...ast.arrows.filter(a => a.from.kind === "boundary" && a.role === "input").map(a => estimateTextWidth(a.label ?? "", 10)));
+  const outputWidth = Math.max(0, ...ast.arrows.filter(a => a.to.kind === "boundary").map(a => estimateTextWidth(a.label ?? "", 10)));
+  const ox = Math.max(C.MARGIN, inputWidth + 60);
+  const oy = C.MARGIN + TITLE.bandH;
   const boxes: Idef0LayoutBox[] = ast.boxes.map((box, idx) => ({
     box,
     x: ox + idx * C.STEP_X,
@@ -63,12 +67,12 @@ export function layoutIdef0(astIn: Idef0Ast): Idef0LayoutResult {
   const lastBox = boxes[boxes.length - 1]!;
   const contentRight = lastBox.x + C.BOX_W;
   const contentBottom = lastBox.y + C.BOX_H;
-  const width = contentRight + C.MARGIN;
+  const width = contentRight + Math.max(C.MARGIN, outputWidth + 60);
   const height = contentBottom + C.MARGIN + C.TITLEBLOCK_H;
 
   // ── 2. Route arrows ──
   const arrows: Idef0LayoutArrow[] = ast.arrows.map((arrow) =>
-    routeArrow(arrow, boxes, boxIndex)
+    routeArrow(arrow, boxes, boxIndex, ast.arrows)
   );
 
   return { ast, boxes, arrows, width, height };
@@ -93,7 +97,8 @@ function sidePoint(b: Idef0LayoutBox, side: BoxSide): { x: number; y: number } {
 function routeArrow(
   arrow: Idef0Arrow,
   boxes: Idef0LayoutBox[],
-  boxIndex: Map<string, number>
+  boxIndex: Map<string, number>,
+  arrows: Idef0Arrow[]
 ): Idef0LayoutArrow {
   const C = IDEF0_CONST;
   const targetSide = ICOM_SIDE[arrow.role]; // side on the *box* endpoint
@@ -103,7 +108,7 @@ function routeArrow(
   const toBoundary = arrow.to.kind === "boundary";
 
   if (fromBoundary || toBoundary) {
-    return routeBoundary(arrow, boxes, boxIndex, targetSide, fromBoundary);
+    return routeBoundary(arrow, boxes, boxIndex, targetSide, fromBoundary, arrows);
   }
 
   // Box → box flow.
@@ -142,7 +147,7 @@ function routeArrow(
   // Feedback (target is earlier on the staircase): route through the LEFT/TOP
   // margin so the arrow never crosses a box. Out the right, up over the top
   // margin, back down into the target side.
-  const marginY = C.MARGIN / 2 + C.TITLE_H;
+  const marginY = C.MARGIN / 2 + TITLE.bandH;
   let d: string;
   if (targetSide === "left") {
     // Input edge: drop down in the margin to the LEFT of the target box, then run
@@ -179,7 +184,8 @@ function routeBoundary(
   boxes: Idef0LayoutBox[],
   boxIndex: Map<string, number>,
   targetSide: BoxSide,
-  fromBoundary: boolean
+  fromBoundary: boolean,
+  arrows: Idef0Arrow[]
 ): Idef0LayoutArrow {
   const C = IDEF0_CONST;
   // The box endpoint.
@@ -188,22 +194,28 @@ function routeBoundary(
 
   // For an output (box→boundary) the box-side is the right edge.
   const side: BoxSide = fromBoundary ? targetSide : "right";
+  const siblings = arrows.filter(a => fromBoundary
+    ? a.from.kind === "boundary" && a.to.kind === "box" && a.to.boxId === b.box.id && ICOM_SIDE[a.role] === side
+    : a.to.kind === "boundary" && a.from.kind === "box" && a.from.boxId === b.box.id);
+  const fraction = (siblings.indexOf(arrow) + 1) / (siblings.length + 1);
   const edge = sidePoint(b, side);
+  if (side === "left" || side === "right") edge.y = b.y + b.height * fraction;
+  else edge.x = b.x + b.width * fraction;
 
   // Stub direction: arrows enter from outside on their side; output exits right.
   let stub: { x: number; y: number };
   switch (side) {
     case "left":
-      stub = { x: edge.x - C.STUB, y: edge.y };
+      stub = { x: C.MARGIN / 3, y: edge.y };
       break;
     case "top":
-      stub = { x: edge.x, y: edge.y - C.STUB };
+      stub = { x: edge.x, y: TITLE.bandH + C.MARGIN / 3 };
       break;
     case "right":
-      stub = { x: edge.x + C.STUB, y: edge.y };
+      stub = { x: Math.max(...boxes.map(box => box.x + box.width)) + Math.max(C.MARGIN * 2 / 3, ...arrows.filter(a => a.to.kind === "boundary").map(a => estimateTextWidth(a.label ?? "", 10) + 24)), y: edge.y };
       break;
     case "bottom":
-      stub = { x: edge.x, y: edge.y + C.STUB };
+      stub = { x: edge.x, y: Math.max(...boxes.map(box => box.y + box.height)) + C.MARGIN };
       break;
   }
 
@@ -215,12 +227,14 @@ function routeBoundary(
     // boundary → box: arrow points INTO the box on `side`.
     path = `M ${stub.x} ${stub.y} L ${edge.x} ${edge.y}`;
     head = { x: edge.x, y: edge.y, dir: side };
-    label = labelAtStub(stub, side);
+    label = side === "left" ? { x: stub.x + 6, y: stub.y - 6, anchor: "start" }
+      : side === "top" ? { x: stub.x + 6, y: stub.y + 14, anchor: "start" }
+      : { x: stub.x + 6, y: stub.y - 22, anchor: "start" };
   } else {
     // box (right) → boundary: arrow points AWAY from the box (outward right).
     path = `M ${edge.x} ${edge.y} L ${stub.x} ${stub.y}`;
     head = { x: stub.x, y: stub.y, dir: "right" };
-    label = { x: stub.x + 6, y: stub.y - 6, anchor: "start" };
+    label = { x: stub.x - 6, y: stub.y - 6, anchor: "end" };
   }
 
   return { arrow, path, head, label, margin: false };
@@ -234,25 +248,10 @@ function labelAt(
   targetSide: BoxSide,
   _margin: boolean
 ): { x: number; y: number; anchor: "start" | "middle" | "end" } {
-  // Place near the midpoint of the run, slightly off the line.
+  // Start after the emitting box: centring a long label on a short outgoing
+  // segment puts its first letters underneath the box drawn above arrows.
   if (targetSide === "top") {
     return { x: end.x + 6, y: (start.y + end.y) / 2, anchor: "start" };
   }
-  return { x: (start.x + end.x) / 2, y: start.y - 6, anchor: "middle" };
-}
-
-function labelAtStub(
-  stub: { x: number; y: number },
-  side: BoxSide
-): { x: number; y: number; anchor: "start" | "middle" | "end" } {
-  switch (side) {
-    case "left":
-      return { x: stub.x - 6, y: stub.y - 6, anchor: "end" };
-    case "top":
-      return { x: stub.x, y: stub.y - 6, anchor: "middle" };
-    case "right":
-      return { x: stub.x + 6, y: stub.y - 6, anchor: "start" };
-    case "bottom":
-      return { x: stub.x, y: stub.y + 14, anchor: "middle" };
-  }
+  return { x: start.x + 6, y: start.y - 6, anchor: "start" };
 }

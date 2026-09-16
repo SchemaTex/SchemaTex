@@ -13,17 +13,15 @@ import type {
   TimelineTick,
   TimelineTrack,
 } from "./types";
-import { formatYear } from "./dates";
+import { formatYear, formatDate, parseDate } from "./dates";
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 
 const CANVAS_WIDTH = 960;
 const PAD_LEFT_WITH_TRACKS = 140;
 const PAD_LEFT_NO_TRACKS = 40;
 const PAD_RIGHT = 40;
 const PAD_TOP_BASE = 40;
-const ERA_BAND_HEIGHT = 16;
 const AXIS_HEIGHT = 40;
-const LANE_HEIGHT_RANGE = 36;
-const LANE_HEIGHT_POINT = 28;
 const LANE_GAP = 8;
 
 // Palette used when a renderer-level theme palette isn't threaded through.
@@ -99,24 +97,28 @@ function buildScale(
   return (v: number) => plotX + ((v - tMin) / span) * plotW;
 }
 
-function packEraRows(eras: TimelineEra[]): { rows: number; rowOf: number[] } {
-  if (!eras.length) return { rows: 0, rowOf: [] };
+function packEraRows(eras: TimelineEra[], xScale: (value: number) => number) {
   const rowsEnd: number[] = [];
-  const rowOf: number[] = [];
-  for (const e of eras) {
-    let placed = -1;
-    for (let i = 0; i < rowsEnd.length; i++) {
-      if (rowsEnd[i]! <= e.start.value) { placed = i; break; }
-    }
-    if (placed < 0) {
-      rowsEnd.push(e.end.value);
-      placed = rowsEnd.length - 1;
-    } else {
-      rowsEnd[placed] = e.end.value;
-    }
-    rowOf.push(placed);
+  const heights: number[] = [];
+  const bands = eras.map(e => {
+    const x = xScale(e.start.value);
+    const width = Math.max(2, xScale(e.end.value) - x);
+    const labelLines = wrapTextToWidth(e.label, 11, Math.max(80, width - 12));
+    const labelWidth = Math.max(...labelLines.map(label => estimateTextWidth(label, 11)));
+    const labelX = Math.max(PAD_LEFT_NO_TRACKS, Math.min(x + 6, CANVAS_WIDTH - PAD_RIGHT - labelWidth));
+    let bandRow = rowsEnd.findIndex(end => end <= Math.min(x, labelX));
+    if (bandRow < 0) bandRow = rowsEnd.length;
+    rowsEnd[bandRow] = Math.max(x + width, labelX + labelWidth + 6);
+    heights[bandRow] = Math.max(heights[bandRow] ?? 0, labelLines.length * 13 + 6);
+    return { bandRow, labelLines, labelX };
+  });
+  const offsets: number[] = [];
+  let totalHeight = 0;
+  for (const height of heights) {
+    offsets.push(totalHeight);
+    totalHeight += height + 2;
   }
-  return { rows: rowsEnd.length, rowOf };
+  return { totalHeight, bands: bands.map(b => ({ ...b, bandY: offsets[b.bandRow]!, bandHeight: heights[b.bandRow]! })) };
 }
 
 function generateTicks(
@@ -125,6 +127,7 @@ function generateTicks(
   span: number,
   xScale: (v: number) => number,
   mode: TimelineAST["scale"],
+  events: TimelineEvent[],
 ): TimelineTick[] {
   const ticks: TimelineTick[] = [];
 
@@ -144,6 +147,39 @@ function generateTicks(
     return ticks;
   }
 
+  if (mode === "equidistant" || (events.length > 0 && events.every(e => e.start.precision === "ordinal"))) {
+    const seen = new Set<number>();
+    return events.filter(e => !seen.has(e.start.value) && seen.add(e.start.value))
+      .map(e => ({ value: e.start.value, x: xScale(e.start.value), label: e.start.raw, major: true }));
+  }
+  if (span < 2 && events.some(e => e.start.precision === "day" || e.start.precision === "month")) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if (span < 0.17) {
+      const year = Math.floor(tMin);
+      const start = new Date(0);
+      start.setUTCFullYear(year, 0, 1);
+      const nextYear = new Date(start);
+      nextYear.setUTCFullYear(year + 1);
+      const days = (nextYear.getTime() - start.getTime()) / 86400000;
+      start.setUTCDate(1 + Math.ceil((tMin - year) * days));
+      const stepDays = [1, 2, 7, 14].find(d => span * 366 / d <= 8) ?? 14;
+      for (let i = 0; i < 80; i += stepDays) {
+        const date = new Date(start.getTime() + i * 86400000);
+        const raw = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`;
+        const value = parseDate(raw).value;
+        if (value > tMax) break;
+        ticks.push({ value, x: xScale(value), label: `${date.getUTCDate()} ${monthNames[date.getUTCMonth()]} ${date.getUTCFullYear()}`, major: true });
+      }
+    } else {
+      const stepMonths = [1, 2, 3].find(m => span * 12 / m <= 10) ?? 3;
+      for (let month = Math.ceil(tMin * 12); month <= Math.floor(tMax * 12); month += stepMonths) {
+        const year = Math.floor(month / 12), index = month - year * 12;
+        const value = year + index / 12;
+        ticks.push({ value, x: xScale(value), label: `${monthNames[index]} ${year}`, major: true });
+      }
+    }
+    return ticks;
+  }
   const step = niceStep(span);
   const start = Math.ceil(tMin / step) * step;
   for (let v = start; v <= tMax; v += step) {
@@ -186,80 +222,68 @@ function layoutSwimlane(ast: TimelineAST): TimelineLayoutResult {
 
   const xScale = buildScale(ast.scale, events, paddedStart, paddedEnd, plotX, plotW);
 
-  const eraRows = packEraRows(ast.eras);
-  const eraBandTotal = eraRows.rows * (ERA_BAND_HEIGHT + 2);
+  const eraRows = packEraRows(ast.eras, xScale);
+  const eraBandTotal = eraRows.totalHeight;
 
   const titleOffset = ast.title ? 28 : 0;
   const plotY = PAD_TOP_BASE + titleOffset + eraBandTotal;
 
   const lanes: TimelineLaneLayout[] = [];
+  const eventLayouts: TimelineEventLayout[] = [];
   let cursorY = plotY + 8;
-  for (const t of allTracks) {
-    const hasRange = events.some(e => e.trackId === t.id && e.kind === "range");
-    const h = hasRange ? LANE_HEIGHT_RANGE : LANE_HEIGHT_POINT;
-    lanes.push({ trackId: t.id, label: t.label, y: cursorY, height: h });
-    cursorY += h + LANE_GAP;
+  // Pack the full visual footprint, not only dates. Each track grows to fit
+  // its text and notes; dates remain on the shared scale.
+  for (const track of allTracks) {
+    const rows: Array<{ end: number; height: number; events: TimelineEventLayout[] }> = [];
+    for (const ev of events.filter(e => e.trackId === track.id)) {
+      const x = xScale(ev.start.value);
+      const w = ev.kind === "range" ? Math.max(4, xScale(ev.end!.value) - x) : 0;
+      const label = ev.icon ? `${ev.icon} ${ev.label}` : ev.label;
+      const inside = ev.kind === "range" && estimateTextWidth(label, 11, { fontWeight: 500 }) + 16 <= w;
+      const labelLines = wrapTextToWidth(label, inside ? 11 : 12, inside ? w - 16 : 200);
+      const hasDate = ev.start.precision !== "ordinal";
+      const dateText = hasDate ? formatDate(ev.start) + (ev.end ? ` – ${formatDate(ev.end)}` : "") : "";
+      const labelW = Math.max(estimateTextWidth(dateText, 10.5), ...labelLines.map(l => estimateTextWidth(l, inside ? 11 : 12, { fontWeight: 600 }))) + 8;
+      const labelX = Math.max(plotX + labelW / 2, Math.min(plotRight - labelW / 2, x + w / 2));
+      const noteLines = ev.note ? wrapTextToWidth(ev.note, 10.5, 200) : [];
+      const noteW = Math.max(0, ...noteLines.map(l => estimateTextWidth(l, 10.5)));
+      const noteX = Math.max(plotX, Math.min(plotRight - noteW, x + 12));
+      const left = Math.min(x - 10, labelX - labelW / 2, noteLines.length ? noteX : x);
+      const right = Math.max(x + w + 10, labelX + labelW / 2, noteLines.length ? noteX + noteW : x);
+      let row = rows.find(r => r.end + 16 <= left);
+      if (!row) { row = { end: -Infinity, height: 0, events: [] }; rows.push(row); }
+      const labelHeight = labelLines.length * 15;
+      const markerY = ev.kind === "range" ? 8 : labelHeight + 12;
+      const labelY = ev.kind === "range" ? (inside ? 22 : 44) : 14;
+      const baseEnd = ev.kind === "range" ? (inside ? 32 : 32 + labelHeight) : markerY + 10;
+      const contentEnd = baseEnd + (hasDate ? 14 : 0);
+      const noteY = contentEnd + 16;
+      row.height = Math.max(row.height, contentEnd + (noteLines.length ? 10 + noteLines.length * 13 : 0) + 12);
+      row.end = right;
+      row.events.push({ event: ev, x, w: ev.kind === "range" ? w : undefined,
+        y: markerY, h: ev.kind === "range" ? 20 : 10, labelX, labelY,
+        labelAnchor: "middle", labelLines, labelInside: inside, noteLines,
+        dateY: hasDate ? baseEnd + 10 : undefined,
+        noteX: ev.note ? noteX : undefined, noteY: ev.note ? noteY : undefined });
+    }
+    const laneY = cursorY;
+    for (const row of rows) {
+      for (const ev of row.events) eventLayouts.push({ ...ev, y: ev.y + cursorY,
+        labelY: ev.labelY + cursorY, dateY: ev.dateY === undefined ? undefined : ev.dateY + cursorY, noteY: ev.noteY === undefined ? undefined : ev.noteY + cursorY });
+      cursorY += row.height;
+    }
+    const trackHeight = wrapTextToWidth(track.label, 12, plotX - 32, { fontWeight: 600 }).length * 15 + 16;
+    const height = Math.max(40, trackHeight, cursorY - laneY);
+    lanes.push({ trackId: track.id, label: track.label, y: laneY, height });
+    cursorY = laneY + height + LANE_GAP;
   }
   const plotH = cursorY - plotY;
   const axisY = cursorY + 4;
   const height = axisY + AXIS_HEIGHT + 20;
-
   const eraLayouts: TimelineEraLayout[] = ast.eras.map((e, idx) => ({
-    era: e,
-    x: xScale(e.start.value),
-    width: Math.max(2, xScale(e.end.value) - xScale(e.start.value)),
-    bandRow: eraRows.rowOf[idx]!,
+    era: e, x: xScale(e.start.value), width: Math.max(2, xScale(e.end.value) - xScale(e.start.value)),
+    ...eraRows.bands[idx]!,
   }));
-
-  const laneByTrack = new Map(lanes.map(l => [l.trackId, l]));
-  const eventLayouts: TimelineEventLayout[] = [];
-  const labelBoxes: Array<{ x1: number; x2: number; y: number }> = [];
-  for (const ev of events) {
-    const lane = laneByTrack.get(ev.trackId!)!;
-    if (!lane) continue;
-    if (ev.kind === "range") {
-      const x = xScale(ev.start.value);
-      const xe = xScale(ev.end!.value);
-      const w = Math.max(4, xe - x);
-      eventLayouts.push({
-        event: ev,
-        x,
-        w,
-        y: lane.y + 6,
-        h: lane.height - 12,
-        labelX: x + w / 2,
-        labelY: lane.y + lane.height / 2 + 4,
-        labelAnchor: "middle",
-      });
-    } else {
-      const x = xScale(ev.start.value);
-      const cy = lane.y + lane.height / 2;
-      const labelW = estimateLabelWidth(ev.label, ev.icon);
-      // Bidirectional cascade: try above first, then below, growing outward.
-      // This roughly doubles the usable label slots compared to above-only.
-      const candidates = [
-        cy - 14, cy + 18, cy - 28, cy + 32,
-        cy - 42, cy + 46, cy - 56, cy + 60,
-      ];
-      let labelY = candidates[0]!;
-      for (const y of candidates) {
-        const box = { x1: x - labelW / 2, x2: x + labelW / 2, y };
-        const collide = labelBoxes.some(b => Math.abs(b.y - box.y) < 13 && b.x1 < box.x2 && b.x2 > box.x1);
-        if (!collide) { labelY = y; labelBoxes.push(box); break; }
-      }
-      eventLayouts.push({
-        event: ev,
-        x,
-        y: cy,
-        h: LANE_HEIGHT_POINT,
-        labelX: x,
-        labelY,
-        labelAnchor: "middle",
-        noteX: ev.note ? x + 12 : undefined,
-        noteY: ev.note ? cy + 16 : undefined,
-      });
-    }
-  }
 
   return {
     width: CANVAS_WIDTH,
@@ -272,7 +296,7 @@ function layoutSwimlane(ast: TimelineAST): TimelineLayoutResult {
     lanes,
     events: eventLayouts,
     eras: eraLayouts,
-    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale)
+    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale, events)
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY,
     title: ast.title,
@@ -370,8 +394,8 @@ function layoutGantt(ast: TimelineAST): TimelineLayoutResult {
 
   const xScale = buildScale(ast.scale, events, paddedStart, paddedEnd, plotX, plotW);
 
-  const eraRows = packEraRows(ast.eras);
-  const eraBandTotal = eraRows.rows * (ERA_BAND_HEIGHT + 2);
+  const eraRows = packEraRows(ast.eras, xScale);
+  const eraBandTotal = eraRows.totalHeight;
 
   const titleOffset = ast.title ? 28 : 0;
   const pinZoneTop = PAD_TOP_BASE + titleOffset + eraBandTotal;
@@ -449,7 +473,7 @@ function layoutGantt(ast: TimelineAST): TimelineLayoutResult {
     era: e,
     x: xScale(e.start.value),
     width: Math.max(2, xScale(e.end.value) - xScale(e.start.value)),
-    bandRow: eraRows.rowOf[idx]!,
+    ...eraRows.bands[idx]!,
   }));
 
   const legend: TimelineLegendItem[] = categories.map(c => ({ label: c, color: colorFor(c) }));
@@ -465,7 +489,7 @@ function layoutGantt(ast: TimelineAST): TimelineLayoutResult {
     lanes,
     events: eventLayouts,
     eras: eraLayouts,
-    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale)
+    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale, events)
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY,
     title: ast.title,
@@ -510,8 +534,8 @@ function layoutLollipop(ast: TimelineAST): TimelineLayoutResult {
   const rawScale = buildScale(ast.scale, events, paddedStart, paddedEnd, axisStart, axisW);
   const xScale = (v: number) => Math.max(plotX, Math.min(plotRight, rawScale(v)));
 
-  const eraRows = packEraRows(ast.eras);
-  const eraBandTotal = eraRows.rows * (ERA_BAND_HEIGHT + 2);
+  const eraRows = packEraRows(ast.eras, xScale);
+  const eraBandTotal = eraRows.totalHeight;
 
   const titleOffset = ast.title ? 28 : 0;
   // Estimate 2 stacked rows per side at worst; compute actual after card assignment.
@@ -612,32 +636,8 @@ function layoutLollipop(ast: TimelineAST): TimelineLayoutResult {
     era: e,
     x: xScale(e.start.value),
     width: Math.max(2, xScale(e.end.value) - xScale(e.start.value)),
-    bandRow: eraRows.rowOf[idx]!,
+    ...eraRows.bands[idx]!,
   }));
-
-  // Per-row leftmost/rightmost extension: ensure era covers full plot width
-  // so cards at axis extremes never overhang a gap.
-  const leftmostIdxByRow = new Map<number, number>();
-  const rightmostIdxByRow = new Map<number, number>();
-  eraLayouts.forEach((e, i) => {
-    const curL = leftmostIdxByRow.get(e.bandRow);
-    if (curL === undefined || e.x < eraLayouts[curL]!.x) leftmostIdxByRow.set(e.bandRow, i);
-    const curR = rightmostIdxByRow.get(e.bandRow);
-    const right = e.x + e.width;
-    if (curR === undefined || right > eraLayouts[curR]!.x + eraLayouts[curR]!.width) {
-      rightmostIdxByRow.set(e.bandRow, i);
-    }
-  });
-  for (const [, i] of leftmostIdxByRow) {
-    const e = eraLayouts[i]!;
-    const right = e.x + e.width;
-    e.x = Math.min(e.x, plotX);
-    e.width = right - e.x;
-  }
-  for (const [, i] of rightmostIdxByRow) {
-    const e = eraLayouts[i]!;
-    e.width = Math.max(e.width, plotRight - e.x);
-  }
 
   return {
     width: CANVAS_WIDTH,
@@ -650,7 +650,7 @@ function layoutLollipop(ast: TimelineAST): TimelineLayoutResult {
     lanes: [],
     events: eventLayouts,
     eras: eraLayouts,
-    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale)
+    ticks: generateTicks(paddedStart, paddedEnd, span, xScale, ast.scale, events)
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY: realAxisY,
     title: ast.title,

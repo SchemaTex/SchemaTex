@@ -1,0 +1,14 @@
+circuit "N-Channel MOSFET H-Bridge Drive" netlist
+# 24 V motor bridge; each half-bridge has a dedicated high/low-side driver and bootstrap capacitor.
+V1 VBUS GND value="24 V DC" label="V1 MOTOR SUPPLY"
+C1 VBUS GND value="470 µF, 35 V" label="C1 BULK"
+M1 VBUS GH1 OUTA nmos value="IRLZ44N" label="Q1 HIGH LEFT"
+M2 OUTA GL1 SENSE nmos value="IRLZ44N" label="Q2 LOW LEFT"
+M3 VBUS GH2 OUTB nmos value="IRLZ44N" label="Q3 HIGH RIGHT"
+M4 OUTB GL2 SENSE nmos value="IRLZ44N" label="Q4 LOW RIGHT"
+L1 OUTA OUTB type=dc_motor value="24 V, 5 A" label="M1 DC MOTOR"
+R1 SENSE GND value="10 mΩ, 3 W" label="RSHUNT"
+U1 VBUS GND BOOT1 OUTA GH1 GL1 type=ic pins="VDD,COM,BOOT,SW,HO,LO" value="IR2104" label="U1 LEFT GATE DRIVER"
+C2 BOOT1 OUTA value="100 nF, 50 V" label="CBOOT1"
+U2 VBUS GND BOOT2 OUTB GH2 GL2 type=ic pins="VDD,COM,BOOT,SW,HO,LO" value="IR2104" label="U2 RIGHT GATE DRIVER"
+C3 BOOT2 OUTB value="100 nF, 50 V" label="CBOOT2"

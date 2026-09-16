@@ -1,0 +1,40 @@
+{
+  "id": "usecase-insurance-claims",
+  "type": "usecase",
+  "title": "Insurance claims",
+  "goal": "Show a policyholder claim journey including fraud escalation.",
+  "rubric": [
+    {
+      "id": "boundary",
+      "severity": "blocker",
+      "must": "Claims Management Platform is a visible subject boundary around all claim capabilities."
+    },
+    {
+      "id": "lodgement-includes",
+      "severity": "blocker",
+      "must": "Lodge Claim has dashed «include» arrows pointing to Validate Policy and Request Documents."
+    },
+    {
+      "id": "fraud-extension",
+      "severity": "major",
+      "must": "Investigate Fraud extends Lodge Claim toward its suspected fraud extension point."
+    },
+    {
+      "id": "policy-system",
+      "severity": "major",
+      "must": "Validate Policy is associated with the external Policy Administration actor."
+    },
+    {
+      "id": "staff-generalization",
+      "severity": "minor",
+      "must": "Fraud Analyst generalizes to Adjuster using a hollow triangle."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/usecase/ideal.svg (sha256 7c0fac2f9989). Vision reviewed all six rasterized targets: named subject boundary, external actors, extension-point compartments, include arrows toward included use cases and extend arrows toward bases; long dependencies routed outside unrelated ellipses. Source and rubric unchanged; no engine rendering used as target."
+  }
+}

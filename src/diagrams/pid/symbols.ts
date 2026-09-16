@@ -1,4 +1,5 @@
 import { circle, group, line, path, polygon, rect, text } from "../../core/svg";
+import { wrapTextToWidth } from "../../core/text-metrics";
 import type { PidActuatorType, PidEquipType, PidFailPosition } from "./types";
 import { PID_ACTUATOR_TYPES, PID_FAIL_POSITIONS } from "./types";
 
@@ -359,14 +360,23 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
 // ── Renderers — each draws around (0,0). ─────────────────────
 
 const STROKE_BLACK = "#1d1d1d";
+const STROKE_DETAIL = "#555";
 const FILL_WHITE = "#ffffff";
 
-function bowtie(): string {
-  // Two triangles meeting at center.
-  return polygon({
-    points: "-18,-11 0,0 -18,11 18,11 0,0 18,-11",
-    class: "lt-pid-valve-body",
-  });
+function bowtie(x = 15.4, y = 9.8): string {
+  // Target coordinates are resized directly; strokes retain engine weights.
+  return group({}, [
+    line({ x1: -18, y1: 0, x2: -x, y2: 0, class: "lt-pid-process", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+    line({ x1: x, y1: 0, x2: 18, y2: 0, class: "lt-pid-process", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+    path({
+      d: `M ${-x} ${-y} L ${-x} ${y} L 0 0 Z M ${x} ${-y} L ${x} ${y} L 0 0 Z`,
+      class: "lt-pid-valve-body",
+      fill: FILL_WHITE,
+      stroke: STROKE_BLACK,
+      "stroke-width": 1.4,
+      "stroke-linejoin": "round",
+    }),
+  ]);
 }
 
 export function normalizePidActuator(value?: string): PidActuatorType | undefined {
@@ -385,39 +395,43 @@ function renderValveActuator(
 ): string {
   const parts: string[] = [
     // Valve body center is y=12; all operators attach through one stem.
-    line({ x1: 0, y1: 1, x2: 0, y2: -6, class: "lt-pid-tray-line" }),
+    line({ x1: 0, y1: 12, x2: 0, y2: -4.1, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 }),
   ];
 
   switch (actuator) {
     case "motor":
       parts.push(
-        circle({ cx: 0, cy: -18, r: 12, class: "lt-pid-equip" }),
-        text({ x: 0, y: -14, "text-anchor": "middle", class: "lt-pid-actuator-letter" }, "M"),
-        line({ x1: 0, y1: -34, x2: 0, y2: -30, class: "lt-pid-tray-line" })
+        circle({ cx: 0, cy: -13.2, r: 9.1, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        text({ x: 0, y: -9.2, "text-anchor": "middle", class: "lt-pid-actuator-letter", "font-size": 11, "font-weight": 700 }, "M"),
+        line({ x1: 0, y1: -34, x2: 0, y2: -22.3, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 })
       );
       break;
     case "solenoid":
       parts.push(
-        rect({ x: -12, y: -30, width: 24, height: 22, class: "lt-pid-equip" }),
-        text({ x: 0, y: -15, "text-anchor": "middle", class: "lt-pid-actuator-letter" }, "S"),
-        line({ x1: 0, y1: -34, x2: 0, y2: -30, class: "lt-pid-tray-line" })
+        rect({ x: -9.1, y: -22.3, width: 18.2, height: 18.2, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        text({ x: 0, y: -9.2, "text-anchor": "middle", class: "lt-pid-actuator-letter", "font-size": 11, "font-weight": 700 }, "S"),
+        line({ x1: 0, y1: -34, x2: 0, y2: -22.3, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 })
       );
       break;
     case "piston":
       parts.push(
-        rect({ x: -13, y: -28, width: 26, height: 18, class: "lt-pid-equip" }),
-        line({ x1: -10, y1: -19, x2: 10, y2: -19, class: "lt-pid-tray-line" }),
-        line({ x1: 0, y1: -19, x2: 0, y2: -6, class: "lt-pid-tray-line" }),
-        line({ x1: 0, y1: -34, x2: 0, y2: -28, class: "lt-pid-tray-line" })
+        rect({ x: -14, y: -28.6, width: 28, height: 19.6, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        line({ x1: -14, y1: -18.8, x2: 14, y2: -18.8, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        line({ x1: 0, y1: -18.8, x2: 0, y2: -4.1, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        line({ x1: 0, y1: -34, x2: 0, y2: -28.6, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 })
       );
       break;
     case "diaphragm":
       parts.push(
         path({
-          d: "M -14 -9 A 14 8 0 0 1 14 -9 L -14 -9 Z",
+          d: "M -14 -13.2 A 14 9.8 0 0 1 14 -13.2 Z",
           class: "lt-pid-equip",
+          fill: FILL_WHITE,
+          stroke: STROKE_BLACK,
+          "stroke-width": 1.6,
         }),
-        line({ x1: 0, y1: -34, x2: 0, y2: -17, class: "lt-pid-tray-line" })
+        line({ x1: 0, y1: -4.1, x2: 0, y2: -13.2, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        line({ x1: 0, y1: -34, x2: 0, y2: -23, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 })
       );
       break;
   }
@@ -437,9 +451,18 @@ function renderValveActuator(
   );
 }
 
-export function renderEquip(
+/** Use one measured, wrapped annotation below equipment instead of fitting a
+ * full description into the process symbol or over its horizontal nozzles. */
+export function renderEquip(type: PidEquipType, label: string, rawType?: string, attrs: Record<string, string> = {}): string {
+  const symbol = renderEquipBody(type, rawType, attrs);
+  if (!label) return symbol;
+  const geometry = GEOMETRY[type] ?? { height: 50 };
+  const lines = wrapTextToWidth(label, 11, 150, { fontWeight: 600 });
+  return group({}, [symbol, ...lines.map((value, index) => text({ x: 0, y: geometry.height / 2 + 24 + index * 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, value))]);
+}
+
+function renderEquipBody(
   type: PidEquipType,
-  label: string,
   rawType?: string,
   attrs: Record<string, string> = {}
 ): string {
@@ -465,547 +488,214 @@ export function renderEquip(
               rawType.length > 12 ? rawType.slice(0, 11) + "…" : rawType
             )
           : "",
-        text({ x: 0, y: h / 2 + 13, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     }
     case "tank_atm": {
-      const w = 90;
-      const h = 90;
-      const cylTop = -h / 2 + 14;
-      const parts = [
-        // dome top
-        path({
-          d: `M ${-w / 2} ${cylTop} A ${w / 2} 14 0 0 1 ${w / 2} ${cylTop}`,
-          class: "lt-pid-equip",
-        }),
-        // body
-        rect({
-          x: -w / 2,
-          y: cylTop,
-          width: w,
-          height: h - 14,
-          class: "lt-pid-equip",
-        }),
-        // tag
-        text(
-          { x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
-      ];
-      return group({ class: "lt-pid-equip-group" }, parts);
+      // Dished roof and flat bottom, with nozzles at the fixed anchors.
+      return group({}, [
+        path({ d: "M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+      ]);
     }
     case "tank_cone_roof": {
-      const w = 90;
-      const h = 100;
-      const roofH = 18;
-      const top = -h / 2;
+      // Conical roof on the accepted flat-bottom tank shell.
       return group({}, [
-        polygon({
-          points: `${-w / 2},${top + roofH} 0,${top} ${w / 2},${top + roofH}`,
-          class: "lt-pid-equip",
-        }),
-        rect({
-          x: -w / 2,
-          y: top + roofH,
-          width: w,
-          height: h - roofH,
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M 0 -50 V -40 M 0 40 V 50 M -45 0 H -40 M 40 0 H 45", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -40 -27 L 0 -40 L 40 -27 V 40 H -40 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "vessel_v": {
-      const w = 70;
-      const h = 130;
-      const headH = 16;
-      const top = -h / 2;
-      const bot = h / 2;
+      // Two 2:1 heads and paired crown nozzles; retain the offset inlet and outlet.
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${top + headH}
-              A ${w / 2} ${headH} 0 0 1 ${w / 2} ${top + headH}
-              L ${w / 2} ${bot - headH}
-              A ${w / 2} ${headH} 0 0 1 ${-w / 2} ${bot - headH}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        text(
-          { x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M 0 -65 V -62 H -14.5 V -53.06 M 0 -62 H 14.5 V -53.06 M 0 55 V 65 M -35 0 H -29 M 29 0 H 35 M -35 -25 H -29 M 29 25 H 35", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -29 -40.5 A 29 14.5 0 0 1 29 -40.5 V 40.5 A 29 14.5 0 0 1 -29 40.5 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "vessel_h": {
-      const w = 130;
-      const h = 70;
-      const headW = 14;
-      const left = -w / 2;
-      const right = w / 2;
+      // Horizontal 2:1 heads with two upper nozzles and a lower liquid nozzle.
       return group({}, [
-        path({
-          d: `M ${left + headW} ${-h / 2}
-              L ${right - headW} ${-h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${right - headW} ${h / 2}
-              L ${left + headW} ${h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${left + headW} ${-h / 2}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        text(
-          { x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -65 0 H -57 M 57 0 H 65 M 0 -35 H -32 V -25 M 0 -35 H 32 V -25 M 32 25 V 35 H 0", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -44.5 -25 H 44.5 A 12.5 25 0 0 1 44.5 25 H -44.5 A 12.5 25 0 0 1 -44.5 -25 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "sphere": {
+      // Spherical shell with short process nozzles.
       return group({}, [
-        circle({ cx: 0, cy: 0, r: 45, class: "lt-pid-equip" }),
-        text({ x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M 0 -45 V -37 M 0 37 V 45 M -45 0 H -37 M 37 0 H 45", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 37, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "column_tray": {
-      const w = 60;
-      const h = 180;
-      const headH = 12;
-      const trays = 12;
-      const inner = h - headH * 2;
-      const traySpacing = inner / (trays + 1);
-      const trayLines: string[] = [];
-      for (let i = 1; i <= trays; i++) {
-        const y = -h / 2 + headH + traySpacing * i;
-        trayLines.push(
-          line({
-            x1: -w / 2 + 6,
-            y1: y,
-            x2: w / 2 - 6,
-            y2: y,
-            class: "lt-pid-tray-line",
-          })
-        );
-      }
+      // Six alternating open trays with downcomers.
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${-h / 2 + headH}
-              A ${w / 2} ${headH} 0 0 1 ${w / 2} ${-h / 2 + headH}
-              L ${w / 2} ${h / 2 - headH}
-              A ${w / 2} ${headH} 0 0 1 ${-w / 2} ${h / 2 - headH}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        ...trayLines,
-        text(
-          {
-            x: 0,
-            y: -h / 2 - 6,
-            "text-anchor": "middle",
-            class: "lt-pid-equip-tag",
-          },
-          label
-        ),
+        path({ d: "M 0 -90 V -87 H -13 V -78.26 M 0 -87 H 13 V -78.26 M 0 80 V 90 M -30 0 H -26 M -30 70 H -25.3", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -26 -67 A 26 13 0 0 1 26 -67 V 67 A 26 13 0 0 1 -26 67 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -26 -50 H 18.2 V -43 M 26 -30 H -18.2 V -23 M -26 -10 H 18.2 V -3 M 26 10 H -18.2 V 17 M -26 30 H 18.2 V 37 M 26 50 H -18.2 V 57", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "column_packed": {
-      const w = 60;
-      const h = 180;
-      const headH = 12;
-      // X-shaped packing pattern, rendered as repeated `<` and `>` characters
-      const packing = path({
-        d: `M ${-w / 2 + 6} ${-h / 2 + headH + 6}
-            L ${w / 2 - 6} ${h / 2 - headH - 6}
-            M ${w / 2 - 6} ${-h / 2 + headH + 6}
-            L ${-w / 2 + 6} ${h / 2 - headH - 6}`,
-        class: "lt-pid-tray-line",
-      });
+      // Two bounded, crossed packing beds distinguish this from the tray column.
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${-h / 2 + headH}
-              A ${w / 2} ${headH} 0 0 1 ${w / 2} ${-h / 2 + headH}
-              L ${w / 2} ${h / 2 - headH}
-              A ${w / 2} ${headH} 0 0 1 ${-w / 2} ${h / 2 - headH}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        packing,
-        text(
-          {
-            x: 0,
-            y: -h / 2 - 6,
-            "text-anchor": "middle",
-            class: "lt-pid-equip-tag",
-          },
-          label
-        ),
+        path({ d: "M 0 -90 V -87 H -13 V -78.26 M 0 -87 H 13 V -78.26 M 0 80 V 90 M -30 0 H -26", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -26 -67 A 26 13 0 0 1 26 -67 V 67 A 26 13 0 0 1 -26 67 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -20.8 -53 H 20.8 V -10 H -20.8 Z M -20.8 -53 L 20.8 -10 M 20.8 -53 L -20.8 -10 M -20.8 10 H 20.8 V 53 H -20.8 Z M -20.8 10 L 20.8 53 M 20.8 10 L -20.8 53", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "hx_shell_tube": {
-      const w = 130;
-      const h = 60;
-      const headW = 12;
-      const left = -w / 2;
-      const right = w / 2;
-      const tubes: string[] = [];
-      for (let yy = -h / 2 + 12; yy <= h / 2 - 12; yy += 8) {
-        tubes.push(
-          line({
-            x1: left + headW + 4,
-            y1: yy,
-            x2: right - headW - 4,
-            y2: yy,
-            class: "lt-pid-tray-line",
-          })
-        );
-      }
+      // Two tube sheets separate the channels from the four-tube bundle.
       return group({}, [
-        path({
-          d: `M ${left + headW} ${-h / 2}
-              L ${right - headW} ${-h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${right - headW} ${h / 2}
-              L ${left + headW} ${h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${left + headW} ${-h / 2}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        ...tubes,
-        text(
-          {
-            x: 0,
-            y: h / 2 + 14,
-            "text-anchor": "middle",
-            class: "lt-pid-equip-tag",
-          },
-          label
-        ),
+        path({ d: "M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        rect({ x: -59, y: -25, width: 118, height: 50, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "hx_air_cooled": {
-      const w = 130;
-      const h = 80;
       return group({}, [
-        rect({
-          x: -w / 2,
-          y: -h / 2 + 18,
-          width: w,
-          height: h - 18,
-          class: "lt-pid-equip",
-        }),
-        circle({ cx: 0, cy: -h / 2 + 14, r: 18, class: "lt-pid-equip" }),
-        // 3-blade fan
-        path({
-          d: `M 0 ${-h / 2 + 14} L 14 ${-h / 2 + 6}
-              M 0 ${-h / 2 + 14} L -14 ${-h / 2 + 6}
-              M 0 ${-h / 2 + 14} L 0 ${-h / 2 + 30}`,
-          class: "lt-pid-tray-line",
-        }),
-        text(
-          { x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -65 10 H -55 M 55 10 H 65", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        rect({ x: -55, y: -9, width: 110, height: 48, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -55 5.4 H 55 M -55 15 H 55 M -55 24.6 H 55", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        path({ d: "M -46.2 -5 V 35 M -38.5 -5 V 35 M -30.8 -5 V 35 M -23.1 -5 V 35 M -15.4 -5 V 35 M -7.7 -5 V 35 M 0 -5 V 35 M 7.7 -5 V 35 M 15.4 -5 V 35 M 23.1 -5 V 35 M 30.8 -5 V 35 M 38.5 -5 V 35 M 46.2 -5 V 35", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: 0, cy: -25, r: 14, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 -25 C -14 -39 14 -39 0 -25 C 14 -11 -14 -11 0 -25", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: 0, cy: -25, r: 1.4, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "reboiler": {
-      const w = 110;
-      const h = 60;
-      const headW = 14;
+      // Kettle vapour space and submerged U-tube, fitted to the existing three ports.
       return group({}, [
-        path({
-          d: `M ${-w / 2 + headW} ${-h / 2}
-              L ${w / 2 - headW} ${-h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${w / 2 - headW} ${h / 2}
-              L ${-w / 2 + headW} ${h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${-w / 2 + headW} ${-h / 2}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        line({
-          x1: -w / 2 + headW + 4,
-          y1: -10,
-          x2: w / 2 - headW - 4,
-          y2: -10,
-          class: "lt-pid-tray-line",
-        }),
-        line({
-          x1: -w / 2 + headW + 4,
-          y1: 0,
-          x2: w / 2 - headW - 4,
-          y2: 0,
-          class: "lt-pid-tray-line",
-        }),
-        line({
-          x1: -w / 2 + headW + 4,
-          y1: 10,
-          x2: w / 2 - headW - 4,
-          y2: 10,
-          class: "lt-pid-tray-line",
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -55 0 H -48 M 48 0 H 55 M 0 27 V 30", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -48 -4 L -28.8 -27 H 33.6 A 14.4 27 0 0 1 33.6 27 H -28.8 L -48 14 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -38.4 -15.5 V 20.5 M -48 0 H 24 A 5 5 0 0 1 24 10 H -48", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "condenser": {
-      // Visually identical to a horizontal HX with a label hint.
-      const w = 130;
-      const h = 60;
-      const headW = 12;
-      const left = -w / 2;
-      const right = w / 2;
-      const tubes: string[] = [];
-      for (let yy = -h / 2 + 12; yy <= h / 2 - 12; yy += 10) {
-        tubes.push(
-          line({
-            x1: left + headW + 4,
-            y1: yy,
-            x2: right - headW - 4,
-            y2: yy,
-            class: "lt-pid-tray-line",
-          })
-        );
-      }
+      // Keep the circular angular-passage target; route shell nozzles to the fixed offset ports.
       return group({}, [
-        path({
-          d: `M ${left + headW} ${-h / 2}
-              L ${right - headW} ${-h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${right - headW} ${h / 2}
-              L ${left + headW} ${h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${left + headW} ${-h / 2}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        ...tubes,
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -65 0 H -24 M 24 0 H 65 M -50 -30 V -27 H 0 V -24 M 0 24 V 27 H 50 V 30", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 24, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -24 0 H -12 L 0 -12 V 12 L 12 0 H 24", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "pump_general": {
-      const r = 22;
+      // Accepted casing and internals, with connections to the fixed port anchors.
       return group({}, [
-        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
-        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
-        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
-        polygon({ points: "-9,-12 13,0 -9,12", class: "lt-pid-tray-line", fill: "none" }),
-        text(
-          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -35 0 H -29 M 29 0 H 35", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 -29 L 29 0 L 0 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "pump_centrifugal": {
-      // Circle + right-side triangle outlet.
-      const r = 22;
+      // Accepted casing and internals, with connections to the fixed port anchors.
       return group({}, [
-        line({ x1: -30, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
-        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
-        polygon({
-          points: `${r * 0.4},${-r * 0.9} ${r + 6},${-r * 0.9} ${r * 0.4},${0}`,
-          class: "lt-pid-equip",
-        }),
-        text(
-          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -30 0 H -29 M 29 0 H 33 V -22 H 28", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 -29 L 29 0 L 0 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        path({ d: "M -29 0 H 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "pump_diaphragm": {
-      const r = 22;
+      // Accepted casing and internals, with connections to the fixed port anchors.
       return group({}, [
-        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
-        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
-        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
-        line({ x1: -9, y1: -15, x2: -9, y2: 15, class: "lt-pid-tray-line" }),
-        path({
-          d: "M -9 -15 Q 13 0 -9 15",
-          class: "lt-pid-tray-line",
-          fill: "none",
-        }),
-        text(
-          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -35 0 H -29 M 29 0 H 35", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 -29 L 29 0 L 0 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        path({ d: "M 0 -29 C -15.47 -13.53 -15.47 13.53 0 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "pump_pd": {
-      const r = 22;
+      // Accepted casing and internals, with connections to the fixed port anchors.
       return group({}, [
-        line({ x1: -35, y1: 0, x2: -r, y2: 0, class: "lt-pid-tray-line" }),
-        line({ x1: r, y1: 0, x2: 35, y2: 0, class: "lt-pid-tray-line" }),
-        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
-        circle({ cx: -8, cy: 0, r: 6, class: "lt-pid-tray-line", fill: "none" }),
-        circle({ cx: 8, cy: 0, r: 6, class: "lt-pid-tray-line", fill: "none" }),
-        text(
-          { x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M -35 0 H -29 M 29 0 H 35", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 -29 L 29 0 L 0 29", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: -5.8, cy: -7.73, r: 9.18, class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: -5.8, cy: 7.73, r: 9.18, class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "compressor": {
-      // Trapezoid (left wide → right narrow inverted = compressor)
       return group({}, [
-        polygon({
-          points: "-45,-20 45,-12 45,12 -45,20",
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: 36, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -45 0 H -29 M 29 0 H 45", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -17.4 -23.2 L 26.1 -12.644 M -17.4 23.2 L 26.1 12.644", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "blower": {
-      const r = 22;
       return group({}, [
-        circle({ cx: 0, cy: 0, r, class: "lt-pid-equip" }),
-        path({
-          d: `M 0 0 L ${r * 0.8} ${-r * 0.5} M 0 0 L ${-r * 0.6} ${-r * 0.6} M 0 0 L 0 ${r * 0.8}`,
-          class: "lt-pid-tray-line",
-        }),
-        text({ x: 0, y: r + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -35 0 H -29 M 29 0 H 35", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        circle({ cx: 0, cy: 0, r: 29, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 0 0 C -29 -29 29 -29 0 0 C 29 29 -29 29 0 0", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: 0, cy: 0, r: 2.9, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "reactor_cstr": {
-      const w = 90;
-      const h = 110;
-      const headH = 14;
-      const top = -h / 2;
-      const bot = h / 2;
+      // Jacket, jacket connections, shaft and impeller fitted inside the fixed envelope.
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${top + headH}
-              A ${w / 2} ${headH} 0 0 1 ${w / 2} ${top + headH}
-              L ${w / 2} ${bot - headH}
-              A ${w / 2} ${headH} 0 0 1 ${-w / 2} ${bot - headH}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        // agitator shaft + paddle
-        line({ x1: 0, y1: top - 14, x2: 0, y2: 4, class: "lt-pid-tray-line" }),
-        rect({ x: -10, y: 4, width: 20, height: 4, class: "lt-pid-equip" }),
-        text(
-          { x: 0, y: bot + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" },
-          label
-        ),
+        path({ d: "M 0 -55 V -50 H -14 V -38.12 M 0 -50 H 14 V -38.12 M 0 44 V 55 M -45 -10 H -28 M -45 -4 H -34 M 34 28 H 45", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -28 -26 A 28 14 0 0 1 28 -26 V 30 A 28 14 0 0 1 -28 30 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -28 -15 H -34 V 30 A 34 20 0 0 0 -6.6 49.5 M 6.6 49.5 A 34 20 0 0 0 34 30 V -15 H 28 M 0 -55 V 20 M -10 -55 H 10", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        path({ d: "M -16 16 L 0 20 L 16 16 V 24 L 0 20 L -16 24 Z", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "reactor_pfr": {
-      const w = 130;
-      const h = 50;
-      const headW = 12;
-      const left = -w / 2;
-      const right = w / 2;
-      // Packed-bed style fill
-      const dots: string[] = [];
-      for (let xx = left + headW + 8; xx <= right - headW - 8; xx += 12) {
-        for (let yy = -h / 2 + 12; yy <= h / 2 - 8; yy += 10) {
-          dots.push(circle({ cx: xx, cy: yy, r: 1.6, fill: STROKE_BLACK }));
-        }
-      }
+      // Tubular vessel with axial nozzles; the accepted PFR does not imply packing.
       return group({}, [
-        path({
-          d: `M ${left + headW} ${-h / 2}
-              L ${right - headW} ${-h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${right - headW} ${h / 2}
-              L ${left + headW} ${h / 2}
-              A ${headW} ${h / 2} 0 0 1 ${left + headW} ${-h / 2}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        ...dots,
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -65 0 H -56 M 56 0 H 65", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -44 -24 H 44 A 12 24 0 0 1 44 24 H -44 A 12 24 0 0 1 -44 -24 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "filter": {
-      const w = 70;
-      const h = 70;
-      const labelWidth = Math.max(34, label.length * 6.4 + 8);
-      // diagonal hatch via 3 lines
+      // Three separated dashes identify the filter medium; keep the backwash nozzle.
       return group({}, [
-        rect({ x: -w / 2, y: -h / 2, width: w, height: h, class: "lt-pid-equip" }),
-        line({ x1: -w / 2, y1: 0, x2: w / 2, y2: 0, class: "lt-pid-tray-line" }),
-        line({ x1: -w / 2 + 8, y1: -h / 2 + 8, x2: w / 2 - 8, y2: -8, class: "lt-pid-tray-line" }),
-        line({ x1: -w / 2 + 8, y1: 8, x2: w / 2 - 8, y2: h / 2 - 8, class: "lt-pid-tray-line" }),
-        rect({
-          x: -labelWidth / 2,
-          y: h / 2 + 3,
-          width: labelWidth,
-          height: 15,
-          class: "lt-pid-equip-tag-bg",
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -35 0 H -25 M 25 0 H 35 M 0 -35 V -28 M 0 28 V 35 M -35 22 H -25", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        rect({ x: -25, y: -28, width: 50, height: 56, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -21 0 H -11 M -5 0 H 5 M 11 0 H 21", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "cyclone": {
-      const w = 70;
-      const h = 100;
-      const cyl = 30;
+      // Side inlet, top vortex finder and truncated solids hopper.
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${-h / 2}
-              L ${w / 2} ${-h / 2}
-              L ${w / 2} ${-h / 2 + cyl}
-              L 0 ${h / 2}
-              L ${-w / 2} ${-h / 2 + cyl}
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -35 -30 H -29 M 0 -50 V -39 M 0 39 V 50", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -29 -39 H 29 V -13 L 5.8 39 H -5.8 L -29 -13 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -5 -39 V -19 M 5 -39 V -19", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
     case "flare": {
-      const w = 30;
-      const h = 110;
+      // Open stack and monochrome outlined flame, with the inlet at its declared bottom port.
       return group({}, [
-        rect({ x: -w / 2, y: -h / 2, width: w, height: h, class: "lt-pid-equip" }),
-        polygon({
-          points: `${-8},${-h / 2 - 4} 0,${-h / 2 - 22} 8,${-h / 2 - 4}`,
-          fill: "#ff7755",
-          stroke: STROKE_BLACK,
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M 0 47 V 55", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -13 -36 V 47 H 13 V -36", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -5.5 -37 C -13.75 -45 -2.2 -48.5 0 -55 C 2.75 -49 9.35 -47.5 7.7 -41 C 6.6 -36.5 0.55 -34 -5.5 -37 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "cooling_tower": {
-      const w = 100;
-      const h = 90;
       return group({}, [
-        path({
-          d: `M ${-w / 2} ${-h / 2}
-              L ${w / 2} ${-h / 2}
-              L ${w / 4} 0
-              L ${w / 2} ${h / 2}
-              L ${-w / 2} ${h / 2}
-              L ${-w / 4} 0
-              Z`,
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -50 0 H -46 V -22 H -31.5 M 36.17 32 H 46 V 0 H 50 M 0 -45 V -44", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -42 -44 H 42 L 21 0 L 42 44 H -42 L -21 0 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -31.5 -22 H 31.5 M -36.27 32 H 36.27", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     }
-
     case "boiler": {
-      const w = 100;
-      const h = 100;
+      // Serpentine tube pass and outlined flame, connected to the offset feed and steam ports.
       return group({}, [
-        rect({ x: -w / 2, y: -h / 2, width: w, height: h, class: "lt-pid-equip" }),
-        path({
-          d: "M -34,-24 L 34,-24 M -34,-14 L 34,-14 M -34,-4 L 34,-4",
-          class: "lt-pid-tray-line",
-        }),
-        path({
-          d: "M -12,30 C -20,18 -8,12 -5,2 C 5,10 4,18 10,22 C 16,27 12,38 0,40 C -8,39 -14,36 -12,30 Z",
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: h / 2 + 14, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -50 20 H -45 V -16 H -39 M 39 -29 H 50 V -28 M -50 38 H -39 M 0 -50 V -45 M 0 45 V 50", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        rect({ x: -39, y: -45, width: 78, height: 90, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M -39 -16 H -24.7 V 9.6 H 24.7 V -3.2 H -11.7 V -29 H 39 M -39 38 H -10", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        path({ d: "M -7.8 32.8 C -15.6 22.5 -3.9 19.9 -2.6 12.9 C 5.2 19.9 2.6 23.8 8.45 27 C 14.95 36.6 3.9 41.1 0 40.5 C -4.55 40.5 -8.45 37.3 -7.8 32.8 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "burner": {
+      // Fuel nozzle and flared mouth with the outlined flame ending at the outlet anchor.
       return group({}, [
-        line({ x1: -38, y1: 0, x2: -18, y2: 0, class: "lt-pid-tray-line" }),
-        polygon({ points: "-18,-14 -18,14 8,0", class: "lt-pid-equip" }),
-        path({
-          d: "M 12,3 C 6,-5 16,-10 18,-19 C 27,-11 23,-3 30,1 C 38,7 31,18 21,18 C 13,18 8,11 12,3 Z",
-          class: "lt-pid-equip",
-        }),
-        text({ x: 0, y: 36, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -38 0 H -22", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -22 -13 H -2 L 10 -26 V 26 L -2 13 H -22 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        path({ d: "M 12.7 -13 C 20.7 -23.4 24 -5.2 38 0 C 24.7 5.2 20.7 23.4 12.7 13 C 18.7 7.8 18.7 -7.8 12.7 -13 Z", class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
       ]);
     }
     case "generator": {
       return group({}, [
-        circle({ cx: 0, cy: 0, r: 38, class: "lt-pid-equip" }),
-        text({ x: 0, y: 7, "text-anchor": "middle", class: "lt-pid-equip-tag" }, "G"),
-        text({ x: 0, y: 54, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        path({ d: "M -38 0 H -36 M 36 0 H 38 M 0 -38 V -36 M 0 36 V 38", class: "lt-pid-tray-line", fill: "none", stroke: STROKE_DETAIL, "stroke-width": 1 }),
+        circle({ cx: 0, cy: 0, r: 36, class: "lt-pid-equip", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.6 }),
+        text({ x: 0, y: 5, "text-anchor": "middle", class: "lt-pid-equip-tag", "font-size": 13, "font-weight": 600, fill: STROKE_BLACK }, "G"),
       ]);
     }
 
@@ -1013,31 +703,33 @@ export function renderEquip(
     case "valve_gate":
       return group({}, [
         bowtie(),
-        text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     case "valve_ball":
       return group({}, [
         bowtie(),
-        circle({ cx: 0, cy: 0, r: 4, fill: STROKE_BLACK }),
-        text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        circle({ cx: 0, cy: 0, r: 7.35, fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.4 }),
       ]);
     case "valve_globe":
       return group({}, [
         bowtie(),
-        circle({ cx: 0, cy: -5, r: 5, class: "lt-pid-valve-body", fill: FILL_WHITE }),
-        text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        group({ class: "lt-pid-valve-body" }, [
+          circle({ cx: 0, cy: 0, r: 3.5, fill: STROKE_BLACK, stroke: "none" }),
+        ]),
       ]);
     case "valve_butterfly":
       return group({}, [
-        bowtie(),
-        line({ x1: 0, y1: -10, x2: 0, y2: 10, class: "lt-pid-tray-line" }),
-        text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        line({ x1: -18, y1: 0, x2: -15.4, y2: 0, class: "lt-pid-process", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        line({ x1: 15.4, y1: 0, x2: 18, y2: 0, class: "lt-pid-process", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
+        path({ d: "M -15.4 -9.8 V 9.8 M 15.4 -9.8 V 9.8", class: "lt-pid-valve-body", fill: FILL_WHITE, stroke: STROKE_BLACK, "stroke-width": 1.4 }),
+        line({ x1: -11.2, y1: -9.8, x2: 11.2, y2: 9.8, class: "lt-pid-tray-line", stroke: STROKE_DETAIL, "stroke-width": 1 }),
       ]);
     case "valve_check":
       return group({}, [
-        bowtie(),
-        path({ d: "M -10 -8 A 10 10 0 0 1 -10 8", class: "lt-pid-tray-line", fill: "none" }),
-        text({ x: 0, y: 22, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+        // Leave room for the upstream seat dot inside the fixed 22-high box.
+        bowtie(12.1, 7.7),
+        group({ class: "lt-pid-tray-line" }, [
+          circle({ cx: -12.1, cy: -7.7, r: 2.475, fill: STROKE_BLACK, stroke: "none" }),
+        ]),
       ]);
     case "valve_control": {
       const actuator = normalizePidActuator(attrs.actuator) ?? "diaphragm";
@@ -1045,31 +737,33 @@ export function renderEquip(
       return group({}, [
         group({ transform: "translate(0 12)" }, [bowtie()]),
         renderValveActuator(actuator, fail),
-        text({ x: 0, y: 36, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
     }
     case "valve_psv":
       return group({}, [
-        bowtie(),
-        // diagonal outlet (45°)
-        line({
-          x1: 18, y1: -11,
-          x2: 26, y2: -22,
-          class: "lt-pid-process",
-        }),
-        // spring stack
+        // Angle body at (0,-8), sized to fill the symbol box. Connect the
+        // bottom inlet and side outlet to the existing, asymmetric ports.
+        path({ d: "M -18 12 H 0 V 6.96 M 14.96 -8 H 18", class: "lt-pid-process", fill: "none", stroke: STROKE_BLACK, "stroke-width": 2.6 }),
         path({
-          d: "M -6 -11 L -10 -16 L -2 -20 L -10 -24 L -2 -28",
+          d: "M -9.52 6.96 L 9.52 6.96 L 0 -8 Z M 14.96 -17.52 L 14.96 1.52 L 0 -8 Z",
+          class: "lt-pid-valve-body",
+          fill: FILL_WHITE,
+          stroke: STROKE_BLACK,
+          "stroke-width": 1.4,
+          "stroke-linejoin": "round",
+        }),
+        path({
+          d: "M 0 -8 L 0 -16 L -8.84 -19 L 8.84 -22 L -8.84 -25 L 8.84 -28 L 0 -29",
           class: "lt-pid-tray-line",
           fill: "none",
+          stroke: STROKE_DETAIL,
+          "stroke-width": 1,
         }),
-        text({ x: 0, y: 24, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
 
     default:
       return group({}, [
         rect({ x: -30, y: -20, width: 60, height: 40, class: "lt-pid-equip" }),
-        text({ x: 0, y: 4, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
       ]);
   }
 }
@@ -1117,20 +811,9 @@ export function renderInstrument(
       })
     );
   } else if (isShared) {
-    // Hexagon inscribed (point-up)
+    // ISA shared display/control: circle inscribed in a square.
+    parts.push(rect({ x: -r, y: -r, width: 2 * r, height: 2 * r, class: "lt-inst-body" }));
     parts.push(circle({ cx: 0, cy: 0, r, class: "lt-inst-body" }));
-    const hex: string[] = [];
-    for (let i = 0; i < 6; i++) {
-      const a = (Math.PI / 3) * i - Math.PI / 2;
-      hex.push(`${(r - 2) * Math.cos(a)},${(r - 2) * Math.sin(a)}`);
-    }
-    parts.push(
-      polygon({
-        points: hex.join(" "),
-        class: "lt-inst-body",
-        fill: "none",
-      })
-    );
   } else {
     // discrete — circle only
     parts.push(circle({ cx: 0, cy: 0, r, class: "lt-inst-body" }));

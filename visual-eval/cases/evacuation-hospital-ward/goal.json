@@ -1,0 +1,78 @@
+{
+  "id": "evacuation-hospital-ward",
+  "type": "evacuation",
+  "variant": "iso",
+  "title": "Ward 4B escape plan",
+  "goal": "A practitioner can read this escape plan at a glance: Ward 4B escape plan.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible YOU ARE HERE marker, legend, and two marked exits are present."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "Primary and secondary routes visibly lead from the marker to separate exits."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The Ward 4B plan is readable at a glance. A prominent YOU ARE HERE marker in the Nurse Station connects to clearly differentiated green routes leading west and east through the ward corridor to two marked final exits. Room, safety-equipment, assembly-point, stair, and legend labels are legible and visibly associated with the correct elements.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:32.026Z",
+      "targetHash": "30110b181189",
+      "sourceHash": "ae1c4f151bf1",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "Visible YOU ARE HERE marker, full legend, and two EXIT labels with final-exit symbols are present."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The primary route visibly leads east to Stair East and its exit, while the alternative route leads west to Stair West and its separate exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Green directional arrows make both paths from the Nurse Station marker through the Ward Corridor to the exits easy to follow."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Ward, room, stair, exit, equipment, assembly-point, and route-legend labels are legible and attached to their corresponding visible features."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Route branches, door openings, stair enclosures, and safety symbols are visually distinct and do not imply unintended connections."
+        }
+      ]
+    }
+  }
+}

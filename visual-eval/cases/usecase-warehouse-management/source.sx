@@ -1,0 +1,29 @@
+# Warehouse operations for receiving, picking, and exception handling.
+usecase
+title: "Warehouse Management"
+system: "Warehouse Management System"
+actor: Picker as P (business)
+actor: Supervisor as S (business)
+actor: "Forklift Operator" as FO
+actor: "ERP System" as ERP (external)
+usecase: "Receive Shipment" as Receive
+usecase: "Scan Goods" as Scan
+usecase: "Put Away Stock" as Putaway
+usecase: "Release Pick Wave" as Release
+usecase: "Pick Order" as Pick { 
+  extension point: short pick
+}
+usecase: "Confirm Shipment" as Ship
+usecase: "Resolve Short Pick" as Short
+FO --|> P
+P -- Receive
+P -- Pick
+S -- Release
+Receive ..> Scan : «include»
+Receive ..> Putaway : «include»
+Pick ..> Scan : «include»
+Pick ..> Ship : «include»
+Release -- ERP
+Ship -- ERP
+Short <.. Pick : «extend» [location empty] (extension point: short pick)
+S -- Short

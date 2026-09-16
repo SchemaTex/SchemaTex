@@ -1,0 +1,20 @@
+%% Context: Accounts-payable invoice approval and payment run, from receipt to remittance.
+flowchart TD
+  A([Invoice received]) --> B[/Scan and capture invoice/]
+  B --> C[(Look up purchase order)]
+  C --> D{PO match found?}
+  D -->|No| E[Request PO from requester]
+  E -.-> C
+  D -->|Yes| F{Amount over $10,000?}
+  subgraph Approval [Approval]
+    F -->|Yes| G[[Route to CFO]]
+    F -->|No| H[Route to department head]
+    G --> I{Approved?}
+    H --> I
+  end
+  I -->|No| J[Notify vendor of dispute]
+  J --> K([Invoice rejected])
+  I -->|Yes| L[Schedule payment run]
+  L --> M[Post entry to ledger]
+  M --> N[/Send remittance advice/]
+  N --> O([Invoice paid])

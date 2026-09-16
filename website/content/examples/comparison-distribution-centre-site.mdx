@@ -1,0 +1,65 @@
+---
+title: Distribution centre site — weighted decision matrix
+description: A Pugh weighted decision matrix scoring four cities against five weighted criteria, with the current favourite as the baseline; the engine computes each total, the ranking and the winner.
+diagram: comparison
+standard: Pugh, Total Design (1991) · ASQ decision matrix
+industry: [logistics, operations]
+persona: For the logistics director choosing a site
+complexity: 3
+tags: [comparison, decision-matrix, pugh, weighted-scoring, site-selection]
+featured: false
+relatedLink:
+  label: Comparison syntax
+  href: /docs/comparison
+status: published
+dsl: |
+  # Scenario: a logistics director chooses the site for a second distribution centre, scored against Reno as the datum.
+  comparison "Site for the second distribution centre"
+  mode: decision
+  baseline: "Reno"
+  option "Reno"
+  option "Salt Lake City"
+  option "Phoenix"
+  option "Boise"
+  criterion "Labour availability" weight: 5
+    Reno: 3
+    Salt Lake City: 5
+    Phoenix: 4
+    Boise: 2
+  criterion "Two-day truck reach to customers" weight: 5
+    Reno: 3
+    Salt Lake City: 4
+    Phoenix: 4
+    Boise: 2
+  criterion "Land and build cost" weight: 4
+    Reno: 3
+    Salt Lake City: 3
+    Phoenix: 4
+    Boise: 5
+  criterion "State tax incentives" weight: 3
+    Reno: 4
+    Salt Lake City: 4
+    Phoenix: 3
+    Boise: 3
+  criterion "Heat and water risk" weight: 2
+    Reno: 3
+    Salt Lake City: 4
+    Phoenix: 1
+    Boise: 4
+---
+
+## Scenario
+
+A logistics director picks the site for a second distribution centre. Four cities — Reno, Salt Lake City, Phoenix and Boise — are scored from 1 to 5 against five criteria, each weighted by importance. Reno, the current favourite, is the baseline that every other option is compared against.
+
+## Annotation key
+
+- `mode: decision` — a weighted decision matrix: the engine multiplies each score by its weight and adds them up
+- `baseline: "Reno"` — the reference option; every other option shows its difference from it
+- `option "..."` — one column per candidate
+- `criterion "..." weight: 5` — one row per criterion, with its importance
+- `Reno: 3` — under a criterion, the score each option gets
+
+## How to read
+
+Each column's total is the sum of score × weight. Salt Lake City wins with 77, 17 points ahead of Reno's 60, mainly on labour availability and truck reach. Phoenix is second with 67 despite a score of 1 on heat and water risk. Boise comes last at 57 — the cheapest land, but weak on the two most heavily weighted criteria. Change a weight or a score and the ranking is recomputed.

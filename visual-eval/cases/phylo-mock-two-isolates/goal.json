@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-two-isolates",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Two isolates (mock)",
+  "goal": "Mock dataset (not empirical or user data). Show the smallest nontrivial tree clearly using the default layout.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "two-tips",
+      "severity": "blocker",
+      "must": "Exactly two named isolates branch directly from a common root."
+    },
+    {
+      "id": "ratio",
+      "severity": "major",
+      "must": "The horizontal B branch spans 2.5 times the A branch."
+    },
+    {
+      "id": "readable",
+      "severity": "major",
+      "must": "Both labels and the branching point are clear without unnecessary visual clutter."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram shows exactly two named isolates branching directly from one clear root. The horizontal branch lengths match the 2.5:1 ratio, and both labels are readable without distracting clutter.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:26:36.168Z",
+      "targetHash": "58e794a804f2",
+      "sourceHash": "729aad1641fe",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "two-tips",
+          "verdict": "pass",
+          "evidence": "Isolate A and Isolate B each branch directly from the same visible root."
+        },
+        {
+          "id": "ratio",
+          "verdict": "pass",
+          "evidence": "The horizontal B branch is about 2.5 times the A branch, consistent with the 0.05 and 0.02 scale values."
+        },
+        {
+          "id": "readable",
+          "verdict": "pass",
+          "evidence": "Both labels and the branching point are clear, with no material overlap or cropping."
+        }
+      ]
+    }
+  }
+}

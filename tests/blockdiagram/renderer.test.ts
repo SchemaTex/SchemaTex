@@ -22,3 +22,10 @@ G -> err`);
     expect(Number(viewBox?.[2])).toBeLessThan(260);
   });
 });
+
+test.each(["title System Architecture", 'title: "System Architecture"'])("renders %s with the shared title placement", (title) => {
+  const svg = render(`blockdiagram\n${title}\nA = block("Plant")`);
+  expect(svg).toBe(render('blockdiagram "System Architecture"\nA = block("Plant")'));
+  expect(svg).toMatch(/<text[^>]*y="24"[^>]*class="schematex-bd-title"[^>]*>System Architecture<\/text>/);
+  expect(svg).toContain('transform="translate(0, 40)"');
+});

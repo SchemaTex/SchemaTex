@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="920" viewBox="0 0 1800 920">
+<title>Medical infusion pump DFMEA — Programmable infusion pump patient-safety risks</title>
+<rect width="1800" height="920" fill="white"/>
+<defs><style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#182b3a} .title{font-size:32px;font-weight:700}.sub{font-size:18px}.label{font-size:14px;font-weight:700;letter-spacing:1px;fill:#506779}.body{font-size:19px}.head{font-size:16px;font-weight:700}.num{font-size:25px;font-weight:700;text-anchor:middle}.small{font-size:16px}.line{stroke:#99aab6;stroke-width:1;fill:none}
+</style></defs>
+<rect x="40" y="38" width="7" height="65" fill="#193b51"/>
+<text x="64" y="65" class="title">Medical infusion pump DFMEA</text>
+<text x="65" y="96" class="sub">Design failure mode and effects analysis · Patient-safety risks</text>
+<text x="1758" y="60" text-anchor="end" class="label">DOCUMENT NUMBER</text>
+<text x="1758" y="91" text-anchor="end" class="body">DFMEA-INF-031</text>
+<rect x="40" y="127" width="1720" height="99" fill="#f2f6f8" stroke="#99aab6"/>
+<text x="60" y="153" class="label">ITEM</text><text x="60" y="187" class="body" font-weight="700">Programmable infusion pump</text>
+<path d="M510 127V226" class="line"/>
+<text x="534" y="153" class="label">FUNCTION</text><text x="534" y="187" class="body">Deliver prescribed fluid volume at prescribed rate</text>
+<text x="40" y="263" class="small">Ranking: RPN = Severity × Occurrence × Detection</text>
+<rect x="1350" y="244" width="18" height="18" fill="#ffebdf" stroke="#ac461c"/>
+<text x="1380" y="259" class="small">Flag criterion: RPN &gt; 100</text>
+<!-- Column boundaries: 40,230,495,555,815,875,1165,1470,1530,1605,1760 -->
+<rect x="40" y="284" width="1720" height="82" fill="#193b51"/>
+<g fill="white" style="fill:white" class="head">
+<text x="57" y="320" style="fill:white">Failure mode</text>
+<text x="247" y="311" style="fill:white">Effect on patient</text><text x="247" y="335" style="fill:white">/ therapy</text>
+<text x="525" y="323" text-anchor="middle" style="fill:white">S</text>
+<text x="573" y="320" style="fill:white">Potential cause</text>
+<text x="845" y="323" text-anchor="middle" style="fill:white">O</text>
+<text x="893" y="311" style="fill:white">Current controls</text><text x="893" y="337" style="fill:white">Prevention</text>
+<text x="1183" y="311" style="fill:white">Current controls</text><text x="1183" y="337" style="fill:white">Detection</text>
+<text x="1500" y="323" text-anchor="middle" style="fill:white">D</text>
+<text x="1567" y="323" text-anchor="middle" style="fill:white">RPN</text>
+<text x="1624" y="320" style="fill:white">Risk flag</text>
+</g>
+<rect x="40" y="366" width="1720" height="110" fill="#fff"/>
+<rect x="40" y="476" width="1720" height="110" fill="#fff0e7"/>
+<rect x="40" y="586" width="1720" height="110" fill="#fff"/>
+<rect x="40" y="696" width="1720" height="110" fill="#f5f8fa"/>
+<g fill="#eaf0f4" opacity=".55"><rect x="495" y="366" width="60" height="440"/><rect x="815" y="366" width="60" height="440"/><rect x="1470" y="366" width="135" height="440"/></g>
+<rect x="1470" y="476" width="135" height="110" fill="#ffdfca"/>
+<g class="line"><path d="M40 284H1760V806H40Z"/><path d="M230 284V806M495 284V806M555 284V806M815 284V806M875 284V806M1165 284V806M1470 284V806M1530 284V806M1605 284V806"/><path d="M40 366H1760M40 476H1760M40 586H1760M40 696H1760"/></g>
+<g class="body">
+<text x="57" y="425" font-weight="700">Over-infusion</text>
+<text x="247" y="413"><tspan x="247">Patient overdose</tspan><tspan x="247" dy="27">and serious harm</tspan></text>
+<text x="573" y="413"><tspan x="573">Flow-sensor</tspan><tspan x="573" dy="27">calibration drift</tspan></text>
+<text x="893" y="413"><tspan x="893">Calibration</tspan><tspan x="893" dy="27">specification</tspan></text>
+<text x="1183" y="413"><tspan x="1183">Flow-rate</tspan><tspan x="1183" dy="27">verification test</tspan></text>
+<text x="57" y="535" font-weight="700">Over-infusion</text>
+<text x="247" y="523"><tspan x="247">Patient overdose</tspan><tspan x="247" dy="27">and serious harm</tspan></text>
+<text x="573" y="535">Incorrect rate entry</text>
+<text x="893" y="523"><tspan x="893">Dose-error reduction</tspan><tspan x="893" dy="27">library</tspan></text>
+<text x="1183" y="523"><tspan x="1183">Independent</tspan><tspan x="1183" dy="27">nurse check</tspan></text>
+<text x="57" y="645" font-weight="700">Under-infusion</text>
+<text x="247" y="633"><tspan x="247">Therapy ineffective</tspan><tspan x="247" dy="27">or delayed</tspan></text>
+<text x="573" y="633"><tspan x="573">Occluded</tspan><tspan x="573" dy="27">administration set</tspan></text>
+<text x="893" y="645">Anti-kink set design</text>
+<text x="1183" y="645">Occlusion alarm test</text>
+<text x="57" y="743" font-weight="700"><tspan x="57">Unexpected</tspan><tspan x="57" dy="27">pump stop</tspan></text>
+<text x="247" y="743"><tspan x="247">Interruption of</tspan><tspan x="247" dy="27">critical medication</tspan></text>
+<text x="573" y="755">Battery depletion</text>
+<text x="893" y="743"><tspan x="893">Battery capacity</tspan><tspan x="893" dy="27">monitoring</tspan></text>
+<text x="1183" y="755">Low-battery alarm test</text>
+</g>
+<g class="num"><text x="525" y="428">10</text><text x="845" y="428">3</text><text x="1500" y="428">3</text><text x="1567" y="428">90</text>
+<text x="525" y="538">10</text><text x="845" y="538">4</text><text x="1500" y="538">4</text><text x="1567" y="538" style="fill:#a23914">160</text>
+<text x="525" y="648">8</text><text x="845" y="648">5</text><text x="1500" y="648">2</text><text x="1567" y="648">80</text>
+<text x="525" y="758">9</text><text x="845" y="758">3</text><text x="1500" y="758">3</text><text x="1567" y="758">81</text></g>
+<g class="small"><text x="1624" y="425">—</text><text x="1624" y="645">—</text><text x="1624" y="755">—</text></g>
+<path d="M1625 511V550M1625 511H1646L1640 521L1646 531H1625" fill="#ac461c" stroke="#ac461c" stroke-width="2"/>
+<text x="1657" y="536" font-size="15" font-family="Arial,Helvetica,sans-serif" font-weight="700" fill="#ac461c">&gt; 100</text>
+<text x="40" y="841" class="small">S = Severity · O = Occurrence · D = Detection · RPN = Risk Priority Number</text>
+<text x="40" y="870" class="small">Assumptions: Programmable hospital infusion pump used with standard nursing checks.</text>
+<text x="40" y="895" class="small">Severity is patient-focused; detection follows the AIAG-VDA 1-to-10 convention.</text>
+</svg>

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1120" viewBox="0 0 1500 1120">
+<title>Three Contactor Interlocked Control — 120 V AC control circuit</title>
+<rect width="1500" height="1120" fill="white"/>
+<defs>
+ <style>text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:19px}.wire{fill:none;stroke:#17212b;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:square}.label{font-weight:bold;font-size:21px}.small{font-size:16px}.node{fill:#17212b}.symbol{fill:white;stroke:#17212b;stroke-width:2.5}</style>
+ <g id="no" class="wire"><path d="M-42 0H-10 M10 0H42 M-10-19V19 M10-19V19"/></g>
+ <g id="nc" class="wire"><path d="M-42 0H-10 M10 0H42 M-10-19V19 M10-19V19 M-20 27L20-27"/></g>
+ <g id="push" class="wire"><use href="#no"/><path d="M0-25V-39 M-14-39H14"/></g>
+ <g id="coil"><circle class="symbol" r="34"/></g>
+ <g id="lamp"><circle class="symbol" r="27"/><path class="wire" d="M-19-19L19 19 M-19 19L19-19"/></g>
+</defs>
+<text x="60" y="58" font-size="32" font-weight="bold">THREE CONTACTOR INTERLOCKED CONTROL</text>
+<text x="60" y="91" font-size="18">120 V AC • Control schematic • Connections follow the supplied netlist</text>
+<path d="M60 112H1440" stroke="#17212b" stroke-width="1"/>
+<!-- Supply and upstream protection -->
+<path class="wire" d="M160 185H298 M382 185H568 M652 185H760V800 M1340 185V990H160V652 M160 568V185"/>
+<use href="#nc" x="340" y="185"/>
+<path class="wire" d="M340 150V135 M326 135H354"/>
+<text class="label" x="340" y="230" text-anchor="middle">S0 STOP NC</text>
+<use href="#nc" x="610" y="185"/>
+<text class="label" x="610" y="230" text-anchor="middle">F1 OVERLOAD</text>
+<text class="small" x="610" y="255" text-anchor="middle">95–96 NC · thermal</text>
+<text class="label" x="180" y="163">L1</text>
+<text class="small" x="460" y="163">STOP</text>
+<text class="label" x="775" y="180">OL</text>
+<text class="label" x="1340" y="158" text-anchor="middle">GND / RETURN</text>
+<circle class="symbol" cx="160" cy="610" r="42"/>
+<path class="wire" d="M134 610C141 585 153 585 160 610S179 635 186 610"/>
+<text class="label" x="95" y="685">V1</text>
+<text x="65" y="714">120 V AC</text>
+<text x="65" y="740">control</text>
+<!-- Forward start and parallel seal-in -->
+<path class="wire" d="M760 330H818 M902 330H1080H1156 M1224 330H1340 M785 330V425H818 M902 425H1080V330 M1080 330V470H1163 M1217 470H1340"/>
+<use href="#push" x="860" y="330"/>
+<text class="label" x="860" y="278" text-anchor="middle">S1</text>
+<text x="860" y="372" text-anchor="middle">START FORWARD</text>
+<use href="#no" x="860" y="425"/>
+<text x="860" y="467" text-anchor="middle">KM1 seal-in</text>
+<text class="small" x="860" y="490" text-anchor="middle">KM1 AUX NO</text>
+<use href="#coil" x="1190" y="330"/>
+<text x="1190" y="337" text-anchor="middle" font-weight="bold">KM1</text>
+<text class="label" x="1190" y="272" text-anchor="middle">KM1 FORWARD</text>
+<text class="small" x="1190" y="391" text-anchor="middle">120 V AC coil</text>
+<text class="small" x="1050" y="309" text-anchor="middle">START_F</text>
+<use href="#lamp" x="1190" y="470"/>
+<text x="1190" y="516" text-anchor="middle">H1 FORWARD · Green</text>
+<!-- Reverse: seal-in connects after the interlock per netlist -->
+<path class="wire" d="M760 565H818 M902 565H958 M1042 565H1080H1156 M1224 565H1340 M785 565V660H818 M902 660H1080V565 M1080 565V705H1163 M1217 705H1340"/>
+<use href="#push" x="860" y="565"/>
+<text class="label" x="810" y="546" text-anchor="middle">S2</text>
+<text x="860" y="607" text-anchor="middle">START REVERSE</text>
+<use href="#nc" x="1000" y="565"/>
+<text class="label" x="1000" y="527" text-anchor="middle">KM1 NC</text>
+<text class="small" x="1000" y="629" text-anchor="middle">KM1 interlock</text>
+<use href="#no" x="860" y="660"/>
+<text x="860" y="702" text-anchor="middle">KM2 seal-in</text>
+<text class="small" x="860" y="725" text-anchor="middle">KM2 AUX NO</text>
+<use href="#coil" x="1190" y="565"/>
+<text x="1190" y="572" text-anchor="middle" font-weight="bold">KM2</text>
+<text class="small" x="1190" y="626" text-anchor="middle">KM2 REVERSE · 120 V AC coil</text>
+<use href="#lamp" x="1190" y="705"/>
+<text x="1190" y="751" text-anchor="middle">H2 REVERSE · Amber</text>
+<!-- Star -->
+<path class="wire" d="M760 800H818 M902 800H958 M1042 800H1080H1156 M1224 800H1340 M785 800V895H818 M902 895H1080V800 M1080 800V940H1163 M1217 940H1340"/>
+<use href="#push" x="860" y="800"/>
+<text class="label" x="810" y="781" text-anchor="middle">S3</text>
+<text x="860" y="842" text-anchor="middle">START STAR</text>
+<use href="#nc" x="1000" y="800"/>
+<text class="label" x="1000" y="762" text-anchor="middle">KM2 NC</text>
+<text class="small" x="1000" y="864" text-anchor="middle">KM2 interlock</text>
+<use href="#no" x="860" y="895"/>
+<text x="860" y="937" text-anchor="middle">KM3 seal-in</text>
+<text class="small" x="860" y="960" text-anchor="middle">KM3 AUX NO</text>
+<use href="#coil" x="1190" y="800"/>
+<text x="1190" y="807" text-anchor="middle" font-weight="bold">KM3</text>
+<text class="small" x="1190" y="861" text-anchor="middle">KM3 STAR · 120 V AC coil</text>
+<use href="#lamp" x="1190" y="940"/>
+<text x="1190" y="983" text-anchor="middle">H3 STAR · Blue</text>
+<!-- Junctions -->
+<g class="node">
+<circle cx="760" cy="330" r="5"/><circle cx="785" cy="330" r="5"/><circle cx="1080" cy="330" r="5"/><circle cx="1080" cy="425" r="5"/><circle cx="1340" cy="330" r="5"/><circle cx="1340" cy="470" r="5"/>
+<circle cx="760" cy="565" r="5"/><circle cx="785" cy="565" r="5"/><circle cx="1080" cy="565" r="5"/><circle cx="1080" cy="660" r="5"/><circle cx="1340" cy="565" r="5"/><circle cx="1340" cy="705" r="5"/>
+<circle cx="760" cy="800" r="5"/><circle cx="785" cy="800" r="5"/><circle cx="1080" cy="800" r="5"/><circle cx="1080" cy="895" r="5"/><circle cx="1340" cy="800" r="5"/><circle cx="1340" cy="940" r="5"/>
+</g>
+<path class="wire" d="M1340 990V1010 M1320 1010H1360 M1326 1018H1354 M1333 1026H1347"/>
+<text class="label" x="330" y="365">01 / FORWARD</text>
+<text x="330" y="394">S1 start · KM1 hold</text>
+<text class="label" x="330" y="600">02 / REVERSE</text>
+<text x="330" y="629">S2 start · KM1 NC interlock</text>
+<text class="label" x="330" y="835">03 / STAR</text>
+<text x="330" y="864">S3 start · KM2 NC interlock</text>
+<path d="M60 1050H1440" stroke="#17212b" stroke-width="1"/>
+<text class="small" x="60" y="1080">Contacts shown in normal, de-energized state. Solid dots indicate electrical junctions.</text>
+<text class="small" x="1440" y="1080" text-anchor="end">CONTROL / 01</text>
+</svg>

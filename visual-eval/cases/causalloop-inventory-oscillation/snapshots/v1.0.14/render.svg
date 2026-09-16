@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="485" height="379" viewBox="0 0 485 379" role="img" aria-label="Causal loop diagram" data-diagram-type="causalloop"><title>Causal loop diagram</title>
+<desc>Causal loop diagram: 4 variables, 4 causal links. 1 feedback loop: 0 reinforcing (R), 1 balancing (B). B1 &quot;Replenishment with delay&quot; (balancing, 1 negative link): Inventory → Perceived stock gap → Order rate → Inbound deliveries → Inventory. Line 3: unrecognised line: &quot;causalloop &quot;Retail inventory oscillation&quot;&quot;</desc>
+<style>.sx-cld-bg { fill: #ffffff; }
+.sx-cld-link { fill: none; stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-arrow { fill: #1a1a1a; stroke: none; }
+.sx-cld-var { fill: #1a1a1a; font-size: 13px; font-weight: 600; }
+.sx-cld-polarity { fill: #1a1a1a; font-size: 14px; font-weight: 700; }
+.sx-cld-link-label { fill: #1a1a1a; font-size: 9px; }
+.sx-cld-delay { stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-glyph { fill: none; stroke: #1d6fd6; stroke-width: 2; }
+.sx-cld-glyph-head { fill: #1d6fd6; stroke: none; }
+.sx-cld-glyph-label { fill: #1d6fd6; font-size: 12px; font-weight: 700; }
+.sx-cld-glyph-phrase { fill: #1d6fd6; font-size: 10px; font-style: italic; }
+.sx-cld-title { fill: #1a1a1a; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="485" height="379" class="sx-cld-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-cld-link-g" data-from="Inventory" data-to="Perceived stock gap" data-polarity="-"><path d="M 235.5 67 Q 308.9 87.6 329.5 161" class="sx-cld-link"/>
+<polygon points="329.5,161 322.74,153.55 331.4,151.12" class="sx-cld-arrow"/>
+<text x="334.6795717276927" y="151.18932963579073" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Perceived stock gap" data-to="Order rate" data-polarity="+"><path d="M 329.5 187 Q 308.9 260.4 235.5 281" class="sx-cld-link"/>
+<polygon points="235.5,281 242.95,274.24 245.38,282.9" class="sx-cld-arrow"/>
+<text x="249.31067036420927" y="290.1795717276927" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Order rate" data-to="Inbound deliveries" data-polarity="+" data-delay="true"><path d="M 209.5 281 Q 136.1 260.4 115.5 187" class="sx-cld-link"/>
+<polygon points="115.5,187 122.26,194.45 113.6,196.88" class="sx-cld-arrow"/>
+<text x="110.32042827230731" y="204.8106703642093" class="sx-cld-polarity" text-anchor="middle">+</text>
+<line x1="144.70380592228744" y1="248.96776695296634" x2="151.06776695296637" y2="242.60380592228742" class="sx-cld-delay"/>
+<line x1="147.53223304703366" y1="251.79619407771256" x2="153.89619407771258" y2="245.43223304703363" class="sx-cld-delay"/></g>
+<g class="sx-cld-link-g" data-from="Inbound deliveries" data-to="Inventory" data-polarity="+"><path d="M 115.5 161 Q 136.1 87.6 209.5 67" class="sx-cld-link"/>
+<polygon points="209.5,67 202.05,73.76 199.62,65.1" class="sx-cld-arrow"/>
+<text x="195.68932963579073" y="65.82042827230731" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-glyph-g" data-loop="B1" data-kind="B" data-vars="Inventory,Perceived stock gap,Order rate,Inbound deliveries" data-negatives="1" data-circulation="cw"><path d="M 222.5 158 A 16 16 0 1 1 208.64 166" class="sx-cld-glyph"/>
+<polygon points="208.64,166 208.17,173.81 202.11,170.31" class="sx-cld-glyph-head"/>
+<text x="222.5" y="179" class="sx-cld-glyph-label" text-anchor="middle">B1</text>
+<text x="222.5" y="203" class="sx-cld-glyph-phrase" text-anchor="middle">Replenishment with delay</text></g>
+<g class="sx-cld-var-g" data-id="Inventory"><text x="222.5" y="58" class="sx-cld-var" text-anchor="middle">Inventory</text></g>
+<g class="sx-cld-var-g" data-id="Perceived stock gap"><text x="342.5" y="178" class="sx-cld-var" text-anchor="middle">Perceived stock gap</text></g>
+<g class="sx-cld-var-g" data-id="Order rate"><text x="222.5" y="298" class="sx-cld-var" text-anchor="middle">Order rate</text></g>
+<g class="sx-cld-var-g" data-id="Inbound deliveries"><text x="102.5" y="178.00000000000003" class="sx-cld-var" text-anchor="middle">Inbound deliveries</text></g></g></svg>

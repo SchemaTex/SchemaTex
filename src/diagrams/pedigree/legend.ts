@@ -1,5 +1,5 @@
 /**
- * Auto-derive a LegendSpec from a pedigree AST.
+ * Build a LegendSpec from encodings emitted by the pedigree renderer.
  *
  * Pedigree-specific encodings:
  *   1. Trait fills (the legacy `legend: trait_id = "Label" (fill: ...)`
@@ -11,7 +11,7 @@
  */
 
 import type {
-  DiagramAST,
+  LegendEntry,
   GeneticStatus,
   LegendItem,
   LegendSection,
@@ -26,37 +26,32 @@ const SECTIONS: LegendSection[] = [
   { id: "symbols", title: "Symbols" },
 ];
 
-const OBVIOUS_SEX: ReadonlySet<Sex> = new Set<Sex>(["male", "female"]);
+// Explicit order, independent of node order or object property insertion order.
+const ITEM_ORDER = [
+  "status.affected", "status.carrier", "status.carrier-x",
+  "status.obligate-carrier", "status.presymptomatic",
+  "sex.unknown", "sex.other", "sex.nonbinary", "sex.intersex",
+  "status.deceased", "status.stillborn",
+  "status.sab", "status.sab.affected", "status.tab", "status.tab.affected",
+  "status.ectopic", "status.ectopic.affected",
+  "relationship.consanguineous", "relationship.separated",
+  "marker.proband", "marker.consultand", "marker.evaluated",
+];
 
 export function buildPedigreeLegend(
-  ast: DiagramAST,
+  drawnItems: LegendItem[],
+  traits: LegendEntry[] | undefined,
   theme: ResolvedTheme<PersonTokens>
 ): LegendSpec {
-  const items: LegendItem[] = [];
-
-  // Genetic status: standard pedigree-chart encoding (unaffected omitted —
-  // it's the universal default).
-  const statusUsed = new Set<GeneticStatus>();
-  for (const ind of ast.individuals) {
-    if (ind.geneticStatus && ind.geneticStatus !== "unaffected") {
-      statusUsed.add(ind.geneticStatus);
-    }
-  }
-  const statusOrder: GeneticStatus[] = [
-    "affected",
-    "carrier",
-    "carrier-x",
-    "obligate-carrier",
-    "presymptomatic",
-  ];
-  for (const s of statusOrder) {
-    if (!statusUsed.has(s)) continue;
-    items.push(geneticStatusItem(s, theme));
-  }
+  const byKey = new Map(drawnItems.map((item) => [item.key, item]));
+  const items = ITEM_ORDER.flatMap((key) => {
+    const item = byKey.get(key);
+    return item ? [item] : [];
+  });
 
   // Legacy trait legend entries (when DSL uses `legend: cf = "Cystic Fibrosis"`).
-  if (ast.legend && ast.legend.length > 0) {
-    for (const entry of ast.legend) {
+  if (traits) {
+    for (const entry of traits) {
       const isFull = !entry.fill || entry.fill === "full";
       items.push({
         key: entry.id,
@@ -69,58 +64,6 @@ export function buildPedigreeLegend(
     }
   }
 
-  // Non-obvious sex shapes (unknown / nonbinary / intersex).
-  const sexUsed = new Set<Sex>();
-  for (const ind of ast.individuals) sexUsed.add(ind.sex);
-  const sexOrder: Sex[] = ["unknown", "other", "nonbinary", "intersex"];
-  for (const s of sexOrder) {
-    if (!sexUsed.has(s) || OBVIOUS_SEX.has(s)) continue;
-    items.push({
-      key: `sex.${s}`,
-      label: sexLabel(s),
-      kind: "shape",
-      shape: "diamond",
-      fill: theme.unknownFill,
-      color: theme.stroke,
-      section: "symbols",
-    });
-  }
-
-  // Deceased
-  const hasDeceased = ast.individuals.some((i) => i.status === "deceased");
-  if (hasDeceased) {
-    items.push({
-      key: "status.deceased",
-      label: "Deceased",
-      kind: "marker",
-      marker: "slash",
-      color: theme.deceasedMark,
-      section: "symbols",
-    });
-  }
-
-  // Proband / consultand markers
-  const hasProband = ast.individuals.some((i) => i.markers?.includes("proband"));
-  if (hasProband) {
-    items.push({
-      key: "marker.proband",
-      label: "Proband (P) — first affected case identified",
-      kind: "marker",
-      marker: "P",
-      section: "symbols",
-    });
-  }
-  const hasConsultand = ast.individuals.some((i) => i.markers?.includes("consultand"));
-  if (hasConsultand) {
-    items.push({
-      key: "marker.consultand",
-      label: "Consultand (C)",
-      kind: "marker",
-      marker: "C",
-      section: "symbols",
-    });
-  }
-
   return {
     mode: "auto",
     title: "Legend",
@@ -131,7 +74,7 @@ export function buildPedigreeLegend(
   };
 }
 
-function geneticStatusItem(
+export function geneticStatusItem(
   s: GeneticStatus,
   theme: ResolvedTheme<PersonTokens>
 ): LegendItem {
@@ -148,27 +91,30 @@ function geneticStatusItem(
       return {
         key: `status.${s}`,
         label: "Carrier",
-        kind: "fill-pattern",
-        color: theme.conditionFill,
-        shape: "half-left",
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "carrier-x":
       return {
         key: `status.${s}`,
         label: "X-linked carrier",
-        kind: "marker",
-        marker: "dot",
-        color: theme.conditionFill,
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "obligate-carrier":
       return {
         key: `status.${s}`,
         label: "Obligate carrier",
-        kind: "marker",
-        marker: "dot",
-        color: theme.conditionFill,
+        kind: "shape",
+        color: theme.stroke,
+        fill: "url(#schematex-pedigree-carrier-pattern)",
+        shape: "square",
         section: "status",
       };
     case "presymptomatic":
@@ -190,6 +136,18 @@ function geneticStatusItem(
         section: "status",
       };
   }
+}
+
+export function sexShapeItem(s: Sex, theme: ResolvedTheme<PersonTokens>): LegendItem {
+  return {
+    key: `sex.${s}`,
+    label: sexLabel(s),
+    kind: "shape",
+    shape: "diamond",
+    fill: theme.fill,
+    color: theme.stroke,
+    section: "symbols",
+  };
 }
 
 function sexLabel(s: Sex): string {

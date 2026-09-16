@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="562.5" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">Coin-operated Turnstile</title>
+  <desc id="desc">An initial marker enters Locked. A coin moves Locked to Unlocked; a push moves Unlocked to Locked. Locked has a push self-transition, and Unlocked has a coin self-transition.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 0.5 L9 5 L1 9.5" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; }
+      .title { font-size:19px; font-weight:600; fill:#16202E; }
+      .subtitle { font-size:11.5px; fill:#64708A; }
+      .state { fill:#FFFFFF; stroke:#16202E; stroke-width:1.5; }
+      .name { font-size:13px; font-weight:500; fill:#16202E; text-anchor:middle; dominant-baseline:middle; }
+      .edge { fill:none; stroke:#4A5568; stroke-width:1.25; stroke-linecap:round; stroke-linejoin:round; marker-end:url(#arrow); }
+      .label { font-size:11px; fill:#64708A; stroke:#FFFFFF; stroke-width:5; stroke-linejoin:round; paint-order:stroke fill; }
+      .legend { font-size:10.5px; fill:#64708A; }
+    </style>
+  </defs>
+  <rect width="800" height="450" fill="#FFFFFF"/>
+  <text class="title" x="40" y="46">Coin-operated Turnstile</text>
+  <text class="subtitle" x="40" y="68">UML 2.5 state machine · transition labels read event</text>
+
+  <!-- Initial pseudo-state and entry. -->
+  <circle cx="245" cy="140" r="6" fill="#16202E"/>
+  <path class="edge" d="M245 146 V210"/>
+
+  <!-- Exactly two operational states. -->
+  <rect class="state" x="170" y="210" width="150" height="46" rx="10"/>
+  <rect class="state" x="530" y="210" width="150" height="46" rx="10"/>
+  <text class="name" x="245" y="233">Locked</text>
+  <text class="name" x="605" y="233">Unlocked</text>
+
+  <!-- Circular self-transitions leave the top and return to the right. -->
+  <path class="edge" d="M295 210 A30 30 0 1 1 320 220"/>
+  <text class="label" x="360" y="180">push</text>
+  <path class="edge" d="M655 210 A30 30 0 1 1 680 220"/>
+  <text class="label" x="720" y="180">coin</text>
+
+  <!-- Separate forward and return routes keep arrow direction unambiguous. -->
+  <path class="edge" d="M320 242 H530"/>
+  <text class="label" x="425" y="231" text-anchor="middle">coin</text>
+  <path class="edge" d="M605 256 V310 Q605 320 595 320 H255 Q245 320 245 310 V256"/>
+  <text class="label" x="425" y="309" text-anchor="middle">push</text>
+
+  <path d="M40 390 H760" stroke="#EEF2F7" stroke-width="1.25"/>
+  <circle cx="46" cy="422" r="6" fill="#16202E"/>
+  <text class="legend" x="61" y="426">initial pseudo-state</text>
+  <path class="edge" d="M270 422 H310"/>
+  <text class="legend" x="322" y="426">transition — label names the triggering event</text>
+</svg>

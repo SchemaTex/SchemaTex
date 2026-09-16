@@ -1,0 +1,40 @@
+{
+  "id": "usecase-warehouse-management",
+  "type": "usecase",
+  "title": "Warehouse management",
+  "goal": "Capture warehouse receiving and fulfillment functions with a short-pick exception.",
+  "rubric": [
+    {
+      "id": "boundary",
+      "severity": "blocker",
+      "must": "Warehouse Management System visibly bounds the warehouse use cases."
+    },
+    {
+      "id": "scan-reuse",
+      "severity": "blocker",
+      "must": "Receive Shipment and Pick Order each have a dashed «include» arrow pointing to Scan Goods."
+    },
+    {
+      "id": "exception",
+      "severity": "major",
+      "must": "Resolve Short Pick extends Pick Order toward the short pick extension point."
+    },
+    {
+      "id": "erp",
+      "severity": "major",
+      "must": "The external ERP System actor is associated with Release Pick Wave and Confirm Shipment."
+    },
+    {
+      "id": "role-hierarchy",
+      "severity": "minor",
+      "must": "Forklift Operator generalizes to Picker with a hollow triangle."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independent reference drawing following visual-eval/exemplars/usecase/ideal.svg (sha256 7c0fac2f9989). Vision reviewed all six rasterized targets: named subject boundary, external actors, extension-point compartments, include arrows toward included use cases and extend arrows toward bases; long dependencies routed outside unrelated ellipses. Source and rubric unchanged; no engine rendering used as target. Follow-up vision audit: increased Picker association clearance and routed Supervisor to Resolve Short Pick below the unrelated Release Pick Wave ellipse. Extend still points from Short Pick to the base Pick Order."
+  }
+}

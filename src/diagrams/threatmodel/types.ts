@@ -128,6 +128,7 @@ export interface ThreatModelAnalysis {
 // ─── Layout ───────────────────────────────────────────────────
 
 export interface LaidOutNode extends DfdNode {
+  labelLines: string[];
   x: number;
   y: number;
   w: number;

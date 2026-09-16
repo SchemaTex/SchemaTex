@@ -1,0 +1,50 @@
+floorplan "Single-Storey House with Garage" unit m
+north
+wall exterior thickness 0.32
+wall interior thickness 0.12
+room living "Living Room" at 0,0 size 5x4
+room kitchen "Kitchen" right-of living size 5x4
+room garage "Attached Garage" right-of kitchen size 4x4
+room hall "Hall" below living size 10x1.5
+room bed1 "Bedroom 1" below hall size 3x3
+room bath "Bathroom" right-of bed1 size 2x3
+room bed2 "Bedroom 2" right-of bath size 2.5x3
+room bed3 "Bedroom 3" right-of bed2 size 2.5x3
+room porch "Entry Porch" below bed1 size 2x1.4
+
+door porch south from start 0.45 width 1.0 id front hinge left swing in
+door between porch bed1 at 45% width 0.9 hinge right swing in
+door between hall living at 45% width 0.9 hinge left swing in
+door between hall kitchen at 55% width 0.9 hinge right swing in
+door between hall bed1 at 45% width 0.85 hinge left swing in
+door between hall bath at 50% width 0.8 hinge right swing in
+door between hall bed2 at 45% width 0.85 hinge left swing in
+door between hall bed3 at 55% width 0.85 hinge right swing in
+door between kitchen garage at 50% width 0.9 hinge left swing in
+
+window living north at 45% width 1.8
+window living west at 45% width 1.5
+window kitchen north at 45% width 1.6
+window garage north at 50% width 2.4 type sliding
+window bed1 west at 45% width 1.2
+window bed2 south at 45% width 1.2
+window bed3 east at 45% width 1.2
+
+furniture sofa in living at 0.7,1.4 size 2.2x0.9
+furniture coffee-table in living at 1.5,2.55 size 1.0x0.6
+furniture tv-stand in living at 4.45,1.3 size 0.35x1.2
+furniture counter in kitchen at 0.2,0.25 size 3.8x0.6
+furniture kitchen-sink in kitchen at 0.65,0.28 size 0.8x0.5
+furniture stove in kitchen at 2.2,0.25 size 0.7x0.6
+furniture fridge in kitchen at 4.1,0.3 size 0.7x0.8
+furniture dining-table in kitchen at 1.3,1.8 size 2.2x0.9
+furniture car in garage at 0.65,0.6 size 2.2x3.2
+furniture bed-queen in bed1 at 0.7,0.45 size 1.6x2.0
+furniture wardrobe in bed1 at 0.15,2.55 size 1.2x0.35
+furniture toilet in bath at 1.1,0.2
+furniture sink in bath at 0.15,0.2
+furniture bathtub in bath at 1.25,1.15 size 0.65x1.6
+furniture bed-single in bed2 at 0.75,0.4 size 1.0x2.0
+furniture wardrobe in bed2 at 1.25,2.4 size 1.1x0.45
+furniture bed-single in bed3 at 0.75,0.4 size 1.0x2.0
+furniture wardrobe in bed3 at 1.25,2.4 size 1.1x0.45

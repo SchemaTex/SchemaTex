@@ -1,3 +1,4 @@
+import { labelLeader, labelPathPoints } from "../../core/label-placement";
 import { circle, defs, el, escapeXml, group, line, multilineText, path, polygon, rect, svgRoot, text } from "../../core/svg";
 import type { RenderConfig, SceneItem } from "../../core/types";
 import { resolveStateTheme, type StateTokens, type ResolvedTheme } from "../../core/theme";
@@ -96,6 +97,9 @@ function renderSimple(
   const children: string[] = [
     rect({ x, y, width, height, rx: 8, ry: 8, class: "lt-state-body" }),
   ];
+  if (node.node.accepting) {
+    children.push(rect({ x: x + 4, y: y + 4, width: width - 8, height: height - 8, rx: 4, ry: 4, class: "lt-state-body" }));
+  }
   const label = node.node.label || node.id;
   const labelLines = node.labelLines?.length ? node.labelLines : [label];
   const labelText = labelLines.join("\n");
@@ -328,6 +332,8 @@ function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
     const h = labelLines.length * 14 + 2;
     const anchor = edge.labelAnchor ?? "middle";
     const dx = anchor === "start" ? 0 : anchor === "end" ? -w : -w / 2;
+    const leader = labelLeader({ x: edge.labelX + dx, y: edge.labelY - h / 2, width: w, height: h }, labelPathPoints(edge.path));
+    if (leader) parts.push(line({ x1: leader.from.x, y1: leader.from.y, x2: leader.to.x, y2: leader.to.y, class: "lt-transition" }));
     parts.push(
       rect({
         x: edge.labelX + dx,

@@ -1,0 +1,78 @@
+{
+  "id": "evacuation-hotel-guest-floor",
+  "type": "evacuation",
+  "variant": "iso",
+  "title": "Third floor guest rooms",
+  "goal": "A practitioner can read this escape plan at a glance: Third floor guest rooms.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "A visible YOU ARE HERE marker, legend, and two marked exits are present."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "Primary and secondary routes visibly lead from the marker to separate exits."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the evacuation/iso exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents the third-floor guest-room layout, a prominent YOU ARE HERE marker in Room 302, two distinct green escape routes leading west to Stair A and east to Stair B, and two visibly marked final exits. Key room, corridor, stair, extinguisher, assembly-point, and legend labels are legible and correctly associated.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:07:33.397Z",
+      "targetHash": "981912b0de5b",
+      "sourceHash": "a0507b90284d",
+      "exemplarHash": "ba3c5f7b5508",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "A visible YOU ARE HERE marker appears in Room 302; the full legend is visible at right; EXIT markings appear at both Stair A and Stair B."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The solid primary route leads left from the marker through the corridor to Stair A and its west exit, while the segmented alternative route leads right to Stair B and its east exit."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "Directional arrowheads make both paths readable from the Room 302 marker through the corridor to their respective stairs and exits."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "YOU ARE HERE, room numbers 301–307, Corridor, Lift Lobby, Stair A, Stair B, EXIT, ABC, and ASSEMBLY POINT are visibly legible and placed beside the corresponding elements."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "The two route styles are differentiated in the legend and visibly terminate at separate exits without implying unintended room or stair connections."
+        }
+      ]
+    }
+  }
+}

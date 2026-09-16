@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="736" height="568" viewBox="0 0 736 568" class="schematex-bpmn"><title>Employee Onboarding</title>
+<desc>BPMN LR — 2 pool(s), 7 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#94a3b8"/></marker></defs>
+<g class="schematex-bpmn-pool blackbox"><rect x="16" y="16" width="704" height="60" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="60" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="46" transform="rotate(-90 29 46)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Employee</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="112" width="704" height="440" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="112" width="26" height="440" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="332" transform="rotate(-90 29 332)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Company</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="112" width="656" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="112" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="222" transform="rotate(-90 53 222)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">HR</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="332" width="656" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="332" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="442" transform="rotate(-90 53 442)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">IT</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 368 46 L 368 111 L 167 111 L 167 176" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="267.5" y="105" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Accept offer</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 176 L 217.3 176 L 217.3 176 L 249.6 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 189 268 L 222.5 268 L 222.5 396 L 256 396" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 167 290 L 167 374 L 317 374 L 317 458" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 378 396 L 411.5 396 L 411.5 396 L 445 396" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 378 488 L 411.5 488 L 411.5 396 L 445 396" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 467 374 L 467 284 L 617 284 L 617 194" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 617 176 L 617 111 L 368 111 L 368 46" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-start="url(#bpmn-msg-start)" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="492.5" y="105" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Welcome</text></g>
+<g class="schematex-bpmn-event kind-start trigger-none"><circle cx="167" cy="176" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<text x="167" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Offer accepted</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="249.6" y="146" width="134.8" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Collect documents</tspan></text>
+<g class="marker-user"><circle cx="262.6" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 257.6 165 Q 262.6 160 267.6 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-and"><polygon points="167,246 189,268 167,290 145,268" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 156 268 L 178 268 M 167 257 L 167 279" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="167" y="240" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Provision in parallel</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="617" cy="176" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="617" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Onboarded</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="256" y="366" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="396" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Create accounts</tspan></text>
+<g class="marker-service"><circle cx="269" cy="379" r="4" fill="none" stroke="#334155" stroke-width="1"/>
+<circle cx="269" cy="379" r="1.5" fill="#334155"/>
+<path d="M 269 373 L 269 375 M 269 383 L 269 385 M 263 379 L 265 379 M 273 379 L 275 379" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="256" y="458" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="317" y="488" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="317" dy="0">Issue equipment</tspan></text>
+<g class="marker-user"><circle cx="269" cy="470" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 264 477 Q 269 472 274 477" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-and"><polygon points="467,374 489,396 467,418 445,396" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 456 396 L 478 396 M 467 385 L 467 407" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="467" y="368" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Ready</text></g></svg>

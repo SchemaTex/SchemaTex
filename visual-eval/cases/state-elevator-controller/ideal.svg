@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1300" viewBox="0 0 1160 943" role="img" aria-labelledby="title desc">
+<title id="title">Elevator Controller Lifecycle</title>
+<desc id="desc">UML state machine with Idle, composite Moving and Door Cycle states, and Emergency Stop. Moving contains Selecting Direction, Going Up, and Going Down. Door Cycle contains Opening, Open, Closing, and a final marker. Calls enter Moving, queued calls return to Moving, obstructions reopen the door, and emergency reset returns to Idle.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 0 L9 5 L1 10" fill="none" stroke="#4A5568" stroke-width="1.25"/></marker></defs>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#16202E} .title{font-size:19px;font-weight:600}.subtitle{font-size:11.5px;fill:#64708A}.state{fill:#FFFFFF;stroke:#16202E;stroke-width:1.5}.container{fill:#EEF2F7;stroke:#16202E;stroke-width:1.5}.name{font-size:13px;font-weight:500;text-anchor:middle;dominant-baseline:middle}.heading{font-size:13px;font-weight:600}.edge{fill:none;stroke:#4A5568;stroke-width:1.25;marker-end:url(#arrow);stroke-linejoin:round}.label{font-size:11px;fill:#64708A;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}.inside{stroke:#EEF2F7}.legend{font-size:10.5px;fill:#64708A}.rule{stroke:#16202E;stroke-width:1.5}
+</style>
+<rect width="1160" height="943" fill="#FFFFFF"/>
+<text x="40" y="46" class="title">Elevator Controller Lifecycle</text>
+<text x="40" y="68" class="subtitle">UML 2.5 state machine · calls are queued while moving</text>
+<!-- Composite state compartments -->
+<rect x="100" y="270" width="450" height="370" rx="10" class="container"/>
+<path d="M100 310 H550" class="rule"/>
+<text x="116" y="296" class="heading">Moving</text>
+<rect x="680" y="270" width="390" height="370" rx="10" class="container"/>
+<path d="M680 310 H1070" class="rule"/>
+<text x="696" y="296" class="heading">Door Cycle</text>
+<!-- Outer transitions, each with a separate orthogonal lane -->
+<path d="M280 106 V140" class="edge"/>
+<path d="M280 186 V270" class="edge"/>
+<text x="296" y="229" class="label">call received</text>
+<path d="M550 350 H680" class="edge"/>
+<text x="615" y="325" text-anchor="middle" class="label"><tspan x="615">target floor</tspan><tspan x="615" dy="14">reached</tspan></text>
+<path d="M980 270 V163 H330" class="edge"/>
+<text x="655" y="151" text-anchor="middle" class="label">no queued calls</text>
+<path d="M780 640 V700 H460 V640" class="edge"/>
+<text x="620" y="688" text-anchor="middle" class="label">queued call</text>
+<path d="M180 170 H70 V790 H170" class="edge"/>
+<text x="83" y="727" class="label">emergency pressed</text>
+<path d="M250 640 V770" class="edge"/>
+<text x="266" y="741" class="label">emergency pressed</text>
+<path d="M250 816 V850 H40 V120 H220 V140" class="edge"/>
+<text x="110" y="838" class="label">reset acknowledged</text>
+<!-- Top-level states -->
+<circle cx="280" cy="100" r="6" fill="#16202E"/>
+<rect x="180" y="140" width="150" height="46" rx="10" class="state"/>
+<text x="255" y="163" class="name">Idle</text>
+<rect x="170" y="770" width="160" height="46" rx="10" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+<text x="250" y="793" class="name" style="fill:#A4442F">Emergency Stop</text>
+<!-- Moving: initial and direction selection -->
+<circle cx="330" cy="330" r="6" fill="#16202E"/>
+<path d="M330 336 V360" class="edge"/>
+<path d="M290 406 V480 H205 V540" class="edge"/>
+<path d="M370 406 V480 H455 V540" class="edge"/>
+<text x="235" y="466" text-anchor="middle" class="label inside">target above</text>
+<text x="415" y="466" text-anchor="middle" class="label inside">target below</text>
+<path d="M140 563 H120 V383 H250" class="edge"/>
+<text x="135" y="413" class="label inside"><tspan x="135">floor reached /</tspan><tspan x="135" dy="14">next call</tspan></text>
+<path d="M520 563 H535 V383 H410" class="edge"/>
+<text x="430" y="413" class="label inside"><tspan x="430">floor reached /</tspan><tspan x="430" dy="14">next call</tspan></text>
+<rect x="250" y="360" width="160" height="46" rx="10" class="state"/>
+<text x="330" y="383" class="name">Selecting Direction</text>
+<rect x="140" y="540" width="130" height="46" rx="10" class="state"/>
+<text x="205" y="563" class="name">Going Up</text>
+<rect x="390" y="540" width="130" height="46" rx="10" class="state"/>
+<text x="455" y="563" class="name">Going Down</text>
+<!-- Door cycle: the return transition has its own right-hand lane -->
+<circle cx="795" cy="330" r="6" fill="#16202E"/>
+<path d="M795 336 V360" class="edge"/>
+<path d="M795 406 V450" class="edge"/>
+<text x="811" y="433" class="label inside">door fully open</text>
+<path d="M795 496 V540" class="edge"/>
+<text x="811" y="523" class="label inside">dwell timeout</text>
+<path d="M860 563 H1030 V473 H860" class="edge"/>
+<text x="945" y="505" text-anchor="middle" class="label inside"><tspan x="945">obstruction</tspan><tspan x="945" dy="14">detected</tspan></text>
+<path d="M795 586 V610" class="edge"/>
+<text x="811" y="609" class="label inside">door fully closed</text>
+<rect x="730" y="360" width="130" height="46" rx="10" class="state"/>
+<text x="795" y="383" class="name">Opening</text>
+<rect x="730" y="450" width="130" height="46" rx="10" class="state"/>
+<text x="795" y="473" class="name">Open</text>
+<rect x="730" y="540" width="130" height="46" rx="10" class="state"/>
+<text x="795" y="563" class="name">Closing</text>
+<circle cx="795" cy="620" r="10" class="state"/>
+<circle cx="795" cy="620" r="5" fill="#16202E"/>
+<!-- Exemplar-style symbol legend -->
+<path d="M40 885 H1120" stroke="#EEF2F7" stroke-width="1.5"/>
+<circle cx="46" cy="917" r="6" fill="#16202E"/>
+<text x="61" y="921" class="legend">initial pseudo-state</text>
+<circle cx="250" cy="917" r="10" class="state"/>
+<circle cx="250" cy="917" r="5" fill="#16202E"/>
+<text x="269" y="921" class="legend">final state</text>
+<rect x="420" y="907" width="26" height="20" rx="6" class="container"/>
+<path d="M420 914 H446" class="rule"/>
+<text x="456" y="921" class="legend">composite state with substates</text>
+<rect x="750" y="907" width="26" height="20" rx="6" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+<text x="786" y="921" class="legend">emergency branch</text>
+</svg>

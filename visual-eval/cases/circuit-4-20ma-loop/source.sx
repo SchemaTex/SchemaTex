@@ -1,0 +1,15 @@
+circuit "4-20 mA Pressure Transmitter Loop" netlist
+V1 LOOP_POS LOOP_NEG type=voltage_source value="24 VDC, 100 mA" label="V1 LOOP SUPPLY"
+T1 LOOP_POS TX_POS type=terminal_block pins="1,2" value="600 V, 10 A" label="TB1 FIELD OUT"
+X1 TX_POS TX_NEG type=generic_ic pins="+, -" value="4-20 mA, 10-30 VDC" label="PT1 PRESSURE TRANSMITTER"
+T2 TX_NEG SENSE_POS type=terminal_block pins="3,4" value="600 V, 10 A" label="TB2 FIELD RETURN"
+R1 SENSE_POS AI_POS 250ohm type=resistor label="R1 250 OHM SENSE"
+U1 AI_POS LOOP_NEG type=generic_ic pins="AI+,AI-" value="4-20 mA input, 24 VDC" label="PLC1 ANALOGUE INPUT"
+TP1 SENSE_POS METER_POS type=test_point value="30 VDC, 1 A" label="TP1 METER +"
+TP2 AI_POS METER_NEG type=test_point value="30 VDC, 1 A" label="TP2 METER -"
+M1 METER_POS METER_NEG type=voltmeter value="1-5 V across sense" label="M1 HAND-HELD METER"
+GND1 LOOP_NEG type=ground label="Loop return reference"
+
+# These terminal pairs are bridged; separate terminal numbers do not imply continuity.
+W_FIELD_OUT T1.1 T1.2
+W_FIELD_RETURN T2.3 T2.4

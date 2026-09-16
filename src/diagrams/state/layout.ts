@@ -10,6 +10,7 @@
  * orthogonal edge routing that detours around node bboxes, and
  * subgraph-aware composite-state rendering.
  */
+import { edgeLabelObstacles, labelEdgeAnchor, labelLeader, labelPathPoints, placeLabel, type LabelBox } from "../../core/label-placement";
 
 import { layoutFlowchart } from "../flowchart/layout";
 import type {
@@ -283,7 +284,8 @@ function selfLoopPath(
   cx: number,
   cy: number,
   w: number,
-  h: number
+  h: number,
+  index: number
 ): { path: string; labelX: number; labelY: number } {
   // Loop on the right side of the node — from (right-edge, +0.25h) curving up
   // and back to (top-edge, +0.25w). Renderer handles the arrow marker.
@@ -291,12 +293,15 @@ function selfLoopPath(
   const startY = cy - h * 0.15;
   const endX = cx + w * 0.15;
   const endY = cy - h / 2;
-  const c1x = startX + 28;
+  const reach = 28 + index * 28;
+  const c1x = startX + reach;
   const c1y = startY - 12;
-  const c2x = endX + 28;
-  const c2y = endY - 28;
-  const path = `M ${startX} ${startY} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${endX} ${endY}`;
-  return { path, labelX: startX + 28, labelY: startY - 18 };
+  const c2x = endX + reach;
+  const c2y = endY - reach;
+  // Space-separated coordinates also let the canvas/title shifts move the
+  // whole cubic, including its second control point and endpoint.
+  const path = `M ${startX} ${startY} C ${c1x} ${c1y} ${c2x} ${c2y} ${endX} ${endY}`;
+  return { path, labelX: startX + reach, labelY: startY - 18 - index * 14 };
 }
 
 // ── Public entry point ──────────────────────────────────────
@@ -405,6 +410,13 @@ export function layoutStateDiagram(
   // Edges from the flowchart layout (already routed orthogonally + label anchored)
   const stateById2 = new Map(stateNodes.map((n) => [n.id, n] as const));
   const stateEdges: StateLayoutEdge[] = [];
+  const parallelEdges = new Map<string, FlowchartEdge[]>();
+  for (const { edge } of fcResult.edges) {
+    const key = JSON.stringify([edge.from, edge.to].sort());
+    const edges = parallelEdges.get(key) ?? [];
+    edges.push(edge);
+    parallelEdges.set(key, edges);
+  }
   for (const fcEdge of fcResult.edges) {
     const t = ast.transitions.find((tr) => tr.id === fcEdge.edge.id);
     if (!t) continue;
@@ -414,6 +426,17 @@ export function layoutStateDiagram(
     // gap between the arrow and the symbol. Extend the path endpoints inward
     // so they land on the actual symbol's perimeter.
     let path = fcEdge.path;
+    const points = parsePathPoints(path)!;
+    // Cycle removal reverses the layout chain, not the authored transition.
+    // Restore its direction before clipping to the visible endpoint symbols.
+    if (fcEdge.edge.isReversed) points.reverse();
+    const siblings = parallelEdges.get(JSON.stringify([fcEdge.edge.from, fcEdge.edge.to].sort()))!;
+    const lane = (siblings.indexOf(fcEdge.edge) - (siblings.length - 1) / 2) * 16;
+    for (const point of points) {
+      if (ast.direction === "TB") point.x += lane;
+      else point.y += lane;
+    }
+    path = pointsToPath(points);
     const sourceNode = stateById2.get(fcEdge.edge.from);
     const targetNode = stateById2.get(fcEdge.edge.to);
     if (sourceNode && sourceNode.node.kind === "pseudo") {
@@ -436,10 +459,13 @@ export function layoutStateDiagram(
   }
 
   // Re-add self-loops as arcs on top of their host node.
+  const loopCounts = new Map<string, number>();
   for (const sl of selfLoops) {
     const host = stateById2.get(sl.from);
     if (!host) continue;
-    const { path, labelX, labelY } = selfLoopPath(host.cx, host.cy, host.width, host.height);
+    const index = loopCounts.get(sl.from) ?? 0;
+    loopCounts.set(sl.from, index + 1);
+    const { path, labelX, labelY } = selfLoopPath(host.cx, host.cy, host.width, host.height, index);
     stateEdges.push({
       id: sl.id,
       from: sl.from,
@@ -488,6 +514,26 @@ export function layoutStateDiagram(
     });
   }
 
+  const occupied: LabelBox[] = [
+    ...stateNodes, ...notes,
+    ...clusters.map((cluster) => ({ ...cluster,
+      height: 22 + cluster.state.activities.length * 14 + 6,
+    })),
+    ...stateEdges.flatMap((edge) => edgeLabelObstacles(labelPathPoints(edge.path))),
+  ];
+  for (const edge of stateEdges) {
+    const box = transitionLabelBounds(edge);
+    if (!box) continue;
+    const anchor = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const direction = labelEdgeAnchor({ x: edge.labelX, y: edge.labelY }, labelPathPoints(edge.path)).direction;
+    const placed = placeLabel(anchor, box, occupied, direction);
+    edge.labelX += placed.x - box.x;
+    edge.labelY += placed.y - box.y;
+    occupied.push(placed);
+    const leader = labelLeader(placed, labelPathPoints(edge.path));
+    if (leader) occupied.push(...edgeLabelObstacles([leader.from, leader.to]));
+  }
+
   // Compute final bounds — flowchart layout already includes padding; expand
   // for notes and self-loop arcs. If left-side notes push content off the
   // left edge (negative x), shift everything right.
@@ -502,6 +548,12 @@ export function layoutStateDiagram(
     minY = Math.min(minY, n.y - 8);
   }
   for (const edge of stateEdges) {
+    for (const point of labelPathPoints(edge.path)) {
+      minX = Math.min(minX, point.x - 8);
+      minY = Math.min(minY, point.y - 8);
+      maxX = Math.max(maxX, point.x + 8);
+      maxY = Math.max(maxY, point.y + 8);
+    }
     const bounds = transitionLabelBounds(edge);
     if (!bounds) continue;
     minX = Math.min(minX, bounds.x - 8);

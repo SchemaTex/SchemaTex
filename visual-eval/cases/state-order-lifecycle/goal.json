@@ -1,0 +1,77 @@
+{
+  "id": "state-order-lifecycle",
+  "type": "state",
+  "title": "Order lifecycle",
+  "goal": "Show guarded e-commerce order progression from draft through delivery or cancellation.",
+  "rubric": [
+    {
+      "id": "start-and-terminal",
+      "severity": "blocker",
+      "must": "An initial marker enters Draft and Delivered and Cancelled visibly terminate at final markers."
+    },
+    {
+      "id": "payment-branches",
+      "severity": "blocker",
+      "must": "Payment Pending visibly branches to Paid and Payment Failed, with retry or cancellation paths."
+    },
+    {
+      "id": "guarded-transitions",
+      "severity": "major",
+      "must": "Cart-valid, stock-available, retry-count, and customer-request guards are visible on transitions."
+    },
+    {
+      "id": "fulfillment-path",
+      "severity": "major",
+      "must": "Paid visibly progresses through Fulfillment and Shipped to Delivered."
+    },
+    {
+      "id": "readable-outcomes",
+      "severity": "minor",
+      "must": "Cancellation and delivery outcomes are visually distinct."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly shows the requested order lifecycle. Transitions and guards are readable, branches are traceable, and cancellation and delivery are visually distinct terminal outcomes. No material overlap or cropping is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:17.106Z",
+      "targetHash": "2ca5a7ebc6e4",
+      "sourceHash": "a8f6476fc25c",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "start-and-terminal",
+          "verdict": "pass",
+          "evidence": "The initial marker enters Draft. Cancelled and Delivered each connect to a final marker."
+        },
+        {
+          "id": "payment-branches",
+          "verdict": "pass",
+          "evidence": "Payment Pending branches to Paid on paymentApproved and Payment Failed on paymentDeclined. Payment Failed has a retry path back to Payment Pending and a cancellation path."
+        },
+        {
+          "id": "guarded-transitions",
+          "verdict": "pass",
+          "evidence": "Visible transition labels include submit [cartValid], reserveInventory [stockAvailable], retry [retries < 3], cancel [retries >= 3], and cancel [customerRequest]."
+        },
+        {
+          "id": "fulfillment-path",
+          "verdict": "pass",
+          "evidence": "Paid progresses through Fulfillment and Shipped to Delivered, with each transition labeled."
+        },
+        {
+          "id": "readable-outcomes",
+          "verdict": "pass",
+          "evidence": "Cancelled is outlined in red and reaches a final marker; Delivered has a separate final marker. Both outcomes are readable and distinct."
+        }
+      ]
+    }
+  }
+}

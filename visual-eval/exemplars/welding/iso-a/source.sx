@@ -1,0 +1,15 @@
+# Scenario: ISO 2553 system A callouts — unequal fillets on a stiffener, a V-groove butt weld from the arrow side, and a symmetric double fillet on a lug.
+welding standard: iso-a "Frame weld details"
+joint "Stiffener to base plate" {
+  arrow: fillet size=5 len=100
+  other: fillet size=4
+  tail: "135"
+}
+joint "Butt joint" {
+  arrow: vgroove size=10
+  tail: "111/ISO 5817-B/PA"
+}
+joint "Lug to plate" {
+  both: fillet size=6
+  tail: "135"
+}

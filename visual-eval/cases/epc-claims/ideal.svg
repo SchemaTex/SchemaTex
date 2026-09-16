@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1090" viewBox="0 0 960 1090">
+  <title>Insurance claim handling</title>
+  <rect width="960" height="1090" fill="#FFFFFF"/>
+  <style>
+    text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#1F1B2E;font-size:12px;text-anchor:middle;dominant-baseline:middle}
+    .title{font-size:22px;font-weight:700;text-anchor:start}
+    .caption{font-size:10px;fill:#6B7280;text-anchor:start}
+    .event{fill:#E9D5FF;stroke:#1F1B2E;stroke-width:1.4}
+    .function{fill:#BBF7D0;stroke:#1F1B2E;stroke-width:1.4}
+    .connector{fill:#E5E7EB;stroke:#1F1B2E;stroke-width:1.4}
+    .flow{fill:none;stroke:#1F1B2E;stroke-width:1.5;stroke-linejoin:round;marker-end:url(#arrow)}
+    .operator{fill:none;stroke:#1F1B2E;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="5" markerHeight="5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8Z" fill="#1F1B2E"/></marker>
+  </defs>
+  <text class="title" x="84" y="34">Insurance claim handling</text>
+  <text class="caption" x="84" y="58">Event-driven process chain (eEPC) · ARIS notation, Keller / Nüttgens / Scheer</text>
+  <path d="M84 71H876" stroke="#6B7280" stroke-width="1" opacity=".2"/>
+
+  <!-- Control flow: exclusive coverage decision; only the covered path settles. -->
+  <g class="flow">
+    <path d="M480 125V151"/>
+    <path d="M480 201V227"/>
+    <path d="M480 273V299"/>
+    <path d="M480 349V375"/>
+    <path d="M480 403V429H350V455"/>
+    <path d="M480 429H690V455"/>
+    <path d="M350 501V527"/>
+    <path d="M690 501V527"/>
+    <path d="M350 577V603"/>
+    <path d="M690 577V603"/>
+    <path d="M350 649V688"/>
+    <path d="M350 716V755H220V794"/>
+    <path d="M350 755H480V794"/>
+    <path d="M220 844V883H350V922"/>
+    <path d="M480 844V883H350" marker-end="none"/>
+    <path d="M350 950V989"/>
+  </g>
+
+  <path class="event" d="M371 79H589L604 102L589 125H371L356 102Z"/>
+  <text x="480" y="102">Claim reported</text>
+  <rect class="function" x="356" y="151" width="248" height="50" rx="9"/>
+  <text x="480" y="176">Register claim</text>
+  <path class="event" d="M371 227H589L604 250L589 273H371L356 250Z"/>
+  <text x="480" y="250">Claim registered</text>
+  <rect class="function" x="356" y="299" width="248" height="50" rx="9"/>
+  <text x="480" y="324">Assess coverage</text>
+  <circle class="connector" cx="480" cy="389" r="14"/>
+  <path class="operator" d="M474 383L486 395M486 383L474 395"/>
+
+  <path class="event" d="M263 455H437L452 478L437 501H263L248 478Z"/>
+  <text x="350" y="478">Claim covered</text>
+  <path class="event" d="M603 455H777L792 478L777 501H603L588 478Z"/>
+  <text x="690" y="478">Claim not covered</text>
+  <rect class="function" x="248" y="527" width="204" height="50" rx="9"/>
+  <text x="350" y="552">Calculate payout</text>
+  <rect class="function" x="588" y="527" width="204" height="50" rx="9"/>
+  <text x="690" y="552">Send rejection letter</text>
+  <path class="event" d="M263 603H437L452 626L437 649H263L248 626Z"/>
+  <text x="350" y="626">Payout approved</text>
+  <path class="event" d="M603 603H777L792 626L777 649H603L588 626Z"/>
+  <text x="690" y="626">Claimant informed</text>
+
+  <circle class="connector" cx="350" cy="702" r="14"/>
+  <path class="operator" d="M344 707L350 695L356 707"/>
+  <rect class="function" x="118" y="794" width="204" height="50" rx="9"/>
+  <text x="220" y="819">Pay claimant</text>
+  <rect class="function" x="378" y="794" width="204" height="50" rx="9"/>
+  <text x="480" y="819">Release reserve</text>
+  <circle class="connector" cx="350" cy="936" r="14"/>
+  <path class="operator" d="M344 941L350 929L356 941"/>
+  <path class="event" d="M241 989H459L474 1012L459 1035H241L226 1012Z"/>
+  <text x="350" y="1012">Claim settled</text>
+</svg>

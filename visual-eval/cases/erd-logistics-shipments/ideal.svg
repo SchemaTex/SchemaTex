@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1410" viewBox="0 0 1066 940" role="img" aria-labelledby="title">
+<title id="title">Logistics shipment schema — order to delivery</title>
+<defs><style>
+text { font-family: Arial, Helvetica, sans-serif; fill:#0f172a; }
+.structure { fill:none; stroke:#334155; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.entity { fill:#fff; stroke:#334155; stroke-width:1.5; }
+.name { font-size:13px; font-weight:600; letter-spacing:.35px; }
+.field { font-size:12px; }
+.pk { font-weight:600; text-decoration:underline; }
+.type { font-size:12px; fill:#475569; }
+.verb { font-size:10.5px; fill:#475569; paint-order:stroke; stroke:white; stroke-width:5px; stroke-linejoin:round; }
+.tag { font-size:10px; fill:white; font-weight:700; }
+</style></defs>
+<rect width="1066" height="940" fill="white"/>
+<text x="46" y="44" font-size="20" font-weight="600">Logistics shipment schema — order to delivery</text>
+<text x="46" y="66" font-size="10.5" fill="#475569" style="fill:#475569;letter-spacing:.3px">CROW'S FOOT (IE) NOTATION · 9 TABLES · 8 RELATIONSHIPS</text>
+<path d="M46 76H1020" stroke="#94a3b8" stroke-width="1"/>
+
+<polyline class="structure" points="296,177 398,177"/>
+<polyline class="structure" points="307.0,170.5 307.0,183.5"/>
+<polyline class="structure" points="398.0,184.0 386.0,177.0 398.0,170.0"/>
+<polyline class="structure" points="398.0,177.0 386.0,177.0"/>
+<circle cx="375.0" cy="177.0" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="347" y="167" text-anchor="middle">places</text>
+<polyline class="structure" points="770,177 648,177"/>
+<polyline class="structure" points="759.0,183.5 759.0,170.5"/>
+<polyline class="structure" points="648.0,170.0 660.0,177.0 648.0,184.0"/>
+<polyline class="structure" points="648.0,177.0 660.0,177.0"/>
+<circle cx="671.0" cy="177.0" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="709" y="167" text-anchor="middle">delivers_to</text>
+<polyline class="structure" points="523,252 523,365"/>
+<polyline class="structure" points="529.5,263.0 516.5,263.0"/>
+<polyline class="structure" points="516.0,365.0 523.0,353.0 530.0,365.0"/>
+<polyline class="structure" points="523.0,365.0 523.0,353.0"/>
+<polyline class="structure" points="516.5,342.0 529.5,342.0"/>
+<text class="verb" x="535" y="310" text-anchor="start">fulfils</text>
+<polyline class="structure" points="296,430 398,430"/>
+<polyline class="structure" points="307.0,423.5 307.0,436.5"/>
+<polyline class="structure" points="398.0,437.0 386.0,430.0 398.0,423.0"/>
+<polyline class="structure" points="398.0,430.0 386.0,430.0"/>
+<circle cx="375.0" cy="430.0" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="347" y="420" text-anchor="middle">dispatches</text>
+<polyline class="structure" points="648,416 770,416"/>
+<polyline class="structure" points="659.0,409.5 659.0,422.5"/>
+<polyline class="structure" points="770.0,423.0 758.0,416.0 770.0,409.0"/>
+<polyline class="structure" points="770.0,416.0 758.0,416.0"/>
+<polyline class="structure" points="747.0,422.5 747.0,409.5"/>
+<text class="verb" x="709" y="406" text-anchor="middle">contains</text>
+<polyline class="structure" points="523,507 523,640"/>
+<polyline class="structure" points="529.5,518.0 516.5,518.0"/>
+<polyline class="structure" points="516.0,640.0 523.0,628.0 530.0,640.0"/>
+<polyline class="structure" points="523.0,640.0 523.0,628.0"/>
+<polyline class="structure" points="516.5,617.0 529.5,617.0"/>
+<text class="verb" x="535" y="579" text-anchor="start">moves_by</text>
+<polyline class="structure" points="296,697 398,697"/>
+<polyline class="structure" points="307.0,690.5 307.0,703.5"/>
+<polyline class="structure" points="398.0,704.0 386.0,697.0 398.0,690.0"/>
+<polyline class="structure" points="398.0,697.0 386.0,697.0"/>
+<circle cx="375.0" cy="697.0" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="347" y="687" text-anchor="middle">operates</text>
+<polyline class="structure" points="648,493 724,493 724,682 770,682"/>
+<polyline class="structure" points="659.0,486.5 659.0,499.5"/>
+<circle cx="759.0" cy="682.0" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="735" y="582" text-anchor="start">confirms</text>
+<g aria-label="CUSTOMER"><rect class="entity" x="46" y="130" width="250" height="92" rx="4"/>
+<text class="name" x="171.0" y="151" text-anchor="middle">CUSTOMER</text>
+<polyline class="structure" points="46,162 296,162"/>
+<text class="field pk" x="58" y="183">customer_id</text>
+<text class="type" x="254" y="183" text-anchor="end">int</text>
+<rect x="262" y="171" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="273" y="182" text-anchor="middle">PK</text>
+<path d="M46 192H296" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="58" y="208">name</text>
+<text class="type" x="254" y="208" text-anchor="end">string</text>
+</g>
+<g aria-label="SALES_ORDER"><rect class="entity" x="398" y="110" width="250" height="142" rx="4"/>
+<text class="name" x="523.0" y="131" text-anchor="middle">SALES_ORDER</text>
+<polyline class="structure" points="398,142 648,142"/>
+<text class="field pk" x="410" y="163">order_id</text>
+<text class="type" x="606" y="163" text-anchor="end">int</text>
+<rect x="614" y="151" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="625" y="162" text-anchor="middle">PK</text>
+<path d="M398 172H648" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="410" y="188">customer_id</text>
+<text class="type" x="606" y="188" text-anchor="end">int</text>
+<rect x="614" y="176" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="187" text-anchor="middle">FK</text>
+<path d="M410 197H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="213">address_id</text>
+<text class="type" x="606" y="213" text-anchor="end">int</text>
+<rect x="614" y="201" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="212" text-anchor="middle">FK</text>
+<path d="M410 222H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="238">ordered_at</text>
+<text class="type" x="606" y="238" text-anchor="end">date</text>
+</g>
+<g aria-label="ADDRESS"><rect class="entity" x="770" y="130" width="250" height="117" rx="4"/>
+<text class="name" x="895.0" y="151" text-anchor="middle">ADDRESS</text>
+<polyline class="structure" points="770,162 1020,162"/>
+<text class="field pk" x="782" y="183">address_id</text>
+<text class="type" x="978" y="183" text-anchor="end">int</text>
+<rect x="986" y="171" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="997" y="182" text-anchor="middle">PK</text>
+<path d="M770 192H1020" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="782" y="208">city</text>
+<text class="type" x="978" y="208" text-anchor="end">string</text>
+<path d="M782 217H1008" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="782" y="233">country</text>
+<text class="type" x="978" y="233" text-anchor="end">string</text>
+</g>
+<g aria-label="WAREHOUSE"><rect class="entity" x="46" y="385" width="250" height="92" rx="4"/>
+<text class="name" x="171.0" y="406" text-anchor="middle">WAREHOUSE</text>
+<polyline class="structure" points="46,417 296,417"/>
+<text class="field pk" x="58" y="438">warehouse_id</text>
+<text class="type" x="254" y="438" text-anchor="end">int</text>
+<rect x="262" y="426" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="273" y="437" text-anchor="middle">PK</text>
+<path d="M46 447H296" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="58" y="463">code</text>
+<text class="type" x="254" y="463" text-anchor="end">string</text>
+</g>
+<g aria-label="SHIPMENT"><rect class="entity" x="398" y="365" width="250" height="142" rx="4"/>
+<text class="name" x="523.0" y="386" text-anchor="middle">SHIPMENT</text>
+<polyline class="structure" points="398,397 648,397"/>
+<text class="field pk" x="410" y="418">shipment_id</text>
+<text class="type" x="606" y="418" text-anchor="end">int</text>
+<rect x="614" y="406" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="625" y="417" text-anchor="middle">PK</text>
+<path d="M398 427H648" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="410" y="443">order_id</text>
+<text class="type" x="606" y="443" text-anchor="end">int</text>
+<rect x="614" y="431" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="442" text-anchor="middle">FK</text>
+<path d="M410 452H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="468">warehouse_id</text>
+<text class="type" x="606" y="468" text-anchor="end">int</text>
+<rect x="614" y="456" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="467" text-anchor="middle">FK</text>
+<path d="M410 477H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="493">tracking_no</text>
+<text class="type" x="606" y="493" text-anchor="end">string</text>
+</g>
+<g aria-label="PACKAGE"><rect class="entity" x="770" y="365" width="250" height="117" rx="4"/>
+<text class="name" x="895.0" y="386" text-anchor="middle">PACKAGE</text>
+<polyline class="structure" points="770,397 1020,397"/>
+<text class="field pk" x="782" y="418">package_id</text>
+<text class="type" x="978" y="418" text-anchor="end">int</text>
+<rect x="986" y="406" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="997" y="417" text-anchor="middle">PK</text>
+<path d="M770 427H1020" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="782" y="443">shipment_id</text>
+<text class="type" x="978" y="443" text-anchor="end">int</text>
+<rect x="986" y="431" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="997" y="442" text-anchor="middle">FK</text>
+<path d="M782 452H1008" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="782" y="468">weight_kg</text>
+<text class="type" x="978" y="468" text-anchor="end">decimal</text>
+</g>
+<g aria-label="CARRIER"><rect class="entity" x="46" y="640" width="250" height="92" rx="4"/>
+<text class="name" x="171.0" y="661" text-anchor="middle">CARRIER</text>
+<polyline class="structure" points="46,672 296,672"/>
+<text class="field pk" x="58" y="693">carrier_id</text>
+<text class="type" x="254" y="693" text-anchor="end">int</text>
+<rect x="262" y="681" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="273" y="692" text-anchor="middle">PK</text>
+<path d="M46 702H296" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="58" y="718">name</text>
+<text class="type" x="254" y="718" text-anchor="end">string</text>
+</g>
+<g aria-label="SHIPMENT_LEG"><rect class="entity" x="398" y="640" width="250" height="142" rx="4"/>
+<text class="name" x="523.0" y="661" text-anchor="middle">SHIPMENT_LEG</text>
+<polyline class="structure" points="398,672 648,672"/>
+<text class="field pk" x="410" y="693">leg_id</text>
+<text class="type" x="606" y="693" text-anchor="end">int</text>
+<rect x="614" y="681" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="625" y="692" text-anchor="middle">PK</text>
+<path d="M398 702H648" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="410" y="718">shipment_id</text>
+<text class="type" x="606" y="718" text-anchor="end">int</text>
+<rect x="614" y="706" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="717" text-anchor="middle">FK</text>
+<path d="M410 727H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="743">carrier_id</text>
+<text class="type" x="606" y="743" text-anchor="end">int</text>
+<rect x="614" y="731" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="625" y="742" text-anchor="middle">FK</text>
+<path d="M410 752H636" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="410" y="768">mode</text>
+<text class="type" x="606" y="768" text-anchor="end">string</text>
+</g>
+<g aria-label="DELIVERY_PROOF"><rect class="entity" x="770" y="640" width="250" height="117" rx="4"/>
+<text class="name" x="895.0" y="661" text-anchor="middle">DELIVERY_PROOF</text>
+<polyline class="structure" points="770,672 1020,672"/>
+<text class="field pk" x="782" y="693">proof_id</text>
+<text class="type" x="978" y="693" text-anchor="end">int</text>
+<rect x="986" y="681" width="22" height="15" rx="3" fill="#2563eb"/>
+<text class="tag" x="997" y="692" text-anchor="middle">PK</text>
+<path d="M770 702H1020" stroke="#94a3b8" stroke-width="1"/>
+<text class="field" x="782" y="718">shipment_id</text>
+<text class="type" x="978" y="718" text-anchor="end">int</text>
+<rect x="986" y="706" width="22" height="15" rx="3" fill="#d97706"/>
+<text class="tag" x="997" y="717" text-anchor="middle">FK</text>
+<path d="M782 727H1008" stroke="#f1f5f9" stroke-width="1"/>
+<text class="field" x="782" y="743">signed_at</text>
+<text class="type" x="978" y="743" text-anchor="end">datetime</text>
+</g>
+<rect x="806" y="804" width="214" height="108" rx="4" fill="white" stroke="#94a3b8" stroke-width="1"/><text x="820" y="825" font-size="10.5" font-weight="600" style="fill:#475569;letter-spacing:.3px">CARDINALITY</text>
+<polyline class="structure" points="820,844 864,844"/>
+<polyline class="structure" points="864,836 864,852"/>
+<polyline class="structure" points="853.0,850.5 853.0,837.5"/>
+<text x="876" y="847.5" font-size="10.5" style="fill:#475569">exactly one</text>
+<polyline class="structure" points="820,862 864,862"/>
+<polyline class="structure" points="864,854 864,870"/>
+<circle cx="853" cy="862" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="876" y="865.5" font-size="10.5" style="fill:#475569">zero or one</text>
+<polyline class="structure" points="820,880 864,880"/>
+<polyline class="structure" points="864,872 864,888"/>
+<polyline class="structure" points="864,887 852,880 864,873"/>
+<polyline class="structure" points="864,880 852,880"/>
+<polyline class="structure" points="841.0,886.5 841.0,873.5"/>
+<text x="876" y="883.5" font-size="10.5" style="fill:#475569">one or many</text>
+<polyline class="structure" points="820,898 864,898"/>
+<polyline class="structure" points="864,890 864,906"/>
+<polyline class="structure" points="864,905 852,898 864,891"/>
+<polyline class="structure" points="864,898 852,898"/>
+<circle cx="841" cy="898" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="876" y="901.5" font-size="10.5" style="fill:#475569">zero or many</text>
+</svg>

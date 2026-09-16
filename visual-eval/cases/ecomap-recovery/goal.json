@@ -1,0 +1,40 @@
+{
+  "id": "ecomap-recovery",
+  "type": "ecomap",
+  "title": "Jordan's Recovery Supports",
+  "goal": "A practitioner can visually assess the Jordan's Recovery Supports scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "central-unit",
+      "severity": "blocker",
+      "must": "The identified person is visibly central, with the name above a readable secondary age label, surrounded by external systems. The age is text rather than a separate enclosed symbol."
+    },
+    {
+      "id": "relationship-meaning",
+      "severity": "blocker",
+      "must": "Connection line weight and style visibly distinguish strong/supportive, weak, and stressful or cut-off relationships."
+    },
+    {
+      "id": "systems-labelled",
+      "severity": "major",
+      "must": "External systems are visibly labelled with the relevant family, service, school, work, health, or community roles."
+    },
+    {
+      "id": "directional-support",
+      "severity": "major",
+      "must": "Where a professional or agency provides support, the arrow direction visibly indicates the flow toward the client or family."
+    },
+    {
+      "id": "clinical-scan",
+      "severity": "minor",
+      "must": "The diagram remains readable as a one-page social-work assessment with systems distributed around the centre."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the ecomap exemplar (`visual-eval/exemplars/ecomap/ideal.svg`) by `scripts/visual-eval/draw-ecomap-target.mjs`, from this case's own source. A Hartman ecomap for Jordan's Recovery Supports. At the centre, a dashed blue boundary holds Jordan, age 31, with the name above a secondary age label. 7 outside systems sit on one ring around it: Employer, Sister, Recovery Group, Sponsor, Using Peers, Counselor, Probation Officer. The quality of every tie is carried by the drawn form of its spoke — three parallel lines strong, two moderate, one plain line ordinary, a thin dashed line tenuous, a clay zigzag stressful, a double bar cut off — with a solid triangle at whichever end the energy arrives at, so meaning never depends on colour. Systems sit on one ring grouped by sector (education and work at the top, community to the right, kin at the bottom, health and statutory services to the left), which makes every spoke radial and stops any two of them from crossing. Category tints and every connection code are repeated in the legend at the foot, at the weights they are drawn at. Individual centre revised on 2026-09-10: name as primary text, Age as secondary text; no inner person glyph. Visually reviewed with the full ecomap set."
+  }
+}

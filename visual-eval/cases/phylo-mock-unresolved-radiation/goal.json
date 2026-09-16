@@ -1,0 +1,58 @@
+{
+  "id": "phylo-mock-unresolved-radiation",
+  "type": "phylo",
+  "variant": "slanted",
+  "title": "Unresolved radiation (mock)",
+  "goal": "Mock dataset (not empirical or user data). Distinguish an unresolved five-way split from the resolved D/E sister pair.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "polytomy",
+      "severity": "blocker",
+      "must": "A, B, C, the D/E ancestor, and F meet at one root without invented binary ancestors."
+    },
+    {
+      "id": "sister-pair",
+      "severity": "blocker",
+      "must": "D and E share a separate ancestor."
+    },
+    {
+      "id": "tip-readability",
+      "severity": "major",
+      "must": "All six tips and their individual branches remain distinguishable."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/slanted exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly matches the authored phylogram: Reef A, B, C, the D/E ancestral branch, and Reef F emerge from one root; Reef D and E then split at their own shared ancestor. All six tips and branches are clearly distinguishable.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:26:57.828Z",
+      "targetHash": "0dac3ae7a4d0",
+      "sourceHash": "662f44fcc162",
+      "exemplarHash": "46b753f0fac9",
+      "items": [
+        {
+          "id": "polytomy",
+          "verdict": "pass",
+          "evidence": "Five lineages visibly meet at the single left root: Reef A, Reef B, Reef C, the branch leading to the D/E ancestor, and Reef F. No extra binary ancestors are shown."
+        },
+        {
+          "id": "sister-pair",
+          "verdict": "pass",
+          "evidence": "Reef D and Reef E visibly diverge from a separate shared node downstream of the root and are also identified by the D/E sister-pair bracket."
+        },
+        {
+          "id": "tip-readability",
+          "verdict": "pass",
+          "evidence": "All six labeled tips—Reef A through Reef F—are legible, and each has a distinct visible terminal branch."
+        }
+      ]
+    }
+  }
+}

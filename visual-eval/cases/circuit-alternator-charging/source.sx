@@ -1,0 +1,10 @@
+circuit "Dual Battery Alternator Charging" netlist
+A1 ALT_OUT CHASSIS type=voltage_source value="14.4 VDC, 120 A" label="A1 ALTERNATOR"
+F1 ALT_OUT START_POS type=fuse value="150 A MEGA" label="F1 STARTER FUSE"
+B1 START_POS CHASSIS 12V type=battery label="B1 STARTER BATTERY"
+K1 START_POS AUX_FEED type=relay_no value="140 A, 12 VDC" label="K1 VSR SPLIT-CHARGE RELAY"
+S1 AUX_FEED AUX_POS type=switch_spst value="200 A, 12 VDC" label="S1 AUX BATTERY ISOLATOR"
+F2 AUX_POS AUX_LOAD_FEED type=fuse value="80 A MIDI" label="F2 AUX LOAD FUSE"
+B2 AUX_POS CHASSIS 12V type=battery label="B2 AUXILIARY BATTERY"
+L1 AUX_LOAD_FEED CHASSIS type=lamp value="12 VDC, 60 W" label="L1 AUXILIARY LOADS"
+G1 CHASSIS 0 type=gnd_chassis value="vehicle chassis" label="G1 CHASSIS EARTH"

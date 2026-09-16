@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 880" width="1160" height="880" role="img">
+  <title>EV Charge Point Lifecycle</title>
+  <desc>A UML state machine for a public EV charge point. From the initial pseudo-state the machine enters Available, where a heartbeat self-transition keeps reporting status. Plugging a cable in leads to Authorizing; the authorization response reaches a choice pseudo-state that either enters the composite Charging state or returns to Available when the token is rejected. Inside Charging the session ramps up, holds steady, and may be suspended and resumed by the vehicle before reaching the composite's own final state. Unplugging the cable moves the machine to Finishing and then back to Available; a ground fault moves it to Faulted, from which it either recovers to Available after a passing self test or terminates at the final state under service lockout.</desc>
+  <rect x="0" y="0" width="1160" height="880" fill="#FFFFFF"/>
+  <defs>
+    <marker id="ah" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" refX="10.5" refY="6" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M2.5,1.5 L10,6 L2.5,10.5" fill="none" stroke="#4A5568" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <text x="40" y="46" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#16202E">EV Charge Point Lifecycle</text>
+  <text x="40" y="68" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64708A">UML 2.5 state machine · transition labels read event [guard] / action</text>
+  <g data-state="Charging" data-composite="true">
+    <rect x="560" y="250" width="540" height="370" rx="10" ry="10" fill="#EEF2F7" stroke="#16202E" stroke-width="1.5"/>
+    <text x="576" y="276" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#16202E">Charging</text>
+    <line x1="560" y1="290" x2="1100" y2="290" stroke="#16202E" stroke-width="1.5"/>
+  </g>
+  <circle data-pseudo="initial" cx="660" cy="318" r="6" fill="#16202E"/>
+  <g data-state="Ramping">
+    <rect x="595" y="347" width="130" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="660" y="374.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Ramping</text>
+  </g>
+  <g data-state="Steady">
+    <rect x="600" y="447" width="120" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="660" y="474.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Steady</text>
+  </g>
+  <g data-state="Suspended">
+    <rect x="920" y="447" width="140" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="990" y="474.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Suspended</text>
+  </g>
+  <g data-pseudo="final"><circle cx="660" cy="570" r="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/><circle cx="660" cy="570" r="5" fill="#16202E"/></g>
+  <path data-edge="Charging.i→Ramping" d="M 660,324 L 660,347" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <path data-edge="Ramping→Steady" d="M 660,393 L 660,447" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="targetCurrentReached">
+    <rect x="673.0" y="413.4" width="127.0" height="15.2" fill="#EEF2F7"/>
+    <text x="676" y="424.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">targetCurrentReached</text>
+  </g>
+  <path data-edge="Steady→Suspended" d="M 720,458 L 920,458" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="evPaused">
+    <rect x="744.4" y="441.4" width="151.2" height="15.2" fill="#EEF2F7"/>
+    <text x="820" y="452.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">evPaused / holdCurrent()</text>
+  </g>
+  <path data-edge="Suspended→Steady" d="M 920,482 L 720,482" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="evResumed">
+    <rect x="789.8" y="491.4" width="60.5" height="15.2" fill="#EEF2F7"/>
+    <text x="820" y="502.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">evResumed</text>
+  </g>
+  <path data-edge="Steady→Charging.final" d="M 660,493 L 660,560" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="stopRequested">
+    <rect x="673.0" y="519.4" width="84.7" height="15.2" fill="#EEF2F7"/>
+    <text x="676" y="530.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">stopRequested</text>
+  </g>
+  <circle data-pseudo="initial" cx="250" cy="100" r="6" fill="#16202E"/>
+  <g data-state="Available">
+    <rect x="175" y="137" width="150" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="250" y="164.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Available</text>
+  </g>
+  <g data-state="Authorizing">
+    <rect x="170" y="277" width="160" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="250" y="304.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Authorizing</text>
+  </g>
+  <polygon data-pseudo="choice" points="250,404 276,430 250,456 224,430" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+  <g data-state="Finishing">
+    <rect x="830" y="137" width="140" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+    <text x="900" y="164.6" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#16202E">Finishing</text>
+  </g>
+  <g data-state="Faulted">
+    <rect x="695" y="697" width="130" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+    <text x="760" y="724.5" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#A4442F">Faulted</text>
+  </g>
+  <g data-pseudo="final"><circle cx="1010" cy="720" r="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/><circle cx="1010" cy="720" r="5" fill="#16202E"/></g>
+  <path data-edge="initial→Available" d="M 250,106 L 250,137" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <path data-edge="Available↺" d="M 302,137 A 30,30 0 1 1 327,152" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" marker-end="url(#ah)"/>
+  <g data-label="heartbeat">
+    <rect x="375.0" y="105.4" width="217.8" height="15.2" fill="#FFFFFF"/>
+    <text x="378" y="116.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">heartbeat [linkUp] / reportStatus()</text>
+  </g>
+  <path data-edge="Available→Authorizing" d="M 250,183 L 250,277" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="cablePluggedIn">
+    <rect x="263.0" y="223.4" width="169.4" height="15.2" fill="#FFFFFF"/>
+    <text x="266" y="234.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">cablePluggedIn / readRFID()</text>
+  </g>
+  <path data-edge="Authorizing→AuthCheck" d="M 250,323 L 250,404" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="authResponse">
+    <rect x="263.0" y="356.4" width="78.6" height="15.2" fill="#FFFFFF"/>
+    <text x="266" y="367.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">authResponse</text>
+  </g>
+  <path data-edge="AuthCheck→Charging" d="M 276,430 L 560,430" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="tokenValid">
+    <rect x="324.3" y="411.4" width="187.5" height="15.2" fill="#FFFFFF"/>
+    <text x="418" y="422.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">[tokenValid] / lockConnector()</text>
+  </g>
+  <path data-edge="AuthCheck→Available" d="M 224,430 L 152.0,430.0 Q 140,430 140.0,418.0 L 140.0,227.0 Q 140,215 152.0,215.0 L 193.0,215.0 Q 205,215 205.0,203.0 L 205,183" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="notTokenValid">
+    <rect x="147.0" y="345.4" width="96.8" height="29.2" fill="#FFFFFF"/>
+    <text x="150" y="356.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">[!tokenValid] /</text>
+    <text x="150" y="370.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">showDenied()</text>
+  </g>
+  <path data-edge="Charging→Finishing" d="M 900,250 L 900,183" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="cableUnplugged">
+    <rect x="913.0" y="209.4" width="211.7" height="15.2" fill="#FFFFFF"/>
+    <text x="916" y="220.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">cableUnplugged / unlockConnector()</text>
+  </g>
+  <path data-edge="Finishing→Available" d="M 830,172 L 325,172" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="meterValuesSent">
+    <rect x="477.2" y="153.4" width="199.6" height="15.2" fill="#FFFFFF"/>
+    <text x="577" y="164.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">meterValuesSent / clearSession()</text>
+  </g>
+  <path data-edge="Charging→Faulted" d="M 760,620 L 760,697" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="groundFault">
+    <rect x="773.0" y="651.4" width="181.5" height="15.2" fill="#FFFFFF"/>
+    <text x="776" y="662.0" text-anchor="start" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">groundFault / openContactor()</text>
+  </g>
+  <path data-edge="Faulted→Available" d="M 695,720 L 82.0,720.0 Q 70,720 70.0,708.0 L 70.0,172.0 Q 70,160 82.0,160.0 L 175,160" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="faultCleared">
+    <rect x="309.3" y="687.4" width="181.5" height="29.2" fill="#FFFFFF"/>
+    <text x="400" y="698.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">faultCleared [selfTestPass] /</text>
+    <text x="400" y="712.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">resetContactor()</text>
+  </g>
+  <path data-edge="Faulted→final" d="M 825,720 L 1000,720" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah)"/>
+  <g data-label="serviceLockout">
+    <rect x="863.6" y="689.4" width="96.8" height="29.2" fill="#FFFFFF"/>
+    <text x="912" y="700.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">serviceLockout</text>
+    <text x="912" y="714.0" text-anchor="middle" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="11" fill="#64708A">[!selfTestPass]</text>
+  </g>
+  <line x1="40" y1="792" x2="1120" y2="792" stroke="#DCE3EC" stroke-width="1"/>
+  <circle cx="46" cy="824" r="6" fill="#16202E"/>
+  <text x="61" y="828" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64708A">initial pseudo-state</text>
+  <g><circle cx="220.5" cy="824" r="10" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/><circle cx="220.5" cy="824" r="5" fill="#16202E"/></g>
+  <text x="239.5" y="828" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64708A">final state</text>
+  <polygon points="348.025,813 359.025,824 348.025,835 337.025,824" fill="#FFFFFF" stroke="#16202E" stroke-width="1.5"/>
+  <text x="368.025" y="828" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64708A">choice — guards evaluated on arrival</text>
+  <rect x="609.925" y="814" width="26" height="20" rx="6" fill="#EEF2F7" stroke="#16202E" stroke-width="1.5"/><line x1="609.925" y1="821" x2="635.925" y2="821" stroke="#16202E" stroke-width="1.5"/>
+  <text x="644.925" y="828" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64708A">composite state with substates</text>
+  <rect x="852.175" y="814" width="26" height="20" rx="6" fill="#FFFFFF" stroke="#A4442F" stroke-width="1.5"/>
+  <text x="887.175" y="828" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="10.5" fill="#64708A">fault branch</text>
+</svg>

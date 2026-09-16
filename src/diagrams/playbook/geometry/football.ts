@@ -30,7 +30,7 @@ const K = {
   olSplit: 1.4,
   wrSplit: 13,
   slotSplit: 6,
-  minHalfWidth: 20,
+  halfWidth: 80 / 3,
   margin: 2,
   hashNfl: 3.08,
   hashCollege: 6.67,
@@ -298,7 +298,7 @@ export const footballModule: SportModule = {
   },
 
   bounds(ast: PlaybookAst, players: PlayerGeom[], moves: MoveGeom[], zones: ZoneGeom[]): Bounds {
-    let minX = -K.minHalfWidth, maxX = K.minHalfWidth, minY = -7, maxY = 6;
+    let minX = -K.halfWidth, maxX = K.halfWidth, minY = -7, maxY = 6;
     const ext = (x: number, y: number): void => { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); };
     for (const p of players) ext(p.x, p.y);
     for (const mv of moves) for (const pt of mv.points) ext(pt.x, pt.y);
@@ -311,37 +311,46 @@ export const footballModule: SportModule = {
   drawField(lay: PlaybookLayoutResult, ctx: RenderCtx, t: PbTheme): string {
     const b = lay.bounds;
     const parts: string[] = [];
-    const x1 = ctx.X(b.minX), x2 = ctx.X(b.maxX);
+    // The viewport may grow for annotations; physical sidelines never move.
+    const x1 = ctx.X(-K.halfWidth), x2 = ctx.X(K.halfWidth);
+    const width = ctx.px(2 * K.halfWidth);
+    const fieldTop = lay.toGoal === undefined ? b.maxY : Math.min(b.maxY, lay.toGoal + 10);
+    parts.push(rect({ class: "sx-pb-turf", x: r2(x1), y: r2(ctx.Y(fieldTop)), width: r2(width), height: r2(ctx.px(fieldTop - b.minY)) }));
+    for (const x of [x1, x2]) {
+      parts.push(line({ class: "sx-pb-boundary", x1: r2(x), y1: r2(ctx.Y(b.minY)), x2: r2(x), y2: r2(ctx.Y(fieldTop)) }));
+    }
 
     // end zone + goal line + goalpost
     if (lay.toGoal !== undefined) {
       const gl = lay.toGoal; // goal line depth
       const ezTop = Math.min(gl + 10, b.maxY);
-      parts.push(rect({ class: "sx-pb-endzone", x: r2(x1), y: r2(ctx.Y(ezTop)), width: r2((b.maxX - b.minX) * K.scale), height: r2((ezTop - gl) * K.scale) }));
+      parts.push(rect({ class: "sx-pb-endzone", x: r2(x1), y: r2(ctx.Y(ezTop)), width: r2(width), height: r2((ezTop - gl) * K.scale) }));
       parts.push(line({ class: "sx-pb-goalline", x1: r2(x1), y1: r2(ctx.Y(gl)), x2: r2(x2), y2: r2(ctx.Y(gl)) }));
+      parts.push(line({ class: "sx-pb-boundary", x1: r2(x1), y1: r2(ctx.Y(gl + 10)), x2: r2(x2), y2: r2(ctx.Y(gl + 10)) }));
       // goalpost at the back of the end zone
       const gy = ctx.Y(Math.min(gl + 10, b.maxY) - 0.2);
       const cx = ctx.X(0);
       const up = ctx.px(2.2);
-      const cross = ctx.px(3);
+      const cross = ctx.px(18.5 / 3);
       parts.push(line({ class: "sx-pb-goalpost", x1: r2(cx), y1: r2(gy), x2: r2(cx), y2: r2(gy + ctx.px(1)) }));
       parts.push(line({ class: "sx-pb-goalpost", x1: r2(cx - cross / 2), y1: r2(gy), x2: r2(cx + cross / 2), y2: r2(gy) }));
       parts.push(line({ class: "sx-pb-goalpost", x1: r2(cx - cross / 2), y1: r2(gy), x2: r2(cx - cross / 2), y2: r2(gy - up) }));
       parts.push(line({ class: "sx-pb-goalpost", x1: r2(cx + cross / 2), y1: r2(gy), x2: r2(cx + cross / 2), y2: r2(gy - up) }));
     }
 
-    // yard lines every 5 yds
-    const startY = Math.ceil(b.minY / 5) * 5;
+    // Anchor painted lines to the absolute yard grid, not the scrimmage line.
+    const origin = lay.toGoal !== undefined ? 100 - lay.toGoal : lay.losYard ?? 0;
+    const startY = Math.ceil((b.minY + origin) / 5) * 5 - origin;
     for (let yd = startY; yd <= b.maxY; yd += 5) {
-      if (Math.abs(yd) < 1e-6) continue;
       if (lay.toGoal !== undefined && yd > lay.toGoal + 0.01) continue; // beyond goal line = end zone
       parts.push(line({ class: "sx-pb-yard", x1: r2(x1), y1: r2(ctx.Y(yd)), x2: r2(x2), y2: r2(ctx.Y(yd)) }));
       // yard number (absolute) when toGoal is known
-      if (lay.toGoal !== undefined) {
-        const yardNum = lay.toGoal - yd;
+      if (lay.toGoal !== undefined || lay.losYard !== undefined) {
+        const absolute = origin + yd;
+        const yardNum = Math.min(absolute, 100 - absolute);
         if (yardNum > 0 && yardNum % 10 === 0) {
-          parts.push(textEl({ class: "sx-pb-yardnum", x: r2(x1 + 12), y: r2(ctx.Y(yd) + 4), "text-anchor": "middle" }, String(yardNum)));
-          parts.push(textEl({ class: "sx-pb-yardnum", x: r2(x2 - 12), y: r2(ctx.Y(yd) + 4), "text-anchor": "middle" }, String(yardNum)));
+          parts.push(textEl({ class: "sx-pb-yardnum", x: r2(x1 + ctx.px(7)), y: r2(ctx.Y(yd) - 7), "text-anchor": "middle" }, String(yardNum)));
+          parts.push(textEl({ class: "sx-pb-yardnum", x: r2(x2 - ctx.px(7)), y: r2(ctx.Y(yd) - 7), "text-anchor": "middle" }, String(yardNum)));
         }
       }
     }
@@ -350,7 +359,7 @@ export const footballModule: SportModule = {
     if (lay.hash !== "none") {
       const hx = lay.hash === "college" ? K.hashCollege : K.hashNfl;
       const top = lay.toGoal !== undefined ? Math.min(b.maxY, lay.toGoal) : b.maxY;
-      for (let yd = Math.ceil(b.minY); yd <= top; yd += 1) {
+      for (let yd = Math.ceil(b.minY + origin) - origin; yd <= top; yd += 1) {
         for (const sgn of [-1, 1]) {
           const xc = ctx.X(sgn * hx);
           parts.push(line({ class: "sx-pb-hash", x1: r2(xc - 2), y1: r2(ctx.Y(yd)), x2: r2(xc + 2), y2: r2(ctx.Y(yd)) }));

@@ -1,0 +1,41 @@
+{
+  "id": "sld-hospital-essential-branch",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "Hospital essential electrical system",
+  "goal": "Show normal and generator transfer to equipment, critical, and life-safety branches.",
+  "rubric": [
+    {
+      "id": "normal",
+      "severity": "blocker",
+      "must": "Normal utility service visibly feeds the normal switchboard."
+    },
+    {
+      "id": "three-ats",
+      "severity": "blocker",
+      "must": "Three distinct ATS branches labelled Equipment, Critical, and Life Safety visibly leave the normal switchboard."
+    },
+    {
+      "id": "generator",
+      "severity": "blocker",
+      "must": "The emergency generator visibly feeds each of the three ATS devices."
+    },
+    {
+      "id": "loads",
+      "severity": "major",
+      "must": "Essential HVAC, OR/ICU critical loads, and egress/fire-alarm loads visibly terminate their own branches."
+    },
+    {
+      "id": "readable",
+      "severity": "minor",
+      "must": "Branch labels are readable without overlap."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. The normal utility service feeds the main service breaker and the normal switchboard, drawn as a heavy vertical bus down the left. The 1250 kW emergency generator feeds an emergency bus drawn the same way down the right. Between them sit three automatic transfer switches, one per NEC 517 branch — equipment, critical and life safety — each with its normal side closed on the normal switchboard and its emergency side dashed back to the generator bus. Each transfer switch runs right into its own branch panel and that branch's load: essential HVAC, the OR and ICU critical loads, and egress lighting with fire alarm. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

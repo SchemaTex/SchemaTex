@@ -1,0 +1,39 @@
+# Fill pump starts at low level and stops at high level; HH alarm requires reset.
+# Manual override is available only when high-high level is not active.
+ladder "Tank Fill Level Control"
+
+rung 0 "Automatic fill latch at low level":
+  XIC(LowLevel)
+  XIO(HighLevel)
+  OTL(FillRequest)
+
+rung 1 "Stop fill request at high level":
+  XIC(HighLevel)
+  OTU(FillRequest)
+
+rung 2 "Manual fill override":
+  XIC(ManualOverride)
+  XIO(HighHighLevel)
+  OTE(ManualFill)
+
+rung 3 "Fill pump from automatic or manual demand":
+  XIO(HighHighLevel)
+  parallel:
+    branch:
+      XIC(FillRequest)
+    branch:
+      XIC(ManualFill)
+  OTE(FillPump)
+
+rung 4 "Latch high-high alarm":
+  XIC(HighHighLevel)
+  OTL(HighHighAlarm)
+
+rung 5 "High-high alarm horn":
+  XIC(HighHighAlarm)
+  OTE(AlarmHorn)
+
+rung 6 "Reset high-high alarm":
+  XIC(AlarmResetPB)
+  XIO(HighHighLevel)
+  OTU(HighHighAlarm)

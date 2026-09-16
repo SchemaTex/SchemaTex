@@ -1,0 +1,22 @@
+# Assumptions: scores cover an onshore turbine gearbox with condition monitoring and scheduled maintenance.
+# Ratings reflect current controls before recommended design or maintenance actions.
+fmea "Wind turbine gearbox DFMEA"
+  type: design
+  rank: rpn
+  flag: rpn > 100
+  number: DFMEA-WTG-018
+  item "Main gearbox" fn "Transmit rotor torque to generator"
+    mode "Gear tooth failure"
+      effect "Turbine trip and extended outage" sev: 8
+      cause "Lubricant contamination" occ: 4
+        controls prevention: "Filtered lubrication circuit", detection: "Oil debris analysis" det: 4
+      cause "Torque transient overload" occ: 3
+        controls prevention: "Drivetrain load control", detection: "SCADA torque trend review" det: 5
+    mode "Bearing overheating"
+      effect "Gearbox damage and fire risk" sev: 9
+      cause "Insufficient oil flow" occ: 3
+        controls prevention: "Redundant oil pump", detection: "Bearing temperature alarm" det: 3
+    mode "Excessive vibration"
+      effect "Accelerated drivetrain wear" sev: 6
+      cause "Shaft misalignment" occ: 4
+        controls prevention: "Alignment specification", detection: "Vibration acceptance test" det: 4

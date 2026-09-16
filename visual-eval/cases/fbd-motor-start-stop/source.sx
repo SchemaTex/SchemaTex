@@ -1,0 +1,11 @@
+# Scenario: IEC 61131-3 motor start-stop latch with emergency stop.
+fbd "Motor Start Stop"
+var Start: bool
+var Stop: bool
+var EmergencyStop: bool
+var MotorOut: bool
+var Latch: bool
+network 0 "Start latch":
+  Latch = OR(Start, AND(Latch, ~Stop, ~EmergencyStop))
+network 1 "Drive output":
+  MotorOut = MOVE(Latch)

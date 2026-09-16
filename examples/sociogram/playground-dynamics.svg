@@ -20,7 +20,7 @@
   --schematex-stroke-thick: 3;
   font-family: system-ui, -apple-system, sans-serif;
 }
-.schematex-sociogram-node { fill: #2563eb; stroke: #2563eb; stroke-width: 2; }
+.schematex-sociogram-node { fill: #ffffff; stroke: #2563eb; stroke-width: 2; }
 .schematex-sociogram-node-star { fill: #d97706; stroke: #d97706; stroke-width: 3; }
 .schematex-sociogram-node-isolate { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4 3; }
 .schematex-sociogram-node-neglectee { fill: #f1f5f9; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 4 3; }
@@ -36,9 +36,9 @@
 .schematex-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
 .schematex-sociogram-group-boys { fill: #42A5F5; stroke: #42A5F5; }
 .schematex-sociogram-group-girls { fill: #EF5350; stroke: #EF5350; }</style>
-<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
-<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker>
-<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
+<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker>
+<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
 <text x="200" y="20" class="schematex-sociogram-title">Playground Dynamics</text>
 <g class="schematex-sociogram-groups" transform="translate(0,30)"><text x="299.72532936285484" y="26" class="schematex-sociogram-group-label" fill="#42A5F5">Boys</text>
 <text x="91.41032218521654" y="45.78851270154203" class="schematex-sociogram-group-label" fill="#EF5350">Girls</text></g>

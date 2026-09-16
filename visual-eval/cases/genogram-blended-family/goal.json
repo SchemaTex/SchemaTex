@@ -1,0 +1,49 @@
+{
+  "id": "genogram-blended-family",
+  "type": "genogram",
+  "title": "The Bennett blended family",
+  "goal": "A reader can identify Sophie as the index person, trace three generations, and distinguish David's successive unions, their children, and Emma's stepchildren.",
+  "rubric": [
+    {
+      "id": "three-generations",
+      "severity": "blocker",
+      "must": "George and Helen appear on the top generation row, David, Laura, and Emma on the middle row, and Sophie, Oliver, Lucy, and Henry on the bottom row; George and Helen are visibly connected as David's parents."
+    },
+    {
+      "id": "successive-unions",
+      "severity": "blocker",
+      "must": "One David symbol connects to two distinct partnership bars: the Laura bar has two divorce slashes and the dates 1996 and 2004, while the Emma bar has the marriage date 2006 and no divorce slashes."
+    },
+    {
+      "id": "union-order",
+      "severity": "major",
+      "must": "The earlier union with Laura is positioned before the later union with Emma from left to right."
+    },
+    {
+      "id": "children-and-stepchildren",
+      "severity": "blocker",
+      "must": "Sophie and Oliver descend from the David-Laura bar, and Lucy and Henry descend from the David-Emma bar; Emma is not shown as the biological mother of Sophie or Oliver."
+    },
+    {
+      "id": "birth-order",
+      "severity": "major",
+      "must": "The children appear from left to right as Sophie (1998), Oliver (2001), Lucy (2008), and Henry (2011), with each sibling group remaining under its own union."
+    },
+    {
+      "id": "symbols-and-index",
+      "severity": "blocker",
+      "must": "Male family members use squares and female family members use circles; Sophie alone has the double outline identifying the index person, and every person has a readable name and birth year."
+    },
+    {
+      "id": "unobstructed-lines-and-labels",
+      "severity": "major",
+      "must": "No relationship line passes through a person's symbol or label, and no two labels overlap."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Three Bennett generations place Sophie and Oliver under David and Laura's divorced union, and Lucy and Henry under David and Emma's later marriage, each with its own sibship line. Sophie is the index person; George and Helen are David's parents."
+  }
+}

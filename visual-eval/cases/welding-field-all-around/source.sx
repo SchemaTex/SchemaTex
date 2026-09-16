@@ -1,0 +1,8 @@
+# Scenario: Field weld, all around, for a pipe support joint.
+welding "Field Weld All Around" [standard: aws]
+joint "Pipe support" {
+  arrow: fillet size=6
+  around
+  field
+  tail: "SMAW; FIELD"
+}

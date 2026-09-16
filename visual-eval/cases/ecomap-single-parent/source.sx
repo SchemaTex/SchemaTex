@@ -1,0 +1,13 @@
+# Social-work ecomap: single parent Maya and two young children, balancing strong kin support and school stress.
+ecomap "Maya's Family Support Network"
+  center: family [label: "Maya + children"]
+  grandmother [label: "Grandmother", category: family, importance: major]
+  school [label: "Early Childhood Center", category: education]
+  employer [label: "Grocery Job", category: work]
+  clinic [label: "Pediatric Clinic", category: health]
+  neighbors [label: "Neighbors", category: community]
+  family === grandmother
+  family == school
+  family ~~~ employer
+  family --- clinic
+  family == neighbors

@@ -1,0 +1,1283 @@
+{
+  "type": "genogram",
+  "variant": null,
+  "exemplar": "genogram",
+  "style": "Individuals are 48 x 48 squares and r = 24 circles outlined #1F2937 at 2, filled #DBEAFE (male) or #FCE7F3 (female); a deceased person carries a corner-to-corner X at 2, and the index person a second outline 4 units out in #0D9488 at 1.8. Structural lines are #1F2937 at 1.8 with butt caps, divorce and separation marks are slashes at 2. Emotional relationships are distinguished by line form at 1.7–2 (parallel lines, zigzag, broken line with end bars), with red #B91C1C reserved for the negative ones. Lettering is Inter / Helvetica: 14 semibold #1F2937 inside shapes, 11.5 #64748B for dates.",
+  "symbols": [
+    {
+      "id": "male",
+      "label": "Male",
+      "file": "male.svg",
+      "engine": null,
+      "dsl": [
+        "[male]",
+        "[M]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a 48 x 48 square outlined at 2 with the pale blue sex fill. Age, when known, is written inside in 14 semibold."
+    },
+    {
+      "id": "female",
+      "label": "Female",
+      "file": "female.svg",
+      "engine": null,
+      "dsl": [
+        "[female]",
+        "[F]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: an r = 24 circle outlined at 2 with the pale pink sex fill, the same height as the male square so a generation lines up on one baseline."
+    },
+    {
+      "id": "unknown-gender",
+      "label": "Unknown gender",
+      "file": "unknown-gender.svg",
+      "engine": null,
+      "dsl": [
+        "[unknown]",
+        "[other]"
+      ],
+      "standard": "GenoPro genogram symbols — question mark for unknown gender, diamond for a pet",
+      "sourceUrl": "https://genopro.com/genogram/symbols/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A question mark occupies the person's 48-unit symbol box, using the set's Inter lettering and ink. The engine uses this for unknown or other sex unless a shape is explicitly specified. A diamond with a question mark remains the separate unknown-siblings placeholder."
+    },
+    {
+      "id": "deceased-male",
+      "label": "Deceased (male)",
+      "file": "deceased-male.svg",
+      "engine": null,
+      "dsl": [
+        "[male, deceased]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a cross drawn corner to corner at the shape weight, ending exactly on the corners. Genograms use an X; the single slash belongs to pedigrees, and the two must not be mixed."
+    },
+    {
+      "id": "index-person",
+      "label": "Index person (identified patient)",
+      "file": "index-person.svg",
+      "engine": null,
+      "dsl": [
+        "[index]",
+        "[female, index]"
+      ],
+      "standard": "Accepted exemplar: index-person double outline; not shown in the supplied MFI pp. 14–15",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: a second outline 4 units outside the shape in teal at 1.8, the only teal on a genogram. The engine uses a gold border; teal matches the exemplar the owner reviewed."
+    },
+    {
+      "id": "divorced",
+      "label": "Divorce",
+      "file": "divorced.svg",
+      "engine": null,
+      "dsl": [
+        "A -divorced- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "Copied from the exemplar: two parallel slashes at 2 crossing the 1.8 couple line at its midpoint, 16 apart, leaning the same way. One slash would mean separation."
+    },
+    {
+      "id": "conflict",
+      "label": "Conflict (emotional relationship)",
+      "file": "conflict.svg",
+      "engine": null,
+      "dsl": [
+        "A -conflict- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": null,
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The exemplar's red zigzag at 2, drawn here between two partner shapes: 8-unit teeth, 16-unit pitch, starting and ending on the axis so it meets each shape cleanly. Red reinforces a negative relationship; the zigzag alone still says conflict."
+    },
+    {
+      "id": "pet",
+      "label": "Pet",
+      "file": "pet.svg",
+      "engine": null,
+      "dsl": [
+        "[shape: diamond] (shape only; no pet semantics)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15; GenoPro genogram symbols — a diamond is a pet",
+      "sourceUrl": "https://genopro.com/genogram/symbols/",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "In a family-therapy genogram a diamond denotes a household pet in both the MFI handout and GenoPro. The engine draws a question mark for [unknown] and [other] unless a shape is explicit. Explicit [shape: diamond], nonbinary/intersex and the unknown-siblings placeholder use a diamond. This library draws the pet smaller than a person; the engine has no dedicated pet kind."
+    },
+    {
+      "id": "marriage-line",
+      "label": "Marriage / ordinary connection",
+      "file": "marriage-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B",
+        "A -normal- B",
+        "A -harmony- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A single structural line joins partners in the library horizontal sample. MFI marriage uses a solid couple connection with marriage dates. Normal and harmony are single emotional lines in GenoPro; friendship/close uses two lines and is listed under close-double-line."
+    },
+    {
+      "id": "biological-descent-line",
+      "label": "Biological descent",
+      "file": "biological-descent-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child [male]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A solid drop runs from the midpoint of the couple line to the child at the next generation. Its uninterrupted form identifies biological descent."
+    },
+    {
+      "id": "sibship-bar",
+      "label": "Sibship",
+      "file": "sibship-bar.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child1 [male]\n  child2 [female]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "The parent drop meets a horizontal sibship bar, with separate vertical drops to siblings on one baseline. This distinguishes siblings from the diagonal fan of a multiple birth."
+    },
+    {
+      "id": "separation-slash",
+      "label": "Separation",
+      "file": "separation-slash.svg",
+      "engine": null,
+      "dsl": [
+        "A -/- B",
+        "A -// B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "One diagonal slash crosses the marriage line at its midpoint. The single slash distinguishes separation from the accepted divorce seed with two slashes."
+    },
+    {
+      "id": "household-enclosure",
+      "label": "Shared household",
+      "file": "household-enclosure.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15; continuation p. 16 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 1,
+      "usageUsers": null,
+      "notes": "A closed dashed enclosure surrounds the people sharing a home, independently of their kinship. Its slate outline, 10-unit corner radius and 7–5 dash cadence follow the exemplar, using the existing structural weight; the engine has no household boundary DSL. The household/placement example appears on continuation p. 16, beyond the attached pp. 14–15."
+    },
+    {
+      "id": "cohabitation-line",
+      "label": "Cohabitation",
+      "file": "cohabitation-line.svg",
+      "engine": null,
+      "dsl": [
+        "A ~ B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI uses a dashed couple relationship line, labelled with relationship and living-together dates when known. The sample retains the library horizontal relationship layout."
+    },
+    {
+      "id": "cohabitation-ended-line",
+      "label": "Ended cohabitation",
+      "file": "cohabitation-ended-line.svg",
+      "engine": null,
+      "dsl": [
+        "A ~/~ B"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A single separation slash crosses a dashed partnership line. Retaining the dashes indicates that the ended union was unmarried."
+    },
+    {
+      "id": "adoptive-descent-line",
+      "label": "Adoptive descent",
+      "file": "adoptive-descent-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child [adopted]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Source conflict: MFI draws a solid descent plus a parallel dashed line labelled A and the adoption date. GenoPro uses a dashed descent (https://genopro.com/genogram/symbols/). This sample follows MFI; the engine lacks the parallel dashed adoption mark."
+    },
+    {
+      "id": "adoption-brackets",
+      "label": "Adoption brackets",
+      "file": "adoption-brackets.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child [adopted]"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Brackets outside the person are borrowed from Bennett pedigree nomenclature, not the MFI adoption convention. MFI instead uses a solid descent plus a parallel dashed line labelled A. The engine accepts adopted but omits the brackets."
+    },
+    {
+      "id": "foster-descent-line",
+      "label": "Foster / guardian descent",
+      "file": "foster-descent-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child [foster]",
+        "A -- B\n  child [guardian]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Source conflict: MFI uses dashed descent labelled with the dates the child lived with the family (LW 98–99). GenoPro uses a dotted line (https://genopro.com/genogram/symbols/). This sample follows MFI; the engine does not style primary foster links correctly."
+    },
+    {
+      "id": "twin-fan",
+      "label": "Fraternal twins",
+      "file": "twin-fan.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child1 [twin-fraternal]\n  child2 [twin-fraternal]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Two diagonal child branches share one origin, identifying a twin birth. No joining bar is present; both children must share a birth year or omit it in the engine."
+    },
+    {
+      "id": "identical-twin-bar",
+      "label": "Identical twins",
+      "file": "identical-twin-bar.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child1 [twin-identical]\n  child2 [twin-identical]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A horizontal bar joins the two branches of the twin fan. That extra link indicates identical twins rather than fraternal twins."
+    },
+    {
+      "id": "pregnancy-triangle",
+      "label": "Current pregnancy",
+      "file": "pregnancy-triangle.svg",
+      "engine": null,
+      "dsl": [
+        "[pregnancy]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A small hollow triangle with a solid outline denotes pregnancy. The engine draws this form."
+    },
+    {
+      "id": "miscarriage-circle",
+      "label": "Miscarriage",
+      "file": "miscarriage-circle.svg",
+      "engine": null,
+      "dsl": [
+        "[miscarriage]",
+        "[miscarried]",
+        "[miscarry]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI draws a small hollow circle at the end of a short descent line for miscarriage. GenoPro uses a crossed triangle; this library follows MFI. The engine draws this form."
+    },
+    {
+      "id": "induced-abortion-cross",
+      "label": "Induced abortion",
+      "file": "induced-abortion-cross.svg",
+      "engine": null,
+      "dsl": [
+        "[abortion]",
+        "[aborted]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI uses a small X for induced abortion; its miscarriage marker is a hollow circle. GenoPro uses a crossed triangle with an additional bar, so the MFI form takes precedence. The engine draws this form."
+    },
+    {
+      "id": "stillbirth-symbol",
+      "label": "Stillbirth",
+      "file": "stillbirth-symbol.svg",
+      "engine": null,
+      "dsl": [
+        "[stillborn]",
+        "[stillbirth]",
+        "[stillbirths]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI uses a small square with an X for stillbirth; only the birth/death dates are written above it. There is no SB label. The engine draws this form."
+    },
+    {
+      "id": "close-double-line",
+      "label": "Close relationship",
+      "file": "close-double-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -close- B",
+        "A -friendship- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Two parallel emotional lines are 12 units apart, matching the exemplar. Their multiplicity denotes closeness without relying on a positive color."
+    },
+    {
+      "id": "fused-triple-line",
+      "label": "Fused relationship",
+      "file": "fused-triple-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -fused- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Three parallel lines denote fusion in MFI. Best friends is a separate GenoPro form with two lines and short cross ticks; it is not an alias for fusion."
+    },
+    {
+      "id": "distant-dashed-line",
+      "label": "Distant relationship",
+      "file": "distant-dashed-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -distant- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI Distant uses short dashes between people, not sparse dots. This emotional line is distinct in context from the structural dashed couple line."
+    },
+    {
+      "id": "cutoff-break",
+      "label": "Emotional cutoff",
+      "file": "cutoff-break.svg",
+      "engine": null,
+      "dsl": [
+        "A -cutoff- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": true,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A gap interrupts the emotional line, with a short perpendicular bar at each broken end. This copies the exemplar and remains distinct from mere distance in monochrome."
+    },
+    {
+      "id": "close-hostile-line",
+      "label": "Close and hostile",
+      "file": "close-hostile-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -close-hostile- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A zigzag lies between two parallel closeness lines, retaining both meanings in one relationship. The engine draws this form."
+    },
+    {
+      "id": "fused-hostile-line",
+      "label": "Fused and hostile",
+      "file": "fused-hostile-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -fused-hostile- B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "A zigzag crosses three parallel fusion lines, preserving the distinction from close-hostile. The engine draws this form."
+    },
+    {
+      "id": "physical-abuse-line",
+      "label": "Physical abuse",
+      "file": "physical-abuse-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -physical-abuse-> B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI physical abuse is a zigzag ending in a filled arrowhead toward the affected person. GenoPro depicts physical abuse differently; MFI takes precedence. Jealous is a separate GenoPro arrow with a hollow midpoint diamond."
+    },
+    {
+      "id": "emotional-abuse-line",
+      "label": "Emotional abuse",
+      "file": "emotional-abuse-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -emotional-abuse-> B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI emotional abuse is a zigzag ending at the base of a hollow triangular arrowhead. There is no wave. GenoPro uses a different form; this library follows MFI."
+    },
+    {
+      "id": "sexual-abuse-line",
+      "label": "Sexual abuse",
+      "file": "sexual-abuse-line.svg",
+      "engine": null,
+      "dsl": [
+        "A -sexual-abuse-> B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI sexual abuse is a zigzag enclosed by two parallel lines, ending in a filled arrowhead. There is no identification dot. GenoPro uses a different form; MFI takes precedence."
+    },
+    {
+      "id": "condition-full-fill",
+      "label": "Full condition fill",
+      "file": "condition-full-fill.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(full, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Whole-person tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-half-left",
+      "label": "Physical or psychological illness",
+      "file": "condition-half-left.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(half-left, #1F2937)]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Left-half black ink means physical or psychological illness. This is a specific MFI convention, not a freely assigned condition position."
+    },
+    {
+      "id": "condition-half-right",
+      "label": "Right half condition fill",
+      "file": "condition-half-right.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(half-right, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Right-half tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "consanguinity-double-line",
+      "label": "Consanguineous partnership",
+      "file": "consanguinity-double-line.svg",
+      "engine": null,
+      "dsl": [
+        "A == B"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two closely spaced partnership lines are borrowed from Bennett pedigree nomenclature. Their 4-unit spacing distinguishes the partnership from the 12-unit emotional close relationship; the engine chart uses one line."
+    },
+    {
+      "id": "engagement-diamond",
+      "label": "Engagement",
+      "file": "engagement-diamond.svg",
+      "engine": null,
+      "dsl": [
+        "A -o- B"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An open midpoint diamond marks engagement in the local extension. The line stops at the diamond edges so the mark remains hollow; the engine draws the line without the diamond."
+    },
+    {
+      "id": "multiple-birth-fan",
+      "label": "Triplets / multiple birth",
+      "file": "multiple-birth-fan.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child1 [twin-fraternal]\n  child2 [twin-fraternal]\n  child3 [twin-fraternal]"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Three diagonal or vertical branches share a single birth origin, extending the twin fan to triplets. The engine groups three or more twin-marked children; triplet attributes themselves are not accepted."
+    },
+    {
+      "id": "unknown-zygosity-mark",
+      "label": "Twins, zygosity unknown",
+      "file": "unknown-zygosity-mark.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The question mark between twin branches is borrowed from Bennett pedigree nomenclature and leaves zygosity unknown. MFI pp. 14–15 show twins and identical twins, not this marker; the parser has no twin-unknown entry."
+    },
+    {
+      "id": "no-children-terminal",
+      "label": "No children",
+      "file": "no-children-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Borrowed from Bennett pedigree nomenclature, not an MFI convention. A short descent from the union terminates in one horizontal bar, indicating no children. The genogram parser does not accept the shared no-children marker."
+    },
+    {
+      "id": "infertility-terminal",
+      "label": "Infertility",
+      "file": "infertility-terminal.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Borrowed from Bennett pedigree nomenclature, not an MFI convention. Two terminal bars on a short descent distinguish infertility from the single bar for no children. The genogram parser has no infertile marker entry."
+    },
+    {
+      "id": "placement-transfer-arrow",
+      "label": "Placement into a family",
+      "file": "placement-transfer-arrow.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15; continuation p. 16 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An arrow from the child turns upward toward the receiving couple, identifying the family into which the child moved. This follows the placement-direction convention rather than indicating biological descent; the engine has no placement arrow DSL. The household/placement example appears on continuation p. 16, beyond the attached pp. 14–15."
+    },
+    {
+      "id": "donor-descent-line",
+      "label": "Donor / surrogate connection",
+      "file": "donor-descent-line.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Bennett 2022, pedigree nomenclature borrowed for genograms — https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Donor D and surrogate S role letters are borrowed from Bennett pedigree nomenclature, not MFI symbols. MFI labels sperm donor, egg donor and surrogate mother in words. This letter-labelled contributor sample requires an explicit pedigree legend; neither role has accepted genogram DSL."
+    },
+    {
+      "id": "repaired-cutoff-mark",
+      "label": "Repaired cutoff",
+      "file": "repaired-cutoff-mark.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small open circle straddles the two cutoff bars on a reconnected line, as in the handout. The engine cannot express the repaired relationship."
+    },
+    {
+      "id": "caretaker-relationship-mark",
+      "label": "Caretaker relationship",
+      "file": "caretaker-relationship-mark.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two open chevrons terminate a directional line toward the person receiving care, as in the handout. The double open head distinguishes caretaking from the filled emotional arrow; the engine lacks this relationship."
+    },
+    {
+      "id": "spiritual-connection-line",
+      "label": "Spiritual connection",
+      "file": "spiritual-connection-line.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two intertwined waves run out of phase and cross one another for the MFI spiritual connection. The existing ink and emotional stroke weight preserve the library palette; the engine has no corresponding type."
+    },
+    {
+      "id": "family-secret-mark",
+      "label": "Family secret",
+      "file": "family-secret-mark.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A small solid upright triangle is the standalone secret marker shown in the handout. Its filled interior distinguishes it from the hollow pregnancy triangle; the engine has no independent adornment entry."
+    },
+    {
+      "id": "immigration-mark",
+      "label": "Immigration adornment",
+      "file": "immigration-mark.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two short waves cross a stem above the person, matching MFI. This mark has no arrowhead; the engine cannot draw it."
+    },
+    {
+      "id": "gay-lesbian-overlay",
+      "label": "Gay / lesbian orientation",
+      "file": "gay-lesbian-overlay.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An open inverted triangle inside the person is the orientation overlay in the 2017 handout. It does not replace the gender shape or imply a condition fill; the engine has no orientation overlay entry."
+    },
+    {
+      "id": "bisexual-overlay",
+      "label": "Bisexual orientation",
+      "file": "bisexual-overlay.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dotted inverted triangle inside the person denotes bisexual orientation in the 2017 handout. Its broken outline differs from the solid gay/lesbian overlay; the engine cannot express it."
+    },
+    {
+      "id": "clinical-letter-marker",
+      "label": "Clinical letter marker",
+      "file": "clinical-letter-marker.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An S beside the lower edge of the person represents the handout's clinical letter marker, with O and L merged as text-only variants. The inspected handout places the letter beside the outline rather than inside as drafted; the engine has no dedicated clinical marker."
+    },
+    {
+      "id": "age-at-death-box",
+      "label": "Boxed age at death",
+      "file": "age-at-death-box.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "The age box sits at the centre of the deceased person. All four X arms stop at its edges, leaving 59 legible inside; birth/death dates belong above the person. The engine only displays an unboxed age."
+    },
+    {
+      "id": "remission-recovery-fill",
+      "label": "Physical or psychological illness in remission",
+      "file": "remission-recovery-fill.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "MFI illness in remission: black lower-left quarter, a full vertical diameter, and a horizontal radius to the left only. No horizontal divider crosses the unfilled right half."
+    },
+    {
+      "id": "suspected-addiction-fill",
+      "label": "Suspected alcohol or drug abuse",
+      "file": "suspected-addiction-fill.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "MFI bottom-half black hatching means suspected alcohol or drug abuse. The top half remains unfilled. The engine supports whole-person stripes but lacks this partial texture."
+    },
+    {
+      "id": "condition-half-top",
+      "label": "Upper half condition fill",
+      "file": "condition-half-top.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(half-top, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Upper-half tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-half-bottom",
+      "label": "Alcohol or drug abuse",
+      "file": "condition-half-bottom.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(half-bottom, #1F2937)]"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "Bottom-half black ink means alcohol or drug abuse. This is a specific MFI convention, not a freely assigned condition position."
+    },
+    {
+      "id": "condition-quarter-top-left",
+      "label": "Upper left quarter fill",
+      "file": "condition-quarter-top-left.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(quad-tl, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Upper-left quarter tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-quarter-top-right",
+      "label": "Upper right quarter fill",
+      "file": "condition-quarter-top-right.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(quad-tr, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Upper-right quarter tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-quarter-bottom-left",
+      "label": "Lower left quarter fill",
+      "file": "condition-quarter-bottom-left.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(quad-bl, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Lower-left quarter tint is legend-defined; not an MFI convention. The chart legend must state its meaning. A generic quarter without the MFI dividing lines does not express remission or recovery."
+    },
+    {
+      "id": "condition-quarter-bottom-right",
+      "label": "Lower right quarter fill",
+      "file": "condition-quarter-bottom-right.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(quad-br, #FCD34D)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Lower-right quarter tint is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-hatched-fill",
+      "label": "Whole-person hatching",
+      "file": "condition-hatched-fill.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(striped)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Whole-person hatching is legend-defined; not an MFI convention. The chart legend must state its meaning. MFI suspected alcohol or drug abuse instead hatches only the bottom half."
+    },
+    {
+      "id": "condition-dotted-fill",
+      "label": "Whole-person stippling",
+      "file": "condition-dotted-fill.svg",
+      "engine": null,
+      "dsl": [
+        "[conditions: name(dotted)]"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Whole-person stippling is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "condition-radial-sectors",
+      "label": "Five condition sectors",
+      "file": "condition-radial-sectors.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "Local condition legend; not an MFI convention",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Five radial sectors is legend-defined; not an MFI convention. The chart legend must state its meaning."
+    },
+    {
+      "id": "external-person-outline",
+      "label": "External person",
+      "file": "external-person-outline.svg",
+      "engine": null,
+      "dsl": [
+        "[external: true]"
+      ],
+      "standard": "Local extension §2D.2",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dashed person outline denotes an external contact in the local extension. Only the outline changes, retaining the seed size and person fill."
+    },
+    {
+      "id": "sibling-only-bracket",
+      "label": "Siblings with unknown parents",
+      "file": "sibling-only-bracket.svg",
+      "engine": null,
+      "dsl": [
+        "A [male]\nB [female, sibling-of: A]"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dashed bracket joins two people above their shapes without inventing parents. This is the local sibling-of form; the claimed pedigree clause remains not verified."
+    },
+    {
+      "id": "unknown-siblings-placeholder",
+      "label": "Unknown siblings",
+      "file": "unknown-siblings-placeholder.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  ?",
+        "[unknown-siblings]"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A question mark occupies the diamond at the end of a child drop, indicating an unknown number of siblings in the local extension. The question mark prevents this placeholder from being mistaken for a known nonbinary person."
+    },
+    {
+      "id": "step-child-connector",
+      "label": "Stepchild connector",
+      "file": "step-child-connector.svg",
+      "engine": null,
+      "dsl": [
+        "A -- B\n  child [step]"
+      ],
+      "standard": "Local library extension; not established by the supplied MFI or GenoPro sources",
+      "sourceUrl": null,
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A descent with two right-angle turns connects the union to an offset child. This is an engine extension rather than a published independent stepchild line form."
+    },
+    {
+      "id": "emotional-arrowhead",
+      "label": "Focused on",
+      "file": "emotional-arrowhead.svg",
+      "engine": null,
+      "dsl": [
+        "A -focused-> B"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "MFI Focused On is a straight line with a filled arrowhead pointing toward the person receiving the attention. There is no magnifier decoration."
+    },
+    {
+      "id": "love",
+      "label": "Love",
+      "file": "love.svg",
+      "engine": null,
+      "dsl": [
+        "A -love- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight line with one hollow circle at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "in-love",
+      "label": "In love",
+      "file": "in-love.svg",
+      "engine": null,
+      "dsl": [
+        "A -inlove- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight line with two overlapping hollow circles at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "distant-hostile",
+      "label": "Distant and hostile",
+      "file": "distant-hostile.svg",
+      "engine": null,
+      "dsl": [
+        "A -distant-hostile- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A continuous zigzag over a separate dashed straight line. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "never-met",
+      "label": "Never met",
+      "file": "never-met.svg",
+      "engine": null,
+      "dsl": [
+        "A -nevermet- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight line with a boxed X at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "neglect",
+      "label": "Neglect",
+      "file": "neglect.svg",
+      "engine": null,
+      "dsl": [
+        "A -neglect-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A dashed line ending in an open arrowhead. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "manipulative",
+      "label": "Manipulative relationship",
+      "file": "manipulative.svg",
+      "engine": null,
+      "dsl": [
+        "A -manipulative-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight open arrow with an X at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "controlling",
+      "label": "Controlling relationship",
+      "file": "controlling.svg",
+      "engine": null,
+      "dsl": [
+        "A -controlling-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight open arrow with a boxed X at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "distrust",
+      "label": "Distrust",
+      "file": "distrust.svg",
+      "engine": null,
+      "dsl": [
+        "A -distrust- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight line crossed by a row of short perpendicular ticks. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "admirer",
+      "label": "Admirer",
+      "file": "admirer.svg",
+      "engine": null,
+      "dsl": [
+        "A -admirer-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An open arrow with one hollow circle at the midpoint (Fan / Admirer). McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "limerence",
+      "label": "Limerence",
+      "file": "limerence.svg",
+      "engine": null,
+      "dsl": [
+        "A -limerence-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "An open arrow with two overlapping hollow circles at its midpoint. McGoldrick has no symbol for it in the MFI handout. GenoPro geometry is retained with the existing library palette."
+    },
+    {
+      "id": "condition-three-quarter-fill",
+      "label": "Serious mental/physical problems plus substance abuse",
+      "file": "condition-three-quarter-fill.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 2,
+      "usageUsers": null,
+      "notes": "MFI fills three quarters in black ink: left half plus lower-right quarter. The upper-right quarter stays unfilled. This denotes serious mental and physical problems plus substance abuse."
+    },
+    {
+      "id": "substance-abuse-recovery-fill",
+      "label": "In recovery from alcohol or drug abuse",
+      "file": "substance-abuse-recovery-fill.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "MFI recovery from alcohol or drug abuse: black lower-left quarter, a full horizontal diameter, and a vertical radius down only. No vertical divider crosses the unfilled upper half."
+    },
+    {
+      "id": "combined-recovery-fill",
+      "label": "In recovery from substance abuse and illness",
+      "file": "combined-recovery-fill.svg",
+      "engine": null,
+      "dsl": [
+        "— (not expressible)"
+      ],
+      "standard": "MFI Standard Symbols for Genograms (2017), SWAG Families of Origin pp. 14–15 — https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "sourceUrl": "https://www.swagtoolkit.com/wp-content/uploads/2020/05/SWAG_Families-of-Origin.pdf",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "MFI recovery from substance abuse and mental or physical problems: black lower-left quarter with both full diameters, dividing all four quarters."
+    },
+    {
+      "id": "best-friends",
+      "label": "Best friends / very close",
+      "file": "best-friends.svg",
+      "engine": null,
+      "dsl": [
+        "A -bestfriends- B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "Two parallel lines crossed by short perpendicular ticks. McGoldrick has no symbol for it in the MFI handout; MFI fusion is a different, three-line relationship. The existing ink palette is retained."
+    },
+    {
+      "id": "jealous",
+      "label": "Jealous",
+      "file": "jealous.svg",
+      "engine": null,
+      "dsl": [
+        "A -jealous-> B"
+      ],
+      "standard": "GenoPro emotional-relationship legend — https://genopro.com/genogram/emotional-relationships/",
+      "sourceUrl": "https://genopro.com/genogram/emotional-relationships/",
+      "inExemplar": false,
+      "tier": 3,
+      "usageUsers": null,
+      "notes": "A straight open arrow with a hollow diamond at its midpoint. McGoldrick has no symbol for it in the MFI handout. This is distinct from the MFI physical-abuse zigzag; the existing red palette is retained."
+    }
+  ]
+}

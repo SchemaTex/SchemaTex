@@ -42,15 +42,18 @@ describe("pedigree renderer", () => {
     expect(svg).toContain("schematex-pedigree-affected-fill");
   });
 
-  test("renders carrier fill (half-filled)", () => {
+  test("renders carrier fill (diagonal hatch)", () => {
     const svg = renderFromDSL(`pedigree\n  a [female, carrier]\n  b [male]\n  a -- b`);
     expect(svg).toContain("schematex-pedigree-carrier-fill");
-    expect(svg).toContain("schematex-pedigree-clip-carrier");
+    expect(svg).toContain('id="schematex-pedigree-carrier-pattern"');
+    expect(svg).not.toContain("schematex-pedigree-clip-carrier");
   });
 
-  test("renders carrier-x dot", () => {
+  test("renders carrier-x with the carrier hatch, not the retired dot", () => {
     const svg = renderFromDSL(`pedigree\n  a [female, carrier-x]\n  b [male]\n  a -- b`);
-    expect(svg).toContain("schematex-pedigree-carrier-x-dot");
+    expect(svg).toContain("schematex-pedigree-carrier-fill");
+    expect(svg).toContain('id="schematex-pedigree-carrier-pattern"');
+    expect(svg).not.toContain("schematex-pedigree-carrier-x-dot");
   });
 
   test("renders presymptomatic line", () => {
@@ -85,7 +88,7 @@ describe("pedigree renderer", () => {
     const svg = renderFromDSL(`pedigree\n  a [male]\n  b [female]\n  a == b`);
     const edgePaths = svg.match(/schematex-pedigree-edge-consanguineous/g);
     expect(edgePaths).not.toBeNull();
-    expect(edgePaths!.length).toBeGreaterThanOrEqual(2);
+    expect(edgePaths?.length).toBeGreaterThanOrEqual(2);
   });
 
   test("renders legend when present", () => {

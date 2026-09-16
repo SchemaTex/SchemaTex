@@ -1,0 +1,40 @@
+{
+  "id": "blockdiagram-control-loop",
+  "type": "blockdiagram",
+  "title": "Heat exchanger control loop",
+  "goal": "Show a closed negative-feedback temperature control loop.",
+  "rubric": [
+    {
+      "id": "summing-junction",
+      "severity": "blocker",
+      "must": "Setpoint and measured sensor paths visibly meet at a summing junction with positive and negative inputs."
+    },
+    {
+      "id": "closed-feedback",
+      "severity": "blocker",
+      "must": "The plant output visibly passes through a sensor and returns to the summing junction."
+    },
+    {
+      "id": "forward-path",
+      "severity": "major",
+      "must": "Controller, actuator, and heat-exchanger plant form a readable forward control path."
+    },
+    {
+      "id": "signal-labels",
+      "severity": "major",
+      "must": "Setpoint, temperature error, valve command, and negative-feedback labels are visible."
+    },
+    {
+      "id": "operator-output",
+      "severity": "minor",
+      "must": "A separate operator display visibly receives the controlled outlet temperature."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Refreshed against the September 15 exemplar: role fills, ink signal lines, 4 px block corners and restrained typography. Each target retains its own functional topology; generic blocks are not assigned inferred hardware roles."
+  }
+}

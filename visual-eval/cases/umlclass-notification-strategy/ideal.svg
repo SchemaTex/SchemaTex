@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1600 982">
+<title>Notification service — channel strategies and delivery records</title>
+<desc>UML class diagram with nine classifiers. EmailChannel, SmsChannel and PushChannel realize NotificationChannel. NotificationService chooses a channel, uses Template and owns Delivery records.</desc>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#0F172A} .title{font-size:20px;font-weight:600}.subtitle{font-size:11px;letter-spacing:.6px;fill:#64748B}.name{font-size:13.5px;font-weight:600;text-anchor:middle}.keyword{font-size:11px;fill:#2563EB;text-anchor:middle}.member{font-size:12px}.vis{fill:#64748B}.type{fill:#475569}.edge{fill:none;stroke:#334155;stroke-width:1.4;stroke-linejoin:miter}.dash{stroke-dasharray:6 4}.label{font-size:12px;fill:#475569;font-style:italic}.legend{font-size:11.5px;fill:#475569}.rule{stroke:#94A3B8;stroke-width:1.25}
+</style>
+<rect width="1600" height="982" fill="#FFFFFF"/>
+<text x="46" y="50" class="title">Notification service — channel strategies and delivery records</text>
+<text x="46" y="75" class="subtitle">UML 2.5.1 CLASS DIAGRAM · 9 CLASSIFIERS · 8 RELATIONSHIPS</text>
+<path d="M46 91 H1554" class="rule"/>
+
+<path d="M440 244 H865" class="edge "/>
+<path d="M853 238 L865 244 L853 250" class="edge "/>
+<text x="617" y="230" class="label">chooses</text>
+<path d="M672 222 L679 226 L672 230 Z" fill="#475569"/>
+<path d="M1185 244 H1300" class="edge "/>
+<path d="M1288 238 L1300 244 L1288 250" class="edge "/>
+<text x="1207" y="230" class="label">delivers</text>
+<path d="M290 290 V470" class="edge dash"/>
+<path d="M284 458 L290 470 L296 458" class="edge "/>
+<text x="304" y="384" class="label">renders with</text>
+<path d="M140 244 L128 237.5 L116 244 L128 250.5 Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<path d="M116 244 H80 V757 H140" class="edge "/>
+<text x="90" y="643" class="label">creates</text>
+<path d="M440 757 H580" class="edge "/>
+<path d="M568 751 L580 757 L568 763" class="edge "/>
+<path d="M700 470 V380 H910 V305" class="edge dash"/>
+<path d="M910 290 L901 305 L919 305 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M1025 470 V305" class="edge dash"/>
+<path d="M1025 290 L1016 305 L1034 305 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<path d="M1350 470 V380 H1140 V305" class="edge dash"/>
+<path d="M1140 290 L1131 305 L1149 305 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<g aria-label="NotificationService"><rect x="140" y="211" width="300" height="83" fill="#FFFFFF"/><rect x="140" y="211" width="300" height="35" fill="#EEF2F7"/><rect x="140" y="211" width="300" height="83" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="290.0" y="233" class="name">NotificationService</text>
+<path d="M140 246 H440 M140 260 H440" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="153" y="281" class="member"><tspan class="vis">+ </tspan>send(message:<tspan class="type"> Message): Delivery</tspan></text>
+</g>
+<g aria-label="NotificationChannel"><rect x="865" y="194" width="320" height="100" fill="#FFFFFF"/><rect x="865" y="194" width="320" height="52" fill="#EEF2F7"/><rect x="865" y="194" width="320" height="100" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1025.0" y="214" class="keyword">«interface»</text>
+<text x="1025.0" y="233" class="name">NotificationChannel</text>
+<path d="M865 246 H1185 M865 260 H1185" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="878" y="281" class="member"><tspan class="vis">+ </tspan>deliver(message:<tspan class="type"> Message): Delivery</tspan></text>
+</g>
+<g aria-label="Message"><rect x="1300" y="210" width="240" height="103" fill="#FFFFFF"/><rect x="1300" y="210" width="240" height="35" fill="#EEF2F7"/><rect x="1300" y="210" width="240" height="103" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1420.0" y="232" class="name">Message</text>
+<path d="M1300 245 H1540 M1300 299 H1540" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="1313" y="266" class="member"><tspan class="vis">+ </tspan>subject:<tspan class="type"> String</tspan></text>
+<text x="1313" y="286" class="member"><tspan class="vis">+ </tspan>body:<tspan class="type"> String</tspan></text>
+</g>
+<g aria-label="Template"><rect x="140" y="470" width="300" height="83" fill="#FFFFFF"/><rect x="140" y="470" width="300" height="35" fill="#EEF2F7"/><rect x="140" y="470" width="300" height="83" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="290.0" y="492" class="name">Template</text>
+<path d="M140 505 H440 M140 519 H440" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="153" y="540" class="member"><tspan class="vis">+ </tspan>render(message:<tspan class="type"> Message): String</tspan></text>
+</g>
+<g aria-label="EmailChannel"><rect x="560" y="470" width="280" height="83" fill="#FFFFFF"/><rect x="560" y="470" width="280" height="35" fill="#EEF2F7"/><rect x="560" y="470" width="280" height="83" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="700.0" y="492" class="name">EmailChannel</text>
+<path d="M560 505 H840 M560 519 H840" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="573" y="540" class="member"><tspan class="vis">+ </tspan>deliver(message:<tspan class="type"> Message): Delivery</tspan></text>
+</g>
+<g aria-label="SmsChannel"><rect x="885" y="470" width="280" height="83" fill="#FFFFFF"/><rect x="885" y="470" width="280" height="35" fill="#EEF2F7"/><rect x="885" y="470" width="280" height="83" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1025.0" y="492" class="name">SmsChannel</text>
+<path d="M885 505 H1165 M885 519 H1165" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="898" y="540" class="member"><tspan class="vis">+ </tspan>deliver(message:<tspan class="type"> Message): Delivery</tspan></text>
+</g>
+<g aria-label="PushChannel"><rect x="1210" y="470" width="280" height="83" fill="#FFFFFF"/><rect x="1210" y="470" width="280" height="35" fill="#EEF2F7"/><rect x="1210" y="470" width="280" height="83" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="1350.0" y="492" class="name">PushChannel</text>
+<path d="M1210 505 H1490 M1210 519 H1490" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="1223" y="540" class="member"><tspan class="vis">+ </tspan>deliver(message:<tspan class="type"> Message): Delivery</tspan></text>
+</g>
+<g aria-label="Delivery"><rect x="140" y="710" width="300" height="103" fill="#FFFFFF"/><rect x="140" y="710" width="300" height="35" fill="#EEF2F7"/><rect x="140" y="710" width="300" height="103" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="290.0" y="732" class="name">Delivery</text>
+<path d="M140 745 H440 M140 799 H440" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="153" y="766" class="member"><tspan class="vis">- </tspan>sentAt:<tspan class="type"> Instant</tspan></text>
+<text x="153" y="786" class="member"><tspan class="vis">+ </tspan>status:<tspan class="type"> DeliveryStatus</tspan></text>
+</g>
+<g aria-label="DeliveryStatus"><rect x="580" y="690" width="180" height="140" fill="#FFFFFF"/><rect x="580" y="690" width="180" height="52" fill="#EEF2F7"/><rect x="580" y="690" width="180" height="140" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="670.0" y="710" class="keyword">«enumeration»</text>
+<text x="670.0" y="729" class="name">DeliveryStatus</text>
+<path d="M580 742 H760 M580 816 H760" stroke="#334155" stroke-width="1" fill="none"/>
+<text x="593" y="763" class="member">QUEUED</text>
+<text x="593" y="783" class="member">SENT</text>
+<text x="593" y="803" class="member">FAILED</text>
+</g>
+<path d="M46 916 H1554" class="rule"/>
+<path d="M46 947 H98" class="edge "/>
+<path d="M98 938 V956" class="edge "/>
+<text x="110" y="951" class="legend">association</text>
+<path d="M212 947 H264" class="edge "/>
+<path d="M264 938 V956" class="edge "/>
+<path d="M252 941 L264 947 L252 953" class="edge "/>
+<text x="276" y="951" class="legend">navigable association</text>
+<path d="M433 947 H485" class="edge "/>
+<path d="M485 938 V956" class="edge "/>
+<path d="M485 947 L473 940.5 L461 947 L473 953.5 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="497" y="951" class="legend">aggregation</text>
+<path d="M602 947 H654" class="edge "/>
+<path d="M654 938 V956" class="edge "/>
+<path d="M654 947 L642 940.5 L630 947 L642 953.5 Z" fill="#334155" stroke="#334155" stroke-width="1.4"/>
+<text x="666" y="951" class="legend">composition</text>
+<path d="M774 947 H826" class="edge "/>
+<path d="M826 938 V956" class="edge "/>
+<path d="M826 947 L811 938 L811 956 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="838" y="951" class="legend">generalization</text>
+<path d="M954 947 H1006" class="edge dash"/>
+<path d="M1006 938 V956" class="edge "/>
+<path d="M1006 947 L991 938 L991 956 Z" fill="#FFFFFF" stroke="#334155" stroke-width="1.4"/>
+<text x="1018" y="951" class="legend">realization</text>
+<path d="M1113 947 H1165" class="edge dash"/>
+<path d="M1165 938 V956" class="edge "/>
+<path d="M1153 941 L1165 947 L1153 953" class="edge "/>
+<text x="1177" y="951" class="legend">dependency</text>
+</svg>

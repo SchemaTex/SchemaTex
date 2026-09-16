@@ -2,16 +2,13 @@
  * Tests for buildPromptContext — the single-shot prompt assembler.
  */
 import { describe, it, expect } from "vitest";
-import { buildPromptContext, validateDsl } from "../../src/ai";
+import { buildPromptContext, getSyntax, getExamples, validateDsl } from "../../src/ai";
 
 describe("buildPromptContext", () => {
   it("assembles a card + worked examples into one block", () => {
     const ctx = buildPromptContext("genogram");
     expect(ctx.type).toBe("genogram");
-    expect(ctx.text).toContain("# Genogram (genogram)");
-    expect(ctx.text).toContain("Canonical generation syntax");
-    expect(ctx.text).toContain("## Worked examples");
-    expect(ctx.text).toContain("```");
+    expect(ctx.text).toContain(getSyntax("genogram").syntax.content);
     expect(ctx.exampleCount).toBeGreaterThan(0);
   });
 
@@ -30,7 +27,9 @@ describe("buildPromptContext", () => {
   it("omits examples when examples: 0", () => {
     const ctx = buildPromptContext("genogram", { examples: 0 });
     expect(ctx.exampleCount).toBe(0);
-    expect(ctx.text).not.toContain("## Worked examples");
+    for (const example of getExamples("genogram").examples) {
+      expect(ctx.text).not.toContain(example.dsl);
+    }
   });
 
   it("throws a helpful error for an unknown type", () => {

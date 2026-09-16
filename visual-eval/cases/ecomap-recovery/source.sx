@@ -1,0 +1,17 @@
+# Social-work ecomap: person in addiction recovery with strong recovery supports and a cut-off high-risk peer relationship.
+ecomap "Jordan's Recovery Supports"
+  center: jordan [male, age: 31, label: "Jordan"]
+  aa [label: "Recovery Group", category: substance, importance: major]
+  sponsor [label: "Sponsor", category: substance]
+  therapist [label: "Counselor", category: mental-health]
+  sister [label: "Sister", category: family]
+  employer [label: "Employer", category: work]
+  oldpeers [label: "Using Peers", category: substance]
+  probation [label: "Probation Officer", category: legal]
+  jordan === aa
+  sponsor --> jordan
+  therapist <-> jordan
+  jordan == sister
+  jordan --- employer
+  jordan -/- oldpeers
+  probation --> jordan

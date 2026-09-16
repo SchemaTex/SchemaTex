@@ -1,0 +1,34 @@
+# Compressor discharge pressure is 8 barg; anti-surge recycle opens on low corrected flow.
+# Recycle valve fails open to protect the compressor on loss of instrument air.
+pid "Compressor Anti-surge Recycle" [direction: LR, units: metric]
+
+equip V-301 : vessel_h [tag: "V-301 Suction Scrubber"]
+equip K-301 : compressor [tag: "K-301 Centrifugal Compressor"]
+equip E-301 : hx_air_cooled [tag: "E-301 Aftercooler"]
+equip FT-301E : filter [tag: "FE-301 Flow Element"]
+equip PT-301E : filter [tag: "PE-301 Discharge Pressure Tap"]
+equip FV-301 : valve_control [tag: "FV-301 Anti-surge Recycle Valve", actuator: "diaphragm", fail: "FO"]
+equip NRV-301 : valve_check [tag: "NRV-301 Discharge Check"]
+equip PSV-301 : valve_psv [tag: "PSV-301 Discharge Relief", set_pressure: "10 barg"]
+
+line suction from V-301.out to K-301.in [type: process, size: "DN250", service: "compressor suction"]
+line discharge from K-301.out to FT-301E.in [type: process, size: "DN200", service: "compressed gas"]
+line flowToCooler from FT-301E.out to E-301.in [type: process, size: "DN200", service: "compressed gas"]
+line cooledGas from E-301.out to NRV-301.in [type: process, size: "DN200", service: "compressed gas"]
+line product from NRV-301.out to DischargeHeader [type: process, size: "DN200", service: "compressed gas"]
+line recycleTakeoff from FT-301E.out to FV-301.in [type: process_minor, size: "DN100", service: "anti-surge recycle"]
+line recycleReturn from FV-301.out to V-301.in [type: process_minor, size: "DN100", service: "anti-surge recycle"]
+line relief from K-301.out to PSV-301.in [type: process_minor, size: "DN50", service: "relief"]
+
+inst FT-301 : field_discrete
+  measures FT-301E
+inst PT-301 : field_discrete
+  measures PT-301E
+inst FIC-301 : cr_shared
+  controls FV-301
+inst PIC-301 : cr_shared
+  measures K-301
+
+line flowSignal from FT-301 to FIC-301 [type: electric]
+line pressureSignal from PT-301 to PIC-301 [type: electric]
+line antiSurgeCommand from FIC-301 to FV-301.signal [type: pneumatic]

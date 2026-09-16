@@ -1,0 +1,30 @@
+# PRISMA 2020 flow diagram for a new systematic review that searched databases,
+# trial registers and other sources (websites, organisations, citation searching).
+prisma
+mode: 2020-dual
+title: "Community interventions for heat-health protection"
+kind: systematic-review
+validate-counts: off
+identification:
+  databases:
+    n: 1800
+    sources: MEDLINE=690, Embase=610, CINAHL=380, ClinicalTrials.gov=85, WHO ICTRP=35
+    duplicates-removed: 360
+    ineligible-automation: 40
+  other:
+    n: 64
+    sources: websites=12, organisations=9, citation searching=43
+screening:
+  records-screened: 1400
+  excluded:
+    n: 1100
+  reports-sought: 300
+  reports-not-retrieved: 20
+eligibility:
+  full-text-assessed: 280
+  excluded:
+    n: 230
+    reasons: wrong intervention=100, wrong outcome=75, wrong study design=55
+included:
+  studies: 58
+  reports: 63

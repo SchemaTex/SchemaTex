@@ -1,0 +1,77 @@
+{
+  "id": "epc-month-end-close",
+  "type": "epc",
+  "title": "Month-end close",
+  "goal": "A practitioner can read this event-driven process chain at a glance: Month-end close.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the epc exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target clearly identifies “Month-end close” and shows the stated EPC flow: period ended → lock sub-ledgers → parallel bank, accrual, and intercompany tasks → trial balance → financial statement approval → books closed. Labels are legible, and the AND connectors visibly join the parallel branches before the main flow continues; no material overlap or cropping is apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:19.321Z",
+      "targetHash": "479ec2eff1f8",
+      "sourceHash": "b662aac4c36e",
+      "exemplarHash": "293804276dc2",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "“Month-end close” is prominent at the top, with the process steps beneath it."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "The diagram uses event hexagons, rounded function boxes, and AND connector symbols in a connected EPC structure."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The flow proceeds top to bottom from “Period ended” to “Books closed”; three reconciliation tasks branch in parallel and rejoin before “Prepare trial balance.”"
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "All key event and function labels are readable and placed inside their corresponding shapes."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Branch and merge lines connect to the AND symbols and corresponding events and functions; no visually competing or unintended connections are apparent."
+        }
+      ]
+    }
+  }
+}

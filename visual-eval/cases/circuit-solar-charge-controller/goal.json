@@ -1,0 +1,49 @@
+{
+  "id": "circuit-solar-charge-controller",
+  "type": "circuit",
+  "title": "Off grid solar DC system",
+  "goal": "Show a safe small off-grid solar system from series PV input through storage and protected DC and AC loads.",
+  "rubric": [
+    {
+      "id": "series-pv-panels",
+      "severity": "blocker",
+      "must": "Two 200 W, 24 V PV panels are visibly wired in series."
+    },
+    {
+      "id": "pv-isolator",
+      "severity": "major",
+      "must": "A labelled 20 A PV isolator is visible between the panels and controller."
+    },
+    {
+      "id": "mppt-controller",
+      "severity": "blocker",
+      "must": "A 40 A MPPT charge controller is visibly connected between the PV array and battery bank."
+    },
+    {
+      "id": "two-battery-bank",
+      "severity": "major",
+      "must": "Two labelled 12 V batteries form the displayed battery bank."
+    },
+    {
+      "id": "fused-dc-distribution",
+      "severity": "blocker",
+      "must": "A 60 A DC distribution fuse and a separate 15 A load fuse are visible."
+    },
+    {
+      "id": "inverter-and-socket",
+      "severity": "major",
+      "must": "A 1200 W inverter feeds a visibly labelled 230 VAC socket through a 125 A fuse."
+    },
+    {
+      "id": "dc-negative-return",
+      "severity": "minor",
+      "must": "The DC battery negative and loads visibly return to the DC earth connection."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The array is in series through its isolator to the controller, the battery bank is in parallel, and the DC distribution is fused separately for loads and for the inverter, with the DC negative bonded to earth."
+  }
+}

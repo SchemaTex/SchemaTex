@@ -7,10 +7,10 @@
  *     branch-name pill at the lane head;
  *   - commits = solid filled circles in the lane colour;
  *   - merge commits = hollow ring circles (white centre, coloured ring);
- *   - HIGHLIGHT commits = larger open square outline;
+ *   - HIGHLIGHT commits = filled square;
  *   - REVERSE commits = filled circle with an inner cross;
  *   - branch divergence = colour-matched elbow, merge = colour-matched curve;
- *   - tag pills above the commit, commit ids below the dot rotated ~45°.
+ *   - horizontal commit labels outside lane traffic; tag pills in a separate band.
  *
  * Hard rules: NO inline styles (classes only, driven by a single <style> block
  * built from the local palette), <title>/<desc>, data-* hooks, svg.ts builder.
@@ -18,6 +18,9 @@
  * Self-contained git0–git7 palette (the shared theme.ts is off-limits to this
  * folder-isolated feature; network/ sets the precedent of an own palette).
  */
+
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 import type { RenderConfig } from "../../core/types";
 import {
@@ -37,7 +40,7 @@ import { parseGitGraph } from "./parser";
 import { GITGRAPH_CONST as C, layoutGitGraph } from "./layout";
 import type { GitGraphLayout, GitLaidCommit, GitLaidEdge } from "./types";
 
-// ─── Local lane palette (git0–git7, Mermaid-default-aligned hues) ────
+// ─── Local lane palette (git0–git7) ────
 
 interface GitPalette {
   bg: string;
@@ -53,21 +56,21 @@ interface GitPalette {
 const LIGHT_PALETTE: GitPalette = {
   bg: "#ffffff",
   lanes: [
-    "#3a6ea5", // git0 main — blue
-    "#6aa84f", // git1 — green
-    "#c98a2b", // git2 — amber
-    "#a64d79", // git3 — magenta
-    "#45818e", // git4 — teal
-    "#8e7cc3", // git5 — violet
-    "#cc4125", // git6 — red-orange
-    "#666666", // git7 — grey
+    "#2563eb", // git0 main — blue
+    "#059669", // git1 — green
+    "#b45309", // git2 — amber
+    "#7c3aed", // git3 — magenta
+    "#0891b2", // git4 — teal
+    "#db2777", // git5 — violet
+    "#dc2626", // git6 — red-orange
+    "#475569", // git7 — grey
   ],
   laneInk: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
   mergeCenter: "#ffffff",
-  labelInk: "#333333",
-  tagFill: "#fff4cc",
-  tagStroke: "#caa83a",
-  tagInk: "#7a5b00",
+  labelInk: "#0f172a",
+  tagFill: "#ffffff",
+  tagStroke: "#334155",
+  tagInk: "#334155",
 };
 
 const DARK_PALETTE: GitPalette = {
@@ -103,7 +106,8 @@ export function renderGitGraphLayout(layout: GitGraphLayout, config?: RenderConf
   const { ast } = layout;
 
   const width = layout.width + pad * 2;
-  const height = layout.height + pad * 2;
+  const titleHeight = ast.title ? TITLE.bandH : 0;
+  const height = layout.height + pad * 2 + titleHeight;
   const a11y = ast.title ?? "Git commit graph";
 
   const styleBlock = buildStyle(pal, ast.showBranches);
@@ -116,35 +120,58 @@ export function renderGitGraphLayout(layout: GitGraphLayout, config?: RenderConf
   ];
 
   const inner: string[] = [];
+  // Quiet bands associate annotations with their lane (LR) or commit row (TB/BT).
+  const bandFill = config?.theme === "dark" ? "#162237" : "#f8fafc";
+  if (layout.messageX !== undefined) {
+    for (const [i, commit] of layout.commits.entries()) if (i % 2 === 0) {
+      inner.push(rect({ x: C.PAD / 2, y: commit.y - C.TIME_STEP / 2,
+        width: layout.width - C.PAD, height: C.TIME_STEP, fill: bandFill }));
+    }
+  } else if (ast.orientation === "LR") {
+    const [first, second] = layout.branches;
+    const gap = first && second ? second.pillY - first.pillY : C.LANE_GAP;
+    for (const [i, branch] of layout.branches.entries()) if (i % 2 === 0) {
+      inner.push(rect({ x: C.PAD / 2, y: branch.pillY - gap / 2,
+        width: layout.width - C.PAD, height: gap, fill: bandFill }));
+    }
+  }
 
-  // 1. Swimlanes (behind everything).
+  // 1. Branch labels. Ancestry edges below provide the actual lane tracks.
   if (ast.showBranches) {
     for (const b of layout.branches) {
-      inner.push(renderLane(layout, b, fontFamily));
+      inner.push(renderLane(b, fontFamily));
     }
   }
 
   // 2. Edges (connectors) under the dots.
-  for (const e of layout.edges) {
+  // Straight parent edges own the lane colour where fork/merge runs share it.
+  for (const e of [...layout.edges].sort((a, b) => Number(a.kind === "straight") - Number(b.kind === "straight"))) {
     inner.push(renderEdge(e));
   }
 
   // 3. Commit nodes + annotations.
   for (const lc of layout.commits) {
-    inner.push(renderCommit(lc, ast, pal, fontFamily));
+    inner.push(renderCommit(lc, ast, pal, fontFamily, layout.messageX, layout.tagX));
   }
 
   children.push(
     group(
       {
         class: "sx-gg-root",
-        transform: `translate(${pad}, ${pad})`,
+        transform: `translate(${pad}, ${pad + titleHeight})`,
         "data-diagram-type": "gitgraph",
         "font-family": fontFamily,
       },
       inner
     )
   );
+
+  if (ast.title) {
+    const resolved = resolveSceneTitle(ast.title, undefined, width / 2, pad + TITLE.y, config);
+    children.push(svgText({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": fontFamily,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: pal.labelInk }, ast.title));
+  }
 
   return svgRoot(
     {
@@ -158,33 +185,13 @@ export function renderGitGraphLayout(layout: GitGraphLayout, config?: RenderConf
   );
 }
 
-// ─── Lane (swimlane line + branch pill) ───────────────────────
+// ─── Lane label (branch pill) ───────────────────────
 
 function renderLane(
-  layout: GitGraphLayout,
   b: GitGraphLayout["branches"][number],
   fontFamily: string
 ): string {
-  const isVertical = layout.ast.orientation !== "LR";
   const ci = b.info.colorIndex;
-
-  // A single-commit branched lane has zero extent — drawing it would render as a
-  // round-cap nub under the node. Skip the line in that case (the pill + the
-  // divergence/merge curves carry the branch on their own).
-  const hasExtent = Math.abs(b.end - b.start) > 0.5;
-  const laneLine = !hasExtent
-    ? ""
-    : isVertical
-    ? svgLine({
-        x1: b.cross, y1: b.start, x2: b.cross, y2: b.end,
-        class: `sx-gg-lane sx-gg-c${ci}`,
-        "data-branch": b.info.name,
-      })
-    : svgLine({
-        x1: b.start, y1: b.cross, x2: b.end, y2: b.cross,
-        class: `sx-gg-lane sx-gg-c${ci}`,
-        "data-branch": b.info.name,
-      });
 
   // Pill: rounded rect sized to the name, with the name centred.
   const name = b.info.name;
@@ -210,39 +217,14 @@ function renderLane(
     ),
   ]);
 
-  return group({ class: "sx-gg-lane-group" }, [laneLine, pill]);
+  return group({ class: "sx-gg-lane-group" }, [pill]);
 }
 
 // ─── Edge (connector) ─────────────────────────────────────────
 
 function renderEdge(e: GitLaidEdge): string {
   const cls = `sx-gg-edge sx-gg-edge-${e.kind} sx-gg-stroke-c${e.colorIndex}`;
-  if (e.kind === "straight") {
-    return svgLine({
-      x1: e.fromX, y1: e.fromY, x2: e.toX, y2: e.toY,
-      class: cls,
-    });
-  }
-  // Elbow + merge both use a smooth cubic bend from parent → child.
-  const d = bendPath(e);
-  return svgPath({ d, class: cls, fill: "none" });
-}
-
-/**
- * Smooth cubic from (from) to (to). Horizontal-major (LR) bends control points
- * along x; vertical-major (TB/BT) along y. The same routine serves both the
- * fork elbow and the merge curve — direction is implied by the endpoints.
- */
-function bendPath(e: GitLaidEdge): string {
-  const dx = e.toX - e.fromX;
-  const dy = e.toY - e.fromY;
-  const horizontalMajor = Math.abs(dx) >= Math.abs(dy);
-  if (horizontalMajor) {
-    const mx = e.fromX + dx * 0.5;
-    return `M ${num(e.fromX)} ${num(e.fromY)} C ${num(mx)} ${num(e.fromY)}, ${num(mx)} ${num(e.toY)}, ${num(e.toX)} ${num(e.toY)}`;
-  }
-  const my = e.fromY + dy * 0.5;
-  return `M ${num(e.fromX)} ${num(e.fromY)} C ${num(e.fromX)} ${num(my)}, ${num(e.toX)} ${num(my)}, ${num(e.toX)} ${num(e.toY)}`;
+  return svgPath({ d: e.path, class: cls, fill: "none" });
 }
 
 // ─── Commit node + annotations ────────────────────────────────
@@ -251,7 +233,9 @@ function renderCommit(
   lc: GitLaidCommit,
   ast: GitGraphLayout["ast"],
   pal: GitPalette,
-  fontFamily: string
+  fontFamily: string,
+  messageX?: number,
+  tagX?: number,
 ): string {
   const { node, x, y, colorIndex: ci } = lc;
   const parts: string[] = [];
@@ -273,7 +257,7 @@ function renderCommit(
       rect({
         x: x - r, y: y - r, width: r * 2, height: r * 2,
         rx: 2,
-        class: `sx-gg-node sx-gg-highlight sx-gg-stroke-c${ci}`,
+        class: `sx-gg-node sx-gg-highlight sx-gg-fill-c${ci} sx-gg-stroke-c${ci}`,
       })
     );
   } else if (node.isMerge) {
@@ -299,40 +283,35 @@ function renderCommit(
     }
   }
 
-  // Cherry-pick marker (a small ring "cherry" above-right of the dot).
-  if (node.isCherryPick) {
-    parts.push(
-      circle({
-        cx: x + C.DOT_R, cy: y - C.DOT_R, r: 3,
-        class: `sx-gg-cherry sx-gg-stroke-c${ci}`,
-      })
-    );
-  }
-
   // Tag pill (above the dot).
   if (node.tag) {
-    parts.push(renderTag(node.tag, x, y, fontFamily));
+    parts.push(renderTag(node.tag, x, y, fontFamily, ast.orientation !== "LR",
+      !ast.rotateCommitLabel && ast.showCommitLabel && lc.labelSide === -1 ? 20 : 0, tagX));
   }
 
-  // Commit id label (below the dot, rotated ~45° when enabled).
+  // Labels stay outside the time-axis track; explicit rotation is preserved.
   if (ast.showCommitLabel) {
-    parts.push(renderCommitLabel(node.id, x, y, ast.rotateCommitLabel, fontFamily));
+    const vertical = ast.orientation !== "LR";
+    const labelX = messageX ?? (!ast.rotateCommitLabel && vertical ? x + lc.labelSide * (C.DOT_R + 8) : x);
+    const labelY = !ast.rotateCommitLabel && vertical ? y + 3
+      : !ast.rotateCommitLabel && lc.labelSide === -1 ? y - C.DOT_R - 7 : y + C.DOT_R + 8;
+    parts.push(renderCommitLabel(node.id, labelX, labelY, ast.rotateCommitLabel, fontFamily, vertical, messageX !== undefined ? 1 : lc.labelSide));
   }
 
   void pal;
   return group({ class: "sx-gg-commit", ...dataAttrs }, parts);
 }
 
-function renderTag(tag: string, x: number, y: number, fontFamily: string): string {
+function renderTag(tag: string, x: number, y: number, fontFamily: string, vertical: boolean, labelBand: number, tagX?: number): string {
   const w = Math.max(22, tag.length * 6.5 + 12);
   const h = 16;
-  const ty = y - C.DOT_R - 6 - h;
-  const tx = x - w / 2;
+  const ty = tagX !== undefined ? y - h / 2 : vertical ? y - h / 2 - labelBand : y - C.DOT_R - 6 - h - labelBand;
+  const tx = tagX ?? (vertical ? x - C.DOT_R - 8 - w : x - w / 2);
   return group({ class: "sx-gg-tag-group" }, [
-    rect({ x: tx, y: ty, width: w, height: h, rx: 3, class: "sx-gg-tag" }),
+    rect({ x: tx, y: ty, width: w, height: h, rx: h / 2, class: "sx-gg-tag" }),
     svgText(
       {
-        x, y: ty + h / 2,
+        x: tx + w / 2, y: ty + h / 2,
         class: "sx-gg-tag-text",
         "text-anchor": "middle",
         "dominant-baseline": "central",
@@ -348,15 +327,17 @@ function renderCommitLabel(
   x: number,
   y: number,
   rotate: boolean,
-  fontFamily: string
+  fontFamily: string,
+  vertical: boolean,
+  labelSide: -1 | 1,
 ): string {
-  const ly = y + C.DOT_R + 8;
+  const ly = y;
   const transform = rotate ? `rotate(45 ${num(x)} ${num(ly)})` : undefined;
   return svgText(
     {
       x, y: ly,
       class: "sx-gg-id",
-      "text-anchor": rotate ? "start" : "middle",
+      "text-anchor": rotate ? "start" : vertical ? (labelSide < 0 ? "end" : "start") : "middle",
       "font-family": fontFamily,
       ...(transform ? { transform } : {}),
     },
@@ -369,7 +350,6 @@ function renderCommitLabel(
 function buildStyle(pal: GitPalette, showBranches: boolean): string {
   const laneStyle = showBranches
     ? `
-.sx-gg-lane { stroke-width: ${STROKE_WIDTH.thick}; stroke-linecap: round; opacity: 0.9; }
 .sx-gg-pill { stroke: none; }
 .sx-gg-pill-text { font-size: ${FONT_SIZE.label}px; font-weight: 700; }`
     : "";
@@ -393,13 +373,14 @@ function buildStyle(pal: GitPalette, showBranches: boolean): string {
 .sx-gg-bg { fill: ${pal.bg}; }${laneStyle}
 .sx-gg-edge { fill: none; stroke-width: ${STROKE_WIDTH.normal}; }
 .sx-gg-edge-merge { stroke-dasharray: none; }
+.sx-gg-edge-cherry-pick { stroke-dasharray: 4 4; opacity: 0.7; }
 .sx-gg-node { stroke-width: ${STROKE_WIDTH.normal}; }
 .sx-gg-dot { stroke: none; }
 .sx-gg-merge { fill: ${pal.mergeCenter}; stroke-width: ${STROKE_WIDTH.thick}; }
-.sx-gg-highlight { fill: none; stroke-width: ${STROKE_WIDTH.thick}; }
+.sx-gg-highlight { stroke-width: ${STROKE_WIDTH.thick}; }
 .sx-gg-reverse-mark { stroke: ${pal.mergeCenter}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
-.sx-gg-cherry { fill: none; stroke-width: ${STROKE_WIDTH.normal}; }
-.sx-gg-id { fill: ${pal.labelInk}; font-size: ${FONT_SIZE.small + 1}px; font-weight: 600; }
+.sx-gg-id { fill: ${pal.labelInk}; font-size: ${FONT_SIZE.small + 1}px; font-weight: 400; }
+.sx-gg-commit[data-merge] .sx-gg-id { opacity: 0.72; }
 .sx-gg-tag { fill: ${pal.tagFill}; stroke: ${pal.tagStroke}; stroke-width: ${STROKE_WIDTH.thin}; }
 .sx-gg-tag-text { fill: ${pal.tagInk}; font-size: ${FONT_SIZE.small}px; font-weight: 700; }
 ${laneRules}

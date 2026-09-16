@@ -1,0 +1,18 @@
+# Campus circulation concept in feet; fire access shown as a continuous route around the academic buildings.
+siteplan "Meadowbrook School Campus" unit ft
+parcel campus "Campus Boundary" points 0,0 420,0 420,300 0,300 fill #F7F5EF
+road access "School Drive" from -30,260 to 450,260 width 24
+structure admin "Administration" points 35,45 130,45 130,105 35,105
+structure primary "Primary Building" points 155,35 300,35 300,115 155,115
+structure gym "Gymnasium" points 320,55 400,55 400,145 320,145
+structure middle "Middle School" points 90,155 255,155 255,225 90,225
+parking staff "Staff Parking · 48 spaces" points 285,170 405,170 405,235 285,235 fill #E3F2FD
+zone play "Play Fields" points 20,245 250,245 250,290 20,290 fill #E8F5E9
+driveway fire "Fire access route" points 20,130 410,130 410,245 270,245 width 16
+entry main at 145,260 size 14 "Main entry"
+hydrant h1 at 275,130 size 10 "Hydrant"
+walkway walk "Student walkway" points 145,260 145,115 225,115 width 6
+callout "Fire appliance turning area" at 400,245 to 380,220
+north
+scale 50
+legend on

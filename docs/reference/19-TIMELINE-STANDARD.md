@@ -225,6 +225,19 @@ x(i) = padding_left + i / (n - 1) * plot_width       # i = event index after sor
 
 ### 6.3 命名 track（swimlane）
 
+Mermaid-style sections accept both bare and quoted event labels. A section
+continues until the next `section` or `track`, with or without event indentation:
+
+```text
+timeline
+  section S
+    2024 : Something happened
+    2025 : "Another event"
+```
+
+`track "Name":` uses an indented body. Both forms accept `date : label`,
+`date - date : label`, and ordinal keys such as `Phase 1 : Planning`.
+
 DSL 显式声明 track：
 ```
 track "Career":

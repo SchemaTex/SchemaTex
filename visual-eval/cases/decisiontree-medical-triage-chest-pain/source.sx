@@ -1,0 +1,12 @@
+%% Context: Educational chest-pain triage tree; not a substitute for local clinical protocols.
+decisiontree "Chest Pain Triage"
+
+q "Haemodynamically unstable or ongoing severe pain?"
+  yes: q "ECG shows STEMI or equivalent?"
+    yes: a "Immediate reperfusion pathway"
+    no: a "Resuscitation area and urgent cardiology review"
+  no: q "ECG or serial troponin concerning for acute coronary syndrome?"
+    yes: a "Monitored observation and cardiology assessment"
+    no: q "Low-risk assessment and alternative diagnosis likely?"
+      yes: a "Discharge with safety-net advice and follow-up"
+      no: a "Observation unit for serial testing"

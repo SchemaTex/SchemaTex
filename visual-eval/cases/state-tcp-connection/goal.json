@@ -1,0 +1,87 @@
+{
+  "id": "state-tcp-connection",
+  "type": "state",
+  "title": "TCP connection state machine",
+  "goal": "Show standard TCP establishment and close-state transitions.",
+  "rubric": [
+    {
+      "id": "opening-paths",
+      "severity": "blocker",
+      "must": "CLOSED visibly branches to LISTEN for passive open and SYN_SENT for active open."
+    },
+    {
+      "id": "established-handshake",
+      "severity": "blocker",
+      "must": "The SYN_SENT and SYN_RCVD states visibly reach ESTABLISHED through labelled SYN, SYN-ACK, and ACK transitions."
+    },
+    {
+      "id": "active-close",
+      "severity": "major",
+      "must": "ESTABLISHED visibly proceeds through FIN_WAIT_1, FIN_WAIT_2, and TIME_WAIT on an active close."
+    },
+    {
+      "id": "passive-close",
+      "severity": "major",
+      "must": "ESTABLISHED visibly reaches CLOSE_WAIT then LAST_ACK before CLOSED on a passive close."
+    },
+    {
+      "id": "simultaneous-close",
+      "severity": "major",
+      "must": "CLOSING and its transition to TIME_WAIT are visibly present."
+    },
+    {
+      "id": "timeout",
+      "severity": "minor",
+      "must": "TIME_WAIT visibly returns to CLOSED after a 2MSL timeout."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Codex visual recheck: LAST_ACK connects along the right outer route to the right edge of CLOSED, labelled rcv ACK of FIN. TIME_WAIT connects along the separate left outer route to CLOSED, labelled 2MSL timeout. FIN_WAIT_1 also has its distinct FIN,ACK route to TIME_WAIT. The paths are not inverted.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol + Codex visual verification",
+      "passes": 3,
+      "reviewedAt": "2026-09-12T21:41:52.600612+00:00",
+      "targetHash": "7f58bc83b290",
+      "sourceHash": "b434c981abfe",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "opening-paths",
+          "verdict": "pass",
+          "evidence": "CLOSED visibly branches to LISTEN with “passive open” and to SYN_SENT with “active open / send SYN”."
+        },
+        {
+          "id": "established-handshake",
+          "verdict": "pass",
+          "evidence": "SYN_SENT reaches SYN_RCVD on “rcv SYN / send SYN,ACK” and ESTABLISHED on “rcv SYN,ACK / send ACK”; SYN_RCVD reaches ESTABLISHED on “rcv ACK”."
+        },
+        {
+          "id": "active-close",
+          "verdict": "pass",
+          "evidence": "ESTABLISHED proceeds to FIN_WAIT_1 on “close / send FIN,” then FIN_WAIT_2 on “rcv ACK of FIN,” and TIME_WAIT on “rcv FIN / send ACK”."
+        },
+        {
+          "id": "passive-close",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: LAST_ACK connects along the right outer route to the right edge of CLOSED, labelled rcv ACK of FIN. TIME_WAIT connects along the separate left outer route to CLOSED, labelled 2MSL timeout. FIN_WAIT_1 also has its distinct FIN,ACK route to TIME_WAIT. The paths are not inverted."
+        },
+        {
+          "id": "simultaneous-close",
+          "verdict": "pass",
+          "evidence": "FIN_WAIT_1 reaches CLOSING on “rcv FIN / send ACK,” and CLOSING reaches TIME_WAIT on “rcv ACK of FIN”."
+        },
+        {
+          "id": "timeout",
+          "verdict": "pass",
+          "evidence": "Codex visual recheck: LAST_ACK connects along the right outer route to the right edge of CLOSED, labelled rcv ACK of FIN. TIME_WAIT connects along the separate left outer route to CLOSED, labelled 2MSL timeout. FIN_WAIT_1 also has its distinct FIN,ACK route to TIME_WAIT. The paths are not inverted."
+        }
+      ]
+    }
+  }
+}

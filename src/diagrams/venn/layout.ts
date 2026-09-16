@@ -33,6 +33,7 @@ import {
   twoCircleIntersectionArea,
   unionBBox,
 } from "./geometry";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { placeLabels } from "./labels";
 
 export interface LayoutOptions {
@@ -66,10 +67,26 @@ export function layoutVenn(ast: VennAST, opts: LayoutOptions = {}): VennLayoutRe
     // Fallback for 5+ — collapse to Euler disjoint row (UpSet deferred).
     else result = layoutEuler(ast, opts);
   }
-  return applyAuthoredGeometry(ast, result);
+  result = applyAuthoredGeometry(ast, result);
+  if (!ast.sets.some(s => s.at || s.radius !== undefined) && result.labels.some(l => l.external)) {
+    const original = result;
+    for (const scale of [1.25, 1.5, 2]) {
+      const shapes = original.shapes.map(s => s.kind === "circle"
+        ? { ...s, cx: s.cx * scale, cy: s.cy * scale, r: s.r * scale }
+        : { ...s, cx: s.cx * scale, cy: s.cy * scale, rx: s.rx * scale, ry: s.ry * scale });
+      const labels = placeLabels(ast, shapes);
+      if (labels.filter(l => l.external).length < result.labels.filter(l => l.external).length) {
+        result = { ...original, width: original.width * scale, height: original.height * scale,
+          shapes, labels, setLabels: original.setLabels.map(l => ({ ...l, x: l.x * scale, y: l.y * scale })) };
+      }
+      if (!labels.some(l => l.external)) break;
+    }
+  }
+  return fitLabels(result);
 }
 
 function applyAuthoredGeometry(ast: VennAST, result: VennLayoutResult): VennLayoutResult {
+  if (!ast.sets.some(s => s.at || s.radius !== undefined)) return result;
   const minDimension = Math.min(result.width, result.height);
   const shapes = result.shapes.map((shape) => {
     const authored = ast.sets.find((set) => set.id === shape.id);
@@ -549,3 +566,32 @@ export { circleBBox, ellipseBBox, pointInCircle, pointInEllipse, unionBBox, regi
 
 /** Export dispatcher helpers kept internal. */
 export type { VennEulerRelation };
+
+/** Keep measured annotations inside the exported canvas, including leaders. */
+function fitLabels(result: VennLayoutResult): VennLayoutResult {
+  let left = 0, right = result.width, top = 0, bottom = result.height;
+  const include = (x: number, y: number, width: number, height: number, anchor = "middle") => {
+    const x0 = x - (anchor === "middle" ? width / 2 : anchor === "end" ? width : 0);
+    left = Math.min(left, x0 - 24); right = Math.max(right, x0 + width + 24);
+    top = Math.min(top, y - height / 2 - (result.title ? 60 : 24));
+    bottom = Math.max(bottom, y + height / 2 + 24);
+  };
+  for (const shape of result.shapes) {
+    const box = shape.kind === "circle" ? circleBBox(shape) : ellipseBBox(shape);
+    include(box.x + box.w / 2, box.y + box.h / 2, box.w, box.h);
+  }
+  for (const label of result.labels) {
+    const lines = label.lines ?? [label.label];
+    include(label.x, label.y, Math.max(...lines.map(s => estimateTextWidth(s, 12))), lines.length * 14, label.anchor);
+  }
+  for (const label of result.setLabels) include(label.x, label.y, estimateTextWidth(label.label, 13, { fontWeight: 600 }), 16, label.anchor);
+  result.width = right - left; result.height = bottom - top;
+  for (const shape of result.shapes) { shape.cx -= left; shape.cy -= top; }
+  for (const label of [...result.labels, ...result.setLabels]) { label.x -= left; label.y -= top; }
+  for (const label of result.labels) if (label.leader) {
+    label.leader.x1 -= left; label.leader.x2 -= left;
+    label.leader.y1 -= top; label.leader.y2 -= top;
+  }
+  if (result.title) result.title.x = result.width / 2;
+  return result;
+}

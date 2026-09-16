@@ -1,0 +1,10 @@
+circuit "Dedicated EV Charge Point Supply" netlist
+V1 LINE_IN NEUTRAL type=ac_source value="230 V AC, 50 Hz, 100 A" label="V1 SERVICE INCOMER"
+T1 LINE_IN LINE_CT CT_S1 CT_S2 type=transformer value="100 A : 50 mA, Class 1" label="CT1 LOAD MANAGEMENT CT"
+QF1 LINE_CT LINE_MCB type=disconnect_switch value="40 A, C-curve, 10 kA" label="QF1 EV MAIN BREAKER"
+Q1 LINE_MCB LINE_RCD type=disconnect_switch value="40 A, 30 mA, Type B" label="Q1 TYPE B RCD"
+S1 LINE_RCD LINE_EV type=disconnect_switch value="40 A, 2-pole, AC-22A" label="S1 EV ISOLATOR"
+U1 LINE_EV NEUTRAL PE type=generic_ic pins="L,N,PE" value="230 V, 32 A, 7.4 kW" label="U1 EV CHARGE POINT"
+U2 CT_S1 CT_S2 type=generic_ic pins="S1,S2" value="230 V, 100 A monitored" label="U2 LOAD MANAGER"
+W1 PE EARTH type=wire value="10 mm2 Cu CPC" label="W1 PROTECTIVE EARTH"
+T2 PE type=terminal_block pins="PE" value="100 A earth terminal" label="T2 MAIN EARTH TERMINAL"

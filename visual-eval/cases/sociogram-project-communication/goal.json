@@ -1,0 +1,40 @@
+{
+  "id": "sociogram-project-communication",
+  "type": "sociogram",
+  "title": "Project Team Communication",
+  "goal": "A practitioner can visually assess the Project Team Communication scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "people-and-arrows",
+      "severity": "blocker",
+      "must": "Named people are visible as separate nodes and choice relations are visibly directed with arrowheads."
+    },
+    {
+      "id": "star-isolate",
+      "severity": "blocker",
+      "must": "The picture makes the high-in-degree star and the named isolate or peripheral person visibly distinguishable."
+    },
+    {
+      "id": "mutual-choices",
+      "severity": "major",
+      "must": "At least one reciprocal choice pair is visibly represented as mutual directed selections."
+    },
+    {
+      "id": "network-structure",
+      "severity": "major",
+      "must": "The directed links reveal the stated classroom, team, study, sport, moderation, or project communication pattern."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Names and arrow directions remain legible without a separate source legend."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/sociogram/ideal.svg (e5d3bf6b332d); rendered and visually reviewed. Distinct directed nominations, reciprocal pairs deduplicated; size and count encode received choices. Sparse peripheral and isolated nodes remain explicit."
+  }
+}

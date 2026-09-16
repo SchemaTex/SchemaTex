@@ -1,0 +1,44 @@
+%% Context: Core e-commerce order schema using Mermaid crow's-foot ERD notation.
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  CUSTOMER ||--o{ ADDRESS : saves
+  ORDER ||--|{ LINE_ITEM : contains
+  PRODUCT ||--o{ LINE_ITEM : appears_in
+  ORDER ||--o{ PAYMENT : has
+  ADDRESS ||--o{ ORDER : ships_to
+  CUSTOMER {
+    int customer_id PK
+    string email
+    string full_name
+  }
+  ORDER {
+    int order_id PK
+    int customer_id FK
+    int shipping_address_id FK
+    date ordered_at
+    string status
+  }
+  LINE_ITEM {
+    int line_item_id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+  }
+  PRODUCT {
+    int product_id PK
+    string sku
+    string name
+    decimal unit_price
+  }
+  PAYMENT {
+    int payment_id PK
+    int order_id FK
+    decimal amount
+    string status
+  }
+  ADDRESS {
+    int address_id PK
+    int customer_id FK
+    string postal_code
+    string country
+  }

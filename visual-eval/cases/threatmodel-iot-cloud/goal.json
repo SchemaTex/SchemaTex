@@ -1,0 +1,40 @@
+{
+  "id": "threatmodel-iot-cloud",
+  "type": "threatmodel",
+  "title": "IoT Cloud Backend STRIDE",
+  "goal": "A practitioner can visually assess the IoT Cloud Backend STRIDE scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "dfd-elements",
+      "severity": "blocker",
+      "must": "External entities, processes, and data stores use visibly distinct DFD shapes."
+    },
+    {
+      "id": "trust-boundaries",
+      "severity": "blocker",
+      "must": "Named dashed trust boundaries visibly group the public, edge, and internal security zones."
+    },
+    {
+      "id": "crossing-flows",
+      "severity": "major",
+      "must": "Data flows crossing between trust zones are visibly highlighted as boundary crossings."
+    },
+    {
+      "id": "stride-badges",
+      "severity": "major",
+      "must": "Visible STRIDE letter badges correspond to the DFD element types, including SR for externals and STRIDE for processes."
+    },
+    {
+      "id": "security-flows",
+      "severity": "minor",
+      "must": "Arrowed, labelled data flows make the system's sensitive request, identity, data, or audit path readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/threatmodel/ideal.svg (sha256 7a0cb0ccc301). Return command routed around Homeowner App instead of passing through its body. Six data flows retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

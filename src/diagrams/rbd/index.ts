@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseRbd } from "./parser";
 import { renderRbd } from "./renderer";
@@ -5,7 +6,7 @@ import { renderRbd } from "./renderer";
 export const rbd: DiagramPlugin = {
   type: "rbd" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*(rbd|reliability(?:blockdiagram)?|reliability-block-diagram)\b/i.test(text);
+    return /^\s*(rbd|reliability(?:blockdiagram)?|reliability-block-diagram)\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseRbd,
   render(text, config?: RenderConfig) {

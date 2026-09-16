@@ -558,6 +558,7 @@ function renderShapeSwatch(
         points: `${cx},${cy - innerR} ${cx + innerR},${cy + innerR * 0.8} ${cx - innerR},${cy + innerR * 0.8}`,
         fill: usedFill,
         stroke: usedStroke,
+        "stroke-dasharray": patternDasharray(item.pattern) ?? undefined,
       });
     }
     case "concentric-square": {
@@ -723,12 +724,27 @@ function renderLineSwatch(
   const sw = item.strokeWidth ?? 2;
   const dash = patternDasharray(item.pattern);
 
-  if (item.pattern === "double") {
+  if (item.pattern === "step") {
+    const cx = (x1 + x2) / 2;
+    return pathEl({
+      d: `M ${x1} ${y + 1} L ${cx} ${y + 1} L ${cx} ${y + h - 1} L ${x2} ${y + h - 1}`,
+      fill: "none", stroke, "stroke-width": sw,
+    });
+  }
+
+  if (item.pattern === "double" || item.pattern === "triple") {
     const off = Math.max(2, sw);
     return (
       lineEl({ x1, y1: cy - off, x2, y2: cy - off, stroke, "stroke-width": sw }) +
-      lineEl({ x1, y1: cy + off, x2, y2: cy + off, stroke, "stroke-width": sw })
+      lineEl({ x1, y1: cy + off, x2, y2: cy + off, stroke, "stroke-width": sw }) +
+      (item.pattern === "triple" ? lineEl({ x1, y1: cy, x2, y2: cy, stroke, "stroke-width": sw }) : "")
     );
+  }
+
+  if (item.pattern === "cutoff") {
+    const mid = (x1+x2)/2;
+    return lineEl({x1,y1:cy,x2,y2:cy,stroke,"stroke-width":sw}) +
+      [-2,2].map(off => lineEl({x1:mid+off,y1:cy-4,x2:mid+off,y2:cy+4,stroke,"stroke-width":sw})).join("");
   }
 
   if (item.pattern === "wavy") {
@@ -772,6 +788,14 @@ function renderMarkerSwatch(
   const color = item.color ?? theme.text;
   const marker = item.marker ?? "dot";
   switch (marker) {
+    case "diagonal-arrow": {
+      const radius = Math.min(w, h) / 2;
+      const tipX = cx + radius, tipY = cy - radius;
+      const baseX = tipX - 4, baseY = tipY + 4;
+      return lineEl({ x1: cx - radius, y1: cy + radius, x2: baseX, y2: baseY,
+        stroke: color, "stroke-width": 1.5 }) +
+        polygon({ points: `${tipX},${tipY} ${baseX + 1.8},${baseY + 1.8} ${baseX - 1.8},${baseY - 1.8}`, fill: color });
+    }
     case "X":
     case "x": {
       const r = Math.min(w, h) / 3;
@@ -799,6 +823,7 @@ function renderMarkerSwatch(
         x2: cx + 4, y2: cy - 5,
         stroke: color, "stroke-width": 1.6,
       });
+    case "SB":
     case "P":
     case "C":
     case "E":

@@ -191,3 +191,16 @@ describe("faulttree e2e — via public api", () => {
     expect(render(dsl)).toBe(render(dsl));
   });
 });
+
+it("keeps cut-set analysis without spanning highlight boxes across unrelated leaves", async () => {
+  const { layoutFaultTree } = await import("../../src/diagrams/faulttree/layout");
+  const ast = parse(`faulttree
+analysis: cutsets
+ top T = AND(A, B)
+ basic A "A long distinct fault event label"
+ basic B "Another fault event"`) as FaultTreeAst;
+  const layout = layoutFaultTree(ast);
+  expect(layout.analysis.cutSets[0]?.events).toEqual(["A", "B"]);
+  expect(layout.cutSetBoxes).toHaveLength(0);
+  expect(render(`faulttree\nanalysis: cutsets\ntop T = AND(A, B)\nbasic A\nbasic B`)).toContain("{A, B}");
+});

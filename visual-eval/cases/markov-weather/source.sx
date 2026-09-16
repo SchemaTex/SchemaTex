@@ -1,0 +1,15 @@
+# Scenario: a three-state daily weather model for a probability class.
+markov "Daily weather"
+  analysis: stationary
+  state Sunny
+  state Cloudy
+  state Rainy
+  Sunny -> Sunny : 0.6
+  Sunny -> Cloudy : 0.3
+  Sunny -> Rainy : 0.1
+  Cloudy -> Sunny : 0.3
+  Cloudy -> Cloudy : 0.4
+  Cloudy -> Rainy : 0.3
+  Rainy -> Sunny : 0.2
+  Rainy -> Cloudy : 0.4
+  Rainy -> Rainy : 0.4

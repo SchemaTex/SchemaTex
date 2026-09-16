@@ -8,11 +8,13 @@ const catalogs = SYMBOL_CATALOG_TYPES
   .map((t) => getSymbolCatalog(t))
   .filter((c): c is SymbolCatalog => c !== null);
 
+const libraryNames = catalogs.map((catalog) => catalog.label).join(', ');
+
 const totalSymbols = catalogs.reduce((n, c) => n + c.entries.length, 0);
 
 export const metadata: Metadata = {
   title: 'Symbols — the real symbol libraries Schematex renders inside diagrams',
-  description: `${totalSymbols} standards-correct domain symbols across ${catalogs.length} diagram types — IEEE 315 circuit components, single-line apparatus, ISA-5.1 P&ID equipment, and flowchart node icons. Every symbol the engines actually draw.`,
+  description: `${totalSymbols} domain symbols from the libraries Schematex renders inside diagrams: ${libraryNames}. Each glyph is produced by its diagram engine.`,
   alternates: { canonical: 'https://schematex.js.org/icons' },
 };
 
@@ -30,8 +32,7 @@ export default function IconsPage() {
             The symbols our engines actually draw.
           </h1>
           <p className="mt-2 max-w-2xl text-sm" style={{ color: 'var(--text-muted)' }}>
-            The standards-correct domain symbols Schematex renders <em>inside</em> diagrams —
-            circuit components, single-line apparatus, P&amp;ID equipment, flowchart node icons.
+            The domain symbol libraries Schematex renders <em>inside</em> diagrams: {libraryNames}.
             Every glyph here is produced by the real engine, not a separate icon font.
           </p>
 

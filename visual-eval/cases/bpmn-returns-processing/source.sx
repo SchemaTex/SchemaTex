@@ -1,0 +1,24 @@
+# E-commerce return authorization and refund.
+bpmn
+direction: LR
+title: "Returns Processing"
+pool "Customer" blackbox
+pool "Retailer" {
+  lane "Returns" {
+    A: start message "Return request"
+    B: task user "Validate return"
+    G: gateway xor "Eligible?"
+    C: task user "Receive item"
+  }
+  lane "Finance" {
+    D: task service "Issue refund"
+    E: end "Refunded"
+    F: end "Rejected"
+  }
+}
+flows
+"Customer" ~~> A : "Return request"
+A --> B --> G
+G --? "yes" --> C --> D --> E
+G --* "no" --> F
+E ~~> "Customer" : "Refund notice"

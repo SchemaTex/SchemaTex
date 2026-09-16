@@ -34,6 +34,12 @@ export interface CircuitLayoutResult {
   items: LaidOutComponent[];
 }
 
+/** The displayed caption includes authored identity for every real symbol. */
+export function componentCaption(comp: CircuitComponent): string | undefined {
+  if (!comp.stableId || comp.label === comp.id || comp.label?.startsWith(`${comp.id} `)) return comp.label;
+  return comp.label ? `${comp.id} ${comp.label}` : comp.id;
+}
+
 function rotationDeg(d: CircuitDirection): number {
   return d === "right" ? 0 : d === "down" ? 90 : d === "left" ? 180 : 270;
 }

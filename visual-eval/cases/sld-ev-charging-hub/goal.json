@@ -1,0 +1,41 @@
+{
+  "id": "sld-ev-charging-hub",
+  "type": "sld",
+  "variant": "ansi",
+  "title": "EV charging hub",
+  "goal": "Show protected charging distribution and managed charger groups.",
+  "rubric": [
+    {
+      "id": "supply",
+      "severity": "blocker",
+      "must": "Utility supply, charging transformer, main breaker, and charging distribution board form one visible sequence."
+    },
+    {
+      "id": "feeders",
+      "severity": "blocker",
+      "must": "Three separately protected feeder branches visibly leave the distribution board."
+    },
+    {
+      "id": "chargers",
+      "severity": "major",
+      "must": "Two DC charger groups and one AC charger group visibly terminate their own feeders."
+    },
+    {
+      "id": "management",
+      "severity": "blocker",
+      "must": "Dynamic Load Management visibly connects to the charging distribution board."
+    },
+    {
+      "id": "ratings",
+      "severity": "minor",
+      "must": "Charger-group and feeder ratings are readable."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn by `scripts/visual-eval/draw-sld-target.mjs`, which draws all ten single-line cases from one kit so the set is one drawing repeated. An 11 kV utility supply feeds a 1600 kVA charging-hub transformer and a 2500 A main low-voltage breaker onto the 400 V charging distribution board. Four ways leave the board: two 630 A feeders to the DC charger banks, a 250 A feeder to the AC chargers, and a direct way to the dynamic load-management controller. Symbols follow `docs/reference/11-SINGLE-LINE-STANDARD.md` §1: an ANSI device-52 breaker is a contact arm hinged on its lower terminal with the arc-quench hook at the tip, an isolator or contactor is the same arm without the hook, a transformer is two interlinked windings, a bus is a heavy horizontal bar, a terminal load is a down-triangle fed at its flat top. Power flows top to bottom (§2.1); each name sits beside its symbol in semibold with the rating on a lighter second line (§2.5); cable annotation hangs off the run it describes (§3.3); and a dashed rule with two captions marks each change of voltage section (§2.2). The page is uniform across all ten sheets by construction rather than by hand: one 46 px margin for the title rule, the section rules and the notes; the canvas fitted to its own content so every sheet carries the same margin on all four sides; a bus sized from the taps that land on it rather than from the page, with its tag and voltage set outside the two ends on the bar's centre line so neither can ever meet a tap. Every label was checked against every other label, every symbol and the canvas edge: 0 overlaps."
+  }
+}

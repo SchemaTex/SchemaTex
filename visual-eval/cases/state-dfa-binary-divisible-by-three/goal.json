@@ -1,0 +1,77 @@
+{
+  "id": "state-dfa-binary-divisible-by-three",
+  "type": "state",
+  "title": "Binary divisible-by-three DFA",
+  "goal": "Show the complete three-state DFA that accepts exactly binary values divisible by three.",
+  "rubric": [
+    {
+      "id": "initial-state",
+      "severity": "blocker",
+      "must": "The initial marker visibly enters state R0."
+    },
+    {
+      "id": "accepting-state",
+      "severity": "blocker",
+      "must": "R0 is visibly marked as the accepting state."
+    },
+    {
+      "id": "total-transitions",
+      "severity": "blocker",
+      "must": "Each of R0, R1, and R2 visibly has one outgoing transition labelled 0 and one labelled 1."
+    },
+    {
+      "id": "correct-zero-cycle",
+      "severity": "major",
+      "must": "The visible 0 transitions are R0 to R0, R1 to R2, and R2 to R1."
+    },
+    {
+      "id": "correct-one-cycle",
+      "severity": "major",
+      "must": "The visible 1 transitions are R0 to R1, R1 to R0, and R2 to R2."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the state exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram shows all three DFA states and the required initial, accepting, 0-transition, and 1-transition markings. The transitions are readable and traceable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:31:58.230Z",
+      "targetHash": "9de18f32914c",
+      "sourceHash": "42237e281895",
+      "exemplarHash": "07eb56d9cd77",
+      "items": [
+        {
+          "id": "initial-state",
+          "verdict": "pass",
+          "evidence": "The initial marker’s arrow enters R0."
+        },
+        {
+          "id": "accepting-state",
+          "verdict": "pass",
+          "evidence": "R0 is drawn with a double outline, marking it as accepting."
+        },
+        {
+          "id": "total-transitions",
+          "verdict": "pass",
+          "evidence": "Each state has one outgoing transition labelled 0 and one labelled 1, including the self-loops on R0 and R2."
+        },
+        {
+          "id": "correct-zero-cycle",
+          "verdict": "pass",
+          "evidence": "The 0 transitions are R0 to R0, R1 to R2, and R2 to R1."
+        },
+        {
+          "id": "correct-one-cycle",
+          "verdict": "pass",
+          "evidence": "The 1 transitions are R0 to R1, R1 to R0, and R2 to R2."
+        }
+      ]
+    }
+  }
+}

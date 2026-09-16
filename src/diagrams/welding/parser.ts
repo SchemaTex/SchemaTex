@@ -94,37 +94,45 @@ function emptyJoint(): Joint {
 }
 
 function stripComment(line: string): string {
-  const hash = line.indexOf("#");
-  if (hash >= 0 && (line.slice(0, hash).match(/["'“‘]/g)?.length ?? 0) % 2 === 0) {
-    return line.slice(0, hash);
-  }
-  return line;
+  const hash = outsideQuotes(line).indexOf("#");
+  return hash >= 0 ? line.slice(0, hash) : line;
 }
 
-// Directive keywords that introduce a value (the lookahead stops a value here).
-const DIR_BOUNDARY = "(?:arrow|other|both|tail|label)\\s*[:=]|(?:around|all-?around|field|site)\\b";
+/** Mask quoted text while retaining source offsets so keywords inside labels stay data. */
+function outsideQuotes(text: string): string {
+  let close = "";
+  return text.split("").map((ch, index) => {
+    if (close) {
+      if (ch === close && text[index - 1] !== "\\") close = "";
+      return " ";
+    }
+    const ending: Record<string, string> = { '"': '"', "'": "'", "“": "”", "‘": "’" };
+    // Quotes open a token or value; an apostrophe within a bare word is data.
+    if (ending[ch] && (index === 0 || /[\s:=([{,;]/.test(text[index - 1]!))) {
+      close = ending[ch];
+      return " ";
+    }
+    return ch;
+  }).join("");
+}
 
-/** Parse one joint body (inline or multi-line) into the joint. */
+/** Parse directives only outside quoted labels, preserving the original value text. */
 function parseJointBody(body: string, joint: Joint): void {
-  // value-bearing directives, value runs until the next directive/flag keyword
-  const dirRe = new RegExp(`\\b(arrow|other|both|tail|label)\\s*[:=]\\s*([\\s\\S]*?)(?=\\b(?:${DIR_BOUNDARY})|$)`, "gi");
-  for (const m of body.matchAll(dirRe)) {
-    const key = m[1]!.toLowerCase();
-    const val = m[2]!.trim();
-    if (key === "arrow") joint.arrow = parseWeldSpec(val);
-    else if (key === "other") joint.other = parseWeldSpec(val);
+  const tokens = [...outsideQuotes(body).matchAll(/\b(arrow|other|both|tail|label)\s*[:=]|\b(around|all-?around|field|site)\b/gi)];
+  tokens.forEach((token, index) => {
+    const key = (token[1] ?? token[2])!.toLowerCase();
+    const value = body.slice(token.index! + token[0].length, tokens[index + 1]?.index ?? body.length).trim();
+    if (key === "field" || key === "site") joint.field = true;
+    else if (key === "around" || key === "all-around" || key === "allaround") joint.around = true;
+    else if (key === "tail") joint.tail = stripQuotes(value);
+    else if (key === "label") joint.label = stripQuotes(value);
+    else if (key === "arrow") joint.arrow = parseWeldSpec(value);
+    else if (key === "other") joint.other = parseWeldSpec(value);
     else if (key === "both") {
-      const spec = parseWeldSpec(val);
-      if (spec) {
-        joint.arrow = spec;
-        joint.other = { ...spec };
-      }
-    } else if (key === "tail") joint.tail = stripQuotes(val);
-    else if (key === "label") joint.label = stripQuotes(val);
-  }
-  // standalone flags
-  if (/\b(around|all-?around)\b/i.test(body)) joint.around = true;
-  if (/\b(field|site)\b/i.test(body)) joint.field = true;
+      const spec = parseWeldSpec(value);
+      if (spec) { joint.arrow = spec; joint.other = { ...spec }; }
+    }
+  });
 }
 
 export function parseWelding(text: string): WeldingAST {
@@ -132,7 +140,8 @@ export function parseWelding(text: string): WeldingAST {
   const src = text.split(/\r?\n/).map(stripComment).join("\n");
 
   // header — the `welding …` line up to the first `joint`
-  const headEnd = src.search(/\bjoint\b/i);
+  const unquoted = outsideQuotes(src);
+  const headEnd = unquoted.search(/\bjoint\b/i);
   const headerScope = headEnd >= 0 ? src.slice(0, headEnd) : src;
   const header = headerScope.match(/welding\b([^\n]*)/i);
   if (header) {
@@ -143,29 +152,31 @@ export function parseWelding(text: string): WeldingAST {
       if (s === "aws" || s === "iso-a" || s === "iso-b") ast.standard = s as WeldStandard;
       else if (s === "iso") ast.standard = "iso-a";
     }
-    const titleM = rest.replace(/standard\s*[:=]\s*[a-zA-Z-]+/i, "").trim();
+    const titleM = rest.replace(/\[\s*standard\s*[:=]\s*[a-zA-Z-]+\s*\]|standard\s*[:=]\s*[a-zA-Z-]+/i, "").trim();
     if (titleM) ast.title = stripQuotes(titleM);
   }
 
   // joint blocks — `joint <label?> { body }` (body has no nested braces)
   const jointRe = /\bjoint\b([^{]*)\{([\s\S]*?)\}/gi;
-  for (const m of src.matchAll(jointRe)) {
+  for (const m of unquoted.matchAll(jointRe)) {
     const joint = emptyJoint();
-    const labelRaw = m[1]!.trim();
+    const open = unquoted.indexOf("{", m.index);
+    const labelRaw = src.slice(m.index! + 5, open).trim();
     if (labelRaw) joint.label = stripQuotes(labelRaw);
-    parseJointBody(m[2]!, joint);
+    parseJointBody(src.slice(open + 1, open + 1 + m[2]!.length), joint);
     ast.joints.push(joint);
   }
 
   // tolerate a final joint with no closing brace (only when braces are unbalanced)
-  const opens = (src.match(/\{/g) ?? []).length;
-  const closes = (src.match(/\}/g) ?? []).length;
-  const tail = opens > closes ? src.match(/\bjoint\b([^{]*)\{([^}]*)$/i) : null;
+  const opens = (unquoted.match(/\{/g) ?? []).length;
+  const closes = (unquoted.match(/\}/g) ?? []).length;
+  const tail = opens > closes ? unquoted.match(/\bjoint\b([^{]*)\{([^}]*)$/i) : null;
   if (tail) {
     const joint = emptyJoint();
-    const labelRaw = tail[1]!.trim();
+    const open = unquoted.indexOf("{", tail.index);
+    const labelRaw = src.slice(tail.index! + 5, open).trim();
     if (labelRaw) joint.label = stripQuotes(labelRaw);
-    parseJointBody(tail[2]!, joint);
+    parseJointBody(src.slice(open + 1), joint);
     ast.joints.push(joint);
   }
 

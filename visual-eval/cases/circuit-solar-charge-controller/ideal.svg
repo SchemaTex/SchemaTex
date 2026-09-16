@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
+<title>Off Grid Solar DC System</title>
+<defs><style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#172b3a} .wire{fill:none;stroke:#263f50;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}.symbol{fill:white;stroke:#172b3a;stroke-width:3}.label{font-size:20px;font-weight:700}.value{font-size:18px}.pin{font-size:16px}.note{font-size:15px;fill:#536675}.node{fill:#263f50}
+</style></defs>
+<rect width="1600" height="1120" fill="white"/>
+<text x="65" y="64" font-size="34" font-weight="700">OFF GRID SOLAR DC SYSTEM</text>
+<text x="65" y="98" font-size="18" fill="#536675">Series PV array · Parallel battery bank · Protected DC and AC branches</text>
+<path d="M65 122H1535" stroke="#b9c5cc"/>
+<!-- Series solar cells: positive at top, negative at bottom -->
+<text x="65" y="172" class="note">PV ARRAY / SERIES CONNECTION</text>
+<path class="wire" d="M210 260V210H410 M490 210H625 M210 340V400 M210 480V540H575V310H625"/>
+<rect x="166" y="260" width="88" height="80" class="symbol"/>
+<path class="wire" d="M178 280H242 M187 296H233 M178 316H242"/>
+<text x="224" y="251" class="value">+</text><text x="224" y="361" class="value">−</text>
+<path class="wire" d="M120 265L151 286 M125 287L151 305 M144 279L151 286L141 286 M144 298L151 305L141 305"/>
+<text x="280" y="292" class="label">P1 PV PANEL</text><text x="280" y="319" class="value">200 W, 24 V</text>
+<rect x="166" y="400" width="88" height="80" class="symbol"/>
+<path class="wire" d="M178 420H242 M187 436H233 M178 456H242"/>
+<text x="224" y="394" class="value">+</text><text x="224" y="504" class="value">−</text>
+<path class="wire" d="M120 405L151 426 M125 427L151 445 M144 419L151 426L141 426 M144 438L151 445L141 445"/>
+<text x="280" y="432" class="label">P2 PV PANEL</text><text x="280" y="459" class="value">200 W, 24 V</text>
+<!-- SPST isolator -->
+<circle cx="410" cy="210" r="5" class="symbol"/><circle cx="490" cy="210" r="5" class="symbol"/>
+<path class="wire" d="M413 207L477 178"/>
+<text x="450" y="151" text-anchor="middle" class="label">S1 PV ISOLATOR</text>
+<text x="450" y="248" text-anchor="middle" class="value">32 VDC, 20 A</text>
+<!-- MPPT -->
+<rect x="625" y="175" width="300" height="200" rx="3" class="symbol"/>
+<text x="775" y="249" text-anchor="middle" class="label">U1 MPPT CONTROLLER</text>
+<text x="775" y="283" text-anchor="middle" class="value">40 A, 12/24 V</text>
+<text x="638" y="216" class="pin">PV+</text><text x="638" y="316" class="pin">PV−</text>
+<text x="912" y="216" text-anchor="end" class="pin">BAT+</text><text x="912" y="351" text-anchor="end" class="pin">BAT−</text>
+<!-- Battery positive and controller negative -->
+<path class="wire" d="M925 210H1010V460H345V645 M645 460V645 M925 345H955V960"/>
+<text x="686" y="439" class="note">BAT_POS</text>
+<circle cx="645" cy="460" r="5" class="node"/><circle cx="1010" cy="460" r="5" class="node"/>
+<!-- Parallel batteries -->
+<text x="65" y="593" class="note">BATTERY BANK / PARALLEL CONNECTION</text>
+<path class="wire" d="M345 645V671 M307 671H383 M321 687H369 M307 712H383 M321 728H369 M345 728V960"/>
+<text x="393" y="680" class="value">+</text><text x="393" y="734" class="value">−</text>
+<text x="345" y="786" text-anchor="middle" class="label">B1 BATTERY BANK A</text>
+<text x="345" y="815" text-anchor="middle" class="value">12 V</text>
+<path class="wire" d="M645 645V671 M607 671H683 M621 687H669 M607 712H683 M621 728H669 M645 728V960"/>
+<text x="693" y="680" class="value">+</text><text x="693" y="734" class="value">−</text>
+<text x="645" y="786" text-anchor="middle" class="label">B2 BATTERY BANK B</text>
+<text x="645" y="815" text-anchor="middle" class="value">12 V</text>
+<!-- Distribution fuse -->
+<path class="wire" d="M1010 460V500 M1010 580V615H1300V650 M1010 615V730"/>
+<rect x="999" y="500" width="22" height="80" class="symbol"/><path class="wire" d="M1010 500V580"/>
+<text x="1045" y="527" class="label">F1 DC DISTRIBUTION</text><text x="1045" y="556" class="value">60 A MIDI</text>
+<text x="1150" y="601" class="note">DC_BUS</text><circle cx="1010" cy="615" r="5" class="node"/>
+<!-- DC load fuse and lamp branch -->
+<rect x="999" y="730" width="22" height="70" class="symbol"/><path class="wire" d="M1010 730V800 M1010 800V850"/>
+<text x="1040" y="750" class="label">F2 12 V LOAD FUSE</text><text x="1040" y="779" class="value">15 A ATO</text>
+<circle cx="1010" cy="880" r="30" class="symbol"/>
+<path class="wire" d="M989 859L1031 901 M989 901L1031 859 M1010 910V960"/>
+<text x="1060" y="875" class="label">L1 DC LOADS</text><text x="1060" y="905" class="value">12 VDC, 30 W</text>
+<!-- Inverter input fuse -->
+<rect x="1289" y="650" width="22" height="65" class="symbol"/><path class="wire" d="M1300 650V715 M1300 715V755"/>
+<text x="1330" y="669" class="label">F3 INVERTER FUSE</text><text x="1330" y="698" class="value">125 A CLASS T</text>
+<!-- DC to AC converter -->
+<rect x="1260" y="755" width="255" height="160" class="symbol"/>
+<text x="1274" y="780" class="pin">DC+</text><text x="1274" y="898" class="pin">DC−</text>
+<text x="1390" y="812" text-anchor="middle" class="label">U2 INVERTER</text><text x="1390" y="842" text-anchor="middle" class="value">1200 W</text>
+<text x="1390" y="870" text-anchor="middle" class="pin">12 VDC → 230 VAC</text>
+<path class="wire" d="M1300 915V960 M1450 755V410H1300 M1490 755V350H1300"/>
+<text x="1435" y="738" class="pin">L</text><text x="1499" y="738" class="pin">N</text>
+<!-- Socket symbol, two explicit AC contacts -->
+<text x="1350" y="236" text-anchor="middle" class="label">X1 AC SOCKET</text>
+<text x="1350" y="267" text-anchor="middle" class="value">230 VAC, 13 A</text>
+<circle cx="1240" cy="380" r="67" class="symbol"/>
+<path class="wire" d="M1300 350H1255V363 M1300 410H1225V397"/>
+<rect x="1249" y="363" width="12" height="19" fill="#172b3a"/><rect x="1219" y="378" width="12" height="19" fill="#172b3a"/>
+<text x="1330" y="337" class="pin">AC_N</text><text x="1330" y="436" class="pin">AC_L</text>
+<!-- Common DC negative and chassis bond -->
+<path class="wire" d="M180 960H1300 M180 960V1005 M150 1005H210 M153 1005L143 1022 M173 1005L163 1022 M193 1005L183 1022"/>
+<circle cx="345" cy="960" r="5" class="node"/><circle cx="645" cy="960" r="5" class="node"/><circle cx="955" cy="960" r="5" class="node"/><circle cx="1010" cy="960" r="5" class="node"/>
+<text x="420" y="991" class="note">CHASSIS / COMMON DC NEGATIVE RETURN</text>
+<text x="65" y="1063" class="label">G1 DC EARTH</text><text x="280" y="1063" class="value">DC negative bond</text>
+</svg>

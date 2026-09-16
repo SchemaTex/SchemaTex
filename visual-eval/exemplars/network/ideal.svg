@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1250" viewBox="0 0 1500 1250">
+<title>Water Plant Industrial Ethernet — segmented industrial Ethernet ring</title>
+<defs>
+<style>
+text{font-family:Verdana, sans-serif;fill:#182b3b;font-size:18px} .title{font-size:30px;font-weight:bold}.zone{font-size:23px;font-weight:bold}.name{font-size:18px;font-weight:bold}.small{font-size:16px}.wire{fill:none;stroke:#536979;stroke-width:3;stroke-linejoin:round}.fiber{fill:none;stroke:#087d92;stroke-width:5;stroke-linejoin:round}.device{fill:white;stroke:#304b60;stroke-width:2.5}.label{fill:white;stroke:none}
+</style>
+<g id="switch"><rect class="device" x="-56" y="-21" width="112" height="42" rx="3"/><path d="M-43 -5h12v12h-12z m20 0h12v12h-12z m20 0h12v12H-3z m20 0h12v12H17z" fill="#304b60"/><circle cx="43" cy="1" r="4" fill="#087d92"/></g>
+<g id="server"><rect class="device" x="-30" y="-38" width="60" height="76" rx="3"/><path d="M-21 -24h42v15h-42z M-21 -1h42v15h-42z" fill="#e4edf2" stroke="#304b60" stroke-width="1.5"/><circle cx="16" cy="-17" r="2.5" fill="#087d92"/><circle cx="16" cy="6" r="2.5" fill="#087d92"/><path d="M-19 27h25" stroke="#304b60" stroke-width="2"/></g>
+<g id="pc"><rect class="device" x="-45" y="-34" width="90" height="56" rx="3"/><rect x="-37" y="-26" width="74" height="40" fill="#e4edf2"/><path d="M0 22v15 M-25 38h50" stroke="#304b60" stroke-width="3"/></g>
+<g id="firewall"><rect x="-54" y="-30" width="108" height="60" rx="2" fill="#fff2df" stroke="#985921" stroke-width="2.5"/><path d="M-54 -10H54 M-54 10H54 M-18 -30v20 M18 -30v20 M-36 -10v20 M0 -10v20 M36 -10v20 M-18 10v20 M18 10v20" fill="none" stroke="#985921" stroke-width="2"/></g>
+</defs>
+<rect width="1500" height="1250" fill="white"/>
+<text x="55" y="54" class="title">Water Plant Industrial Ethernet</text>
+<text x="55" y="87" fill="#536979">Industrial DMZ isolation · resilient OT fiber ring</text>
+<!-- Explicit and disjoint security boundaries -->
+<rect x="55" y="270" width="1390" height="215" rx="8" fill="#fffaf1" stroke="#b7853c" stroke-width="2.5" stroke-dasharray="10 6"/>
+<text x="80" y="306" class="zone">Industrial DMZ</text>
+<rect x="55" y="535" width="1390" height="665" rx="8" fill="#f5fafc" stroke="#47768c" stroke-width="2.5"/>
+<text x="80" y="574" class="zone">OT Control Zone</text>
+<!-- Security path -->
+<path class="fiber" d="M484 170H746"/>
+<rect class="label" x="547" y="139" width="152" height="25"/>
+<text x="623" y="158" text-anchor="middle">fiber · 10G</text>
+<path class="wire" d="M800 200V359"/>
+<rect class="label" x="817" y="225" width="235" height="27"/>
+<text x="827" y="245">trunk · VLAN 10 · 1G</text>
+<use href="#firewall" x="430" y="170"/><text x="430" y="225" text-anchor="middle" class="name">IT Firewall</text>
+<use href="#firewall" x="800" y="170"/><text x="873" y="177" class="name">OT Firewall</text>
+<!-- DMZ devices -->
+<path class="wire" d="M856 380H1150"/>
+<text x="998" y="361" text-anchor="middle">access · VLAN 10</text>
+<use href="#switch" x="800" y="380"/>
+<text x="800" y="428" text-anchor="middle" class="name">DMZ Switch</text>
+<use href="#server" x="1180" y="380"/>
+<text x="1180" y="439" text-anchor="middle" class="name">Historian Server</text>
+<text x="1180" y="465" text-anchor="middle" class="small">10.50.10.20</text>
+<!-- DMZ to SCADA, then ring -->
+<path class="wire" d="M800 401V510H400V612"/>
+<rect class="label" x="472" y="495" width="257" height="29"/>
+<text x="600" y="516" text-anchor="middle">trunk · VLAN 20 · 1G</text>
+<use href="#server" x="400" y="650"/>
+<text x="454" y="646" class="name">SCADA Server</text>
+<text x="454" y="673" class="small">10.50.20.10</text>
+<path class="wire" d="M400 688V769"/>
+<text x="419" y="733" class="small">copper · 1G</text>
+<!-- Closed rectangular ring A-B-C-D-A -->
+<path class="fiber" d="M456 790H994 M1050 811V1009 M994 1030H456 M400 1009V811"/>
+<rect x="620" y="774" width="210" height="32" fill="#f5fafc"/>
+<text x="725" y="797" text-anchor="middle" class="name">fiber · MRP ring</text>
+<rect x="620" y="1014" width="210" height="32" fill="#f5fafc"/>
+<text x="725" y="1037" text-anchor="middle" class="name">fiber · MRP ring</text>
+<text x="420" y="918" class="name">fiber · MRP ring</text>
+<text x="1030" y="918" text-anchor="end" class="name">fiber · MRP ring</text>
+<!-- Endpoint copper links -->
+<path class="wire" d="M344 790H225 M1106 790H1230 M1106 1030H1215 M344 1030H240"/>
+<text x="284" y="779" text-anchor="middle" class="small">copper</text>
+<text x="1166" y="779" text-anchor="middle" class="small">copper</text>
+<text x="1160" y="1019" text-anchor="middle" class="small">copper</text>
+<text x="288" y="1019" text-anchor="middle" class="small">copper</text>
+<!-- Ring switches -->
+<use href="#switch" x="400" y="790"/>
+<text x="400" y="852" text-anchor="middle" class="name">Managed Ring Switch A</text>
+<use href="#switch" x="1050" y="790"/>
+<text x="1050" y="852" text-anchor="middle" class="name">Managed Ring Switch B</text>
+<use href="#switch" x="1050" y="1030"/>
+<text x="1050" y="1092" text-anchor="middle" class="name">Managed Ring Switch C</text>
+<use href="#switch" x="400" y="1030"/>
+<text x="400" y="1092" text-anchor="middle" class="name">Managed Ring Switch D</text>
+<!-- Control endpoints -->
+<use href="#pc" x="180" y="790"/>
+<text x="180" y="866" text-anchor="middle" class="name">HMI Intake</text>
+<text x="180" y="893" text-anchor="middle" class="small">10.50.20.31</text>
+<use href="#server" x="1260" y="790"/>
+<text x="1260" y="866" text-anchor="middle" class="name">PLC Intake</text>
+<text x="1260" y="893" text-anchor="middle" class="small">10.50.20.41</text>
+<use href="#pc" x="1260" y="1030"/>
+<text x="1260" y="1110" text-anchor="middle" class="name">HMI Treatment</text>
+<text x="1260" y="1137" text-anchor="middle" class="small">10.50.20.32</text>
+<use href="#server" x="210" y="1030"/>
+<text x="195" y="1110" text-anchor="middle" class="name">PLC Treatment</text>
+<text x="195" y="1137" text-anchor="middle" class="small">10.50.20.42</text>
+</svg>

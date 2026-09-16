@@ -228,7 +228,10 @@ export function parseThreatModel(text: string): ThreatModelAst {
       if (!name) {
         throw new ThreatModelParseError("Trust boundary has no name.", lineNo);
       }
-      const boundary: TrustBoundary = { name, members, line: lineNo };
+      if (ast.boundaries.some(boundary => boundary.name === name)) {
+        throw new ThreatModelParseError(`Duplicate trust boundary "${name}". Combine its members in one declaration.`, lineNo);
+      }
+      const boundary: TrustBoundary = { name, members: [...new Set(members)], line: lineNo };
       ast.boundaries.push(boundary);
       continue;
     }

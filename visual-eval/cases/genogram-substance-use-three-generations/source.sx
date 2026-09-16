@@ -1,0 +1,14 @@
+# Clinical family history. Condition colours distinguish alcohol-use disorder from opioid-use disorder; emotional overlays support formulation.
+genogram "Morris Family · Substance Use Pattern" [asOf: 2026]
+arthur [male, 1945, deceased, death: 2015, label: "Arthur Morris", conditions: alcohol-use(half-left, #FFB300) + depression(half-right, #5C6BC0)]
+joan [female, 1947, label: "Joan Morris"]
+arthur -- joan
+  peter [male, 1970, label: "Peter Morris", conditions: alcohol-use(full, #FFB300)]
+  linda [female, 1973, label: "Linda Morris"]
+susan [female, 1972, label: "Susan Morris"]
+peter -- susan
+  caleb [male, 1996, label: "Caleb Morris", index, conditions: opioid-use(full, #F4511E)]
+  emily [female, 1999, label: "Emily Morris"]
+caleb -cutoff- peter [label: "No contact since 2023"]
+caleb -close- susan
+peter -conflict- susan

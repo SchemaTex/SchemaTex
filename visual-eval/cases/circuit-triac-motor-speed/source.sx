@@ -1,0 +1,12 @@
+circuit "TRIAC AC Motor Speed Controller" netlist
+V1 LIVE GND type=ac_source value="230 V AC, 50 Hz" label="V1 MAINS"
+F1 LIVE FUSED type=fuse value="2 A slow-blow" label="F1"
+Q1 FUSED LOAD GATE type=triac value="BT136-600" label="Q1"
+M1 LOAD GND type=motor value="230 V AC, 150 W" label="M1"
+R1 FUSED PHASE value="220 kΩ, 0.5 W" label="R1"
+P1 PHASE DIAC_A PHASE type=potentiometer value="470 kΩ" label="P1 SPEED"
+C1 DIAC_A GND value="100 nF, X2 275 VAC" label="C1"
+D1 DIAC_A GATE_D type=diac value="DB3, 32 V" label="D1"
+R2 GATE_D GATE value="180 Ω" label="R2"
+R3 FUSED SNUB value="100 Ω, 1 W" label="R3"
+C2 SNUB LOAD value="47 nF, X2 275 VAC" label="C2"

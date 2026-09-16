@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+<title>Clean-in-Place Skid — Supply, Return and Diverter Instrumentation</title>
+<desc>Caustic and rinse tanks feed separate isolation valves and a common CIP supply pump. Conductivity and temperature transmitters report to shared control-room controllers. AIC-501 commands the supply diverter and TIC-501 commands the return diverter. Both diverters have fail-closed solenoid actuators. The return path passes through the return diverter and return pump to the horizontal return tank.</desc>
+<defs>
+<style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#1E293B;font-size:11.5px} .title{font-size:20px;font-weight:600}.tag{font-size:12px;font-weight:600}.muted{fill:#64748B}.small{font-size:9.5px;letter-spacing:.25px}.zone{font-size:10px;letter-spacing:1px;fill:#64748B}.pipe{fill:none;stroke:#1E293B;stroke-width:2.5;stroke-linejoin:miter}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.symbol{fill:white;stroke:#1E293B;stroke-width:1.6;stroke-linejoin:miter}.signal{fill:none;stroke:#1E293B;stroke-width:1.4;stroke-dasharray:7 5}.hair{stroke:#E2E8F0;stroke-width:1}.letters{font-size:11.5px;font-weight:600}
+</style>
+<g id="gate"><path class="symbol" d="M-22-14 22 14V-14L-22 14Z"/></g>
+<g id="solenoid"><use href="#gate"/><path class="minor" d="M0-14V-23"/><rect class="symbol" x="-13" y="-49" width="26" height="26"/><text class="tag" text-anchor="middle" y="-31">S</text><text class="tag" x="23" y="-39">FC</text></g>
+<g id="pump"><circle class="symbol" r="30"/><path class="symbol" d="M-14-16 18 0-14 16Z"/></g>
+<g id="controller"><circle class="symbol" r="18"/><path class="minor" d="M0-18 15.6-9V9L0 18-15.6 9V-9Z M-18 0H18"/></g>
+<marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 10 4 0 8Z" fill="#1E293B"/></marker>
+</defs>
+<rect width="1600" height="985" fill="white"/>
+<text x="47" y="45" class="title">Clean-in-Place Skid</text>
+<text x="47" y="70" class="muted">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text x="1553" y="70" text-anchor="end" class="muted">solid dot = connection · jumper = crossing, not connected</text>
+<path class="hair" d="M47 99H1553"/>
+<path d="M47 256.5H1553" fill="none" stroke="#64748B" stroke-width="1" stroke-dasharray="12 4 2 4"/>
+<text x="1553" y="246" text-anchor="end" class="zone">CONTROL ROOM / DCS</text>
+<text x="1553" y="279" text-anchor="end" class="zone">FIELD</text>
+<!-- Separate electrical routes; a jumper preserves the non-connection at (810,205). -->
+<path class="signal" d="M650 412V223 M668 205H1010V551"/>
+<path class="signal" d="M810 452V214 M810 196V173 M828 155H1195V591 M1195 609V680H1010V741"/>
+<path d="M1195 591C1207 591 1207 609 1195 609" fill="none" stroke="#1E293B" stroke-width="1.4"/>
+<path d="M810 214C822 214 822 196 810 196" fill="none" stroke="#1E293B" stroke-width="1.4"/>
+<g transform="translate(650 205)"><use href="#controller"/><text class="letters" y="-3" text-anchor="middle">AIC</text><text y="13" text-anchor="middle">501</text></g>
+<g transform="translate(810 155)"><use href="#controller"/><text class="letters" y="-3" text-anchor="middle">TIC</text><text y="13" text-anchor="middle">501</text></g>
+<!-- Source tanks and individual isolation branches. -->
+<path class="pipe" d="M170 465V490H455V725H170V700 M455 600H520 M580 600H1495"/>
+<circle cx="455" cy="600" r="3.3" fill="#1E293B"/>
+<path class="symbol" d="M90 465V356C90 321 250 321 250 356V465Z"/>
+<text x="170" y="400" text-anchor="middle" class="tag">TK-501</text>
+<text x="170" y="421" text-anchor="middle" class="muted">Caustic Tank</text>
+<path class="symbol" d="M90 700V591C90 556 250 556 250 591V700Z"/>
+<text x="170" y="635" text-anchor="middle" class="tag">TK-502</text>
+<text x="170" y="656" text-anchor="middle" class="muted">Rinse Water Tank</text>
+<use href="#gate" transform="translate(330 490)"/>
+<text class="tag" x="330" y="533" text-anchor="middle">XV-501</text>
+<text class="muted" x="330" y="554" text-anchor="middle">Caustic Isolation</text>
+<use href="#gate" transform="translate(330 725)"/>
+<text class="tag" x="330" y="768" text-anchor="middle">XV-502</text>
+<text class="muted" x="330" y="789" text-anchor="middle">Rinse Isolation</text>
+<rect x="193" y="480" width="100" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="243" y="493.5" text-anchor="middle" class="small">DN50 · CAUSTIC</text>
+<rect x="181" y="715" width="113" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="237.5" y="728.5" text-anchor="middle" class="small">DN50 · RINSE WATER</text>
+<use href="#pump" transform="translate(550 600)"/>
+<text x="550" y="652" text-anchor="middle" class="tag">P-501</text>
+<text x="550" y="673" text-anchor="middle" class="muted">CIP Supply Pump</text>
+<!-- Field measurements on the supply-pump discharge. -->
+<path class="minor" d="M650 600V448 M810 600V488"/>
+<circle cx="650" cy="600" r="3.3" fill="#1E293B"/><circle cx="810" cy="600" r="3.3" fill="#1E293B"/>
+<circle cx="650" cy="430" r="18" class="symbol"/>
+<text x="650" y="427" text-anchor="middle" class="letters">AT</text><text x="650" y="442" text-anchor="middle">501</text>
+<text x="678" y="434" class="muted">Conductivity</text>
+<circle cx="810" cy="470" r="18" class="symbol"/>
+<text x="810" y="467" text-anchor="middle" class="letters">TT</text><text x="810" y="482" text-anchor="middle">501</text>
+<text x="838" y="474" class="muted">Temperature</text>
+<use href="#solenoid" transform="translate(1010 600)"/>
+<text x="1010" y="650" text-anchor="middle" class="tag">DV-501</text>
+<text x="1010" y="671" text-anchor="middle" class="muted">Supply Diverter</text>
+<rect x="1265" y="590" width="121" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="1325.5" y="603.5" text-anchor="middle" class="small">DN50 · CIP SUPPLY</text>
+<path class="pipe" d="M1450 600H1510" marker-end="url(#arrow)"/>
+<text x="1508" y="575" text-anchor="end" class="tag">ProcessCircuit</text>
+<text x="1325" y="635" text-anchor="middle" class="muted">Supply 70 °C</text>
+<!-- Independent return train. -->
+<path class="pipe" d="M720 790H1165 M1225 790H1350"/>
+<path class="minor" d="M720 790H757" marker-end="url(#arrow)"/>
+<text x="720" y="758" class="tag">ProcessReturn</text>
+<use href="#solenoid" transform="translate(1010 790)"/>
+<text x="1010" y="839" text-anchor="middle" class="tag">DV-502</text>
+<text x="1010" y="860" text-anchor="middle" class="muted">Return Diverter</text>
+<rect x="782" y="780" width="121" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="842.5" y="793.5" text-anchor="middle" class="small">DN50 · CIP RETURN</text>
+<text x="842" y="825" text-anchor="middle" class="muted">Return velocity 1.5 m/s</text>
+<use href="#pump" transform="translate(1195 790)"/>
+<text x="1195" y="839" text-anchor="middle" class="tag">P-502</text>
+<text x="1195" y="860" text-anchor="middle" class="muted">CIP Return Pump</text>
+<path class="symbol" d="M1350 730H1485C1518.3 730 1518.3 830 1485 830H1350C1316.7 830 1316.7 730 1350 730Z"/>
+<text x="1417.5" y="775" text-anchor="middle" class="tag">TK-503</text>
+<text x="1417.5" y="796" text-anchor="middle" class="muted">CIP Return Tank</text>
+<!-- Legend matches line weights and decorations used by the exemplar. -->
+<path class="hair" d="M47 886H1553"/>
+<path class="pipe" d="M47 922H92"/><text class="muted" x="102" y="926">Process</text>
+<path class="minor" d="M188 922H233"/><text class="muted" x="243" y="926">Process, minor</text>
+<path class="signal" d="M366 922H411"/><text class="muted" x="421" y="926">Electric signal</text>
+<path d="M537 922H582 M550 918 559 927" fill="none" stroke="#1E293B" stroke-width="1.4"/><text class="muted" x="592" y="926">Pneumatic signal</text>
+<path d="M726 922H771" fill="none" stroke="#1E293B" stroke-width="1.4"/><g fill="#1E293B"><circle cx="732" cy="922" r="2"/><circle cx="747" cy="922" r="2"/><circle cx="762" cy="922" r="2"/></g><text class="muted" x="781" y="926">Capillary / filled system</text>
+<text x="47" y="961" class="muted">Conductivity verifies chemical concentration. AIC-501 commands DV-501; TIC-501 commands DV-502. Both solenoid actuators fail closed (FC).</text>
+</svg>

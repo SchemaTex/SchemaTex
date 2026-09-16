@@ -19,6 +19,16 @@
 
 ---
 
+## Current rendering contract (2026-09-14)
+
+The variant exemplars under `visual-eval/exemplars/decisiontree/` define the current visual style; the older geometry examples below are illustrative.
+
+- Question trees use numbered hexagons and a common shelf of outcome cards. `classes:` and `class=` optionally name outcome categories. Explicit `emergency`, `urgent`, `routine` classes use red, amber, green; other classes use declaration order. Unclassified answers stay neutral. The engine never infers an urgency class from prose.
+- ML split cards are neutral; prediction headers, bars and count chips use class colour. Quoted operators such as `op="<="` are accepted. An explicit node metric (`mse`, `entropy`, etc.) keeps its own name.
+- Decision-analysis branches default to rounded orthogonal routing. Squares, circles and terminal triangles retain their notation, EVs appear in boxes, and green traces the reachable optimal strategy through both decisions and chance outcomes.
+- Influence uncertainty nodes are neutral ovals; `chance Margin "Unit margin" deterministic` draws a double oval. The value node is a dark octagon.
+- Text is never shortened to fit. Geometry and spacing are computed by the engine; authors provide content, relationships and optional semantic classes.
+
 ## 1. 用户与需求（第一性原理）
 
 Decision tree 名义上是同一种 "树" 图表，但真正使用这个名词的用户群体 **互相不重叠**。任何把三者压成一个渲染模式的设计都会同时得罪三方。本 standard 首先声明这点。

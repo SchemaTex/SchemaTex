@@ -1,0 +1,14 @@
+%% Context: First-notice-of-loss routing tree for property and casualty claims.
+decisiontree "Insurance Claim Routing"
+
+q "Is the reported loss above the fast-track value threshold?"
+  yes: q "Does the claim involve injury or liability?"
+    yes: a "Assign complex casualty adjuster"
+    no: q "Is there suspected fraud indicator?"
+      yes: a "Refer to special investigations"
+      no: a "Assign field property adjuster"
+  no: q "Is the claim type covered by automated rules?"
+    yes: a "Route to fast-track settlement"
+    no: q "Does the loss require repair network coordination?"
+      yes: a "Assign desk adjuster and repair partner"
+      no: a "Assign standard claims handler"

@@ -1,0 +1,21 @@
+fmea "EV battery pack DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  number: DFMEA-2026-014
+  item "Cell module" fn "Store and deliver energy"
+    mode "Thermal runaway"
+      effect "Pack fire / occupant injury" sev: 10
+      cause "Internal short from dendrite growth" occ: 4
+        controls prevention: "Cell qualification", detection: "In-line CT scan" det: 5
+      cause "Overcharge past cutoff" occ: 4
+        controls prevention: "BMS voltage clamp", detection: "Redundant voltage sense" det: 3
+    mode "Capacity fade"
+      effect "Reduced range" sev: 6
+      cause "Electrolyte depletion" occ: 5
+        controls detection: "Periodic SOH estimate" det: 6
+  item "Busbar joint" fn "Conduct current between modules"
+    mode "High-resistance connection"
+      effect "Local overheating" sev: 8
+      cause "Loose torque on weld" occ: 4
+        controls detection: "End-of-line resistance test" det: 4

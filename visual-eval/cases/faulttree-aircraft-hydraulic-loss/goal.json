@@ -1,0 +1,45 @@
+{
+  "id": "faulttree-aircraft-hydraulic-loss",
+  "type": "faulttree",
+  "title": "Total aircraft hydraulic failure",
+  "goal": "Show the combined supply and voting-control failures required to lose hydraulic actuation.",
+  "rubric": [
+    {
+      "id": "top-event",
+      "severity": "blocker",
+      "must": "The top event visibly identifies total hydraulic actuation as unavailable."
+    },
+    {
+      "id": "three-systems",
+      "severity": "blocker",
+      "must": "Three distinct hydraulic-system loss branches visibly combine at an AND gate."
+    },
+    {
+      "id": "voting-gate",
+      "severity": "blocker",
+      "must": "A gate visibly marked 2/3 combines the three actuator-control channel failures."
+    },
+    {
+      "id": "system-causes",
+      "severity": "major",
+      "must": "Each hydraulic-system branch visibly has pump and reservoir-leak causes."
+    },
+    {
+      "id": "control-series",
+      "severity": "major",
+      "must": "The supply-loss and control-vote-loss branches visibly join before the top event."
+    },
+    {
+      "id": "probabilities",
+      "severity": "minor",
+      "must": "Basic-event probabilities are visibly printed next to the component failures."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/faulttree/ideal.svg (sha256 7bffbe71b8bd). Corrected invalid relative arc in AND symbols. Exemplar green gate treatment and blue probabilities; existing gate logic retained. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

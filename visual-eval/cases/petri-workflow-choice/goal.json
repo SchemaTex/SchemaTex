@@ -1,0 +1,77 @@
+{
+  "id": "petri-workflow-choice",
+  "type": "petri",
+  "title": "Review Workflow Choice and Merge",
+  "goal": "A practitioner can visually assess the Review Workflow Choice and Merge scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "bipartite-net",
+      "severity": "blocker",
+      "must": "Places are circles and transitions are bars or rectangles, with arrows only between the two node kinds."
+    },
+    {
+      "id": "initial-marking",
+      "severity": "blocker",
+      "must": "Initial tokens are visibly shown in the resource or state places needed to start the process."
+    },
+    {
+      "id": "enabled-sequence",
+      "severity": "major",
+      "must": "The picture visibly supports the stated process progression through its marked places and transitions."
+    },
+    {
+      "id": "domain-control",
+      "severity": "major",
+      "must": "The net visibly expresses the scenario's buffer, shared resource, semaphore, cycle, or workflow choice control."
+    },
+    {
+      "id": "marking-legibility",
+      "severity": "minor",
+      "must": "Tokens, labels, and arrows remain readable as a one-page Petri net."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/petri/ideal.svg (sha256 ee1a8c675b71). Separated transition names from place labels; consistent sans-serif typography. Tokens and arcs unchanged. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The one-page Petri net visibly matches the source workflow: one token begins at Start, branches through either Standard or Expedite review, merges at Reviewed, and reaches Complete through Close. The stated firing sequence is shown and supported by the arrows. Some upper labels are closely spaced but remain identifiable.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:29:12.736Z",
+      "targetHash": "e6a64e0f32d2",
+      "sourceHash": "d81b2530441c",
+      "exemplarHash": "ee1a8c675b71",
+      "items": [
+        {
+          "id": "bipartite-net",
+          "verdict": "pass",
+          "evidence": "Places are outlined circles, transitions are solid vertical bars, and every visible arrow connects a place to a transition or a transition to a place."
+        },
+        {
+          "id": "initial-marking",
+          "verdict": "pass",
+          "evidence": "A single black token is clearly visible inside the Start place."
+        },
+        {
+          "id": "enabled-sequence",
+          "verdict": "pass",
+          "evidence": "The visible path Start → ChooseStandard → Standard → ReviewStandard → Reviewed → Close → Complete supports the stated firing sequence."
+        },
+        {
+          "id": "domain-control",
+          "verdict": "pass",
+          "evidence": "Start visibly offers standard and expedited alternative branches, which converge into the shared Reviewed place before Close."
+        },
+        {
+          "id": "marking-legibility",
+          "verdict": "pass",
+          "evidence": "The token, nodes, directional arrows, title, and firing-sequence annotation are readable on one page; the ChooseStandard and Standard labels are close but still distinguishable."
+        }
+      ]
+    }
+  }
+}

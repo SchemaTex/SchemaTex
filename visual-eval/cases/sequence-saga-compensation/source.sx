@@ -1,0 +1,31 @@
+%% Distributed order saga with compensation.
+sequenceDiagram
+participant Orchestrator
+participant Order
+participant Inventory
+participant Payment
+participant Shipping
+Orchestrator->>Order: Start saga
+activate Order
+par
+Order->>Inventory: Reserve stock
+Inventory-->>Order: Reserved
+and
+Order->>Payment: Authorize
+Payment-->>Order: Authorized
+end
+Order->>Shipping: Create shipment
+alt [success]
+Shipping-->>Order: Shipment ID
+else [failure]
+Shipping-->>Order: Failed
+loop [completed actions]
+Order->>Payment: Void authorization
+Payment-->>Order: Voided
+Order->>Inventory: Release stock
+Inventory-->>Order: Released
+end
+end
+Order-->>Orchestrator: Outcome
+deactivate Order
+Note over Order,Shipping: Reverse compensation

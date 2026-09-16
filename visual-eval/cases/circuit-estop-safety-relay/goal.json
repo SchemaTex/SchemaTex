@@ -1,0 +1,44 @@
+{
+  "id": "circuit-estop-safety-relay",
+  "type": "circuit",
+  "title": "Dual-channel E-stop safety relay",
+  "goal": "A reader must be able to trace two independent emergency-stop channels through a safety relay and its monitored contactor feedback loop.",
+  "rubric": [
+    {
+      "id": "two-estop-channels",
+      "severity": "blocker",
+      "must": "Two separate emergency-stop devices labelled CH A and CH B are visible."
+    },
+    {
+      "id": "separate-safety-inputs",
+      "severity": "blocker",
+      "must": "The safety relay visibly identifies separate S11-S12 and S21-S22 input channels."
+    },
+    {
+      "id": "safety-relay-rating",
+      "severity": "major",
+      "must": "A safety relay labelled 24 VDC and SIL3/PLe is visible."
+    },
+    {
+      "id": "manual-reset",
+      "severity": "major",
+      "must": "A labelled MANUAL RESET pushbutton is visibly wired to the safety relay."
+    },
+    {
+      "id": "dual-contactors",
+      "severity": "blocker",
+      "must": "Two distinct safety contactor coils labelled KM1 and KM2 are visible."
+    },
+    {
+      "id": "mirror-feedback",
+      "severity": "major",
+      "must": "Normally closed mirror contacts for both KM1 and KM2 are visibly traced back as EDM feedback."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. Both stop channels are visibly independent from their E-stop contacts to S11-S12 and S21-S22, the reset sits on Y1-Y2, and the two contactor mirror contacts return in series to the external device monitoring input. Terminal designations match a real safety relay."
+  }
+}

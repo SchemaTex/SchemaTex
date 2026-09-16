@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+<title>24 V HVAC Thermostat Control — rated control circuit</title>
+<rect width="1600" height="1100" fill="white"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#17232d;font-size:19px} .title{font-size:32px;font-weight:bold}.label{font-size:21px;font-weight:bold}.small{font-size:16px}.wire{fill:none;stroke:#17232d;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}.box{fill:white;stroke:#17232d;stroke-width:2.5}.dot{fill:#17232d}.pin{fill:white;stroke:#17232d;stroke-width:2.5}
+</style>
+<text x="55" y="60" class="title">24 V HVAC THERMOSTAT CONTROL</text>
+<text x="55" y="92">120 V supply / 24 V AC, Class 2 control circuit</text>
+<path d="M55 113H1545" stroke="#17232d" stroke-width="1.5"/>
+<!-- Supply and transformer primary -->
+<text x="55" y="161" class="label">V1 CONTROL SUPPLY</text>
+<text x="55" y="191">120 V AC, 60 Hz</text>
+<circle cx="120" cy="345" r="39" class="box"/>
+<path d="M94 345C102 319 112 319 120 345S138 371 146 345 M120 306V255H350V295 M120 384V445H350V405" class="wire"/>
+<text x="147" y="242" class="small">PRIMARY_L</text>
+<text x="147" y="469" class="small">PRIMARY_N</text>
+<text x="320" y="161" class="label">T1 CONTROL TRANSFORMER</text>
+<text x="320" y="191">120 V : 24 V AC, 40 VA</text>
+<!-- Conventional two winding iron core transformer -->
+<path d="M350 295 C383 295 383 322.5 350 322.5 C383 322.5 383 350 350 350 C383 350 383 377.5 350 377.5 C383 377.5 383 405 350 405 M412 295 C379 295 379 322.5 412 322.5 C379 322.5 379 350 412 350 C379 350 379 377.5 412 377.5 C379 377.5 379 405 412 405 M383 285V415 M390 285V415" class="wire"/>
+<path d="M412 295V255H685 M412 405V870H1480" class="wire"/>
+<text x="465" y="242">R · 24 V AC</text>
+<text x="429" y="839">C · COMMON</text>
+<!-- Thermostat -->
+<rect x="685" y="215" width="250" height="395" rx="0" class="box"/>
+<text x="810" y="291" text-anchor="middle" class="label">U1 THERMOSTAT</text>
+<text x="810" y="321" text-anchor="middle">24 V AC, Class 2</text>
+<circle cx="685" cy="255" r="5" class="pin"/><text x="705" y="263" class="label">R</text>
+<circle cx="935" cy="370" r="5" class="pin"/><text x="905" y="377" class="label">W</text>
+<circle cx="935" cy="455" r="5" class="pin"/><text x="905" y="462" class="label">G</text>
+<circle cx="935" cy="540" r="5" class="pin"/><text x="905" y="547" class="label">Y</text>
+<circle cx="810" cy="610" r="5" class="pin"/><text x="799" y="590" class="label">C</text>
+<path d="M810 615V870" class="wire"/><circle cx="810" cy="870" r="5" class="dot"/>
+<!-- Relay branches: IEC relay coils -->
+<path d="M940 370H1180 M1260 370H1480 M940 455H1180 M1260 455H1480 M940 540H1180 M1260 540H1480 M1480 370V870" class="wire"/>
+<rect x="1180" y="350" width="80" height="40" class="box"/><path d="M1190 382L1250 358" class="wire"/>
+<text x="1115" y="316" class="label">K1 FURNACE HEAT RELAY</text><text x="1280" y="397">24 V AC, 0.2 A</text>
+<rect x="1180" y="435" width="80" height="40" class="box"/><path d="M1190 467L1250 443" class="wire"/>
+<text x="1115" y="419" class="label">K2 FURNACE FAN RELAY</text><text x="1280" y="482">24 V AC, 0.2 A</text>
+<rect x="1180" y="520" width="80" height="40" class="box"/><path d="M1190 552L1250 528" class="wire"/>
+<text x="1115" y="503" class="label">K3 COMPRESSOR CONTACTOR</text>
+<text x="1280" y="570" class="small">24 V AC coil</text><text x="1180" y="587">30 A contacts</text>
+<circle cx="1480" cy="455" r="5" class="dot"/><circle cx="1480" cy="540" r="5" class="dot"/>
+<!-- Device connections; circles at junctions, line bridges at unconnected crossings -->
+<path d="M990 370V680 M1040 455V680 M1090 540V625H1310V680" class="wire"/>
+<circle cx="990" cy="370" r="5" class="dot"/><circle cx="1040" cy="455" r="5" class="dot"/><circle cx="1090" cy="540" r="5" class="dot"/>
+<!-- White masks and bridge arcs make crossing wires explicitly unconnected -->
+<path d="M980 455H1000 M980 540H1000 M1030 540H1050" stroke="white" stroke-width="9"/>
+<path d="M980 455Q990 438 1000 455 M980 540Q990 523 1000 540 M1030 540Q1040 523 1050 540" class="wire"/>
+<rect x="900" y="680" width="265" height="135" class="box"/>
+<circle cx="990" cy="680" r="5" class="pin"/><circle cx="1040" cy="680" r="5" class="pin"/>
+<text x="981" y="708">W</text><text x="1032" y="708">G</text>
+<text x="1032" y="745" class="label" text-anchor="middle">U3 FURNACE</text>
+<text x="1032" y="775" text-anchor="middle" class="small">24 V AC control, 80 kBtu/h</text>
+<text x="1073" y="804" class="small">C</text><circle cx="1080" cy="815" r="5" class="pin"/>
+<path d="M1080 820V870" class="wire"/><circle cx="1080" cy="870" r="5" class="dot"/>
+<rect x="1210" y="680" width="275" height="135" class="box"/>
+<circle cx="1310" cy="680" r="5" class="pin"/><text x="1303" y="708">Y</text>
+<text x="1347" y="745" class="label" text-anchor="middle">U2 CONDENSER UNIT</text>
+<text x="1347" y="775" text-anchor="middle">24 V AC control, 3 ton</text>
+<text x="1373" y="804" class="small">C</text><circle cx="1380" cy="815" r="5" class="pin"/>
+<path d="M1380 820V870" class="wire"/><circle cx="1380" cy="870" r="5" class="dot"/>
+<!-- Specified common return to ground -->
+<circle cx="570" cy="870" r="5" class="dot"/><path d="M570 870V973 M547 973H593 M554 983H586 M563 993H577" class="wire"/>
+<text x="605" y="922" class="label">W1 24 V COMMON</text>
+<text x="605" y="951">18 AWG common return</text><text x="550" y="1025" class="small">GND</text>
+<path d="M55 1047H1545" stroke="#17232d" stroke-width="1"/>
+<text x="55" y="1078" class="small">CONTROL NETLIST • Dots indicate connections; wire bridges indicate crossings without connection.</text>
+</svg>

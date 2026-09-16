@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1219" height="281" viewBox="0 0 1219 281" role="img" aria-label="Reliability block diagram" data-diagram-type="rbd"><title>Reliability block diagram</title>
+<desc>Reliability block diagram: 7 blocks. System reliability n/a — missing R on rbd.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1219" height="281" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="589.5" y="18" class="sx-rbd-rsys" text-anchor="middle">System reliability: n/a — missing R on rbd</text>
+<path d="M 660 77 L 704 77" class="sx-rbd-wire"/>
+<path d="M 515.5 113 L 515.5 77 L 542 77" class="sx-rbd-wire"/>
+<path d="M 877 77 L 903.5 77 L 903.5 113" class="sx-rbd-wire"/>
+<path d="M 660 149 L 704 149" class="sx-rbd-wire"/>
+<path d="M 515.5 113 L 515.5 149 L 542 149" class="sx-rbd-wire"/>
+<path d="M 877 149 L 903.5 149 L 903.5 113" class="sx-rbd-wire"/>
+<path d="M 468 113 L 515.5 113" class="sx-rbd-wire"/>
+<path d="M 903.5 113 L 947.5 113" class="sx-rbd-wire"/>
+<path d="M 224 113 L 268 113" class="sx-rbd-wire"/>
+<path d="M 28 113 L 58 113" class="sx-rbd-wire"/>
+<path d="M 1120.5 113 L 1150.5 113" class="sx-rbd-wire"/>
+<circle cx="515.5" cy="113" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="903.5" cy="113" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="113" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1150.5" cy="113" r="6" class="sx-rbd-term" data-node="out"/>
+<g class="sx-rbd-block-g" data-id="rbd"><rect x="58" y="90" width="166" height="46" rx="5" class="sx-rbd-block"/>
+<text x="141" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="141" dy="-6.5">Telecom core</tspan><tspan x="141" dy="13">network</tspan></text></g>
+<g class="sx-rbd-block-g" data-id="AGG" data-r="0.995"><rect x="268" y="90" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="368" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="368" dy="-6.5">Access aggregation</tspan><tspan x="368" dy="13">switch</tspan></text>
+<text x="368" y="151" class="sx-rbd-r" text-anchor="middle">R=0.995</text></g>
+<g class="sx-rbd-block-g" data-id="CORE_A" data-r="0.999"><rect x="542" y="54" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="601" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="601" dy="0">Core router A</tspan></text>
+<text x="601" y="115" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="FIBRE_A" data-r="0.997"><rect x="704" y="54" width="173" height="46" rx="5" class="sx-rbd-block"/>
+<text x="790.5" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="790.5" dy="-6.5">Backbone fibre</tspan><tspan x="790.5" dy="13">path A</tspan></text>
+<text x="790.5" y="115" class="sx-rbd-r" text-anchor="middle">R=0.997</text></g>
+<g class="sx-rbd-block-g" data-id="CORE_B" data-r="0.999"><rect x="542" y="126" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="601" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="601" dy="0">Core router B</tspan></text>
+<text x="601" y="187" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="FIBRE_B" data-r="0.997"><rect x="704" y="126" width="173" height="46" rx="5" class="sx-rbd-block"/>
+<text x="790.5" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="790.5" dy="-6.5">Backbone fibre</tspan><tspan x="790.5" dy="13">path B</tspan></text>
+<text x="790.5" y="187" class="sx-rbd-r" text-anchor="middle">R=0.997</text></g>
+<g class="sx-rbd-block-g" data-id="PEER" data-r="0.998"><rect x="947.5" y="90" width="173" height="46" rx="5" class="sx-rbd-block"/>
+<text x="1034" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1034" dy="-6.5">Internet peering</tspan><tspan x="1034" dy="13">edge</tspan></text>
+<text x="1034" y="151" class="sx-rbd-r" text-anchor="middle">R=0.998</text></g></g></svg>

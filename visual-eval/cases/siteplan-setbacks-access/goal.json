@@ -1,0 +1,96 @@
+{
+  "id": "siteplan-setbacks-access",
+  "type": "siteplan",
+  "title": "Parcel setbacks and access",
+  "goal": "A reader must be able to identify the parcel dimensions, distinguish all four setback lines from the property boundaries, and trace vehicle and pedestrian access from the street to the building.",
+  "rubric": [
+    {
+      "id": "distinct-property-boundary",
+      "severity": "blocker",
+      "must": "The parcel is a closed rectangle with a heavier continuous boundary visibly distinct from the four dashed setback lines inside it."
+    },
+    {
+      "id": "four-labelled-setbacks",
+      "severity": "major",
+      "must": "Four visible setback lines are individually labelled Rear setback 6 m, Front setback 8 m, West setback 5 m, and East setback 5 m beside the corresponding sides."
+    },
+    {
+      "id": "building-within-setbacks",
+      "severity": "blocker",
+      "must": "The closed building footprint lies entirely inside all four setback lines, with visible clearance from each line and each property boundary."
+    },
+    {
+      "id": "parcel-dimension-attachment",
+      "severity": "major",
+      "must": "The 30 m parcel-width dimension spans the two ends of the horizontal property boundary, and the 40 m parcel-depth dimension spans the two ends of the vertical property boundary, without terminating on a setback or building edge."
+    },
+    {
+      "id": "vehicle-access-visible",
+      "severity": "blocker",
+      "must": "A continuous wide driveway connects the street to the building, with its route visible through the frontage and setback crossing and unobscured by annotations."
+    },
+    {
+      "id": "pedestrian-entrance-access",
+      "severity": "major",
+      "must": "A narrower pedestrian path visibly connects the street to the marked building entrance, remains distinct from the driveway, and is not hidden by labels or callouts."
+    },
+    {
+      "id": "orientation-and-labels",
+      "severity": "major",
+      "must": "A legible north arrow points toward the rear of the parcel, a scale bar is visible, and the street, building, setback, and dimension labels can all be read without overlapping one another."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the siteplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly satisfies the complete site-plan intent: parcel boundaries and dimensions are clear, all four setbacks are dashed and labelled, the building is inside them, and separate vehicle and pedestrian routes connect the street to the building.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:51.540Z",
+      "targetHash": "36907fb25f9d",
+      "sourceHash": "1719e5855a27",
+      "exemplarHash": "84bc448556d8",
+      "items": [
+        {
+          "id": "distinct-property-boundary",
+          "verdict": "pass",
+          "evidence": "The parcel is a closed rectangle drawn with a heavy continuous black line, clearly distinct from the lighter dashed setback rectangle inside."
+        },
+        {
+          "id": "four-labelled-setbacks",
+          "verdict": "pass",
+          "evidence": "All four dashed sides are visible and individually labelled: Rear setback 6 m, Front setback 8 m, West setback 5 m, and East setback 5 m."
+        },
+        {
+          "id": "building-within-setbacks",
+          "verdict": "pass",
+          "evidence": "The closed grey building footprint lies entirely within the dashed setback rectangle, with visible clearance on every side."
+        },
+        {
+          "id": "parcel-dimension-attachment",
+          "verdict": "pass",
+          "evidence": "The 30 m parcel width dimension spans the left and right ends of the top property boundary, while the 40 m parcel depth dimension spans the top and bottom ends of the left property boundary."
+        },
+        {
+          "id": "vehicle-access-visible",
+          "verdict": "pass",
+          "evidence": "A wide, clearly outlined driveway runs continuously from the street across the front property boundary and setback to the building's front edge; its route is unobscured."
+        },
+        {
+          "id": "pedestrian-entrance-access",
+          "verdict": "pass",
+          "evidence": "A narrower 1.2 m pedestrian path runs separately from the street to the visibly marked entrance on the building, remaining distinguishable from the driveway."
+        },
+        {
+          "id": "orientation-and-labels",
+          "verdict": "pass",
+          "evidence": "A legible north arrow points upward toward the parcel rear, a 0–20 m graphic scale is visible, and the street, building, setback, and dimension labels are readable without material overlap."
+        }
+      ]
+    }
+  }
+}

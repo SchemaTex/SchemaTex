@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="800" viewBox="0 0 1060 800" role="img" aria-labelledby="title desc">
+  <title id="title">Laboratory supplier positioning</title>
+  <desc id="desc">Four laboratory suppliers compared on price, increasing to the right, and assay quality, increasing upward. Northstar Labs: position 0.24, 0.42, size 4, value. Meridian Diagnostics: position 0.76, 0.86, size 7, premium. Apex Bioanalytics: position 0.58, 0.68, size 5, specialist. RapidTest Co.: position 0.36, 0.26, size 3, value. Bubble area is proportional to size.</desc>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #1e293b; }
+    .title { font-size:22px; font-weight:600; }
+    .subtitle { font-size:13px; fill:#475569; }
+    .name { font-size:12px; font-weight:500; }
+    .detail { font-size:10.5px; fill:#475569; }
+    .axis { font-size:12px; font-weight:600; }
+    .end { font-size:11px; fill:#475569; }
+    .heading { font-size:11px; font-weight:600; letter-spacing:.6px; fill:#475569; }
+    .key { font-size:12px; }
+    .rule { stroke:#e2e8f0; stroke-width:1; fill:none; }
+    .value { fill:#24618c; fill-opacity:.85; stroke:#1b4963; stroke-width:1.5; }
+    .premium { fill:#3f8f7a; fill-opacity:.85; stroke:#306b5b; stroke-width:1.5; }
+    .specialist { fill:#c08a2e; fill-opacity:.85; stroke:#906723; stroke-width:1.5; }
+  </style>
+  <rect width="1060" height="800" fill="#ffffff"/>
+  <text x="48" y="46" class="title">Laboratory supplier positioning</text>
+  <text x="48" y="74" class="subtitle">Bubble area = supplier size. Price increases to the right; assay quality increases upward.</text>
+
+  <rect x="132" y="124" width="300" height="300" fill="#E6E9ED"/>
+  <rect x="432" y="124" width="300" height="300" fill="#F6F5F4"/>
+  <rect x="132" y="424" width="300" height="300" fill="#F1F3F6"/>
+  <rect x="432" y="424" width="300" height="300" fill="#FCFBFB"/>
+  <rect x="132" y="124" width="600" height="600" class="rule"/>
+  <path d="M432 124V724M132 424H732" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+
+  <path d="M132 724V108M132 724H748" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+  <path d="M132 100L127.5 110H136.5Z M756 724L746 719.5V728.5Z" fill="#1e293b"/>
+  <text x="132" y="750" class="end">Low price</text>
+  <text x="732" y="750" class="end" text-anchor="end">Premium price</text>
+  <text x="432" y="774" class="axis" text-anchor="middle">Price</text>
+  <text transform="translate(104 124) rotate(-90)" class="end" text-anchor="end">High assay quality</text>
+  <text transform="translate(104 724) rotate(-90)" class="end">Basic assay quality</text>
+  <text transform="translate(78 424) rotate(-90)" class="axis" text-anchor="middle">Assay quality</text>
+
+  <circle cx="588" cy="208" r="46" class="premium"/>
+  <text x="532" y="205" class="name" text-anchor="end">Meridian Diagnostics</text>
+  <text x="532" y="218" class="detail" text-anchor="end">7</text>
+
+  <circle cx="480" cy="316" r="38.876" class="specialist"/>
+  <text x="529" y="313" class="name">Apex Bioanalytics</text>
+  <text x="529" y="326" class="detail">5</text>
+
+  <circle cx="276" cy="472" r="34.772" class="value"/>
+  <text x="321" y="469" class="name">Northstar Labs</text>
+  <text x="321" y="482" class="detail">4</text>
+
+  <circle cx="348" cy="568" r="30.114" class="value"/>
+  <text x="388" y="565" class="name">RapidTest Co.</text>
+  <text x="388" y="578" class="detail">3</text>
+
+  <rect x="776" y="124" width="236" height="404" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="794" y="150" class="heading">CATEGORY</text>
+  <circle cx="801" cy="168" r="6.5" class="value"/>
+  <text x="814" y="172" class="key">Value</text>
+  <circle cx="801" cy="194" r="6.5" class="premium"/>
+  <text x="814" y="198" class="key">Premium</text>
+  <circle cx="801" cy="220" r="6.5" class="specialist"/>
+  <text x="814" y="224" class="key">Specialist</text>
+  <path d="M794 252H994" class="rule"/>
+  <text x="794" y="280" class="heading">SUPPLIER SIZE</text>
+  <g fill="none" stroke="#94a3b8" stroke-width="1">
+    <circle cx="846" cy="360" r="46"/>
+    <circle cx="846" cy="367.124" r="38.876"/>
+    <circle cx="846" cy="375.886" r="30.114"/>
+  </g>
+  <path d="M846 314H912M846 328.248H912M846 345.772H912" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="918" y="318" class="detail">7</text>
+  <text x="918" y="332.248" class="detail">5</text>
+  <text x="918" y="349.772" class="detail">3</text>
+  <path d="M794 442H994" class="rule"/>
+  <text x="794" y="470" class="heading">SUPPLIERS</text>
+  <text x="794" y="492" font-size="13" font-weight="600">4 laboratory suppliers</text>
+  <text x="794" y="510" class="detail">across 3 categories</text>
+</svg>

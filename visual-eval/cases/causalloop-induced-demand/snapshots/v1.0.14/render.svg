@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="506" height="449" viewBox="0 0 506 449" role="img" aria-label="Causal loop diagram" data-diagram-type="causalloop"><title>Causal loop diagram</title>
+<desc>Causal loop diagram: 5 variables, 5 causal links. 1 feedback loop: 0 reinforcing (R), 1 balancing (B). B1 &quot;Induced demand&quot; (balancing, 1 negative link): Travel time → Driving attractiveness → Vehicle trips → Congestion → Travel time. Not in any loop: Road capacity. Line 3: unrecognised line: &quot;causalloop &quot;Urban traffic induced demand&quot;&quot;</desc>
+<style>.sx-cld-bg { fill: #ffffff; }
+.sx-cld-link { fill: none; stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-arrow { fill: #1a1a1a; stroke: none; }
+.sx-cld-var { fill: #1a1a1a; font-size: 13px; font-weight: 600; }
+.sx-cld-polarity { fill: #1a1a1a; font-size: 14px; font-weight: 700; }
+.sx-cld-link-label { fill: #1a1a1a; font-size: 9px; }
+.sx-cld-delay { stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-glyph { fill: none; stroke: #1d6fd6; stroke-width: 2; }
+.sx-cld-glyph-head { fill: #1d6fd6; stroke: none; }
+.sx-cld-glyph-label { fill: #1d6fd6; font-size: 12px; font-weight: 700; }
+.sx-cld-glyph-phrase { fill: #1d6fd6; font-size: 10px; font-style: italic; }
+.sx-cld-title { fill: #1a1a1a; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="506" height="449" class="sx-cld-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-cld-link-g" data-from="Road capacity" data-to="Travel time" data-polarity="-"><path d="M 87.85 351 Q 225.45 242.33 226.65 67" class="sx-cld-link"/>
+<polygon points="226.65,67 231.09,76.03 222.09,75.97" class="sx-cld-arrow"/>
+<text x="235.58347327615857" y="82.39063868729994" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Travel time" data-to="Driving attractiveness" data-polarity="-"><path d="M 246 67 Q 319.4 87.6 340 161" class="sx-cld-link"/>
+<polygon points="340,161 333.24,153.55 341.9,151.12" class="sx-cld-arrow"/>
+<text x="345.1795717276927" y="151.18932963579073" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Driving attractiveness" data-to="Vehicle trips" data-polarity="+"><path d="M 340 187 Q 319.4 260.4 246 281" class="sx-cld-link"/>
+<polygon points="246,281 253.45,274.24 255.88,282.9" class="sx-cld-arrow"/>
+<text x="259.8106703642093" y="290.1795717276927" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Vehicle trips" data-to="Congestion" data-polarity="+"><path d="M 220 281 Q 146.6 260.4 126 187" class="sx-cld-link"/>
+<polygon points="126,187 132.76,194.45 124.1,196.88" class="sx-cld-arrow"/>
+<text x="120.82042827230731" y="204.8106703642093" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Congestion" data-to="Travel time" data-polarity="+"><path d="M 126 161 Q 146.6 87.6 220 67" class="sx-cld-link"/>
+<polygon points="220,67 212.55,73.76 210.12,65.1" class="sx-cld-arrow"/>
+<text x="206.18932963579073" y="65.82042827230731" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-glyph-g" data-loop="B1" data-kind="B" data-vars="Travel time,Driving attractiveness,Vehicle trips,Congestion" data-negatives="1" data-circulation="cw"><path d="M 233 158 A 16 16 0 1 1 219.14 166" class="sx-cld-glyph"/>
+<polygon points="219.14,166 218.67,173.81 212.61,170.31" class="sx-cld-glyph-head"/>
+<text x="233" y="179" class="sx-cld-glyph-label" text-anchor="middle">B1</text>
+<text x="233" y="203" class="sx-cld-glyph-phrase" text-anchor="middle">Induced demand</text></g>
+<g class="sx-cld-var-g" data-id="Road capacity"><text x="81.5" y="368" class="sx-cld-var" text-anchor="middle">Road capacity</text></g>
+<g class="sx-cld-var-g" data-id="Travel time"><text x="233" y="58" class="sx-cld-var" text-anchor="middle">Travel time</text></g>
+<g class="sx-cld-var-g" data-id="Driving attractiveness"><text x="353" y="178" class="sx-cld-var" text-anchor="middle">Driving attractiveness</text></g>
+<g class="sx-cld-var-g" data-id="Vehicle trips"><text x="233" y="298" class="sx-cld-var" text-anchor="middle">Vehicle trips</text></g>
+<g class="sx-cld-var-g" data-id="Congestion"><text x="113" y="178.00000000000003" class="sx-cld-var" text-anchor="middle">Congestion</text></g></g></svg>

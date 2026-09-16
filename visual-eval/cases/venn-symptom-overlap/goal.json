@@ -1,0 +1,41 @@
+{
+  "id": "venn-symptom-overlap",
+  "type": "venn",
+  "variant": "venn",
+  "title": "Cold, flu, and allergy symptom overlap",
+  "goal": "A teaching aid can distinguish shared symptoms from condition-specific symptoms.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Three labelled overlapping condition sets are visibly present."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "The central three-way overlap is visibly labelled Congestion."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Pairwise symptom overlaps are visibly labelled."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "Each condition has a visible unique symptom."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "Labels are readable in or beside their regions."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/venn/venn/ideal.svg (07e0f59e6164); rendered and visually reviewed. Three equal translucent circles; every exclusive, pairwise and triple region is labelled inside its exact region, with clearance from boundaries. No areas or counts invented."
+  }
+}

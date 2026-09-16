@@ -1,0 +1,78 @@
+{
+  "id": "phylo-primates",
+  "type": "phylo",
+  "title": "Primate Phylogeny",
+  "goal": "A practitioner can visually assess the Primate Phylogeny scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "tree-topology",
+      "severity": "blocker",
+      "must": "A rooted branching tree visibly shows the stated sister taxa and their clade relationships."
+    },
+    {
+      "id": "branch-lengths",
+      "severity": "blocker",
+      "must": "Horizontal branch lengths visibly vary to encode the supplied evolutionary distances."
+    },
+    {
+      "id": "tip-labels",
+      "severity": "major",
+      "must": "The named taxa are legible at the tree tips."
+    },
+    {
+      "id": "highlighted-clade",
+      "severity": "major",
+      "must": "The named clade is visibly highlighted distinctly from the rest of the tree."
+    },
+    {
+      "id": "scale",
+      "severity": "minor",
+      "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing clearly presents the supplied rectangular phylogram: Human and Chimpanzee are sister taxa, Gorilla joins their highlighted Homininae clade, followed by Orangutan and then Gibbon. Horizontal branch lengths visibly vary, all five tip labels are legible, and a 0.01 substitutions/site scale is shown.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:27:10.976Z",
+      "targetHash": "436fcb2031bd",
+      "sourceHash": "5f4ac90b7d13",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "The rooted tree visibly shows Human and Chimpanzee sharing an immediate ancestor, that pair joining Gorilla, then Orangutan, with Gibbon as the outermost split."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Horizontal segments have visibly different lengths consistent with a phylogram, including short terminal Human/Chimpanzee branches and longer basal branches."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "Human, Chimpanzee, Gorilla, Orangutan, and Gibbon are all clearly legible beside their respective tips."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "Human, Chimpanzee, and Gorilla are distinctly emphasized with blue branches, a pale blue region, a bracket, and the label Homininae."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A visible scale bar is labeled 0.01 substitutions/site, and accompanying text identifies horizontal distance as substitutions/site."
+        }
+      ]
+    }
+  },
+  "variant": "rectangular"
+}

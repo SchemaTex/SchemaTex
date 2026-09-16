@@ -1,0 +1,45 @@
+{
+  "id": "eventtree-dam-overtopping",
+  "type": "eventtree",
+  "title": "Dam overtopping",
+  "goal": "Show flood outcomes through warning, spillway operation, and evacuation.",
+  "rubric": [
+    {
+      "id": "initiator",
+      "severity": "blocker",
+      "must": "The initiating event Extreme inflow exceeds reservoir design level and its frequency are visible at the left."
+    },
+    {
+      "id": "functions",
+      "severity": "blocker",
+      "must": "Ordered function columns visibly show flood warning, emergency spillway, and evacuation."
+    },
+    {
+      "id": "outcomes",
+      "severity": "blocker",
+      "must": "Terminal branches visibly distinguish controlled-release and overtopping outcomes."
+    },
+    {
+      "id": "probabilities",
+      "severity": "major",
+      "must": "Each safety-function column visibly shows complementary success and failure branch probabilities."
+    },
+    {
+      "id": "branching",
+      "severity": "major",
+      "must": "Success and failure paths are visibly traceable from the initiator to terminal outcomes."
+    },
+    {
+      "id": "layout",
+      "severity": "minor",
+      "must": "The left-to-right event-tree sequence remains legible without ambiguous crossings."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Independently authored against visual-eval/exemplars/eventtree/ideal.svg (sha256 064a513719ee), source sha256 18cc0b3d29e3. Independent orthogonal event tree with success above failure, pruned wildcard branches, complementary probabilities, aligned outcome table, and independently multiplied sequence frequencies; their sum equals the initiating frequency. No invented severity classes. All 21 risk-batch targets were rasterised with Resvg and visually inspected individually on 2026-09-14; this drawing was accepted for geometry, label readability and semantic traceability."
+  }
+}

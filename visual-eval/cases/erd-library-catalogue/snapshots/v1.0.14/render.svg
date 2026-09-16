@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="784" height="558" viewBox="0 0 784 558" class="lt-erd"><title>Schematex ERD</title>
+<desc>Entity-Relationship Diagram with 7 entities and 7 relationships.</desc>
+<style>.lt-erd { font-family: system-ui, -apple-system, sans-serif; }
+.lt-erd-title { font: bold 16px sans-serif; fill: #0f172a; }
+.lt-erd-entity-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header { font: 600 13px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-erd-attr-name { font: 500 12px sans-serif; fill: #0f172a; dominant-baseline: middle; }
+.lt-erd-attr-name-pk { font: 600 12px sans-serif; fill: #0f172a; text-decoration: underline; dominant-baseline: middle; }
+.lt-erd-attr-type { font: 11px monospace; fill: #475569; dominant-baseline: middle; }
+.lt-erd-attr-marker { font: 700 10px sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0.3px; }
+.lt-erd-attr-marker-bg-pk { fill: #2563eb; stroke: none; }
+.lt-erd-attr-marker-bg-fk { fill: #d97706; stroke: none; }
+.lt-erd-attr-marker-bg-uk { fill: #059669; stroke: none; }
+.lt-erd-attr-marker-bg-nn { fill: #94a3b8; stroke: none; }
+.lt-erd-row-divider { stroke: #f1f5f9; stroke-width: 1; }
+.lt-erd-edge { fill: none; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-edge-non-identifying { stroke-dasharray: 5,4; }
+.lt-erd-glyph { stroke: #334155; stroke-width: 1.5; fill: none; }
+.lt-erd-glyph-circle { stroke: #334155; stroke-width: 1.5; fill: #ffffff; }
+.lt-erd-edge-label-bg { fill: #ffffff; stroke: #f1f5f9; stroke-width: 1; }
+.lt-erd-edge-label { font: 500 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }</style>
+
+<g class="lt-erd-edges" transform="translate(0, 0)"><g class="lt-erd-edge-group"><path d="M 212 81 L 392 81 L 392 207.5 L 572 207.5" class="lt-erd-edge"/>
+<line x1="230" y1="87" x2="230" y2="75" class="lt-erd-glyph"/>
+<circle cx="554" cy="207.5" r="4" class="lt-erd-glyph-circle"/><line x1="562" y1="207.5" x2="572" y2="207.5" class="lt-erd-glyph"/><line x1="562" y1="207.5" x2="572" y2="201.5" class="lt-erd-glyph"/><line x1="562" y1="207.5" x2="572" y2="213.5" class="lt-erd-glyph"/>
+<rect x="364" y="129.25" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="392" y="138.25" class="lt-erd-edge-label">borrows</text></g>
+<g class="lt-erd-edge-group"><path d="M 482 334 L 527 334 L 527 207.5 L 572 207.5" class="lt-erd-edge"/>
+<line x1="500" y1="340" x2="500" y2="328" class="lt-erd-glyph"/>
+<circle cx="554" cy="207.5" r="4" class="lt-erd-glyph-circle"/><line x1="562" y1="207.5" x2="572" y2="207.5" class="lt-erd-glyph"/><line x1="562" y1="207.5" x2="572" y2="201.5" class="lt-erd-glyph"/><line x1="562" y1="207.5" x2="572" y2="213.5" class="lt-erd-glyph"/>
+<rect x="484" y="255.75" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="527" y="264.75" class="lt-erd-edge-label">is_loaned_on</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 235 L 257 235 L 257 334 L 302 334" class="lt-erd-edge"/>
+<line x1="230" y1="241" x2="230" y2="229" class="lt-erd-glyph"/>
+<line x1="284" y1="328" x2="284" y2="340" class="lt-erd-glyph"/><line x1="292" y1="334" x2="302" y2="334" class="lt-erd-glyph"/><line x1="292" y1="334" x2="302" y2="328" class="lt-erd-glyph"/><line x1="292" y1="334" x2="302" y2="340" class="lt-erd-glyph"/>
+<rect x="241" y="269.5" width="32" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="257" y="278.5" class="lt-erd-edge-label">has</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 235 L 247 235 L 247 158 L 302 158" class="lt-erd-edge"/>
+<line x1="230" y1="241" x2="230" y2="229" class="lt-erd-glyph"/>
+<circle cx="284" cy="158" r="4" class="lt-erd-glyph-circle"/><line x1="292" y1="158" x2="302" y2="158" class="lt-erd-glyph"/><line x1="292" y1="158" x2="302" y2="152" class="lt-erd-glyph"/><line x1="292" y1="158" x2="302" y2="164" class="lt-erd-glyph"/>
+<rect x="195" y="181.5" width="104" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="247" y="190.5" class="lt-erd-edge-label">is_reserved_for</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 81 L 267 81 L 267 158 L 302 158" class="lt-erd-edge"/>
+<line x1="230" y1="87" x2="230" y2="75" class="lt-erd-glyph"/>
+<circle cx="284" cy="158" r="4" class="lt-erd-glyph-circle"/><line x1="292" y1="158" x2="302" y2="158" class="lt-erd-glyph"/><line x1="292" y1="158" x2="302" y2="152" class="lt-erd-glyph"/><line x1="292" y1="158" x2="302" y2="164" class="lt-erd-glyph"/>
+<rect x="245" y="104.5" width="44" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="267" y="113.5" class="lt-erd-edge-label">makes</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 378 L 237 378 L 237 488 L 302 488" class="lt-erd-edge"/>
+<line x1="230" y1="384" x2="230" y2="372" class="lt-erd-glyph"/>
+<circle cx="284" cy="488" r="4" class="lt-erd-glyph-circle"/><line x1="292" y1="488" x2="302" y2="488" class="lt-erd-glyph"/><line x1="292" y1="488" x2="302" y2="482" class="lt-erd-glyph"/><line x1="292" y1="488" x2="302" y2="494" class="lt-erd-glyph"/>
+<rect x="197" y="418" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="237" y="427" class="lt-erd-edge-label">contributes</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 235 L 277 235 L 277 488 L 302 488" class="lt-erd-edge"/>
+<line x1="230" y1="241" x2="230" y2="229" class="lt-erd-glyph"/>
+<line x1="284" y1="482" x2="284" y2="494" class="lt-erd-glyph"/><line x1="292" y1="488" x2="302" y2="488" class="lt-erd-glyph"/><line x1="292" y1="488" x2="302" y2="482" class="lt-erd-glyph"/><line x1="292" y1="488" x2="302" y2="494" class="lt-erd-glyph"/>
+<rect x="249" y="346.5" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="277" y="355.5" class="lt-erd-edge-label">credits</text></g></g>
+<g class="lt-erd-entities" transform="translate(0, 0)"><g class="lt-erd-entity" data-id="MEMBER"><rect x="32" y="32" width="180" height="98" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 36 Q 32 32 36 32 L 208 32 Q 212 32 212 36 L 212 60 L 32 60 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="46" class="lt-erd-entity-header">MEMBER</text>
+<text x="46" y="71" class="lt-erd-attr-name-pk">member_id</text>
+<text x="164" y="71" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="63" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="72" class="lt-erd-attr-marker">PK</text>
+<line x1="32" y1="82" x2="212" y2="82" class="lt-erd-row-divider"/>
+<text x="46" y="93" class="lt-erd-attr-name">name</text>
+<text x="194" y="93" class="lt-erd-attr-type" text-anchor="end">string</text>
+<line x1="32" y1="104" x2="212" y2="104" class="lt-erd-row-divider"/>
+<text x="46" y="115" class="lt-erd-attr-name">email</text>
+<text x="194" y="115" class="lt-erd-attr-type" text-anchor="end">string</text></g>
+<g class="lt-erd-entity" data-id="TITLE"><rect x="32" y="186" width="180" height="98" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 190 Q 32 186 36 186 L 208 186 Q 212 186 212 190 L 212 214 L 32 214 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="200" class="lt-erd-entity-header">TITLE</text>
+<text x="46" y="225" class="lt-erd-attr-name-pk">title_id</text>
+<text x="164" y="225" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="217" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="226" class="lt-erd-attr-marker">PK</text>
+<line x1="32" y1="236" x2="212" y2="236" class="lt-erd-row-divider"/>
+<text x="46" y="247" class="lt-erd-attr-name">isbn</text>
+<text x="194" y="247" class="lt-erd-attr-type" text-anchor="end">string</text>
+<line x1="32" y1="258" x2="212" y2="258" class="lt-erd-row-divider"/>
+<text x="46" y="269" class="lt-erd-attr-name">title</text>
+<text x="194" y="269" class="lt-erd-attr-type" text-anchor="end">string</text></g>
+<g class="lt-erd-entity" data-id="AUTHOR"><rect x="32" y="340" width="180" height="76" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 344 Q 32 340 36 340 L 208 340 Q 212 340 212 344 L 212 368 L 32 368 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="354" class="lt-erd-entity-header">AUTHOR</text>
+<text x="46" y="379" class="lt-erd-attr-name-pk">author_id</text>
+<text x="164" y="379" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="371" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="380" class="lt-erd-attr-marker">PK</text>
+<line x1="32" y1="390" x2="212" y2="390" class="lt-erd-row-divider"/>
+<text x="46" y="401" class="lt-erd-attr-name">name</text>
+<text x="194" y="401" class="lt-erd-attr-type" text-anchor="end">string</text></g>
+<g class="lt-erd-entity" data-id="RESERVATION"><rect x="302" y="98" width="180" height="120" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 302 102 Q 302 98 306 98 L 478 98 Q 482 98 482 102 L 482 126 L 302 126 Z" class="lt-erd-entity-header-bg"/>
+<text x="392" y="112" class="lt-erd-entity-header">RESERVATION</text>
+<text x="316" y="137" class="lt-erd-attr-name-pk">reservation_id</text>
+<text x="434" y="137" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="129" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="455" y="138" class="lt-erd-attr-marker">PK</text>
+<line x1="302" y1="148" x2="482" y2="148" class="lt-erd-row-divider"/>
+<text x="316" y="159" class="lt-erd-attr-name">member_id</text>
+<text x="434" y="159" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="151" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="455" y="160" class="lt-erd-attr-marker">FK</text>
+<line x1="302" y1="170" x2="482" y2="170" class="lt-erd-row-divider"/>
+<text x="316" y="181" class="lt-erd-attr-name">title_id</text>
+<text x="434" y="181" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="173" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="455" y="182" class="lt-erd-attr-marker">FK</text>
+<line x1="302" y1="192" x2="482" y2="192" class="lt-erd-row-divider"/>
+<text x="316" y="203" class="lt-erd-attr-name">requested_at</text>
+<text x="464" y="203" class="lt-erd-attr-type" text-anchor="end">date</text></g>
+<g class="lt-erd-entity" data-id="COPY"><rect x="302" y="274" width="180" height="120" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 302 278 Q 302 274 306 274 L 478 274 Q 482 274 482 278 L 482 302 L 302 302 Z" class="lt-erd-entity-header-bg"/>
+<text x="392" y="288" class="lt-erd-entity-header">COPY</text>
+<text x="316" y="313" class="lt-erd-attr-name-pk">copy_id</text>
+<text x="434" y="313" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="305" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="455" y="314" class="lt-erd-attr-marker">PK</text>
+<line x1="302" y1="324" x2="482" y2="324" class="lt-erd-row-divider"/>
+<text x="316" y="335" class="lt-erd-attr-name">title_id</text>
+<text x="434" y="335" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="327" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="455" y="336" class="lt-erd-attr-marker">FK</text>
+<line x1="302" y1="346" x2="482" y2="346" class="lt-erd-row-divider"/>
+<text x="316" y="357" class="lt-erd-attr-name">barcode</text>
+<text x="464" y="357" class="lt-erd-attr-type" text-anchor="end">string</text>
+<line x1="302" y1="368" x2="482" y2="368" class="lt-erd-row-divider"/>
+<text x="316" y="379" class="lt-erd-attr-name">condition</text>
+<text x="464" y="379" class="lt-erd-attr-type" text-anchor="end">string</text></g>
+<g class="lt-erd-entity" data-id="TITLE_AUTHOR"><rect x="302" y="450" width="180" height="76" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 302 454 Q 302 450 306 450 L 478 450 Q 482 450 482 454 L 482 478 L 302 478 Z" class="lt-erd-entity-header-bg"/>
+<text x="392" y="464" class="lt-erd-entity-header">TITLE_AUTHOR</text>
+<text x="316" y="489" class="lt-erd-attr-name-pk">title_id</text>
+<text x="434" y="489" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="481" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="455" y="490" class="lt-erd-attr-marker">PK</text>
+<line x1="302" y1="500" x2="482" y2="500" class="lt-erd-row-divider"/>
+<text x="316" y="511" class="lt-erd-attr-name-pk">author_id</text>
+<text x="434" y="511" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="442" y="503" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="455" y="512" class="lt-erd-attr-marker">PK</text></g>
+<g class="lt-erd-entity" data-id="LOAN"><rect x="572" y="147.5" width="180" height="120" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 572 151.5 Q 572 147.5 576 147.5 L 748 147.5 Q 752 147.5 752 151.5 L 752 175.5 L 572 175.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="662" y="161.5" class="lt-erd-entity-header">LOAN</text>
+<text x="586" y="186.5" class="lt-erd-attr-name-pk">loan_id</text>
+<text x="704" y="186.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="712" y="178.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="725" y="187.5" class="lt-erd-attr-marker">PK</text>
+<line x1="572" y1="197.5" x2="752" y2="197.5" class="lt-erd-row-divider"/>
+<text x="586" y="208.5" class="lt-erd-attr-name">member_id</text>
+<text x="704" y="208.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="712" y="200.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="725" y="209.5" class="lt-erd-attr-marker">FK</text>
+<line x1="572" y1="219.5" x2="752" y2="219.5" class="lt-erd-row-divider"/>
+<text x="586" y="230.5" class="lt-erd-attr-name">copy_id</text>
+<text x="704" y="230.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="712" y="222.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="725" y="231.5" class="lt-erd-attr-marker">FK</text>
+<line x1="572" y1="241.5" x2="752" y2="241.5" class="lt-erd-row-divider"/>
+<text x="586" y="252.5" class="lt-erd-attr-name">due_date</text>
+<text x="734" y="252.5" class="lt-erd-attr-type" text-anchor="end">date</text></g></g></svg>

@@ -1,0 +1,49 @@
+{
+  "id": "ladder-reversing-interlock",
+  "type": "ladder",
+  "title": "Reversing motor starter",
+  "goal": "A reader can trace both motor directions, identify each holding branch, and verify the stop, overload, and opposite-coil interlocks.",
+  "rubric": [
+    {
+      "id": "separate-direction-rungs",
+      "severity": "blocker",
+      "must": "Two separate rungs terminate in coils labelled Forward and Reverse respectively."
+    },
+    {
+      "id": "closed-contact-marks",
+      "severity": "blocker",
+      "must": "Both Stop contacts, both Overload contacts, and both opposite-direction interlock contacts have visible normally-closed diagonal marks."
+    },
+    {
+      "id": "forward-holding-branch",
+      "severity": "blocker",
+      "must": "FwdStart and the Forward holding contact occupy separate parallel paths with visible split and rejoin connections."
+    },
+    {
+      "id": "reverse-holding-branch",
+      "severity": "blocker",
+      "must": "RevStart and the Reverse holding contact occupy separate parallel paths with visible split and rejoin connections."
+    },
+    {
+      "id": "opposite-coil-interlocks",
+      "severity": "blocker",
+      "must": "The Forward coil rung has a series normally-closed Reverse contact, and the Reverse coil rung has a series normally-closed Forward contact, outside their holding branches."
+    },
+    {
+      "id": "stop-overload-series",
+      "severity": "major",
+      "must": "Each rung passes through Stop and Overload before splitting into the start and holding paths, with no branch bypassing either protection contact."
+    },
+    {
+      "id": "tag-association",
+      "severity": "major",
+      "must": "Every contact and coil label is readable and unambiguously attached to its own symbol."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Updated 2026-09-14 against exemplar visual-eval/exemplars/ladder/ideal.svg (sha256 72319743d0eb). Exemplar restrained wire weight and ink palette; contacts, coils and seal-in branches unchanged. Visually inspected at full size and across the case family; independent targets, not engine-output snapshots."
+  }
+}

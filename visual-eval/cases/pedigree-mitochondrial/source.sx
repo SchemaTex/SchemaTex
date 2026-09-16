@@ -1,0 +1,16 @@
+pedigree "Mitochondrial Transmission Family"
+  I-1 [male, unaffected]
+  I-2 [female, affected]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-3 [female, affected]
+
+  II-2 [female, unaffected]
+  II-4 [male, unaffected]
+  II-1 -- II-2
+    III-1 [female, unaffected]
+    III-2 [male, unaffected]
+
+  II-3 -- II-4
+    III-3 [female, affected, proband]
+    III-4 [male, affected]

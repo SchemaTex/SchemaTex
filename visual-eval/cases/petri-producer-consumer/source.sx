@@ -1,0 +1,20 @@
+# Bounded-buffer Petri net: producer deposits an item, consumer removes it, and the displayed firing sequence is enabled.
+petri "Producer Consumer Buffer"
+  layout: lr
+  place Empty *2 capacity: 2 "empty slots"
+  place Ready *1 "producer ready"
+  place Item
+  place Consumer *1 "consumer ready"
+  place Done
+  transition Produce "produce item"
+  transition Consume "consume item"
+  Ready -> Produce
+  Empty -> Produce
+  Produce -> Ready
+  Produce -> Item
+  Item -> Consume
+  Consumer -> Consume
+  Consume -> Consumer
+  Consume -> Empty
+  Consume -> Done
+  fire: Produce, Consume

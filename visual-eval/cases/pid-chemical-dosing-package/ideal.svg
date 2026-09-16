@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="985" viewBox="0 0 1600 985">
+<title>Chemical Dosing Package — pH Control and Metering Calibration</title>
+<desc>Prepared chemical flows from TK-701 through AG-701, P-701, C-701, XV-701, FV-701 and NRV-701 into V-702. AT-701 reports electrically to AIC-701, which pneumatically commands the fail-closed dosing valve. FT-701 reports calibration flow electrically to FI-701.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#1E293B;font-size:11.5px} .title{font-size:20px;font-weight:600}.tag{font-size:12px;font-weight:600}.secondary{fill:#64748B}.small{font-size:9.5px;letter-spacing:.25px}.zone{font-size:10px;letter-spacing:1px;fill:#64748B}.pipe{fill:none;stroke:#1E293B;stroke-width:2.5;stroke-linejoin:miter}.symbol{fill:white;stroke:#1E293B;stroke-width:1.6;stroke-linejoin:round}.minor{fill:none;stroke:#1E293B;stroke-width:1.5}.signal{fill:none;stroke:#1E293B;stroke-width:1.4}.electric{fill:none;stroke:#1E293B;stroke-width:1.4;stroke-dasharray:7 5}.rule{stroke:#E2E8F0;stroke-width:1}
+</style>
+<rect width="1600" height="985" fill="white"/>
+<text x="47" y="45" class="title">Chemical Dosing Package</text>
+<text x="47" y="70" class="secondary">ISA-5.1 instrumentation on ISO 10628 equipment · process flow left to right · metric</text>
+<text x="1553" y="70" text-anchor="end" class="secondary">solid dot = connection · jumper = crossing, not connected</text>
+<path d="M47 98.5H1553" class="rule"/>
+<path d="M47 256.5H1553" fill="none" stroke="#64748B" stroke-width="1" stroke-dasharray="12 4 2 4"/>
+<text x="1553" y="246" text-anchor="end" class="zone">CONTROL ROOM / DCS</text>
+<text x="1553" y="279" text-anchor="end" class="zone">FIELD</text>
+<!-- Continuous chemical process piping -->
+<path d="M167 626V657H275V460H330 M395 650V770H520 M580 770H620V530H680 M770 657H1330V565H1350" class="pipe"/>
+<!-- Independent electrical measurement routes -->
+<path d="M820 452V223 M1490 392V330H1540V205H1118" class="electric"/>
+<!-- Pneumatic command, terminating at diaphragm -->
+<path d="M1100 223V606" class="signal"/>
+
+<path d="M1096 246l8 -8" class="signal"/>
+<path d="M1096 281l8 -8" class="signal"/>
+<path d="M1096 316l8 -8" class="signal"/>
+<path d="M1096 351l8 -8" class="signal"/>
+<path d="M1096 386l8 -8" class="signal"/>
+<path d="M1096 421l8 -8" class="signal"/>
+<path d="M1096 456l8 -8" class="signal"/>
+<path d="M1096 491l8 -8" class="signal"/>
+<path d="M1096 526l8 -8" class="signal"/>
+<path d="M1096 561l8 -8" class="signal"/>
+<path d="M1096 596l8 -8" class="signal"/>
+<path d="M90 626V482C90 447 245 447 245 482V626Z" class="symbol"/>
+<text x="167" y="550" text-anchor="middle" class="tag">TK-701</text>
+<text x="167" y="571" text-anchor="middle" class="secondary">Chemical Dosing Tank</text>
+<path d="M330 423C330 391 460 391 460 423V627C460 658 330 658 330 627Z" class="symbol"/>
+<path d="M395 376V493 M365 481L425 499 M365 499L425 481" class="minor"/><rect x="380" y="352" width="30" height="24" class="symbol"/>
+<text x="395" y="548" text-anchor="middle" class="tag">AG-701</text>
+<text x="395" y="570" text-anchor="middle" class="secondary">Agitated Dosing Tank</text>
+<circle cx="550" cy="770" r="30" class="symbol"/><path d="M536 753L568 770L536 787Z" class="symbol"/><path d="M530 750Q519 770 530 790" class="minor"/>
+<text x="550" y="822" text-anchor="middle" class="tag">P-701</text>
+<text x="550" y="843" text-anchor="middle" class="secondary">Metering Pump</text>
+<path d="M680 435C680 410 770 410 770 435V682C770 707 680 707 680 682Z" class="symbol"/>
+<path d="M692 455h14" class="minor"/>
+<path d="M692 467h8" class="minor"/>
+<path d="M692 479h14" class="minor"/>
+<path d="M692 491h8" class="minor"/>
+<path d="M692 503h14" class="minor"/>
+<text x="725" y="568" text-anchor="middle" class="tag">C-701</text>
+<text x="725" y="734" text-anchor="middle" class="secondary">Calibration Column</text>
+<path d="M903 643L947 671V643L903 671Z" class="symbol"/>
+<path d="M1078 643L1122 671V643L1078 671Z" class="symbol"/>
+<path d="M1233 643L1277 671V643L1233 671Z" class="symbol"/>
+<path d="M1269 643L1255 671" class="minor"/>
+<path d="M1100 643V620" class="minor"/><path d="M1080 620C1080 601 1120 601 1120 620Z" class="symbol"/>
+<text x="1130" y="615" text-anchor="start" class="tag">FC</text>
+<text x="925" y="708" text-anchor="middle" class="tag">XV-701</text>
+<text x="925" y="729" text-anchor="middle" class="secondary">Calibration Isolation</text>
+<text x="1100" y="708" text-anchor="middle" class="tag">FV-701</text>
+<text x="1100" y="729" text-anchor="middle" class="secondary">Dosing Control Valve</text>
+<text x="1255" y="708" text-anchor="middle" class="tag">NRV-701</text>
+<text x="1255" y="729" text-anchor="middle" class="secondary">Injection Check Valve</text>
+<path d="M1370 525H1495C1522 525 1522 605 1495 605H1370C1343 605 1343 525 1370 525Z" class="symbol"/>
+<text x="1433" y="559" text-anchor="middle" class="tag">V-702</text>
+<text x="1433" y="581" text-anchor="middle" class="secondary">Process Mixing Header</text>
+<path d="M770 470L802 470" class="signal"/>
+<circle cx="784.0" cy="470.0" r="2" fill="#1E293B"/>
+<circle cx="798.0" cy="470.0" r="2" fill="#1E293B"/>
+<path d="M1490 525L1490 428" class="signal"/>
+<circle cx="1490.0" cy="511.0" r="2" fill="#1E293B"/>
+<circle cx="1490.0" cy="497.0" r="2" fill="#1E293B"/>
+<circle cx="1490.0" cy="483.0" r="2" fill="#1E293B"/>
+<circle cx="1490.0" cy="469.0" r="2" fill="#1E293B"/>
+<circle cx="1490.0" cy="455.0" r="2" fill="#1E293B"/>
+<circle cx="1490.0" cy="441.0" r="2" fill="#1E293B"/>
+<circle cx="820" cy="470" r="18" class="symbol"/>
+<text x="820" y="467" text-anchor="middle" class="tag">FT</text>
+<text x="820" y="482" text-anchor="middle" class="">701</text>
+<circle cx="820" cy="205" r="18" class="symbol"/>
+<path d="M802 205H838" class="minor"/>
+<text x="820" y="202" text-anchor="middle" class="tag">FI</text>
+<text x="820" y="217" text-anchor="middle" class="">701</text>
+<circle cx="1100" cy="205" r="18" class="symbol"/>
+<path d="M1100 187L1115.6 196V214L1100 223L1084.4 214V196Z" class="minor"/>
+<path d="M1082 205H1118" class="minor"/>
+<text x="1100" y="202" text-anchor="middle" class="tag">AIC</text>
+<text x="1100" y="217" text-anchor="middle" class="">701</text>
+<circle cx="1490" cy="410" r="18" class="symbol"/>
+<text x="1490" y="407" text-anchor="middle" class="tag">AT</text>
+<text x="1490" y="422" text-anchor="middle" class="">701</text>
+<text x="1131" y="186" text-anchor="start" class="secondary">SP pH 7.0</text>
+<text x="1458" y="414" text-anchor="end" class="secondary">pH</text>
+<rect x="192.0" y="647" width="46" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="215" y="660" text-anchor="middle" class="small">DN25</text>
+<rect x="433.0" y="760" width="46" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="456" y="773" text-anchor="middle" class="small">DN20</text>
+<rect x="821.0" y="647" width="46" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="844" y="660" text-anchor="middle" class="small">DN15</text>
+<rect x="1307.0" y="610" width="46" height="20" rx="1.5" fill="white" stroke="#1E293B" stroke-width="1"/>
+<text x="1330" y="623" text-anchor="middle" class="small">DN15</text>
+<path d="M47 859.5H1553" class="rule"/>
+<path d="M47 901H92" class="pipe"/>
+<text x="102" y="905" text-anchor="start" class="secondary">Process</text>
+<path d="M188 901H233" class="minor"/>
+<text x="243" y="905" text-anchor="start" class="secondary">Process, minor</text>
+<path d="M366 901H411" class="electric"/>
+<text x="421" y="905" text-anchor="start" class="secondary">Electric signal</text>
+<path d="M538 901H583 M551 897l8 8" class="signal"/>
+<text x="593" y="905" text-anchor="start" class="secondary">Pneumatic signal</text>
+<path d="M726 901L771 901" class="signal"/>
+<circle cx="740.0" cy="901.0" r="2" fill="#1E293B"/>
+<circle cx="754.0" cy="901.0" r="2" fill="#1E293B"/>
+<circle cx="768.0" cy="901.0" r="2" fill="#1E293B"/>
+<text x="781" y="905" text-anchor="start" class="secondary">Capillary / filled system</text>
+<text x="47" y="944" text-anchor="start" class="secondary">Dosing solution is adjusted to pH 7.0; metering rate is verified in C-701. AIC-701 commands FV-701, which fails closed.</text>
+</svg>

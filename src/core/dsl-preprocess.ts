@@ -1,3 +1,4 @@
+import { QUOTE_PAIRS } from "./quotes";
 /**
  * DSL preprocessing shared across all diagram parsers.
  *
@@ -71,10 +72,12 @@ function collectMatches(
   ranges: DslRemovalRange[]
 ): string {
   let result = text;
+  const quoted = [...text.matchAll(/"(?:[^"\\]|\\.)*"/gs)];
   pattern.lastIndex = 0;
   for (const match of text.matchAll(pattern)) {
     const start = match.index;
     if (start === undefined || match[0].length === 0) continue;
+    if (quoted.some((quote) => quote.index < start && start < quote.index + quote[0].length)) continue;
     const end = start + match[0].length;
     ranges.push({ start, end });
     result = blankRange(result, start, end);
@@ -96,24 +99,36 @@ export function findArtifactWrapperRanges(text: string): DslRemovalRange[] {
   const ranges: DslRemovalRange[] = [];
   let working = text;
 
-  // Markdown fence around the whole artifact. Blank it first so a nested
-  // <artifact> opener becomes the first significant token for the next pass.
-  const openingFence =
-    /^\uFEFF?\s*```[A-Za-z0-9_-]*[ \t]*(?:\r?\n|$)/.exec(working);
-  if (openingFence) {
-    ranges.push({ start: 0, end: openingFence[0].length });
-    working = blankRange(working, 0, openingFence[0].length);
+  // Only line-delimited, outermost fences are candidates. Quoted DSL labels
+  // (including physical multiline labels) can contain literal fence lines.
+  const quoted = [...working.matchAll(/"(?:[^"\\]|\\.)*"/gs)];
+  const fences: Array<{ start: number; end: number; preferred: boolean }> = [];
+  let opening: { marker: string; start: number; preferred: boolean } | undefined;
+  const diagramLanguage = /^(?:mermaid|schematex|dsl|diagram|flowchart|graph|genogram|ecomap|pedigree|phylo|sociogram|timing|logic|circuit|blockdiagram|ladder|sld|entity(?:-structure)?|fishbone|venn|mindmap|matrix|orgchart|decisiontree|timeline|state|pid|erd|erDiagram|breadboard|bpmn|fbd|sfc|prisma|usecase|pert|sequence|petri|network|umlclass|faulttree|bowtie|eventtree|fmea|rbd|comparison|causalloop|markov|gitgraph|epc|idef0|threatmodel|welding|floorplan|evacuation|stageplot|siteplan|playbook)$/i;
+  for (const match of working.matchAll(/^[ \t\uFEFF]*(`{3,}|~{3,})([^\r\n]*)(?:\r?\n|$)/gm)) {
+    if (quoted.some((quote) => quote.index < match.index && match.index < quote.index + quote[0].length)) continue;
+    const marker = match[1]!;
+    const info = match[2]!.trim();
+    if (!opening) {
+      opening = {
+        marker,
+        start: match.index + match[0].length,
+        preferred: info === "" || diagramLanguage.test(info.split(/\s+/)[0]!),
+      };
+    } else if (marker[0] === opening.marker[0] && marker.length >= opening.marker.length && info === "") {
+      fences.push({ start: opening.start, end: match.index, preferred: opening.preferred });
+      opening = undefined;
+    }
   }
-  const closingFence = /(?:^|\r?\n)[ \t]*```[ \t]*$/.exec(working);
-  if (closingFence) {
-    const newlineLength = closingFence[0].startsWith("\r\n")
-      ? 2
-      : closingFence[0].startsWith("\n")
-        ? 1
-        : 0;
-    const start = closingFence.index + newlineLength;
-    ranges.push({ start, end: working.length });
-    working = blankRange(working, start, working.length);
+  if (opening) fences.push({ start: opening.start, end: working.length, preferred: opening.preferred });
+  const preferred = fences.filter((fence) => fence.preferred);
+  const selected = (preferred.length > 0 ? preferred : fences)
+    .sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
+  if (selected) {
+    // Exclude all prose/other blocks, retaining original offsets and newlines.
+    ranges.push({ start: 0, end: selected.start }, { start: selected.end, end: working.length });
+    working = blankRange(working, 0, selected.start);
+    working = blankRange(working, selected.end, working.length);
   }
 
   // Only treat <artifact> as a wrapper when it is the first significant token.
@@ -172,6 +187,9 @@ export interface DslFrontmatter {
   data: Record<string, string>;
   /** Input with the frontmatter block removed, ready for the diagram parser. */
   body: string;
+  /** Original offsets, used to blank the block without shifting diagnostics. */
+  range?: DslRemovalRange;
+  titleRange?: DslRemovalRange;
 }
 
 const FRONTMATTER_DELIM = /^-{3,}\s*$/;
@@ -180,10 +198,9 @@ const FRONTMATTER_DELIM = /^-{3,}\s*$/;
  * Strip a Mermaid-style YAML frontmatter block from the start of `text`.
  *
  * Accepts any whitespace-only or blank lines before the opening `---`. The
- * parser is deliberately tiny: one `key: value` per line, no nesting, no
- * quoted/multiline values. Anything fancier we treat as "not a frontmatter
- * block" and return the original text unchanged — better to no-op than
- * to silently swallow malformed YAML.
+ * metadata reader is deliberately tiny: one `key: value` per line. Other
+ * YAML content is stripped with the block without being interpreted.
+ * An unclosed block is returned unchanged.
  */
 export function parseFrontmatter(text: string): DslFrontmatter {
   const lines = text.split(/\r?\n/);
@@ -192,9 +209,9 @@ export function parseFrontmatter(text: string): DslFrontmatter {
   if (i >= lines.length || !FRONTMATTER_DELIM.test(lines[i]!)) {
     return { data: {}, body: text };
   }
-  const openIdx = i;
   i++;
   const data: Record<string, string> = {};
+  let titleRange: DslRemovalRange | undefined;
   while (i < lines.length && !FRONTMATTER_DELIM.test(lines[i]!)) {
     const line = lines[i]!;
     const trimmed = line.trim();
@@ -204,12 +221,16 @@ export function parseFrontmatter(text: string): DslFrontmatter {
     }
     const colonIdx = trimmed.indexOf(":");
     if (colonIdx <= 0) {
-      // Malformed line inside the block — bail out, treat the whole thing
-      // as not-a-frontmatter so the user sees their original input back.
-      return { data: {}, body: text };
+      i++;
+      continue;
     }
     const key = trimmed.slice(0, colonIdx).trim();
     let value = trimmed.slice(colonIdx + 1).trim();
+    if (key === "title" && value) {
+      const lineStart = text.split(/(?<=\n)/).slice(0, i).join("").length;
+      const start = lineStart + line.indexOf(value, line.indexOf(":") + 1);
+      titleRange = { start, end: start + value.length };
+    }
     // Strip matching surrounding quotes (single, double, or smart) without
     // pulling in the full quotes.ts helpers — frontmatter values are dumb.
     if (
@@ -227,14 +248,9 @@ export function parseFrontmatter(text: string): DslFrontmatter {
     // Opened a `---` block but never closed it — leave input untouched.
     return { data: {}, body: text };
   }
-  // i now points at the closing `---`; body starts on the next line.
-  const body = lines.slice(i + 1).join("\n");
-  // If we found an opening delim but the body is empty and data is empty,
-  // it was probably just a separator someone typed. Return raw text.
-  if (Object.keys(data).length === 0 && openIdx === 0) {
-    return { data: {}, body: text };
-  }
-  return { data, body };
+  // Slice the original source to preserve CRLF and trailing whitespace.
+  const end = text.split(/(?<=\n)/).slice(0, i + 1).join("").length;
+  return { data, body: text.slice(end), range: { start: 0, end }, titleRange };
 }
 
 /** A line-comment marker. Each begins a "rest of line is a comment" region. */
@@ -248,11 +264,9 @@ export type CommentMarker = "%%" | "//" | "#";
 export const DEFAULT_COMMENT_MARKERS: readonly CommentMarker[] = ["%%", "//", "#"];
 
 /**
- * `%%` is the one marker that never begins valid content in ANY schematex
- * grammar (it is Mermaid's comment style). It is stripped for every diagram in
- * the shared preprocess pass, giving one universal, learnable comment syntax
- * regardless of a diagram's own lexer. Per-diagram native markers (`#` shell,
- * `*` SPICE, …) are still honored by each parser on top of this.
+ * `%%` comments are stripped across diagrams. Parser-owned directive lines
+ * (declared by DiagramPlugin.isDirective) are retained by the core API before
+ * this lexical comment stripper is called.
  */
 export const UNIVERSAL_COMMENT_MARKERS: readonly CommentMarker[] = ["%%"];
 
@@ -264,26 +278,25 @@ export const UNIVERSAL_COMMENT_MARKERS: readonly CommentMarker[] = ["%%"];
  * {@link UNIVERSAL_COMMENT_MARKERS} so it only removes `%%`, leaving `#`/`//`
  * to diagrams where they are content (e.g. `#` headings in mindmap).
  *
- * Markers inside ASCII double-quoted regions are preserved verbatim so URLs
- * (`"https://..."`) and CSS-color values (`"#ff0"`) survive. Smart-quoted
- * regions are NOT special-cased — they're rare inside attribute strings,
- * and the cost of full Unicode quote tracking for every line isn't worth
- * the protection.
+ * Markers inside double-quoted and smart-quoted strings are preserved.
  */
 export function stripLineComment(
   line: string,
   markers: readonly CommentMarker[] = DEFAULT_COMMENT_MARKERS,
 ): string {
-  let inQuote = false;
+  let close = "";
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]!;
-    if (ch === '"') {
-      // Respect a backslash escape so `"foo\""` stays inside the quote.
-      if (i > 0 && line[i - 1] === "\\") continue;
-      inQuote = !inQuote;
+    if (close) {
+      if (close === '"' && ch === "\\") { i++; continue; }
+      if (ch === close) close = "";
       continue;
     }
-    if (inQuote) continue;
+    // Apostrophes in unquoted labels are ordinary text, not string openers.
+    if (ch === '"' || ch === "“" || ch === "「" || ch === "『" || ch === "«") {
+      close = QUOTE_PAIRS[ch]!;
+      continue;
+    }
     for (const marker of markers) {
       if (line.startsWith(marker, i)) return line.slice(0, i);
     }
@@ -319,4 +332,21 @@ export function firstContentLine(text: string): string | undefined {
     if (line !== "") return line;
   }
   return undefined;
+}
+
+/** Shared input normalization. Blanking preserves original line/column offsets. */
+export function normalizeDslInput(source: string): {
+  text: string;
+  data: Record<string, string>;
+  titleRange?: DslRemovalRange;
+} {
+  let text = source;
+  for (const range of findArtifactWrapperRanges(source)) {
+    text = blankRange(text, range.start, range.end);
+  }
+  const frontmatter = parseFrontmatter(text);
+  if (frontmatter.range) {
+    text = blankRange(text, frontmatter.range.start, frontmatter.range.end);
+  }
+  return { text, data: frontmatter.data, titleRange: frontmatter.titleRange };
 }

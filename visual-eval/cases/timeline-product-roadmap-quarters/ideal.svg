@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="660" viewBox="0 0 1600 660">
+  <title>2026 Product Roadmap</title>
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, sans-serif; fill: #202d3b; }
+    .month { font-size: 16px; fill: #657483; }
+    .quarter { font-size: 24px; font-weight: 700; }
+    .event { font-size: 18px; }
+    .milestone { font-size: 18px; font-weight: 700; }
+    .date { font-size: 15px; fill: #657483; }
+    .grid { stroke: #e6ebef; stroke-width: 1; }
+    .connector { fill: none; stroke: #365c76; stroke-width: 2; }
+  </style>
+  <rect width="1600" height="660" fill="white"/>
+  <text x="48" y="64" font-size="34" font-weight="700">2026 Product Roadmap</text>
+  <!-- Annual scale: January 1 at x=170; January 1, 2027 at x=1530. -->
+  <g fill="#f6f8fa">
+    <rect x="40" y="164" width="1510" height="104"/>
+    <rect x="40" y="388" width="1510" height="104"/>
+  </g>
+  <path d="M170 144H1530" stroke="#a4b0bb" stroke-width="2"/>
+  <g class="grid">
+    <path d="M170 144V608 M285.5 144V608 M389.8 144V608 M505.3 144V608 M617.1 144V608 M732.6 144V608 M844.4 144V608 M959.9 144V608 M1075.4 144V608 M1187.2 144V608 M1302.7 144V608 M1414.5 144V608 M1530 144V608"/>
+  </g>
+  <g class="month" text-anchor="middle">
+    <text x="227.8" y="130">JAN</text><text x="337.7" y="130">FEB</text>
+    <text x="447.6" y="130">MAR</text><text x="561.2" y="130">APR</text>
+    <text x="674.9" y="130">MAY</text><text x="788.5" y="130">JUN</text>
+    <text x="902.2" y="130">JUL</text><text x="1017.7" y="130">AUG</text>
+    <text x="1131.3" y="130">SEP</text><text x="1244.9" y="130">OCT</text>
+    <text x="1358.6" y="130">NOV</text><text x="1472.3" y="130">DEC</text>
+  </g>
+  <g class="quarter">
+    <text x="70" y="224">Q1</text><text x="70" y="336">Q2</text>
+    <text x="70" y="448">Q3</text><text x="70" y="560">Q4</text>
+  </g>
+  <!-- Q1: January 12 and March 27 -->
+  <path d="M170 216H505.3" stroke="#c1cdd6" stroke-width="3"/>
+  <path class="connector" d="M211 216V184 M486.7 216V240"/>
+  <circle cx="211" cy="216" r="6" fill="#365c76"/>
+  <path d="M486.7 206L496.7 216L486.7 226L476.7 216Z" fill="#365c76"/>
+  <text class="event" x="211" y="179">Customer discovery</text>
+  <text class="date" x="211" y="242">Jan 12</text>
+  <text class="milestone" x="486.7" y="258" text-anchor="end">Architecture approved</text>
+  <text class="date" x="486.7" y="198" text-anchor="end">Mar 27</text>
+  <!-- Q2: April 6 and June 19 -->
+  <path d="M505.3 328H844.4" stroke="#c1cdd6" stroke-width="3"/>
+  <path class="connector" d="M523.9 328V296 M799.7 328V352"/>
+  <circle cx="523.9" cy="328" r="6" fill="#365c76"/>
+  <path d="M799.7 318L809.7 328L799.7 338L789.7 328Z" fill="#365c76"/>
+  <text class="event" x="523.9" y="291">Core workflow build</text>
+  <text class="date" x="523.9" y="354">Apr 06</text>
+  <text class="milestone" x="799.7" y="370" text-anchor="end">Private beta</text>
+  <text class="date" x="799.7" y="310" text-anchor="end">Jun 19</text>
+  <!-- Q3: July 13 and September 18 -->
+  <path d="M844.4 440H1187.2" stroke="#c1cdd6" stroke-width="3"/>
+  <path class="connector" d="M889.1 440V408 M1138.7 440V464"/>
+  <circle cx="889.1" cy="440" r="6" fill="#365c76"/>
+  <path d="M1138.7 430L1148.7 440L1138.7 450L1128.7 440Z" fill="#365c76"/>
+  <text class="event" x="889.1" y="403">Analytics and integrations</text>
+  <text class="date" x="889.1" y="466">Jul 13</text>
+  <text class="milestone" x="1138.7" y="482" text-anchor="end">Public beta</text>
+  <text class="date" x="1138.7" y="422" text-anchor="end">Sep 18</text>
+  <!-- Q4: October 5 and December 11 -->
+  <path d="M1187.2 552H1530" stroke="#c1cdd6" stroke-width="3"/>
+  <path class="connector" d="M1202.1 552V520 M1451.8 552V576"/>
+  <circle cx="1202.1" cy="552" r="6" fill="#365c76"/>
+  <path d="M1451.8 542L1461.8 552L1451.8 562L1441.8 552Z" fill="#365c76"/>
+  <text class="event" x="1202.1" y="515">Reliability hardening</text>
+  <text class="date" x="1202.1" y="578">Oct 05</text>
+  <text class="milestone" x="1451.8" y="594" text-anchor="end">General availability</text>
+  <text class="date" x="1451.8" y="534" text-anchor="end">Dec 11</text>
+</svg>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1102" height="353" viewBox="0 0 1102 353" role="img" aria-label="Reliability block diagram" data-diagram-type="rbd"><title>Reliability block diagram</title>
+<desc>Reliability block diagram: 8 blocks. System reliability n/a — missing R on rbd.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1102" height="353" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="531" y="18" class="sx-rbd-rsys" text-anchor="middle">System reliability: n/a — missing R on rbd</text>
+<path d="M 305.5 149 L 305.5 113 L 332 113" class="sx-rbd-wire"/>
+<path d="M 512 113 L 538.5 113 L 538.5 149" class="sx-rbd-wire"/>
+<path d="M 305.5 149 L 305.5 185 L 332 185" class="sx-rbd-wire"/>
+<path d="M 512 185 L 538.5 185 L 538.5 149" class="sx-rbd-wire"/>
+<path d="M 586 149 L 586 77 L 612.5 77" class="sx-rbd-wire"/>
+<path d="M 737.5 77 L 764 77 L 764 149" class="sx-rbd-wire"/>
+<path d="M 586 149 L 586 149 L 612.5 149" class="sx-rbd-wire"/>
+<path d="M 737.5 149 L 764 149 L 764 149" class="sx-rbd-wire"/>
+<path d="M 586 149 L 586 221 L 612.5 221" class="sx-rbd-wire"/>
+<path d="M 737.5 221 L 764 221 L 764 149" class="sx-rbd-wire"/>
+<path d="M 538.5 149 L 586 149" class="sx-rbd-wire"/>
+<path d="M 811.5 149 L 811.5 113 L 838 113" class="sx-rbd-wire"/>
+<path d="M 977 113 L 1003.5 113 L 1003.5 149" class="sx-rbd-wire"/>
+<path d="M 811.5 149 L 811.5 185 L 838 185" class="sx-rbd-wire"/>
+<path d="M 977 185 L 1003.5 185 L 1003.5 149" class="sx-rbd-wire"/>
+<path d="M 764 149 L 811.5 149" class="sx-rbd-wire"/>
+<path d="M 258 149 L 305.5 149" class="sx-rbd-wire"/>
+<path d="M 28 149 L 58 149" class="sx-rbd-wire"/>
+<path d="M 1003.5 149 L 1033.5 149" class="sx-rbd-wire"/>
+<circle cx="305.5" cy="149" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="538.5" cy="149" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="586" cy="149" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="764" cy="149" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="811.5" cy="149" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="1003.5" cy="149" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="149" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1033.5" cy="149" r="6" class="sx-rbd-term" data-node="out"/>
+<text x="770" y="48" class="sx-rbd-mark">2/3</text>
+<g class="sx-rbd-block-g" data-id="rbd"><rect x="58" y="126" width="200" height="46" rx="5" class="sx-rbd-block"/>
+<text x="158" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="158" dy="-6.5">Safety</tspan><tspan x="158" dy="13">instrumented…</tspan></text></g>
+<g class="sx-rbd-block-g" data-id="PSH_A" data-r="0.985"><rect x="332" y="90" width="180" height="46" rx="5" class="sx-rbd-block"/>
+<text x="422" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="422" dy="-6.5">High-pressure</tspan><tspan x="422" dy="13">sensor A</tspan></text>
+<text x="422" y="151" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="PSH_B" data-r="0.985"><rect x="332" y="162" width="180" height="46" rx="5" class="sx-rbd-block"/>
+<text x="422" y="185" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="422" dy="-6.5">High-pressure</tspan><tspan x="422" dy="13">sensor B</tspan></text>
+<text x="422" y="223" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="LS_A" data-r="0.999"><rect x="612.5" y="54" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="675" y="77" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="675" dy="0">Logic solver A</tspan></text>
+<text x="675" y="115" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="LS_B" data-r="0.999"><rect x="612.5" y="126" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="675" y="149" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="675" dy="0">Logic solver B</tspan></text>
+<text x="675" y="187" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="LS_C" data-r="0.999"><rect x="612.5" y="198" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="675" y="221" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="675" dy="0">Logic solver C</tspan></text>
+<text x="675" y="259" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="SDV_A" data-r="0.96"><rect x="838" y="90" width="139" height="46" rx="5" class="sx-rbd-block"/>
+<text x="907.5" y="113" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="907.5" dy="0">Shutdown valve A</tspan></text>
+<text x="907.5" y="151" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g>
+<g class="sx-rbd-block-g" data-id="SDV_B" data-r="0.96"><rect x="838" y="162" width="139" height="46" rx="5" class="sx-rbd-block"/>
+<text x="907.5" y="185" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="907.5" dy="0">Shutdown valve B</tspan></text>
+<text x="907.5" y="223" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g></g></svg>

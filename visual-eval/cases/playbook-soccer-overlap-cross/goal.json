@@ -1,0 +1,78 @@
+{
+  "id": "playbook-soccer-overlap-cross",
+  "type": "playbook",
+  "variant": "soccer",
+  "title": "Overlap and cross from the right",
+  "goal": "A practitioner can read this play at a glance: Overlap and cross from the right.",
+  "rubric": [
+    {
+      "id": "primary-subject-visible",
+      "severity": "blocker",
+      "must": "The named scenario is visibly identified and its primary subject is clearly shown."
+    },
+    {
+      "id": "standard-structure-visible",
+      "severity": "blocker",
+      "must": "The picture visibly uses the required standard diagram structure and connected elements."
+    },
+    {
+      "id": "main-flow-readable",
+      "severity": "major",
+      "must": "A reader can visually follow the principal flow or relationship from beginning to end."
+    },
+    {
+      "id": "labels-legible",
+      "severity": "major",
+      "must": "Key labels remain legible and attached to the correct visible elements."
+    },
+    {
+      "id": "no-ambiguous-connections",
+      "severity": "minor",
+      "must": "Lines and symbols do not visually imply unintended connections."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the playbook/soccer exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The titled half-pitch diagram clearly shows player 7 dribbling, player 2 overlapping on the right to receive, the subsequent cross into the box, and dashed attacking runs by players 9 and 11. Labels, ball, line styles, arrowheads, and legend are visibly legible, and the connected sequence is readable without unintended connections.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:31:25.711Z",
+      "targetHash": "b19367eb6afb",
+      "sourceHash": "f60fba2369de",
+      "exemplarHash": "3525b0607bf2",
+      "items": [
+        {
+          "id": "primary-subject-visible",
+          "verdict": "pass",
+          "evidence": "“Overlap and cross from the right” is prominently titled, and the right-side overlap and cross are clearly depicted."
+        },
+        {
+          "id": "standard-structure-visible",
+          "verdict": "pass",
+          "evidence": "A standard soccer half-pitch, numbered player markers, ball, directional arrows, and a legend distinguishing pass, run, and dribble are visible."
+        },
+        {
+          "id": "main-flow-readable",
+          "verdict": "pass",
+          "evidence": "The flow can be followed from player 7’s dribble, through the pass into player 2’s overlapping route, to the cross toward goal and the two runners."
+        },
+        {
+          "id": "labels-legible",
+          "verdict": "pass",
+          "evidence": "Player labels 2, 7, 9, 10, and 11 are readable and remain attached to their respective markers."
+        },
+        {
+          "id": "no-ambiguous-connections",
+          "verdict": "pass",
+          "evidence": "Solid passes, dashed runs, and the wavy dribble are visually distinct; their arrowheads and shared handoff point communicate the intended sequence without implying an extra connection."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "pid-distillation-column",
+  "type": "pid",
+  "title": "Distillation column with reflux control",
+  "goal": "A process engineer can trace overhead condensation and reflux plus the drum-level and reboiler-temperature control loops.",
+  "rubric": [
+    {
+      "id": "column-overhead-reflux",
+      "severity": "blocker",
+      "must": "T-201 connects visibly to E-201, D-201, P-201, LV-201, and back to the column reflux connection."
+    },
+    {
+      "id": "reboiler-circuit",
+      "severity": "blocker",
+      "must": "The column bottom visibly connects to E-202 and a return line visibly reconnects to T-201."
+    },
+    {
+      "id": "level-loop",
+      "severity": "major",
+      "must": "LT-201, LIC-201, and LV-201 form a readable loop at the reflux drum."
+    },
+    {
+      "id": "temperature-loop",
+      "severity": "major",
+      "must": "TT-202, TIC-202, and TV-202 form a readable electric-and-pneumatic steam control loop."
+    },
+    {
+      "id": "fail-closed-valves",
+      "severity": "major",
+      "must": "LV-201 and TV-202 control-valve symbols visibly show diaphragm actuation and FC fail position."
+    },
+    {
+      "id": "overhead-relief",
+      "severity": "minor",
+      "must": "PSV-201 is visibly connected to the column overhead."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All required process paths and control loops are visibly traceable. Overhead vapor flows from T-201 through E-201 and D-201, then through P-201 and FC diaphragm valve LV-201 back to the column. The reboiler circulation, level-control loop, temperature-control loop, and overhead relief connection are all shown.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:30:00.359Z",
+      "targetHash": "70436a835fcd",
+      "sourceHash": "a509b3ac62ff",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "column-overhead-reflux",
+          "verdict": "pass",
+          "evidence": "Visible process lines connect T-201 top to E-201, E-201 to D-201, D-201 bottom to P-201, P-201 through LV-201, and LV-201 back to the column reflux connection."
+        },
+        {
+          "id": "reboiler-circuit",
+          "verdict": "pass",
+          "evidence": "A DN150 bottoms line visibly connects T-201 bottom to E-202, and a separate DN150 boilup line returns from E-202 to T-201."
+        },
+        {
+          "id": "level-loop",
+          "verdict": "pass",
+          "evidence": "LT-201 is shown at D-201, with an electric signal to LIC-201 and a pneumatic command from LIC-201 to LV-201."
+        },
+        {
+          "id": "temperature-loop",
+          "verdict": "pass",
+          "evidence": "TT-202 is shown measuring E-202, with a dashed electric signal to TIC-202 and a pneumatic signal from TIC-202 to the steam valve TV-202."
+        },
+        {
+          "id": "fail-closed-valves",
+          "verdict": "pass",
+          "evidence": "Both LV-201 and TV-202 visibly use diaphragm-actuated control-valve symbols and are labeled FC."
+        },
+        {
+          "id": "overhead-relief",
+          "verdict": "pass",
+          "evidence": "PSV-201 is visibly branched from the T-201 overhead line and discharges to the line labeled TO ATM."
+        }
+      ]
+    }
+  }
+}

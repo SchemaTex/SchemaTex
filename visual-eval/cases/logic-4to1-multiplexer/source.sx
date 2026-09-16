@@ -1,0 +1,13 @@
+# Gate-level 4-to-1 multiplexer; S1,S0 select D0,D1,D2,D3 respectively.
+logic "4-to-1 Multiplexer"
+input D0, D1, D2, D3, S1, S0
+output Y
+nS1 = NOT(S1)
+nS0 = NOT(S0)
+p0 = AND(D0, nS1, nS0)
+p1 = AND(D1, nS1, S0)
+p2 = AND(D2, S1, nS0)
+p3 = AND(D3, S1, S0)
+o01 = OR(p0, p1)
+o23 = OR(p2, p3)
+Y = OR(o01, o23)

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="716" viewBox="0 0 1140 510" role="img" aria-labelledby="title desc">
+  <title id="title">Gene Duplication Tree</title>
+  <desc id="desc">Rooted rectangular phylogram. The root has NHX D=Y, indicating duplication. The GeneA ancestor has D=N and a branch length of 0.18; its Human GeneA and Mouse GeneA tips have lengths 0.06 and 0.07. The GeneB ancestor has D=N and a branch length of 0.17; its Human GeneB and Mouse GeneB tips have lengths 0.05 and 0.06. GeneA is highlighted orange. All horizontal branches use 2160 SVG units per substitution per site; dotted label guides add no distance.</desc>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size: 28px; font-weight: 700; }
+    .subtitle { font-size: 13px; fill: #64748b; letter-spacing: .2px; }
+    .heading { font-size: 12px; fill: #64748b; letter-spacing: 1px; }
+    .taxon { font-size: 16px; font-style: italic; }
+    .annotation { font-size: 12px; }
+    .note { font-size: 11px; fill: #64748b; }
+    .branch { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .guide { fill: none; stroke: #b8c4d5; stroke-width: 1; stroke-dasharray: 2.5 4.5; }
+  </style>
+  <rect width="1140" height="510" fill="#ffffff"/>
+  <text class="title" x="48" y="48">Gene Duplication Tree</text>
+  <text class="subtitle" x="48" y="76">Rectangular phylogram · branch distances and duplication annotations</text>
+  <path d="M48 99H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="heading" x="80" y="133">PHYLOGENY</text>
+  <text class="heading" x="654" y="133">TAXON</text>
+  <text class="heading" x="967" y="133">CLADE</text>
+  <rect x="638" y="148" width="454" height="88" rx="3" fill="#FB8C00" fill-opacity=".045"/>
+  <rect x="638" y="268" width="454" height="88" rx="3" fill="#64748b" fill-opacity=".045"/>
+  <g class="guide">
+    <path d="M598.4 170H641"/>
+    <path d="M620 214H641"/>
+    <path d="M555.2 290H641"/>
+    <path d="M576.8 334H641"/>
+  </g>
+  <path class="branch" stroke="#1e293b" d="M80 192V312"/>
+  <g class="branch" stroke="#FB8C00">
+    <path d="M80 192H468.8M468.8 170V214M468.8 170H598.4M468.8 214H620"/>
+  </g>
+  <path class="branch" stroke="#1e293b" d="M80 312H447.2M447.2 290V334M447.2 290H555.2M447.2 334H576.8"/>
+  <text class="annotation" x="445.8" y="181" text-anchor="end" style="fill:#FB8C00">D=N</text>
+  <text class="annotation" x="424.2" y="301" text-anchor="end">D=N</text>
+  <text class="annotation" x="92" y="256">D=Y</text>
+  <g class="taxon">
+    <text x="654" y="175">Human GeneA</text>
+    <text x="654" y="219">Mouse GeneA</text>
+    <text x="654" y="295">Human GeneB</text>
+    <text x="654" y="339">Mouse GeneB</text>
+  </g>
+  <path d="M945 158H952V226H945" fill="none" stroke="#FB8C00" stroke-width="1.4"/>
+  <text x="967" y="196" font-size="12" font-weight="700" style="fill:#FB8C00">GeneA</text>
+  <path d="M80 401V411M80 406H188M188 401V411" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="431" font-size="12">0.05 substitutions/site</text>
+  <text class="note" x="466" y="407">Horizontal distance: substitutions/site · NHX: D=Y duplication; D=N no duplication</text>
+  <text class="note" x="466" y="430">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 454H1092" stroke="#dce2ea" stroke-width="1"/>
+  <text class="note" x="48" y="479">Gene-family tree · duplicated paralogs A and B each retain human and mouse orthologs.</text>
+</svg>

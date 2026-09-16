@@ -1,0 +1,46 @@
+# Residential permit site plan: a new detached ADU behind an existing one-storey house.
+# Lot 7, Block 3, 1418 Alder Street. Bearings and distances as recorded on the plat.
+siteplan "1418 Alder Street — Site Plan" unit ft
+
+parcel lot "Lot 7, Block 3" points 0,0 60,0 60,120 0,120
+road alder "Alder Street" from -10,138 to 70,138 width 26
+
+dim "N 82°30′00″ E 60.00′" from 0,0 to 60,0
+dim "N 82°30′00″ E 60.00′" from 0,120 to 60,120
+dim "N 07°30′00″ W 120.00′" from 0,120 to 0,0
+dim "N 07°30′00″ W 120.00′" from 60,120 to 60,0
+
+setback front "20′ front setback" from 5,100 to 55,100
+setback rear "15′ rear setback" from 5,15 to 55,15
+setback west "5′ side setback" from 5,15 to 5,100
+setback east "5′ side setback" from 55,15 to 55,100
+easement rearEasement "10′ utility easement" from 0,10 to 60,10
+
+structure house "Existing residence" points 9,54 41,54 41,94 9,94
+structure adu "Proposed detached ADU" points 21,18 47,18 47,42 21,42
+
+driveway drive "Existing concrete driveway" points 48,125 48,70 width 10
+walkway frontWalk "Existing front walk" points 43,96 26,96 width 4
+walkway aduWalk "Proposed ADU walk" points 45,70 45,42 width 4
+zone patio "Existing concrete patio" points 10,44 32,44 32,54 10,54
+
+fence rearFence "6′ wood fence" points 1,94 1,1 59,1 59,70
+tree oak at 12,30 size 12 "Existing 16″ oak"
+
+utility water "Water service" points 17,122 17,94
+utility sewer "Sewer lateral" points 13,94 13,138
+utility aduService "New water and sewer to ADU" points 35,54 35,42
+utility power "Overhead electric" from -10,5 to 70,5
+
+# Distances from each building to the property lines, and between the buildings
+dim "26′" from 10,94 to 10,120
+dim "9′" from 0,86 to 9,86
+dim "19′" from 41,62 to 60,62
+dim "18′" from 45,0 to 45,18
+dim "21′" from 0,21 to 21,21
+dim "13′" from 47,30 to 60,30
+dim "12′" from 39,42 to 39,54
+
+north 7.5
+scale 40
+legend on

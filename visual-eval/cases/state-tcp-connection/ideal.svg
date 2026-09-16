@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1400" viewBox="0 0 1200 1050">
+  <title>TCP Connection Lifecycle</title>
+  <desc>TCP connection establishment, data transfer, and orderly or simultaneous close. All eighteen transitions and the initial transition are shown.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 0.5 L9 5 L1 9.5" fill="none" stroke="#4A5568" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; }
+      .title { font-size:19px; font-weight:600; fill:#16202E; }
+      .subtitle { font-size:11.5px; fill:#64708A; }
+      .state { fill:#FFFFFF; stroke:#16202E; stroke-width:1.5; }
+      .name { font-size:13px; font-weight:500; fill:#16202E; text-anchor:middle; dominant-baseline:middle; }
+      .edge { fill:none; stroke:#4A5568; stroke-width:1.25; stroke-linejoin:round; stroke-linecap:round; marker-end:url(#arrow); }
+      .label { font-size:11px; fill:#64708A; paint-order:stroke; stroke:#FFFFFF; stroke-width:5px; stroke-linejoin:round; }
+      .legend { font-size:10.5px; fill:#64708A; }
+    </style>
+  </defs>
+  <rect width="1200" height="1050" fill="#FFFFFF"/>
+  <text class="title" x="40" y="46">TCP Connection Lifecycle</text>
+  <text class="subtitle" x="40" y="68">UML 2.5 state machine · transition labels read event / action</text>
+
+  <!-- Orthogonal transitions; long returns occupy the outside margins. -->
+  <g class="edge">
+    <path d="M600 96 V116"/>
+    <path d="M560 164 V190 Q560 200 550 200 H370 Q360 200 360 210 V236"/>
+    <path d="M640 164 V190 Q640 200 650 200 H750 Q760 200 760 210 V236"/>
+    <path d="M440 260 H680"/>
+    <path d="M360 284 V366"/>
+    <path d="M720 284 V320 Q720 330 710 330 H410 Q400 330 400 340 V366"/>
+    <path d="M760 284 V446"/>
+    <path d="M360 414 V460 Q360 470 370 470 H680"/>
+    <path d="M720 494 V540 Q720 550 710 550 H520 Q510 550 510 560 V576"/>
+    <path d="M840 470 H940 Q950 470 950 480 V576"/>
+    <path d="M430 600 H320 Q310 600 310 610 V716"/>
+    <path d="M570 624 V716"/>
+    <path d="M590 600 H690 Q700 600 700 610 V880 Q700 890 690 890 H520"/>
+    <path d="M310 764 V870 Q310 880 320 880 H360"/>
+    <path d="M570 764 V820 Q570 830 560 830 H490 Q480 830 480 840 V866"/>
+    <path d="M950 624 V866"/>
+    <path d="M1030 890 H1110 Q1120 890 1120 880 V150 Q1120 140 1110 140 H680"/>
+    <path d="M360 902 H110 Q100 902 100 892 V150 Q100 140 110 140 H520"/>
+  </g>
+
+  <!-- State symbols -->
+  <circle cx="600" cy="90" r="6" fill="#16202E"/>
+  <g>
+    <rect class="state" x="520" y="116" width="160" height="48" rx="10"/>
+    <text class="name" x="600" y="140">CLOSED</text>
+    <rect class="state" x="280" y="236" width="160" height="48" rx="10"/>
+    <text class="name" x="360" y="260">LISTEN</text>
+    <rect class="state" x="680" y="236" width="160" height="48" rx="10"/>
+    <text class="name" x="760" y="260">SYN_SENT</text>
+    <rect class="state" x="280" y="366" width="160" height="48" rx="10"/>
+    <text class="name" x="360" y="390">SYN_RCVD</text>
+    <rect class="state" x="680" y="446" width="160" height="48" rx="10"/>
+    <text class="name" x="760" y="470">ESTABLISHED</text>
+    <rect class="state" x="430" y="576" width="160" height="48" rx="10"/>
+    <text class="name" x="510" y="600">FIN_WAIT_1</text>
+    <rect class="state" x="870" y="576" width="160" height="48" rx="10"/>
+    <text class="name" x="950" y="600">CLOSE_WAIT</text>
+    <rect class="state" x="230" y="716" width="160" height="48" rx="10"/>
+    <text class="name" x="310" y="740">FIN_WAIT_2</text>
+    <rect class="state" x="490" y="716" width="160" height="48" rx="10"/>
+    <text class="name" x="570" y="740">CLOSING</text>
+    <rect class="state" x="360" y="866" width="160" height="48" rx="10"/>
+    <text class="name" x="440" y="890">TIME_WAIT</text>
+    <rect class="state" x="870" y="866" width="160" height="48" rx="10"/>
+    <text class="name" x="950" y="890">LAST_ACK</text>
+  </g>
+
+  <!-- Full DSL labels, clear of symbols and strokes. -->
+  <g class="label">
+    <text x="450" y="188" text-anchor="middle">passive open</text>
+    <text x="700" y="188" text-anchor="middle">active open / send SYN</text>
+    <text x="550" y="250" text-anchor="middle">send SYN</text>
+    <text x="344" y="312" text-anchor="end"><tspan x="344">rcv SYN /</tspan><tspan x="344" dy="14">send SYN,ACK</tspan></text>
+    <text x="540" y="320" text-anchor="middle">rcv SYN / send SYN,ACK</text>
+    <text x="776" y="382">rcv SYN,ACK / send ACK</text>
+    <text x="515" y="460" text-anchor="middle">rcv ACK</text>
+    <text x="610" y="539" text-anchor="middle">close / send FIN</text>
+    <text x="966" y="526">rcv FIN / send ACK</text>
+    <text x="294" y="665" text-anchor="end">rcv ACK of FIN</text>
+    <text x="554" y="669" text-anchor="end">rcv FIN / send ACK</text>
+    <text x="716" y="787"><tspan x="716">rcv FIN,ACK /</tspan><tspan x="716" dy="14">send ACK</tspan></text>
+    <text x="294" y="822" text-anchor="end"><tspan x="294">rcv FIN /</tspan><tspan x="294" dy="14">send ACK</tspan></text>
+    <text x="586" y="807">rcv ACK of FIN</text>
+    <text x="966" y="748">close / send FIN</text>
+    <text x="910" y="129" text-anchor="middle">rcv ACK of FIN</text>
+    <text x="290" y="129" text-anchor="middle">2MSL timeout</text>
+  </g>
+
+  <!-- Exemplar-style legend: only symbols actually used in this diagram. -->
+  <path d="M40 980 H1160" stroke="#EEF2F7" stroke-width="1.25"/>
+  <circle cx="46" cy="1012" r="6" fill="#16202E"/>
+  <text class="legend" x="62" y="1016">initial pseudo-state</text>
+  <rect class="state" x="275" y="1002" width="28" height="20" rx="10"/>
+  <text class="legend" x="314" y="1016">connection state</text>
+  <path class="edge" d="M510 1012 H550"/>
+  <text class="legend" x="562" y="1016">transition — event / action</text>
+  <text class="legend" x="840" y="1016">2MSL = twice the maximum segment lifetime</text>
+</svg>

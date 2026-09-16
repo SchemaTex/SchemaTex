@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { renderIdef0 } from "../../src/diagrams/idef0/renderer";
+import { parseIdef0 } from "../../src/diagrams/idef0/parser";
+import { layoutIdef0 } from "../../src/diagrams/idef0/layout";
+import { renderIdef0, renderIdef0Layout } from "../../src/diagrams/idef0/renderer";
 import { idef0 } from "../../src/diagrams/idef0";
 
 const SRC = `
@@ -80,4 +82,22 @@ describe("idef0 renderer", () => {
     expect(svg).toContain("A &amp; B");
     expect(svg).toContain("x &lt; y");
   });
+});
+
+it("keeps incoming arrowhead triangles outside the receiving box", () => {
+  const source = `idef0 "Entry directions"
+function X "Review"
+control X "Policy"
+input X "Request"
+mechanism X "Reviewer"`;
+  const layout = layoutIdef0(parseIdef0(source));
+  const svg = renderIdef0Layout(layout);
+  const triangles = [...svg.matchAll(/<polygon[^>]*points="([^"]+)"[^>]*class="sx-idef0-head"/g)]
+    .map(match => (match[1] ?? "").split(" ").map(pair => pair.split(",").map(Number)));
+  const box = layout.boxes[0];
+  expect(box).toBeDefined();
+  expect(triangles).toHaveLength(3);
+  expect(triangles[0]?.every(point => (point[1] ?? Infinity) <= (box?.y ?? 0))).toBe(true);
+  expect(triangles[1]?.every(point => (point[0] ?? Infinity) <= (box?.x ?? 0))).toBe(true);
+  expect(triangles[2]?.every(point => (point[1] ?? -Infinity) >= (box?.y ?? 0) + (box?.height ?? 0))).toBe(true);
 });

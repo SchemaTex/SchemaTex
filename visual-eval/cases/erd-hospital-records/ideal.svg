@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1260" viewBox="0 0 1000 840" role="img" aria-labelledby="title desc">
+<title id="title">Clinical record schema — patients, care and results</title>
+<desc id="desc">Five entities with five relationships. Each Patient and Clinician has zero or many Encounters. Each Encounter generates zero or many Prescriptions and records zero or many Lab Results. Each Clinician authorises zero or many Prescriptions. Every child has exactly one parent in each relationship.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#0f172a;font-size:12px}
+.structure{fill:none;stroke:#334155;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.entity{fill:#fff;stroke:#334155;stroke-width:1.5}
+.name{font-size:13px;font-weight:600;letter-spacing:.35px;text-anchor:middle}
+.type{fill:#475569;text-anchor:end}
+.verb{fill:#475569;font-size:10.5px;paint-order:stroke;stroke:white;stroke-width:5px;stroke-linejoin:round}
+.pk{font-weight:600;text-decoration:underline}
+.tag{fill:white;font-size:10px;font-weight:700;text-anchor:middle}
+</style>
+<rect width="1000" height="840" fill="white"/>
+<text x="44" y="43" font-size="20" style="font-size:20px;font-weight:600">Clinical record schema — patients, care and results</text>
+<text x="44" y="65" style="font-size:10.5px;fill:#475569;letter-spacing:.2px">CROW'S-FOOT (IE) NOTATION · 5 TABLES · 5 RELATIONSHIPS</text>
+<path d="M44 75H956" stroke="#94a3b8" stroke-width="1"/>
+
+<path class="structure" d="M300 180H430V320"/>
+<path class="structure" d="M311.0 186.5L311.0 173.5"/>
+<path class="structure" d="M437 308L430 320L423 308"/>
+<circle cx="430" cy="298" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="365" y="169">has</text>
+<path class="structure" d="M700 180H570V320"/>
+<path class="structure" d="M689.0 173.5L689.0 186.5"/>
+<path class="structure" d="M577 308L570 320L563 308"/>
+<circle cx="570" cy="298" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="603" y="169">attends</text>
+<path class="structure" d="M628 410H780V530"/>
+<path class="structure" d="M639.0 416.5L639.0 403.5"/>
+<path class="structure" d="M787 518L780 530L773 518"/>
+<circle cx="780" cy="508" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="672" y="399">generates</text>
+<path class="structure" d="M372 410H220V530"/>
+<path class="structure" d="M361.0 403.5L361.0 416.5"/>
+<path class="structure" d="M227 518L220 530L213 518"/>
+<circle cx="220" cy="508" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="266" y="399">records</text>
+<path class="structure" d="M860 227V530"/>
+<path class="structure" d="M853.5 238.0L866.5 238.0"/>
+<path class="structure" d="M867 518L860 530L853 518"/>
+<circle cx="860" cy="508" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text class="verb" x="872" y="363">authorises</text>
+<g aria-label="PATIENT"><rect class="entity" x="44" y="110" width="256" height="117" rx="4"/>
+<path class="structure" d="M44 142H300"/>
+<text class="name" x="172.0" y="131">PATIENT</text>
+<path d="M44 171H300" stroke="#94a3b8" stroke-width="1"/>
+<text class="pk" x="56" y="163">patient_id</text><text class="type" x="258" y="163">int</text>
+<rect x="266" y="152" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="277" y="163">PK</text>
+<path d="M56 196H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="188">medical_record_number</text><text class="type" x="258" y="188">string</text>
+<text x="56" y="213">date_of_birth</text><text class="type" x="258" y="213">date</text>
+</g>
+<g aria-label="CLINICIAN"><rect class="entity" x="700" y="110" width="256" height="117" rx="4"/>
+<path class="structure" d="M700 142H956"/>
+<text class="name" x="828.0" y="131">CLINICIAN</text>
+<path d="M700 171H956" stroke="#94a3b8" stroke-width="1"/>
+<text class="pk" x="712" y="163">clinician_id</text><text class="type" x="914" y="163">int</text>
+<rect x="922" y="152" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="933" y="163">PK</text>
+<path d="M712 196H944" stroke="#f1f5f9" stroke-width="1"/>
+<text x="712" y="188">name</text><text class="type" x="914" y="188">string</text>
+<text x="712" y="213">specialty</text><text class="type" x="914" y="213">string</text>
+</g>
+<g aria-label="ENCOUNTER"><rect class="entity" x="372" y="320" width="256" height="167" rx="4"/>
+<path class="structure" d="M372 352H628"/>
+<text class="name" x="500.0" y="341">ENCOUNTER</text>
+<path d="M372 381H628" stroke="#94a3b8" stroke-width="1"/>
+<text class="pk" x="384" y="373">encounter_id</text><text class="type" x="586" y="373">int</text>
+<rect x="594" y="362" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="605" y="373">PK</text>
+<path d="M384 406H616" stroke="#f1f5f9" stroke-width="1"/>
+<text x="384" y="398">patient_id</text><text class="type" x="586" y="398">int</text>
+<rect x="594" y="387" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="605" y="398">FK</text>
+<path d="M384 431H616" stroke="#f1f5f9" stroke-width="1"/>
+<text x="384" y="423">clinician_id</text><text class="type" x="586" y="423">int</text>
+<rect x="594" y="412" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="605" y="423">FK</text>
+<path d="M384 456H616" stroke="#f1f5f9" stroke-width="1"/>
+<text x="384" y="448">admitted_at</text><text class="type" x="586" y="448">datetime</text>
+<text x="384" y="473">encounter_type</text><text class="type" x="586" y="473">string</text>
+</g>
+<g aria-label="PRESCRIPTION"><rect class="entity" x="700" y="530" width="256" height="142" rx="4"/>
+<path class="structure" d="M700 562H956"/>
+<text class="name" x="828.0" y="551">PRESCRIPTION</text>
+<path d="M700 591H956" stroke="#94a3b8" stroke-width="1"/>
+<text class="pk" x="712" y="583">prescription_id</text><text class="type" x="914" y="583">int</text>
+<rect x="922" y="572" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="933" y="583">PK</text>
+<path d="M712 616H944" stroke="#f1f5f9" stroke-width="1"/>
+<text x="712" y="608">encounter_id</text><text class="type" x="914" y="608">int</text>
+<rect x="922" y="597" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="933" y="608">FK</text>
+<path d="M712 641H944" stroke="#f1f5f9" stroke-width="1"/>
+<text x="712" y="633">clinician_id</text><text class="type" x="914" y="633">int</text>
+<rect x="922" y="622" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="933" y="633">FK</text>
+<text x="712" y="658">medication</text><text class="type" x="914" y="658">string</text>
+</g>
+<g aria-label="LAB_RESULT"><rect class="entity" x="44" y="530" width="256" height="142" rx="4"/>
+<path class="structure" d="M44 562H300"/>
+<text class="name" x="172.0" y="551">LAB_RESULT</text>
+<path d="M44 591H300" stroke="#94a3b8" stroke-width="1"/>
+<text class="pk" x="56" y="583">lab_result_id</text><text class="type" x="258" y="583">int</text>
+<rect x="266" y="572" width="22" height="15" rx="3" fill="#2563eb"/><text class="tag" x="277" y="583">PK</text>
+<path d="M56 616H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="608">encounter_id</text><text class="type" x="258" y="608">int</text>
+<rect x="266" y="597" width="22" height="15" rx="3" fill="#d97706"/><text class="tag" x="277" y="608">FK</text>
+<path d="M56 641H288" stroke="#f1f5f9" stroke-width="1"/>
+<text x="56" y="633">test_name</text><text class="type" x="258" y="633">string</text>
+<text x="56" y="658">result_value</text><text class="type" x="258" y="658">string</text>
+</g>
+<rect x="742" y="706" width="214" height="108" rx="4" fill="white" stroke="#94a3b8" stroke-width="1"/><text x="756" y="727" style="font-size:10.5px;font-weight:600;letter-spacing:.4px;fill:#475569">CARDINALITY</text>
+<path class="structure" d="M756 746H800M800 737V755"/>
+<path class="structure" d="M789 739.5V752.5"/>
+<text x="812" y="749.5" style="font-size:10.5px;fill:#475569">exactly one</text>
+<path class="structure" d="M756 764H800M800 755V773"/>
+<circle cx="786" cy="764" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="812" y="767.5" style="font-size:10.5px;fill:#475569">zero or one</text>
+<path class="structure" d="M756 782H800M800 773V791"/>
+<path class="structure" d="M788 775L800 782L788 789"/>
+<path class="structure" d="M780 775.5V788.5"/>
+<text x="812" y="785.5" style="font-size:10.5px;fill:#475569">one or many</text>
+<path class="structure" d="M756 800H800M800 791V809"/>
+<path class="structure" d="M788 793L800 800L788 807"/>
+<circle cx="777" cy="800" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+<text x="812" y="803.5" style="font-size:10.5px;fill:#475569">zero or many</text>
+</svg>

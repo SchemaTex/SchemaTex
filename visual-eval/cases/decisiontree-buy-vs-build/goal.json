@@ -1,0 +1,51 @@
+{
+  "id": "decisiontree-buy-vs-build",
+  "type": "decisiontree",
+  "variant": "taxonomy",
+  "title": "Buy vs build decision",
+  "goal": "Show an engineering decision tree that balances capability, security, cost, and delivery time.",
+  "rubric": [
+    {
+      "id": "capability-root",
+      "severity": "blocker",
+      "must": "The root visibly asks whether a product meets critical requirements and separates buy-oriented from build-oriented paths."
+    },
+    {
+      "id": "buy-conditions",
+      "severity": "blocker",
+      "must": "The buy path visibly checks both vendor security/compliance and approved-budget cost before Buy and integrate."
+    },
+    {
+      "id": "build-conditions",
+      "severity": "major",
+      "must": "The no-product path visibly checks MVP delivery deadline and long-term ownership capacity before Build in-house."
+    },
+    {
+      "id": "alternatives",
+      "severity": "major",
+      "must": "The visible leaves include negotiation, compliant-platform, reduced-scope, and deferred-custom-feature outcomes."
+    },
+    {
+      "id": "binary-decisions",
+      "severity": "minor",
+      "must": "The tree shows readable Yes and No branches at each decision."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Redrawn from the source with the independent taxonomy exemplar drawing script; no engine geometry or screenshot used to build the target.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "Visually reviewed against the taxonomy exemplar and source: complete questions and outcomes, numbered hexagons, unambiguous Yes/No drops, and a shared outcome row. No clipped labels or material collisions. Unclassified outcomes remain neutral.",
+      "model": "Codex visual review",
+      "passes": 1,
+      "reviewedAt": "2026-09-14T21:56:58.143Z",
+      "targetHash": "f5e2285b1301",
+      "sourceHash": "92d7be69018e",
+      "exemplarHash": "0c6f8008415a"
+    }
+  }
+}

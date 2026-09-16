@@ -101,8 +101,8 @@ Das Layout wird in den Header-Klammern gesetzt: `phylo "Titel" [layout: rectangu
 
 | Layout | Wert | Beschreibung |
 |---|---|---|
-| Rechteckig | `rectangular` | Standard. L-förmige Äste; Wurzel links, Blätter rechts |
-| Geneigt | `slanted` | Diagonale Linien von Eltern zu Kindern; kompakter |
+| Rechteckig | `rectangular` | L-förmige Äste; Wurzel links, Blätter rechts |
+| Geneigt | `slanted` | Standard. Diagonale Linien von Eltern zu Kindern; kompakter |
 | Kreisförmig | `circular` | Wurzel im Zentrum, Blätter um den Umfang |
 | Ohne Wurzel | `unrooted` | Gleichwinkeliger Radial; betont Distanz, nicht Abstammung |
 
@@ -220,7 +220,7 @@ Alle Optionen kommen innerhalb von `[…]` in der `phylo`-Header-Zeile oder in e
 
 | Eigenschaft | Werte | Standard | Effekt |
 |---|---|---|---|
-| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Baum-Layout |
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `slanted` | Baum-Layout |
 | `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Astlängen-Semantik |
 | `unrooted` | (Flag) | — | Äquivalent zu `layout: unrooted` |
 | `branch-width:` | Zahl | `1.5` | Strichbreite der Äste |

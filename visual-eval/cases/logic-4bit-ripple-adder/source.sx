@@ -1,0 +1,24 @@
+# Four-bit unsigned ripple-carry adder; each stage is a full adder built from gates.
+logic "4-bit Ripple-Carry Adder"
+input A0, A1, A2, A3, B0, B1, B2, B3, Cin
+output S0, S1, S2, S3, Cout
+x0 = XOR(A0, B0)
+S0 = XOR(x0, Cin)
+a0 = AND(A0, B0)
+b0 = AND(x0, Cin)
+c0 = OR(a0, b0)
+x1 = XOR(A1, B1)
+S1 = XOR(x1, c0)
+a1 = AND(A1, B1)
+b1 = AND(x1, c0)
+c1 = OR(a1, b1)
+x2 = XOR(A2, B2)
+S2 = XOR(x2, c1)
+a2 = AND(A2, B2)
+b2 = AND(x2, c1)
+c2 = OR(a2, b2)
+x3 = XOR(A3, B3)
+S3 = XOR(x3, c2)
+a3 = AND(A3, B3)
+b3 = AND(x3, c2)
+Cout = OR(a3, b3)

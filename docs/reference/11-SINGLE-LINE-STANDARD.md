@@ -756,24 +756,23 @@ bus -> cb3 -> lp1
 ```
 
 #### ATS (Automatic Transfer Switch)
-- **描述**: 自动切换两路电源（主用/备用）
-- **符号**: 两个断路器符号 + 连接杆（表示联动互锁）
-```xml
-<!-- Source 1 breaker (left) -->
-<g transform="translate(-20,0)">
-  <line x1="-8" y1="8" x2="8" y2="-8" stroke="#333" stroke-width="2"/>
-  <path d="M 5,-5 A 4,4 0 0 1 10,-5" fill="none" stroke="#333" stroke-width="1.5"/>
-</g>
-<!-- Source 2 breaker (right) -->
-<g transform="translate(20,0)">
-  <line x1="-8" y1="8" x2="8" y2="-8" stroke="#333" stroke-width="2"/>
-  <path d="M 5,-5 A 4,4 0 0 1 10,-5" fill="none" stroke="#333" stroke-width="1.5"/>
-</g>
-<!-- Mechanical interlock (dashed line between arms) -->
-<line x1="-12" y1="-8" x2="12" y2="-8" stroke="#333" stroke-width="1.5" stroke-dasharray="3,2"/>
-<!-- "ATS" label -->
-<text x="0" y="20" text-anchor="middle" font-size="9" font-weight="bold">ATS</text>
-```
+
+`ats` 表达两路独立输入和一个公共输出。当前符号用两个固定触点、一根接到
+公共输出的可动刀片和虚线行程提示表达 changeover。绘图端口与 routing 共用
+同一份 geometry；不把两个输入并接，也不画成方框内两根悬空斜线。
+
+图中默认的断开位置是示意符号，不代表实时状态。当前 DSL 不声明正常/应急
+输入角色、当前选中电源或 closed-transition 操作，不能从 label 推断这些属性。
+Open transition 的含义是 break-before-make；参见
+[Eaton ATS fundamentals](https://www.eaton.com/ca/en-gb/products/low-voltage-power-distribution-control-systems/automatic-transfer-switches/automatic-transfer-switch-fundamentals.html)。
+此资料解释操作语义，不是本库每个 glyph 的标准认证。
+
+#### Contactor
+
+`K = contactor [label: "Pump contactor", rating: "90 A"]` 显式声明电磁操作的
+接触器。它使用固定触点、可动刀片、虚线机械连接和侧面的 actuator 标记。
+`switch_load` 继续表示 load-break switch；引擎不会根据名称里是否有
+“Contactor”改换器件类型。
 
 ---
 
@@ -894,3 +893,44 @@ sld "Substation with Protection"
 | P2 | harmonic_filter, capacitor_bank (switched) | 0.5h |
 
 **Total SLD symbols (v2): 37 (P0: 10, P1: 16, P2: 11)**
+
+## 7. Current automatic layout contract (2026-09-10)
+
+The DSL describes device types, nameplates and connections. Placement, terminal
+attachment, route elbows and caption offsets belong to the engine. This revision
+adds no DSL geometry attributes and does not interpret equipment names as types.
+
+- Measure wrapped device captions before assigning feeder columns. A series chain
+  shares a column and reserves its widest caption; bus taps follow feeder positions.
+- Pack disconnected power systems separately. A lateral bus tie preserves both
+  feeder banks and their tap extents; captions stay off the tie and bar artwork.
+- Attach the two ATS supplies to separate terminals. Multiple inputs to a generic
+  `load` also stay separate externally; this does not infer its internal circuitry.
+- A root relay feeding a switching device is drawn as lateral control. An inline
+  overload relay remains in the power chain. Other relay-monitoring topologies are
+  not covered by that inference.
+- Route orthogonally using the shared router, with symbol and measured caption
+  obstacles. Distinct-net crossings use a paper gap; only same-net branches get
+  junction dots. This is not a guarantee of zero crossings on arbitrary graphs.
+- Keep voltage text attached to declared equipment. Do not infer full-width voltage
+  zones from graph ranks. Do not pad deep diagrams into a square canvas.
+
+Visual review, retained limitations and validation evidence are recorded in
+[the SLD visual audit](../issues/27-sld-visual-layout-audit.md).
+
+
+### Switch readability update (2026-09-10)
+
+All open-contact devices share an anchored blade/pivot construction. Breakers keep
+ANSI arc / IEC breaking-mark distinctions; disconnects, load switches, contactors,
+ground switches, reclosers and sectionalizers add their own functional marks.
+A bus tie rotates the same breaker geometry instead of maintaining a second glyph.
+The early SVG sketches above are illustrative; executable terminal geometry and
+current artwork live in `src/diagrams/sld/symbols.ts`.
+
+Through-buses with one upstream and one downstream connection remain in the series
+column. Final column packing checks every occupied row for caption clearance.
+Peer supplies are centred by conductor positions, while terminal bus bars extend
+on both sides of their incoming tap. No layout controls were added to the DSL.
+See [the switch audit](../issues/28-sld-switch-symbol-audit.md) for visual evidence
+and remaining limitations.

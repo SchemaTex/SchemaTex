@@ -1,3 +1,5 @@
+import { estimateTextWidth } from "../../core/text-metrics";
+import { cardSize } from "./presentation";
 import type {
   DTreeAST,
   DTreeEdgeStyle,
@@ -9,17 +11,14 @@ import type {
 
 interface NodeSize { w: number; h: number; }
 
-function sizeOf(node: DTreeNode, mode: DTreeAST["mode"]): NodeSize {
+function sizeOf(node: DTreeNode, ast: DTreeAST): NodeSize {
+  const mode = ast.mode;
   if (mode === "decision") {
-    if (node.kind === "decision") return { w: 58, h: 36 };
-    if (node.kind === "chance") return { w: 34, h: 34 };
-    return { w: 22, h: 22 }; // end triangle
+    if (node.kind === "decision") return { w: 24, h: 24 };
+    if (node.kind === "chance") return { w: 24, h: 24 };
+    return { w: 14, h: 16 }; // end triangle
   }
-  if (mode === "ml") {
-    if (node.kind === "split") return { w: 200, h: 100 };
-    return { w: 200, h: 82 };
-  }
-  return { w: 150, h: 50 };
+  return cardSize(node, ast);
 }
 
 interface WN {
@@ -34,12 +33,12 @@ interface WN {
   yFinal: number;
 }
 
-function wrap(node: DTreeNode, mode: DTreeAST["mode"], depth: number, parent?: WN): WN {
+function wrap(node: DTreeNode, ast: DTreeAST, depth: number, parent?: WN): WN {
   const w: WN = {
-    node, size: sizeOf(node, mode), depth, parent,
+    node, size: sizeOf(node, ast), depth, parent,
     children: [], prelim: 0, mod: 0, xFinal: 0, yFinal: 0,
   };
-  w.children = node.children.map((c) => wrap(c, mode, depth + 1, w));
+  w.children = node.children.map((c) => wrap(c, ast, depth + 1, w));
   return w;
 }
 
@@ -149,7 +148,6 @@ function routeEdge(
   sibH: boolean,
   p: DTreeLayoutNode,
   c: DTreeLayoutNode,
-  rail?: number,
 ): EdgeGeom {
   const px = p.x, py = p.y, cx = c.x, cy = c.y;
   let startX: number, startY: number, endX: number, endY: number;
@@ -204,21 +202,27 @@ function routeEdge(
     };
   }
 
-  // orthogonal L-shape — use per-level rail if provided so siblings align
+  const r = 6;
   if (sibH) {
-    const railY = rail ?? (startY + endY) / 2;
+    const railY = startY + Math.min(28, (endY - startY) / 2);
+    const sign = Math.sign(endX - startX);
+    const bend = Math.min(r, Math.abs(endX - startX) / 2);
     return {
-      path: `M ${startX} ${startY} L ${startX} ${railY} L ${endX} ${railY} L ${endX} ${endY}`,
-      labelX: (startX + endX) / 2,
-      labelY: railY,
+      path: sign === 0 ? `M ${startX} ${startY} L ${endX} ${endY}` :
+        `M ${startX} ${startY} L ${startX} ${railY-r} Q ${startX} ${railY} ${startX+sign*bend} ${railY} L ${endX-sign*bend} ${railY} Q ${endX} ${railY} ${endX} ${railY+r} L ${endX} ${endY}`,
+      labelX: endX + (sign || 1) * 10,
+      labelY: railY + 18,
       angle: 0,
     };
   }
-  const railX = rail ?? (startX + endX) / 2;
+  const railX = startX + Math.min(p.node.kind === "decision" || p.node.kind === "chance" ? 70 : 28, (endX-startX)/2);
+  const sign = Math.sign(endY-startY);
+  const bend = Math.min(r, Math.abs(endY-startY)/2);
   return {
-    path: `M ${startX} ${startY} L ${railX} ${startY} L ${railX} ${endY} L ${endX} ${endY}`,
-    labelX: railX,
-    labelY: (startY + endY) / 2,
+    path: sign === 0 ? `M ${startX} ${startY} L ${endX} ${endY}` :
+      `M ${startX} ${startY} L ${railX-r} ${startY} Q ${railX} ${startY} ${railX} ${startY+sign*bend} L ${railX} ${endY-sign*bend} Q ${railX} ${endY} ${railX+r} ${endY} L ${endX} ${endY}`,
+    labelX: (railX + endX) / 2,
+    labelY: endY - 12,
     angle: 0,
   };
 }
@@ -268,38 +272,40 @@ function routeSnappedEnd(sibH: boolean, p: DTreeLayoutNode, c: DTreeLayoutNode):
 
 export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
   const sibH = ast.direction === "top-down";
-  const root = wrap(ast.root, ast.mode, 0);
+  const root = wrap(ast.root, ast, 0);
 
   // Mode-tuned spacing.
   const all: WN[] = []; collect(root, all);
 
-  // Pad all nodes at the same depth to the same DEPTH-axis size (height in TD,
-  // width in LR). This makes orthogonal rails align cleanly.
-  const perDepthDepthSize: number[] = [];
-  for (const w of all) {
-    const d = sibH ? w.size.h : w.size.w;
-    perDepthDepthSize[w.depth] = Math.max(perDepthDepthSize[w.depth] ?? 0, d);
-  }
-  for (const w of all) {
-    const target = perDepthDepthSize[w.depth]!;
-    if (sibH) w.size.h = target;
-    else w.size.w = target;
+  if (ast.mode === "taxonomy" || ast.mode === "ml") {
+    const leaves = all.filter(w => !w.children.length);
+    const width = Math.max(...leaves.map(w => w.size.w));
+    const height = Math.max(...leaves.map(w => w.size.h));
+    for (const leaf of leaves) leaf.size = { w: width, h: height };
   }
 
-  const maxSibExtent = Math.max(...all.map((w) => sibExtent(w, sibH)));
+  const maxSibExtent = Math.max(...all.filter(w => !w.children.length).map(w => sibExtent(w, sibH)));
 
   let leafGap: number, levelGap: number, sibGap: number;
   if (ast.mode === "ml") { leafGap = 40; levelGap = 80; sibGap = 40; }
-  else if (ast.mode === "decision") { leafGap = sibH ? 40 : 36; levelGap = sibH ? 90 : 110; sibGap = 30; }
+  else if (ast.mode === "decision") { leafGap = sibH ? 40 : 36; levelGap = sibH ? 110 : Math.max(180, ...all.map(w => estimateTextWidth(w.node.incomingChoice ?? w.node.label, 11) + 140)); sibGap = 36; }
   else { leafGap = sibH ? 30 : 22; levelGap = sibH ? 80 : 90; sibGap = 26; }
 
-  const unit = Math.max(maxSibExtent, sibH ? 120 : 50);
+  const unit = Math.max(maxSibExtent, sibH ? 120 : ast.mode === "decision" ? 62 : 50);
   const cursor = { v: 0 };
   assignLeafPositions(root, sibH, unit, leafGap, cursor);
   enforceSibGap(root, sibH, sibGap);
 
   const levelOffsets = computeLevelOffsets(root, sibH, levelGap);
   setFinal(root, sibH, levelOffsets);
+  // Outcomes form a comparison shelf, irrespective of where a branch terminates.
+  if (ast.mode === "taxonomy" || ast.mode === "ml") {
+    const last = Math.max(...all.map(w => sibH ? w.yFinal : w.xFinal));
+    for (const w of all) if (!w.children.length) {
+      if (sibH) w.yFinal = last;
+      else w.xFinal = last;
+    }
+  }
 
   // Bounding box — extra left padding for decision-mode left-right (root label sits outside the rect)
   const PADDING = 40;
@@ -314,7 +320,6 @@ export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
 
   // For decision mode (left-right), reserve a rightmost column for payoff text.
   const needsPayoffCol = ast.mode === "decision" && !sibH;
-  const payoffColGap = needsPayoffCol ? 110 : 0;
   const extraRight = needsPayoffCol ? 180 : ast.mode === "decision" ? 110 : 20;
 
   // Capture natural x BEFORE snapping — needed to route shallow end-node edges via
@@ -353,20 +358,14 @@ export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
 
   // Edge style resolution
   const edgeStyle: DTreeEdgeStyle =
-    ast.edgeStyle ?? (ast.mode === "decision" ? "diagonal" : "orthogonal");
+    ast.edgeStyle ?? "orthogonal";
 
-  // Level rails — for orthogonal, precompute the elbow position per child-depth so
-  // all siblings at the same depth share the same rail (keeps True/False aligned).
-  const levelRails: number[] = [];
-  if (edgeStyle === "orthogonal") {
-    // For each child depth d>=1, rail = midpoint between parent-level bottom and child-level top.
-    for (let d = 1; d < perDepthDepthSize.length; d++) {
-      const parentBotY = (levelOffsets[d - 1] ?? 0) + (perDepthDepthSize[d - 1]! / 2);
-      const childTopY = (levelOffsets[d] ?? 0) - (perDepthDepthSize[d]! / 2);
-      levelRails[d] = (parentBotY + childTopY) / 2 + (sibH ? offsetY : offsetX);
-    }
-  }
-
+  const strategy = new Set<string>();
+  const mark = (n: DTreeNode): void => {
+    strategy.add(n.id);
+    for (const child of n.children) if (n.kind !== "decision" || child.optimal) mark(child);
+  };
+  if (ast.mode === "decision") mark(ast.root);
   const labelAnchors: Record<string, { x: number; y: number; angle: number }> = {};
   const edges: DTreeLayoutEdge[] = [];
   for (const w of all) {
@@ -376,11 +375,11 @@ export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
       // Special route: end node snapped from its natural x to the payoff column.
       // Route as diagonal (parent → naturalX, childY) then horizontal to (snappedX, childY).
       const wasSnapped = needsPayoffCol && c.node.kind === "end" && cn.naturalX !== undefined && Math.abs(cn.naturalX - cn.x) > 1;
-      const geom = wasSnapped
+      const geom = wasSnapped && edgeStyle !== "orthogonal"
         ? routeSnappedEnd(sibH, pn, cn)
-        : routeEdge(edgeStyle, sibH, pn, cn, levelRails[c.depth]);
+        : routeEdge(edgeStyle, sibH, pn, cn);
 
-      const isOptimal = c.node.optimal === true;
+      const isOptimal = strategy.has(c.node.id);
       let strokeWidth = 1.6;
       if (isOptimal) strokeWidth = 3;
       if (ast.branchLengthProb && c.node.incomingProb !== undefined) {
@@ -390,32 +389,24 @@ export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
       let label: string | undefined;
       if (ast.mode === "decision") {
         if (c.node.incomingChoice !== undefined) label = c.node.incomingChoice;
-        else if (c.node.incomingProb !== undefined) label = formatProb(c.node.incomingProb);
+        else if (c.node.incomingProb !== undefined) label = [c.node.label, formatProb(c.node.incomingProb)].filter(Boolean).join(" · ");
       } else if (ast.mode === "ml") {
         if (c.node.mlBranch) {
           if (ast.branchLabels === "relation" && w.node.op && w.node.threshold !== undefined) {
             const op = c.node.mlBranch === "true" ? w.node.op : flipOp(w.node.op);
-            label = `${op} ${w.node.threshold}`;
+            label = `${op} ${w.node.threshold}`.replace(/<=/g, "≤").replace(/>=/g, "≥");
           } else {
             label = c.node.mlBranch === "true" ? "True" : "False";
           }
         }
       } else {
-        if (c.node.branchLabel) label = c.node.branchLabel;
+        if (c.node.branchLabel) label = /^(yes|no)$/.test(c.node.branchLabel) ? c.node.branchLabel[0]!.toUpperCase() + c.node.branchLabel.slice(1) : c.node.branchLabel;
       }
 
       labelAnchors[c.node.id] = { x: geom.labelX, y: geom.labelY, angle: geom.angle };
 
       edges.push({ from: w.node.id, to: c.node.id, path: geom.path, label, isOptimal, strokeWidth });
     }
-  }
-
-  // Payoff column X (in final coordinates)
-  let payoffColumnX: number | undefined;
-  if (needsPayoffCol) {
-    let endX = 0;
-    for (const n of layoutNodes) if (n.node.kind === "end") endX = Math.max(endX, n.x + n.width / 2);
-    payoffColumnX = endX + payoffColGap;
   }
 
   const width = Math.ceil(maxX - minX + PADDING * 2 + extraRight + extraLeft);
@@ -426,13 +417,11 @@ export function layoutDecisionTree(ast: DTreeAST): DTreeLayoutResult {
     height,
     nodes: layoutNodes,
     edges,
-    levelRails: edgeStyle === "orthogonal" ? levelRails : undefined,
     title: ast.title,
     mode: ast.mode,
     direction: ast.direction,
     edgeStyle,
     labelAnchors,
-    payoffColumnX,
   };
 }
 

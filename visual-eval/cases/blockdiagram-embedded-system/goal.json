@@ -1,0 +1,45 @@
+{
+  "id": "blockdiagram-embedded-system",
+  "type": "blockdiagram",
+  "title": "Embedded telemetry node",
+  "goal": "Show sensors, compute, memory, radio, and a distinct power distribution path.",
+  "rubric": [
+    {
+      "id": "power-distribution",
+      "severity": "blocker",
+      "must": "Battery and power-management blocks visibly distribute a labelled 3.3 V rail to the powered electronics."
+    },
+    {
+      "id": "sensor-to-mcu",
+      "severity": "blocker",
+      "must": "Temperature and pressure sensors visibly converge through an I2C bus into the microcontroller."
+    },
+    {
+      "id": "memory-bus",
+      "severity": "major",
+      "must": "The microcontroller visibly connects to SPI flash through a labelled SPI bus."
+    },
+    {
+      "id": "radio-output",
+      "severity": "major",
+      "must": "Telemetry flows visibly from the microcontroller through LoRa radio to an antenna."
+    },
+    {
+      "id": "power-distinction",
+      "severity": "major",
+      "must": "Power lines are visually distinguishable from data-bus connections."
+    },
+    {
+      "id": "component-count",
+      "severity": "minor",
+      "must": "All principal battery, PMIC, MCU, two sensors, radio, flash, and antenna blocks are visible."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently redrawn against the September 15 hardware exemplar: eight real devices; power and buses are connections rather than pill nodes. The rail supplies only the four devices named in source. DSL discrete rail is dashed. This target intentionally retains shared-bus and power-layer capabilities missing from the current parser; no source semantics were changed."
+  }
+}

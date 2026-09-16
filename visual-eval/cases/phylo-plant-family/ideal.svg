@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1140 542">
+  <title>Flowering Plant Families — rectangular phylogram</title>
+  <desc>Rooted phylogram with a root stem of 0.22 substitutions per site. Fabaceae and Rosaceae are sisters in the green Rosids clade, with stem 0.10 and terminal branches 0.12 and 0.14. Asteraceae and Lamiaceae are sisters with stem 0.08 and terminal branches 0.19 and 0.17. Dashed guides do not add branch length.</desc>
+  <rect width="1140" height="542" fill="#ffffff"/>
+  <style>
+    text {font-family:Verdana,sans-serif;fill:#1e293b}
+    .title {font-family:'Trebuchet MS',sans-serif;font-size:28px;font-weight:700}
+    .subtitle {font-size:13px;fill:#64748b;letter-spacing:.25px}
+    .heading {font-size:12px;fill:#64748b;letter-spacing:1px}
+    .taxon {font-size:16px}
+    .note {font-size:11px;fill:#64748b}
+    .branch {fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+    .guide {stroke:#b8c5d8;stroke-width:1;stroke-dasharray:2.5 4.5;fill:none}
+  </style>
+  <text x="48" y="48" class="title">Flowering Plant Families</text>
+  <text x="48" y="76" class="subtitle">Rectangular phylogram · branch distances and clade relationships</text>
+  <path d="M48 98H1092" stroke="#dce2eb" stroke-width="1"/>
+  <text x="80" y="132" class="heading">PHYLOGENY</text>
+  <text x="654" y="132" class="heading">TAXON</text>
+  <text x="967" y="132" class="heading">CLADE</text>
+  <rect x="638" y="147" width="454" height="88" rx="3" fill="#43A047" fill-opacity=".055"/>
+  <!-- One linear distance scale: 1000 SVG units per substitution/site. -->
+  <!-- Root stem .22, then sister-pair stems .10 and .08. -->
+  <path class="branch" stroke="#1e293b" d="M80 251H300M300 191V311M300 311H380M380 289V333M380 289H570M380 333H550"/>
+  <path class="branch" stroke="#43A047" d="M300 191H400M400 169V213M400 169H520M400 213H540"/>
+  <path class="guide" d="M524 169H640M544 213H640M574 289H640M554 333H640"/>
+  <text x="654" y="174" class="taxon">Fabaceae</text>
+  <text x="654" y="218" class="taxon">Rosaceae</text>
+  <text x="654" y="294" class="taxon">Asteraceae</text>
+  <text x="654" y="338" class="taxon">Lamiaceae</text>
+  <path d="M945 157H952V225H945" fill="none" stroke="#43A047" stroke-width="1.4"/>
+  <text x="967" y="195" style="font-size:12px;font-weight:700;fill:#43A047">Rosids</text>
+  <path d="M80 442H130M80 437V447M130 437V447" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+  <text x="80" y="467" style="font-size:12px">0.05 substitutions/site</text>
+  <text x="466" y="443" class="note">Horizontal distance: substitutions/site</text>
+  <text x="466" y="466" class="note">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 490H1092" stroke="#dce2eb" stroke-width="1"/>
+  <text x="48" y="515" class="note">Branch distances and topology follow the supplied Newick data.</text>
+</svg>

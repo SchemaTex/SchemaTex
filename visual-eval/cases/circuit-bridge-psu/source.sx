@@ -1,0 +1,13 @@
+circuit "Transformer Bridge Rectifier and 5 V Linear Supply" netlist
+V1 LINE NEUTRAL type=ac_source value="230 V AC, 50 Hz" label="V1"
+T1 LINE NEUTRAL AC1 AC2 type=transformer value="230:9 V AC" label="T1"
+D1 AC1 RAW value="1N4007" label="D1"
+D2 AC2 RAW value="1N4007" label="D2"
+D3 GND AC1 value="1N4007" label="D3"
+D4 GND AC2 value="1N4007" label="D4"
+C1 RAW GND type=ecap value="2200 uF, 25 V" label="C1"
+C2 RAW GND value="330 nF" label="C2"
+U1 RAW GND VOUT type=voltage_regulator value="7805, 5 V" label="U1"
+C3 VOUT GND value="100 nF" label="C3"
+R1 VOUT LED_A value="1 kOhm" label="R1"
+D5 LED_A GND type=led value="Red LED" label="D5"

@@ -90,15 +90,17 @@ Bennett 2022 formalized that square and circle represent **assigned sex at birth
 
 ### 3.2 Genetic status (fill)
 
+Following NSGC Bennett 2022 §4.5, all carrier statuses use a diagonal hatch fill whose meaning is defined in the key.
+
 | Status | Meaning |
 |---|---|
 | (default, no status token) | Unaffected — empty shape |
 | `unaffected` | Explicit unaffected |
 | `affected` | Fully filled shape |
-| `carrier` | Half-filled — autosomal carrier |
-| `carrier-x` | Center dot — X-linked carrier female |
-| `obligate-carrier` | Center dot — inferred from pedigree structure |
-| `presymptomatic` | Vertical line through shape — tested positive, no clinical signs yet |
+| `carrier` | Diagonal hatch fill — autosomal carrier |
+| `carrier-x` | Diagonal hatch fill — X-linked carrier |
+| `obligate-carrier` | Diagonal hatch fill — carrier inferred from pedigree structure |
+| `presymptomatic` | Vertical line from edge to edge through the shape — tested positive, no clinical signs yet |
 
 <Playground initial={`pedigree
   I-1 [male, unaffected]
@@ -121,11 +123,11 @@ Bennett 2022 formalized that square and circle represent **assigned sex at birth
 | Value | Meaning |
 |---|---|
 | `deceased` | Diagonal slash across the shape |
-| `stillborn` | Small shape + "SB" label |
-| `pregnancy` | Shape + "P" label, or diamond if sex unknown |
-| `sab` | Small triangle — spontaneous abortion |
-| `tab` | Small triangle with bar — terminated pregnancy |
-| `ectopic` | Small triangle + "ECT" label |
+| `stillborn` | Sex shape with the deceased diagonal slash + "SB" label |
+| `pregnancy` | "P" inside the sex shape (diamond if sex unknown) |
+| `sab` | Small triangle + "SAB" label — spontaneous abortion |
+| `tab` | Small triangle with a diagonal termination slash — terminated pregnancy |
+| `ectopic` | Small triangle with a diagonal termination slash + "ECT" label |
 
 Multiple tokens combine: `[female, affected, deceased]`, `[male, sab]`, `[unknown, pregnancy, presymptomatic]`.
 
@@ -134,6 +136,8 @@ Multiple tokens combine: `[female, affected, deceased]`, `[male, sab]`, `[unknow
 ## 4. Couples and children
 
 ### 4.1 Couple operators
+
+`-/-` means the relationship no longer exists; it draws a continuous line with two diagonal slashes.
 
 The parser tries these in order. The first match wins — so `-/-` beats `--`.
 

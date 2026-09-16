@@ -1,0 +1,30 @@
+%% Password reset token flow with expiry handling.
+sequenceDiagram
+actor User
+participant Web
+participant Account
+participant TokenStore
+participant Email
+User->>Web: Request reset
+Web->>Account: Find account
+activate Account
+Account->>TokenStore: Create token
+TokenStore-->>Account: Token
+Account->>Email: Send reset link
+Email-->>User: Reset email
+deactivate Account
+User->>Web: Submit new password and token
+Web->>Account: Reset password
+activate Account
+Account->>TokenStore: Validate token
+alt [valid]
+TokenStore-->>Account: Valid
+Account->>Account: Hash and save password
+Account-->>Web: Reset complete
+else [expired]
+TokenStore-->>Account: Expired
+Account-->>Web: Request new link
+end
+deactivate Account
+Web-->>User: Result
+Note over Account,TokenStore: Tokens are single use

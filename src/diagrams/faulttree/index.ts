@@ -1,3 +1,4 @@
+import { firstContentLine } from "../../core/dsl-preprocess";
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseFaultTree } from "./parser";
 import { renderFaultTree } from "./renderer";
@@ -5,7 +6,7 @@ import { renderFaultTree } from "./renderer";
 export const faulttree: DiagramPlugin = {
   type: "faulttree" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*(faulttree|fta)\b/i.test(text);
+    return /^\s*(faulttree|fta)\b/i.test(firstContentLine(text) ?? "");
   },
   parse: parseFaultTree,
   render(text, config?: RenderConfig) {

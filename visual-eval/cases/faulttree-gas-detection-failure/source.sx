@@ -1,0 +1,15 @@
+# Assumptions: a credible gas release is present; detector channels and logic-solver hardware fail independently.
+# A maintenance inhibit only defeats alarm action while the inhibit is deliberately active.
+faulttree "Failure to detect gas release"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Gas release is not detected and alarmed" = AND(GAS_RELEASE, DETECTION_FUNCTION_FAILS)
+  gate DETECTION_FUNCTION_FAILS "Gas detection function fails" = OR(ALL_DETECTORS_FAIL, LOGIC_SOLVER_FAIL, INHIBITED_ALARM_PATH)
+  gate ALL_DETECTORS_FAIL "Both detector channels fail" = AND(DETECTOR_A_FAIL, DETECTOR_B_FAIL)
+  gate INHIBITED_ALARM_PATH "Alarm demand suppressed during maintenance inhibit" = INHIBIT(ALARM_DEMAND_PATH_FAIL) if MAINTENANCE_INHIBIT
+  basic GAS_RELEASE "Flammable gas release occurs" p: 0.002
+  basic DETECTOR_A_FAIL "Detector A fails dangerously" p: 0.03
+  basic DETECTOR_B_FAIL "Detector B fails dangerously" p: 0.03
+  basic LOGIC_SOLVER_FAIL "Logic solver fails dangerously" p: 0.005
+  basic ALARM_DEMAND_PATH_FAIL "Alarm demand path unavailable" p: 0.01
+  house MAINTENANCE_INHIBIT "Maintenance inhibit active" state: 1

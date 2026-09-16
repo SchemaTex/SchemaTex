@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520" role="img">
+<title>1-bit Full Adder</title>
+<desc>Gate-level 1-bit full adder in ANSI/IEEE Std 91 distinctive-shape symbols. Inputs A, B and Cin enter as labelled stubs on the left. A and B drive an exclusive-OR whose output is the half-sum net s1, and an AND whose output is the carry-generate net c1. A second exclusive-OR adds Cin to s1 to give Sum; a second AND combines s1 with Cin to give the carry-propagate net c2; an OR gate sums c1 and c2 into Cout. All wires are orthogonal, filled dots mark fan-out junctions, and the two outputs leave on the right margin.</desc>
+<rect x="0" y="0" width="800" height="520" fill="#FFFFFF"/>
+<line x1="46" y1="96" x2="754" y2="96" stroke="#E2E8F0" stroke-width="1"/>
+<line x1="46" y1="450" x2="754" y2="450" stroke="#E2E8F0" stroke-width="1"/>
+<g fill="none" stroke="#1E293B" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter">
+<polyline points="62,146 186.25,146"/>
+<polyline points="112,146 112,378 190,378"/>
+<polyline points="62,170 186.25,170"/>
+<polyline points="88,170 88,402 190,402"/>
+<polyline points="250,158 332,158"/>
+<polyline points="300,158 300,184 376.25,184"/>
+<polyline points="332,158 332,288 380,288"/>
+<polyline points="62,250 356,250"/>
+<polyline points="344,250 344,208 376.25,208"/>
+<polyline points="356,250 356,312 380,312"/>
+<polyline points="440,300 500,300 500,333 575.25,333"/>
+<polyline points="250,390 524,390 524,357 575.25,357"/>
+<polyline points="440,196 690,196"/>
+<polyline points="630,345 690,345"/>
+</g>
+<g fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5" stroke-linejoin="round">
+<path d="M 190,134 Q 204,158 190,182 C 216,179.984 236,172.016 250,158 C 236,143.984 216,136.016 190,134 Z"/>
+<path d="M 181,134 Q 195,158 181,182" fill="none"/>
+<path d="M 190,366 H 226 A 24,24 0 0 1 226,414 H 190 Z"/>
+<path d="M 380,172 Q 394,196 380,220 C 406,217.984 426,210.016 440,196 C 426,181.984 406,174.016 380,172 Z"/>
+<path d="M 371,172 Q 385,196 371,220" fill="none"/>
+<path d="M 380,276 H 416 A 24,24 0 0 1 416,324 H 380 Z"/>
+<path d="M 570,321 Q 584,345 570,369 C 596,366.984 616,359.016 630,345 C 616,330.984 596,323.016 570,321 Z"/>
+</g>
+<g fill="#1E293B">
+<circle cx="112" cy="146" r="3.5"/>
+<circle cx="88" cy="170" r="3.5"/>
+<circle cx="300" cy="158" r="3.5"/>
+<circle cx="344" cy="250" r="3.5"/>
+</g>
+<g font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif">
+<text x="276" y="149" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">s1</text>
+<text x="390" y="381" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">c1</text>
+<text x="470" y="291" font-size="10" fill="#64748B" text-anchor="middle" letter-spacing="0.4">c2</text>
+<text x="46" y="478" font-size="11.5" fill="#64748B" text-anchor="start">Sum = A ⊕ B ⊕ Cin</text>
+<text x="300" y="478" font-size="11.5" fill="#64748B" text-anchor="start">Cout = A·B + (A ⊕ B)·Cin</text>
+<text x="46" y="56" font-size="20" fill="#1E293B" text-anchor="start" font-weight="600">1-bit Full Adder</text>
+<text x="46" y="80" font-size="11.5" fill="#64748B" text-anchor="start">ANSI / IEEE Std 91 distinctive-shape gates · signal flow left to right</text>
+<text x="754" y="80" font-size="11.5" fill="#64748B" text-anchor="end">filled dot = junction · plain crossing = no connection</text>
+<text x="54" y="150.5" font-size="13" fill="#1E293B" text-anchor="end">A</text>
+<text x="54" y="174.5" font-size="13" fill="#1E293B" text-anchor="end">B</text>
+<text x="54" y="254.5" font-size="13" fill="#1E293B" text-anchor="end">Cin</text>
+<text x="700" y="200.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">Sum</text>
+<text x="700" y="349.5" font-size="13" fill="#1E293B" text-anchor="start" font-weight="600">Cout</text>
+</g>
+</svg>

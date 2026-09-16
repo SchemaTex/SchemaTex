@@ -1,0 +1,12 @@
+# Arduino Uno I²C OLED: VCC/GND and the A4/A5 SDA/SCL bus are wired to the display.
+breadboard
+board: half
+title: "I2C OLED Display"
+parts
+  uno: mcu uno @beside-left
+  oled: display oled-ssd1306 @beside-right
+wires
+  uno:5V --red-- oled:VCC
+  uno:GND --black-- oled:GND
+  uno:A4 --green-- oled:SDA
+  uno:A5 --white-- oled:SCL

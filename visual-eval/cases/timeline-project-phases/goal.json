@@ -1,0 +1,41 @@
+{
+  "id": "timeline-project-phases",
+  "type": "timeline",
+  "variant": "swimlane",
+  "title": "Mobile platform delivery",
+  "goal": "Show dated delivery events grouped by discovery, build, validation, and launch phases.",
+  "rubric": [
+    {
+      "id": "four-phases",
+      "severity": "blocker",
+      "must": "Discovery, Build, Validation, and Launch are visibly separated as four dated phases."
+    },
+    {
+      "id": "events-in-phases",
+      "severity": "blocker",
+      "must": "Each phase visibly contains multiple dated events in its corresponding track."
+    },
+    {
+      "id": "phase-milestones",
+      "severity": "major",
+      "must": "Requirements approval, internal beta, release candidate, and project closeout are visibly emphasized milestones."
+    },
+    {
+      "id": "chronological-order",
+      "severity": "major",
+      "must": "The phase tracks read in chronological order from January through September 2025."
+    },
+    {
+      "id": "track-labels",
+      "severity": "minor",
+      "must": "The named project-phase tracks are readable."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/timeline/swimlane/ideal.svg (7c3470ea58a6); rendered and visually reviewed. Exemplar swimlane palette and proportional calendar. Point events are not converted to invented work spans; crowded dates use extra rows within the same track. Milestones and declared ranges remain distinct."
+  }
+}

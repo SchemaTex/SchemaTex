@@ -89,3 +89,18 @@ describe("idef0 layout — diagonal staircase + ICOM sides", () => {
     expect(layout.height).toBeGreaterThan(C.BOX_H + 2 * C.MARGIN);
   });
 });
+
+it("allocates distinct control ports and enough output space for full labels", () => {
+  const ast = parseIdef0(`idef0 "Review"
+function Review "Review submission"
+control Review "Policy"
+control Review "Approval"
+output Review "A detailed disposition supplied to the requesting department"`);
+  const layout = layoutIdef0(ast);
+  const controls = layout.arrows.filter(a => a.arrow.role === "control");
+  expect(controls[0]?.head.x).not.toBe(controls[1]?.head.x);
+  const output = layout.arrows.find(a => a.arrow.role === "output");
+  const box = layout.boxes[0];
+  expect(output?.label.anchor).toBe("end");
+  expect((output?.head.x ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeGreaterThan(200);
+});

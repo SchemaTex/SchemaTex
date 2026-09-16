@@ -56,9 +56,11 @@ UTIL -> MSB
 MSB -> LOAD`;
 
 describe("SLD layout — professional review contract", () => {
-  it("gives portrait commercial feeders at least a square review canvas", () => {
+  it("sizes the canvas from actual content without artificial square padding", () => {
     const layout = layoutSLD(parseSLDDSL(COMMERCIAL_PV));
-    expect(layout.width).toBeGreaterThanOrEqual(layout.height);
+    const right=Math.max(...layout.nodes.flatMap(n=>[n.x+n.halfWidth,...n.labels.map(l=>l.x+l.width)]));
+    expect(layout.width-right).toBeLessThan(80);
+    expect(layout.width).toBeGreaterThan(right);
   });
 
   it("keeps fan-in cable labels beside their own source drops", () => {
@@ -70,15 +72,11 @@ describe("SLD layout — professional review contract", () => {
     expect(labelXs[2]! - labelXs[1]!).toBeGreaterThanOrEqual(100);
   });
 
-  it("keeps a direct Utility feeder outside the PV source bank", () => {
+  it("places a short independent source near its receiving bus", () => {
     const layout = layoutSLD(parseSLDDSL(COMMERCIAL_PV));
-    const utility = layout.nodes.find((node) => node.node.id === "UTIL")!;
-    const rightmostPv = Math.max(
-      ...layout.nodes
-        .filter((node) => node.node.id.startsWith("PV_"))
-        .map((node) => node.x)
-    );
-    expect(utility.x - rightmostPv).toBeGreaterThanOrEqual(140);
+    const utility=layout.nodeById.get("UTIL")!, bus=layout.nodeById.get("MSB")!;
+    expect(utility.level).toBe(bus.level-1);
+    expect(layout.edges.find(e=>e.from==="UTIL")!.path).toContain(`M ${utility.x}`);
   });
 
   it("treats any structurally skipped rank as a side feed without a depth threshold", () => {
@@ -98,12 +96,13 @@ describe("SLD layout — professional review contract", () => {
     expect(Math.abs(utility.x - pv.x)).toBeLessThanOrEqual(150);
   });
 
-  it("keeps labels centered on deep residential boards with wide branch banks", () => {
+  it("keeps each residential protection-and-load pair aligned", () => {
     const layout = layoutSLD(parseSLDDSL(RESIDENTIAL_BRANCHES));
     const branchNodes = layout.nodes.filter((node) => /^CB|^L/.test(node.node.id));
 
     expect(branchNodes).toHaveLength(14);
-    expect(branchNodes.every((node) => node.labelSide === undefined)).toBe(true);
+    for(let i=1;i<=7;i++)expect(layout.nodeById.get(`CB${i}`)!.x).toBe(layout.nodeById.get(`L${i}`)!.x);
+    for(const node of branchNodes)for(const label of node.labels)expect(label.x+label.width).toBeLessThan(layout.width);
   });
 
   it("reserves canvas width for side annotations on deep narrow feeders", () => {
@@ -129,8 +128,8 @@ describe("SLD layout — professional review contract", () => {
     const beforeById = new Map(before.nodes.map((node) => [node.node.id, node]));
     const afterById = new Map(after.nodes.map((node) => [node.node.id, node]));
 
-    expect(after.width).toBeGreaterThanOrEqual(after.height);
-    expect(afterById.get("UTIL")!.x).toBeGreaterThan(afterById.get("PV_C")!.x);
+    expect(after.edges).toHaveLength(before.edges.length);
+    expect(afterById.get("UTIL")!.level).toBe(afterById.get("MSB")!.level-1);
     for (const id of ["DISC_DC", "INV", "CB_AC", "MTR", "LOAD"]) {
       expect(afterById.get(id)!.labelSide).toBe(beforeById.get(id)!.labelSide);
     }

@@ -1,0 +1,73 @@
+%% Context: Storefront order-to-fulfilment schema — customers, catalogue, orders, money and shipping.
+erDiagram
+  CUSTOMER ||--o{ ADDRESS : "saves"
+  CUSTOMER ||--o{ ORDER : "places"
+  ADDRESS ||--o{ ORDER : "ships to"
+  ORDER ||--|{ ORDER_LINE : "contains"
+  ORDER ||--o{ PAYMENT : "settled by"
+  ORDER ||--o| SHIPMENT : "fulfilled by"
+  PRODUCT ||--o{ ORDER_LINE : "appears in"
+  CATEGORY ||--o{ PRODUCT : "classifies"
+  PRODUCT ||--|| INVENTORY : "stocked as"
+  CATEGORY |o--o{ CATEGORY : "parent of"
+  CUSTOMER {
+    int customer_id PK
+    string email
+    string full_name
+    datetime created_at
+  }
+  ADDRESS {
+    int address_id PK
+    int customer_id FK
+    string city
+    string postal_code
+    string country
+  }
+  ORDER {
+    int order_id PK
+    int customer_id FK
+    int shipping_address_id FK
+    datetime placed_at
+    string status
+    decimal total_amount
+  }
+  ORDER_LINE {
+    int order_line_id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+    decimal unit_price
+  }
+  PRODUCT {
+    int product_id PK
+    int category_id FK
+    string sku
+    string name
+    decimal list_price
+  }
+  CATEGORY {
+    int category_id PK
+    int parent_category_id FK
+    string name
+    string slug
+  }
+  INVENTORY {
+    int inventory_id PK
+    int product_id FK
+    string warehouse_code
+    int quantity_on_hand
+  }
+  PAYMENT {
+    int payment_id PK
+    int order_id FK
+    string method
+    decimal amount
+    datetime captured_at
+  }
+  SHIPMENT {
+    int shipment_id PK
+    int order_id FK
+    string carrier
+    string tracking_number
+    datetime shipped_at
+  }

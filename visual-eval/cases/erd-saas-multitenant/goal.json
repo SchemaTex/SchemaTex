@@ -1,0 +1,87 @@
+{
+  "id": "erd-saas-multitenant",
+  "type": "erd",
+  "title": "Multi-tenant SaaS",
+  "goal": "Show tenant-scoped users, billing, roles, and feature configuration with crow's-foot cardinality.",
+  "rubric": [
+    {
+      "id": "tenant-users",
+      "severity": "blocker",
+      "must": "Tenant visibly contains one or more User records."
+    },
+    {
+      "id": "billing-chain",
+      "severity": "blocker",
+      "must": "Tenant visibly holds subscriptions and Subscription visibly produces invoices."
+    },
+    {
+      "id": "roles-flags",
+      "severity": "major",
+      "must": "Role visibly assigns users and Tenant visibly configures feature flags."
+    },
+    {
+      "id": "entity-fields",
+      "severity": "major",
+      "must": "Tenant, User, Role, Subscription, Invoice, and Feature Flag are visible with readable fields."
+    },
+    {
+      "id": "tenant-foreign-keys",
+      "severity": "major",
+      "must": "Tenant-related foreign-key fields are visibly shown in User, Subscription, and Feature Flag."
+    },
+    {
+      "id": "crows-foot",
+      "severity": "minor",
+      "must": "Relationship endpoints visibly use crow's-foot cardinality marks."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the erd exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "All six entities and their fields are visible and readable. The five labeled relationships match the source, show the intended crow’s-foot cardinalities, and connect traceably without material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:06:50.493Z",
+      "targetHash": "e41bc62da78f",
+      "sourceHash": "33e2945a58ff",
+      "exemplarHash": "e6fed459fd93",
+      "items": [
+        {
+          "id": "tenant-users",
+          "verdict": "pass",
+          "evidence": "TENANT contains USER, with exactly one tenant and one or more users indicated."
+        },
+        {
+          "id": "billing-chain",
+          "verdict": "pass",
+          "evidence": "TENANT holds SUBSCRIPTION, and SUBSCRIPTION produces INVOICE; both relationships show one tenant/subscription to zero or more children."
+        },
+        {
+          "id": "roles-flags",
+          "verdict": "pass",
+          "evidence": "ROLE assigns USER and TENANT configures FEATURE_FLAG, with the displayed cardinalities matching the source."
+        },
+        {
+          "id": "entity-fields",
+          "verdict": "pass",
+          "evidence": "TENANT, USER, ROLE, SUBSCRIPTION, INVOICE, and FEATURE_FLAG are present with their listed fields legible."
+        },
+        {
+          "id": "tenant-foreign-keys",
+          "verdict": "pass",
+          "evidence": "USER shows tenant_id as FK, SUBSCRIPTION shows tenant_id as FK, and FEATURE_FLAG shows tenant_id as FK."
+        },
+        {
+          "id": "crows-foot",
+          "verdict": "pass",
+          "evidence": "Relationship endpoints use bar, circle, and crow’s-foot marks, with a cardinality legend visible."
+        }
+      ]
+    }
+  }
+}

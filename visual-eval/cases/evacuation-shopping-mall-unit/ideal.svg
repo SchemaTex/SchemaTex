@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="834" viewBox="0 0 1600 834">
+<title>Unit 14 escape plan — front concourse and rear service corridor exits</title>
+<defs>
+<style>text{font-family:Helvetica,Arial,sans-serif;fill:#1B2430} .room{font-size:14px}.body{font-size:12px}.caption{font-size:11px;fill:#5A646E}.small{font-size:10px;fill:#8A939C}.section{font-size:11px;font-weight:700;letter-spacing:1.1px;fill:#8A939C}.heading{font-size:13px;font-weight:700;letter-spacing:1.7px}.wall{fill:none;stroke:#8D959D;stroke-width:9;stroke-linecap:butt}.part{fill:none;stroke:#B4BBC2;stroke-width:3.5}.swing{fill:none;stroke:#B4BBC2;stroke-width:1.2}.route{fill:none;stroke:#00A651;stroke-width:13.6;stroke-linejoin:round}.panel{fill:white;stroke:#D0D6DC;stroke-width:1}</style>
+<g id="runner"><rect width="32" height="32" rx="2" fill="#00843D"/><path d="M22 4h7v25h-7M4 28h14" fill="none" stroke="white" stroke-width="2"/><circle cx="15" cy="7" r="2.6" fill="white"/><path d="m14 12-5 5-5-1m10-4 5 5 5 1m-10-6-3 9-5 7m5-7 7 2 2 6" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="exitLeft"><use href="#runner"/><path d="M-3 35h38" stroke="#00843D" stroke-width="3"/></g>
+<g id="exitRight"><g transform="translate(32 0) scale(-1 1)"><use href="#runner"/></g><path d="M-3 35h38" stroke="#00843D" stroke-width="3"/></g>
+<g id="fire"><rect width="32" height="32" rx="2" fill="#C8102E"/><path d="M12 9h8v19h-8zM13 5h7M16 5v4M20 7q7 0 7 9" fill="none" stroke="white" stroke-width="2.4"/><path d="M11 28h11" stroke="white" stroke-width="2.5"/></g>
+<g id="here"><circle r="19" fill="#005387"/><circle r="11" fill="none" stroke="white" stroke-width="2.5"/><circle r="4" fill="white"/></g>
+<g id="assembly"><rect width="44" height="44" rx="3" fill="#00843D"/><path d="M16 16h12v12H16z" fill="none" stroke="white" stroke-width="2.5"/><path d="m22 3-6 9h12zM22 41l-6-9h12zM3 22l9-6v12zM41 22l-9-6v12z" fill="white"/></g>
+<path id="arrow" d="M-6-5 6 0-6 5Z" fill="white"/>
+</defs>
+<rect width="1600" height="834" fill="white"/><rect x="18" y="18" width="1564" height="798" fill="none" stroke="#D6DCE1"/>
+<text x="46" y="66" font-size="22" font-weight="600">Unit 14 escape plan</text>
+<text x="46" y="91" font-size="13" fill="#5A646E">Escape and evacuation plan to ISO 23601:2020 · signs to ISO 7010:2019 · colours to ISO 3864-1</text>
+<text x="1577" y="66" text-anchor="end" font-size="13" font-weight="700" fill="#5A646E" letter-spacing=".7">UNIT 14 · SHEET A3 · SCALE 1:100</text>
+<text x="1577" y="91" text-anchor="end" font-size="13" fill="#5A646E">Posted at: Shop Floor · Rev 1 · Issued 2026-09</text>
+<path d="M46 110H1577" stroke="#CDD3D9"/>
+<!-- Metre geometry: origin (300,155); 34 drawing units per metre. -->
+<path d="M300 257H878V529H300Z" fill="#F2F4F5"/>
+<!-- Perimeter with final discharge openings -->
+<path class="wall" d="M300 188V155H878V544M878 582V597H300V226"/>
+<!-- Shop frontage: four metre opening, centred on shop -->
+<path class="part" d="M300 257H402M538 257H878M640 257V309.7M640 340.3V440.6M640 481.4V529M640 393H776M776 257V445.7M776 476.3V529M300 529H687.6M728.4 529H878"/>
+<!-- Door leaves and quarter-circle swings, clear of escape bands -->
+<path class="part" d="M640 309.7H670.6M640 481.4H680.8M776 445.7H806.6M728.4 529V569.8"/>
+<path class="swing" d="M640 340.3A30.6 30.6 0 0 0 670.6 309.7M640 440.6A40.8 40.8 0 0 1 680.8 481.4M776 476.3A30.6 30.6 0 0 0 806.6 445.7M687.6 529A40.8 40.8 0 0 0 728.4 569.8"/>
+<!-- Primary: shop, frontage opening, concourse, west final exit -->
+<path class="route" d="M470 461V206H273"/>
+<use href="#arrow" transform="translate(470 383) rotate(-90)"/><use href="#arrow" transform="translate(470 315) rotate(-90)"/><use href="#arrow" transform="translate(470 247) rotate(-90)"/><use href="#arrow" transform="translate(419 206) rotate(180)"/><use href="#arrow" transform="translate(351 206) rotate(180)"/><use href="#arrow" transform="translate(282 206) rotate(180)"/>
+<!-- Alternative: shop, stockroom door, rear door, service corridor, east final exit -->
+<path class="route" stroke-dasharray="48 14" d="M470 461H708V563H908"/>
+<use href="#arrow" transform="translate(502 461)"/><use href="#arrow" transform="translate(564 461)"/><use href="#arrow" transform="translate(626 461)"/><use href="#arrow" transform="translate(688 461)"/><use href="#arrow" transform="translate(708 503) rotate(90)"/><use href="#arrow" transform="translate(708 553) rotate(90)"/><use href="#arrow" transform="translate(755 563)"/><use href="#arrow" transform="translate(817 563)"/><use href="#arrow" transform="translate(890 563)"/>
+<!-- Room labels placed in clear space -->
+<text class="room" x="675" y="209" text-anchor="middle">Mall Concourse</text>
+<text class="room" x="390" y="352" text-anchor="middle">Shop Floor</text>
+<text class="room" x="708" y="299" text-anchor="middle">Fitting Rooms</text>
+<text class="room" x="700" y="418" text-anchor="middle">Stockroom</text>
+<text class="room" x="827" y="355" text-anchor="middle">Staff Room</text>
+<text class="room" x="470" y="568" text-anchor="middle">Service Corridor</text>
+<text x="470" y="426" text-anchor="middle" font-size="13" font-weight="700" fill="#005387">YOU ARE HERE</text><use href="#here" transform="translate(470 461)"/>
+<use href="#exitLeft" x="254" y="164"/><text x="270" y="149" text-anchor="middle" font-size="11" fill="#00843D" font-weight="700">EXIT</text>
+<use href="#exitRight" x="889" y="519"/><text x="905" y="506" text-anchor="middle" font-size="11" fill="#00843D" font-weight="700">EXIT</text>
+<use href="#fire" x="743" y="394"/><text x="759" y="386" text-anchor="middle" font-size="10" fill="#C8102E">ABC</text>
+<!-- North point, matching exemplar position -->
+<circle cx="1110" cy="260" r="33" fill="white" stroke="#B4BBC2"/><path d="m1110 234-12 46 12-11 10 10Z" fill="white" stroke="#1B2430"/><path d="M1110 234V269l10 10Z" fill="#1B2430"/><text class="caption" x="1110" y="308" text-anchor="middle" font-weight="700">N</text>
+<!-- Assembly point at world coordinate (22,16), outside the unit -->
+<rect x="981" y="658" width="134" height="105" rx="7" fill="#EAF4EE" stroke="#00843D" stroke-width="1.6" stroke-dasharray="8 6"/><use href="#assembly" x="1026" y="677"/><text x="1048" y="738" text-anchor="middle" font-size="13" font-weight="700" fill="#00843D">ASSEMBLY POINT</text><text class="caption" x="1048" y="752" text-anchor="middle">Outside Unit 14</text>
+<!-- Scale bar -->
+<g transform="translate(139 631)"><text class="small" x="0" y="-9" text-anchor="middle">0</text><text class="small" x="68" y="-9" text-anchor="middle">2</text><text class="small" x="136" y="-9" text-anchor="middle">4</text><text class="small" x="204" y="-9" text-anchor="middle">6 m</text><path d="M0 0h68v8H0zM136 0h68v8h-68z" fill="#1B2430"/><rect width="204" height="8" fill="none" stroke="#1B2430"/><text class="caption" y="26">Scale 1:100 at A3 · dimensions in metres</text></g>
+<!-- Fire action panel -->
+<rect class="panel" x="457" y="623" width="493" height="168" rx="4"/><text class="heading" x="475" y="648">IF YOU DISCOVER A FIRE</text><path d="M475 657H931" stroke="#CDD3D9"/>
+<g class="body"><circle cx="483" cy="678" r="8.5" fill="#1B2430"/><circle cx="483" cy="702" r="8.5" fill="#1B2430"/><circle cx="483" cy="726" r="8.5" fill="#1B2430"/><circle cx="483" cy="750" r="8.5" fill="#1B2430"/><g text-anchor="middle" font-size="10" font-weight="700"><text x="483" y="681" style="fill:white">1</text><text x="483" y="705" style="fill:white">2</text><text x="483" y="729" style="fill:white">3</text><text x="483" y="753" style="fill:white">4</text></g><text x="503" y="682">Raise the alarm and alert mall staff.</text><text x="503" y="706">Leave by the green route shown — never use a lift.</text><text x="503" y="730">Close every door behind you.</text><text x="503" y="754">Go to the assembly point and report to mall staff.</text></g><text class="small" x="475" y="775">Follow the instructions of the fire marshal. Do not re-enter.</text>
+<!-- Automatic legend: only symbols present in this plan -->
+<rect class="panel" x="1209" y="169" width="368" height="608" rx="4"/><text class="heading" x="1227" y="194">LEGEND</text><path d="M1227 203H1559" stroke="#CDD3D9"/>
+<text class="section" x="1227" y="221">ESCAPE ROUTES</text>
+<path d="M1227 257h48" stroke="#00A651" stroke-width="10"/><use href="#arrow" transform="translate(1252 257) scale(.8)"/><text class="body" x="1287" y="262">Primary escape route</text>
+<path d="M1227 287h48" stroke="#00A651" stroke-width="10" stroke-dasharray="19 6"/><use href="#arrow" transform="translate(1239 287) scale(.65)"/><text class="body" x="1287" y="292">Alternative escape route</text>
+<text class="section" x="1227" y="325">EXITS AND ASSEMBLY</text>
+<use href="#exitRight" transform="translate(1239 349) scale(.75)"/><text class="body" x="1287" y="367">Final exit (ISO 7010 E001/E002)</text>
+<use href="#assembly" transform="translate(1239 398) scale(.55)"/><text class="body" x="1287" y="416">Assembly point (E007)</text>
+<text class="section" x="1227" y="457">FIRE EQUIPMENT</text>
+<use href="#fire" transform="translate(1239 480) scale(.75)"/><text class="body" x="1287" y="497">Fire extinguisher (F001), class marked</text>
+<text class="section" x="1227" y="540">YOUR POSITION</text>
+<use href="#here" transform="translate(1251 573) scale(.6)"/><text class="body" x="1287" y="577">You are here (ISO 23601 marker)</text>
+<text class="section" x="1227" y="623">BUILDING</text>
+<path d="M1237 671V648M1237 648a23 23 0 0 1 23 23" class="swing"/><path d="M1237 671V648" class="part"/><text class="body" x="1287" y="666">Door and swing</text>
+<path d="M1227 702h17m16 0h15" stroke="#B4BBC2" stroke-width="3.5"/><text class="body" x="1287" y="706">Open connection</text>
+<text class="small" x="1227" y="763">Lists every symbol used on this plan (ISO 23601 §6).</text>
+<text class="small" x="46" y="807">Original symbol geometry drawn to the visual grammar described in ISO 7010 and ISO 3864-1. Occupant information only — not a fire-service pre-incident plan.</text><text class="small" x="1577" y="807" text-anchor="end">Sheet 1 of 1</text>
+</svg>

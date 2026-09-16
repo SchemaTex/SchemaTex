@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1400" width="1600" height="1400">
+<title>ESP8266 Dual Relay Controller — circuit schematic</title>
+<rect width="1600" height="1400" fill="white"/>
+<defs>
+ <style>text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:20px}.wire{fill:none;stroke:#293e4d;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sym{fill:white;stroke:#17212b;stroke-width:2.5}.label{font-weight:bold}.small{font-size:17px}.net{fill:#126780;font-weight:bold}.dot{fill:#293e4d}</style>
+ <g id="gnd" class="wire"><path d="M0 0v12m-14 0h28m-10 6h-8m-2 6h12"/></g>
+ <g id="res" class="sym"><rect x="-10" y="0" width="20" height="60"/></g>
+ <g id="coil" class="wire"><path d="M0 0v15c-26 0-26 25 0 25c-26 0-26 25 0 25c-26 0-26 25 0 25c-26 0-26 25 0 25v15"/></g>
+ <g id="fly" class="wire"><path d="M0 0v40m-16 0h32m-16 0-16 30h32zM0 70v60"/></g>
+ <g id="led" class="wire"><path d="M0 0v15m-14 0h28L0 43zM-15 43h30M0 43v27M19 15l18-18m-8 0h8v8M24 32l18-18m-8 0h8v8"/></g>
+ <g id="npn" class="wire"><circle cx="0" cy="0" r="36"/><path d="M-55 0h40m0-24v48m0-12 30 22v21m-30-67 30-22v-21"/><path d="m5 28 10 6-4-12" fill="#293e4d"/></g>
+</defs>
+<text x="55" y="53" font-size="32" class="label">ESP8266 Dual Relay Controller</text>
+<text x="55" y="84" class="small">5 V relay power • 3.3 V logic • independent low-side NPN drivers</text>
+<!-- supply -->
+<text x="55" y="135" class="label">POWER SUPPLY</text>
+<path class="wire" d="M110 235v-55h390m160 0h130v70M300 180v55M110 305v45m190-55v55M580 235v115M790 275v75"/>
+<circle class="sym" cx="110" cy="270" r="35"/>
+<text x="104" y="261">+</text><text x="104" y="294">−</text>
+<text x="55" y="330" class="label">V1</text><text x="155" y="274">5 V DC</text>
+<text x="180" y="166" class="net">VIN · +5 V</text>
+<path class="wire" d="M280 235h40m-40 12q20-10 40 0M300 247v48"/>
+<text x="269" y="226">+</text><text x="330" y="238" class="label">C1</text><text x="330" y="264">47 µF, 10 V</text>
+<rect x="500" y="145" width="160" height="90" rx="2" class="sym"/>
+<text x="515" y="168" class="small">IN</text><text x="618" y="168" class="small">OUT</text>
+<text x="580" y="193" text-anchor="middle" class="label">U1</text>
+<text x="580" y="218" text-anchor="middle" class="small">AMS1117-3.3</text>
+<text x="595" y="287" class="small">GND</text>
+<text x="700" y="166" class="net">V33 · +3.3 V</text>
+<path class="wire" d="M771 250h38m-38 12h38M790 262v13"/>
+<text x="820" y="247" class="label">C2</text><text x="820" y="274">100 nF</text>
+<use href="#gnd" x="110" y="350"/><use href="#gnd" x="300" y="350"/><use href="#gnd" x="580" y="350"/><use href="#gnd" x="790" y="350"/>
+<circle class="dot" cx="300" cy="180" r="4"/>
+<!-- module and enable -->
+<text x="55" y="450" class="label">CONTROLLER</text>
+<text x="120" y="505" class="net">V33 · +3.3 V</text>
+<path class="wire" d="M145 520h215v90M145 520v30m0 60v65h75"/>
+<use href="#res" x="145" y="550"/>
+<text x="180" y="570" class="label">R1</text><text x="180" y="594">10 kΩ</text>
+<rect x="220" y="610" width="280" height="330" class="sym"/>
+<text x="360" y="641" text-anchor="middle" class="small">3V3</text>
+<text x="238" y="682" class="small">EN</text>
+<text x="360" y="746" text-anchor="middle" font-size="26" class="label">U2</text>
+<text x="360" y="779" text-anchor="middle" font-size="25" class="label">ESP8266</text>
+<text x="360" y="809" text-anchor="middle">ESP-12E module</text>
+<text x="480" y="702" text-anchor="end" class="small">GPIO12</text>
+<text x="480" y="877" text-anchor="end" class="small">GPIO13</text>
+<text x="360" y="924" text-anchor="middle" class="small">GND</text>
+<path class="wire" d="M360 940v55"/><use href="#gnd" x="360" y="995"/>
+<!-- Relay 1 -->
+<text x="690" y="135" font-size="24" class="label" transform="translate(280 0)">RELAY 1</text>
+<text x="1030" y="186" class="net">VIN · +5 V</text>
+<path class="wire" d="M980 200h480M990 200v70M1260 200v70M1400 200v50"/>
+<use href="#coil" x="990" y="270"/>
+<text x="1015" y="303" class="label">K1 RELAY 1</text><text x="1015" y="330" class="small">SRD-05VDC-SL-C</text>
+<use href="#fly" x="1260" y="270"/><text x="1215" y="429" class="label">D1</text><text x="1215" y="454" class="small">1N4007</text>
+<use href="#res" x="1400" y="250"/><text x="1430" y="271" class="label">R4</text><text x="1430" y="296">1 kΩ</text>
+<path class="wire" d="M1400 310v30"/><use href="#led" x="1400" y="340"/>
+<text x="1430" y="427" class="label">D3</text><text x="1430" y="452" class="small">Green</text><text x="1430" y="477" class="small">RELAY 1</text>
+<path class="wire" d="M990 400v70h410v-60M1260 400v70M990 470v175"/>
+<text x="1008" y="511" class="net">COIL1</text>
+<use href="#npn" x="975" y="700"/>
+<text x="1035" y="688" class="label">Q1</text><text x="1035" y="718">2N2222A</text><text x="1035" y="743" class="small">NPN</text>
+<path class="wire" d="M990 755v20"/><use href="#gnd" x="990" y="775"/>
+<path class="wire" d="M500 695h140m60 0h195v5h25"/>
+<rect class="sym" x="640" y="685" width="60" height="20"/>
+<text x="640" y="659" class="label">R2 · 1 kΩ</text><text x="534" y="722" class="net small">IN1</text><text x="803" y="679" class="net small">B1</text>
+<!-- Relay 2 -->
+<text x="970" y="830" font-size="24" class="label">RELAY 2</text>
+<text x="1030" y="870" class="net">VIN · +5 V</text>
+<path class="wire" d="M980 885h480M990 885v35M1260 885v35M1400 885v15"/>
+<use href="#coil" x="990" y="920"/>
+<text x="1015" y="953" class="label">K2 RELAY 2</text><text x="1015" y="980" class="small">SRD-05VDC-SL-C</text>
+<use href="#fly" x="1260" y="920"/>
+<text x="1215" y="1080" class="label">D2</text><text x="1215" y="1105" class="small">1N4007</text>
+<use href="#res" x="1400" y="900"/><text x="1430" y="921" class="label">R5</text><text x="1430" y="946">1 kΩ</text>
+<path class="wire" d="M1400 960v30"/><use href="#led" x="1400" y="990"/>
+<text x="1430" y="1080" class="label">D4</text><text x="1430" y="1105" class="small">Green</text><text x="1430" y="1130" class="small">RELAY 2</text>
+<path class="wire" d="M990 1050v80h410v-70M1260 1050v80M990 1130v15"/>
+<text x="1008" y="1164" class="net small">COIL2</text>
+<use href="#npn" x="975" y="1200"/>
+<text x="1035" y="1190" class="label">Q2</text><text x="1035" y="1220">2N2222A</text><text x="1035" y="1245" class="small">NPN</text>
+<path class="wire" d="M990 1255v30"/><use href="#gnd" x="990" y="1285"/>
+<path class="wire" d="M500 870h50v330h90m60 0h220"/>
+<rect class="sym" x="640" y="1190" width="60" height="20"/>
+<text x="640" y="1170" class="label">R3 · 1 kΩ</text><text x="565" y="920" class="net small">IN2</text><text x="805" y="1180" class="net small">B2</text>
+<g class="dot"><circle cx="990" cy="200" r="4"/><circle cx="1260" cy="200" r="4"/><circle cx="1400" cy="200" r="4"/><circle cx="1260" cy="470" r="4"/><circle cx="990" cy="470" r="4"/><circle cx="990" cy="885" r="4"/><circle cx="1260" cy="885" r="4"/><circle cx="1400" cy="885" r="4"/><circle cx="1260" cy="1130" r="4"/><circle cx="990" cy="1130" r="4"/><circle cx="145" cy="520" r="4"/></g>
+<text x="55" y="1360" class="small">Matching VIN and V33 labels denote connected nets. All ground symbols share GND. Relay coils shown without contacts.</text>
+</svg>

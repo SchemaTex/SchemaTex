@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200"><title>PLC Digital I O Field Wiring</title><rect width="1800" height="1200" fill="white"/><style>text{font-family:Arial,Helvetica,sans-serif;fill:#15232d;font-size:18px}.title{font-size:32px;font-weight:bold}.head{font-size:23px;font-weight:bold}.small{font-size:15px}.pin{font-size:18px;font-weight:bold}.wire{fill:none;stroke:#243746;stroke-width:2.5;stroke-linejoin:round}.power{fill:none;stroke:#a52b27;stroke-width:3}.return{fill:none;stroke:#24618a;stroke-width:3}.sym{fill:white;stroke:#243746;stroke-width:2.5}</style>
+<text x="55" y="55" class="title" text-anchor="start">PLC DIGITAL I/O FIELD WIRING</text>
+<text x="55" y="87" class="small" text-anchor="start">24 VDC • Four digital inputs / four digital outputs • PNP field input</text>
+<rect x="55" y="127" width="215" height="158" class="sym"/>
+<text x="162" y="155" class="head" text-anchor="middle">PS1</text>
+<text x="162" y="181" class="" text-anchor="middle">24 VDC SUPPLY</text>
+<text x="162" y="208" class="" text-anchor="middle">24 VDC, 10 A</text>
+<text x="246" y="239" class="pin" text-anchor="start">+</text>
+<text x="246" y="272" class="pin" text-anchor="start">−</text>
+<path d="M270 233 H338" class="power"/>
+<rect x="338" y="219" width="80" height="28" class="sym"/>
+<path d="M345 233 H411" class="power"/>
+<path d="M418 233 H1640" class="power"/>
+<text x="350" y="155" class="head" text-anchor="start">F1 PLC I/O FUSE</text>
+<text x="350" y="184" class="" text-anchor="start">2 A, 250 VDC</text>
+<text x="282" y="217" class="small" text-anchor="start">L24</text>
+<text x="1150" y="218" class="pin" text-anchor="start">L24F — FUSED +24 VDC</text>
+<path d="M270 266 H295 V1060 H1680" class="return"/>
+<text x="65" y="1098" class="pin" text-anchor="start">COM / 0 VDC</text>
+<path d="M295 1060 H65" class="return"/>
+<rect x="730" y="310" width="350" height="665" class="sym"/>
+<text x="905" y="350" class="head" text-anchor="middle">PLC1 DIGITAL I/O</text>
+<text x="905" y="382" class="" text-anchor="middle">24 VDC, 8-point DI/DO</text>
+<path d="M730 405 H1080" class="wire"/>
+<text x="757" y="436" class="small" text-anchor="start">DIGITAL INPUTS</text>
+<text x="1055" y="436" class="small" text-anchor="end">DIGITAL OUTPUTS</text>
+<path d="M820 233 V310" class="power"/>
+<circle cx="820" cy="233" r="4" fill="#a52b27"/>
+<text x="830" y="295" class="pin" text-anchor="start">L+</text>
+<path d="M1040 310 V282 H1120 V1060" class="return"/>
+<text x="1010" y="298" class="pin" text-anchor="start">M</text>
+<circle cx="1120" cy="1060" r="4" fill="#24618a"/>
+<text x="578" y="328" class="head" text-anchor="middle">TB1 FIELD I/O</text>
+<text x="578" y="353" class="small" text-anchor="middle">11–15 · INPUTS</text>
+<text x="1250" y="328" class="head" text-anchor="middle">TB1 FIELD I/O</text>
+<text x="1250" y="353" class="small" text-anchor="middle">21–25 · OUTPUTS</text>
+<text x="905" y="1153" class="" text-anchor="middle">TB1: one 10-way terminal block, 600 V • Shown in input and output sections for clarity</text>
+<rect x="548" y="370" width="60" height="580" class="sym"/>
+<rect x="1220" y="370" width="60" height="580" class="sym"/>
+<circle cx="578" cy="490" r="15" class="sym"/>
+<path d="M568 500 L588 480" class="wire"/>
+<text x="578" y="466" class="pin" text-anchor="middle">11</text>
+<circle cx="1250" cy="490" r="15" class="sym"/>
+<path d="M1240 500 L1260 480" class="wire"/>
+<text x="1250" y="466" class="pin" text-anchor="middle">21</text>
+<circle cx="578" cy="610" r="15" class="sym"/>
+<path d="M568 620 L588 600" class="wire"/>
+<text x="578" y="586" class="pin" text-anchor="middle">12</text>
+<circle cx="1250" cy="610" r="15" class="sym"/>
+<path d="M1240 620 L1260 600" class="wire"/>
+<text x="1250" y="586" class="pin" text-anchor="middle">22</text>
+<circle cx="578" cy="730" r="15" class="sym"/>
+<path d="M568 740 L588 720" class="wire"/>
+<text x="578" y="706" class="pin" text-anchor="middle">13</text>
+<circle cx="1250" cy="730" r="15" class="sym"/>
+<path d="M1240 740 L1260 720" class="wire"/>
+<text x="1250" y="706" class="pin" text-anchor="middle">23</text>
+<circle cx="578" cy="850" r="15" class="sym"/>
+<path d="M568 860 L588 840" class="wire"/>
+<text x="578" y="826" class="pin" text-anchor="middle">14</text>
+<circle cx="1250" cy="850" r="15" class="sym"/>
+<path d="M1240 860 L1260 840" class="wire"/>
+<text x="1250" y="826" class="pin" text-anchor="middle">24</text>
+<circle cx="578" cy="925" r="15" class="sym"/>
+<path d="M568 935 L588 915" class="wire"/>
+<text x="578" y="901" class="pin" text-anchor="middle">15</text>
+<circle cx="1250" cy="925" r="15" class="sym"/>
+<path d="M1240 935 L1260 915" class="wire"/>
+<text x="1250" y="901" class="pin" text-anchor="middle">25</text>
+<path d="M450 233 V300 H120 V850" class="power"/>
+<circle cx="450" cy="233" r="4" fill="#a52b27"/>
+<text x="160" y="434" class="pin" text-anchor="start">S1 START PB</text>
+<text x="160" y="459" class="small" text-anchor="start">24 VDC, 1 A</text>
+<path d="M120 490 H255" class="power"/>
+<circle cx="120" cy="490" r="4" fill="#a52b27"/>
+<circle cx="255" cy="490" r="4" class="sym"/>
+<circle cx="325" cy="490" r="4" class="sym"/>
+<path d="M259 477 H321 M290 477 V465 M276 465 H304" class="wire"/>
+<path d="M325 490 H563 M593 490 H730" class="wire"/>
+<text x="650" y="479" class="small" text-anchor="middle">PB1</text>
+<text x="752" y="496" class="pin" text-anchor="start">I0.0</text>
+<text x="160" y="554" class="pin" text-anchor="start">S2 STOP PB NC</text>
+<text x="160" y="579" class="small" text-anchor="start">24 VDC, 1 A</text>
+<path d="M120 610 H255" class="power"/>
+<circle cx="120" cy="610" r="4" fill="#a52b27"/>
+<circle cx="255" cy="610" r="4" class="sym"/>
+<circle cx="325" cy="610" r="4" class="sym"/>
+<path d="M255 610 H325 M290 610 V590 M276 590 H304 M325 602 V618" class="wire"/>
+<path d="M325 610 H563 M593 610 H730" class="wire"/>
+<text x="650" y="599" class="small" text-anchor="middle">PB2</text>
+<text x="752" y="616" class="pin" text-anchor="start">I0.1</text>
+<text x="160" y="674" class="pin" text-anchor="start">S3 RESET PB</text>
+<text x="160" y="699" class="small" text-anchor="start">24 VDC, 1 A</text>
+<path d="M120 730 H255" class="power"/>
+<circle cx="120" cy="730" r="4" fill="#a52b27"/>
+<circle cx="255" cy="730" r="4" class="sym"/>
+<circle cx="325" cy="730" r="4" class="sym"/>
+<path d="M259 717 H321 M290 717 V705 M276 705 H304" class="wire"/>
+<path d="M325 730 H563 M593 730 H730" class="wire"/>
+<text x="650" y="719" class="small" text-anchor="middle">PB3</text>
+<text x="752" y="736" class="pin" text-anchor="start">I0.2</text>
+<text x="160" y="794" class="pin" text-anchor="start">B1 PROX SENSOR</text>
+<text x="160" y="819" class="small" text-anchor="start">24 VDC, PNP, 100 mA</text>
+<path d="M120 850 H255" class="power"/>
+<circle cx="120" cy="850" r="4" fill="#a52b27"/>
+<rect x="255" y="830" width="70" height="40" class="sym"/>
+<path d="M267 859 V843 H280 V856 H292 M304 837 L315 850 L304 863" class="wire"/>
+<path d="M325 850 H563 M593 850 H730" class="wire"/>
+<text x="650" y="839" class="small" text-anchor="middle">PE1</text>
+<text x="752" y="856" class="pin" text-anchor="start">I0.3</text>
+<path d="M1680 490 V1060" class="return"/>
+<circle cx="1680" cy="1060" r="4" fill="#24618a"/>
+<text x="1058" y="496" class="pin" text-anchor="end">Q0.0</text>
+<path d="M1080 490 H1235 M1265 490 H1475" class="wire"/>
+<text x="1150" y="479" class="small" text-anchor="middle">OUT1</text>
+<text x="1370" y="434" class="pin" text-anchor="start">K1 CONTROL RELAY</text>
+<text x="1370" y="459" class="small" text-anchor="start">24 VDC, 2 A contacts</text>
+<rect x="1475" y="469" width="80" height="42" class="sym"/>
+<text x="1515" y="496" class="pin" text-anchor="middle">K1</text>
+<path d="M1555 490 H1680" class="return"/>
+<circle cx="1680" cy="490" r="4" fill="#24618a"/>
+<text x="1058" y="616" class="pin" text-anchor="end">Q0.1</text>
+<path d="M1080 610 H1235 M1265 610 H1475" class="wire"/>
+<text x="1150" y="599" class="small" text-anchor="middle">OUT2</text>
+<text x="1370" y="554" class="pin" text-anchor="start">K2 ALARM RELAY</text>
+<text x="1370" y="579" class="small" text-anchor="start">24 VDC, 2 A contacts</text>
+<rect x="1475" y="589" width="80" height="42" class="sym"/>
+<text x="1515" y="616" class="pin" text-anchor="middle">K2</text>
+<path d="M1555 610 H1680" class="return"/>
+<circle cx="1680" cy="610" r="4" fill="#24618a"/>
+<text x="1058" y="736" class="pin" text-anchor="end">Q0.2</text>
+<path d="M1080 730 H1235 M1265 730 H1475" class="wire"/>
+<text x="1150" y="719" class="small" text-anchor="middle">OUT3</text>
+<text x="1370" y="674" class="pin" text-anchor="start">Y1 SOLENOID VALVE</text>
+<text x="1370" y="699" class="small" text-anchor="start">24 VDC, 6 W</text>
+<rect x="1475" y="709" width="80" height="42" class="sym"/>
+<path d="M1483 744 L1547 716" class="wire"/>
+<path d="M1555 730 H1680" class="return"/>
+<circle cx="1680" cy="730" r="4" fill="#24618a"/>
+<text x="1058" y="856" class="pin" text-anchor="end">Q0.3</text>
+<path d="M1080 850 H1235 M1265 850 H1475" class="wire"/>
+<text x="1150" y="839" class="small" text-anchor="middle">OUT4</text>
+<text x="1370" y="794" class="pin" text-anchor="start">H1 OUTPUT PILOT</text>
+<text x="1370" y="819" class="small" text-anchor="start">24 VDC, 20 mA</text>
+<circle cx="1515" cy="850" r="25" class="sym"/>
+<path d="M1475 850 H1490 M1540 850 H1555 M1498 833 L1532 867 M1498 867 L1532 833" class="wire"/>
+<path d="M1555 850 H1680" class="return"/>
+<circle cx="1680" cy="850" r="4" fill="#24618a"/>
+<text x="752" y="932" class="pin" text-anchor="start">DI-COM</text>
+<path d="M730 925 H593 M563 925 H420 V1060" class="return"/>
+<circle cx="420" cy="1060" r="4" fill="#24618a"/>
+<text x="440" y="984" class="pin" text-anchor="start">W1 DI COMMON RETURN</text>
+<text x="440" y="1010" class="small" text-anchor="start">INCOM → COM · 0.75 mm², 24 VDC</text>
+<text x="1058" y="932" class="pin" text-anchor="end">DO-COM</text>
+<path d="M1080 925 H1235 M1265 925 H1740 V233 H1640" class="power"/>
+<circle cx="1640" cy="233" r="4" fill="#a52b27"/>
+<text x="1370" y="984" class="pin" text-anchor="start">W2 DO COMMON +24V</text>
+<text x="1370" y="1010" class="small" text-anchor="start">OUTCOM → L24F · 0.75 mm², 24 VDC</text>
+<text x="905" y="572" class="" text-anchor="middle">DI</text>
+<text x="905" y="606" class="small" text-anchor="middle">4 points</text>
+<text x="905" y="713" class="" text-anchor="middle">DO</text>
+<text x="905" y="747" class="small" text-anchor="middle">4 points</text>
+</svg>

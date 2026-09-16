@@ -1,0 +1,78 @@
+{
+  "id": "comparison-cloud-decision",
+  "type": "comparison",
+  "variant": "decision",
+  "title": "Cloud provider selection",
+  "goal": "A platform team can use weighted scoring to select the strongest cloud provider.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "A weighted criteria-by-provider decision table is visible."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "A computed weighted-total row visibly ranks providers and identifies AWS as winner."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "All criteria show visible weights and numeric option scores."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "AWS, Azure, and GCP columns are visible."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The winning option is visually distinguished."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/decision exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a readable weighted decision table with all three providers, all four criteria and weights, numeric scores, and weighted points. The totals are AWS 66 (1st), Azure 58 (2nd), and GCP 54 (3rd); AWS is highlighted as the winner. No blocking visual defects are apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:03:23.358Z",
+      "targetHash": "d9dd5bb0810e",
+      "sourceHash": "be752d80ad2c",
+      "exemplarHash": "8168085fda8e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "A criteria-by-provider table is visible, with weighted totals below the criteria rows."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "The weighted-total row ranks AWS first at 66, Azure second at 58, and GCP third at 54; the note also identifies AWS as winner."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Each criterion has a visible weight (×5, ×4, ×3, ×2) and numeric scores for every provider."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "AWS, Azure, and GCP each have a visible provider column."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "AWS is distinguished with a pale green column, green top rule and total, and a green “1st” badge."
+        }
+      ]
+    }
+  }
+}

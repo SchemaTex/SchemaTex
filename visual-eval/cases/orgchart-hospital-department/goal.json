@@ -1,0 +1,78 @@
+{
+  "id": "orgchart-hospital-department",
+  "type": "orgchart",
+  "variant": "tree",
+  "title": "Hospital medicine directorate",
+  "goal": "Show clinical, nursing, and allied-health reporting in one directorate.",
+  "rubric": [
+    {
+      "id": "chief",
+      "severity": "blocker",
+      "must": "Dr Helen Ward is visibly at the chief-of-medicine root."
+    },
+    {
+      "id": "clinical-chain",
+      "severity": "blocker",
+      "must": "Acute Medicine and Cardiology consultants visibly lead their named registrars."
+    },
+    {
+      "id": "nursing",
+      "severity": "major",
+      "must": "The director of nursing visibly leads ward and cath-lab nursing leads."
+    },
+    {
+      "id": "allied",
+      "severity": "major",
+      "must": "The allied-health lead visibly leads physiotherapy and pharmacy."
+    },
+    {
+      "id": "matrix",
+      "severity": "minor",
+      "must": "The clinical-coordination relationship is visibly dashed and labelled."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the orgchart/tree exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The chart shows Dr Helen Ward at the root, the named clinical consultants leading their registrars, Grace Miller leading both nursing leads, and Ben Foster leading the physiotherapy and pharmacy leads. A dashed, labelled “Clinical coordination” connection is visible from Dr Amir Khan to Elena Cruz; labels are readable and connections are traceable.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:28.599Z",
+      "targetHash": "ee5f2c0f7bf6",
+      "sourceHash": "82e9c7d28d3c",
+      "exemplarHash": "65dff1048f39",
+      "items": [
+        {
+          "id": "chief",
+          "verdict": "pass",
+          "evidence": "Dr Helen Ward, Chief of Medicine, is visibly at the root above the reporting branches."
+        },
+        {
+          "id": "clinical-chain",
+          "verdict": "pass",
+          "evidence": "Dr Amir Khan leads Dr Sofia Green and Dr James Cole; Dr Mei Lin leads Dr Tara Singh."
+        },
+        {
+          "id": "nursing",
+          "verdict": "pass",
+          "evidence": "Grace Miller leads Elena Cruz and Ruth Hall."
+        },
+        {
+          "id": "allied",
+          "verdict": "pass",
+          "evidence": "Ben Foster leads Kara Young and Omar Ali."
+        },
+        {
+          "id": "matrix",
+          "verdict": "pass",
+          "evidence": "A dashed line labelled “Clinical coordination” connects Dr Amir Khan to Elena Cruz."
+        }
+      ]
+    }
+  }
+}

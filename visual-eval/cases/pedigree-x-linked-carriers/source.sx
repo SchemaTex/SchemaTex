@@ -1,0 +1,22 @@
+pedigree "X-linked Recessive Hemophilia A"
+  I-1 [male, unaffected]
+  I-2 [female, carrier-x]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-4 [female, carrier-x]
+    II-5 [male, unaffected]
+
+  II-2 [female, unaffected]
+  II-3 [male, unaffected]
+  II-6 [female, unaffected]
+
+  II-1 -- II-2
+    III-1 [male, unaffected]
+    III-2 [female, carrier-x]
+
+  II-3 -- II-4
+    III-3 [male, affected, proband]
+    III-4 [female, unaffected]
+
+  II-5 -- II-6
+    III-5 [male, unaffected]

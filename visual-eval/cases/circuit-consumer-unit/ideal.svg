@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1400" viewBox="0 0 1800 1400">
+<title>Domestic Consumer Unit — distribution schematic</title>
+<rect width="1800" height="1400" fill="white"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#17212b;font-size:19px} .title{font-size:34px;font-weight:bold}.head{font-size:22px;font-weight:bold}.small{font-size:16px}.wire{fill:none;stroke:#202a34;stroke-width:3;stroke-linejoin:round;stroke-linecap:square}.neutral{fill:none;stroke:#235c8f;stroke-width:3}.earth{fill:none;stroke:#33714c;stroke-width:3}.dot{fill:#202a34}.terminal{fill:white;stroke:#202a34;stroke-width:2.5}</style>
+
+<text x="65" y="66" class="title" text-anchor="start">DOMESTIC CONSUMER UNIT</text>
+<text x="65" y="98" class="" text-anchor="start">230 V AC  /  50 Hz  /  63 A incoming supply</text>
+<text x="1735" y="65" class="head" text-anchor="end">DISTRIBUTION SCHEMATIC</text>
+<text x="1735" y="97" class="small" text-anchor="end">L · N · PE connections</text>
+<path d="M65 120 H1735" class="wire"/>
+<circle cx="160" cy="230" r="37" class="terminal"/>
+<path d="M138 230 C145 207 153 207 160 230 C167 253 175 253 182 230" class="wire"/>
+<text x="85" y="163" class="head" text-anchor="start">V1 INCOMING SUPPLY</text>
+<text x="85" y="184" class="small" text-anchor="start">230 V AC, 50 Hz, 63 A</text>
+<path d="M197 230 H450" class="wire"/>
+<text x="265" y="214" class="small" text-anchor="start">LINE_IN</text>
+<path d="M123 230 H65 V950 H170" class="neutral"/>
+<text x="79" y="465" class="small" text-anchor="start">NEUTRAL_IN</text>
+<rect x="420" y="195" width="145" height="70" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M420 230 H450 M515 230 H565 M450 230 L502 204" class="wire"/>
+<circle cx="450" cy="230" r="4" class="terminal"/>
+<circle cx="515" cy="230" r="4" class="terminal"/>
+<text x="420" y="160" class="head" text-anchor="start">S0 MAIN SWITCH</text>
+<text x="420" y="183" class="" text-anchor="start">63 A, 2-pole</text>
+<rect x="820" y="195" width="145" height="70" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M820 230 H850 M915 230 H965 M850 230 L902 204" class="wire"/>
+<circle cx="850" cy="230" r="4" class="terminal"/>
+<circle cx="915" cy="230" r="4" class="terminal"/>
+<text x="820" y="160" class="head" text-anchor="start">Q1 RCD</text>
+<text x="820" y="183" class="" text-anchor="start">63 A, 30 mA, Type A</text>
+<path d="M565 230 H820" class="wire"/>
+<text x="635" y="214" class="small" text-anchor="start">LINE_MAIN</text>
+<path d="M965 230 H1610 V375 H280" class="wire"/>
+<text x="1330" y="214" class="small" text-anchor="start">LINE_RCD</text>
+<text x="85" y="331" class="head" text-anchor="start">PROTECTED OUTGOING WAYS</text>
+<text x="1735" y="331" class="small" text-anchor="end">All MCBs: B-curve · 6 kA</text>
+<circle cx="280" cy="375" r="5" class="dot"/>
+<path d="M280 375 V441" class="wire"/>
+<rect x="228" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M280 421 V449 M280 494 V525 M280 494 L310 450" class="wire"/>
+<circle cx="280" cy="449" r="4" class="terminal"/>
+<circle cx="280" cy="494" r="4" class="terminal"/>
+<text x="280" y="556" class="head" text-anchor="middle">QF1 MCB</text>
+<text x="280" y="582" class="head" text-anchor="middle">LIGHTING</text>
+<text x="280" y="607" class="small" text-anchor="middle">6 A, B-curve, 6 kA</text>
+<path d="M280 525 V538 M280 618 V710" class="wire"/>
+<path d="M280 538 H180 V618 H280" class="wire"/>
+<text x="292" y="669" class="small" text-anchor="start">L_LIGHT</text>
+<circle cx="280" cy="749" r="39" class="terminal"/>
+<path d="M253 722 L307 776 M307 722 L253 776" class="wire"/>
+<path d="M280 788 V827" class="wire"/>
+<text x="280" y="859" class="head" text-anchor="middle">L1 LIGHTING</text>
+<text x="280" y="884" class="small" text-anchor="middle">FINAL CIRCUIT</text>
+<text x="280" y="909" class="small" text-anchor="middle">230 V, 100 W</text>
+<path d="M280 827 H392 V978 H280 V1010" class="neutral"/>
+<text x="290" y="998" class="small" text-anchor="start">N_LIGHT</text>
+<circle cx="546" cy="375" r="5" class="dot"/>
+<path d="M546 375 V441" class="wire"/>
+<rect x="494" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M546 421 V449 M546 494 V525 M546 494 L576 450" class="wire"/>
+<circle cx="546" cy="449" r="4" class="terminal"/>
+<circle cx="546" cy="494" r="4" class="terminal"/>
+<text x="546" y="556" class="head" text-anchor="middle">QF2 MCB</text>
+<text x="546" y="582" class="head" text-anchor="middle">SOCKETS</text>
+<text x="546" y="607" class="small" text-anchor="middle">32 A, B-curve, 6 kA</text>
+<path d="M546 525 V538 M546 618 V710" class="wire"/>
+<path d="M546 538 H446 V618 H546" class="wire"/>
+<text x="558" y="669" class="small" text-anchor="start">L_SOCKET</text>
+<circle cx="546" cy="749" r="39" class="terminal"/>
+<path d="M534 732 V752 M558 732 V752 M533 770 H559" class="wire"/>
+<path d="M546 788 V827" class="wire"/>
+<text x="546" y="859" class="head" text-anchor="middle">U1 SOCKETS</text>
+<text x="546" y="884" class="small" text-anchor="middle">FINAL CIRCUIT</text>
+<text x="546" y="909" class="small" text-anchor="middle">230 V, 32 A ring</text>
+<path d="M546 827 H658 V978 H546 V1010" class="neutral"/>
+<text x="556" y="998" class="small" text-anchor="start">N_SOCKET</text>
+<circle cx="812" cy="375" r="5" class="dot"/>
+<path d="M812 375 V441" class="wire"/>
+<rect x="760" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M812 421 V449 M812 494 V525 M812 494 L842 450" class="wire"/>
+<circle cx="812" cy="449" r="4" class="terminal"/>
+<circle cx="812" cy="494" r="4" class="terminal"/>
+<text x="812" y="556" class="head" text-anchor="middle">QF3 MCB</text>
+<text x="812" y="582" class="head" text-anchor="middle">COOKER</text>
+<text x="812" y="607" class="small" text-anchor="middle">32 A, B-curve, 6 kA</text>
+<path d="M812 525 V538 M812 618 V710" class="wire"/>
+<path d="M812 538 H712 V618 H812" class="wire"/>
+<text x="824" y="669" class="small" text-anchor="start">L_COOKER</text>
+<rect x="745" y="710" width="134" height="79" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<text x="760" y="738" class="small" text-anchor="start">L</text>
+<text x="760" y="778" class="small" text-anchor="start">N</text>
+<text x="822" y="754" class="head" text-anchor="middle">U2</text>
+<path d="M812 789 V827" class="wire"/>
+<text x="812" y="859" class="head" text-anchor="middle">U2 COOKER</text>
+<text x="812" y="884" class="small" text-anchor="middle">FINAL CIRCUIT</text>
+<text x="812" y="909" class="small" text-anchor="middle">230 V, 7.2 kW</text>
+<path d="M812 827 H924 V978 H812 V1010" class="neutral"/>
+<text x="822" y="998" class="small" text-anchor="start">N_COOKER</text>
+<circle cx="1078" cy="375" r="5" class="dot"/>
+<path d="M1078 375 V441" class="wire"/>
+<rect x="1026" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M1078 421 V449 M1078 494 V525 M1078 494 L1108 450" class="wire"/>
+<circle cx="1078" cy="449" r="4" class="terminal"/>
+<circle cx="1078" cy="494" r="4" class="terminal"/>
+<text x="1078" y="556" class="head" text-anchor="middle">QF4 MCB</text>
+<text x="1078" y="582" class="head" text-anchor="middle">SHOWER</text>
+<text x="1078" y="607" class="small" text-anchor="middle">40 A, B-curve, 6 kA</text>
+<path d="M1078 525 V538 M1078 618 V710" class="wire"/>
+<path d="M1078 538 H978 V618 H1078" class="wire"/>
+<text x="1090" y="669" class="small" text-anchor="start">L_SHOWER</text>
+<rect x="1011" y="710" width="134" height="79" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<text x="1026" y="738" class="small" text-anchor="start">L</text>
+<text x="1026" y="778" class="small" text-anchor="start">N</text>
+<text x="1088" y="754" class="head" text-anchor="middle">U3</text>
+<path d="M1078 789 V827" class="wire"/>
+<text x="1078" y="859" class="head" text-anchor="middle">U3 SHOWER</text>
+<text x="1078" y="884" class="small" text-anchor="middle">FINAL CIRCUIT</text>
+<text x="1078" y="909" class="small" text-anchor="middle">230 V, 9 kW</text>
+<path d="M1078 827 H1190 V978 H1078 V1010" class="neutral"/>
+<text x="1088" y="998" class="small" text-anchor="start">N_SHOWER</text>
+<circle cx="1344" cy="375" r="5" class="dot"/>
+<path d="M1344 375 V441" class="wire"/>
+<rect x="1292" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M1344 421 V449 M1344 494 V525 M1344 494 L1374 450" class="wire"/>
+<circle cx="1344" cy="449" r="4" class="terminal"/>
+<circle cx="1344" cy="494" r="4" class="terminal"/>
+<text x="1344" y="556" class="head" text-anchor="middle">QF5 MCB</text>
+<text x="1344" y="582" class="head" text-anchor="middle">OUTSIDE</text>
+<text x="1344" y="607" class="small" text-anchor="middle">16 A, B-curve, 6 kA</text>
+<path d="M1344 525 V538 M1344 618 V710" class="wire"/>
+<path d="M1344 538 H1244 V618 H1344" class="wire"/>
+<text x="1356" y="669" class="small" text-anchor="start">L_OUTSIDE</text>
+<circle cx="1344" cy="749" r="39" class="terminal"/>
+<path d="M1332 732 V752 M1356 732 V752 M1331 770 H1357" class="wire"/>
+<path d="M1344 788 V827" class="wire"/>
+<text x="1344" y="859" class="head" text-anchor="middle">U4 OUTSIDE</text>
+<text x="1344" y="884" class="small" text-anchor="middle">FINAL CIRCUIT</text>
+<text x="1344" y="909" class="small" text-anchor="middle">230 V, 16 A</text>
+<path d="M1344 827 H1456 V978 H1344 V1010" class="neutral"/>
+<text x="1354" y="998" class="small" text-anchor="start">N_OUTSIDE</text>
+<circle cx="1610" cy="375" r="5" class="dot"/>
+<path d="M1610 375 V441" class="wire"/>
+<rect x="1558" y="421" width="104" height="104" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M1610 421 V449 M1610 494 V525 M1610 494 L1640 450" class="wire"/>
+<circle cx="1610" cy="449" r="4" class="terminal"/>
+<circle cx="1610" cy="494" r="4" class="terminal"/>
+<text x="1610" y="556" class="head" text-anchor="middle">QF6 MCB</text>
+<text x="1610" y="582" class="head" text-anchor="middle">SPARE</text>
+<text x="1610" y="607" class="small" text-anchor="middle">20 A, B-curve, 6 kA</text>
+<path d="M1610 525 V538 M1610 618 V710" class="wire"/>
+<path d="M1610 538 H1510 V618 H1610" class="wire"/>
+<text x="1622" y="669" class="small" text-anchor="start">L_SPARE</text>
+<rect x="1543" y="710" width="134" height="79" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<text x="1558" y="738" class="small" text-anchor="start">L</text>
+<text x="1558" y="778" class="small" text-anchor="start">N</text>
+<text x="1620" y="754" class="head" text-anchor="middle">U5</text>
+<path d="M1610 789 V827" class="wire"/>
+<text x="1610" y="859" class="head" text-anchor="middle">U5 SPARE</text>
+<text x="1610" y="884" class="small" text-anchor="middle">SPARE WAY</text>
+<text x="1610" y="909" class="small" text-anchor="middle">230 V, 20 A reserved</text>
+<path d="M1610 827 H1722 V978 H1610 V1010" class="neutral"/>
+<text x="1620" y="998" class="small" text-anchor="start">N_SPARE</text>
+<rect x="170" y="1010" width="1490" height="70" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M190 1056 H1640" class="neutral"/>
+<path d="M170 950 H195 V1038" class="neutral"/>
+<circle cx="195" cy="1038" r="8" class="terminal"/>
+<path d="M195 1046 V1056" class="neutral"/>
+<text x="195" y="1076" class="small" text-anchor="middle">IN</text>
+<circle cx="280" cy="1030" r="8" class="terminal"/>
+<path d="M280 1038 V1056" class="neutral"/>
+<text x="280" y="1076" class="small" text-anchor="middle">N1</text>
+<circle cx="546" cy="1030" r="8" class="terminal"/>
+<path d="M546 1038 V1056" class="neutral"/>
+<text x="546" y="1076" class="small" text-anchor="middle">N2</text>
+<circle cx="812" cy="1030" r="8" class="terminal"/>
+<path d="M812 1038 V1056" class="neutral"/>
+<text x="812" y="1076" class="small" text-anchor="middle">N3</text>
+<circle cx="1078" cy="1030" r="8" class="terminal"/>
+<path d="M1078 1038 V1056" class="neutral"/>
+<text x="1078" y="1076" class="small" text-anchor="middle">N4</text>
+<circle cx="1344" cy="1030" r="8" class="terminal"/>
+<path d="M1344 1038 V1056" class="neutral"/>
+<text x="1344" y="1076" class="small" text-anchor="middle">N5</text>
+<circle cx="1610" cy="1030" r="8" class="terminal"/>
+<path d="M1610 1038 V1056" class="neutral"/>
+<text x="1610" y="1076" class="small" text-anchor="middle">N6</text>
+<text x="170" y="1122" class="head" text-anchor="start">TN1 NEUTRAL BAR</text>
+<text x="455" y="1122" class="" text-anchor="start">100 A, 7-way</text>
+<rect x="170" y="1160" width="1490" height="60" rx="0" fill="white" stroke="#202a34" stroke-width="2.5"/>
+<path d="M195 1180 H1640" class="earth"/>
+<text x="170" y="1148" class="head" text-anchor="start">TE1 EARTH BAR — 100 A, 6-way</text>
+<text x="280" y="1177" class="small" text-anchor="middle">PE1</text>
+<circle cx="280" cy="1200" r="8" class="terminal"/>
+<path d="M280 1180 V1192 M280 1208 V1320" class="earth"/>
+<text x="292" y="1242" class="small" text-anchor="start">W1 EARTH / PE</text>
+<text x="292" y="1267" class="small" text-anchor="start">1.5 mm² CPC</text>
+<text x="292" y="1292" class="small" text-anchor="start">PE_LIGHT</text>
+<circle cx="280" cy="1320" r="4" class="dot"/>
+<text x="546" y="1177" class="small" text-anchor="middle">PE2</text>
+<circle cx="546" cy="1200" r="8" class="terminal"/>
+<path d="M546 1180 V1192 M546 1208 V1320" class="earth"/>
+<text x="558" y="1242" class="small" text-anchor="start">W2 EARTH / PE</text>
+<text x="558" y="1267" class="small" text-anchor="start">2.5 mm² CPC</text>
+<text x="558" y="1292" class="small" text-anchor="start">PE_SOCKET</text>
+<circle cx="546" cy="1320" r="4" class="dot"/>
+<text x="812" y="1177" class="small" text-anchor="middle">PE3</text>
+<circle cx="812" cy="1200" r="8" class="terminal"/>
+<path d="M812 1180 V1192 M812 1208 V1320" class="earth"/>
+<text x="824" y="1242" class="small" text-anchor="start">W3 EARTH / PE</text>
+<text x="824" y="1267" class="small" text-anchor="start">6 mm² CPC</text>
+<text x="824" y="1292" class="small" text-anchor="start">PE_COOKER</text>
+<circle cx="812" cy="1320" r="4" class="dot"/>
+<text x="1078" y="1177" class="small" text-anchor="middle">PE4</text>
+<circle cx="1078" cy="1200" r="8" class="terminal"/>
+<path d="M1078 1180 V1192 M1078 1208 V1320" class="earth"/>
+<text x="1090" y="1242" class="small" text-anchor="start">W4 EARTH / PE</text>
+<text x="1090" y="1267" class="small" text-anchor="start">10 mm² CPC</text>
+<text x="1090" y="1292" class="small" text-anchor="start">PE_SHOWER</text>
+<circle cx="1078" cy="1320" r="4" class="dot"/>
+<text x="1344" y="1177" class="small" text-anchor="middle">PE5</text>
+<circle cx="1344" cy="1200" r="8" class="terminal"/>
+<path d="M1344 1180 V1192 M1344 1208 V1320" class="earth"/>
+<text x="1356" y="1242" class="small" text-anchor="start">W5 EARTH / PE</text>
+<text x="1356" y="1267" class="small" text-anchor="start">2.5 mm² CPC</text>
+<text x="1356" y="1292" class="small" text-anchor="start">PE_OUTSIDE</text>
+<circle cx="1344" cy="1320" r="4" class="dot"/>
+<text x="1610" y="1177" class="small" text-anchor="middle">PE6</text>
+<circle cx="1610" cy="1200" r="8" class="terminal"/>
+<path d="M1610 1180 V1192 M1610 1208 V1320" class="earth"/>
+<text x="1622" y="1242" class="small" text-anchor="start">W6 EARTH / PE</text>
+<text x="1622" y="1267" class="small" text-anchor="start">2.5 mm² CPC</text>
+<text x="1622" y="1292" class="small" text-anchor="start">PE_SPARE</text>
+<circle cx="1610" cy="1320" r="4" class="dot"/>
+<path d="M280 1320 H1610 M945 1320 V1345 M920 1345 H970 M928 1354 H962 M937 1363 H953" class="earth"/>
+<text x="990" y="1353" class="head" text-anchor="start">EARTH</text>
+</svg>

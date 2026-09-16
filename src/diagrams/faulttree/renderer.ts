@@ -4,13 +4,13 @@
  *
  * Output-up / inputs-down gates (mirror of the `logic` engine): AND = dome,
  * OR/XOR/VOTING = shield, INHIBIT = hexagon, PAND = dome + order condition.
- * The computed minimal cut sets are boxed in red (single points of failure in
- * the strongest red) — the first-class differentiator, the `pert` red-accent
- * stance applied to reliability.
+ * Single points of failure are ringed in red; cut-set counts appear in a
+ * compact footer, with complete membership retained in the SVG description.
  *
  * Hard rules: no inline styles (classes from tokens), <title>/<desc>, data-*.
  */
 
+import { estimateTextWidth, wrapTextToWidth } from "../../core/text-metrics";
 import type { RenderConfig } from "../../core/types";
 import {
   circle,
@@ -55,7 +55,13 @@ export function renderFaultTreeLayout(layout: FaultTreeLayoutResult, config?: Re
   const showProb = ast.analysis.probability;
 
   const width = layout.width + pad * 2;
-  const height = layout.height + pad * 2;
+  const orderCounts = new Map<number, number>();
+  for (const cs of analysis.cutSets) orderCounts.set(cs.order, (orderCounts.get(cs.order) ?? 0) + 1);
+  const summary = `${analysis.cutSets.length} minimal cut sets · ${[...orderCounts].map(([order, count]) => `${count} of order ${order}`).join("; ")}`;
+  const cutSetLines = ast.analysis.cutsets
+    ? wrapTextToWidth(summary, FONT_SIZE.small, layout.width - 2 * C.CANVAS_PAD)
+    : [];
+  const height = layout.height + pad * 2 + cutSetLines.length * 16 + (cutSetLines.length ? 12 : 0);
   const a11y = ast.title ?? "Fault tree";
 
   const styleBlock = el(
@@ -149,6 +155,11 @@ export function renderFaultTreeLayout(layout: FaultTreeLayoutResult, config?: Re
     if (top) inner.push(renderTopProb(top, analysis));
   }
 
+  if (cutSetLines.length) {
+    inner.push(svgLine({ x1: C.CANVAS_PAD, y1: layout.height - 5, x2: layout.width - C.CANVAS_PAD, y2: layout.height - 5, class: "sx-ft-pin" }));
+    cutSetLines.forEach((caption, index) => inner.push(svgText({ x: C.CANVAS_PAD, y: layout.height + 15 + index * 16, class: "sx-ft-cap" }, caption)));
+  }
+
   children.push(
     group({ transform: pad ? `translate(${pad}, ${pad})` : undefined, "font-family": fontFamily }, inner)
   );
@@ -175,12 +186,16 @@ function renderEvent(e: FaultTreeLayoutEvent, showProb: boolean): string {
   } else if (e.role === "basic") {
     parts.push(circle({ cx: e.cx, cy, r: C.BASIC_R, class: "sx-ft-basic" }));
     if (e.shared) parts.push(svgLine({ x1: e.cx - 5, y1: cy + C.BASIC_R - 5, x2: e.cx + 5, y2: cy + C.BASIC_R - 5, class: "sx-ft-shared-mark" }));
-    parts.push(svgText({ x: e.cx, y: cy + 3, class: "sx-ft-id", "text-anchor": "middle" }, e.event.id));
+    if (estimateTextWidth(e.event.id, 12, { fontWeight: 700 }) <= e.width - 8) {
+      parts.push(svgText({ x: e.cx, y: cy + 3, class: "sx-ft-id", "text-anchor": "middle" }, e.event.id));
+    }
     parts.push(...leafCaption(e, cy + C.BASIC_R, label, showProb));
   } else if (e.role === "undeveloped") {
     const r = C.DIAMOND_W / 2;
     parts.push(svgPath({ d: `M ${e.cx} ${cy - r} L ${e.cx + r} ${cy} L ${e.cx} ${cy + r} L ${e.cx - r} ${cy} Z`, class: "sx-ft-undeveloped" }));
-    parts.push(svgText({ x: e.cx, y: cy + 3, class: "sx-ft-id", "text-anchor": "middle" }, e.event.id));
+    if (estimateTextWidth(e.event.id, 12, { fontWeight: 700 }) <= e.width - 8) {
+      parts.push(svgText({ x: e.cx, y: cy + 3, class: "sx-ft-id", "text-anchor": "middle" }, e.event.id));
+    }
     parts.push(...leafCaption(e, cy + r, label, showProb));
   } else if (e.role === "house") {
     const w = C.HOUSE_W, h = C.HOUSE_H, roofH = h * 0.34;
@@ -207,12 +222,14 @@ function renderEvent(e: FaultTreeLayoutEvent, showProb: boolean): string {
 function leafCaption(e: FaultTreeLayoutEvent, shapeBottom: number, label: string, showProb: boolean): string[] {
   const out: string[] = [];
   const hasOwnLabel = !!e.event.label && e.event.label !== e.event.id;
-  // CAP_GAP clears the widest (capped) cut-set box below the shape.
-  if (hasOwnLabel) {
-    out.push(svgText({ x: e.cx, y: shapeBottom + C.CAP_GAP, class: "sx-ft-cap", "text-anchor": "middle" }, clip(label, 20)));
+  const captionLines: string[] = [];
+  if (estimateTextWidth(e.event.id, 12, { fontWeight: 700 }) > e.width - 8) {
+    captionLines.push(...wrapTextToWidth(e.event.id, 11, C.EVENT_MIN_W));
   }
+  if (hasOwnLabel) captionLines.push(...wrapTextToWidth(label, 11, C.EVENT_MIN_W));
+  captionLines.forEach((caption, index) => out.push(svgText({ x: e.cx, y: shapeBottom + C.CAP_GAP + index * C.CAP_LINE_H, class: "sx-ft-cap", "text-anchor": "middle" }, caption)));
   if (showProb && e.event.prob !== undefined) {
-    const y = shapeBottom + (hasOwnLabel ? C.CAP_GAP + C.CAP_LINE_H : C.CAP_GAP);
+    const y = shapeBottom + C.CAP_GAP + captionLines.length * C.CAP_LINE_H;
     out.push(svgText({ x: e.cx, y, class: "sx-ft-prob", "text-anchor": "middle" }, `p=${fmtProb(e.event.prob)}`));
   }
   return out;

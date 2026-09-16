@@ -1,0 +1,39 @@
+# Green 30 s, amber 4 s, and red 30 s phases repeat when AutoEnable is true.
+# Each on-delay timer is enabled by the preceding phase completion.
+ladder "Traffic Light Sequence"
+
+rung 0 "Green phase timer":
+  XIC(AutoEnable)
+  XIO(GreenTimer.Q)
+  TON(GreenTimer, PT=30000)
+
+rung 1 "Green lamp before timer done":
+  XIC(AutoEnable)
+  XIO(GreenTimer.Q)
+  OTE(GreenLamp)
+
+rung 2 "Amber phase timer after green":
+  XIC(GreenTimer.Q)
+  XIO(AmberTimer.Q)
+  TON(AmberTimer, PT=4000)
+
+rung 3 "Amber lamp during amber timer":
+  XIC(GreenTimer.Q)
+  XIO(AmberTimer.Q)
+  OTE(AmberLamp)
+
+rung 4 "Red phase timer after amber":
+  XIC(AmberTimer.Q)
+  XIO(RedTimer.Q)
+  TON(RedTimer, PT=30000)
+
+rung 5 "Red lamp during red timer":
+  XIC(AmberTimer.Q)
+  XIO(RedTimer.Q)
+  OTE(RedLamp)
+
+rung 6 "Reset phase timers after red":
+  XIC(RedTimer.Q)
+  RES(GreenTimer)
+  RES(AmberTimer)
+  RES(RedTimer)

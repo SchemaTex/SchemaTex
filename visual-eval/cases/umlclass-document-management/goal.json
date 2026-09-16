@@ -1,0 +1,77 @@
+{
+  "id": "umlclass-document-management",
+  "type": "umlclass",
+  "title": "Document management",
+  "goal": "Model document-owned pages and versions alongside retained folders and access grants.",
+  "rubric": [
+    {
+      "id": "lifetime",
+      "severity": "blocker",
+      "must": "Document has filled composition diamonds to Page and Version, each with 1..* multiplicity."
+    },
+    {
+      "id": "folder-aggregation",
+      "severity": "blocker",
+      "must": "Folder has a hollow aggregation diamond to Document rather than a filled composition diamond."
+    },
+    {
+      "id": "access",
+      "severity": "major",
+      "must": "AccessGrant has directed associations to both Permission and Document."
+    },
+    {
+      "id": "index-dependency",
+      "severity": "major",
+      "must": "SearchIndex has a dashed dependency arrow to Document."
+    },
+    {
+      "id": "enum",
+      "severity": "minor",
+      "must": "Permission is visibly an enumeration with READ, WRITE, and ADMIN literals."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the umlclass exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target visibly matches all five rubric rules. Relationships and labels are traceable, and no material overlaps or cropping are apparent.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:32:42.530Z",
+      "targetHash": "7b3b64c9923a",
+      "sourceHash": "6b1dad938690",
+      "exemplarHash": "5fe2af562f7d",
+      "items": [
+        {
+          "id": "lifetime",
+          "verdict": "pass",
+          "evidence": "Document connects to Page and Version with filled composition diamonds at Document and 1 to 1..* multiplicities."
+        },
+        {
+          "id": "folder-aggregation",
+          "verdict": "pass",
+          "evidence": "Folder connects to Document with a hollow aggregation diamond at Folder; the Document end shows 0..*."
+        },
+        {
+          "id": "access",
+          "verdict": "pass",
+          "evidence": "AccessGrant has directed associations to Document (grants access to) and Permission."
+        },
+        {
+          "id": "index-dependency",
+          "verdict": "pass",
+          "evidence": "SearchIndex connects to Document with a dashed dependency arrow pointing to Document, labeled indexes."
+        },
+        {
+          "id": "enum",
+          "verdict": "pass",
+          "evidence": "Permission is marked as an enumeration and lists READ, WRITE, and ADMIN."
+        }
+      ]
+    }
+  }
+}

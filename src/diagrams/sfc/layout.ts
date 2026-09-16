@@ -26,6 +26,8 @@ import type {
   SfcTransition,
 } from "../../core/types";
 
+import { estimateTextWidth } from "../../core/text-metrics";
+
 export const SFC_CONST = {
   step_width: 160,
   step_height: 36,
@@ -50,6 +52,7 @@ export const SFC_CONST = {
 interface SizeInfo {
   width: number;
   height: number;
+  centerOffsetX?: number;
   /** y-distance from top to step center (used to align convergence wire). */
   centerOffsetTop?: number;
 }
@@ -75,27 +78,37 @@ function actionBlockFullHeight(): number {
   return SFC_CONST.action_block_h;  // base; +action_time_h added when time present
 }
 
+function stepWidth(step: SfcStep): number {
+  return Math.max(SFC_CONST.step_width, estimateTextWidth(step.label ?? step.id, 12, { monospace: true, fontWeight: 600 }) + 24);
+}
+
+function actionWidth(step: SfcStep): number {
+  return Math.max(SFC_CONST.action_block_w, ...step.actions.map(a =>
+    estimateTextWidth(a.body, 11, { monospace: true }) + SFC_CONST.action_qualifier_w + 16));
+}
+
 function sizeStepWithActions(step: SfcStep): SizeInfo {
-  const width = SFC_CONST.step_width;
-  const height = SFC_CONST.step_height;
-  void step;
-  return { width, height };
+  const w = stepWidth(step);
+  const actionH = step.actions.reduce((n, a) => n + actionBlockFullHeight() + (a.time ? SFC_CONST.action_time_h : 0), 0);
+  return {
+    width: w + (step.actions.length ? SFC_CONST.action_gap_x + actionWidth(step) : 0),
+    height: Math.max(SFC_CONST.step_height, actionH),
+    centerOffsetX: w / 2,
+  };
 }
 
 function sizeBody(ast: SfcAst, body: SfcNode[]): SizeInfo {
-  // Linear stack: take max width, sum heights with vertical_pitch gaps between nodes (transition bars).
-  let maxW = SFC_CONST.step_width;
-  let totalH = 0;
-  for (let i = 0; i < body.length; i++) {
-    const node = body[i];
+  let left = SFC_CONST.step_width / 2;
+  let right = left;
+  let height = 0;
+  body.forEach((node, index) => {
     const sz = sizeNode(ast, node);
-    if (sz.width > maxW) maxW = sz.width;
-    totalH += sz.height;
-    if (i < body.length - 1) {
-      totalH += SFC_CONST.vertical_pitch;
-    }
-  }
-  return { width: maxW, height: totalH };
+    const anchor = sz.centerOffsetX ?? sz.width / 2;
+    left = Math.max(left, anchor);
+    right = Math.max(right, sz.width - anchor);
+    height += sz.height + (index ? SFC_CONST.vertical_pitch : 0);
+  });
+  return { width: left + right, height, centerOffsetX: left };
 }
 
 function sizeNode(ast: SfcAst, node: SfcNode): SizeInfo {
@@ -132,53 +145,53 @@ function sizeNode(ast: SfcAst, node: SfcNode): SizeInfo {
 }
 
 function sizeAltBranch(ast: SfcAst, br: SfcAltBranch): SizeInfo {
-  // entry transition + body + exit transition
-  let bodyW = SFC_CONST.step_width;
-  let bodyH = 0;
-  for (let i = 0; i < br.body.length; i++) {
-    const sz = sizeNode(ast, br.body[i]);
-    if (sz.width > bodyW) bodyW = sz.width;
-    bodyH += sz.height;
-    if (i < br.body.length - 1) bodyH += SFC_CONST.vertical_pitch;
-  }
+  const body = sizeBody(ast, br.body);
+  const conditionWidth = Math.max(
+    estimateTextWidth(br.entryCondition, 11, { monospace: true }),
+    estimateTextWidth(br.exitCondition ?? "", 11, { monospace: true })
+  );
   return {
-    width: bodyW,
-    height: bodyH + SFC_CONST.vertical_pitch * 2,  // entry + exit transitions
+    ...body,
+    width: Math.max(body.width, (body.centerOffsetX ?? body.width / 2) + SFC_CONST.transition_bar_w + 6 + conditionWidth),
+    height: body.height + SFC_CONST.vertical_pitch * 2,
   };
 }
 
-/** Place a linear body returning the y-coordinate at the bottom (for chaining). */
+/** Connect adjacent node ports without flattening a branch region into a step. */
 function placeBody(
   ctx: LayoutContext,
   ast: SfcAst,
   body: SfcNode[],
   cx: number,
   startY: number
-): { endY: number; firstStepCy?: number; lastStepCy?: number; firstStepId?: string; lastStepId?: string } {
+): PlaceResult {
   let y = startY;
-  let firstCy: number | undefined;
-  let firstId: string | undefined;
-  let lastCy: number | undefined;
-  let lastId: string | undefined;
-  for (let i = 0; i < body.length; i++) {
-    const node = body[i];
-    if (i > 0) y += SFC_CONST.vertical_pitch;  // gap with transition between
+  let first: PlaceResult | undefined;
+  let previous: PlaceResult | undefined;
+  for (const node of body) {
+    if (previous) y += SFC_CONST.vertical_pitch;
     const placed = placeNode(ctx, ast, node, cx, y);
-    if (i === 0) {
-      firstCy = placed.firstCy;
-      if (placed.firstStepId) firstId = placed.firstStepId;
+    if (previous) {
+      ctx.wires.push({ path: `M ${cx} ${previous.exitY} L ${cx} ${placed.entryY}`, cls: "wire" });
+      const fromId = previous.lastStepId;
+      const transition = ast.transitions.find(t => t.from === fromId && t.to === placed.firstStepId);
+      if (transition) {
+        ctx.transitions.push({ transition, cx, cy: (previous.endY + placed.entryY) / 2,
+          w: SFC_CONST.transition_bar_w, ...(transition.id ? { id: transition.id } : {}) });
+      }
     }
-    lastCy = placed.lastCy;
-    if (placed.lastStepId) lastId = placed.lastStepId;
+    first ??= placed;
+    previous = placed;
     y = placed.endY;
   }
-  return { endY: y, firstStepCy: firstCy, lastStepCy: lastCy, firstStepId: firstId, lastStepId: lastId };
+  return { endY: y, entryY: first?.entryY ?? startY, exitY: previous?.exitY ?? startY,
+    firstStepId: first?.firstStepId, lastStepId: previous?.lastStepId };
 }
 
 interface PlaceResult {
   endY: number;
-  firstCy: number;
-  lastCy: number;
+  entryY: number;
+  exitY: number;
   firstStepId?: string;
   lastStepId?: string;
 }
@@ -187,7 +200,7 @@ function placeNode(ctx: LayoutContext, ast: SfcAst, node: SfcNode, cx: number, s
   if (node.kind === "step") {
     const step = ast.steps.get(node.stepId);
     if (!step) {
-      return { endY: startY + SFC_CONST.step_height, firstCy: startY + SFC_CONST.step_height / 2, lastCy: startY + SFC_CONST.step_height / 2 };
+      return { endY: startY + SFC_CONST.step_height, entryY: startY, exitY: startY + SFC_CONST.step_height };
     }
     return placeStep(ctx, step, cx, startY);
   }
@@ -198,7 +211,7 @@ function placeNode(ctx: LayoutContext, ast: SfcAst, node: SfcNode, cx: number, s
 }
 
 function placeStep(ctx: LayoutContext, step: SfcStep, cx: number, y: number): PlaceResult {
-  const w = SFC_CONST.step_width;
+  const w = stepWidth(step);
   const h = SFC_CONST.step_height;
   const x = cx - w / 2;
   const layoutStep: SfcLayoutStep = { step, x, y, width: w, height: h };
@@ -216,7 +229,7 @@ function placeStep(ctx: LayoutContext, step: SfcStep, cx: number, y: number): Pl
       index: idx,
       x: ax,
       y: ay,
-      width: SFC_CONST.action_block_w,
+      width: actionWidth(step),
       height: ah,
       qualifierWidth: SFC_CONST.action_qualifier_w,
     });
@@ -224,9 +237,9 @@ function placeStep(ctx: LayoutContext, step: SfcStep, cx: number, y: number): Pl
   });
 
   return {
-    endY: y + h,
-    firstCy: y + h / 2,
-    lastCy: y + h / 2,
+    endY: y + sizeStepWithActions(step).height,
+    entryY: y,
+    exitY: y + h,
     firstStepId: step.id,
     lastStepId: step.id,
   };
@@ -251,14 +264,13 @@ function placeAlt(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
   // Place each branch
   let bx = leftX;
   let maxBranchEnd = 0;
-  const branchEndIds: { id: string; cx: number }[] = [];
+  const branchEnds: { cx: number; y: number }[] = [];
   for (let bi = 0; bi < node.branches.length; bi++) {
     const br = node.branches[bi];
     const sz = branchSizes[bi];
-    const branchCx = bx + sz.width / 2;
+    const branchCx = bx + (sz.centerOffsetX ?? sz.width / 2);
 
     // Entry transition (between div bar and first step)
-    const entryY = divY + (SFC_CONST.vertical_pitch - SFC_CONST.transition_bar_h) / 2 + SFC_CONST.transition_bar_h;
     const entryT: SfcTransition = {
       id: `_alt${bi}_entry`,
       from: "_div", to: "_div",
@@ -270,7 +282,6 @@ function placeAlt(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
       cy: divY + SFC_CONST.vertical_pitch * 0.5,
       w: SFC_CONST.transition_bar_w,
     });
-    void entryY;
 
     // Place body inside branch
     const bodyStartY = divY + SFC_CONST.vertical_pitch;
@@ -283,18 +294,8 @@ function placeAlt(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
       cy: branchEndY + SFC_CONST.vertical_pitch * 0.5,
       w: SFC_CONST.transition_bar_w,
     });
-    if (placed.lastStepId) branchEndIds.push({ id: placed.lastStepId, cx: branchCx });
-    if (placed.firstStepCy !== undefined) {
-      // wire from div bar to entry transition to first step
-      ctx.wires.push({ path: `M ${branchCx} ${divY} L ${branchCx} ${placed.firstStepCy - SFC_CONST.step_height / 2}`, cls: "wire" });
-    }
-    if (placed.lastStepCy !== undefined) {
-      // wire from last step to exit transition then to conv
-      ctx.wires.push({
-        path: `M ${branchCx} ${placed.lastStepCy + SFC_CONST.step_height / 2} L ${branchCx} ${branchEndY + SFC_CONST.vertical_pitch}`,
-        cls: "wire",
-      });
-    }
+    ctx.wires.push({ path: `M ${branchCx} ${divY} L ${branchCx} ${placed.entryY}`, cls: "wire" });
+    branchEnds.push({ cx: branchCx, y: placed.exitY });
     bx += sz.width + SFC_CONST.branch_x_spacing;
     if (branchEndY + SFC_CONST.vertical_pitch > maxBranchEnd) maxBranchEnd = branchEndY + SFC_CONST.vertical_pitch;
   }
@@ -308,13 +309,10 @@ function placeAlt(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
     y: convY,
   });
 
-  // Wire from main upstream into div bar (handled by parent body chain).
-  // Wire from conv bar onward (handled by body chain).
-  return {
-    endY: convY,
-    firstCy: divY,
-    lastCy: convY,
-  };
+  for (const end of branchEnds) {
+    ctx.wires.push({ path: `M ${end.cx} ${end.y} L ${end.cx} ${convY}`, cls: "wire" });
+  }
+  return { endY: convY, entryY: divY, exitY: convY };
 }
 
 function placeSim(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind: "sim" }>, cx: number, startY: number): PlaceResult {
@@ -342,17 +340,14 @@ function placeSim(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
   // Place each branch
   let bx = leftX;
   let maxBranchEnd = 0;
+  const branchEnds: { cx: number; y: number }[] = [];
   for (let bi = 0; bi < node.branches.length; bi++) {
     const br = node.branches[bi];
     const sz = branchSizes[bi];
-    const branchCx = bx + sz.width / 2;
+    const branchCx = bx + (sz.centerOffsetX ?? sz.width / 2);
     const placed = placeBody(ctx, ast, br.body, branchCx, divY2 + SFC_CONST.vertical_pitch);
-    if (placed.firstStepCy !== undefined) {
-      ctx.wires.push({ path: `M ${branchCx} ${divY2} L ${branchCx} ${placed.firstStepCy - SFC_CONST.step_height / 2}`, cls: "wire" });
-    }
-    if (placed.lastStepCy !== undefined) {
-      ctx.wires.push({ path: `M ${branchCx} ${placed.lastStepCy + SFC_CONST.step_height / 2} L ${branchCx} ${placed.endY + SFC_CONST.vertical_pitch}`, cls: "wire" });
-    }
+    ctx.wires.push({ path: `M ${branchCx} ${divY2} L ${branchCx} ${placed.entryY}`, cls: "wire" });
+    branchEnds.push({ cx: branchCx, y: placed.exitY });
     bx += sz.width + SFC_CONST.branch_x_spacing;
     if (placed.endY + SFC_CONST.vertical_pitch > maxBranchEnd) maxBranchEnd = placed.endY + SFC_CONST.vertical_pitch;
   }
@@ -372,11 +367,13 @@ function placeSim(ctx: LayoutContext, ast: SfcAst, node: Extract<SfcNode, { kind
     w: SFC_CONST.transition_bar_w,
   });
 
-  return {
-    endY: convY2 + SFC_CONST.vertical_pitch,
-    firstCy: sharedTopY,
-    lastCy: convY2,
-  };
+  ctx.wires.push({ path: `M ${cx} ${startY} L ${cx} ${divY1}`, cls: "wire" });
+  for (const end of branchEnds) {
+    ctx.wires.push({ path: `M ${end.cx} ${end.y} L ${end.cx} ${convY1}`, cls: "wire" });
+  }
+  const endY = convY2 + SFC_CONST.vertical_pitch;
+  ctx.wires.push({ path: `M ${cx} ${convY2} L ${cx} ${endY}`, cls: "wire" });
+  return { endY, entryY: startY, exitY: endY };
 }
 
 export function layoutSfc(ast: SfcAst): SfcLayoutResult {
@@ -392,81 +389,59 @@ export function layoutSfc(ast: SfcAst): SfcLayoutResult {
 
   // Estimate total width from sized body
   const totalSize = sizeBody(ast, ast.body);
-  const cx = SFC_CONST.margin_x + totalSize.width / 2;
+  const adjacentPairs = new Set<string>();
+  const visit = (body: SfcNode[]): void => {
+    body.forEach((node, index) => {
+      const previous = body[index - 1];
+      if (node.kind === "step" && previous?.kind === "step") adjacentPairs.add(`${previous.stepId}\0${node.stepId}`);
+      if (node.kind !== "step") node.branches.forEach(branch => visit(branch.body));
+    });
+  };
+  visit(ast.body);
+  const marginTransitions = ast.transitions.filter(t => !adjacentPairs.has(`${t.from}\0${t.to}`));
+  const jumpIdWidth = (t: SfcTransition) => estimateTextWidth(t.id ?? "", 10, { monospace: true });
+  const jumpWidth = (t: SfcTransition) => jumpIdWidth(t) + SFC_CONST.transition_bar_w * 2 +
+    estimateTextWidth(t.condition, 11, { monospace: true }) + 38;
+  const marginLeft = Math.max(SFC_CONST.margin_x, marginTransitions.reduce((width, t) => width + jumpWidth(t), 20));
+  const cx = marginLeft + (totalSize.centerOffsetX ?? totalSize.width / 2);
 
   // Place body
   const startY = SFC_CONST.margin_y;
   const placed = placeBody(ctx, ast, ast.body, cx, startY);
 
-  // Connect adjacent body steps with vertical wires + transition bars from explicit transitions.
-  // Build a quick adjacency table of explicit transitions.
-  const trByPair = new Map<string, SfcTransition>();
-  for (const t of ast.transitions) {
-    trByPair.set(`${t.from}\0${t.to}`, t);
-  }
-
-  // Walk body to extract linear chain (step ids only at the top level).
-  // Add transition bars between adjacent step nodes.
-  const linearStepIds: string[] = collectLinearSteps(ast.body);
-  for (let i = 0; i < linearStepIds.length - 1; i++) {
-    const from = linearStepIds[i];
-    const to = linearStepIds[i + 1];
-    const t = trByPair.get(`${from}\0${to}`);
-    const fromS = ctx.placedById.get(from);
-    const toS = ctx.placedById.get(to);
-    if (!fromS || !toS) continue;
-    const midY = (fromS.cy + SFC_CONST.step_height / 2 + toS.cy - SFC_CONST.step_height / 2) / 2;
-    if (t) {
-      ctx.transitions.push({
-        transition: t,
-        cx: fromS.cx,
-        cy: midY,
-        w: SFC_CONST.transition_bar_w,
-        ...(t.id ? { id: t.id } : {}),
-      });
-    }
-    // Vertical wire (always)
-    ctx.wires.push({
-      path: `M ${fromS.cx} ${fromS.cy + SFC_CONST.step_height / 2} L ${toS.cx} ${toS.cy - SFC_CONST.step_height / 2}`,
-      cls: "wire",
-    });
-    if (t) trByPair.delete(`${from}\0${to}`);
-  }
-
   // Remaining transitions are jumps — draw as margin arrows.
-  let jumpIdx = 0;
-  for (const t of ast.transitions) {
-    if (!trByPair.has(`${t.from}\0${t.to}`)) continue;
+  let jumpX = 12;
+  // Longer returns use outer lanes so shorter nested returns do not cross
+  // their source connectors before reaching their own transition.
+  const jumps = marginTransitions.slice().sort((a, b) => {
+    const span = (t: SfcTransition) => Math.abs((ctx.placedById.get(t.from)?.cy ?? 0) - (ctx.placedById.get(t.to)?.cy ?? 0));
+    return span(b) - span(a);
+  });
+  for (const t of jumps) {
     const fromS = ctx.placedById.get(t.from);
     const toS = ctx.placedById.get(t.to);
     if (!fromS || !toS) continue;
-    const onLeft = jumpIdx % 2 === 0;
-    jumpIdx++;
-    const marginX = onLeft
-      ? SFC_CONST.margin_x - SFC_CONST.jump_margin_x
-      : (placed.endY, totalSize.width + SFC_CONST.margin_x + SFC_CONST.jump_margin_x);
-    const fromX = onLeft
-      ? fromS.cx - SFC_CONST.step_width / 2
-      : fromS.cx + SFC_CONST.step_width / 2;
-    const toX = onLeft
-      ? toS.cx - SFC_CONST.step_width / 2
-      : toS.cx + SFC_CONST.step_width / 2;
+    const marginX = jumpX + jumpIdWidth(t) + SFC_CONST.transition_bar_w;
+    jumpX += jumpWidth(t);
+    const fromX = fromS.cx - stepWidth(fromS.step) / 2;
+    const toX = toS.cx - stepWidth(toS.step) / 2;
     const fromY = fromS.cy;
     const toY = toS.cy;
     const path = `M ${fromX} ${fromY} L ${marginX} ${fromY} L ${marginX} ${toY} L ${toX} ${toY}`;
+    ctx.transitions.push({ transition: t, cx: marginX, cy: (fromY + toY) / 2,
+      w: SFC_CONST.transition_bar_w, ...(t.id ? { id: t.id } : {}) });
     ctx.jumps.push({
       fromStepId: t.from,
       toStepId: t.to,
       path,
-      labelX: marginX + (onLeft ? -8 : 8),
-      labelY: (fromY + toY) / 2,
+      labelX: (marginX + toX) / 2,
+      labelY: toY - 10,
       labelText: t.to,
-      condition: t.condition,
     });
   }
 
   // Compute final width/height
-  const width = totalSize.width + SFC_CONST.margin_x * 2 + SFC_CONST.jump_margin_x * 2 + 80;
+  const width = totalSize.width + marginLeft * 2 + SFC_CONST.jump_margin_x * 2;
   const height = placed.endY + SFC_CONST.margin_y;
 
   return {
@@ -480,16 +455,4 @@ export function layoutSfc(ast: SfcAst): SfcLayoutResult {
     width,
     height,
   };
-}
-
-function collectLinearSteps(body: SfcNode[]): string[] {
-  const out: string[] = [];
-  for (const node of body) {
-    if (node.kind === "step") out.push(node.stepId);
-    // alt/sim represent a single "logical step slot" but we don't include
-    // their internal step ids as part of the linear chain — the chain
-    // continues at the merge_to step which appears as a separate step node
-    // later in body. Branch internals get wired by the placer.
-  }
-  return out;
 }

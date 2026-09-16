@@ -16,9 +16,9 @@
 
 ## 0. Positioning
 
-**Network topology diagrams are the single most-drawn professional diagram that Schematex does not yet have an engine for.** Every network designer, IT infrastructure engineer, sysadmin, MSP, and physical-security (CCTV) integrator draws them — for design proposals, as-built documentation, audit evidence, troubleshooting, and customer hand-off. They are convention-rich (a router does not look like a switch; a fiber link does not look like a copper link; a camera subnet is a recognisable shape) and that is exactly why a *generic* shape tool produces wrong-looking, low-trust output.
+**Schematex renders physical and logical network topology diagrams with its `network` engine.** Every network designer, IT infrastructure engineer, sysadmin, MSP, and physical-security (CCTV) integrator draws them — for design proposals, as-built documentation, audit evidence, troubleshooting, and customer hand-off. They are convention-rich (a router does not look like a switch; a fiber link does not look like a copper link; a camera subnet is a recognisable shape) and that is exactly why a *generic* shape tool produces wrong-looking, low-trust output.
 
-**Why this engine exists — the demand signal.** Real inbound requests Schematex already receives land on the wrong engine today: *"una topología de red para cámaras"* (a network topology for cameras), *"a customizable, editable, and printable network diagram that I can update for different networks"*, enterprise infrastructure diagrams. With no `network` engine these requests fall through to `flowchart` or to raw Mermaid, which produces a **P0 failure: devices and ports get dropped**, link types collapse to identical lines, and the layout ignores the tier structure that makes the diagram readable. At least one such user arrived after hitting a **Microsoft Copilot paywall** whose headline capability is IT-infrastructure network diagrams — i.e. this audience is *already paying* for exactly this.
+**Why this engine exists — the demand signal.** The motivating requests included: *"una topología de red para cámaras"* (a network topology for cameras), *"a customizable, editable, and printable network diagram that I can update for different networks"*, enterprise infrastructure diagrams. These requests need typed device icons and annotated links with topology-aware placement, which the `network` engine provides. At least one such user arrived after hitting a **Microsoft Copilot paywall** whose headline capability is IT-infrastructure network diagrams — i.e. this audience is *already paying* for exactly this.
 
 **The competitor landscape splits three ways.** (1) **Auto-discovery / monitoring tools** — Auvik, SolarWinds Network Topology Mapper, ManageEngine — discover the live network over SNMP/LLDP/CDP and draw it; powerful but heavyweight, subscription-priced, and not authorable by hand or by an LLM. (2) **General diagramming with stencils** — Visio (Cisco stencils), Lucidchart, draw.io / diagrams.net (Cisco shape libraries), yEd, ConceptDraw — give you the Cisco *shapes* but no topology semantics: you hand-place every icon, links are dumb lines, and there is no notion of a tier, a subnet, or a port that the tool will keep consistent. (3) **Code-to-diagram** — `mingrammer/diagrams` (Python, cloud-provider icons), and Mermaid/PlantUML which have **no network diagram type at all**. **There is no free, embeddable, zero-dependency, text-first network topology engine that renders the standard device icons *and* lays out each topology class correctly *and* guarantees device/port/link integrity.** Schematex `network` closes that gap.
 
@@ -49,10 +49,10 @@ Per the project rule (cover the full published vocabulary in v0.1, not a partial
 | Kind (`id`) | Meaning | Icon silhouette (Cisco-convention, redrawn) | v0.1 |
 |------|---------|------------------------------|:----:|
 | `router` | L3 packet forwarding between networks | puck / short cylinder with two curved-in + two curved-out arrows | ✅ |
-| `switch` | L2 frame switching (default switch) | flat box with two pairs of straight opposing arrows | ✅ |
-| `l3switch` / `multilayer` | multilayer (routing) switch | switch box with **circular** arrows | ✅ |
+| `switch` | L2 frame switching (default switch) | rack face with port sockets | ✅ |
+| `l3switch` / `multilayer` | multilayer (routing) switch | rack face with port sockets and routing arrows | ✅ |
 | `firewall` | stateful perimeter / segmentation firewall | **brick wall** rectangle (offset courses) | ✅ |
-| `loadbalancer` / `lb` | traffic distribution | box with fan-out arrows | ✅ |
+| `loadbalancer` | traffic distribution | box with fan-out arrows | ✅ |
 | `ap` / `wifi` | wireless access point | puck with **radio-wave arcs** | ✅ |
 | `wlc` | wireless LAN controller | box with AP glyph + arcs | ✅ |
 | `gateway` | edge / default gateway | router glyph tagged `GW` | ✅ |
@@ -60,8 +60,8 @@ Per the project rule (cover the full published vocabulary in v0.1, not a partial
 | `ids` / `ips` | intrusion detection / prevention | box with shield/eye glyph | ✅ |
 | `proxy` | forward / reverse proxy | box with bidirectional arrow | ✅ |
 | `vpngw` | VPN concentrator / gateway | router glyph with lock | ✅ |
-| `hub` | legacy L1 repeater hub | flat box with concentric arcs | ⬜ deferred (legacy) |
-| `bridge` | L2 bridge | box spanning two segments | ⬜ deferred (legacy) |
+| `hub` | accepted alias for `switch` | same rack-face switch icon | ✅ |
+| `bridge` | accepted alias for `switch` | same rack-face switch icon | ✅ |
 
 ### 2.2 Device catalog — Endpoints / hosts
 
@@ -71,11 +71,10 @@ Per the project rule (cover the full published vocabulary in v0.1, not a partial
 | `serverfarm` / `servers` | a stack/cluster of servers | three offset server boxes (use `count:` for n) | ✅ |
 | `pc` / `workstation` | desktop workstation | monitor + base | ✅ |
 | `laptop` | laptop | clamshell silhouette | ✅ |
-| `mobile` / `phone` | smartphone / tablet | rounded handset rectangle | ✅ |
+| `mobile` / `phone` | smartphone | rounded handset rectangle | ✅ |
 | `ipphone` / `voip` | VoIP desk phone | phone handset on base | ✅ |
 | `printer` | network printer / MFP | printer body with paper tray | ✅ |
-| `storage` / `nas` / `san` | network storage array | disk-stack cylinder / array box | ✅ |
-| `iot` | generic IoT endpoint | small chip/sensor glyph | ⬜ deferred |
+| `storage` | generic storage array | drive-bay enclosure | ✅ |
 
 ### 2.3 Device catalog — CCTV / physical security (ONVIF roles) — **full v0.1**
 
@@ -89,7 +88,6 @@ Per the project rule (cover the full published vocabulary in v0.1, not a partial
 | `poeswitch` | PoE / PoE+ switch (powers cameras) | switch box tagged `PoE` | ✅ |
 | `encoder` / `decoder` | analog↔IP video encoder/decoder | box with ▷ glyph | ✅ |
 | `monitor` / `videowall` | spot monitor / video wall | display rectangle (grid for video wall) | ✅ |
-| `accesscontrol` | door access controller | panel with card-reader glyph | ⬜ deferred |
 | `intercom` | door station / intercom | bell/speaker glyph | ⬜ deferred |
 
 ### 2.4 Device catalog — Networks / clouds (multi-device abstractions)
@@ -101,6 +99,34 @@ Per the project rule (cover the full published vocabulary in v0.1, not a partial
 | `cloud` | generic cloud / provider | cloud, custom label | ✅ |
 | `pstn` | public switched telephone network | cloud labelled "PSTN" with phone glyph | ✅ |
 | `lan` / `segment` | a shared L2 segment (bus backbone) | a horizontal **bus bar** that links attach to | ✅ |
+
+### 2.4.1 Additional physical and virtual devices
+
+Each kind below is accepted by the parser and has its own original line-art icon. `nas` and `san` are independent kinds; neither aliases `storage`. `db` and `dbserver` alias `database`. Use the exact hyphenated names `iot-sensor` and `access-control`.
+
+| Kind | Meaning | Icon silhouette |
+|---|---|---|
+| `database` | Database service | Cylinder with stacked elliptical rims |
+| `hypervisor` | Virtualization host | Server enclosure with overlapping VM panels |
+| `nas` | Network-attached storage | Desktop enclosure with vertical drive bays |
+| `wireless-bridge` | Point-to-point wireless bridge | Pole-mounted panel with radio arcs |
+| `container` | Software container | Ribbed perspective container box |
+| `cellular-router` | Cellular network router | Antenna, routing arrows, signal bars |
+| `satellite-terminal` | Satellite terminal | Dish, feed arm, and stand |
+| `access-control` | Door access controller | Controller panel linked to card reader |
+| `iot-sensor` | IoT sensor | Vented sensor enclosure with radio arc |
+| `display` | Wall display / TV | Wide screen with bezel |
+| `san` | Storage area network | Connected rack arrays with drive bays |
+| `olt` | Optical line terminal | Rack chassis with optical ports and fan-out glyph |
+| `ont` | Optical network terminal | Small enclosure with optical and Ethernet ports |
+| `pbx` | Private telephone exchange | Rack box with handset glyph and ports |
+| `tablet` | Tablet computer | Portrait screen with camera and home mark |
+| `plc` | Programmable logic controller | DIN-rail controller and I/O modules |
+| `ups` | Uninterruptible power supply | Tower with battery and lightning glyph |
+| `hmi` | Industrial human-machine interface | Touch panel with controls and process trace |
+| `media-converter` | Fiber media converter | Ethernet and optical ports with conversion arrows |
+| `pos-terminal` | Point-of-sale terminal | Screen, keypad, and card |
+| `patch-panel` | Passive patch panel | Rack strip with port sockets |
 
 ### 2.5 Boundaries / grouping containers
 
@@ -383,57 +409,29 @@ Mirrors the project-wide "Made for AI" pillar — and the P0 we are fixing is *f
 
 ## 5. Layout Rules
 
-Deterministic — no randomness in the default placers, so golden-string e2e tests are stable. (`mesh` uses a *seeded*, fixed-iteration force pass so it is also deterministic.) Eight `layout:` modes:
+The current implementation is deterministic. The engine owns placement, caption sides and routing; generated DSL does not need coordinates or waypoints. The authoritative dimensions are `NET_CONST` and measured icon/text footprints in `src/diagrams/network/layout.ts`.
 
-### 5.1 Coordinate model
+### 5.1 Placement
 
-```
-Constants (px):
-  DEVICE_W            = 64     default device icon box width
-  DEVICE_H            = 48     default device icon box height
-  CLOUD_W / CLOUD_H   = 110/64 cloud abstraction size
-  TIER_BAND_GAP       = 96     vertical gap between tier bands (tiered)
-  SIBLING_GAP         = 40     gap between siblings within a band/row
-  RING_RADIUS_MIN     = 120    minimum ring/star radius
-  STAR_HUB_GAP        = 110    hub-to-spoke distance (star)
-  SPINE_LEAF_GAP      = 130    spine-row to leaf-row gap
-  LABEL_GAP           = 6      icon-to-label gap
-  LINK_LABEL_OFFSET   = 8      annotation perpendicular offset from link
-  GROUP_PAD           = 18     boundary padding around child union
-  GROUP_LABEL_INSET   = 12     boundary label inset from top-left corner
-  PORT_LABEL_GAP      = 4      port label offset from endpoint
-  ARROW_LEN           = 8      directed-link arrowhead
-```
+- `tiered`: use explicit edge/core/distribution/access tiers and infer unranked neighbors. `tree`: breadth-first ranks from a cloud or highest-degree device. Both use the local band placer, measured captions, group lanes and neighbor alignment; they do not call the Flowchart layout kernel.
+- `star`: highest-degree hub and radial spokes. `ring`: peel leaves to identify the cycle core, order it by connectivity and place attached branches outward. `mesh`: deterministic circular placement; no force solver currently runs.
+- `bus`: device row placement; no synthetic bus is created by the placer.
+- `spine-leaf`: declared spine and leaf bands with auto-mesh links. Other devices are ranked from their connections and placed with the same measured row packing. Every link uses the shared router. Connecting to both tiers does not imply secondary traffic, reduced emphasis or a mandatory perimeter path. All declared links remain rendered.
+- `manual`: existing `at: x,y` positions remain supported. They are not part of the minimal LLM generation profile.
 
-### 5.2 The eight layout modes
+### 5.2 Captions and groups
 
-1. **`tiered`** (default for enterprise/CCTV) — devices banded by `tier:` in fixed rows **edge → core → distribution → access** (top→bottom for `direction: tb`, left→right for `lr`). Within a band, barycenter ordering minimises crossings (reused from flowchart). Devices with no `tier:` are placed by graph distance from the edge band. This is SLD voltage-banding applied to network tiers. Endpoints/cameras hang one band below their access switch.
-2. **`tree`** — pure hierarchical Sugiyama (flowchart kernel) from the root device(s); for arbitrary hierarchies without explicit tiers.
-3. **`star`** — one hub (the highest-degree node, or the explicit center) at the centroid; spokes on an even-angle circle at `STAR_HUB_GAP`. (sociogram circle placer.)
-4. **`ring`** — all nodes on a circle (`RING_RADIUS_MIN`+), links following the ring; non-ring links chord across. (sociogram circle placer.)
-5. **`bus`** — a horizontal **backbone bar** (`lan`/`segment` device, or a synthetic spine); every attached device drops a short vertical stub to the bar. (The classic bus topology; matches the server-farm bus in the Driscoll figure.)
-6. **`mesh`** — seeded Fruchterman-Reingold (sociogram force kernel, fixed iteration count) for full/partial mesh fabrics where no hierarchy applies.
-7. **`spine-leaf`** — two rows: `spines:` on the top row, `leaves:` on the bottom row, **every leaf auto-linked to every spine** (the Clos fabric); host attachments hang below their leaf.
-8. **`manual`** — explicit `at: x,y` per device (escape hatch; bypasses auto-placement, links still routed).
+Device captions wrap by measured text width (120 SVG units at 12px), with IP/model sublabels included in their footprint. Intermediate TB devices may put captions to the right to leave vertical connector channels clear; leaves and LR devices normally use captions below. Cloud labels wrap independently and their bodies grow to fit those measured lines.
 
-### 5.3 Node rendering
+Non-VLAN groups participate in band placement, and their boundaries contain measured member geometry. Nested groups are inflated inside-out. VLAN membership gets a badge at each member rather than an enclosing rectangle spanning unrelated branches or sites. Arbitrary overlapping logical regions are not fully solved.
 
-1. Each device kind → its icon from `src/diagrams/network/symbols.ts` (own `SymbolDef`, per the EE-ICON-ROADMAP "no central Icon interface" rule). `camera` switches silhouette on `type:`; `serverfarm`/`count:` draws a stacked glyph.
-2. Cloud kinds (`internet`/`wan`/`pstn`/`cloud`) render the cloud outline at `CLOUD_W×CLOUD_H` with the label inside.
-3. `lan`/`segment` renders as a bus bar, not a box.
-4. Label: device `id`/string placed `LABEL_GAP` below the icon (above in `lr`); `model:`/`ip:` as a smaller sub-label when present.
+### 5.3 Routing
 
-### 5.4 Link routing
+All modes prefer an unobstructed straight connection. Where a caption obstructs that connection, the engine tries short terminal escapes with a diagonal middle segment, then uses the existing Logic orthogonal router when an obstacle requires a detour. Device/caption/header obstacles are hard constraints; wire crossings and proximity are soft costs in Network, so a high-degree device cannot be sealed off by previously drawn links. Cross-tier spine-leaf attachments use individual exterior tracks when those tracks are clear. This is a local heuristic, not a crossing-free or globally optimal guarantee.
 
-1. Links attach to icon boundaries (nearest face), not centres. Orthogonal routing (flowchart router) for `tiered`/`tree`/`bus`; straight chords for `star`/`ring`/`mesh`/`spine-leaf`.
-2. **Appearance by type**: copper = solid; fiber = fiber-colour + slash ticks; wireless/vpn = dashed (+ lock for vpn); serial = zigzag tick; lag = double/thick; poe = solid + `⚡PoE` tag.
-3. **Single-VLAN colouring**: a link carrying exactly one VLAN id is tinted with that VLAN's colour (deterministic palette index by id, **skipping the reserved alarm-red** so a VLAN link never reads as a fault/zone border); multi-VLAN trunks stay neutral with a `VLAN 10,20` tag.
-4. **Annotations**: port labels at each endpoint (`PORT_LABEL_GAP`); mode/vlan/speed/free-label centred mid-link, `LINK_LABEL_OFFSET` perpendicular.
-5. Directed links (`->`) get an arrowhead; `--` is undirected.
+Link type controls appearance; labels, fiber marks, port annotations and LAG double paths follow actual route geometry. The SVG extends wires beneath opaque icon artwork so they meet the painted silhouette. Device and caption obstacles govern external routes. Labels may sit on their own link using the text halo, while avoiding other links. Boundary constraints keep label searches local instead of relocating annotations to a distant corner. Route bounds are normalized before adding the title band. Dense layouts still need visual review.
 
-### 5.5 Boundary geometry
-
-Reuses C4's dashed-boundary approach (§30): a boundary's rectangle is the union of its children's boxes inflated by `GROUP_PAD`; the label sits at the top-left inset by `GROUP_LABEL_INSET`. Physical boundaries (site/rack) draw a solid rounded border; logical overlays (subnet/vlan/zone/dmz) draw a dashed tinted region. Nested boundaries inflate recursively (inner first). A device in **two** logical overlays (e.g. a subnet *and* a VLAN) is handled by drawing the subnet as the box boundary and the VLAN as a coloured halo/tag (overlapping arbitrary regions is deferred — §11).
+See `docs/issues/26-ecomap-network-visual-layout-audit.md` for retained changes, rejected experiments and current visual limitations.
 
 ---
 
@@ -453,9 +451,9 @@ Add to `src/core/theme.ts`, alongside `FlowchartTokens` / `TimelineTokens`:
 
 ```ts
 export interface NetworkTokens {
-  deviceFill: string;        // icon body fill (the "Cisco blue" in default)
+  deviceFill: string;        // pale icon body fill
   deviceStroke: string;      // icon outline
-  deviceAccent: string;      // arrows/glyph inside the icon (lighter device tone)
+  deviceAccent: string;      // ports/arrows inside the icon
   cloudFill: string;         // cloud abstraction interior
   cloudStroke: string;
   label: string;             // device id/name
@@ -485,13 +483,13 @@ export interface NetworkTokens {
 
 ### 6.3 Per-theme values
 
-**`default`** — house blue with a device "Cisco-blue" body, derived from existing tokens where possible (no gratuitous new hex):
+**`default`** — pale device faces, slate outlines and blue port/routing details. This is original Schematex line art, not the Cisco stencil artwork:
 
 | Token | Value | Rationale |
 |-------|-------|-----------|
-| `deviceFill` | `#1d6fb8` (house "network blue") | reads as the conventional Cisco-blue device |
-| `deviceStroke` | `#0f3a5f` | darker outline |
-| `deviceAccent` | `#bfe0f7` | light arrows/glyph inside the icon |
+| `deviceFill` | `#f8fafc` | pale device face |
+| `deviceStroke` | `#334155` | slate outline |
+| `deviceAccent` | `#256b8a` | ports and routing details |
 | `cloudFill` | `#ffffff` (`fill`) | clean cloud |
 | `cloudStroke` | `#334155` (`stroke`) | |
 | `label` | `#0f172a` (`text`) | |
@@ -537,9 +535,9 @@ export interface NetworkTokens {
 
 | Token | Value |
 |-------|-------|
-| `deviceFill` | `#6d8fff` (Schematex slate/blue blue) |
-| `deviceStroke` | `#0f172a` |
-| `deviceAccent` | `#0f172a` |
+| `deviceFill` | `#172033` |
+| `deviceStroke` | `#cbd5e1` |
+| `deviceAccent` | `#7dd3fc` |
 | `cloudFill` / `cloudStroke` | `#172033` / `#f8fafc` |
 | `label` / `subLabel` | `#f8fafc` / `#cbd5e1` |
 | `linkCopper` | `#f8fafc` |
@@ -560,20 +558,13 @@ export interface NetworkTokens {
 
 ### 6.5 House-style rule (one sentence to remember)
 
-**Device bodies in house "network blue" (Cisco-convention), clouds neutral; link *type* carried by colour in `default` (fiber-orange, PoE-green, accent-dashed wireless/vpn) and by *line-style/tag* in `monochrome`; logical overlays dashed-tinted, physical containers solid; VLANs draw from `BaseTheme.palette`.** This keeps network in the `c4`/`flowchart`/`pert` coloured-house family, never the forced-mono industrial family.
+**Device bodies use pale line art with ports and distinct role glyphs, clouds neutral; link *type* carried by colour in `default` (fiber-orange, PoE-green, accent-dashed wireless/vpn) and by *line-style/tag* in `monochrome`; logical overlays dashed-tinted, physical containers solid; VLANs draw from `BaseTheme.palette`.** This keeps network in the `c4`/`flowchart`/`pert` coloured-house family, never the forced-mono industrial family.
 
 ---
 
 ## 7. Legend
 
-By the auto-derive rules (`LEGEND-SYSTEM.md`): universal device silhouettes (router/switch/firewall icons are self-explanatory and labelled) are **not** listed. The legend auto-derives entries **only** for encodings actually used and non-obvious:
-
-- link types present (fiber / wireless / serial / PoE / VPN / LAG) — each with its line sample;
-- per-VLAN colour swatches — when single-VLAN colouring is in play;
-- boundary types present (subnet / VLAN / security zone / DMZ);
-- the validation-warning marker — when any soft warning fired (trunk endpoint, SPOF hint).
-
-DSL controls follow the shared system: `legend: on/off/<position>`, `legend.title:`, `legend.label <key>:`, etc. Default position `bottom-inline`.
+The network engine does not currently render a legend. The parser accepts `legend:` but ignores its value. Device labels and link annotations carry the displayed meaning; automatic link-type, VLAN, boundary, and warning keys are not implemented.
 
 ---
 
@@ -670,7 +661,7 @@ network
 
 ## 10. Deviations From the Standard
 
-- **Original icon art, not Cisco's.** Cisco's icons are the de-facto standard but are licensed for use **only unaltered**, and the hard "hand-write everything / zero-dependency" constraint forbids shipping foreign asset files anyway. Schematex therefore draws its **own original line-art** that follows the *conventional silhouettes* (router = puck with curved arrows, L2 switch = box with straight arrows, firewall = brick wall, cloud = Internet/WAN). The silhouettes are functional conventions, not Cisco's specific artwork. Tools that ship the actual Cisco EPS/Visio stencils (Lucidchart, draw.io) take a different, asset-licensed path; Schematex's path is the legally-clean and dependency-free one.
+- **Original icon art, not Cisco's.** Cisco's icons are the de-facto standard but are licensed for use **only unaltered**, and the hard "hand-write everything / zero-dependency" constraint forbids shipping foreign asset files anyway. Schematex therefore draws its **own original line-art** that follows the *conventional silhouettes* (router = puck with curved arrows, L2 switch = rack face with ports, firewall = brick wall, cloud = Internet/WAN). The silhouettes are functional conventions, not Cisco's specific artwork. Tools that ship the actual Cisco EPS/Visio stencils (Lucidchart, draw.io) take a different, asset-licensed path; Schematex's path is the legally-clean and dependency-free one.
 - **No single formal standard exists.** Unlike IEEE 315 (circuits) or ISA-5.1 (P&ID), there is no ISO/IEC/IEEE drawing standard for network topology. Schematex composes its baseline from the de-facto sources (Cisco icons, the hierarchical/spine-leaf models, TIA-606-D colour, ONVIF roles) and says so plainly rather than pretending to a standard that doesn't exist.
 - **Logical and physical in one model.** Real practice often splits "physical" (cabling/racks) from "logical" (IP/VLAN) network diagrams. Schematex v0.1 represents both in one DSL via boundary kinds (site/rack are physical, subnet/vlan/zone are logical overlays) rather than two diagram types; a dedicated `view: physical|logical` toggle that hides one layer is deferred (§11).
 - **Topology classes are layout *modes*, not separate engines.** star/ring/bus/mesh/tree/tiered/spine-leaf are `layout:` directives over one device/link model, not seven diagram types — so a hybrid (a tree of stars, the most common real topology) is expressible by nesting groups under `tiered`/`tree`.
@@ -687,7 +678,7 @@ Each has a slot in §2 so adding it is additive — no DSL or type breakage:
 - **Rack-elevation diagrams** — the front-of-rack U-height view (a different, dedicated layout); related but distinct from topology.
 - **L3 path / reachability computation** — compute and highlight the route between two hosts across the topology (the network analogue of `pert` scheduling / `petri` firing). High-value, non-trivial; a later differentiator.
 - **SPOF / redundancy analysis** — articulation-point and bridge detection surfaced as resilience warnings.
-- **Legacy + niche device icons** — hub, bridge, ATM/Frame-Relay switch, access-control panel, intercom, IoT sensor (added on real demand per the EE-ICON-ROADMAP rule).
+- **Legacy + niche device icons** — dedicated hub/bridge silhouettes (both names currently alias `switch`), ATM/Frame-Relay switch, intercom.
 - **Arbitrary overlapping logical regions** — a device in many overlapping subnets/VLANs/zones drawn as true overlapping translucent regions (Euler-style) rather than the v0.1 box-plus-halo approximation.
 - **Routing protocol annotation** (`proto: ospf|bgp|eigrp`) and per-link metrics/cost labels.
 - **Cloud-provider icon packs** (AWS/Azure/GCP) — the `mingrammer/diagrams` niche; out of scope until there is clear demand, and would follow the same original-art rule as the Cisco silhouettes.

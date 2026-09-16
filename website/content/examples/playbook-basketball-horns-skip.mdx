@@ -1,0 +1,45 @@
+---
+title: Horns pick-and-roll — skip to the corner
+description: "A Horns ball screen against man-to-man: the screener rolls, the other big pops, and when the corner defender tags the roller the ball-handler skips it to the open corner shooter."
+diagram: playbook
+standard: FIBA/NBA half-court markings · coaching legend
+industry: [coaching, basketball]
+persona: For a coach teaching the tag-and-skip read
+complexity: 3
+tags: [basketball, horns, pick-and-roll, skip-pass, man-to-man, defense]
+featured: false
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  # Scenario: a Horns pick-and-roll with the skip pass. 5 screens for 1 and rolls to the rim while 4 pops to the left slot; when 2's defender leaves the corner to tag the roller, 1 skips the ball to 2 for an open corner three.
+  playbook "Horns Pick-and-Roll: Skip to the Corner" sport basketball
+  set horns
+  defense man
+  screen 5 1
+  dribble 1 to rwing
+  cut 5 rim
+  cut 4 lslot
+  cut X2 lblock
+  pass 1 2
+---
+
+## Scenario
+
+From the Horns set — 1 at the top, 4 and 5 at the elbows, 2 and 3 in the corners — against man-to-man defense. 5 steps up and screens for 1, then rolls to the rim while 4 pops to the left slot. 1 dribbles off the screen to the right wing. When X2 leaves the corner to stop the roller, 1 throws the skip pass to 2 for an open corner three.
+
+## Annotation key
+
+- `sport basketball` — half-court surface and basketball line conventions
+- `set horns` — places the five offensive players in the Horns alignment
+- `defense man` — adds a defender (X1–X5) guarding each player
+- `screen 5 1` — 5 sets a screen for 1, drawn as a line ending in a T-bar
+- `dribble 1 to rwing` — a dribble to a court landmark (right wing), drawn as a wavy line
+- `cut 5 rim`, `cut 4 lslot` — player movement without the ball, drawn as a solid line
+- `cut X2 lblock` — a defender's movement, here X2 sliding to the left block
+- `pass 1 2` — a pass, drawn as a dashed line
+
+## How to read
+
+Follow the actions in order: the screen, the dribble, the roll and pop, then the defender's rotation, and finally the pass. In basketball diagrams a solid line is a player moving and a dashed line is the ball — the opposite of soccer diagrams — and the legend says so. The key moment is X2's move toward the lane: it leaves 2 alone in the corner, which is why the pass goes there.

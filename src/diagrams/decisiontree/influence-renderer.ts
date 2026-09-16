@@ -28,17 +28,18 @@ import type { InfluenceAST, InfluenceLayoutArc, InfluenceLayoutNode } from "./ty
 
 function buildCss(t: BaseTheme): string {
   return `
-.lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
-.lt-dtree-title { font: 500 16px sans-serif; fill: ${t.text}; }
-.lt-dtree-decision { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 1.6; }
-.lt-dtree-chance { fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; }
-.lt-dtree-value { fill: #dcfce7; stroke: #15803d; stroke-width: 1.6; }
-.lt-dtree-node-label { font: 500 12px sans-serif; fill: ${t.text}; text-anchor: middle; dominant-baseline: middle; }
-.lt-dtree-value-util { font: 600 10px "SF Mono", monospace; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-dtree { font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.lt-dtree-title { font-size: 20px; font-weight: 500; fill: ${t.text}; }
+.lt-dtree-decision { fill: ${t.fillMuted}; stroke: ${t.stroke}; stroke-width: 1.6; }
+.lt-dtree-chance { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.6; }
+.lt-dtree-value { fill: ${t.stroke}; stroke: ${t.stroke}; stroke-width: 1.6; }
+.lt-dtree-node-label { font-size: 12px; font-weight: 500; fill: ${t.text}; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-value-label { fill: ${t.bg}; }
+.lt-dtree-value-util { font-size: 10px; font-weight: 600; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-dtree-arc { fill: none; stroke: ${t.stroke}; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .lt-dtree-arc-information { fill: none; stroke: ${t.stroke}; stroke-width: 1.6; stroke-dasharray: 5 4; stroke-linecap: round; }
 .lt-dtree-arc-head { fill: ${t.stroke}; stroke: none; }
-.lt-dtree-arc-label { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-arc-label { font-size: 10px; font-weight: 500; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: middle; }
 .lt-dtree-arc-label-bg { fill: ${t.bg}; stroke: none; }
 `.trim();
 }
@@ -58,6 +59,7 @@ function renderNode(ln: InfluenceLayoutNode): string {
     parts.push(el("ellipse", {
       cx: ln.x, cy: ln.y, rx: hw, ry: hh, class: "lt-dtree-chance",
     }));
+    if (n.deterministic) parts.push(el("ellipse", {cx:ln.x,cy:ln.y,rx:hw-4,ry:hh-4,class:"lt-dtree-chance"}));
   } else {
     // value node — octagon (Howard & Matheson convention: cut-corner box)
     const ix = Math.min(14, ln.width * 0.2);
@@ -77,9 +79,9 @@ function renderNode(ln: InfluenceLayoutNode): string {
 
   const hasUtil = n.kind === "value" && n.utility !== undefined;
   const labelY = hasUtil ? ln.y - 6 : ln.y;
-  parts.push(textEl({ x: ln.x, y: labelY, class: "lt-dtree-node-label" }, n.label));
+  parts.push(textEl({ x: ln.x, y: labelY, class: n.kind === "value" ? "lt-dtree-node-label lt-dtree-value-label" : "lt-dtree-node-label" }, n.label));
   if (hasUtil) {
-    parts.push(textEl({ x: ln.x, y: ln.y + 11, class: "lt-dtree-value-util" }, `U=${formatNum(n.utility!)}`));
+    parts.push(textEl({ x: ln.x, y: ln.y + 11, class: "lt-dtree-value-util lt-dtree-value-label" }, `U=${formatNum(n.utility!)}`));
   }
 
   return group({
@@ -131,10 +133,11 @@ function round(n: number): number {
 }
 
 export function renderInfluence(ast: InfluenceAST, config?: RenderConfig): string {
-  const t = resolveBaseTheme(config?.theme ?? "default");
+  const base = resolveBaseTheme(config?.theme ?? "default");
+  const t = !config?.theme || config.theme === "default" ? {...base,text:"#1F2933",stroke:"#3E4C59",textMuted:"#52606D",fillMuted:"#DDE5ED"} : base;
   const layout = layoutInfluence(ast);
 
-  const titleOffset = ast.title ? 36 : 10;
+  const titleOffset = ast.title ? 52 : 10;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
 
@@ -146,7 +149,7 @@ export function renderInfluence(ast: InfluenceAST, config?: RenderConfig): strin
   children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
-    children.push(textEl({ x: 20, y: 24, class: "lt-dtree-title" }, ast.title));
+    children.push(textEl({ x: 36, y: 32, class: "lt-dtree-title" }, ast.title));
   }
 
   const inner: string[] = [];

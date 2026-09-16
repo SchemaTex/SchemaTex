@@ -1,0 +1,13 @@
+# Assumptions: rupture results from excessive stress or a critical wall defect; third-party impact is independent.
+# The model represents a single buried high-pressure transmission pipeline segment.
+faulttree "Pipeline rupture"
+  analysis: cutsets, probability
+  prob: exact
+  top TOP "Full-bore pipeline rupture" = OR(EXCESSIVE_STRESS, CRITICAL_WALL_DEFECT, THIRD_PARTY_IMPACT)
+  gate EXCESSIVE_STRESS "Stress exceeds pipe capacity" = AND(OVERPRESSURE, MATERIAL_WEAKNESS)
+  gate CRITICAL_WALL_DEFECT "Critical defect present" = OR(CORROSION_PENETRATION, WELD_DEFECT)
+  basic OVERPRESSURE "Pressure-control failure causes overpressure" p: 0.002
+  basic MATERIAL_WEAKNESS "Low toughness pipe material" p: 0.001
+  basic CORROSION_PENETRATION "External corrosion penetrates wall" p: 0.003
+  basic WELD_DEFECT "Undetected girth-weld defect" p: 0.0008
+  basic THIRD_PARTY_IMPACT "Excavator strikes pipeline" p: 0.0015

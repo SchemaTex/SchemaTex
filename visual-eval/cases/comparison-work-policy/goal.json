@@ -1,0 +1,78 @@
+{
+  "id": "comparison-work-policy",
+  "type": "comparison",
+  "variant": "matrix",
+  "title": "Remote-first versus office-first policy",
+  "goal": "A public agency can compare policy trade-offs before hybrid-work planning.",
+  "rubric": [
+    {
+      "id": "structure",
+      "severity": "blocker",
+      "must": "Remote-first and Office-first appear as parallel option columns."
+    },
+    {
+      "id": "core-content",
+      "severity": "blocker",
+      "must": "Commute, collaboration, hiring, and workspace-cost rows are visibly compared."
+    },
+    {
+      "id": "detail-one",
+      "severity": "major",
+      "must": "Partial and yes/no distinctions are visually visible."
+    },
+    {
+      "id": "detail-two",
+      "severity": "major",
+      "must": "The comparison grid is readable."
+    },
+    {
+      "id": "legibility",
+      "severity": "minor",
+      "must": "The policy title is visible."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the comparison/matrix exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows the policy title, parallel Remote-first and Office-first columns, and all four requested comparison rows. Text values and yes/partial/no symbols are visible and readable, with no material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:04:50.238Z",
+      "targetHash": "1584d0a6e36b",
+      "sourceHash": "49777e9fc0f7",
+      "exemplarHash": "2d3ee2a53d3e",
+      "items": [
+        {
+          "id": "structure",
+          "verdict": "pass",
+          "evidence": "Remote-first and Office-first appear as parallel option columns."
+        },
+        {
+          "id": "core-content",
+          "verdict": "pass",
+          "evidence": "Commute burden, informal collaboration, geographic hiring, and workspace cost are all compared."
+        },
+        {
+          "id": "detail-one",
+          "verdict": "pass",
+          "evidence": "Informal collaboration is marked partial for Remote-first and yes for Office-first; hiring is marked yes and no, respectively. The legend identifies each symbol."
+        },
+        {
+          "id": "detail-two",
+          "verdict": "pass",
+          "evidence": "The comparison grid and its labels and values are readable."
+        },
+        {
+          "id": "legibility",
+          "verdict": "pass",
+          "evidence": "The title “Remote-first versus office-first policy” is visible."
+        }
+      ]
+    }
+  }
+}

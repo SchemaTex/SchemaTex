@@ -1,0 +1,19 @@
+# Scenario: ISO 23601 office escape plan with primary and alternative routes.
+evacuation "Office Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office "Open Office" at 0,0 size 7x5
+room corridor "Corridor" below office size 7x2
+room stairE "East Stair" right-of corridor size 3x2
+room stairW "West Stair" left-of corridor size 3x2
+opening between office corridor at 50% width 1.2
+door between corridor stairE at 50% width 1.1
+door between corridor stairW at 50% width 1.1
+here in office at 3.5,2.5 "YOU ARE HERE"
+exit-final east in stairE at 2.8,1 side east "EXIT"
+exit-final west in stairW at 0.2,1 side west "EXIT"
+extinguisher f1 in corridor at 0.5,1 class "ABC"
+assembly muster outside at 9,8 "ASSEMBLY POINT"
+route primary here -> office -> corridor -> stairE -> east
+route secondary here -> office -> corridor -> stairW -> west
+legend auto

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="420.2" height="737" viewBox="0 0 420.2 737"><title>Batch Counter Packaging</title>
+<desc>PLC ladder logic diagram with 6 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="210.1" y="20" class="lt-ladder-title" text-anchor="middle">Batch Counter Packaging</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="707" class="lt-ladder-rail"/>
+<line x1="390.2" y1="0" x2="390.2" y2="707" class="lt-ladder-rail"/>
+<text x="54" y="132" class="lt-ladder-rung-num">Rung 000</text>
+<text x="70" y="80" class="lt-ladder-comment">— Count product photoeye pulses —</text>
+<text x="54" y="223" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="187" class="lt-ladder-comment">— Divert full package at preset —</text>
+<text x="54" y="323" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="287" class="lt-ladder-comment">— Full package lamp —</text>
+<text x="54" y="423" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="387" class="lt-ladder-comment">— Inhibit conveyor while diverting —</text>
+<text x="54" y="523" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="487" class="lt-ladder-comment">— Reset counter after discharge —</text>
+<text x="54" y="623" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="587" class="lt-ladder-comment">— Reset full indication —</text>
+<path d="M 60 129 L 93.5 129" class="lt-ladder-wire"/>
+<path d="M 125.5 129 L 191.75 129" class="lt-ladder-wire"/>
+<path d="M 223.75 129 L 278.2 129" class="lt-ladder-wire"/>
+<path d="M 60 220 L 111.8 220" class="lt-ladder-wire"/>
+<path d="M 143.8 220 L 213.1 220" class="lt-ladder-wire"/>
+<path d="M 60 320 L 111.8 320" class="lt-ladder-wire"/>
+<path d="M 143.8 320 L 222.25 320" class="lt-ladder-wire"/>
+<path d="M 60 420 L 111.8 420" class="lt-ladder-wire"/>
+<path d="M 143.8 420 L 213.1 420" class="lt-ladder-wire"/>
+<path d="M 60 520 L 84.35 520" class="lt-ladder-wire"/>
+<path d="M 116.35 520 L 164.29999999999998 520" class="lt-ladder-wire"/>
+<path d="M 196.29999999999998 520 L 265.59999999999997 520" class="lt-ladder-wire"/>
+<path d="M 60 620 L 84.35 620" class="lt-ladder-wire"/>
+<path d="M 116.35 620 L 164.29999999999998 620" class="lt-ladder-wire"/>
+<path d="M 196.29999999999998 620 L 262.54999999999995 620" class="lt-ladder-wire"/>
+<path d="M 358.2 129 L 390.2 129" class="lt-ladder-wire"/>
+<path d="M 245.1 220 L 390.2 220" class="lt-ladder-wire"/>
+<path d="M 254.25 320 L 390.2 320" class="lt-ladder-wire"/>
+<path d="M 245.1 420 L 390.2 420" class="lt-ladder-wire"/>
+<path d="M 297.59999999999997 520 L 390.2 520" class="lt-ladder-wire"/>
+<path d="M 294.54999999999995 620 L 390.2 620" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="PackageRun"><line x1="93.5" y1="129" x2="97.5" y2="129" class="lt-ladder-wire"/>
+<line x1="121.5" y1="129" x2="125.5" y2="129" class="lt-ladder-wire"/>
+<line x1="97.5" y1="117" x2="97.5" y2="141" class="lt-ladder-element"/>
+<line x1="121.5" y1="117" x2="121.5" y2="141" class="lt-ladder-element"/>
+<text x="109.5" y="113" class="lt-ladder-tag">PackageRun</text></g>
+<g data-element="contact" data-tag="ProductPhotoeye"><line x1="191.75" y1="129" x2="195.75" y2="129" class="lt-ladder-wire"/>
+<line x1="219.75" y1="129" x2="223.75" y2="129" class="lt-ladder-wire"/>
+<line x1="195.75" y1="117" x2="195.75" y2="141" class="lt-ladder-element"/>
+<line x1="219.75" y1="117" x2="219.75" y2="141" class="lt-ladder-element"/>
+<text x="207.75" y="132" class="lt-ladder-symbol-label">↑</text>
+<text x="207.75" y="113" class="lt-ladder-tag">ProductPhotoeye</text></g>
+<g data-element="function_block" data-tag="PackageCounter"><rect x="278.2" y="101" width="80" height="56" class="lt-ladder-fb"/>
+<text x="318.2" y="115" class="lt-ladder-fb-name">CTU</text>
+<line x1="272.2" y1="129" x2="278.2" y2="129" class="lt-ladder-wire"/>
+<line x1="358.2" y1="129" x2="364.2" y2="129" class="lt-ladder-wire"/>
+<text x="282.2" y="129" class="lt-ladder-pin">PV=12</text>
+<text x="318.2" y="97" class="lt-ladder-tag">PackageCounter</text></g>
+<g data-element="contact" data-tag="PackageCounter.Q"><line x1="111.8" y1="220" x2="115.8" y2="220" class="lt-ladder-wire"/>
+<line x1="139.8" y1="220" x2="143.8" y2="220" class="lt-ladder-wire"/>
+<line x1="115.8" y1="208" x2="115.8" y2="232" class="lt-ladder-element"/>
+<line x1="139.8" y1="208" x2="139.8" y2="232" class="lt-ladder-element"/>
+<text x="127.8" y="204" class="lt-ladder-tag">PackageCounter.Q</text></g>
+<g data-element="coil" data-tag="DivertGate"><path d="M 219.1 208 A 10 12 0 0 0 219.1 232" class="lt-ladder-coil"/>
+<path d="M 239.1 208 A 10 12 0 0 1 239.1 232" class="lt-ladder-coil"/>
+<line x1="213.1" y1="220" x2="219.1" y2="220" class="lt-ladder-wire"/>
+<line x1="239.1" y1="220" x2="245.1" y2="220" class="lt-ladder-wire"/>
+<text x="229.1" y="204" class="lt-ladder-tag">DivertGate</text></g>
+<g data-element="contact" data-tag="PackageCounter.Q"><line x1="111.8" y1="320" x2="115.8" y2="320" class="lt-ladder-wire"/>
+<line x1="139.8" y1="320" x2="143.8" y2="320" class="lt-ladder-wire"/>
+<line x1="115.8" y1="308" x2="115.8" y2="332" class="lt-ladder-element"/>
+<line x1="139.8" y1="308" x2="139.8" y2="332" class="lt-ladder-element"/>
+<text x="127.8" y="304" class="lt-ladder-tag">PackageCounter.Q</text></g>
+<g data-element="coil" data-tag="BatchFullLamp"><path d="M 228.25 308 A 10 12 0 0 0 228.25 332" class="lt-ladder-coil"/>
+<path d="M 248.25 308 A 10 12 0 0 1 248.25 332" class="lt-ladder-coil"/>
+<line x1="222.25" y1="320" x2="228.25" y2="320" class="lt-ladder-wire"/>
+<line x1="248.25" y1="320" x2="254.25" y2="320" class="lt-ladder-wire"/>
+<text x="238.25" y="304" class="lt-ladder-tag">BatchFullLamp</text></g>
+<g data-element="contact" data-tag="PackageCounter.Q"><line x1="111.8" y1="420" x2="115.8" y2="420" class="lt-ladder-wire"/>
+<line x1="139.8" y1="420" x2="143.8" y2="420" class="lt-ladder-wire"/>
+<line x1="115.8" y1="408" x2="115.8" y2="432" class="lt-ladder-element"/>
+<line x1="139.8" y1="408" x2="139.8" y2="432" class="lt-ladder-element"/>
+<line x1="117.8" y1="430" x2="137.8" y2="410" class="lt-ladder-element"/>
+<text x="127.8" y="404" class="lt-ladder-tag">PackageCounter.Q</text></g>
+<g data-element="coil" data-tag="PackageRun"><path d="M 219.1 408 A 10 12 0 0 0 219.1 432" class="lt-ladder-coil"/>
+<path d="M 239.1 408 A 10 12 0 0 1 239.1 432" class="lt-ladder-coil"/>
+<line x1="213.1" y1="420" x2="219.1" y2="420" class="lt-ladder-wire"/>
+<line x1="239.1" y1="420" x2="245.1" y2="420" class="lt-ladder-wire"/>
+<text x="229.1" y="404" class="lt-ladder-tag">PackageRun</text></g>
+<g data-element="contact" data-tag="ResetPB"><line x1="84.35" y1="520" x2="88.35" y2="520" class="lt-ladder-wire"/>
+<line x1="112.35" y1="520" x2="116.35" y2="520" class="lt-ladder-wire"/>
+<line x1="88.35" y1="508" x2="88.35" y2="532" class="lt-ladder-element"/>
+<line x1="112.35" y1="508" x2="112.35" y2="532" class="lt-ladder-element"/>
+<text x="100.35" y="504" class="lt-ladder-tag">ResetPB</text></g>
+<g data-element="contact" data-tag="PackageClear"><line x1="164.29999999999998" y1="520" x2="168.29999999999998" y2="520" class="lt-ladder-wire"/>
+<line x1="192.29999999999998" y1="520" x2="196.29999999999998" y2="520" class="lt-ladder-wire"/>
+<line x1="168.29999999999998" y1="508" x2="168.29999999999998" y2="532" class="lt-ladder-element"/>
+<line x1="192.29999999999998" y1="508" x2="192.29999999999998" y2="532" class="lt-ladder-element"/>
+<text x="180.29999999999998" y="504" class="lt-ladder-tag">PackageClear</text></g>
+<g data-element="coil" data-tag="PackageCounter"><path d="M 271.59999999999997 508 A 10 12 0 0 0 271.59999999999997 532" class="lt-ladder-coil"/>
+<path d="M 291.59999999999997 508 A 10 12 0 0 1 291.59999999999997 532" class="lt-ladder-coil"/>
+<line x1="265.59999999999997" y1="520" x2="271.59999999999997" y2="520" class="lt-ladder-wire"/>
+<line x1="291.59999999999997" y1="520" x2="297.59999999999997" y2="520" class="lt-ladder-wire"/>
+<text x="281.59999999999997" y="523" class="lt-ladder-symbol-label">R</text>
+<text x="281.59999999999997" y="504" class="lt-ladder-tag">PackageCounter</text></g>
+<g data-element="contact" data-tag="ResetPB"><line x1="84.35" y1="620" x2="88.35" y2="620" class="lt-ladder-wire"/>
+<line x1="112.35" y1="620" x2="116.35" y2="620" class="lt-ladder-wire"/>
+<line x1="88.35" y1="608" x2="88.35" y2="632" class="lt-ladder-element"/>
+<line x1="112.35" y1="608" x2="112.35" y2="632" class="lt-ladder-element"/>
+<text x="100.35" y="604" class="lt-ladder-tag">ResetPB</text></g>
+<g data-element="contact" data-tag="PackageClear"><line x1="164.29999999999998" y1="620" x2="168.29999999999998" y2="620" class="lt-ladder-wire"/>
+<line x1="192.29999999999998" y1="620" x2="196.29999999999998" y2="620" class="lt-ladder-wire"/>
+<line x1="168.29999999999998" y1="608" x2="168.29999999999998" y2="632" class="lt-ladder-element"/>
+<line x1="192.29999999999998" y1="608" x2="192.29999999999998" y2="632" class="lt-ladder-element"/>
+<text x="180.29999999999998" y="604" class="lt-ladder-tag">PackageClear</text></g>
+<g data-element="coil" data-tag="ResetAccepted"><path d="M 268.54999999999995 608 A 10 12 0 0 0 268.54999999999995 632" class="lt-ladder-coil"/>
+<path d="M 288.54999999999995 608 A 10 12 0 0 1 288.54999999999995 632" class="lt-ladder-coil"/>
+<line x1="262.54999999999995" y1="620" x2="268.54999999999995" y2="620" class="lt-ladder-wire"/>
+<line x1="288.54999999999995" y1="620" x2="294.54999999999995" y2="620" class="lt-ladder-wire"/>
+<text x="278.54999999999995" y="604" class="lt-ladder-tag">ResetAccepted</text></g></g></svg>

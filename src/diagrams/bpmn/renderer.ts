@@ -1,11 +1,14 @@
 /**
  * BPMN renderer — BpmnLayoutResult → SVG.
  *
- * Z-order: pools → lanes → flows → objects → labels.
+ * Z-order: pools → lanes → flows → objects → source adornments.
  * Defs include arrowhead markers (filled-triangle for sequence,
- * open-triangle for message) and the small source-end glyphs
- * (conditional diamond, default slash, message-start circle).
+ * open-triangle for message). Source-end glyphs are painted separately
+ * so opaque flow objects cannot hide them.
  */
+
+import { TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import {
   defs,
   desc,
@@ -55,18 +58,20 @@ export function renderBpmnLayout(
 
   out.push(buildDefs(t));
 
+  const vertical = ast.direction === "TB";
+
   // Pools
-  for (const pl of layout.pools) out.push(renderPool(pl, t));
+  for (const pl of layout.pools) out.push(renderPool(pl, t, vertical));
 
   // Lanes
   for (const lan of layout.lanes) {
     out.push(
       group({ class: "schematex-bpmn-lane" }, [
         rect({
-          x: lan.x + lan.labelHeight,
-          y: lan.y,
-          width: lan.width - lan.labelHeight,
-          height: lan.height,
+          x: lan.x + (vertical ? 0 : lan.labelHeight),
+          y: lan.y + (vertical ? lan.labelHeight : 0),
+          width: lan.width - (vertical ? 0 : lan.labelHeight),
+          height: lan.height - (vertical ? lan.labelHeight : 0),
           fill: t.laneFill,
           stroke: t.bpmnStroke,
           "stroke-width": 1,
@@ -74,17 +79,17 @@ export function renderBpmnLayout(
         rect({
           x: lan.x,
           y: lan.y,
-          width: lan.labelHeight,
-          height: lan.height,
+          width: vertical ? lan.width : lan.labelHeight,
+          height: vertical ? lan.labelHeight : lan.height,
           fill: t.labelBandFill,
           stroke: t.bpmnStroke,
           "stroke-width": 1,
         }),
         text(
           {
-            x: lan.x + lan.labelHeight / 2,
-            y: lan.y + lan.height / 2,
-            transform: `rotate(-90 ${lan.x + lan.labelHeight / 2} ${lan.y + lan.height / 2})`,
+            x: lan.x + (vertical ? lan.width : lan.labelHeight) / 2,
+            y: lan.y + (vertical ? lan.labelHeight : lan.height) / 2,
+            transform: vertical ? undefined : `rotate(-90 ${lan.x + lan.labelHeight / 2} ${lan.y + lan.height / 2})`,
             "text-anchor": "middle",
             "dominant-baseline": "middle",
             "font-family": FONT_FAMILY,
@@ -103,11 +108,26 @@ export function renderBpmnLayout(
   // Objects
   for (const ol of layout.objects) out.push(renderObject(ol, t));
 
+  // Source adornments must remain whole where a flow joins its source object.
+  const gatewayIds = new Set(ast.gateways.map((gateway) => gateway.id));
+  out.push(group({ class: "schematex-bpmn-source-markers" },
+    layout.flows.map((flow) => renderSourceMarker(flow, gatewayIds))));
+
+  const titleHeight = ast.title ? TITLE.bandH : 0;
+  const body = group({ transform: `translate(0, ${titleHeight})` }, out.splice(3));
+  out.push(body);
+  if (ast.title) {
+    const resolved = resolveSceneTitle(ast.title, undefined, width / 2, TITLE.y, config);
+    out.push(text({ x: resolved.x, y: resolved.y, ...resolved.attrs,
+      "text-anchor": "middle", "font-family": config?.fontFamily ?? FONT_FAMILY,
+      "font-size": TITLE.size, "font-weight": TITLE.weight, fill: t.bpmnText }, ast.title));
+  }
+
   return svgRoot(
     {
       width,
-      height,
-      viewBox: `0 0 ${width} ${height}`,
+      height: height + titleHeight,
+      viewBox: `0 0 ${width} ${height + titleHeight}`,
       class: "schematex-bpmn",
     },
     out
@@ -118,6 +138,15 @@ export function renderBpmnLayout(
 
 function buildDefs(t: BpmnTheme): string {
   return defs([
+    el("style", {}, `
+.schematex-bpmn .bpmn-service-gear,
+.schematex-bpmn .bpmn-service-hub { fill: ${t.taskFill}; stroke: ${t.bpmnStroke}; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-ring { fill: none; stroke: ${t.gatewayGlyph}; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-pentagon { fill: none; stroke: ${t.gatewayGlyph}; stroke-width: 1.2; }
+.schematex-bpmn .bpmn-flow-conditional { fill: ${t.poolFill}; stroke: ${t.flowStroke}; stroke-width: 1; }
+.schematex-bpmn .bpmn-flow-default { fill: none; stroke: ${t.flowStroke}; stroke-width: 1.5; }
+.schematex-bpmn .bpmn-msg-start { fill: ${t.poolFill}; stroke: ${t.msgFlowStroke}; stroke-width: 0.84; }
+`),
     // Sequence flow — filled triangle.
     el(
       "marker",
@@ -158,67 +187,15 @@ function buildDefs(t: BpmnTheme): string {
         }),
       ]
     ),
-    // Message source dot.
-    el(
-      "marker",
-      {
-        id: "bpmn-msg-start",
-        viewBox: "0 0 10 10",
-        refX: 5,
-        refY: 5,
-        markerWidth: 6,
-        markerHeight: 6,
-        orient: "auto",
-      },
-      [
-        el("circle", { cx: 5, cy: 5, r: 3, fill: t.poolFill, stroke: t.msgFlowStroke }),
-      ]
-    ),
   ]);
 }
 
 // ─── Pool ──────────────────────────────────────────────────────
 
-function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
-  const labelCx = pl.labelX + pl.labelWidth / 2;
-  const labelCy = pl.labelY + pl.height / 2;
-  if (pl.pool.blackbox) {
-    return group({ class: "schematex-bpmn-pool blackbox" }, [
-      rect({
-        x: pl.x,
-        y: pl.y,
-        width: pl.width,
-        height: pl.height,
-        fill: t.poolFill,
-        stroke: t.bpmnStroke,
-        "stroke-width": 1.5,
-      }),
-      rect({
-        x: pl.x,
-        y: pl.y,
-        width: pl.labelWidth,
-        height: pl.height,
-        fill: t.labelBandFill,
-        stroke: t.bpmnStroke,
-        "stroke-width": 1,
-      }),
-      text(
-        {
-          x: labelCx,
-          y: labelCy,
-          transform: `rotate(-90 ${labelCx} ${labelCy})`,
-          "text-anchor": "middle",
-          "dominant-baseline": "middle",
-          "font-family": FONT_FAMILY,
-          "font-size": 13,
-          "font-weight": "bold",
-          fill: t.bpmnText,
-        },
-        pl.pool.label
-      ),
-    ]);
-  }
-  return group({ class: "schematex-bpmn-pool" }, [
+function renderPool(pl: BpmnLayoutPool, t: BpmnTheme, vertical: boolean): string {
+  const labelCx = pl.labelX + (vertical ? pl.width : pl.labelWidth) / 2;
+  const labelCy = pl.labelY + (vertical ? pl.labelWidth : pl.height) / 2;
+  return group({ class: `schematex-bpmn-pool${pl.pool.blackbox ? " blackbox" : ""}` }, [
     rect({
       x: pl.x,
       y: pl.y,
@@ -231,8 +208,8 @@ function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
     rect({
       x: pl.x,
       y: pl.y,
-      width: pl.labelWidth,
-      height: pl.height,
+      width: vertical ? pl.width : pl.labelWidth,
+      height: vertical ? pl.labelWidth : pl.height,
       fill: t.labelBandFill,
       stroke: t.bpmnStroke,
       "stroke-width": 1,
@@ -241,7 +218,7 @@ function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
       {
         x: labelCx,
         y: labelCy,
-        transform: `rotate(-90 ${labelCx} ${labelCy})`,
+        transform: vertical ? undefined : `rotate(-90 ${labelCx} ${labelCy})`,
         "text-anchor": "middle",
         "dominant-baseline": "middle",
         "font-family": FONT_FAMILY,
@@ -264,6 +241,7 @@ function renderObject(ol: BpmnLayoutObject, t: BpmnTheme): string {
 }
 
 function renderActivity(ol: BpmnLayoutObject, t: BpmnTheme): string {
+  // renderObject dispatches here only for objects with an activity marker.
   const a = ol.obj as BpmnActivity;
   const isSubproc = a.kind === "subprocess-collapsed";
   const cx = ol.x + ol.width / 2;
@@ -337,16 +315,23 @@ function taskMarker(x: number, y: number, marker: string, t: BpmnTheme): string 
     ]);
   }
   if (marker === "service") {
-    // Two overlapping gears (simplified).
-    return el("g", { class: "marker-service" }, [
-      el("circle", { cx, cy, r: 4, fill: "none", stroke: t.bpmnStroke, "stroke-width": 1 }),
-      el("circle", { cx, cy, r: 1.5, fill: t.bpmnStroke }),
-      el("path", {
-        d: `M ${cx} ${cy - 6} L ${cx} ${cy - 4} M ${cx} ${cy + 4} L ${cx} ${cy + 6} M ${cx - 6} ${cy} L ${cx - 4} ${cy} M ${cx + 4} ${cy} L ${cx + 6} ${cy}`,
-        stroke: t.bpmnStroke,
-        "stroke-width": 1,
-      }),
-    ]);
+    // The accepted emblem: two eight-tooth gears, large above-left of small.
+    // Bake geometry into the top-left slot; never scale the 1px strokes.
+    const gears: string[] = [];
+    const geometry: [number, number, number][] = [[x + 6, y + 6, 5.7], [x + 13.6, y + 12.84, 4.18]];
+    for (const [gx, gy, radius] of geometry) {
+      const points: string[] = [];
+      for (let k = 0; k < 48; k++) {
+        const angle = k * Math.PI / 24;
+        const toothRadius = radius * (k % 6 >= 1 && k % 6 <= 3 ? 1 : 0.76);
+        points.push(`${gx + toothRadius * Math.cos(angle)},${gy + toothRadius * Math.sin(angle)}`);
+      }
+      gears.push(
+        el("polygon", { points: points.join(" "), class: "bpmn-service-gear" }),
+        el("circle", { cx: gx, cy: gy, r: radius * 0.3, class: "bpmn-service-hub" }),
+      );
+    }
+    return group({ class: "marker-service" }, gears);
   }
   if (marker === "send") {
     return el("g", { class: "marker-send" }, [
@@ -390,6 +375,7 @@ function taskMarker(x: number, y: number, marker: string, t: BpmnTheme): string 
 }
 
 function renderGateway(ol: BpmnLayoutObject, t: BpmnTheme): string {
+  // renderObject dispatches here only for objects with gatewayKind.
   const g = ol.obj as BpmnGateway;
   const cx = ol.x + ol.width / 2;
   const cy = ol.y + ol.height / 2;
@@ -429,17 +415,10 @@ function renderGateway(ol: BpmnLayoutObject, t: BpmnTheme): string {
       })
     );
   } else if (g.gatewayKind === "event") {
-    // Pentagon inscribed in circle.
-    inner.push(
-      el("circle", {
-        cx,
-        cy,
-        r: r * 0.55,
-        fill: "none",
-        stroke: t.gatewayGlyph,
-        "stroke-width": 1,
-      })
-    );
+    // Ordinary event-based gateway: double circle enclosing a pentagon.
+    for (const radius of [r * 0.55, r * 0.55 - 2.75]) {
+      inner.push(el("circle", { cx, cy, r: radius, class: "bpmn-event-gateway-ring" }));
+    }
     const pr = r * 0.32;
     const pts: string[] = [];
     for (let k = 0; k < 5; k++) {
@@ -449,9 +428,7 @@ function renderGateway(ol: BpmnLayoutObject, t: BpmnTheme): string {
     inner.push(
       el("polygon", {
         points: pts.join(" "),
-        fill: "none",
-        stroke: t.gatewayGlyph,
-        "stroke-width": 1.2,
+        class: "bpmn-event-gateway-pentagon",
       })
     );
   }
@@ -482,6 +459,7 @@ function renderGateway(ol: BpmnLayoutObject, t: BpmnTheme): string {
 }
 
 function renderEvent(ol: BpmnLayoutObject, t: BpmnTheme): string {
+  // renderObject excludes both activity and gateway discriminants first.
   const e = ol.obj as BpmnEvent;
   const cx = ol.x + ol.width / 2;
   const cy = ol.y + ol.height / 2;
@@ -597,7 +575,6 @@ function renderFlow(fl: BpmnLayoutFlow, t: BpmnTheme): string {
   const f = fl.flow;
   const isMessage = f.kind === "message";
   const dasharray = isMessage ? "6 4" : undefined;
-  const markerStart = isMessage ? "url(#bpmn-msg-start)" : undefined;
   const markerEnd = isMessage ? "url(#bpmn-arrow-msg)" : "url(#bpmn-arrow-seq)";
   const children: string[] = [
     path({
@@ -606,37 +583,9 @@ function renderFlow(fl: BpmnLayoutFlow, t: BpmnTheme): string {
       stroke: isMessage ? t.msgFlowStroke : t.flowStroke,
       "stroke-width": 1.4,
       "stroke-dasharray": dasharray,
-      "marker-start": markerStart,
       "marker-end": markerEnd,
     }),
   ];
-  // Conditional flow: small diamond at source.
-  if (f.kind === "conditional") {
-    const head = parseStart(fl.path);
-    if (head) {
-      children.push(
-        el("polygon", {
-          points: diamondPoints(head.x, head.y, 5),
-          fill: t.poolFill,
-          stroke: t.flowStroke,
-          "stroke-width": 1,
-        })
-      );
-    }
-  }
-  // Default flow: small slash at source.
-  if (f.kind === "default") {
-    const head = parseStart(fl.path);
-    if (head) {
-      children.push(
-        el("path", {
-          d: `M ${head.x - 4} ${head.y + 4} L ${head.x + 4} ${head.y - 4}`,
-          stroke: t.flowStroke,
-          "stroke-width": 1.5,
-        })
-      );
-    }
-  }
   // Edge label.
   if (f.label && fl.labelAnchor) {
     children.push(
@@ -656,14 +605,34 @@ function renderFlow(fl: BpmnLayoutFlow, t: BpmnTheme): string {
   return group({ class: `schematex-bpmn-flow kind-${f.kind}` }, children);
 }
 
-function parseStart(d: string): { x: number; y: number } | null {
-  const m = d.match(/^M\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/);
-  if (!m) return null;
-  return { x: parseFloat(m[1]!), y: parseFloat(m[2]!) };
-}
-
-function diamondPoints(cx: number, cy: number, r: number): string {
-  return `${cx - r},${cy} ${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r}`;
+function renderSourceMarker(fl: BpmnLayoutFlow, gatewayIds: ReadonlySet<string>): string {
+  const kind = fl.flow.kind;
+  if (kind === "sequence" || (kind === "conditional" && gatewayIds.has(fl.flow.from))) return "";
+  // Layout emits M/L polylines. Skip duplicate vertices when finding direction.
+  const points = [...fl.path.matchAll(/[ML]\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g)]
+    .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+  const head = points[0];
+  if (!head) return "";
+  if (kind === "message") {
+    // Preserve the old marker's effective radius/stroke (6/10 × flow width 1.4).
+    return el("circle", { cx: head.x, cy: head.y, r: 2.52, class: "bpmn-msg-start" });
+  }
+  const next = points.find((point) => point.x !== head.x || point.y !== head.y);
+  if (!next) return "";
+  const length = Math.hypot(next.x - head.x, next.y - head.y);
+  const dx = (next.x - head.x) / length;
+  const dy = (next.y - head.y) / length;
+  const point = (along: number, across: number): string =>
+    `${head.x + along * dx - across * dy},${head.y + along * dy + across * dx}`;
+  if (kind === "conditional") {
+    // Elongated hollow diamond, with its first tip touching the activity edge.
+    return el("polygon", {
+      points: [point(0, 0), point(5, -3.5), point(10, 0), point(5, 3.5)].join(" "),
+      class: "bpmn-flow-conditional",
+    });
+  }
+  // Full slash a short distance beyond the source, across the first segment.
+  return path({ d: `M ${point(4, 4)} L ${point(12, -4)}`, class: "bpmn-flow-default" });
 }
 
 // Re-export const for tests.

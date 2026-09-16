@@ -1,0 +1,96 @@
+{
+  "id": "pid-heat-exchanger",
+  "type": "pid",
+  "title": "Shell-and-tube heat exchanger",
+  "goal": "A process engineer can trace the separate hot and cold circuits through E-101 and read the outlet temperature-control loop and maintenance connections.",
+  "rubric": [
+    {
+      "id": "exchanger-central-and-labelled",
+      "severity": "blocker",
+      "must": "A shell-and-tube exchanger labelled E-101 is the visible centre of the drawing."
+    },
+    {
+      "id": "two-independent-circuits",
+      "severity": "blocker",
+      "must": "Hot glycol and cooling-water process paths are visibly separate circuits through different exchanger connections."
+    },
+    {
+      "id": "hot-outlet-control-loop",
+      "severity": "major",
+      "must": "TT-101, TIC-101 and TV-101 form a readable temperature-control loop associated with the hot outlet."
+    },
+    {
+      "id": "isolation-valves-visible",
+      "severity": "major",
+      "must": "Both circuits show labelled inlet and outlet isolation valves."
+    },
+    {
+      "id": "vent-and-drain-visible",
+      "severity": "major",
+      "must": "A high-point vent and low-point drain are visibly connected to the exchanger."
+    },
+    {
+      "id": "signals-distinct-from-pipe",
+      "severity": "minor",
+      "must": "The temperature-control signal lines are visually distinct from process piping."
+    },
+    {
+      "id": "no-ambiguous-crossing",
+      "severity": "minor",
+      "must": "Where the hot and cold circuits cross or approach, the picture does not imply they are connected."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the pid exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram clearly labels the central shell-and-tube exchanger E-101. Hot glycol and cooling-water paths use separate exchanger connections; both have labelled inlet and outlet isolation valves. TT-101 is associated with the hot outlet, and the dashed signal path connects it to TIC-101 and TV-101. The vent and drain are visibly connected to the exchanger’s tube-side connections. No ambiguous hot/cold pipe crossing or material overlap is visible.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:30:17.862Z",
+      "targetHash": "f600133772a7",
+      "sourceHash": "f775b58cd178",
+      "exemplarHash": "c45c24f8cc63",
+      "items": [
+        {
+          "id": "exchanger-central-and-labelled",
+          "verdict": "pass",
+          "evidence": "E-101, labelled “Shell-and-Tube Exchanger,” is prominently centered."
+        },
+        {
+          "id": "two-independent-circuits",
+          "verdict": "pass",
+          "evidence": "Hot glycol enters the exchanger at the upper left and exits along the lower-right route; cooling water enters on the lower left and returns from the exchanger along the middle-right route. The paths attach to distinct exchanger connections."
+        },
+        {
+          "id": "hot-outlet-control-loop",
+          "verdict": "pass",
+          "evidence": "TT-101 is shown on the hot outlet line, with a dashed signal to TIC-101 and a distinct dashed command route toward the fail-open TV-101."
+        },
+        {
+          "id": "isolation-valves-visible",
+          "verdict": "pass",
+          "evidence": "XV-101 and XV-102 are labelled on the hot circuit; XV-201 and XV-202 are labelled on the cooling-water circuit."
+        },
+        {
+          "id": "vent-and-drain-visible",
+          "verdict": "pass",
+          "evidence": "XV-301 High-point Vent branches from the exchanger’s upper tube-side connection; XV-302 Low-point Drain branches from the lower tube-side connection."
+        },
+        {
+          "id": "signals-distinct-from-pipe",
+          "verdict": "pass",
+          "evidence": "The temperature signal and control routes are dashed, while process piping is shown as solid lines."
+        },
+        {
+          "id": "no-ambiguous-crossing",
+          "verdict": "pass",
+          "evidence": "The hot and cold process lines remain visually distinct; no crossing suggests a connection between the circuits."
+        }
+      ]
+    }
+  }
+}

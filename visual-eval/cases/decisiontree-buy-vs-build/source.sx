@@ -1,0 +1,14 @@
+%% Context: Engineering product decision tree balancing capability, cost, and delivery time.
+decisiontree "Buy vs Build Decision"
+
+q "Does a product meet critical requirements?"
+  yes: q "Can vendor pass security and compliance review?"
+    yes: q "Is total cost within the approved budget?"
+      yes: a "Buy and integrate"
+      no: a "Negotiate or seek another vendor"
+    no: a "Build internally or use a compliant platform"
+  no: q "Can the team build a safe MVP before the deadline?"
+    yes: q "Is long-term ownership capacity funded?"
+      yes: a "Build in-house"
+      no: a "Reduce scope or use a managed service"
+    no: a "Buy adjacent capability and defer custom features"

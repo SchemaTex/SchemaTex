@@ -1,0 +1,77 @@
+{
+  "id": "petri-manufacturing-cell",
+  "type": "petri",
+  "title": "Manufacturing Cell Shared Robot",
+  "goal": "A practitioner can visually assess the Manufacturing Cell Shared Robot scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "bipartite-net",
+      "severity": "blocker",
+      "must": "Places are circles and transitions are bars or rectangles, with arrows only between the two node kinds."
+    },
+    {
+      "id": "initial-marking",
+      "severity": "blocker",
+      "must": "Initial tokens are visibly shown in the resource or state places needed to start the process."
+    },
+    {
+      "id": "enabled-sequence",
+      "severity": "major",
+      "must": "The picture visibly supports the stated process progression through its marked places and transitions."
+    },
+    {
+      "id": "domain-control",
+      "severity": "major",
+      "must": "The net visibly expresses the scenario's buffer, shared resource, semaphore, cycle, or workflow choice control."
+    },
+    {
+      "id": "marking-legibility",
+      "severity": "minor",
+      "must": "Tokens, labels, and arrows remain readable as a one-page Petri net."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the petri exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The diagram shows the shared robot and machine resources, the processing sequence, and visible initial tokens. Places are circles, transitions are bars, and arrows connect only places to transitions. Labels and connections are readable without material overlap or cropping.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:28:55.457Z",
+      "targetHash": "f0c17f440e63",
+      "sourceHash": "4a04a5f7e641",
+      "exemplarHash": "ee1a8c675b71",
+      "items": [
+        {
+          "id": "bipartite-net",
+          "verdict": "pass",
+          "evidence": "Places are circles and Load, StartMachine, and Unload are bars; all visible arrows run between circles and bars."
+        },
+        {
+          "id": "initial-marking",
+          "verdict": "pass",
+          "evidence": "RobotFree and MachineFree each show an initial token, and RawPart also shows a token to start the process."
+        },
+        {
+          "id": "enabled-sequence",
+          "verdict": "pass",
+          "evidence": "The marked RawPart and RobotFree places feed Load; Load leads to Loaded and returns the robot token; Loaded leads through StartMachine and Machining to Unload, which leads to Finished."
+        },
+        {
+          "id": "domain-control",
+          "verdict": "pass",
+          "evidence": "RobotFree is consumed and restored by both Load and Unload, visibly expressing shared exclusive robot use; MachineFree gates Load and is restored by Unload."
+        },
+        {
+          "id": "marking-legibility",
+          "verdict": "pass",
+          "evidence": "Place and transition labels, tokens, and arrowheads are readable, and the diagram fits on the page without material overlap or cropping."
+        }
+      ]
+    }
+  }
+}

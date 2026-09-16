@@ -1,0 +1,41 @@
+{
+  "id": "logic-2to4-decoder",
+  "type": "logic",
+  "variant": "ansi",
+  "title": "Enabled 2-to-4 decoder",
+  "goal": "Show the four active-high minterms selected by an enable and two select inputs.",
+  "rubric": [
+    {
+      "id": "enable-on-all-outputs",
+      "severity": "blocker",
+      "must": "The E input visibly fans out to logic feeding all four outputs."
+    },
+    {
+      "id": "correct-minterms",
+      "severity": "blocker",
+      "must": "Y0, Y1, Y2, and Y3 visibly correspond respectively to E·S1bar·S0bar, E·S1bar·S0, E·S1·S0bar, and E·S1·S0."
+    },
+    {
+      "id": "select-inverters",
+      "severity": "major",
+      "must": "Visible inverter gates create complemented S1 and S0 signals."
+    },
+    {
+      "id": "four-labelled-outputs",
+      "severity": "major",
+      "must": "Four distinct outputs labelled Y0 through Y3 appear."
+    },
+    {
+      "id": "readable-fanout",
+      "severity": "minor",
+      "must": "Branches of the enable and select signals are visually unambiguous."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Gate-level enabled 2-to-4 decoder in ANSI/IEEE Std 91 distinctive-shape symbols. Enable E and select lines S1 and S0 enter as labelled stubs on the left. Two inverters produce the complements nS1 and nS0. E is qualified by S1 and by nS1 in a pair of AND gates, giving the half-decode nets e0 and e1, and each of those is combined with S0 or nS0 in a final AND to give one of the four active-high outputs Y0 to Y3. The S0 and nS0 literals run as vertical rails tapped twice each; all wires are orthogonal, filled dots mark junctions and plain crossings mark wires that pass without connecting. Drawn in the idiom of the logic exemplar: ANSI/IEEE Std 91 distinctive shapes on one body box so the columns line up, ink-only palette with paper-filled gate bodies so a wire passing behind a gate is visibly interrupted, the gate type carried by the outline rather than printed under it, and the label slot spent on net names instead. Row pitch, channel x and canvas size are solved from browser-measured text widths, and the drawing was checked label-against-label, label-against-wire, label-against-canvas-edge and wire-against-every-unattached-gate before it was written: 0 collisions, and no wire crosses a gate body."
+  }
+}

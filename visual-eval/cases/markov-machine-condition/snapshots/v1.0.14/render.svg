@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Markov chain" width="415.84776310850236" height="415.84776310850236" viewBox="0 0 415.84776310850236 415.84776310850236" data-diagram-type="markov"><title>Markov chain</title>
+<desc>4 states, 9 transitions. Classification: 4 recurrent, 0 transient, 0 absorbing. Stationary π: { Good=0.596, Worn=0.239, Faulty=0.066, Repair=0.099 }. Unrecognized line 3: &quot;markov &quot;Machine condition by week&quot;&quot;</desc>
+<style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
+.sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
+.sx-markov-state-absorbing { stroke: #2563eb; }
+.sx-markov-state-label { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-markov-state-sublabel { font: 10px sans-serif; fill: #475569; }
+.sx-markov-pi { font: 600 10px sans-serif; fill: #2563eb; }
+.sx-markov-arc { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-arc-self { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
+.sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-markov-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4"/></marker></defs>
+<g><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Good" data-to="Good" data-prob="0.85"><path class="sx-markov-arc-self" d="M 189.92 90.5 C 171.92 60.5 243.92 60.5 225.92 90.5" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="51" text-anchor="middle">0.85</text></g>
+<g class="sx-markov-arc-g" data-from="Good" data-to="Worn" data-prob="0.12"><path class="sx-markov-arc" d="M 224.93 140.71 C 235.17 155.58 260.27 180.68 275.14 190.91" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="245.4005409571382" y="173.44722215136417" text-anchor="middle">0.12</text></g>
+<g class="sx-markov-arc-g" data-from="Good" data-to="Faulty" data-prob="0.03"><path class="sx-markov-arc" d="M 204.04 145.75 C 199.98 176.84 199.98 239.01 204.04 270.1" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="195.92388155425118" y="210.92388155425118" text-anchor="middle">0.03</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Worn" data-to="Worn" data-prob="0.7"><path class="sx-markov-arc-self" d="M 325.35 189.92 C 355.35 171.92 355.35 243.92 325.35 225.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="367.84776310850236" y="210.92388155425118" text-anchor="middle">0.7</text></g>
+<g class="sx-markov-arc-g" data-from="Worn" data-to="Faulty" data-prob="0.2"><path class="sx-markov-arc" d="M 282.84 232.64 C 272.6 247.5 247.5 272.6 232.64 282.84" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="262.3711037056153" y="265.3711037056153" text-anchor="middle">0.2</text></g>
+<g class="sx-markov-arc-g" data-from="Worn" data-to="Repair" data-prob="0.1"><path class="sx-markov-arc" d="M 270.1 211.81 C 239.01 215.87 176.84 215.87 145.75 211.81" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="222.92388155425118" text-anchor="middle">0.1</text></g>
+<g class="sx-markov-arc-g" data-from="Faulty" data-to="Repair" data-prob="1"><path class="sx-markov-arc" d="M 183.21 282.84 C 168.34 272.6 143.24 247.5 133.01 232.64" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="153.476659402887" y="265.3711037056153" text-anchor="middle">1</text></g>
+<g class="sx-markov-arc-g" data-from="Repair" data-to="Good" data-prob="0.9"><path class="sx-markov-arc" d="M 140.71 190.91 C 155.58 180.68 180.68 155.58 190.91 140.71" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="170.44722215136417" y="173.44722215136417" text-anchor="middle">0.9</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Repair" data-to="Repair" data-prob="0.1"><path class="sx-markov-arc-self" d="M 90.5 225.92 C 60.5 243.92 60.5 171.92 90.5 189.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="48" y="210.92388155425118" text-anchor="middle">0.1</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="Good" data-class="recurrent" data-pi="0.596"><circle class="sx-markov-state" cx="207.92388155425118" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="207.92388155425118" y="120" text-anchor="middle">Good</text>
+<text class="sx-markov-pi" x="207.92388155425118" y="160" text-anchor="middle">π=0.596</text></g>
+<g class="sx-markov-state-g" data-id="Worn" data-class="recurrent" data-pi="0.239"><circle class="sx-markov-state" cx="299.84776310850236" cy="207.92388155425118" r="30"/>
+<text class="sx-markov-state-label" x="299.84776310850236" y="211.92388155425118" text-anchor="middle">Worn</text>
+<text class="sx-markov-pi" x="299.84776310850236" y="251.92388155425118" text-anchor="middle">π=0.239</text></g>
+<g class="sx-markov-state-g" data-id="Faulty" data-class="recurrent" data-pi="0.066"><circle class="sx-markov-state" cx="207.92388155425118" cy="299.84776310850236" r="30"/>
+<text class="sx-markov-state-label" x="207.92388155425118" y="303.84776310850236" text-anchor="middle">Faulty</text>
+<text class="sx-markov-pi" x="207.92388155425118" y="343.84776310850236" text-anchor="middle">π=0.066</text></g>
+<g class="sx-markov-state-g" data-id="Repair" data-class="recurrent" data-pi="0.099"><circle class="sx-markov-state" cx="116" cy="207.92388155425118" r="30"/>
+<text class="sx-markov-state-label" x="116" y="211.92388155425118" text-anchor="middle">Under repair</text>
+<text class="sx-markov-pi" x="116" y="251.92388155425118" text-anchor="middle">π=0.099</text></g></g></g></svg>

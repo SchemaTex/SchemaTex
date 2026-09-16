@@ -1,0 +1,25 @@
+# PRISMA 2020 flow diagram for a new systematic review that searched databases and registers only.
+prisma
+mode: 2020-single
+title: "Drug efficacy for refractory migraine"
+kind: systematic-review
+identification:
+  databases:
+    n: 1540
+    sources: MEDLINE=600, Embase=500, CENTRAL=350, ClinicalTrials.gov=90
+    duplicates-removed: 330
+    other-removed: 10
+screening:
+  records-screened: 1200
+  excluded:
+    n: 940
+  reports-sought: 260
+  reports-not-retrieved: 14
+eligibility:
+  full-text-assessed: 246
+  excluded:
+    n: 204
+    reasons: wrong population=80, wrong comparator=58, wrong outcome=42, not randomised=24
+included:
+  studies: 42
+  reports: 46

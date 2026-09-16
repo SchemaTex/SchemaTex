@@ -1,0 +1,12 @@
+# Arduino distance sensor: HC-SR04 receives 5 V/GND with separate trigger and echo signal wires.
+breadboard
+board: half
+title: "HC-SR04 Ultrasonic Sensor"
+parts
+  uno: mcu uno @beside-left
+  sonar: sensor hcsr04 @beside-right
+wires
+  uno:5V --red-- sonar:VCC
+  uno:GND --black-- sonar:GND
+  uno:8 --yellow-- sonar:TRIG
+  uno:7 --green-- sonar:ECHO

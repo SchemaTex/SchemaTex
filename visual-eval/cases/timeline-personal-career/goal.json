@@ -1,0 +1,41 @@
+{
+  "id": "timeline-personal-career",
+  "type": "timeline",
+  "variant": "swimlane",
+  "title": "Personal career journey",
+  "goal": "Show a dated career progression from education through engineering leadership.",
+  "rubric": [
+    {
+      "id": "chronological-progression",
+      "severity": "blocker",
+      "must": "The visible sequence progresses from 2010 education to the 2025 international-team launch."
+    },
+    {
+      "id": "graduation-milestone",
+      "severity": "blocker",
+      "must": "Graduated with honours is visibly dated 2014-06-15 and emphasized as a milestone."
+    },
+    {
+      "id": "three-tracks",
+      "severity": "major",
+      "must": "Education, Early Career, and Leadership are visibly separated and labelled."
+    },
+    {
+      "id": "promotion-registration",
+      "severity": "major",
+      "must": "The Early Career track visibly contains both design-engineer promotion and professional registration."
+    },
+    {
+      "id": "leadership-events",
+      "severity": "minor",
+      "must": "The Leadership track visibly contains platform redesign, manager appointment, and international-team launch."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Independently authored using visual-eval/exemplars/timeline/swimlane/ideal.svg (7c3470ea58a6); rendered and visually reviewed. Exemplar swimlane palette and proportional calendar. Point events are not converted to invented work spans; crowded dates use extra rows within the same track. Milestones and declared ranges remain distinct."
+  }
+}

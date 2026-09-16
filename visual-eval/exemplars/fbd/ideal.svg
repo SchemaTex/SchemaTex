@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="978" viewBox="0 0 1040 978" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif"><title>Bottle counter — IEC 61131-3 FBD</title><rect width="1040" height="978" fill="#FFFFFF"/>
+<text x="48" y="56" font-size="25" font-weight="600" text-anchor="start" fill="#20272B">Bottle counter</text>
+<text x="48" y="82" font-size="13" font-weight="400" text-anchor="start" fill="#59636B">PROGRAM BottleCounter  ·  IEC 61131-3 function block diagram</text>
+<line x1="48" y1="112" x2="992" y2="112" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="140" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Network 1</text>
+<text x="144" y="140" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Debounce the photo-eye: the beam must stay broken for 50 ms.</text>
+<line x1="460" y1="192" x2="592" y2="192" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="192" x2="592" y2="282" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="282" x2="460" y2="282" stroke="#20272B" stroke-width="2"/>
+<line x1="460" y1="282" x2="460" y2="192" stroke="#20272B" stroke-width="2"/>
+<text x="526" y="213" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">TON</text>
+<text x="526" y="182" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">Dwell</text>
+<line x1="436" y1="238" x2="460" y2="238" stroke="#20272B" stroke-width="1.5"/>
+<text x="468" y="242.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<line x1="436" y1="264" x2="460" y2="264" stroke="#20272B" stroke-width="1.5"/>
+<text x="468" y="268.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">PT</text>
+<line x1="592" y1="238" x2="616" y2="238" stroke="#20272B" stroke-width="1.5"/>
+<text x="584" y="242.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<line x1="592" y1="264" x2="616" y2="264" stroke="#20272B" stroke-width="1.5"/>
+<text x="584" y="268.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">ET</text>
+<text x="322" y="243" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BottleSensor</text>
+<line x1="330" y1="238" x2="436" y2="238" stroke="#20272B" stroke-width="1.5"/>
+<text x="322" y="269" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">T#50ms</text>
+<line x1="330" y1="264" x2="436" y2="264" stroke="#20272B" stroke-width="1.5"/>
+<line x1="48" y1="312" x2="992" y2="312" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="340" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Network 2</text>
+<text x="144" y="340" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Count one bottle on each rising edge; clear the count on case reset.</text>
+<line x1="360" y1="392" x2="492" y2="392" stroke="#20272B" stroke-width="2"/>
+<line x1="492" y1="392" x2="492" y2="456" stroke="#20272B" stroke-width="2"/>
+<line x1="492" y1="456" x2="360" y2="456" stroke="#20272B" stroke-width="2"/>
+<line x1="360" y1="456" x2="360" y2="392" stroke="#20272B" stroke-width="2"/>
+<text x="426" y="413" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">R_TRIG</text>
+<text x="426" y="382" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">Pulse</text>
+<line x1="336" y1="438" x2="360" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<text x="368" y="442.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">CLK</text>
+<line x1="492" y1="438" x2="516" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<text x="484" y="442.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<text x="242" y="443" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">Dwell.Q</text>
+<line x1="250" y1="438" x2="336" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<line x1="700" y1="392" x2="832" y2="392" stroke="#20272B" stroke-width="2"/>
+<line x1="832" y1="392" x2="832" y2="508" stroke="#20272B" stroke-width="2"/>
+<line x1="832" y1="508" x2="700" y2="508" stroke="#20272B" stroke-width="2"/>
+<line x1="700" y1="508" x2="700" y2="392" stroke="#20272B" stroke-width="2"/>
+<text x="766" y="413" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">CTU</text>
+<text x="766" y="382" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">BatchSize</text>
+<line x1="676" y1="438" x2="700" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<line x1="700" y1="433" x2="707" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<line x1="707" y1="438" x2="700" y2="443" stroke="#20272B" stroke-width="1.5"/>
+<text x="712" y="442.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">CU</text>
+<line x1="676" y1="464" x2="700" y2="464" stroke="#20272B" stroke-width="1.5"/>
+<text x="708" y="468.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">R</text>
+<line x1="676" y1="490" x2="700" y2="490" stroke="#20272B" stroke-width="1.5"/>
+<text x="708" y="494.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">PV</text>
+<line x1="832" y1="438" x2="856" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<text x="824" y="442.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">Q</text>
+<line x1="832" y1="464" x2="856" y2="464" stroke="#20272B" stroke-width="1.5"/>
+<text x="824" y="468.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">CV</text>
+<line x1="516" y1="438" x2="676" y2="438" stroke="#20272B" stroke-width="1.5"/>
+<text x="602" y="469" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">CaseReset</text>
+<line x1="610" y1="464" x2="676" y2="464" stroke="#20272B" stroke-width="1.5"/>
+<text x="602" y="495" font-size="14" font-weight="400" text-anchor="end" fill="#20272B">24</text>
+<line x1="610" y1="490" x2="676" y2="490" stroke="#20272B" stroke-width="1.5"/>
+<line x1="48" y1="538" x2="992" y2="538" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="566" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Network 3</text>
+<text x="144" y="566" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Case full: report batch done to the case packer.</text>
+<line x1="460" y1="618" x2="592" y2="618" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="618" x2="592" y2="682" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="682" x2="460" y2="682" stroke="#20272B" stroke-width="2"/>
+<line x1="460" y1="682" x2="460" y2="618" stroke="#20272B" stroke-width="2"/>
+<text x="526" y="639" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">MOVE</text>
+<line x1="436" y1="664" x2="460" y2="664" stroke="#20272B" stroke-width="1.5"/>
+<text x="468" y="668.5" font-size="13" font-weight="400" text-anchor="start" fill="#20272B">IN</text>
+<line x1="592" y1="664" x2="616" y2="664" stroke="#20272B" stroke-width="1.5"/>
+<text x="584" y="668.5" font-size="13" font-weight="400" text-anchor="end" fill="#20272B">OUT</text>
+<text x="372" y="669" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BatchSize.Q</text>
+<line x1="380" y1="664" x2="436" y2="664" stroke="#20272B" stroke-width="1.5"/>
+<line x1="616" y1="664" x2="680" y2="664" stroke="#20272B" stroke-width="1.5"/>
+<text x="688" y="669" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">BatchDone</text>
+<line x1="48" y1="712" x2="992" y2="712" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="740" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">Network 4</text>
+<text x="144" y="740" font-size="14" font-weight="400" text-anchor="start" fill="#59636B">Run the infeed conveyor while commanded and the case is not yet full.</text>
+<line x1="460" y1="792" x2="592" y2="792" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="792" x2="592" y2="882" stroke="#20272B" stroke-width="2"/>
+<line x1="592" y1="882" x2="460" y2="882" stroke="#20272B" stroke-width="2"/>
+<line x1="460" y1="882" x2="460" y2="792" stroke="#20272B" stroke-width="2"/>
+<text x="526" y="813" font-size="14" font-weight="600" text-anchor="middle" fill="#20272B">AND</text>
+<line x1="436" y1="838" x2="460" y2="838" stroke="#20272B" stroke-width="1.5"/>
+<line x1="436" y1="864" x2="452" y2="864" stroke="#20272B" stroke-width="1.5"/>
+<circle cx="456" cy="864" r="4" fill="#FFFFFF" stroke="#20272B" stroke-width="1.5"/>
+<line x1="592" y1="838" x2="616" y2="838" stroke="#20272B" stroke-width="1.5"/>
+<text x="372" y="843" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">RunCmd</text>
+<line x1="380" y1="838" x2="436" y2="838" stroke="#20272B" stroke-width="1.5"/>
+<text x="372" y="869" font-size="14" font-weight="600" text-anchor="end" fill="#20272B">BatchDone</text>
+<line x1="380" y1="864" x2="436" y2="864" stroke="#20272B" stroke-width="1.5"/>
+<line x1="616" y1="838" x2="680" y2="838" stroke="#20272B" stroke-width="1.5"/>
+<text x="688" y="843" font-size="14" font-weight="600" text-anchor="start" fill="#20272B">InfeedRun</text>
+<line x1="48" y1="912" x2="992" y2="912" stroke="#CBD1D6" stroke-width="1"/>
+<text x="48" y="938" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">Instance name above each block, block type inside the top, formal parameter names inside at their pins.</text>
+<text x="48" y="956" font-size="12" font-weight="400" text-anchor="start" fill="#59636B">An inward wedge marks an edge-triggered input (CTU.CU); a small circle marks a negated input.</text>
+</svg>

@@ -1,0 +1,36 @@
+sld "Three-Phase Distribution Board" [standard: ansi]
+
+UTIL = utility [voltage: "400 V", rating: "50 kA", label: "400 V Utility Supply"]
+MAIN = breaker [rating: "250 A, 36 kA", label: "Main Breaker 52-Q0"]
+MTR = watthour_meter [rating: "400 V, 250 A", label: "Multifunction Meter PM-1"]
+DB1 = bus [voltage: "400 V", label: "DB-1 Three-Phase Busbar"]
+
+Q1 = breaker [rating: "32 A, C-curve, 10 kA", label: "Q1 Lighting L1"]
+Q2 = breaker [rating: "63 A, C-curve, 10 kA", label: "Q2 Socket Outlets S1"]
+Q3 = breaker [rating: "80 A, C-curve, 10 kA", label: "Q3 AHU-1"]
+Q4 = breaker [rating: "100 A, C-curve, 10 kA", label: "Q4 Kitchen DB"]
+Q5 = breaker [rating: "125 A, C-curve, 10 kA", label: "Q5 Workshop Panel"]
+Q6 = breaker [rating: "160 A, C-curve, 10 kA", label: "Q6 Spare Feeder"]
+
+L1 = load [rating: "32 A, 230 V", label: "Lighting L1"]
+S1 = load [rating: "63 A, 230 V", label: "Socket Outlets S1"]
+AHU1 = motor [rating: "22 kW, 400 V, 3ph", label: "AHU-1 Fan Motor"]
+KDB = consumer_unit [rating: "100 A, 400/230 V", label: "Kitchen DB"]
+WP = consumer_unit [rating: "125 A, 400/230 V", label: "Workshop Panel"]
+SPARE = load [rating: "160 A", label: "Future Feeder"]
+
+UTIL -> MAIN
+MAIN -> MTR
+MTR -> DB1
+DB1 -> Q1
+Q1 -> L1 [cable: "4C 6 mm2 Cu"]
+DB1 -> Q2
+Q2 -> S1 [cable: "4C 16 mm2 Cu"]
+DB1 -> Q3
+Q3 -> AHU1 [cable: "4C 25 mm2 Cu"]
+DB1 -> Q4
+Q4 -> KDB [cable: "4C 35 mm2 Cu"]
+DB1 -> Q5
+Q5 -> WP [cable: "4C 50 mm2 Cu"]
+DB1 -> Q6
+Q6 -> SPARE [cable: "4C 70 mm2 Cu"]

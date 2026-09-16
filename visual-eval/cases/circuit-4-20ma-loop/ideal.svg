@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="940" viewBox="0 0 1400 940">
+<title>4-20 mA Pressure Transmitter Loop</title>
+<defs><style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#17212b;font-size:20px} .title{font-size:32px;font-weight:700}.label{font-size:22px;font-weight:700}.small{font-size:17px}.wire{fill:none;stroke:#17212b;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}.part{fill:white;stroke:#17212b;stroke-width:3}.node{fill:#17212b}.note{fill:#52606d}
+</style></defs>
+<rect width="1400" height="940" fill="white"/>
+<text x="60" y="65" class="title">4–20 mA Pressure Transmitter Loop</text>
+<text x="60" y="100" class="note">Two-wire series loop · 24 VDC supply · 250 Ω sense resistor</text>
+<path d="M60 125H1340" stroke="#b9c2ca"/>
+<!-- Main series path: supply positive, field out, transmitter, field return, sense, PLC, supply negative. -->
+<path class="wire" d="M180 360V230H420 M510 230H660 M930 230H1100V395 M1100 485V535 M1100 635V710 M1100 830V870H180V460"/>
+<!-- Voltage source -->
+<circle class="part" cx="180" cy="410" r="50"/>
+<path class="wire" d="M168 390H192 M180 378V402 M168 432H192"/>
+<text x="65" y="540" class="label">V1 LOOP SUPPLY</text>
+<text x="65" y="572">24 VDC, 100 mA</text>
+<text x="195" y="325" class="small note">LOOP_POS</text>
+<text x="210" y="855" class="small note">LOOP_NEG</text>
+<!-- Field-out two-position terminal block -->
+<rect class="part" x="420" y="204" width="90" height="52"/>
+<path class="wire" d="M432 230H498"/>
+<circle class="part" cx="438" cy="230" r="7"/><circle class="part" cx="492" cy="230" r="7"/>
+<text x="438" y="283" text-anchor="middle" class="small">1</text><text x="492" y="283" text-anchor="middle" class="small">2</text>
+<text x="465" y="165" text-anchor="middle" class="label">T1 · TB1 FIELD OUT</text>
+<text x="465" y="191" text-anchor="middle" class="small">600 V, 10 A</text>
+<text x="575" y="216" text-anchor="middle" class="small note">TX_POS</text>
+<!-- Two-wire transmitter -->
+<rect class="part" x="660" y="180" width="270" height="100"/>
+<text x="677" y="237" class="label">+</text><text x="901" y="237" class="label">−</text>
+<text x="795" y="218" text-anchor="middle" class="label">PT1</text>
+<text x="795" y="251" text-anchor="middle">PRESSURE</text>
+<text x="795" y="320" text-anchor="middle" class="label">X1 · PRESSURE TRANSMITTER</text>
+<text x="795" y="350" text-anchor="middle">4–20 mA, 10–30 VDC · two-wire</text>
+<text x="1120" y="315" class="small note">TX_NEG</text>
+<!-- Field-return terminal block -->
+<rect class="part" x="1074" y="395" width="52" height="90"/>
+<path class="wire" d="M1100 407V473"/>
+<circle class="part" cx="1100" cy="413" r="7"/><circle class="part" cx="1100" cy="467" r="7"/>
+<text x="1055" y="419" text-anchor="end" class="small">3</text><text x="1055" y="473" text-anchor="end" class="small">4</text>
+<text x="1020" y="427" text-anchor="end" class="label">T2 · TB2 FIELD RETURN</text>
+<text x="1020" y="457" text-anchor="end">600 V, 10 A</text>
+<!-- Sense resistor, IEC symbol -->
+<rect class="part" x="1085" y="535" width="30" height="100"/>
+<text x="1138" y="568" class="label">R1</text>
+<text x="1138" y="599" class="label">250 Ω SENSE</text>
+<text x="1120" y="514" class="small note">SENSE_POS</text>
+<text x="1120" y="681" class="small note">AI_POS</text>
+<!-- Meter branch across resistor only -->
+<path class="wire" d="M1100 510H710V545 M710 625V665H1100"/>
+<circle class="node" cx="1100" cy="510" r="5"/><circle class="node" cx="1100" cy="665" r="5"/>
+<circle class="part" cx="900" cy="510" r="7"/><circle class="part" cx="900" cy="665" r="7"/>
+<text x="900" y="547" text-anchor="middle" class="label">TP1 METER +</text>
+<text x="900" y="574" text-anchor="middle" class="small">30 VDC, 1 A</text>
+<text x="900" y="624" text-anchor="middle" class="label">TP2 METER −</text>
+<text x="900" y="648" text-anchor="middle" class="small">30 VDC, 1 A</text>
+<circle class="part" cx="710" cy="585" r="40"/>
+<text x="710" y="597" text-anchor="middle" font-size="34">V</text>
+<text x="725" y="540" class="small">+</text><text x="725" y="645" class="small">−</text>
+<text x="635" y="562" text-anchor="end" class="label">M1 HAND-HELD METER</text>
+<text x="635" y="595" text-anchor="end">4–20 mA loop check</text>
+<text x="635" y="625" text-anchor="end">1–5 V across sense</text>
+<!-- PLC series input -->
+<rect class="part" x="970" y="710" width="260" height="120"/>
+<text x="1100" y="736" text-anchor="middle" class="small">AI+</text>
+<text x="1100" y="769" text-anchor="middle" class="label">PLC1</text>
+<text x="1100" y="817" text-anchor="middle" class="small">AI−</text>
+<text x="925" y="751" text-anchor="end" class="label">U1 · ANALOGUE INPUT</text>
+<text x="925" y="782" text-anchor="end">4–20 mA input, 24 VDC</text>
+<!-- Return reference -->
+<circle class="node" cx="440" cy="870" r="5"/>
+<path class="wire" d="M440 870V891 M420 891H460 M427 901H453 M435 911H445"/>
+<text x="480" y="909" class="small">GND1 · Loop return reference</text>
+</svg>

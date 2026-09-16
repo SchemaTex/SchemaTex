@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 700" width="1320" height="700" role="img" data-ideal="hand-authored">
+<title>12 V Automotive Indicator with Pilot — design target</title>
+<desc>Hand-authored target for the load bank pilot circuit. Not engine output.</desc>
+<style>
+.wire { stroke: #1a1a1a; stroke-width: 2; fill: none; stroke-linecap: square; }
+.body { stroke: #1a1a1a; stroke-width: 2.2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.dot { fill: #1a1a1a; stroke: none; }
+.title { font: 700 20px system-ui, -apple-system, sans-serif; fill: #111111; }
+.subtitle { font: 400 13px system-ui, -apple-system, sans-serif; fill: #555555; }
+.ref { font: 600 14px system-ui, -apple-system, sans-serif; fill: #111111; }
+.val { font: 400 13px system-ui, -apple-system, sans-serif; fill: #555555; }
+.pin { font: 600 11px system-ui, -apple-system, sans-serif; fill: #555555; }
+.rule { stroke: #d4d4d4; stroke-width: 1; }
+</style>
+<rect fill="#ffffff" x="0" y="0" width="1320" height="700"/>
+<text class="title" x="40" y="44">12 V Automotive Indicator with Pilot</text>
+<text class="subtitle" x="40" y="64">Flasher-driven turn indicators with a dashboard pilot lamp</text>
+<line class="rule" x1="40" y1="80" x2="1280" y2="80"/>
+
+<!-- Supply rail from the battery, and the chassis return rail -->
+<path class="wire" d="M 40 360 L 40 150 L 460 150"/>
+<path class="wire" d="M 40 404 L 40 640 L 1080 640"/>
+<path class="body" d="M 22 360 H 58 M 32 372 H 48 M 22 384 H 58 M 32 396 H 48"/>
+<text class="ref" x="70" y="368">B1</text><text class="val" x="70" y="386">12 V</text>
+
+<!-- F1 main fuse -->
+<rect class="body" x="158" y="139" width="46" height="22" rx="11" fill="#ffffff"/>
+<text class="ref" x="158" y="128">F1</text><text class="val" x="158" y="184">15 A</text>
+
+<!-- S1 activation switch, drawn open -->
+<circle class="dot" cx="248" cy="150" r="3.5"/><circle class="dot" cx="292" cy="150" r="3.5"/>
+<path class="body" d="M 248 150 L 288 126"/>
+<text class="ref" x="248" y="116">S1</text><text class="val" x="248" y="184">Activation</text>
+
+<!-- K1 flasher: B in, L to the selector, P to the pilot lamp -->
+<rect class="body" x="330" y="120" width="76" height="60" fill="#ffffff"/>
+<path class="body" d="M 344 158 L 354 138 L 364 158 L 374 138 L 384 158 L 394 144"/>
+<text class="pin" x="336" y="136">B</text><text class="pin" x="394" y="136">L</text><text class="pin" x="362" y="176">P</text>
+<text class="ref" x="330" y="110">K1</text><text class="val" x="356" y="110">Flasher</text>
+
+<!-- S2 selector, centre-off: the lever rests between the two contacts -->
+<circle class="dot" cx="460" cy="150" r="4"/>
+<path class="body" d="M 460 150 L 506 150"/>
+<circle class="dot" cx="520" cy="118" r="4"/><circle class="dot" cx="520" cy="182" r="4"/>
+<text class="pin" x="534" y="114">RIGHT</text><text class="pin" x="534" y="186">LEFT</text>
+<text class="ref" x="534" y="208">S2</text><text class="val" x="556" y="208">Left / OFF / Right</text>
+
+<!-- Left feed drops behind the control chain; right feed goes over the top -->
+<path class="wire" d="M 520 182 L 520 268 L 110 268 L 110 320 L 480 320"/>
+<path class="wire" d="M 520 118 L 520 96 L 1220 96 L 1220 320 L 720 320"/>
+<!-- Pilot feed from the flasher P pin -->
+<path class="wire" d="M 368 180 L 368 240 L 570 240 L 570 320"/>
+
+<path class="wire" d="M 150 320 V 640 M 260 320 V 640 M 370 320 V 640 M 480 320 V 640 M 570 320 V 640 M 720 320 V 640 M 840 320 V 640 M 960 320 V 640 M 1080 320 V 640"/>
+<g class="dot"><circle cx="150" cy="320" r="4"/><circle cx="260" cy="320" r="4"/><circle cx="370" cy="320" r="4"/><circle cx="840" cy="320" r="4"/><circle cx="960" cy="320" r="4"/><circle cx="1080" cy="320" r="4"/><circle cx="150" cy="640" r="4"/><circle cx="260" cy="640" r="4"/><circle cx="370" cy="640" r="4"/><circle cx="480" cy="640" r="4"/><circle cx="570" cy="640" r="4"/><circle cx="720" cy="640" r="4"/><circle cx="840" cy="640" r="4"/><circle cx="960" cy="640" r="4"/><circle cx="1080" cy="640" r="4"/></g>
+<circle class="body" cx="150" cy="390" r="20" fill="#ffffff"/><path class="body" d="M 136 376 L 164 404 M 164 376 L 136 404"/><text class="ref" x="150" y="442" text-anchor="middle">L1</text><text class="val" x="150" y="296" text-anchor="middle">Left Front</text>
+<circle class="body" cx="260" cy="390" r="20" fill="#ffffff"/><path class="body" d="M 246 376 L 274 404 M 274 376 L 246 404"/><text class="ref" x="260" y="442" text-anchor="middle">L2</text><text class="val" x="260" y="296" text-anchor="middle">Left Rear</text>
+<path class="body" d="M 356 374 L 384 374 L 370 398 Z" fill="#ffffff"/><path class="body" d="M 356 398 H 384"/><path class="body" d="M 386 372 l 14 -14 M 394 358 h 6 v 6"/><path class="body" d="M 386 386 l 14 -14 M 394 372 h 6 v 6"/><text class="ref" x="370" y="442" text-anchor="middle">D1</text><text class="val" x="370" y="296" text-anchor="middle">Left LED 1</text>
+<path class="body" d="M 370 470 l -10 8 l 20 12 l -20 12 l 20 12 l -10 8"/><text class="ref" x="390" y="498">R1</text><text class="val" x="390" y="516">500 Ω</text>
+<path class="body" d="M 466 374 L 494 374 L 480 398 Z" fill="#ffffff"/><path class="body" d="M 466 398 H 494"/><path class="body" d="M 496 372 l 14 -14 M 504 358 h 6 v 6"/><path class="body" d="M 496 386 l 14 -14 M 504 372 h 6 v 6"/><text class="ref" x="480" y="442" text-anchor="middle">D2</text><text class="val" x="480" y="296" text-anchor="middle">Left LED 2</text>
+<path class="body" d="M 480 470 l -10 8 l 20 12 l -20 12 l 20 12 l -10 8"/><text class="ref" x="500" y="498">R2</text><text class="val" x="500" y="516">500 Ω</text>
+<path class="body" d="M 556 374 L 584 374 L 570 398 Z" fill="#ffffff"/><path class="body" d="M 556 398 H 584"/><path class="body" d="M 586 372 l 14 -14 M 594 358 h 6 v 6"/><path class="body" d="M 586 386 l 14 -14 M 594 372 h 6 v 6"/><text class="ref" x="570" y="442" text-anchor="middle">D3</text><text class="val" x="600" y="296">Pilot LED</text>
+<path class="body" d="M 570 470 l -10 8 l 20 12 l -20 12 l 20 12 l -10 8"/><text class="ref" x="590" y="498">R3</text><text class="val" x="590" y="516">1 kΩ</text>
+<circle class="body" cx="720" cy="390" r="20" fill="#ffffff"/><path class="body" d="M 706 376 L 734 404 M 734 376 L 706 404"/><text class="ref" x="720" y="442" text-anchor="middle">L3</text><text class="val" x="720" y="296" text-anchor="middle">Right Front</text>
+<circle class="body" cx="840" cy="390" r="20" fill="#ffffff"/><path class="body" d="M 826 376 L 854 404 M 854 376 L 826 404"/><text class="ref" x="840" y="442" text-anchor="middle">L4</text><text class="val" x="840" y="296" text-anchor="middle">Right Rear</text>
+<path class="body" d="M 946 374 L 974 374 L 960 398 Z" fill="#ffffff"/><path class="body" d="M 946 398 H 974"/><path class="body" d="M 976 372 l 14 -14 M 984 358 h 6 v 6"/><path class="body" d="M 976 386 l 14 -14 M 984 372 h 6 v 6"/><text class="ref" x="960" y="442" text-anchor="middle">D4</text><text class="val" x="960" y="296" text-anchor="middle">Right LED 1</text>
+<path class="body" d="M 960 470 l -10 8 l 20 12 l -20 12 l 20 12 l -10 8"/><text class="ref" x="980" y="498">R4</text><text class="val" x="980" y="516">500 Ω</text>
+<path class="body" d="M 1066 374 L 1094 374 L 1080 398 Z" fill="#ffffff"/><path class="body" d="M 1066 398 H 1094"/><path class="body" d="M 1096 372 l 14 -14 M 1104 358 h 6 v 6"/><path class="body" d="M 1096 386 l 14 -14 M 1104 372 h 6 v 6"/><text class="ref" x="1080" y="442" text-anchor="middle">D5</text><text class="val" x="1080" y="296" text-anchor="middle">Right LED 2</text>
+<path class="body" d="M 1080 470 l -10 8 l 20 12 l -20 12 l 20 12 l -10 8"/><text class="ref" x="1100" y="498">R5</text><text class="val" x="1100" y="516">500 Ω</text>
+
+<!-- Chassis ground on the return rail -->
+<path class="wire" d="M 570 640 V 664"/>
+<path class="body" d="M 548 664 H 592 M 557 674 H 583 M 566 684 H 574"/>
+<text class="val" x="602" y="678">Chassis</text>
+</svg>

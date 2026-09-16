@@ -1,0 +1,15 @@
+# Social-work ecomap: newly resettled refugee family with resettlement agency, language classes, health care, and cultural community.
+ecomap "Hassan Family Resettlement"
+  center: family [label: "Hassan Family"]
+  agency [label: "Resettlement Agency", category: government, importance: major]
+  interpreter [label: "Interpreter", category: community]
+  esl [label: "ESL Classes", category: education]
+  clinic [label: "Community Health Clinic", category: health]
+  mosque [label: "Mosque Community", category: religion]
+  employer [label: "New Employer", category: work]
+  agency --> family
+  interpreter <-> family
+  family === esl
+  family == clinic
+  family === mosque
+  family --- employer

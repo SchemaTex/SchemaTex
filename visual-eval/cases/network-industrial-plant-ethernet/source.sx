@@ -1,0 +1,44 @@
+# Segmented industrial Ethernet ring with OT control devices isolated from enterprise services by a DMZ.
+network "Water Plant Industrial Ethernet"
+  layout: ring
+  firewall itfw "IT Firewall" tier: edge
+  firewall otfw "OT Firewall" tier: edge
+  switch dmzsw "DMZ Switch" tier: distribution
+  server hist "Historian Server" ip: 10.50.10.20
+  server scada "SCADA Server" ip: 10.50.20.10
+  switch sw1 "Managed Ring Switch A" tier: access
+  switch sw2 "Managed Ring Switch B" tier: access
+  switch sw3 "Managed Ring Switch C" tier: access
+  switch sw4 "Managed Ring Switch D" tier: access
+  pc hmi1 "HMI Intake" ip: 10.50.20.31
+  pc hmi2 "HMI Treatment" ip: 10.50.20.32
+  server plc1 "PLC Intake" ip: 10.50.20.41
+  server plc2 "PLC Treatment" ip: 10.50.20.42
+  dmz industrial-dmz "Industrial DMZ" {
+    dmzsw
+    hist
+  }
+  zone control "OT Control Zone" {
+    scada
+    sw1
+    sw2
+    sw3
+    sw4
+    hmi1
+    hmi2
+    plc1
+    plc2
+  }
+  itfw -- otfw : fiber 10G
+  otfw -- dmzsw : trunk vlan: 10 1G
+  dmzsw -- hist : access vlan: 10
+  dmzsw -- scada : trunk vlan: 20 1G
+  sw1 -- sw2 : fiber "MRP ring"
+  sw2 -- sw3 : fiber "MRP ring"
+  sw3 -- sw4 : fiber "MRP ring"
+  sw4 -- sw1 : fiber "MRP ring"
+  scada -- sw1 : copper 1G
+  sw1 -- hmi1 : copper
+  sw2 -- plc1 : copper
+  sw3 -- hmi2 : copper
+  sw4 -- plc2 : copper

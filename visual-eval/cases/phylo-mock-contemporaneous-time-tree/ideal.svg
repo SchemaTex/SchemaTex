@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1140 700">
+  <title>Contemporaneous samples (mock) — rectangular chronogram</title>
+  <desc>Authored mock data, not empirical or user data. All six samples are at month four. A and B share an ancestor at month three. C shares an ancestor at month two with D and E, which share an ancestor at month three. F branches directly from the root. Horizontal lengths represent months.</desc>
+  <rect width="1140" height="700" fill="#ffffff"/>
+  <style>
+    text{font-family:Verdana,sans-serif;fill:#1e293b}
+    .title{font-family:'Trebuchet MS',sans-serif;font-size:28px;font-weight:700}
+    .subtitle{font-size:13px;fill:#64748b;letter-spacing:.25px}
+    .section{font-size:12px;fill:#64748b;letter-spacing:1px}
+    .label{font-size:16px}
+    .note{font-size:11px;fill:#64748b;letter-spacing:.1px}
+    .branch{fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+    .guide{stroke:#b8c4d6;stroke-width:1;stroke-dasharray:2.5 4.5}
+  </style>
+  <text x="48" y="48" class="title">Contemporaneous samples (mock)</text>
+  <text x="48" y="76" class="subtitle">Rectangular chronogram · shared sampling time · branch durations in months</text>
+  <path d="M48 99H1092" stroke="#dce2e9" stroke-width="1"/>
+  <text x="80" y="133" class="section">PHYLOGENY</text>
+  <text x="654" y="133" class="section">SAMPLE</text>
+  <rect x="638" y="164" width="454" height="106" rx="3" fill="#0f766e" fill-opacity=".045"/>
+  <rect x="638" y="302" width="454" height="150" rx="3" fill="#2563eb" fill-opacity=".045"/>
+  <rect x="638" y="484" width="454" height="62" rx="3" fill="#a16207" fill-opacity=".045"/>
+  <!-- 126 SVG units per month. Root x=80; months 2,3,4 at x=332,458,584. -->
+  <path class="branch" stroke="#1e293b" d="M80 217V515"/>
+  <path class="branch" stroke="#0f766e" d="M80 217H458 M458 195V239 M458 195H584 M458 239H584"/>
+  <path class="branch" stroke="#2563eb" d="M80 366H332 M332 333V399 M332 333H584 M332 399H458 M458 377V421 M458 377H584 M458 421H584"/>
+  <path class="branch" stroke="#a16207" d="M80 515H584"/>
+  <g class="guide">
+    <path d="M588 195H640 M588 239H640 M588 333H640 M588 377H640 M588 421H640 M588 515H640"/>
+  </g>
+  <g class="label">
+    <text x="654" y="200">Sample A</text>
+    <text x="654" y="244">Sample B</text>
+    <text x="654" y="338">Sample C</text>
+    <text x="654" y="382">Sample D</text>
+    <text x="654" y="426">Sample E</text>
+    <text x="654" y="520">Sample F</text>
+  </g>
+  <path d="M80 600V610 M80 605H206 M206 600V610" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="80" y="630" font-size="12">1 month</text>
+  <text x="466" y="606" class="note">Horizontal distance: months · all samples at month 4</text>
+  <text x="466" y="629" class="note">Dashed extensions align labels; they add no branch duration.</text>
+  <path d="M48 653H1092" stroke="#dce2e9" stroke-width="1"/>
+  <text x="48" y="678" class="note">Mock dataset · topology and branch durations are authored examples, not an empirical or inferred analysis.</text>
+</svg>

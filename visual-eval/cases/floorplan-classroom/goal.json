@@ -1,0 +1,96 @@
+{
+  "id": "floorplan-classroom",
+  "type": "floorplan",
+  "title": "Classroom seating plan",
+  "goal": "A reader can locate all 28 student desks, the teaching wall and storage, and trace a clear route from the entrance to every seat.",
+  "rubric": [
+    {
+      "id": "student-seating",
+      "severity": "blocker",
+      "must": "Exactly 28 student desk-and-chair units are arranged in four rows facing the whiteboard wall."
+    },
+    {
+      "id": "teaching-area",
+      "severity": "major",
+      "must": "A labeled whiteboard and a separate teacher desk with a chair occupy the front teaching area."
+    },
+    {
+      "id": "storage-access",
+      "severity": "major",
+      "must": "Labeled storage has open floor space directly in front of it."
+    },
+    {
+      "id": "reachable-desks",
+      "severity": "blocker",
+      "must": "An unobstructed central aisle connects the entrance to every row, with visible walking gaps between rows and access to every desk."
+    },
+    {
+      "id": "clear-door-swing",
+      "severity": "blocker",
+      "must": "The entrance shows a door leaf and swing arc with no furniture in the swept area."
+    },
+    {
+      "id": "furniture-clearance",
+      "severity": "blocker",
+      "must": "Every desk and chair lies inside the room, with visible gaps separating it from walls and other furniture."
+    },
+    {
+      "id": "architectural-context",
+      "severity": "minor",
+      "must": "The room has visible windows, exterior dimensions of 12 m by 11 m, and a labeled 1.6 m central aisle."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the floorplan exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The drawing visibly satisfies the classroom program: 28 student desk-and-chair units appear as four rows of seven facing the north teaching wall; the whiteboard, teacher desk and chair, storage, entrance, windows, dimensions and central aisle are all shown with clear circulation and separation.",
+      "model": "gpt-5.6-luna + gpt-5.6-sol verification",
+      "passes": 2,
+      "reviewedAt": "2026-09-12T21:12:28.867Z",
+      "targetHash": "2325594e3267",
+      "sourceHash": "bc48fb1ee25d",
+      "exemplarHash": "4f573199f5f8",
+      "items": [
+        {
+          "id": "student-seating",
+          "verdict": "pass",
+          "evidence": "Exactly 28 desk-and-chair units are visible in four rows, with three units left and four right of the central aisle in each row; all face the whiteboard wall."
+        },
+        {
+          "id": "teaching-area",
+          "verdict": "pass",
+          "evidence": "A labeled WHITEBOARD is on the front wall, with a separate labeled Teacher desk and chair in the open teaching area."
+        },
+        {
+          "id": "storage-access",
+          "verdict": "pass",
+          "evidence": "Labeled STORAGE is shown at the front-right wall with unobstructed open floor directly in front."
+        },
+        {
+          "id": "reachable-desks",
+          "verdict": "pass",
+          "evidence": "The entrance opens into a continuous central aisle, and visible lateral and inter-row gaps provide access to every row and desk."
+        },
+        {
+          "id": "clear-door-swing",
+          "verdict": "pass",
+          "evidence": "The south entrance visibly includes a door leaf and swing arc, and no furniture occupies the swept area."
+        },
+        {
+          "id": "furniture-clearance",
+          "verdict": "pass",
+          "evidence": "All desks and chairs are inside the room and visibly separated from walls, neighboring units and other furniture."
+        },
+        {
+          "id": "architectural-context",
+          "verdict": "pass",
+          "evidence": "Windows are visible on both east and west walls, exterior dimensions are labeled 12.00 m by 11.00 m, and the central aisle is labeled 1.6 m; the north arrow establishes orientation."
+        }
+      ]
+    }
+  }
+}

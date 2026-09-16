@@ -1,0 +1,8 @@
+circuit "MOSFET Low-Side Relay Drive" netlist
+V1 VCC GND value="12 V DC" label="V1 LOAD SUPPLY"
+U1 VCC GND GPIO type=generic_ic pins="VCC,GND,GPIO" value="3.3 V MCU" label="U1 MCU OUTPUT"
+R1 GPIO GATE value="100 Ω" label="R1 GATE"
+R2 GATE GND value="100 kΩ" label="R2 PULL-DOWN"
+M1 COIL GATE GND type=nmos value="IRLZ44N" label="Q1 N-MOSFET"
+K1 VCC COIL type=relay_coil value="12 VDC, 400 Ω" label="K1 RELAY COIL"
+D1 COIL VCC value="1N4007" label="D1 FLYBACK"

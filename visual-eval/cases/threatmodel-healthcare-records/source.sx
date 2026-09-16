@@ -1,0 +1,16 @@
+# STRIDE DFD: patient portal, clinical application, external insurer, and protected health-record stores cross trust boundaries.
+threatmodel "Healthcare Records STRIDE"
+external Patient: Patient Portal User
+external Insurer: Insurance Payer
+process Portal: Patient Portal
+process EHR: Clinical EHR Service
+datastore Records: Protected Health Records
+datastore Audit: Access Audit Log
+Patient -> Portal : portal request
+Portal -> EHR : authenticated request
+EHR -> Records : record query
+EHR -> Audit : access event
+EHR -> Insurer : claim submission
+boundary "Public" { Patient, Insurer }
+boundary "Hospital DMZ" { Portal }
+boundary "Clinical Network" { EHR, Records, Audit }

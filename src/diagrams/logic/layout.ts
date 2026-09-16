@@ -1,5 +1,7 @@
 import type { LogicGateAST } from "../../core/types";
 import { getGateGeometry, type GateGeometry } from "./symbols";
+import { routeLogicWires } from "./routing";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 export interface LogicLayoutNode {
   id: string;
@@ -13,6 +15,7 @@ export interface LogicLayoutNode {
   rawType?: string;
   label: string;
   isActiveLow?: boolean;
+  portWidth?: number;
 }
 
 export interface LogicLayoutWire {
@@ -44,7 +47,7 @@ export interface LogicLayoutResult {
 }
 
 const LAYER_GAP = 80; // extra horizontal gap between layers
-const ROW_GAP = 40;   // vertical gap between rows in same layer
+const ROW_GAP = 80;   // includes a readable signal channel between gate captions
 const PORT_SIZE = 40; // input/output port pseudo-box width
 const PORT_H = 30;
 
@@ -105,8 +108,22 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
 
   // Compute sizes per node (precompute geometries for gates)
   const gateGeoms = new Map<string, GateGeometry>();
+  const inputWidth = Math.max(PORT_SIZE, ...ast.inputs.map(input => estimateTextWidth(input.label, 13) + 20));
   for (const g of ast.gates) {
-    gateGeoms.set(g.id, getGateGeometry(g.gateType, g.inputs.length));
+    const geometry = getGateGeometry(g.gateType, g.inputs.length);
+    const rows = [...new Set(geometry.inputPins.map(pin => pin.y))].sort((a,b) => a - b);
+    const spacing = Math.min(Infinity, ...rows.slice(1).map((y,i) => y - rows[i]!));
+    if (spacing < 14) {
+      const factor = 14 / spacing;
+      geometry.bodyScaleY = factor;
+      geometry.height *= factor;
+      geometry.inputPins = geometry.inputPins.map(pin => ({ ...pin, y: pin.y * factor }));
+      geometry.outputPins = geometry.outputPins.map(pin => ({ ...pin, y: pin.y * factor }));
+    }
+    if (ast.style === "iec") {
+      geometry.inputPins = geometry.inputPins.map(pin => ({ ...pin, x: pin.y >= geometry.height ? pin.x : 0 }));
+    }
+    gateGeoms.set(g.id, geometry);
   }
 
   // Assign coordinates
@@ -120,8 +137,8 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
     for (const id of ids) {
       const g = gateGeoms.get(id);
       if (g && g.width > maxW) maxW = g.width;
-      if (!g && layerIdx === 0) maxW = Math.max(maxW, PORT_SIZE);
-      if (!g && layerIdx === outputLayer) maxW = Math.max(maxW, PORT_SIZE);
+      if (!g && layerIdx === 0) maxW = Math.max(maxW, inputWidth);
+      if (!g && layerIdx === outputLayer) maxW = Math.max(maxW, ...ast.outputs.map(output => estimateTextWidth(output.label, 13) + 16));
     }
     layerWidth.set(layerIdx, maxW);
   }
@@ -168,6 +185,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
           layer: 0,
           label: inp.label,
           isActiveLow: inp.isActiveLow,
+          portWidth: inputWidth,
         };
       } else if (layerIdx === outputLayer && !g && id.startsWith("$out$")) {
         const out = portOutputs.find((o) => o.termId === id)!;
@@ -199,12 +217,45 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
     }
   }
 
+  // Align single-node stages and terminal outputs to their driving gates.
+  // Multi-node columns keep separate rows; labels no longer introduce arbitrary
+  // output elbows simply because the preceding column contains fewer gates.
+  for (const layer of sortedLayers) {
+    const column = nodes.filter(n => n.layer === layer && n.kind === "gate");
+    if (column.length !== 1) continue;
+    const node = column[0]!;
+    const gate = ast.gates.find(g => g.id === node.id)!;
+    const drivers = gate.inputs.map(id => nodeInfo.get(id.replace(/^~/,""))).filter(n => n?.geometry);
+    if (drivers.length) node.y = drivers.reduce((sum,n) => sum+n!.y+n!.geometry!.outputPins[0]!.y,0)/drivers.length-node.geometry!.outputPins[0]!.y;
+  }
+  for (const output of portOutputs) {
+    const source = nodeInfo.get(output.source), target = nodeInfo.get(output.termId)!;
+    if (source?.geometry) target.y = source.y+source.geometry.outputPins[0]!.y-PORT_H/2;
+  }
+  let outputBottom = -Infinity;
+  for (const output of nodes.filter(n=>n.kind==="output").sort((a,b)=>a.y-b.y)) {
+    output.y=Math.max(output.y,outputBottom);outputBottom=output.y+PORT_H+10;
+  }
+  let bypassY = Math.max(...nodes.filter(n=>n.geometry).map(n=>n.y+n.geometry!.height+48),40);
+  let inputBottom = 0;
+  for (const input of ast.inputs) {
+    const consumers = ast.gates.filter(g=>g.inputs.some(id=>id.replace(/^~/,"")===input.id))
+      .sort((a,b)=>(layerOf.get(a.id)??0)-(layerOf.get(b.id)??0));
+    const first = consumers[0], node = nodeInfo.get(input.id)!;
+    if (!first) continue;
+    const target = nodeInfo.get(first.id)!;
+    const pin = target.geometry!.inputPins[first.inputs.findIndex(id=>id.replace(/^~/,"")===input.id)]!;
+    const center = target.layer>1 ? (bypassY+=24) : target.y+pin.y;
+    node.y = Math.max(center,inputBottom)-PORT_H/2;
+    inputBottom = node.y+PORT_H/2+14;
+  }
+
   // Wires
   const wires: LogicLayoutWire[] = [];
   const getSourcePoint = (id: string) => {
     const n = nodeInfo.get(id);
     if (!n) return null;
-    if (n.kind === "input") return { x: n.x + PORT_SIZE, y: n.y + PORT_H / 2 };
+    if (n.kind === "input") return { x: n.x + (n.portWidth ?? PORT_SIZE), y: n.y + PORT_H / 2 };
     if (n.kind === "gate" && n.geometry) {
       const out = n.geometry.outputPins[0];
       return { x: n.x + out.x, y: n.y + out.y };
@@ -224,8 +275,6 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
       if (!pin) return;
       const toX = target.x + pin.x;
       const toY = target.y + pin.y;
-      const midX = (src.x + toX) / 2;
-      const path = `M ${src.x},${src.y} L ${midX},${src.y} L ${midX},${toY} L ${toX},${toY}`;
       wires.push({
         fromNode: srcId,
         fromX: src.x,
@@ -234,7 +283,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
         toX,
         toY,
         isActiveLow: isLow,
-        path,
+        path: "", // Filled once by obstacle-aware routing below.
       });
     });
   }
@@ -246,13 +295,6 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
     if (!src || !target || target.kind !== "output") continue;
     const toX = target.x;
     const toY = target.y + PORT_H / 2;
-    let path: string;
-    if (Math.abs(src.y - toY) < 0.5) {
-      path = `M ${src.x},${src.y} L ${toX},${toY}`;
-    } else {
-      const midX = (src.x + toX) / 2;
-      path = `M ${src.x},${src.y} L ${midX},${src.y} L ${midX},${toY} L ${toX},${toY}`;
-    }
     wires.push({
       fromNode: o.source,
       fromX: src.x,
@@ -260,9 +302,11 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
       toNode: o.termId,
       toX,
       toY,
-      path,
+      path: "",
     });
   }
+
+  routeLogicWires(nodes, wires);
 
   // Module bounding boxes (dashed enclosure for sub-circuits)
   const modules: LogicLayoutModule[] = [];
@@ -295,5 +339,16 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
     }
   }
 
-  return { width: totalW, height: totalH, nodes, wires, modules };
+  const points = wires.flatMap(w => [...w.path.matchAll(/[ML] ([\d.-]+),([\d.-]+)/g)].map(m => ({ x: +m[1]!, y: +m[2]! })));
+  const shiftX = Math.max(0, 12 - Math.min(12, ...points.map(p => p.x)));
+  const shiftY = Math.max(0, 12 - Math.min(12, ...points.map(p => p.y)));
+  if (shiftX || shiftY) {
+    for (const node of nodes) { node.x += shiftX; node.y += shiftY; }
+    for (const module of modules) { module.x += shiftX; module.y += shiftY; }
+    for (const wire of wires) {
+      wire.fromX += shiftX; wire.fromY += shiftY; wire.toX += shiftX; wire.toY += shiftY;
+      wire.path = wire.path.replace(/([ML]) ([\d.-]+),([\d.-]+)/g, (_, command, x, y) => `${command} ${+x + shiftX},${+y + shiftY}`);
+    }
+  }
+  return { width: Math.max(totalW, ...points.map(p => p.x + 12)) + shiftX, height: Math.max(totalH, ...nodes.map(n=>n.y+(n.geometry?.height??PORT_H)+30), ...points.map(p => p.y + 12)) + shiftY, nodes, wires, modules };
 }

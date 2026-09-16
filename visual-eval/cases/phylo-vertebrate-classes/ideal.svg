@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="982" viewBox="0 0 1140 700">
+  <title>Vertebrate Classes — rectangular phylogram</title>
+  <desc>Newick phylogram with a root stem of 0.30. Mammalia and Aves are sisters with a shared branch of 0.15; Reptilia and Amphibia are sisters with a shared branch of 0.10; Actinopterygii branches directly from the root. Purple marks the specified Amniotes members, which do not form a monophyletic group in the supplied Newick. Horizontal distances use 950 SVG units per unit of relative divergence.</desc>
+  <rect width="1140" height="700" fill="#ffffff"/>
+  <style>
+    text { font-family: Verdana, sans-serif; fill: #1e293b; }
+    .title { font-family: 'Trebuchet MS', sans-serif; font-size:28px; font-weight:700; }
+    .subtitle { font-size:13px; fill:#64748b; letter-spacing:.25px; }
+    .heading { font-size:12px; fill:#64748b; letter-spacing:1px; }
+    .taxon { font-size:16px; }
+    .note { font-size:11px; fill:#64748b; }
+    .branch { fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .guide { fill:none; stroke:#b8c4d5; stroke-width:1; stroke-dasharray:2.5 4.5; }
+    .clade { font-size:12px; font-weight:700; fill:#8E24AA; }
+  </style>
+  <text class="title" x="48" y="48">Vertebrate Classes</text>
+  <text class="subtitle" x="48" y="76">Rectangular phylogram · branch distances and named clade</text>
+  <path d="M48 99H1092" stroke="#dce2e9" stroke-width="1"/>
+  <text class="heading" x="80" y="133">PHYLOGENY</text>
+  <text class="heading" x="826" y="133">TAXON</text>
+  <text class="heading" x="995" y="133">CLADE</text>
+
+  <rect x="810" y="194" width="282" height="157" rx="3" fill="#8E24AA" fill-opacity=".045"/>
+
+  <!-- Every solid horizontal segment is scaled at 950 units per relative divergence. -->
+  <!-- The root stem is 0.30; the root has three children. -->
+  <path class="branch" stroke="#1e293b" d="M80 388H365 M365 238V538 M365 238H507.5 M365 370H460 M460 348V392 M460 392H688 M365 538H764"/>
+  <!-- Purple terminal branches identify exactly the three named members. -->
+  <path class="branch" stroke="#8E24AA" d="M507.5 216V260 M507.5 216H697.5 M507.5 260H688 M460 348H631"/>
+
+  <path class="guide" d="M697.5 216H813 M688 260H813 M631 348H813 M688 392H813 M764 538H813"/>
+  <text class="taxon" x="826" y="221">Mammalia</text>
+  <text class="taxon" x="826" y="265">Aves</text>
+  <text class="taxon" x="826" y="353">Reptilia</text>
+  <text class="taxon" x="826" y="397">Amphibia</text>
+  <text class="taxon" x="826" y="543">Actinopterygii</text>
+
+  <path d="M973 204H980V359H973" stroke="#8E24AA" stroke-width="1.4" fill="none"/>
+  <text class="clade" x="995" y="287">Amniotes</text>
+
+  <path d="M80 600V610 M80 605H175 M175 600V610" stroke="#1e293b" stroke-width="1.4" fill="none"/>
+  <text x="80" y="630" font-size="12">0.10 relative divergence</text>
+  <text class="note" x="466" y="606">Horizontal distance: relative divergence</text>
+  <text class="note" x="466" y="629">Dashed extensions align labels; they add no branch length.</text>
+  <path d="M48 653H1092" stroke="#dce2e9" stroke-width="1"/>
+  <text class="note" x="48" y="678">Topology follows supplied Newick; highlighted Amniotes members do not form a monophyletic clade in this tree.</text>
+</svg>

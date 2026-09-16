@@ -1,0 +1,29 @@
+# Scenario: IEC 61131-3 lift trip: close doors, travel up or down to the called floor, then open doors.
+sfc "Lift trip sequence"
+var CallPending: bool
+var DoorsClosed: bool
+var TargetAbove: bool
+var TargetBelow: bool
+var AtFloor: bool
+var DoorTimerDone: bool
+step S0 [initial]
+  N DoorsOpenIdle
+step S1 [label: "Close doors"]
+  N DoorCloseMotor
+alt from: S1:
+  branch [priority: 1]:
+    transition: DoorsClosed AND TargetAbove
+    step S2 [label: "Travel up"]
+      N HoistUp
+    transition: AtFloor
+  branch [priority: 2]:
+    transition: DoorsClosed AND TargetBelow
+    step S3 [label: "Travel down"]
+      N HoistDown
+    transition: AtFloor
+merge_to: S4
+step S4 [label: "Open doors"]
+  P BrakeSet
+  D DoorOpenMotor T#1s
+transition from: S0 to: S1: CallPending
+transition from: S4 to: S0: DoorTimerDone

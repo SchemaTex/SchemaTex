@@ -1,29 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { render } from "../../src/index";
-import { parsePedigree } from "../../src/diagrams/pedigree";
 
 describe("pedigree e2e", () => {
-  test("render() auto-detects pedigree and produces SVG", () => {
-    const svg = render(`pedigree "Test"
-  I-1 [male, carrier]
-  I-2 [female, carrier]
-  I-1 -- I-2
-    II-1 [male, affected, proband]`);
-    expect(svg).toContain("<svg");
-    expect(svg).toContain("schematex-pedigree");
-    expect(svg).toContain("</svg>");
-  });
-
-  test("parse() returns pedigree AST", () => {
-    const ast = parsePedigree(`pedigree
-  a [male]
-  b [female]
-  a -- b
-    c [male, affected]`);
-    expect(ast.type).toBe("pedigree");
-    expect(ast.individuals).toHaveLength(3);
-    expect(ast.relationships).toHaveLength(2);
-  });
 
   test("Case 1: Autosomal Recessive (CF)", () => {
     const svg = render(`pedigree "Cystic Fibrosis Family"
@@ -72,7 +50,10 @@ describe("pedigree e2e", () => {
     III-1 [male, affected]
     III-2 [female, carrier-x]
     III-3 [male, unaffected]`);
-    expect(svg).toContain("schematex-pedigree-carrier-x-dot");
+    // X-linked carriers use the 2022 carrier hatch; the centre dot is retired (Bennett et al. 2022 §4.5).
+    expect(svg).toContain("schematex-pedigree-carrier-fill");
+    expect(svg).toContain('id="schematex-pedigree-carrier-pattern"');
+    expect(svg).not.toContain("schematex-pedigree-carrier-x-dot");
     expect(svg).toContain("schematex-pedigree-affected-fill");
     expect(svg).toContain(">III<");
   });

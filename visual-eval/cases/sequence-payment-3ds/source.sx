@@ -1,0 +1,29 @@
+%% Card authorization with 3-D Secure authentication.
+sequenceDiagram
+actor Shopper
+participant Store
+participant PSP
+participant ACS
+participant Issuer
+Shopper->>Store: Place order
+Store->>PSP: Authorize card
+activate PSP
+PSP->>ACS: Start 3DS
+activate ACS
+alt [challenge required]
+ACS-->>Shopper: Challenge
+Shopper->>ACS: OTP
+ACS->>Issuer: Verify
+Issuer-->>ACS: Result
+else [frictionless]
+ACS->>Issuer: Assess
+Issuer-->>ACS: Result
+end
+ACS-->>PSP: CAVV and ECI
+deactivate ACS
+PSP->>Issuer: Authorization
+Issuer-->>PSP: Approved or declined
+PSP-->>Store: Result
+deactivate PSP
+Store-->>Shopper: Confirmation
+Note over PSP,ACS: Authenticate before authorize

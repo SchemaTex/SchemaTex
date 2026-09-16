@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960">
+<title>Addressable Fire Alarm Class A Loop</title>
+<rect width="1500" height="960" fill="white"/>
+<defs><style>
+text{font-family:Helvetica,Arial,sans-serif;fill:#17232e;font-size:18px} .title{font-size:30px;font-weight:bold}.label{font-weight:bold;font-size:19px}.small{font-size:15px}.wire{fill:none;stroke:#17232e;stroke-width:2.5;stroke-linejoin:round}.sym{fill:white;stroke:#17232e;stroke-width:2.5}.dot{fill:#17232e}.loop{fill:none;stroke:#145c86;stroke-width:3;stroke-linejoin:round}.blue{fill:#145c86}
+</style></defs>
+<text x="60" y="57" class="title">Addressable Fire Alarm Class A Loop</text>
+<text x="60" y="87">24 VDC • Addressable field loop with dedicated return • Parallel sounders</text>
+<!-- Control panel -->
+<rect x="70" y="180" width="290" height="555" rx="0" class="sym"/>
+<text x="215" y="219" text-anchor="middle" class="label">FACP PANEL</text>
+<text x="215" y="248" text-anchor="middle">Notifier NFS-320</text>
+<text x="90" y="280" class="small">U1</text>
+<path d="M70 296H360" class="wire"/>
+<text x="340" y="345" text-anchor="end" class="label">LOOP OUT</text>
+<text x="340" y="475" text-anchor="end" class="label">LOOP IN</text>
+<text x="340" y="600" text-anchor="end" class="label">SOUNDER+</text>
+<text x="97" y="704">24V</text><text x="287" y="704">COM</text>
+<!-- field devices in sequence -->
+<path d="M360 350H455 M635 350H685 M865 350H915 M1095 350H1145 M1325 350H1390V480H360" class="loop"/>
+<path d="M403 344L415 350L403 356 M754 474L742 480L754 486" fill="none" stroke="#145c86" stroke-width="2.5"/>
+<text x="820" y="165" text-anchor="middle" class="label blue">ADDRESSABLE LOOP — OUTGOING PATH</text>
+<rect x="455" y="260" width="180" height="150" class="sym"/>
+<circle cx="545" cy="300" r="23" class="sym"/>
+<text x="545" y="307" text-anchor="middle" class="label">S</text>
+<text x="545" y="230" text-anchor="middle" class="label">D1 SMOKE DETECTOR</text>
+<text x="545" y="381" text-anchor="middle">U2 · FSP-851</text>
+<text x="465" y="342" class="small">IN</text><text x="625" y="342" text-anchor="end" class="small">OUT</text>
+<rect x="685" y="260" width="180" height="150" class="sym"/>
+<circle cx="775" cy="300" r="23" class="sym"/>
+<text x="775" y="307" text-anchor="middle" class="label">H</text>
+<text x="775" y="230" text-anchor="middle" class="label">D2 HEAT DETECTOR</text>
+<text x="775" y="381" text-anchor="middle">U3 · FST-851</text>
+<text x="695" y="342" class="small">IN</text><text x="855" y="342" text-anchor="end" class="small">OUT</text>
+<rect x="915" y="260" width="180" height="150" class="sym"/>
+<rect x="984" y="279" width="42" height="42" class="sym"/><path d="M990 315L1020 285" class="wire"/>
+<text x="1005" y="208" text-anchor="middle" class="label">MCP1 MANUAL</text><text x="1005" y="231" text-anchor="middle" class="label">CALL POINT</text>
+<text x="1005" y="381" text-anchor="middle">U4 · MCP5A</text>
+<text x="925" y="342" class="small">IN</text><text x="1085" y="342" text-anchor="end" class="small">OUT</text>
+<rect x="1145" y="260" width="180" height="150" class="sym"/>
+<circle cx="1235" cy="300" r="23" class="sym"/>
+<text x="1235" y="307" text-anchor="middle" class="label">S</text>
+<text x="1235" y="230" text-anchor="middle" class="label">D3 SMOKE DETECTOR</text>
+<text x="1235" y="381" text-anchor="middle">U5 · FSP-851</text>
+<text x="1155" y="342" class="small">IN</text><text x="1315" y="342" text-anchor="end" class="small">OUT</text>
+<text x="660" y="335" text-anchor="middle" class="small blue">N1</text><text x="890" y="335" text-anchor="middle" class="small blue">N2</text><text x="1120" y="335" text-anchor="middle" class="small blue">N3</text>
+<text x="1398" y="455" class="small blue">N4</text>
+<text x="790" y="462" text-anchor="middle" class="label blue">W1 · LOOP RETURN — Class A return</text>
+<!-- Remote EOL branch -->
+<circle cx="1390" cy="480" r="5" class="dot"/>
+<path d="M1390 480V542 M1390 618V850" class="wire"/>
+<rect x="1378" y="542" width="24" height="76" class="sym"/>
+<text x="1355" y="554" text-anchor="end" class="label">R1</text>
+<text x="1355" y="582" text-anchor="end">6.8 kΩ</text>
+<text x="1355" y="610" text-anchor="end" class="label">EOL MONITOR</text>
+<!-- sounder output, fuse and parallel branches -->
+<path d="M360 605H475 M555 605H1050 M780 605V675 M1050 605V675" class="wire"/>
+<rect x="475" y="594" width="80" height="22" class="sym"/><path d="M475 605H555" class="wire"/>
+<text x="515" y="552" text-anchor="middle" class="label">F1 SOUNDER FUSE</text>
+<text x="515" y="578" text-anchor="middle">1 A</text>
+<text x="822" y="570" class="label">SOUNDER CIRCUIT</text>
+<text x="655" y="630" class="small">SND_FUSED</text>
+<circle cx="780" cy="605" r="5" class="dot"/>
+<rect x="705" y="675" width="150" height="112" class="sym"/>
+<path d="M761 706H779L802 692V750L779 736H761Z" class="sym"/>
+<text x="790" y="697" class="small">+</text><text x="790" y="780" class="small">−</text>
+<text x="683" y="717" text-anchor="end" class="label">S1 SOUNDER</text><text x="683" y="744" text-anchor="end">U6 · 24 VDC</text>
+<rect x="975" y="675" width="150" height="112" class="sym"/>
+<path d="M1031 706H1049L1072 692V750L1049 736H1031Z" class="sym"/>
+<text x="1060" y="697" class="small">+</text><text x="1060" y="780" class="small">−</text>
+<text x="1148" y="717" class="label">S2 SOUNDER</text><text x="1148" y="744">U7 · 24 VDC</text>
+<path d="M780 787V850 M1050 787V850" class="wire"/>
+<!-- voltage supply and shared COM -->
+<path d="M115 735V770 M115 830V850H1390 M305 735V850" class="wire"/>
+<circle cx="115" cy="800" r="30" class="sym"/>
+<text x="115" y="790" text-anchor="middle">+</text><text x="115" y="818" text-anchor="middle">−</text>
+<text x="165" y="782" class="label">V1</text><text x="165" y="806">PANEL 24 VDC</text><text x="165" y="831" class="small">24 V DC</text>
+<circle cx="305" cy="850" r="5" class="dot"/><circle cx="780" cy="850" r="5" class="dot"/><circle cx="1050" cy="850" r="5" class="dot"/>
+<text x="829" y="883" text-anchor="middle" class="label">COM — SHARED PANEL, EOL MONITOR &amp; SOUNDER RETURN</text>
+<!-- terminals -->
+<g fill="white" stroke="#17232e" stroke-width="2.5"><circle cx="360" cy="350" r="5"/><circle cx="360" cy="480" r="5"/><circle cx="360" cy="605" r="5"/><circle cx="115" cy="735" r="5"/><circle cx="305" cy="735" r="5"/></g>
+</svg>

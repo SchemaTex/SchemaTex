@@ -1,0 +1,49 @@
+{
+  "id": "circuit-bridge-psu",
+  "type": "circuit",
+  "title": "Transformer-fed regulated DC supply",
+  "goal": "A reader can follow power from the mains through the isolated transformer and four-diode bridge to the filtered 5 V regulator output and its LED indicator using one clear DC ground reference.",
+  "rubric": [
+    {
+      "id": "transformer-isolation",
+      "severity": "blocker",
+      "must": "T1 shows separate primary and secondary windings with a core between them, the 230 V AC source connects across the primary, and the 9 V AC secondary connects to the two AC corners of the bridge without a conductive primary-to-secondary connection."
+    },
+    {
+      "id": "diode-bridge-diamond",
+      "severity": "blocker",
+      "must": "D1 through D4 form the four sides of a recognizable diamond, with the AC connections at opposite corners, the cathodes of D1 and D2 meeting at the positive DC corner, and the anodes of D3 and D4 meeting at the negative DC corner."
+    },
+    {
+      "id": "filter-and-regulator",
+      "severity": "major",
+      "must": "The bridge positive output feeds the positive plate of the 2200 uF reservoir capacitor and the input of the three-terminal 7805 regulator, with a 330 nF capacitor from input to ground and a 100 nF capacitor from the 5 V output to ground."
+    },
+    {
+      "id": "single-ground-reference",
+      "severity": "major",
+      "must": "One ground symbol identifies the shared DC return joining the bridge negative output, capacitor returns, regulator ground pin, and LED cathode."
+    },
+    {
+      "id": "output-indicator",
+      "severity": "major",
+      "must": "A visible series path runs from the regulator output through R1, marked 1 kOhm, and the red LED D5 to the DC return, with the LED cathode toward the return."
+    },
+    {
+      "id": "no-wire-through-body",
+      "severity": "blocker",
+      "must": "No wire passes through the inside of a component symbol."
+    },
+    {
+      "id": "labels-attached",
+      "severity": "major",
+      "must": "Every reference designator and value sits beside its own symbol."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Reviewed. The four rectifier diodes form the conventional diamond with the two AC corners on the sides and the positive and negative corners top and bottom — the shape the engine still does not produce. Reservoir capacitor, regulator with its input and output capacitors, and the indicator complete the supply."
+  }
+}

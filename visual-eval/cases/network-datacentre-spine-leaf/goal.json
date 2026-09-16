@@ -1,0 +1,40 @@
+{
+  "id": "network-datacentre-spine-leaf",
+  "type": "network",
+  "title": "Data-centre spine-leaf fabric",
+  "goal": "Show a fully meshed Clos fabric with attached servers and out-of-band management.",
+  "rubric": [
+    {
+      "id": "two-spines-four-leaves",
+      "severity": "blocker",
+      "must": "Two spine switches appear above four leaf switches in separate fabric rows."
+    },
+    {
+      "id": "full-fabric-mesh",
+      "severity": "blocker",
+      "must": "Every leaf visibly has a link to each spine, forming a complete two-by-four mesh."
+    },
+    {
+      "id": "server-attachments",
+      "severity": "major",
+      "must": "Four named compute or storage servers visibly attach below separate leaves."
+    },
+    {
+      "id": "oob-network",
+      "severity": "major",
+      "must": "A management gateway and OOB management switch visibly connect to all fabric switches."
+    },
+    {
+      "id": "fabric-labels",
+      "severity": "minor",
+      "must": "Spine, leaf, server, and management roles are readable from labels."
+    }
+  ],
+  "split": "holdout",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": true,
+    "notes": "Drawn in the idiom of the network exemplar (`visual-eval/exemplars/network/ideal.svg`) by `scripts/visual-eval/draw-network-target.mjs`, from this case's own source. A two-spine, four-leaf Clos fabric. Both spine switches sit in one row above the four leaf switches, and every leaf carries an uplink to each spine, so the eight fabric links form a complete two-by-four mesh — the only crossings in the drawing, and the ones the topology requires. One named server hangs below each leaf on a 25G link: three compute nodes and one storage node. The out-of-band management path is drawn apart from the fabric as a thin dashed grey bus along the foot, with a riser to every spine and every leaf, an OOB management switch sitting on the bus and the management gateway below it. One consistent line-art icon family throughout, a bold name under or beside each icon with the address on a lighter second line, and link type carried by weight and colour — thick teal fiber, thin grey copper, green PoE, dark WAN, dotted wireless, dashed violet VPN — with the media, speed and VLAN spelled out beside each line on a white knock-out so nothing is read from colour alone. Routing is orthogonal, every drop leaves its own port on its own lane so no two runs are ever collinear, and nothing crosses except the Clos mesh, where crossing is the topology. Every label was checked against every other label, every device icon and the canvas edge: 0 overlaps."
+  }
+}

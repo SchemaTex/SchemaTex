@@ -1,0 +1,78 @@
+{
+  "id": "phylo-gene-duplication",
+  "type": "phylo",
+  "title": "Gene Duplication Tree",
+  "goal": "A practitioner can visually assess the Gene Duplication Tree scenario using its published diagram convention.",
+  "rubric": [
+    {
+      "id": "tree-topology",
+      "severity": "blocker",
+      "must": "A rooted branching tree visibly shows the stated sister taxa and their clade relationships."
+    },
+    {
+      "id": "branch-lengths",
+      "severity": "blocker",
+      "must": "Horizontal branch lengths visibly vary to encode the supplied evolutionary distances."
+    },
+    {
+      "id": "tip-labels",
+      "severity": "major",
+      "must": "The named taxa are legible at the tree tips."
+    },
+    {
+      "id": "highlighted-clade",
+      "severity": "major",
+      "must": "The named clade is visibly highlighted distinctly from the rest of the tree."
+    },
+    {
+      "id": "scale",
+      "severity": "minor",
+      "must": "A visible scale or distance label identifies the evolutionary-distance interpretation."
+    }
+  ],
+  "split": "holdout",
+  "variant": "rectangular",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": true,
+    "notes": "Drafted by Codex from the source, the rubric and the phylo/rectangular exemplar, without seeing the engine's own output.",
+    "review": {
+      "verdict": "accept",
+      "evidence": "The target shows a rooted rectangular tree with Human and Mouse tips paired within GeneA and GeneB, visibly unequal horizontal branch lengths, an orange GeneA clade, readable tip labels, and a 0.05 substitutions/site scale. The dashed label extensions are identified as alignment guides that add no branch length, so connections remain traceable.",
+      "model": "gpt-5.6-luna",
+      "passes": 1,
+      "reviewedAt": "2026-09-12T21:25:40.698Z",
+      "targetHash": "e9aa07f85a8e",
+      "sourceHash": "a96b56ed425a",
+      "exemplarHash": "8c6f1dd4e0bc",
+      "items": [
+        {
+          "id": "tree-topology",
+          "verdict": "pass",
+          "evidence": "A root splits into GeneA and GeneB pairs; Human GeneA and Mouse GeneA are sisters, as are Human GeneB and Mouse GeneB."
+        },
+        {
+          "id": "branch-lengths",
+          "verdict": "pass",
+          "evidence": "Horizontal branches visibly differ in length, with the two clade stems and individual tip branches represented separately."
+        },
+        {
+          "id": "tip-labels",
+          "verdict": "pass",
+          "evidence": "All four tip labels—Human GeneA, Mouse GeneA, Human GeneB, and Mouse GeneB—are legible."
+        },
+        {
+          "id": "highlighted-clade",
+          "verdict": "pass",
+          "evidence": "GeneA is distinctly highlighted in orange, including its tree branches and clade bracket; GeneB remains dark."
+        },
+        {
+          "id": "scale",
+          "verdict": "pass",
+          "evidence": "A scale bar is labeled “0.05 substitutions/site,” and the caption identifies horizontal distance as substitutions/site."
+        }
+      ]
+    }
+  }
+}

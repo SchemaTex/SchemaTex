@@ -23,6 +23,7 @@ interface LayoutGraph {
   familyUnits: FamilyUnit[];
   generations: Map<string, number>;
   childOf: Map<string, string>;
+  twins: Relationship[];
 }
 
 // ─── Constants ─────────────────────────────────────────────
@@ -94,7 +95,7 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
     familyUnits.push({ id: fuId, partners, relationship: rel.type, children });
   }
 
-  return { individuals, familyUnits, generations: new Map(), childOf };
+  return { individuals, familyUnits, generations: new Map(), childOf, twins: ast.relationships.filter(r => r.type === "twin-identical" || r.type === "twin-fraternal") };
 }
 
 // ─── Step 2: Assign generations ─────────────────────────────
@@ -204,7 +205,29 @@ function orderGeneration(nodeIds: string[], graph: LayoutGraph): string[] {
     }
   }
 
-  return ordered;
+  return groupTwinSiblings(ordered, graph);
+}
+
+function groupTwinSiblings(ordered: string[], graph: LayoutGraph): string[] {
+  const nodeSet = new Set(ordered);
+  // Keep each declared birth pair together even when an unrelated sibling was
+  // entered between them. This uses kinship, never IDs, dates, or label text.
+  const twinPartner = new Map<string, string>();
+  for (const twin of graph.twins) {
+    twinPartner.set(twin.from, twin.to);
+    twinPartner.set(twin.to, twin.from);
+  }
+  const grouped: string[] = [];
+  const groupedIds = new Set<string>();
+  for (const id of ordered) {
+    if (groupedIds.has(id)) continue;
+    grouped.push(id); groupedIds.add(id);
+    const partner = twinPartner.get(id);
+    if (partner && nodeSet.has(partner) && !groupedIds.has(partner)) {
+      grouped.push(partner); groupedIds.add(partner);
+    }
+  }
+  return grouped;
 }
 
 // ─── Step 4: Assign positions ──────────────────────────────
@@ -317,11 +340,11 @@ function centerChildrenUnderParents(
       const parentMidX = (posA.x + posB.x) / 2;
       const childSpacing = config.nodeSpacingX + config.nodeWidth;
 
-      const sortedChildren = [...fu.children].sort((a, b) => {
+      const sortedChildren = groupTwinSiblings([...fu.children].sort((a, b) => {
         const ia = graph.individuals.get(a);
         const ib = graph.individuals.get(b);
         return (ia?.birthYear ?? 9999) - (ib?.birthYear ?? 9999);
-      });
+      }), graph);
 
       if (sortedChildren.length > 1) {
         // Calculate per-gap spacing: add room for married-in spouses
@@ -565,8 +588,23 @@ function computeEdges(
       if (childPositions.length === 0) continue;
       childPositions.sort((a, b) => a.pos.x - b.pos.x);
 
-      const leftX = childPositions[0].pos.x;
-      const rightX = childPositions[childPositions.length - 1].pos.x;
+      const twinForks = new Map<string, number>();
+      for (const twin of graph.twins) {
+        const a = childPositions.find(child => child.id === twin.from);
+        const b = childPositions.find(child => child.id === twin.to);
+        if (!a || !b) continue;
+        const forkX = (a.pos.x + b.pos.x) / 2;
+        twinForks.set(a.id, forkX);
+        twinForks.set(b.id, forkX);
+        if (twin.type === "twin-identical") {
+          const barY = (dropY + a.pos.y - config.nodeHeight / 2) / 2;
+          edges.push({ from: a.id, to: b.id, relationship: twin,
+            path: `M ${(forkX + a.pos.x) / 2} ${barY} L ${(forkX + b.pos.x) / 2} ${barY}` });
+        }
+      }
+      const anchors = childPositions.map(child => twinForks.get(child.id) ?? child.pos.x);
+      const leftX = Math.min(...anchors);
+      const rightX = Math.max(...anchors);
 
       edges.push({
         from: fu.partners[0], to: fu.partners[1],
@@ -588,7 +626,10 @@ function computeEdges(
 
       for (const child of childPositions) {
         const childTop = child.pos.y - config.nodeHeight / 2;
-        const childPath = childPositions.length === 1
+        const twinFork = twinForks.get(child.id);
+        const childPath = twinFork !== undefined
+          ? `M ${twinFork} ${dropY} L ${child.pos.x} ${childTop}`
+          : childPositions.length === 1
           ? `M ${midX} ${dropY} L ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`
           : `M ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
 
@@ -814,53 +855,22 @@ function samePoint(a: PathPoint, b: PathPoint): boolean {
 }
 
 function pointOnSegment(point: PathPoint, segment: PathSegment): boolean {
-  const minX = Math.min(segment.from.x, segment.to.x) - 0.01;
-  const maxX = Math.max(segment.from.x, segment.to.x) + 0.01;
-  const minY = Math.min(segment.from.y, segment.to.y) - 0.01;
-  const maxY = Math.max(segment.from.y, segment.to.y) + 0.01;
-  if (Math.abs(segment.from.y - segment.to.y) < 0.01) {
-    return (
-      Math.abs(point.y - segment.from.y) < 0.01 &&
-      point.x >= minX &&
-      point.x <= maxX
-    );
-  }
-  if (Math.abs(segment.from.x - segment.to.x) < 0.01) {
-    return (
-      Math.abs(point.x - segment.from.x) < 0.01 &&
-      point.y >= minY &&
-      point.y <= maxY
-    );
-  }
-  return false;
+  const dx = segment.to.x - segment.from.x;
+  const dy = segment.to.y - segment.from.y;
+  const length = Math.hypot(dx, dy);
+  if (length < 0.01) return samePoint(point, segment.from);
+  const cross = (point.x - segment.from.x) * dy - (point.y - segment.from.y) * dx;
+  if (Math.abs(cross) / length > 0.01) return false;
+  const dot = (point.x - segment.from.x) * dx + (point.y - segment.from.y) * dy;
+  return dot >= -0.01 * length && dot <= length * length + 0.01 * length;
 }
 
 function segmentsTouch(a: PathSegment, b: PathSegment): boolean {
-  const aHorizontal = Math.abs(a.from.y - a.to.y) < 0.01;
-  const bHorizontal = Math.abs(b.from.y - b.to.y) < 0.01;
-  if (aHorizontal && bHorizontal) {
-    if (Math.abs(a.from.y - b.from.y) >= 0.01) return false;
-    return (
-      Math.max(Math.min(a.from.x, a.to.x), Math.min(b.from.x, b.to.x)) <=
-      Math.min(Math.max(a.from.x, a.to.x), Math.max(b.from.x, b.to.x)) + 0.01
-    );
-  }
-  if (!aHorizontal && !bHorizontal) {
-    if (Math.abs(a.from.x - b.from.x) >= 0.01) return false;
-    return (
-      Math.max(Math.min(a.from.y, a.to.y), Math.min(b.from.y, b.to.y)) <=
-      Math.min(Math.max(a.from.y, a.to.y), Math.max(b.from.y, b.to.y)) + 0.01
-    );
-  }
-  const horizontal = aHorizontal ? a : b;
-  const vertical = aHorizontal ? b : a;
-  return pointOnSegment(
-    { x: vertical.from.x, y: horizontal.from.y },
-    horizontal
-  ) && pointOnSegment(
-    { x: vertical.from.x, y: horizontal.from.y },
-    vertical
-  );
+  if (pointOnSegment(a.from, b) || pointOnSegment(a.to, b) || pointOnSegment(b.from, a) || pointOnSegment(b.to, a)) return true;
+  const cross = (p: PathPoint, q: PathPoint, r: PathPoint): number =>
+    (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+  return cross(a.from, a.to, b.from) * cross(a.from, a.to, b.to) < 0
+    && cross(b.from, b.to, a.from) * cross(b.from, b.to, a.to) < 0;
 }
 
 /** Validate that rendered parent-child geometry still encodes the parsed kinship. */

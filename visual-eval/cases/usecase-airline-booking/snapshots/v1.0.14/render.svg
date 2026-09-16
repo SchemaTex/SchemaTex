@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Airline Booking" width="975" height="970" viewBox="0 0 975 970" data-diagram-type="usecase"><title>Use Case Diagram — Airline Booking</title>
+<desc>Subject: Airline Reservation System. 5 actors, 8 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="487.5" y="24" class="sx-uc-title" text-anchor="middle">Airline Booking</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="148.8" y="58" width="610" height="888" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="453.8" y="82" text-anchor="middle">Airline Reservation System</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 52.8 554 L 32.8 554 L 32.8 434 L 52.8 434" data-source="FF" data-target="T" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 88.8 436 L 289.74 171.08" data-source="T" data-target="Search"/>
+<path class="sx-uc-assoc" d="M 88.8 436 L 219.89 408.96" data-source="T" data-target="Book"/>
+<path class="sx-uc-assoc" d="M 818.8 376 L 410.66 387.27" data-source="A" data-target="Book"/>
+<path class="sx-uc-include" d="M 410.8 390 L 524.8 390" data-source="Book" data-target="Select" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 390.28 421.09 L 565.58 490.54" data-source="Book" data-target="Price" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 365.76 432.76 L 589.63 610.13" data-source="Book" data-target="Pay" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 351.17 436.79 L 600.7 733.36" data-source="Book" data-target="Ticket" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 663.82 610.65 L 818.8 502" data-source="Pay" data-target="PP"/>
+<path class="sx-uc-assoc" d="M 661.78 735.31 L 818.8 622" data-source="Ticket" data-target="DC"/>
+<path class="sx-uc-extend" d="M 606.27 856.64 L 342.41 438.5" data-source="Cancel" data-target="Book" marker-end="url(#sx-uc-open-arrow-accent)"/>
+<path class="sx-uc-assoc" d="M 88.8 436 L 274.16 294.69" data-source="T" data-target="Notify"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="T" transform="translate(48.80000000000001, 412)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Traveller</text></g>
+<g class="sx-uc-actor" data-id="FF" transform="translate(48.80000000000001, 532)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Frequent Flyer</text></g>
+<g class="sx-uc-actor" data-id="A" transform="translate(818.8, 352)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Agent</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="PP" transform="translate(818.8, 478)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Payment Processor</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="DC" transform="translate(818.8, 598)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Departure Control</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Search"><ellipse cx="311.8" cy="142" rx="90" ry="30"/>
+<text class="sx-uc-name" x="311.8" y="146" text-anchor="middle">Search Flights</text></g>
+<g class="sx-uc-usecase" data-id="Notify"><ellipse cx="311.8" cy="266" rx="129" ry="30"/>
+<text class="sx-uc-name" x="311.8" y="270" text-anchor="middle">Notify Schedule Change</text></g>
+<g class="sx-uc-usecase" data-id="Book"><ellipse cx="311.8" cy="390" rx="99" ry="51"/>
+<text class="sx-uc-name" x="311.8" y="357" text-anchor="middle">Book Flight</text>
+<line class="sx-uc-div" x1="220.8" y1="365" x2="402.8" y2="365"/>
+<text class="sx-uc-extpoint-head" x="228.8" y="379">extension points</text>
+<text class="sx-uc-extpoint" x="228.8" y="392">payment declined</text></g>
+<g class="sx-uc-usecase" data-id="Select"><ellipse cx="624.8" cy="390" rx="100" ry="30"/>
+<text class="sx-uc-name" x="624.8" y="394" text-anchor="middle">Select Itinerary</text></g>
+<g class="sx-uc-usecase" data-id="Price"><ellipse cx="624.8" cy="514" rx="95" ry="30"/>
+<text class="sx-uc-name" x="624.8" y="518" text-anchor="middle">Price Itinerary</text></g>
+<g class="sx-uc-usecase" data-id="Pay"><ellipse cx="624.8" cy="638" rx="95" ry="30"/>
+<text class="sx-uc-name" x="624.8" y="642" text-anchor="middle">Collect Payment</text></g>
+<g class="sx-uc-usecase" data-id="Ticket"><ellipse cx="624.8" cy="762" rx="81" ry="30"/>
+<text class="sx-uc-name" x="624.8" y="766" text-anchor="middle">Issue Ticket</text></g>
+<g class="sx-uc-usecase" data-id="Cancel"><ellipse cx="624.8" cy="886" rx="90" ry="30"/>
+<text class="sx-uc-name" x="624.8" y="890" text-anchor="middle">Cancel Booking</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="436.79999999999995" y="382" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="467.79999999999995" y="393" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="446.9311255253367" y="447.81552576722606" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="477.9311255253367" y="458.81552576722606" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="446.6957644798806" y="513.4445673834198" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="477.6957644798806" y="524.4445673834198" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="444.9364830558409" y="577.0759479130122" width="62" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="475.9364830558409" y="588.0759479130122" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="365.3403882589495" y="627.5719890621053" width="218" height="40" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="474.3403882589495" y="638.5719890621053" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="474.3403882589495" y="650.5719890621053" text-anchor="middle">[payment declined]</text>
+<text class="sx-uc-edge-label" x="474.3403882589495" y="662.5719890621053" text-anchor="middle">(extension point: payment declined)</text></g></g></svg>

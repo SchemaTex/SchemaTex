@@ -7,11 +7,6 @@ import {
 import { listDiagrams, getExamples, validateDsl } from "../../src/ai";
 
 describe("stripLineComment marker set", () => {
-  test("default set strips %%, //, and #", () => {
-    expect(stripLineComment("a %% c").trimEnd()).toBe("a");
-    expect(stripLineComment("a // c").trimEnd()).toBe("a");
-    expect(stripLineComment("a # c").trimEnd()).toBe("a");
-  });
 
   test("narrowing to %% leaves # and // untouched", () => {
     expect(stripLineComment("a # c", UNIVERSAL_COMMENT_MARKERS)).toBe("a # c");

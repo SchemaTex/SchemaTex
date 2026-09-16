@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="876" height="690" viewBox="0 0 876 690" role="img" aria-label="Fault tree" data-diagram-type="faulttree"><title>Fault tree</title>
+<desc>Fault tree for &quot;Total hydraulic actuation unavailable&quot;: 1 top, 5 intermediate, 9 basic. 24 minimal cut sets: {CONTROL_A_FAIL, CONTROL_B_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ELECTRIC_PUMP_C_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_B_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK, RESERVOIR_C_LEAK}, {CONTROL_A_FAIL, CONTROL_C_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ELECTRIC_PUMP_C_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_C_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_A_FAIL, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, ENG_DRIVEN_PUMP_B_FAIL, RESERVOIR_A_LEAK, RESERVOIR_C_LEAK}, {CONTROL_B_FAIL, CONTROL_C_FAIL, RESERVOIR_A_LEAK, RESERVOIR_B_LEAK, RESERVOIR_C_LEAK}. P(top) = 9.60e-13 (exact). prob: exact needs ≤ 20 cut sets (have 24); fell back to MCUB.</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="876" height="690" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><rect x="43.5" y="369" width="684" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL" data-cutset-index="0" data-order="5" data-cutset-prob="1.4400000000000002e-13"/>
+<rect x="41.5" y="367" width="688" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK" data-cutset-index="1" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="113.5" y="365" width="618" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK" data-cutset-index="2" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="117.5" y="369" width="610" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ELECTRIC_PUMP_C_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK" data-cutset-index="3" data-order="5" data-cutset-prob="1.6000000000000004e-14"/>
+<rect x="41.5" y="367" width="688" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_C_LEAK" data-cutset-index="4" data-order="5" data-cutset-prob="3.6e-14"/>
+<rect x="39.5" y="365" width="692" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="5" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="117.5" y="369" width="610" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK,RESERVOIR_C_LEAK" data-cutset-index="6" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="115.5" y="367" width="614" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_B_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="7" data-order="5" data-cutset-prob="4.000000000000001e-15"/>
+<rect x="39.5" y="365" width="766" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL" data-cutset-index="8" data-order="5" data-cutset-prob="1.4400000000000002e-13"/>
+<rect x="43.5" y="369" width="758" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK" data-cutset-index="9" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="115.5" y="367" width="688" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK" data-cutset-index="10" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="113.5" y="365" width="692" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK" data-cutset-index="11" data-order="5" data-cutset-prob="1.6000000000000004e-14"/>
+<rect x="43.5" y="369" width="758" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_C_LEAK" data-cutset-index="12" data-order="5" data-cutset-prob="3.6e-14"/>
+<rect x="41.5" y="367" width="762" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="13" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="113.5" y="365" width="692" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK,RESERVOIR_C_LEAK" data-cutset-index="14" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="117.5" y="369" width="684" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_A_FAIL,CONTROL_C_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="15" data-order="5" data-cutset-prob="4.000000000000001e-15"/>
+<rect x="41.5" y="367" width="762" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL" data-cutset-index="16" data-order="5" data-cutset-prob="1.4400000000000002e-13"/>
+<rect x="39.5" y="365" width="766" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK" data-cutset-index="17" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="117.5" y="369" width="684" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK" data-cutset-index="18" data-order="5" data-cutset-prob="4.8000000000000004e-14"/>
+<rect x="115.5" y="367" width="688" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ELECTRIC_PUMP_C_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK" data-cutset-index="19" data-order="5" data-cutset-prob="1.6000000000000004e-14"/>
+<rect x="39.5" y="365" width="766" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_C_LEAK" data-cutset-index="20" data-order="5" data-cutset-prob="3.6e-14"/>
+<rect x="43.5" y="369" width="758" height="218" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_A_FAIL,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="21" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="115.5" y="367" width="688" height="222" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,ENG_DRIVEN_PUMP_B_FAIL,RESERVOIR_A_LEAK,RESERVOIR_C_LEAK" data-cutset-index="22" data-order="5" data-cutset-prob="1.2000000000000001e-14"/>
+<rect x="113.5" y="365" width="692" height="226" rx="6" class="sx-ft-cutset" data-cutset="CONTROL_B_FAIL,CONTROL_C_FAIL,RESERVOIR_A_LEAK,RESERVOIR_B_LEAK,RESERVOIR_C_LEAK" data-cutset-index="23" data-order="5" data-cutset-prob="4.000000000000001e-15"/>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="ALL_HYDRAULIC_SYSTEMS_LOST#1"><path d="M 498.5 148 L 498.5 179 L 297.5 179 L 297.5 210" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="CONTROL_VOTE_LOST#11"><path d="M 498.5 148 L 498.5 179 L 699.5 179 L 699.5 210" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="ALL_HYDRAULIC_SYSTEMS_LOST#1" data-to="SYSTEM_A_LOST#2"><path d="M 297.5 310 L 297.5 341 L 108.5 341 L 108.5 372" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="ALL_HYDRAULIC_SYSTEMS_LOST#1" data-to="SYSTEM_B_LOST#5"><path d="M 297.5 310 L 297.5 341 L 297.5 341 L 297.5 372" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="ALL_HYDRAULIC_SYSTEMS_LOST#1" data-to="SYSTEM_C_LOST#8"><path d="M 297.5 310 L 297.5 341 L 486.5 341 L 486.5 372" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_A_LOST#2" data-to="ENG_DRIVEN_PUMP_A_FAIL#3"><path d="M 108.5 472 L 108.5 505 L 71.5 505 L 71.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_A_LOST#2" data-to="RESERVOIR_A_LEAK#4"><path d="M 108.5 472 L 108.5 505 L 145.5 505 L 145.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_B_LOST#5" data-to="ENG_DRIVEN_PUMP_B_FAIL#6"><path d="M 297.5 472 L 297.5 505 L 260.5 505 L 260.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_B_LOST#5" data-to="RESERVOIR_B_LEAK#7"><path d="M 297.5 472 L 297.5 505 L 334.5 505 L 334.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_C_LOST#8" data-to="ELECTRIC_PUMP_C_FAIL#9"><path d="M 486.5 472 L 486.5 505 L 449.5 505 L 449.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="SYSTEM_C_LOST#8" data-to="RESERVOIR_C_LEAK#10"><path d="M 486.5 472 L 486.5 505 L 523.5 505 L 523.5 538" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="CONTROL_VOTE_LOST#11" data-to="CONTROL_A_FAIL#12"><path d="M 699.5 310 L 699.5 343 L 625.5 343 L 625.5 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="CONTROL_VOTE_LOST#11" data-to="CONTROL_B_FAIL#13"><path d="M 699.5 310 L 699.5 343 L 699.5 343 L 699.5 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="CONTROL_VOTE_LOST#11" data-to="CONTROL_C_FAIL#14"><path d="M 699.5 310 L 699.5 343 L 773.5 343 L 773.5 376" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="TOP#0" data-gate="and"><line x1="498.5" y1="110" x2="498.5" y2="98" class="sx-ft-pin"/>
+<path d="M 471.5 148 L 471.5 129 A 27 19 0 0 1 525.5 129 L 525.5 148 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="ALL_HYDRAULIC_SYSTEMS_LOST#1" data-gate="and"><line x1="297.5" y1="272" x2="297.5" y2="260" class="sx-ft-pin"/>
+<path d="M 270.5 310 L 270.5 291 A 27 19 0 0 1 324.5 291 L 324.5 310 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="SYSTEM_A_LOST#2" data-gate="or"><line x1="108.5" y1="434" x2="108.5" y2="422" class="sx-ft-pin"/>
+<path d="M 81.5 472 Q 108.5 463 135.5 472 Q 135.5 443.5 108.5 434 Q 81.5 443.5 81.5 472 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="SYSTEM_B_LOST#5" data-gate="or"><line x1="297.5" y1="434" x2="297.5" y2="422" class="sx-ft-pin"/>
+<path d="M 270.5 472 Q 297.5 463 324.5 472 Q 324.5 443.5 297.5 434 Q 270.5 443.5 270.5 472 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="SYSTEM_C_LOST#8" data-gate="or"><line x1="486.5" y1="434" x2="486.5" y2="422" class="sx-ft-pin"/>
+<path d="M 459.5 472 Q 486.5 463 513.5 472 Q 513.5 443.5 486.5 434 Q 459.5 443.5 459.5 472 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="CONTROL_VOTE_LOST#11" data-gate="voting" data-k="2" data-n="3"><line x1="699.5" y1="272" x2="699.5" y2="260" class="sx-ft-pin"/>
+<path d="M 672.5 310 Q 699.5 301 726.5 310 Q 726.5 281.5 699.5 272 Q 672.5 281.5 672.5 310 Z" class="sx-ft-gate"/>
+<text x="699.5" y="295" class="sx-ft-gate-label" text-anchor="middle">2/3</text></g>
+<g class="sx-ft-event-g" data-id="TOP" data-role="top"><rect x="410" y="48" width="177" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="498.5" y="73" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="498.5" dy="-7">Total hydraulic</tspan><tspan x="498.5" dy="14">actuation unavailable</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ALL_HYDRAULIC_SYSTEMS_LOST" data-role="intermediate"><rect x="205.5" y="210" width="184" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="297.5" y="235" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="297.5" dy="-7">All independent</tspan><tspan x="297.5" dy="14">hydraulic systems lost</tspan></text></g>
+<g class="sx-ft-event-g" data-id="SYSTEM_A_LOST" data-role="intermediate"><rect x="30" y="372" width="157" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="108.5" y="397" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108.5" dy="-7">Hydraulic system A</tspan><tspan x="108.5" dy="14">lost</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ENG_DRIVEN_PUMP_A_FAIL" data-role="basic" data-prob="0.003"><circle cx="71.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="71.5" y="562" class="sx-ft-id" text-anchor="middle">ENG_DRIVEN_PUMP_A_FAIL</text>
+<text x="71.5" y="599" class="sx-ft-cap" text-anchor="middle">Engine-driven pump …</text>
+<text x="71.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.003</text></g>
+<g class="sx-ft-event-g" data-id="RESERVOIR_A_LEAK" data-role="basic" data-prob="0.001"><circle cx="145.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="145.5" y="562" class="sx-ft-id" text-anchor="middle">RESERVOIR_A_LEAK</text>
+<text x="145.5" y="599" class="sx-ft-cap" text-anchor="middle">System A reservoir …</text>
+<text x="145.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.001</text></g>
+<g class="sx-ft-event-g" data-id="SYSTEM_B_LOST" data-role="intermediate"><rect x="219" y="372" width="157" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="297.5" y="397" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="297.5" dy="-7">Hydraulic system B</tspan><tspan x="297.5" dy="14">lost</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ENG_DRIVEN_PUMP_B_FAIL" data-role="basic" data-prob="0.003"><circle cx="260.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="260.5" y="562" class="sx-ft-id" text-anchor="middle">ENG_DRIVEN_PUMP_B_FAIL</text>
+<text x="260.5" y="599" class="sx-ft-cap" text-anchor="middle">Engine-driven pump …</text>
+<text x="260.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.003</text></g>
+<g class="sx-ft-event-g" data-id="RESERVOIR_B_LEAK" data-role="basic" data-prob="0.001"><circle cx="334.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="334.5" y="562" class="sx-ft-id" text-anchor="middle">RESERVOIR_B_LEAK</text>
+<text x="334.5" y="599" class="sx-ft-cap" text-anchor="middle">System B reservoir …</text>
+<text x="334.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.001</text></g>
+<g class="sx-ft-event-g" data-id="SYSTEM_C_LOST" data-role="intermediate"><rect x="408" y="372" width="157" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="486.5" y="397" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="486.5" dy="-7">Hydraulic system C</tspan><tspan x="486.5" dy="14">lost</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ELECTRIC_PUMP_C_FAIL" data-role="basic" data-prob="0.004"><circle cx="449.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="449.5" y="562" class="sx-ft-id" text-anchor="middle">ELECTRIC_PUMP_C_FAIL</text>
+<text x="449.5" y="599" class="sx-ft-cap" text-anchor="middle">Electric pump C fai…</text>
+<text x="449.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.004</text></g>
+<g class="sx-ft-event-g" data-id="RESERVOIR_C_LEAK" data-role="basic" data-prob="0.001"><circle cx="523.5" cy="559" r="21" class="sx-ft-basic"/>
+<text x="523.5" y="562" class="sx-ft-id" text-anchor="middle">RESERVOIR_C_LEAK</text>
+<text x="523.5" y="599" class="sx-ft-cap" text-anchor="middle">System C reservoir …</text>
+<text x="523.5" y="612" class="sx-ft-prob" text-anchor="middle">p=0.001</text></g>
+<g class="sx-ft-event-g" data-id="CONTROL_VOTE_LOST" data-role="intermediate"><rect x="597" y="210" width="205" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="699.5" y="235" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="699.5" dy="-7">Two of three</tspan><tspan x="699.5" dy="14">actuator-control channels</tspan></text></g>
+<g class="sx-ft-event-g" data-id="CONTROL_A_FAIL" data-role="basic" data-prob="0.002"><circle cx="625.5" cy="397" r="21" class="sx-ft-basic"/>
+<text x="625.5" y="400" class="sx-ft-id" text-anchor="middle">CONTROL_A_FAIL</text>
+<text x="625.5" y="437" class="sx-ft-cap" text-anchor="middle">Control channel A f…</text>
+<text x="625.5" y="450" class="sx-ft-prob" text-anchor="middle">p=0.002</text></g>
+<g class="sx-ft-event-g" data-id="CONTROL_B_FAIL" data-role="basic" data-prob="0.002"><circle cx="699.5" cy="397" r="21" class="sx-ft-basic"/>
+<text x="699.5" y="400" class="sx-ft-id" text-anchor="middle">CONTROL_B_FAIL</text>
+<text x="699.5" y="437" class="sx-ft-cap" text-anchor="middle">Control channel B f…</text>
+<text x="699.5" y="450" class="sx-ft-prob" text-anchor="middle">p=0.002</text></g>
+<g class="sx-ft-event-g" data-id="CONTROL_C_FAIL" data-role="basic" data-prob="0.002"><circle cx="773.5" cy="397" r="21" class="sx-ft-basic"/>
+<text x="773.5" y="400" class="sx-ft-id" text-anchor="middle">CONTROL_C_FAIL</text>
+<text x="773.5" y="437" class="sx-ft-cap" text-anchor="middle">Control channel C f…</text>
+<text x="773.5" y="450" class="sx-ft-prob" text-anchor="middle">p=0.002</text></g>
+<text x="498.5" y="39" class="sx-ft-ptop" text-anchor="middle">P(top) = 9.60e-13 (exact)</text></g></svg>

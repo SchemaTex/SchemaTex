@@ -1,0 +1,41 @@
+{
+  "id": "bpmn-patient-referral",
+  "type": "bpmn",
+  "variant": "collaboration",
+  "title": "Patient referral",
+  "goal": "Show referral exchange between two healthcare organisations.",
+  "rubric": [
+    {
+      "id": "pools",
+      "severity": "blocker",
+      "must": "Clinic and Specialist are separate pools."
+    },
+    {
+      "id": "messages",
+      "severity": "blocker",
+      "must": "Referral and Appointment are dashed message flows crossing pools."
+    },
+    {
+      "id": "sequence",
+      "severity": "major",
+      "must": "Each pool has internal solid sequence flows only."
+    },
+    {
+      "id": "gateway",
+      "severity": "major",
+      "must": "An event-based gateway is visible after Triage referral."
+    },
+    {
+      "id": "events",
+      "severity": "minor",
+      "must": "Referral needed and Booked are start and end events."
+    }
+  ],
+  "split": "train",
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "model-svg",
+    "reviewed": false,
+    "notes": "Drafted by Codex from the source and the rubric, without seeing the engine's own output. It preferred the svg: The SVG satisfies all five rules, while the picture depicts a different workflow and lacks the required Appointment message flow, event-based gateway, and Booked end event."
+  }
+}

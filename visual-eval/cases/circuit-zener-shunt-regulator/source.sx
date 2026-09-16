@@ -1,0 +1,7 @@
+circuit "Zener Shunt Regulator" netlist
+V1 VIN GND value="15 V unregulated" label="V1 INPUT"
+D1 VIN PROTECTED type=schottky value="SS14, 1 A" label="D1 REVERSE PROTECT"
+R1 PROTECTED VOUT value="330 Ω, 1 W" label="R1 SERIES"
+D2 VOUT GND type=zener value="5.1 V, 1 W" label="D2 ZENER"
+R2 VOUT GND value="1 kΩ, 0.25 W" label="R2 LOAD"
+C1 VOUT GND type=ecap value="47 µF, 16 V" label="C1 OUTPUT"

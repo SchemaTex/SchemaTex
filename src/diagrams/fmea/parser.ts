@@ -1,3 +1,4 @@
+import { matchQuoted } from "../../core/quotes";
 /**
  * FMEA parser — nested, row-structured DSL (item → mode → effect / cause).
  * Per docs/reference/40-FMEA-STANDARD.md §"DSL sketch".
@@ -367,18 +368,6 @@ function parseInt10(v: string, lineNo: number, what: string): number {
 }
 
 // ─── Lexical helpers (shared house-style: CJK quotes + // # comments) ──
-
-interface Quoted { value: string; length: number }
-
-function matchQuoted(s: string): Quoted | undefined {
-  if (!s) return undefined;
-  const open = s[0]!;
-  if (open !== '"' && open !== "「" && open !== "“") return undefined;
-  const close = closingQuote(open);
-  const end = s.indexOf(close, 1);
-  if (end < 0) return undefined;
-  return { value: s.slice(1, end), length: end + 1 };
-}
 
 function stripQuotes(s: string): string {
   const q = matchQuoted(s);
