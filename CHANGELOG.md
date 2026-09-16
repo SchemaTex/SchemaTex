@@ -7,29 +7,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.1.0] — 2026-09-15
+
+Engines across the library were reworked for visual correctness. Two diagram
+types now draw differently by default, and several inputs that used to parse are
+now rejected. No API changed, but the sections below are worth reading before
+upgrading a document you rely on.
+
+### Breaking — your existing documents may draw differently
+
+- **Phylogenetic trees default to slanted branches.** A tree with no `layout:`
+  line used to draw elbow connectors; it now draws diagonals meeting at each
+  ancestor. Add `layout: rectangular` to keep the old picture.
+- **Git graph commit ids are horizontal.** They used to be tilted about 45°.
+  Set `rotateCommitLabel: true` to keep the tilt.
+- **Fishbone causes hang from the tail side by default.** `config causeSide =
+  head` restores the ASQ orientation.
+- **Every `--> [*]` in a state diagram now draws its own final circle.** Two
+  transitions to the final state used to share one; each now terminates where it
+  is written, which is what UML shows.
+
+### Breaking — input that used to be accepted is now an error
+
+Each of these used to draw something misleading rather than fail, so the error is
+the fix. All of them report the offending line.
+
+- Newick strings with unbalanced parentheses, or with content after the root.
+- Pedigree bracket tokens outside the documented set. The parser accepts
+  `twin-mz` and `twin-dz`; `adopted-in`, `triplet-mz`, `surrogate` and the rest
+  were never implemented and were silently ignored.
+- A twin flag that does not mark exactly two children of the same parents.
+- Genogram `[initials: …]`, which was never drawn — use `label:`.
+- Genogram emotional relationships outside the McGoldrick set, and header lines
+  carrying tokens the parser does not recognise.
 
 ### Added
-- Circuit netlists can describe optional functional groups, flow, pin roles and ordered physical buses. Placement and routing remain engine responsibilities.
-- Phylogenetic trees support slanted (default) and rectangular presentation; symbol catalogs share the artwork used by production renderers.
-- Visual evaluation includes per-variant exemplars, case targets, paired version judgments and freshness checks.
 
-### Changed
-- Improve layout, routing, captions and symbols across relationship, electrical, process, tree, graph and sports diagrams.
-- Refresh the reviewed symbol libraries, including network equipment, circuit components, industrial symbols and floorplan assets.
-- Separate relationship labels from wires and improve transfer-switch source separation, graph arrows, field markings and chart readability.
-- Move the local visual evaluation UI to /eval/ and remove superseded engineering-review pages.
+- **Circuit netlists can describe functional structure.** Optional `group`,
+  `flow`, pin roles and ordered physical `bus` declarations guide placement.
+  Coordinates, bends and spacing stay with the engine, and simple circuits need
+  none of it.
+- **Genogram gains the vocabulary clinicians actually use:** `pregnancy` status,
+  `step` child relationships, `external:`, an `[asOf: YYYY]` header property,
+  `@key: "value"` annotation blocks and labels on relationships. `nonbinary` and
+  `intersex` are accepted sex values and draw as the diamond the symbol table
+  already defined for them; the parser had been rejecting both.
+- **Phylogenetic trees, git graphs and several other families gained a second
+  presentation:** phylo slanted and rectangular, gitgraph horizontal and
+  vertical. Each is a variant with its own reference drawing.
+- Smaller additions: bare event labels in timelines, a `title:` statement in
+  block diagrams, an SLD `contactor`, UML `<<accepting>>` / `<<final>>` state
+  stereotypes, prefix-form flowchart output nodes, and twenty-one network device
+  kinds promoted from aliases to first-class symbols with their own icons.
+- **Visual evaluation ships with the library.** 380 cases, one hand-drawn
+  reference per diagram variant, and a review UI at `/eval/`.
 
 ### Fixed
-- Preserve parser-owned %% directives through preprocessing; consume IDEF0 role suffixes and flow separators; prevent a phantom sociogram header node.
-- Reject malformed phylogenetic trees and retain domain semantics such as pedigree twins and stillbirth.
-- Share quoted-prefix parsing across five parsers and preserve literal comment markers inside smart/escaped quotes.
-- Replace the previous approximate FMEA action-priority bands with the documented S/O/D matrix.
-- Repair incomplete agent copyable patterns and keep alternative modes in separate documents. Align FMEA reference guidance with the implemented S/O/D lookup.
+
+- **Every engine now accepts all seven documented quote pairs.** `「…」`, `'…'`,
+  `«…»` and the rest work in diagram titles and in body labels everywhere, not
+  just in the engines that happened to share the parsing helper. This is the
+  headline claim of a DSL written for LLM output, and it was only half true.
+- **A dense circuit no longer takes forty seconds to lay out.** A 74-component
+  schematic took 48 s; it now takes about 8 s. The router was rebuilding its
+  full visibility grid for every wire and re-scoring every wire already on the
+  page for each new candidate route.
+- **FMEA action priority follows the published S/O/D table** instead of the
+  earlier approximation, which rated every severity 9–10 item High.
+- Parser-owned `%%` directives survive preprocessing; IDEF0 role suffixes and
+  flow separators are consumed; a sociogram header no longer becomes a node.
+- Copyable patterns in the agent-facing cards now carry their own header line,
+  so all 52 validate and render when pasted on their own.
+
+### Changed
+
+- Reviewed symbol artwork for network equipment, circuit components, industrial
+  symbols and floorplan assets is now what the production renderers draw.
+- Phylogenetic trees use the library's own font stack again rather than Verdana.
+- Layout, routing, captions and symbols improved across the relationship,
+  electrical, process, tree, graph and sports families.
 
 ### Maintenance
-- Remove obsolete review tools and tests that freeze SVG artwork hashes; retain semantic and terminal-connectivity checks.
-- Regenerate published examples from the current engines. Visual scores document remaining weaknesses and do not imply standards certification or perfect automatic layout.
+
+- `npm publish` now runs the test suite. It previously ran only the build and
+  type check, because of a note about failing P&ID cases that pass today.
+- Reference documentation no longer describes syntax the parsers reject, and the
+  planning material that had accumulated under `docs/` has been removed.
+- Frozen SVG-hash and exact-artwork-coordinate assertions were dropped; semantic,
+  connectivity and terminal checks stay.
 
 ---
 
