@@ -835,6 +835,12 @@ export interface DiagramPlugin {
   altTypes?: readonly DiagramType[];
   /** Recognizes parser-owned %% directives that must survive comment stripping. */
   isDirective?: (line: string) => boolean;
+  /**
+   * Opening quote characters this grammar has claimed for something other than
+   * quoting, which the shared quote-pair normalization must leave alone. The
+   * UML family reads `«interface»` as a stereotype, so it reserves `«`.
+   */
+  reservedQuotes?: readonly string[];
   detect: (text: string) => boolean;
   render: (text: string, config?: RenderConfig) => string;
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */

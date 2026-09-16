@@ -4,6 +4,8 @@ import { renderUsecase } from "./renderer";
 
 export const usecase: DiagramPlugin = {
   type: "usecase" as DiagramPlugin["type"],
+  /** UML reads «…» as a stereotype, never as a quoted string. */
+  reservedQuotes: ["«"],
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

@@ -25,6 +25,10 @@ import type {
 } from "../../core/types";
 import { isIdentifier } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["//", "#"];
 
 export class BreadboardParseError extends Error {
   constructor(message: string, public lineNumber?: number) {
@@ -34,21 +38,6 @@ export class BreadboardParseError extends Error {
 }
 
 // ─── Lex helpers ─────────────────────────────────────────────
-
-function stripComment(s: string): string {
-  let out = "";
-  let inQuote = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (ch === '"') inQuote = !inQuote;
-    if (!inQuote) {
-      if (ch === "/" && s[i + 1] === "/") break;
-      if (ch === "#") break;
-    }
-    out += ch;
-  }
-  return out;
-}
 
 function unquote(v: string): string {
   const t = v.trim();
@@ -61,7 +50,7 @@ interface RawLine { text: string; lineNumber: number; start: number; }
 function lex(text: string): RawLine[] {
   let start = 0;
   return text.split(/\r?\n/).map((raw, i, lines) => {
-    const stripped = stripComment(raw).trimEnd();
+    const stripped = stripLineComment(raw, COMMENT_MARKERS).trimEnd();
     const textValue = stripped.replace(/^\s+/, "");
     const line = {
       text: textValue,

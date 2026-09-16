@@ -138,3 +138,95 @@ export function matchQuoted(s: string): { value: string; length: number } | unde
   const quoted = extractQuotedString(s, 0);
   return quoted ? { value: quoted.value, length: quoted.end } : undefined;
 }
+
+const ALPHANUMERIC = /[\p{L}\p{N}]/u;
+
+/**
+ * Locate the closer for a non-ASCII-double opener, using the two rules that
+ * separate a real closing quote from an apostrophe inside a word:
+ *
+ *   - a closer is never immediately followed by a letter or digit, so the
+ *     `'` in `Alice's` cannot end `'Alice's team'`;
+ *   - for a pair whose opener and closer are the same character, a doubled
+ *     closer is an escaped literal (Newick writes `'Homo ''sapiens'''`), and
+ *     the span may not cross a line break.
+ */
+function findAlternateClosing(text: string, openIdx: number, open: string): number {
+  const close = QUOTE_PAIRS[open]!;
+  const symmetric = open === close;
+  for (let i = openIdx + 1; i < text.length; i++) {
+    const ch = text[i]!;
+    if (symmetric && ch === "\n") return -1;
+    if (ch !== close) continue;
+    if (symmetric && text[i + 1] === close) {
+      i++;
+      continue;
+    }
+    const next = text[i + 1];
+    if (next !== undefined && ALPHANUMERIC.test(next)) continue;
+    return i;
+  }
+  return -1;
+}
+
+/**
+ * Rewrite every alternate quote pair in `text` as ASCII `"`.
+ *
+ * This is how the seven documented pairs reach every engine: each parser's
+ * own lexer only has to know `"`, and the locale-specific spellings are
+ * folded in one place before any diagram grammar sees the source.
+ *
+ * Two properties make it safe to run over arbitrary DSL:
+ *
+ *   - **Offsets never move.** Every quote character is a single UTF-16 unit,
+ *     so openers and closers are replaced in place. Diagnostic line/column
+ *     positions still point at the text the author wrote.
+ *   - **ASCII-quoted regions are left alone.** A label written `"Jordan's
+ *     plan"` or `"see 「this」"` keeps its contents verbatim; only delimiters
+ *     outside an existing `"…"` span are candidates.
+ *
+ * A span whose contents already include `"` is left unconverted: the
+ * alternate pairs carry no escape syntax, so there is no faithful rewrite.
+ *
+ * `reserved` lists opening characters a grammar has claimed for something
+ * other than quoting — the UML family reads `«interface»` as a stereotype,
+ * not as a quoted string — and those are passed through untouched.
+ */
+export function normalizeQuotePairs(
+  text: string,
+  reserved: readonly string[] = []
+): string {
+  if (!/['‘“«「『]/u.test(text)) return text;
+  const out = text.split("");
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i]!;
+    if (ch === '"') {
+      const close = findClosingQuote(text, i);
+      i = close < 0 ? i + 1 : close + 1;
+      continue;
+    }
+    if (!OPEN_QUOTES.has(ch) || reserved.includes(ch)) {
+      i++;
+      continue;
+    }
+    const prev = text[i - 1];
+    if (prev !== undefined && ALPHANUMERIC.test(prev)) {
+      i++;
+      continue;
+    }
+    const end = findAlternateClosing(text, i, ch);
+    if (end < 0) {
+      i++;
+      continue;
+    }
+    if (text.slice(i + 1, end).includes('"')) {
+      i = end + 1;
+      continue;
+    }
+    out[i] = '"';
+    out[end] = '"';
+    i = end + 1;
+  }
+  return out.join("");
+}

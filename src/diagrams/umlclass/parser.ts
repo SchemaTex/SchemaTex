@@ -27,6 +27,7 @@ import {
   readQualifiedIdentifier,
 } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+import { matchQuoted as matchAnyQuoted, QUOTE_PAIRS } from "../../core/quotes";
 
 const CLASSIFIER_ALIAS_TOKEN_RE = new RegExp(
   `\\bas\\s+("[^"]+"|${QUALIFIED_IDENTIFIER_SOURCE})`,
@@ -508,7 +509,7 @@ function topLevelBraceIndex(s: string): number {
     const ch = s[i]!;
     if (inQuote) { if (ch === quoteCh) inQuote = false; continue; }
     if (ch === '"' || ch === "“" || ch === "「" || ch === "『" || ch === "«") {
-      inQuote = true; quoteCh = closingQuote(ch); continue;
+      inQuote = true; quoteCh = QUOTE_PAIRS[ch]!; continue;
     }
     if (ch === "{") return i;
   }
@@ -1065,7 +1066,7 @@ function stripComment(line: string): string {
     }
     if (ch === '"' || ch === "“" || ch === "「" || ch === "『" || ch === "«") {
       inQuote = true;
-      quoteCh = closingQuote(ch);
+      quoteCh = QUOTE_PAIRS[ch]!;
       seenContent = true; prevWasSpace = false;
       continue;
     }
@@ -1084,33 +1085,18 @@ function stripComment(line: string): string {
   return line;
 }
 
-function closingQuote(open: string): string {
-  switch (open) {
-    case '"': return '"';
-    case "“": return "”";
-    case "「": return "」";
-    case "『": return "』";
-    case "«": return "»";
-    default: return open;
-  }
-}
-
 function firstNonSpace(s: string): number {
   for (let i = 0; i < s.length; i++) if (s[i] !== " " && s[i] !== "\t") return i;
   return -1;
 }
 
-interface Quoted { value: string; length: number }
-
-/** Match a leading quoted string in `s` (straight or CJK quotes). */
-function matchQuoted(s: string): Quoted | undefined {
-  if (!s) return undefined;
-  const open = s[0]!;
-  if (open !== '"' && open !== "“" && open !== "「" && open !== "『") return undefined;
-  const close = closingQuote(open);
-  const end = s.indexOf(close, 1);
-  if (end < 0) return undefined;
-  return { value: s.slice(1, end), length: end + 1 };
+/**
+ * Match a leading quoted string, with UML's one exception: `«…»` is a
+ * stereotype here, not a string, so it is left for {@link matchStereotype}.
+ */
+function matchQuoted(s: string): { value: string; length: number } | undefined {
+  if (s.startsWith("«")) return undefined;
+  return matchAnyQuoted(s);
 }
 
 interface Stereotype { value: string; length: number }

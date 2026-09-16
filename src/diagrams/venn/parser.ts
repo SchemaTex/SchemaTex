@@ -26,6 +26,10 @@ import {
   isOpenQuote,
   stripQuotes as stripQuotesShared,
 } from "../../core/quotes";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#"];
 
 const ONLY_REGION_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s+only$`, "iu");
 const SET_DECL_RE = new RegExp(`^set\\s+(${IDENTIFIER_SOURCE})\\s+(.+)$`, "iu");
@@ -50,27 +54,6 @@ const DEFAULT_CONFIG: VennConfig = {
   showCounts: "auto",
   showPercent: false,
 };
-
-function stripComment(line: string): string {
-  // Comments start at first '#' that isn't inside any recognised quote pair.
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]!;
-    if (isOpenQuote(ch)) {
-      try {
-        const r = extractQuotedString(line, i);
-        if (r) {
-          i = r.end - 1;
-          continue;
-        }
-      } catch {
-        // unterminated quote — leave the rest alone
-        return line;
-      }
-    }
-    if (ch === "#") return line.slice(0, i);
-  }
-  return line;
-}
 
 function stripQuotes(s: string): string {
   return stripQuotesShared(s);
@@ -256,7 +239,7 @@ export function parseVennDSL(input: string): VennAST {
   };
 
   for (let i = 0; i < lines.length; i++) {
-    const raw = stripComment(lines[i] ?? "").trim();
+    const raw = stripLineComment(lines[i] ?? "", COMMENT_MARKERS).trim();
     if (!raw) continue;
     const lineNo = i + 1;
 

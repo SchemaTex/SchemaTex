@@ -24,6 +24,10 @@ import type {
   WeldFinish,
 } from "./types";
 import { validateWelding } from "./types";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#"];
 
 const WELD_TYPES: ReadonlySet<string> = new Set<WeldType>([
   "fillet", "square", "vgroove", "bevel", "ugroove", "jgroove",
@@ -93,11 +97,6 @@ function emptyJoint(): Joint {
   return { around: false, field: false };
 }
 
-function stripComment(line: string): string {
-  const hash = outsideQuotes(line).indexOf("#");
-  return hash >= 0 ? line.slice(0, hash) : line;
-}
-
 /** Mask quoted text while retaining source offsets so keywords inside labels stay data. */
 function outsideQuotes(text: string): string {
   let close = "";
@@ -137,7 +136,7 @@ function parseJointBody(body: string, joint: Joint): void {
 
 export function parseWelding(text: string): WeldingAST {
   const ast: WeldingAST = { type: "welding", standard: "aws", joints: [], warnings: [] };
-  const src = text.split(/\r?\n/).map(stripComment).join("\n");
+  const src = text.split(/\r?\n/).map((line) => stripLineComment(line, COMMENT_MARKERS)).join("\n");
 
   // header — the `welding …` line up to the first `joint`
   const unquoted = outsideQuotes(src);

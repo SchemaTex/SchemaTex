@@ -41,7 +41,9 @@ const COUPLE_OPS: Array<{ token: string; type: RelationshipType }> = [
   { token: "~", type: "cohabiting" },
 ];
 
-const VALID_SEX = new Set(["male", "female", "unknown", "other"]);
+// Bennett 2022 adds nonbinary and intersex to the classic three; both draw as
+// the diamond the symbol table already defines for them.
+const VALID_SEX = new Set(["male", "female", "unknown", "other", "nonbinary", "intersex"]);
 const VALID_STATUS = new Set([
   "deceased",
   "stillborn",

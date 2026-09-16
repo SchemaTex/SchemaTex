@@ -10,6 +10,10 @@ import type {
 import { isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
+import { stripLineComment, type CommentMarker } from "../../core/dsl-preprocess";
+
+/** Line-comment markers this grammar recognises. */
+const COMMENT_MARKERS: readonly CommentMarker[] = ["#", "//"];
 
 export class OrgchartParseError extends Error {
   constructor(
@@ -57,20 +61,6 @@ const NODE_KIND_KEYWORDS = new Set([
   "advisor",
   "external",
 ]);
-
-function stripComment(line: string): string {
-  let out = "";
-  let inQuote = false;
-  for (const ch of line) {
-    if (ch === '"') inQuote = !inQuote;
-    if ((ch === "#" || (ch === "/" && out.endsWith("/"))) && !inQuote) {
-      if (ch === "/") return out.slice(0, -1);
-      return out;
-    }
-    out += ch;
-  }
-  return out;
-}
 
 function stripQuotes(v: string): string {
   const t = v.trim();
@@ -126,7 +116,7 @@ function tokenizeLines(text: string): RawLine[] {
   let offset = 0;
   for (let i = 0; i < split.length; i++) {
     const raw = split[i] ?? "";
-    const stripped = stripComment(raw.replace(/\r$/, ""));
+    const stripped = stripLineComment(raw.replace(/\r$/, ""), COMMENT_MARKERS);
     if (!stripped.trim()) {
       offset += raw.length + (i < split.length - 1 ? 1 : 0);
       continue;

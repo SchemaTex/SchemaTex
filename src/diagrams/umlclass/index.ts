@@ -4,6 +4,8 @@ import { renderUmlClass } from "./renderer";
 
 export const umlclass: DiagramPlugin = {
   type: "umlclass",
+  /** UML reads «…» as a stereotype, never as a quoted string. */
+  reservedQuotes: ["«"],
   capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {

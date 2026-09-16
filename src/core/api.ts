@@ -6,6 +6,7 @@ import {
 } from "./dsl-preprocess";
 import { parseMachineSections } from "./editing";
 import { createSourceLocator, findFirstQuotedRange } from "./source-range";
+import { normalizeQuotePairs } from "./quotes";
 import { sourceRevision } from "./revision";
 import { TITLE_SCENE_ID } from "./title-scene";
 import { isInteractiveDiagramType } from "./interactive-capabilities";
@@ -369,7 +370,15 @@ function prepareForPlugin(
   forced: boolean,
   type: DiagramType = plugin.type
 ): PreparedInput {
-  const normalized = normalizeHeader(blankUniversalComments(input, [plugin]), type);
+  // Fold the seven documented quote pairs down to ASCII `"` before this
+  // plugin's grammar sees the text, so no parser has to re-learn the locale
+  // spellings. The rewrite is length-preserving, so `boundaries` still maps
+  // every processed offset back to the character the author typed.
+  const quoted: MappedText = {
+    ...input,
+    text: normalizeQuotePairs(input.text, plugin.reservedQuotes),
+  };
+  const normalized = normalizeHeader(blankUniversalComments(quoted, [plugin]), type);
   const recovered = recoverHeader(plugin, normalized, forced, type);
   return { ...input, text: recovered.text, boundaries: recovered.boundaries };
 }
