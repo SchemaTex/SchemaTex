@@ -1,0 +1,31 @@
+{
+  "id": "sld-weekly-2026-09-20-industrial-distribution",
+  "type": "sld",
+  "title": "Weekly 2026-09-20 — Industrial distribution with metering and branch loads",
+  "goal": "Show utility supply, transformers, metering, switchboards and protected loads without a routing exception.",
+  "split": "train",
+  "variant": "ansi",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The distribution diagram is drawn instead of an error panel."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The utility-to-transformer-to-main-switchboard supply path is visible."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "All five named feeder breakers and their outgoing branches are readable."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

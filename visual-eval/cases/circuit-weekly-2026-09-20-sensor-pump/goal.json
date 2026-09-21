@@ -1,0 +1,30 @@
+{
+  "id": "circuit-weekly-2026-09-20-sensor-pump",
+  "type": "circuit",
+  "title": "Weekly 2026-09-20 — Soil sensor and pump controller",
+  "goal": "Read soil moisture with an ESP32 and drive a separately supplied pump. Preserves a generated missing sensor connection as a demand-completeness failure.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The soil sensor output is visibly connected to an ESP32 input."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The pump, switching transistor, gate resistor and pull-down resistor are visible."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Controller, sensor and pump power labels are legible and distinct."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "FreeDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

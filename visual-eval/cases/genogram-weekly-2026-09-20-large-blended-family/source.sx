@@ -1,0 +1,103 @@
+genogram "Synthetic blended family"
+  member_01 [male, label: "Member 01"]
+  member_02 [female, label: "Member 02"]
+  member_01 -- member_02
+    member_03 [male, label: "Member 03"]
+
+  member_04 [female, label: "Member 04"]
+  member_05 [male, label: "Member 05"]
+  member_04 -- member_05
+    member_06 [female, label: "Member 06"]
+    member_07 [female, label: "Member 07"]
+
+  member_08 [male, label: "Member 08"]
+  member_09 [female, label: "Member 09"]
+  member_08 -- member_09
+    member_10 [male, deceased, label: "Member 10"]
+
+  member_11 [male, label: "Member 11"]
+  member_12 [female, label: "Member 12"]
+  member_11 -- member_12
+    member_13 [female, label: "Member 13"]
+    member_14 [female, label: "Member 14"]
+
+  member_10 -- member_13
+    member_15 [female, deceased, label: "Member 15"]
+    member_16 [male, label: "Member 16"]
+    member_17 [female, label: "Member 17"]
+
+  member_18 [male, label: "Member 18"]
+  member_14 -- member_18
+
+  member_19 [female, label: "Member 19"]
+  member_03 -- member_19
+    member_20 [male, label: "Member 20"]
+
+  member_03 ~/~ member_06
+    member_21 [male, label: "Member 21"]
+
+  member_22 [male, label: "Member 22"]
+  member_06 ~/~ member_22
+    member_23 [male, label: "Member 23"]
+
+  member_24 [male, label: "Member 24"]
+  member_06 ~ member_24
+    member_25 [female, label: "Member 25"]
+
+  member_17 -- member_21 "Relationship"
+    member_26 [female, index, label: "Member 26"]
+    member_27 [female, label: "Member 27"]
+
+  member_28 [female, label: "Member 28"]
+  member_23 -/- member_28
+    member_29 [male, label: "Member 29"]
+    member_30 [female, label: "Member 30"]
+
+  member_31 [female, label: "Member 31"]
+  member_16 -- member_31
+    member_32 [female, label: "Member 32"]
+
+  member_33 [male, label: "Member 33"]
+  member_15 -- member_33
+
+  member_34 [male, label: "Member 34"]
+  member_25 -- member_34
+    member_35 [male, label: "Member 35"]
+    member_36 [male, label: "Member 36"]
+
+  member_37 [male, label: "Member 37"]
+  member_07 ~/~ member_37
+    member_38 [female, label: "Member 38"]
+
+  member_39 [male, label: "Member 39"]
+  member_07 ~ member_39
+
+  member_40 [male, label: "Member 40"]
+  member_38 -- member_40
+    member_41 [male, label: "Member 41"]
+
+  member_03 -abuse-> member_06 "Relationship"
+  member_26 -close- member_15 "Relationship"
+  member_26 -distant-> member_16 "Relationship"
+  member_15 -hostile- member_33 "Relationship"
+  member_16 -distant-> member_31 "Relationship"
+  member_23 -distant-> member_30 "Relationship"
+
+@overrides
+pin member_26 954.66,617
+pin member_32 1297.09,617
+pin member_27 1147.14,617
+pin member_30 569.8,617
+pin member_41 755.48,617
+pin member_29 448.34,617
+pin member_40 724.48,438
+pin member_23 411.26,438
+pin member_34 -41.01,438
+pin member_20 129.1,438
+pin member_28 265.45,438
+pin member_21 1176.82,438
+pin member_31 1371.11,438
+pin member_38 1526.38,438
+pin member_17 1673.38,438
+pin member_16 2141.73,438
+pin member_15 2315.86,438

@@ -1,0 +1,285 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2465.27 796" class="schematex-diagram schematex-genogram" width="2465.27" height="796"><title>Genogram: Synthetic blended family</title>
+<desc>Genogram diagram with 41 individuals across 4 generations</desc>
+<defs><marker id="schematex-genogram-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/></marker></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="1232.635" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">Synthetic blended family</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_01" data-to="member_02"><path d="M 155.20999999999998 60 L 235.20999999999998 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_01" data-to="member_02"><path d="M 195.20999999999998 60 L 195.20999999999998 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_01+member_02" data-to="member_03"><path d="M 195.20999999999998 141 L 455.21 141 L 455.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_05" data-to="member_04"><path d="M 435.21 60 L 515.21 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_05" data-to="member_04"><path d="M 475.21 60 L 475.21 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_04" data-to="member_05"><path d="M 475.21 141 L 975.21 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_04+member_05" data-to="member_06"><path d="M 735.21 141 L 735.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_04+member_05" data-to="member_07"><path d="M 975.21 141 L 975.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_08" data-to="member_09"><path d="M 715.21 60 L 795.21 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_08" data-to="member_09"><path d="M 755.21 60 L 755.21 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_08+member_09" data-to="member_10"><path d="M 755.21 141 L 1315.21 141 L 1315.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_11" data-to="member_12"><path d="M 995.21 60 L 1075.21 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_11" data-to="member_12"><path d="M 1035.21 60 L 1035.21 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_11" data-to="member_12"><path d="M 1035.21 141 L 1775.21 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_11+member_12" data-to="member_13"><path d="M 1535.21 141 L 1535.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_11+member_12" data-to="member_14"><path d="M 1775.21 141 L 1775.21 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_10" data-to="member_13"><path d="M 1335.21 226 L 1515.21 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_10" data-to="member_13"><path d="M 1425.21 226 L 1425.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_10" data-to="member_13"><path d="M 1425.21 307 L 2391.07 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_10+member_13" data-to="member_17"><path d="M 1748.5900000000001 307 L 1748.5900000000001 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_10+member_13" data-to="member_16"><path d="M 2216.94 307 L 2216.94 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_10+member_13" data-to="member_15"><path d="M 2391.07 307 L 2391.07 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_18" data-to="member_14"><path d="M 1675.21 226 L 1755.21 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_03" data-to="member_19"><path d="M 475.21 226 L 555.21 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_03" data-to="member_19"><path d="M 515.21 226 L 515.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_03+member_19" data-to="member_20"><path d="M 515.21 307 L 204.30999999999997 307 L 204.30999999999997 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-cohabiting-ended" data-from="member_03" data-to="member_06"><path d="M 475.21 226 L 715.21 226" class="schematex-genogram-edge-path"/>
+<line x1="591.21" y1="220" x2="599.21" y2="232" class="schematex-genogram-separation-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_03" data-to="member_06"><path d="M 595.21 226 L 595.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_03+member_06" data-to="member_21"><path d="M 595.21 307 L 1252.03 307 L 1252.03 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-cohabiting-ended" data-from="member_22" data-to="member_06"><path d="M 195.20999999999998 226 L 715.21 226" class="schematex-genogram-edge-path"/>
+<line x1="451.21000000000004" y1="220" x2="459.21000000000004" y2="232" class="schematex-genogram-separation-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_22" data-to="member_06"><path d="M 455.21 226 L 455.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_06+member_22" data-to="member_23"><path d="M 455.21 307 L 486.46999999999997 307 L 486.46999999999997 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-cohabiting" data-from="member_24" data-to="member_06"><path d="M 315.21 226 L 715.21 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_24" data-to="member_06"><path d="M 515.21 226 L 515.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_06+member_24" data-to="member_25"><path d="M 515.21 307 L 1035.21 307 L 1035.21 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_21" data-to="member_17"><path d="M 1272.03 392 L 1728.5900000000001 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_21" data-to="member_17"><path d="M 1500.31 392 L 1500.31 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_17" data-to="member_21"><path d="M 1029.87 473 L 1500.31 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_17+member_21" data-to="member_26"><path d="M 1029.87 473 L 1029.87 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_17+member_21" data-to="member_27"><path d="M 1222.3500000000001 473 L 1222.3500000000001 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-separated" data-from="member_28" data-to="member_23"><path d="M 360.65999999999997 392 L 466.46999999999997 392" class="schematex-genogram-edge-path"/>
+<line x1="409.56499999999994" y1="386" x2="417.56499999999994" y2="398" class="schematex-genogram-separation-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_23" data-to="member_28"><path d="M 413.565 392 L 413.565 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_23" data-to="member_28"><path d="M 413.565 473 L 645.01 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_23+member_28" data-to="member_29"><path d="M 523.55 473 L 523.55 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_23+member_28" data-to="member_30"><path d="M 645.01 473 L 645.01 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_31" data-to="member_16"><path d="M 1466.32 392 L 2196.94 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_16" data-to="member_31"><path d="M 1831.63 392 L 1831.63 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_16+member_31" data-to="member_32"><path d="M 1831.63 473 L 1372.3 473 L 1372.3 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_33" data-to="member_15"><path d="M 895.21 392 L 2371.07 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_34" data-to="member_25"><path d="M 54.19999999999999 392 L 1015.21 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_34" data-to="member_25"><path d="M 534.705 392 L 534.705 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_25" data-to="member_34"><path d="M 285.21 473 L 534.705 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_25+member_34" data-to="member_35"><path d="M 285.21 473 L 285.21 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_25+member_34" data-to="member_36"><path d="M 405.21 473 L 405.21 538" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-cohabiting-ended" data-from="member_37" data-to="member_07"><path d="M 875.21 226 L 955.21 226" class="schematex-genogram-edge-path"/>
+<line x1="911.21" y1="220" x2="919.21" y2="232" class="schematex-genogram-separation-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_37" data-to="member_07"><path d="M 915.21 226 L 915.21 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_07+member_37" data-to="member_38"><path d="M 915.21 307 L 1601.5900000000001 307 L 1601.5900000000001 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-cohabiting" data-from="member_07" data-to="member_39"><path d="M 995.21 226 L 1075.21 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="member_40" data-to="member_38"><path d="M 819.69 392 L 1581.5900000000001 392" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_40" data-to="member_38"><path d="M 1200.64 392 L 1200.64 473" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="member_38+member_40" data-to="member_41"><path d="M 1200.64 473 L 830.69 473 L 830.69 538" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-abuse" data-from="member_03" data-to="member_06" data-relationship-type="abuse"><path d="M 455.21 246 Q 595.21 276 735.21 246" fill="none" stroke="#b71c1c" stroke-width="2" marker-end="url(#schematex-genogram-arrow)"/>
+<text x="525.21" y="255" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#b71c1c">Relationship</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="member_26" data-to="member_15" data-relationship-type="close"><path d="M 1029.87 558 Q 2441.07 475 2391.07 392" fill="none" stroke="#4caf50" stroke-width="3"/>
+<text x="1735.47" y="510.5" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#4caf50">Relationship</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-distant" data-from="member_26" data-to="member_16" data-relationship-type="distant"><path d="M 1029.87 558 Q 2266.94 475 2216.94 392" fill="none" stroke="#9e9e9e" stroke-width="2" style="stroke-dasharray: 6,4;" marker-end="url(#schematex-genogram-arrow)"/>
+<text x="1648.405" y="510.5" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#9e9e9e">Relationship</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-hostile" data-from="member_15" data-to="member_33" data-relationship-type="hostile"><path d="M 2391.07 412 Q 1633.14 442 875.21 412" fill="none" stroke="#e53935" stroke-width="2" style="stroke-dasharray: 8,3,2,3;"/>
+<text x="2012.105" y="421" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#e53935">Relationship</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-distant" data-from="member_16" data-to="member_31" data-relationship-type="distant"><path d="M 2216.94 412 Q 1831.63 442 1446.32 412" fill="none" stroke="#9e9e9e" stroke-width="2" style="stroke-dasharray: 6,4;" marker-end="url(#schematex-genogram-arrow)"/>
+<text x="2024.285" y="421" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#9e9e9e">Relationship</text></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-distant" data-from="member_23" data-to="member_30" data-relationship-type="distant"><path d="M 486.46999999999997 392 Q 695.01 475 645.01 558" fill="none" stroke="#9e9e9e" stroke-width="2" style="stroke-dasharray: 6,4;" marker-end="url(#schematex-genogram-arrow)"/>
+<text x="590.74" y="427.5" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" fill="#9e9e9e">Relationship</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_01" transform="translate(135.20999999999998, 60)"><title>Member 01</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_02" transform="translate(255.20999999999998, 60)"><title>Member 02</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_05" transform="translate(415.21, 60)"><title>Member 05</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_04" transform="translate(535.21, 60)"><title>Member 04</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_08" transform="translate(695.21, 60)"><title>Member 08</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_09" transform="translate(815.21, 60)"><title>Member 09</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_11" transform="translate(975.21, 60)"><title>Member 11</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_12" transform="translate(1095.21, 60)"><title>Member 12</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-male schematex-genogram-deceased" data-individual-id="member_10" transform="translate(1315.21, 226)"><title>Member 10</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_13" transform="translate(1535.21, 226)"><title>Member 13</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_18" transform="translate(1655.21, 226)"><title>Member 18</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_14" transform="translate(1775.21, 226)"><title>Member 14</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_19" transform="translate(575.21, 226)"><title>Member 19</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_03" transform="translate(455.21, 226)"><title>Member 03</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_06" transform="translate(735.21, 226)"><title>Member 06</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_22" transform="translate(175.20999999999998, 226)"><title>Member 22</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_24" transform="translate(295.21, 226)"><title>Member 24</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_37" transform="translate(855.21, 226)"><title>Member 37</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_07" transform="translate(975.21, 226)"><title>Member 07</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_39" transform="translate(1095.21, 226)"><title>Member 39</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_21" transform="translate(1252.03, 392)"><title>Member 21</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_17" transform="translate(1748.5900000000001, 392)"><title>Member 17</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_23" transform="translate(486.46999999999997, 392)"><title>Member 23</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_28" transform="translate(340.65999999999997, 392)"><title>Member 28</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_16" transform="translate(2216.94, 392)"><title>Member 16</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_31" transform="translate(1446.32, 392)"><title>Member 31</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_33" transform="translate(875.21, 392)"><title>Member 33</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female schematex-genogram-deceased" data-individual-id="member_15" transform="translate(2391.07, 392)"><title>Member 15</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark" stroke="#333" stroke-width="2"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_34" transform="translate(34.199999999999996, 392)"><title>Member 34</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_25" transform="translate(1035.21, 392)"><title>Member 25</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_40" transform="translate(799.69, 392)"><title>Member 40</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_38" transform="translate(1601.5900000000001, 392)"><title>Member 38</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_20" transform="translate(204.30999999999997, 392)"><title>Member 20</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-3" data-generation="3"><g class="schematex-genogram-node schematex-genogram-female schematex-genogram-index-person" data-individual-id="member_26" transform="translate(1029.87, 558)"><title>Member 26</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_27" transform="translate(1222.3500000000001, 558)"><title>Member 27</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_29" transform="translate(523.55, 558)"><title>Member 29</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_30" transform="translate(645.01, 558)"><title>Member 30</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-female" data-individual-id="member_32" transform="translate(1372.3, 558)"><title>Member 32</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_35" transform="translate(285.21, 558)"><title>Member 35</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_36" transform="translate(405.21, 558)"><title>Member 36</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-male" data-individual-id="member_41" transform="translate(830.69, 558)"><title>Member 41</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="135.20999999999998" y="98" class="schematex-genogram-label" data-individual-id="member_01">Member 01</text>
+<text x="255.20999999999998" y="98" class="schematex-genogram-label" data-individual-id="member_02">Member 02</text>
+<text x="415.21" y="98" class="schematex-genogram-label" data-individual-id="member_05">Member 05</text>
+<text x="535.21" y="98" class="schematex-genogram-label" data-individual-id="member_04">Member 04</text>
+<text x="695.21" y="98" class="schematex-genogram-label" data-individual-id="member_08">Member 08</text>
+<text x="815.21" y="98" class="schematex-genogram-label" data-individual-id="member_09">Member 09</text>
+<text x="975.21" y="98" class="schematex-genogram-label" data-individual-id="member_11">Member 11</text>
+<text x="1095.21" y="98" class="schematex-genogram-label" data-individual-id="member_12">Member 12</text>
+<text x="1315.21" y="264" class="schematex-genogram-label" data-individual-id="member_10">Member 10</text>
+<text x="1535.21" y="264" class="schematex-genogram-label" data-individual-id="member_13">Member 13</text>
+<text x="1655.21" y="264" class="schematex-genogram-label" data-individual-id="member_18">Member 18</text>
+<text x="1775.21" y="264" class="schematex-genogram-label" data-individual-id="member_14">Member 14</text>
+<text x="575.21" y="264" class="schematex-genogram-label" data-individual-id="member_19">Member 19</text>
+<text x="455.21" y="264" class="schematex-genogram-label" data-individual-id="member_03">Member 03</text>
+<text x="735.21" y="264" class="schematex-genogram-label" data-individual-id="member_06">Member 06</text>
+<text x="175.20999999999998" y="264" class="schematex-genogram-label" data-individual-id="member_22">Member 22</text>
+<text x="295.21" y="264" class="schematex-genogram-label" data-individual-id="member_24">Member 24</text>
+<text x="855.21" y="264" class="schematex-genogram-label" data-individual-id="member_37">Member 37</text>
+<text x="975.21" y="264" class="schematex-genogram-label" data-individual-id="member_07">Member 07</text>
+<text x="1095.21" y="264" class="schematex-genogram-label" data-individual-id="member_39">Member 39</text>
+<text x="1252.03" y="430" class="schematex-genogram-label" data-individual-id="member_21">Member 21</text>
+<text x="1748.5900000000001" y="430" class="schematex-genogram-label" data-individual-id="member_17">Member 17</text>
+<text x="486.46999999999997" y="430" class="schematex-genogram-label" data-individual-id="member_23">Member 23</text>
+<text x="340.65999999999997" y="430" class="schematex-genogram-label" data-individual-id="member_28">Member 28</text>
+<text x="2216.94" y="430" class="schematex-genogram-label" data-individual-id="member_16">Member 16</text>
+<text x="1446.32" y="430" class="schematex-genogram-label" data-individual-id="member_31">Member 31</text>
+<text x="875.21" y="430" class="schematex-genogram-label" data-individual-id="member_33">Member 33</text>
+<text x="2391.07" y="430" class="schematex-genogram-label" data-individual-id="member_15">Member 15</text>
+<text x="34.199999999999996" y="430" class="schematex-genogram-label" data-individual-id="member_34">Member 34</text>
+<text x="1035.21" y="430" class="schematex-genogram-label" data-individual-id="member_25">Member 25</text>
+<text x="799.69" y="430" class="schematex-genogram-label" data-individual-id="member_40">Member 40</text>
+<text x="1601.5900000000001" y="430" class="schematex-genogram-label" data-individual-id="member_38">Member 38</text>
+<text x="204.30999999999997" y="430" class="schematex-genogram-label" data-individual-id="member_20">Member 20</text>
+<text x="1029.87" y="596" class="schematex-genogram-label" data-individual-id="member_26">Member 26</text>
+<text x="1222.3500000000001" y="596" class="schematex-genogram-label" data-individual-id="member_27">Member 27</text>
+<text x="523.55" y="596" class="schematex-genogram-label" data-individual-id="member_29">Member 29</text>
+<text x="645.01" y="596" class="schematex-genogram-label" data-individual-id="member_30">Member 30</text>
+<text x="1372.3" y="596" class="schematex-genogram-label" data-individual-id="member_32">Member 32</text>
+<text x="285.21" y="596" class="schematex-genogram-label" data-individual-id="member_35">Member 35</text>
+<text x="405.21" y="596" class="schematex-genogram-label" data-individual-id="member_36">Member 36</text>
+<text x="830.69" y="596" class="schematex-genogram-label" data-individual-id="member_41">Member 41</text></g>
+<g class="schematex-genogram-edge-labels"><text x="1500.31" y="386" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Relationship</text></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="720.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="136.45" y1="713" x2="144.45" y2="721" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="144.45" y1="713" x2="136.45" y2="721" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="159.45" y="720.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="738.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="separated" data-legend-section="structural"><line x1="130.45" y1="735" x2="150.45" y2="735" stroke="#334155" stroke-width="2" stroke-linecap="round"/><line x1="145.45" y1="740" x2="153.45" y2="730" stroke="#334155" stroke-width="1.6"/>
+<text x="159.45" y="738.5" class="schematex-legend-label">Separated</text></g>
+<g class="schematex-legend-row" data-legend-key="cohabiting" data-legend-section="structural"><line x1="238.45" y1="735" x2="258.45" y2="735" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="267.45" y="738.5" class="schematex-legend-label">Cohabiting</text></g>
+<g class="schematex-legend-row" data-legend-key="cohabiting-ended" data-legend-section="structural"><line x1="352.45" y1="735" x2="372.45" y2="735" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/><line x1="367.45" y1="740" x2="375.45" y2="730" stroke="#334155" stroke-width="1.6"/>
+<text x="381.45" y="738.5" class="schematex-legend-label">Cohabiting (ended)</text></g>
+<text x="16" y="756.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><line x1="130.45" y1="753" x2="150.45" y2="753" stroke="#4caf50" stroke-width="3" stroke-linecap="round"/>
+<text x="159.45" y="756.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="hostile" data-legend-section="relationships"><line x1="211.45" y1="753" x2="231.45" y2="753" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-dasharray="8,3,2,3"/>
+<text x="240.45" y="756.5" class="schematex-legend-label">Hostile</text></g>
+<g class="schematex-legend-row" data-legend-key="distant" data-legend-section="relationships"><line x1="306.45" y1="753" x2="326.45" y2="753" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="335.45" y="756.5" class="schematex-legend-label">Distant</text></g>
+<g class="schematex-legend-row" data-legend-key="abuse" data-legend-section="relationships"><line x1="401.45" y1="753" x2="421.45" y2="753" stroke="#b71c1c" stroke-width="2" stroke-linecap="round"/>
+<text x="430.45" y="756.5" class="schematex-legend-label">Abuse</text></g>
+<text x="16" y="774.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="768" width="16" height="6" fill="#fef3c7" stroke="#334155"/><rect x="130.45" y="766" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="774.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

@@ -1,0 +1,48 @@
+sld "Industrial Facility Distribution — 13.8 kV to 480 V"
+UTIL = utility [voltage: "13.8kV", label: "Utility Supply"]
+RECL = recloser [rating: "600A", label: "Recloser"]
+XFMR = transformer_dy [rating: "1500 kVA", voltage: "13.8kV / 480V", label: "T-1 13.8kV/480V"]
+MB = breaker [rating: "2000A", label: "Main Breaker"]
+BUS1 = bus [voltage: "480V", label: "Main Switchboard 480V"]
+CT1 = ct [label: "CT 2000:5"]
+PT1 = pt [label: "PT 480:120"]
+KWH = watthour_meter [label: "Revenue kWh Meter"]
+SA1 = surge_arrester [label: "SPD-1"]
+CB1 = breaker [rating: "600A", label: "Feeder 1"]
+CB2 = breaker [rating: "400A", label: "Feeder 2"]
+CB3 = breaker [rating: "250A", label: "Feeder 3"]
+CB4 = breaker [rating: "100A", label: "Feeder 4"]
+CB5 = breaker [rating: "60A", label: "Feeder 5"]
+BUSTIE = bus_tie [rating: "1600A", label: "Tie — Bus A/B"]
+BUS2 = bus [voltage: "480V", label: "Switchboard 2 480V"]
+MCC1 = motor [rating: "250 HP", label: "M-1 Compressor"]
+MCC2 = motor [rating: "150 HP", label: "M-2 Chiller Pump"]
+VFD1 = vfd [rating: "125 HP", label: "VFD-1 Supply Fan"]
+XFMR2 = transformer [rating: "75 kVA", voltage: "480V / 208V", label: "T-2 Dry Type"]
+LP = bus [voltage: "208V", label: "Lighting Panel LP-1"]
+PF = capacitor_bank [rating: "300 kVAr", label: "Power Factor Correction"]
+HF = harmonic_filter [label: "Tuned Filter 5th/7th"]
+LGT = load [rating: "40 kVA", label: "Lighting & Receptacles"]
+UTIL -> RECL
+RECL -> KWH
+KWH -> XFMR
+XFMR -> MB
+MB -> CT1
+MB -> PT1
+MB -> SA1
+MB -> BUS1
+BUS1 -> CB1 [cable: "3-350 kcmil Cu XLPE", cable_length_m: "45"]
+BUS1 -> CB2 [cable: "2-250 kcmil Cu XLPE", cable_length_m: "30"]
+BUS1 -> CB3 [cable: "3-4/0 Cu XLPE", cable_length_m: "25"]
+BUS1 -> BUSTIE
+BUSTIE -> CB4
+CB4 -> BUS2
+BUS2 -> CB5
+CB5 -> XFMR2
+XFMR2 -> LP
+LP -> LGT
+CB1 -> MCC1
+CB2 -> MCC2
+CB3 -> VFD1
+CB4 -> PF
+CB5 -> HF

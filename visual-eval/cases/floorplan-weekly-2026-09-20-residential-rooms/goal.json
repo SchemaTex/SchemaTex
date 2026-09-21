@@ -1,0 +1,30 @@
+{
+  "id": "floorplan-weekly-2026-09-20-residential-rooms",
+  "type": "floorplan",
+  "title": "Weekly 2026-09-20 — Residential plan with service rooms and suites",
+  "goal": "Show room adjacency, doors and furniture in a multi-room home; preserve generated partial diagnostics for evaluation.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Named living, kitchen, service and bedroom spaces are visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "Door openings can be associated with the rooms they connect."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Furniture stays inside its intended room and room labels remain legible."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

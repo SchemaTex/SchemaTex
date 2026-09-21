@@ -1,0 +1,30 @@
+{
+  "id": "ladder-weekly-2026-09-20-conveyor-interlocks",
+  "type": "ladder",
+  "title": "Weekly 2026-09-20 — Conveyor seal-in and stop interlocks",
+  "goal": "Read a Japanese-labelled conveyor start latch, stop button, photoeye and overload protection.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The start and auxiliary contacts form a visible parallel seal-in branch."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Stop, photoeye and overload contacts precede the motor coil."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Japanese names and contact addresses do not overlap the ladder wires."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "FreeDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}
