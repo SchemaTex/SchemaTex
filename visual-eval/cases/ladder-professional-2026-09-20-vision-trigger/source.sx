@@ -1,0 +1,23 @@
+ladder "Y0 Vision Trigger - Trigger Delay + 10ms 固定脈波"
+
+rung 1 "Trigger 請求 (M10 = 視覺有效 X0 確認後)":
+  XIC(M10, "M10", name="Trigger 請求")
+  OTL(M14, "M14", name="延遲計時啟動")
+
+rung 2 "Trigger Delay：T128 100ms 解析度，預設值 D0":
+  XIC(M14, "M14", name="延遲計時執行中")
+  TON(T128, "T128", name="Trigger Delay, preset = D0 x 10 ms")
+
+rung 3 "延遲時間到：復歸 M14，啟動 Y0 脈波程序":
+  XIC(T128, "T128", name="延遲完成")
+  RES(M14, "M14", name="復歸延遲計時")
+  OTL(M15, "M15", name="Y0 脈波程序啟動")
+
+rung 4 "Y0 10ms 固定脈波：T127 1ms 解析度，預設 K10":
+  XIC(M15, "M15", name="脈波程序執行中")
+  TON(T127, "T127", name="Y0 pulse, preset = K10 (10 ms @ 1 ms base)")
+  OTE(Y0, "Y0", name="Vision Trigger 輸出")
+
+rung 5 "脈波結束：復歸 M15，等待下一次觸發":
+  XIC(T127, "T127", name="脈波完成")
+  RES(M15, "M15", name="復歸脈波程序")

@@ -1,0 +1,31 @@
+{
+  "id": "sld-professional-2026-09-20-solar-skid",
+  "type": "sld",
+  "title": "Professional 2026-09-20 — Ten inverter medium-voltage solar skid",
+  "goal": "Show one ten-inverter skid within a larger solar project: dedicated incoming protection, low-voltage aggregation, a 0.8/33 kV transformer and medium-voltage protection. Project identity is removed.",
+  "split": "train",
+  "variant": "ansi",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "All ten inverter branches are separately traceable through their individual breakers to the common low-voltage bus."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The aggregation, coupling breaker, step-up transformer and medium-voltage outlet form an identifiable power path."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Protection and telemetry connections remain distinguishable from power conductors; long ratings and equipment labels do not hide branch connections."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

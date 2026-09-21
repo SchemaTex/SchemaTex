@@ -1,0 +1,30 @@
+{
+  "id": "circuit-professional-2026-09-20-remote-pump-control",
+  "type": "circuit",
+  "title": "Professional 2026-09-20 — Local remote soft-starter pump control",
+  "goal": "Inspect the saved control-diagram portion of a request for five soft-started pumps with local and remote operation. This single artifact cannot establish whether the full conversation delivered every requested power drawing.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "All declared relay terminals are connected as intended or explicitly identified as unused; missing terminal nets are not silently accepted."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Local and remote command paths and the emergency-stop action can be traced through actual connections rather than labels alone."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Control component names, operating indicators and pin attachments remain readable without overlap."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

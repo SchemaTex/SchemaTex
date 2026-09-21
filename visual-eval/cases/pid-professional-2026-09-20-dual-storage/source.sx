@@ -1,0 +1,67 @@
+pid "Heizungshydraulik – Kessel, Brauchwasserspeicher 200 l, Pufferspeicher 600 l, Ausdehnungsgefäß 60 l, 2 Heizkreisverteiler"
+
+equip K-101 : boiler [tag: "Heizkessel"]
+equip B-101 : burner [tag: "Brenner"]
+equip P-101 : pump_centrifugal [tag: "Speicherladepumpe Brauchwasser"]
+equip P-102 : pump_centrifugal [tag: "Speicherladepumpe Puffer"]
+equip CV-101 : valve_check [tag: "Rückschlagventil Brauchwasserladung"]
+equip CV-102 : valve_check [tag: "Rückschlagventil Pufferladung"]
+equip BW-101 : vessel_v [tag: "Brauchwasserspeicher 200 l"]
+equip PS-101 : vessel_v [tag: "Pufferspeicher 600 l"]
+equip MAG-101 : vessel_v [tag: "Ausdehnungsgefäß 60 l"]
+equip AE-101 : valve_ball [tag: "Schnellentlüfter Vorlauf Pufferladung"]
+equip AE-102 : valve_ball [tag: "Schnellentlüfter Kesselrücklauf"]
+equip AE-103 : valve_ball [tag: "Schnellentlüfter Ausdehnungsgefäß"]
+equip F-101 : filter [tag: "Schlammabscheider mit Magnet"]
+equip PSV-101 : valve_psv [tag: "Sicherheitsgruppe Pufferspeicher oben"]
+equip DRAIN-101 : valve_ball [tag: "Entleerungshahn Pufferspeicher unten"]
+equip HV-101 : vessel_h [tag: "Heizkreisverteiler 1 mit Festwertregelset"]
+equip HV-102 : vessel_h [tag: "Heizkreisverteiler 2 mit Festwertregelset"]
+equip FCV-101 : valve_control [tag: "Festwertregelset Heizkreis 1", actuator: "piston", fail: "FL"]
+equip FCV-102 : valve_control [tag: "Festwertregelset Heizkreis 2", actuator: "piston", fail: "FL"]
+equip HX-101 : hx_shell_tube [tag: "Wärmeabnehmer Heizkreis 1"]
+equip HX-102 : hx_shell_tube [tag: "Wärmeabnehmer Heizkreis 2"]
+equip TK-101 : tank_atm [tag: "Kaltwasser Trinkwasser-Zulauf"]
+
+line VL1 from K-101.out to P-101.in [size: "DN25", service: "Kesselvorlauf ab T-Stück 1 zur Brauchwasserladung", type: "process"]
+line VL2 from P-101.out to CV-101.in [size: "DN22", service: "Vorlauf Brauchwasserladung", type: "process"]
+line VL3 from CV-101.out to BW-101.top [size: "DN22", service: "Vorlauf in Brauchwasserspeicher 200 l", type: "process"]
+line VL4 from K-101.out to AE-101.in [size: "DN15", service: "Kesselvorlauf T-Stück 2 - Entlüftung", type: "process_minor"]
+line VL5 from K-101.out to P-102.in [size: "DN25", service: "Kesselvorlauf T-Stück 2 zur Pufferladung", type: "process"]
+line VL6 from P-102.out to CV-102.in [size: "DN25", service: "Vorlauf Pufferladung", type: "process"]
+line VL7 from CV-102.out to PS-101.top [size: "DN25", service: "Vorlauf in Pufferspeicher 600 l", type: "process"]
+line SG1 from PS-101.top to PSV-101.in [size: "DN15", service: "Sicherheitsgruppe am Pufferspeicher oben", type: "process_minor"]
+line RL1 from K-101.in to AE-102.in [size: "DN15", service: "Kesselrücklauf T-Stück 3 - Entlüftung", type: "process_minor"]
+line RL2 from F-101.out to K-101.in [size: "DN32", service: "Kesselrücklauf über Schlammabscheider mit Magnet", type: "process"]
+line RL3 from BW-101.bottom to F-101.in [size: "DN22", service: "Rücklauf vom Brauchwasserspeicher 200 l", type: "process"]
+line RL4 from MAG-101.bottom to BW-101.bottom [size: "DN22", service: "Rücklauf über Ausdehnungsgefäß 60 l", type: "process"]
+line RL5 from PS-101.bottom to MAG-101.bottom [size: "DN32", service: "Rücklauf vom Pufferspeicher 600 l", type: "process"]
+line RL6 from MAG-101.top to AE-103.in [size: "DN15", service: "Entlüftung Ausdehnungsgefäß", type: "process_minor"]
+line DR1 from PS-101.bottom to DRAIN-101.in [size: "DN15", service: "Entleerung Pufferspeicher unten", type: "process_minor"]
+line HK1a from PS-101.right to HV-101.in [size: "DN25", service: "Vorlauf Heizkreisverteiler 1", type: "process"]
+line HK1b from HV-101.out to FCV-101.in [size: "DN25", service: "Vorlauf Heizkreis 1 zum Festwertregelset", type: "process"]
+line HK1c from FCV-101.out to HX-101.in [size: "DN25", service: "Vorlauf Heizkreis 1 nach Festwertregelset", type: "process"]
+line HK1d from HX-101.out to PS-101.bottom [size: "DN25", service: "Rücklauf Heizkreis 1 zum Pufferspeicher", type: "process"]
+line HK2a from PS-101.right to HV-102.in [size: "DN20", service: "Vorlauf Heizkreisverteiler 2", type: "process"]
+line HK2b from HV-102.out to FCV-102.in [size: "DN20", service: "Vorlauf Heizkreis 2 zum Festwertregelset", type: "process"]
+line HK2c from FCV-102.out to HX-102.in [size: "DN20", service: "Vorlauf Heizkreis 2 nach Festwertregelset", type: "process"]
+line HK2d from HX-102.out to PS-101.bottom [size: "DN20", service: "Rücklauf Heizkreis 2 zum Pufferspeicher", type: "process"]
+line TW1 from TK-101.right to BW-101.right [size: "DN20", service: "Trinkwasser kalt", type: "process_minor"]
+line TW2 from BW-101.right to dest [size: "DN20", service: "Trinkwasser warm (WW)", type: "process_minor"]
+
+inst TS-101 : field_discrete
+  measures K-101
+inst TC-103 : cr_shared
+  controls B-101
+line S1 from TS-101 to TC-103 [type: "electric"]
+line S2 from TC-103 to B-101 [type: "electric"]
+
+inst TC-101 : local_discrete
+  measures HK1b
+  controls FCV-101
+line S3 from TC-101 to FCV-101.signal [type: "capillary"]
+
+inst TC-102 : local_discrete
+  measures HK2b
+  controls FCV-102
+line S4 from TC-102 to FCV-102.signal [type: "capillary"]

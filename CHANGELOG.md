@@ -20,8 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Fourteen production-derived visual evaluation cases, including de-identified
-  family data, with 1.0.14 reference snapshots.
+- Twenty-two production-derived visual evaluation cases, including de-identified
+  family data and eight professional PLC, heating, electrical and analytics
+  scenarios, with 1.0.14 reference snapshots.
 - Regression coverage for renamed and reordered inputs, shared-field routing,
   and multi-tie feeder topologies.
 
