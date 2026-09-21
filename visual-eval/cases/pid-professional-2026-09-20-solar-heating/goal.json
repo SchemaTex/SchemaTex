@@ -1,0 +1,30 @@
+{
+  "id": "pid-professional-2026-09-20-solar-heating",
+  "type": "pid",
+  "title": "Professional 2026-09-20 — Solar boiler storage and two heating circuits",
+  "goal": "Show a boiler, thermal solar loop, buffer storage, fresh-water station and two independently pumped mixed heating circuits. Distinguish missing requested content from additional control functionality not requested.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Boiler, solar, fresh-water and both heating circuits can each be traced to their intended supply and return connections."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The storage temperature measurements and each motorized three-way mixing function are identifiable; a two-port valve with a three-way name alone is insufficient."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Process paths, instrument signal paths and long equipment labels remain distinguishable and readable."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

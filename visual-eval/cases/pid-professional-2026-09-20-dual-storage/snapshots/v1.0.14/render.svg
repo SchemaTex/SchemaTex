@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1619.5" height="1150" viewBox="0 0 1619.5 1150" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Heizungshydraulik – Kessel, Brauchwasserspeicher 200 l, Pufferspeicher 600 l, Ausdehnungsgefäß 60 l, 2 Heizkreisverteiler</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="809.75" y="22" class="lt-pid-title" text-anchor="middle">Heizungshydraulik – Kessel, Brauchwasserspeicher 200 l, Pufferspeicher 600 l, Ausdehnungsgefäß 60 l, 2 Heizkreisverteiler</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="VL1"><path d="M 628 489 L 668.5 489 L 668.5 241 L 709 241" class="lt-pid-process lt-pid-line-path" data-line-id="VL1" data-service="Kesselvorlauf ab T-Stück 1 zur Brauchwasserladung"/></g>
+<g class="lt-pid-line" data-id="VL2"><path d="M 767 219 L 809.5 219 L 809.5 425 L 852 425" class="lt-pid-process lt-pid-line-path" data-line-id="VL2" data-service="Vorlauf Brauchwasserladung"/></g>
+<g class="lt-pid-line" data-id="VL3"><path d="M 888 425 L 906 425 L 906 1036 L 218 1036 L 218 434 L 271 434 L 271 452" class="lt-pid-process lt-pid-line-path" data-line-id="VL3" data-service="Vorlauf in Brauchwasserspeicher 200 l"/></g>
+<g class="lt-pid-line" data-id="VL4"><path d="M 628 489 L 674.5 489 L 674.5 609 L 721 609" class="lt-pid-process-min lt-pid-line-path" data-line-id="VL4" data-service="Kesselvorlauf T-Stück 2 - Entlüftung"/></g>
+<g class="lt-pid-line" data-id="VL5"><path d="M 628 489 L 668.5 489 L 668.5 425 L 709 425" class="lt-pid-process lt-pid-line-path" data-line-id="VL5" data-service="Kesselvorlauf T-Stück 2 zur Pufferladung"/></g>
+<g class="lt-pid-line" data-id="VL6"><path d="M 767 403 L 809.5 403 L 809.5 609 L 852 609" class="lt-pid-process lt-pid-line-path" data-line-id="VL6" data-service="Vorlauf Pufferladung"/></g>
+<g class="lt-pid-line" data-id="VL7"><path d="M 888 609 L 1001 609 L 1001 452" class="lt-pid-process lt-pid-line-path" data-line-id="VL7" data-service="Vorlauf in Pufferspeicher 600 l"/></g>
+<g class="lt-pid-line" data-id="SG1"><path d="M 1001 452 L 1001 345 L 1159 345" class="lt-pid-process-min lt-pid-line-path" data-line-id="SG1" data-service="Sicherheitsgruppe am Pufferspeicher oben"/></g>
+<g class="lt-pid-line" data-id="RL1"><path d="M 528 537 L 624.5 537 L 624.5 793 L 721 793" class="lt-pid-process-min lt-pid-line-path" data-line-id="RL1" data-service="Kesselrücklauf T-Stück 3 - Entlüftung"/></g>
+<g class="lt-pid-line" data-id="RL2"><path d="M 452 517 L 490 517 L 490 537 L 528 537" class="lt-pid-process lt-pid-line-path" data-line-id="RL2" data-service="Kesselrücklauf über Schlammabscheider mit Magnet"/></g>
+<g class="lt-pid-line" data-id="RL3"><path d="M 271 582 L 271 517 L 382 517" class="lt-pid-process lt-pid-line-path" data-line-id="RL3" data-service="Rücklauf vom Brauchwasserspeicher 200 l"/></g>
+<g class="lt-pid-line" data-id="RL4"><path d="M 1177 214 L 1177 1064 L 271 1064 L 271 582" class="lt-pid-process lt-pid-line-path" data-line-id="RL4" data-service="Rücklauf über Ausdehnungsgefäß 60 l"/></g>
+<g class="lt-pid-line" data-id="RL5"><path d="M 1001 582 L 1001 398 L 1177 398 L 1177 214" class="lt-pid-process lt-pid-line-path" data-line-id="RL5" data-service="Rücklauf vom Pufferspeicher 600 l"/></g>
+<g class="lt-pid-line" data-id="RL6"><path d="M 1177 84 L 1177 333 L 1322 333" class="lt-pid-process-min lt-pid-line-path" data-line-id="RL6" data-service="Entlüftung Ausdehnungsgefäß"/></g>
+<g class="lt-pid-line" data-id="DR1"><path d="M 1001 582 L 1001 517 L 1159 517" class="lt-pid-process-min lt-pid-line-path" data-line-id="DR1" data-service="Entleerung Pufferspeicher unten"/></g>
+<g class="lt-pid-line" data-id="HK1a"><path d="M 1036 517 L 1074 517 L 1074 701 L 1112 701" class="lt-pid-process lt-pid-line-path" data-line-id="HK1a" data-service="Vorlauf Heizkreisverteiler 1"/></g>
+<g class="lt-pid-line" data-id="HK1b"><path d="M 1242 701 L 1282 701 L 1282 529 L 1322 529" class="lt-pid-process lt-pid-line-path" data-line-id="HK1b" data-service="Vorlauf Heizkreis 1 zum Festwertregelset"/></g>
+<g class="lt-pid-line" data-id="HK1c"><path d="M 1358 529 L 1398 529 L 1398 425 L 1438 425" class="lt-pid-process lt-pid-line-path" data-line-id="HK1c" data-service="Vorlauf Heizkreis 1 nach Festwertregelset"/></g>
+<g class="lt-pid-line" data-id="HK1d"><path d="M 1568 425 L 1586 425 L 1586 1092 L 1001 1092 L 1001 582" class="lt-pid-process lt-pid-line-path" data-line-id="HK1d" data-service="Rücklauf Heizkreis 1 zum Pufferspeicher"/></g>
+<g class="lt-pid-line" data-id="HK2a"><path d="M 1036 517 L 1074 517 L 1074 885 L 1112 885" class="lt-pid-process lt-pid-line-path" data-line-id="HK2a" data-service="Vorlauf Heizkreisverteiler 2"/></g>
+<g class="lt-pid-line" data-id="HK2b"><path d="M 1242 885 L 1282 885 L 1282 713 L 1322 713" class="lt-pid-process lt-pid-line-path" data-line-id="HK2b" data-service="Vorlauf Heizkreis 2 zum Festwertregelset"/></g>
+<g class="lt-pid-line" data-id="HK2c"><path d="M 1358 713 L 1398 713 L 1398 609 L 1438 609" class="lt-pid-process lt-pid-line-path" data-line-id="HK2c" data-service="Vorlauf Heizkreis 2 nach Festwertregelset"/></g>
+<g class="lt-pid-line" data-id="HK2d"><path d="M 1568 609 L 1586 609 L 1586 1120 L 1001 1120 L 1001 582" class="lt-pid-process lt-pid-line-path" data-line-id="HK2d" data-service="Rücklauf Heizkreis 2 zum Pufferspeicher"/></g>
+<g class="lt-pid-line" data-id="TW1"><path d="M 160 609 L 233 609 L 233 517 L 306 517" class="lt-pid-process-min lt-pid-line-path" data-line-id="TW1" data-service="Trinkwasser kalt"/></g></g>
+<g class="lt-pid-junctions"><circle cx="628" cy="489" r="3.6" class="lt-pid-junction"/>
+<circle cx="1001" cy="452" r="3.6" class="lt-pid-junction"/>
+<circle cx="528" cy="537" r="3.6" class="lt-pid-junction"/>
+<circle cx="271" cy="582" r="3.6" class="lt-pid-junction"/>
+<circle cx="1177" cy="214" r="3.6" class="lt-pid-junction"/>
+<circle cx="1001" cy="582" r="3.6" class="lt-pid-junction"/>
+<circle cx="1036" cy="517" r="3.6" class="lt-pid-junction"/></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="B-101" data-type="burner" transform="translate(115 425)"><g><line x1="-38" y1="0" x2="-18" y2="0" class="lt-pid-tray-line"/>
+<polygon points="-18,-14 -18,14 8,0" class="lt-pid-equip"/>
+<path d="M 12,3 C 6,-5 16,-10 18,-19 C 27,-11 23,-3 30,1 C 38,7 31,18 21,18 C 13,18 8,11 12,3 Z" class="lt-pid-equip"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Brenner</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-101" data-type="tank_atm" transform="translate(115 609)"><g class="lt-pid-equip-group"><path d="M -45 -31 A 45 14 0 0 1 45 -31" class="lt-pid-equip"/>
+<rect x="-45" y="-31" width="90" height="76" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Kaltwasser Trinkwasser-Zulauf</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="BW-101" data-type="vessel_v" transform="translate(271 517)"><g><path d="M -35 -49
+              A 35 16 0 0 1 35 -49
+              L 35 49
+              A 35 16 0 0 1 -35 49
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Brauchwasserspeicher 200 l</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="F-101" data-type="filter" transform="translate(417 517)"><g><rect x="-35" y="-35" width="70" height="70" class="lt-pid-equip"/>
+<line x1="-35" y1="0" x2="35" y2="0" class="lt-pid-tray-line"/>
+<line x1="-27" y1="-27" x2="27" y2="-8" class="lt-pid-tray-line"/>
+<line x1="-27" y1="8" x2="27" y2="27" class="lt-pid-tray-line"/>
+<rect x="-93.60000000000001" y="38" width="187.20000000000002" height="15" class="lt-pid-equip-tag-bg"/>
+<text x="0" y="49" text-anchor="middle" class="lt-pid-equip-tag">Schlammabscheider mit Magnet</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="K-101" data-type="boiler" transform="translate(578 517)"><g><rect x="-50" y="-50" width="100" height="100" class="lt-pid-equip"/>
+<path d="M -34,-24 L 34,-24 M -34,-14 L 34,-14 M -34,-4 L 34,-4" class="lt-pid-tray-line"/>
+<path d="M -12,30 C -20,18 -8,12 -5,2 C 5,10 4,18 10,22 C 16,27 12,38 0,40 C -8,39 -14,36 -12,30 Z" class="lt-pid-equip"/>
+<text x="0" y="64" text-anchor="middle" class="lt-pid-equip-tag">Heizkessel</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-101" data-type="pump_centrifugal" transform="translate(739 241)"><g><line x1="-30" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<polygon points="8.8,-19.8 28,-19.8 8.8,0" class="lt-pid-equip"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Speicherladepumpe Brauchwasser</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-102" data-type="pump_centrifugal" transform="translate(739 425)"><g><line x1="-30" y1="0" x2="-22" y2="0" class="lt-pid-tray-line"/>
+<circle cx="0" cy="0" r="22" class="lt-pid-equip"/>
+<polygon points="8.8,-19.8 28,-19.8 8.8,0" class="lt-pid-equip"/>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Speicherladepumpe Puffer</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="AE-101" data-type="valve_ball" transform="translate(739 609)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<circle cx="0" cy="0" r="4" fill="#1d1d1d"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Schnellentlüfter Vorlauf Pufferladung</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="AE-102" data-type="valve_ball" transform="translate(739 793)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<circle cx="0" cy="0" r="4" fill="#1d1d1d"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Schnellentlüfter Kesselrücklauf</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="CV-101" data-type="valve_check" transform="translate(870 425)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<path d="M -10 -8 A 10 10 0 0 1 -10 8" class="lt-pid-tray-line" fill="none"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Rückschlagventil Brauchwasserladung</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="CV-102" data-type="valve_check" transform="translate(870 609)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<path d="M -10 -8 A 10 10 0 0 1 -10 8" class="lt-pid-tray-line" fill="none"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Rückschlagventil Pufferladung</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="PS-101" data-type="vessel_v" transform="translate(1001 517)"><g><path d="M -35 -49
+              A 35 16 0 0 1 35 -49
+              L 35 49
+              A 35 16 0 0 1 -35 49
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Pufferspeicher 600 l</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="MAG-101" data-type="vessel_v" transform="translate(1177 149)"><g><path d="M -35 -49
+              A 35 16 0 0 1 35 -49
+              L 35 49
+              A 35 16 0 0 1 -35 49
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Ausdehnungsgefäß 60 l</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="PSV-101" data-type="valve_psv" transform="translate(1177 333)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<line x1="18" y1="-11" x2="26" y2="-22" class="lt-pid-process"/>
+<path d="M -6 -11 L -10 -16 L -2 -20 L -10 -24 L -2 -28" class="lt-pid-tray-line" fill="none"/>
+<text x="0" y="24" text-anchor="middle" class="lt-pid-equip-tag">Sicherheitsgruppe Pufferspeicher oben</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="DRAIN-101" data-type="valve_ball" transform="translate(1177 517)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<circle cx="0" cy="0" r="4" fill="#1d1d1d"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Entleerungshahn Pufferspeicher unten</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HV-101" data-type="vessel_h" transform="translate(1177 701)"><g><path d="M -51 -35
+              L 51 -35
+              A 14 35 0 0 1 51 35
+              L -51 35
+              A 14 35 0 0 1 -51 -35
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Heizkreisverteiler 1 mit Festwertregelset</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HV-102" data-type="vessel_h" transform="translate(1177 885)"><g><path d="M -51 -35
+              L 51 -35
+              A 14 35 0 0 1 51 35
+              L -51 35
+              A 14 35 0 0 1 -51 -35
+              Z" class="lt-pid-equip"/>
+<text x="0" y="4" text-anchor="middle" class="lt-pid-equip-tag">Heizkreisverteiler 2 mit Festwertregelset</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="AE-103" data-type="valve_ball" transform="translate(1340 333)"><g><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/>
+<circle cx="0" cy="0" r="4" fill="#1d1d1d"/>
+<text x="0" y="22" text-anchor="middle" class="lt-pid-equip-tag">Schnellentlüfter Ausdehnungsgefäß</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="FCV-101" data-type="valve_control" transform="translate(1340 517)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="piston" data-fail="FL"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<rect x="-13" y="-28" width="26" height="18" class="lt-pid-equip"/>
+<line x1="-10" y1="-19" x2="10" y2="-19" class="lt-pid-tray-line"/>
+<line x1="0" y1="-19" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<line x1="0" y1="-34" x2="0" y2="-28" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Festwertregelset Heizkreis 1</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="FCV-102" data-type="valve_control" transform="translate(1340 701)"><g><g transform="translate(0 12)"><polygon points="-18,-11 0,0 -18,11 18,11 0,0 18,-11" class="lt-pid-valve-body"/></g>
+<g class="lt-pid-actuator" data-actuator="piston" data-fail="FL"><line x1="0" y1="1" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<rect x="-13" y="-28" width="26" height="18" class="lt-pid-equip"/>
+<line x1="-10" y1="-19" x2="10" y2="-19" class="lt-pid-tray-line"/>
+<line x1="0" y1="-19" x2="0" y2="-6" class="lt-pid-tray-line"/>
+<line x1="0" y1="-34" x2="0" y2="-28" class="lt-pid-tray-line"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g>
+<text x="0" y="36" text-anchor="middle" class="lt-pid-equip-tag">Festwertregelset Heizkreis 2</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HX-101" data-type="hx_shell_tube" transform="translate(1503 425)"><g><path d="M -53 -30
+              L 53 -30
+              A 12 30 0 0 1 53 30
+              L -53 30
+              A 12 30 0 0 1 -53 -30
+              Z" class="lt-pid-equip"/>
+<line x1="-49" y1="-18" x2="49" y2="-18" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-10" x2="49" y2="-10" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-2" x2="49" y2="-2" class="lt-pid-tray-line"/>
+<line x1="-49" y1="6" x2="49" y2="6" class="lt-pid-tray-line"/>
+<line x1="-49" y1="14" x2="49" y2="14" class="lt-pid-tray-line"/>
+<text x="0" y="44" text-anchor="middle" class="lt-pid-equip-tag">Wärmeabnehmer Heizkreis 1</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HX-102" data-type="hx_shell_tube" transform="translate(1503 609)"><g><path d="M -53 -30
+              L 53 -30
+              A 12 30 0 0 1 53 30
+              L -53 30
+              A 12 30 0 0 1 -53 -30
+              Z" class="lt-pid-equip"/>
+<line x1="-49" y1="-18" x2="49" y2="-18" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-10" x2="49" y2="-10" class="lt-pid-tray-line"/>
+<line x1="-49" y1="-2" x2="49" y2="-2" class="lt-pid-tray-line"/>
+<line x1="-49" y1="6" x2="49" y2="6" class="lt-pid-tray-line"/>
+<line x1="-49" y1="14" x2="49" y2="14" class="lt-pid-tray-line"/>
+<text x="0" y="44" text-anchor="middle" class="lt-pid-equip-tag">Wärmeabnehmer Heizkreis 2</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="S1"><path d="M 578 629 L 346.5 629 L 346.5 70 L 115 70" class="lt-pid-electric lt-pid-line-path" data-line-id="S1" data-service=""/></g>
+<g class="lt-pid-line" data-id="S2"><path d="M 115 70 L 96 70 L 96 425 L 77 425" class="lt-pid-electric lt-pid-line-path" data-line-id="S2" data-service=""/></g>
+<g class="lt-pid-line" data-id="S3"><path d="M 1282 972 L 1340 972 L 1340 483" class="lt-pid-capillary lt-pid-line-path" data-line-id="S3" data-service=""/></g>
+<g class="lt-pid-line" data-id="S4"><path d="M 1322 972 L 1340 972 L 1340 667" class="lt-pid-capillary lt-pid-line-path" data-line-id="S4" data-service=""/></g>
+<g><path d="M 578 629 L 578 575 L 578 575 L 578 567" class="lt-pid-electric"/></g>
+<g><path d="M 115 84 L 115 84 L 115 397" class="lt-pid-pneumatic"/></g>
+<g><path d="M 1282 986 L 1340 986 L 1340 479" class="lt-pid-pneumatic"/></g>
+<g><path d="M 1322 986 L 1340 986 L 1340 663" class="lt-pid-pneumatic"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="TS-101" data-category="field_discrete" transform="translate(578 629)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TS</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g>
+<g class="lt-inst" data-tag="TC-103" data-category="cr_shared" transform="translate(115 70)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<polygon points="7.347880794884119e-16,-12 10.392304845413264,-6 10.392304845413264,5.999999999999998 7.347880794884119e-16,12 -10.392304845413262,6.0000000000000036 -10.392304845413268,-5.999999999999993" class="lt-inst-body" fill="none"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">103</text></g></g>
+<g class="lt-inst" data-tag="TC-101" data-category="local_discrete" transform="translate(1282 972)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-local-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g>
+<g class="lt-inst" data-tag="TC-102" data-category="local_discrete" transform="translate(1322 972)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-local-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">102</text></g></g></g></svg>

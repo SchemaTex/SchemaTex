@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="Proxmox Cluster – Netzplan" width="538.44" height="699" viewBox="0 0 538.44 699" data-diagram-type="network"><title>Network diagram — Proxmox Cluster – Netzplan</title>
+<desc>9 devices, 11 links, 0 boundaries. Topology: hierarchical. Links: 11 copper.</desc>
+<style>.sx-net { font-family: system-ui, -apple-system, sans-serif; }
+.sx-net-body { fill: #1d6fb8; stroke: #0f3a5f; stroke-width: 2; }
+.sx-net-detail { fill: none; stroke: #0f3a5f; stroke-width: 1; }
+.sx-net-glyph { fill: #bfe0f7; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px sans-serif; }
+.sx-net-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<text x="269.22" y="21" class="sx-net-title" text-anchor="middle">Proxmox Cluster – Netzplan</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="wan" data-to="gw" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="283.77,72.9 271.74,94.95"/></g>
+<g class="sx-net-link-g" data-from="gw" data-to="sw1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="265.06,142.95 279.89,198.4"/></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="node1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="318.3,233.36 407.5,263.92"/></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="node2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="254.3,234.41 171.07,265.64"/></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="backup" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="286.1,246.4 285.11,361.8"/></g>
+<g class="sx-net-link-g" data-from="node1" data-to="node2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="407.5,275.18 171.07,277.35"/></g>
+<g class="sx-net-link-g" data-from="node1" data-to="dc1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="439.77,298.88 442.17,508.69"/></g>
+<g class="sx-net-link-g" data-from="node1" data-to="cl1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="423.61,298.88 295.29,492.63"/></g>
+<g class="sx-net-link-g" data-from="node2" data-to="dc2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="138.94,301.65 137.85,501.46"/></g>
+<g class="sx-net-link-g" data-from="backup" data-to="node1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="316.91,362.84 407.5,297.84"/></g>
+<g class="sx-net-link-g" data-from="backup" data-to="node2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="252.91,362.07 171.07,301.38"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="wan" data-kind="internet"><g><path class="sx-net-cloud-body" d="M 273.73 64.75 C 259.43 64.75 259.43 44.97 273.73 42.65 C 273.73 26.35 297.93 24.03 301.23 37.99 C 304.53 24.03 328.73 26.35 328.73 42.65 C 343.03 44.97 343.03 64.75 328.73 64.75 Z"/>
+<text class="sx-net-cloudtext" x="301.23" y="55.45" text-anchor="middle">Internet</text></g></g>
+<g class="sx-net-device" data-id="gw" data-kind="router" data-ip="192.168.10.1"><g><rect class="sx-net-body" x="233.69" y="104.07" width="49.92" height="29.76" rx="14.879999999999999" ry="14.879999999999999"/>
+<line class="sx-net-glyph-line" x1="256.65" y1="113.59" x2="278.61" y2="113.59"/><polygon class="sx-net-glyph" points="278.61,113.59 275.1,115.51 275.1,111.68"/>
+<line class="sx-net-glyph-line" x1="260.65" y1="124.31" x2="238.69" y2="124.31"/><polygon class="sx-net-glyph" points="238.69,124.31 242.2,122.39 242.2,126.22"/>
+<line class="sx-net-glyph-line" x1="267.64" y1="120.95" x2="267.64" y2="129.83"/><polygon class="sx-net-glyph" points="267.64,129.83 265.72,126.32 269.55,126.32"/>
+<line class="sx-net-glyph-line" x1="249.66" y1="116.95" x2="249.66" y2="108.07"/><polygon class="sx-net-glyph" points="249.66,108.07 251.58,111.58 247.75,111.58"/></g>
+<text class="sx-net-label" x="258.65" y="159.95" text-anchor="middle">Router</text>
+<text class="sx-net-sublabel" x="258.65" y="171.95" text-anchor="middle">192.168.10.1</text></g>
+<g class="sx-net-device" data-id="sw1" data-kind="switch" data-tier="core"><g><rect class="sx-net-body" x="258.78" y="210.4" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="269.79" y1="218.08" x2="302.81" y2="218.08"/><polygon class="sx-net-glyph" points="302.81,218.08 299.3,220 299.3,216.16"/>
+<line class="sx-net-glyph-line" x1="302.81" y1="226.72" x2="269.79" y2="226.72"/><polygon class="sx-net-glyph" points="269.79,226.72 273.3,224.8 273.3,228.64"/></g>
+<text class="sx-net-label" x="286.3" y="263.4" text-anchor="middle">Managed Switch (VLAN)</text></g>
+<g class="sx-net-device" data-id="node1" data-kind="server" data-ip="192.168.10.11"><g><rect class="sx-net-body" x="424.78" y="255.2" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="428.78" y1="265.04" x2="450.22" y2="265.04"/>
+<line class="sx-net-detail" x1="428.78" y1="274.88" x2="450.22" y2="274.88"/>
+<line class="sx-net-detail" x1="428.78" y1="284.72" x2="450.22" y2="284.72"/>
+<circle class="sx-net-glyph" cx="447.22" cy="261.2" r="1.6"/></g>
+<text class="sx-net-label" x="439.5" y="315.88" text-anchor="middle">Proxmox Node1</text>
+<text class="sx-net-sublabel" x="439.5" y="327.88" text-anchor="middle">192.168.10.11</text></g>
+<g class="sx-net-device" data-id="node2" data-kind="server" data-ip="192.168.10.12"><g><rect class="sx-net-body" x="124.35" y="257.97" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="128.35" y1="267.81" x2="149.79" y2="267.81"/>
+<line class="sx-net-detail" x1="128.35" y1="277.65" x2="149.79" y2="277.65"/>
+<line class="sx-net-detail" x1="128.35" y1="287.49" x2="149.79" y2="287.49"/>
+<circle class="sx-net-glyph" cx="146.79" cy="263.97" r="1.6"/></g>
+<text class="sx-net-label" x="139.07" y="318.65" text-anchor="middle">Proxmox Node2</text>
+<text class="sx-net-sublabel" x="139.07" y="330.65" text-anchor="middle">192.168.10.12</text></g>
+<g class="sx-net-device" data-id="backup" data-kind="server" data-ip="192.168.10.20"><g><rect class="sx-net-body" x="270.19" y="366.12" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="274.19" y1="375.96" x2="295.63" y2="375.96"/>
+<line class="sx-net-detail" x1="274.19" y1="385.8" x2="295.63" y2="385.8"/>
+<line class="sx-net-detail" x1="274.19" y1="395.64" x2="295.63" y2="395.64"/>
+<circle class="sx-net-glyph" cx="292.63" cy="372.12" r="1.6"/></g>
+<text class="sx-net-label" x="284.91" y="426.8" text-anchor="middle">Backup Server</text>
+<text class="sx-net-sublabel" x="284.91" y="438.8" text-anchor="middle">192.168.10.20</text></g>
+<g class="sx-net-device" data-id="dc1" data-kind="server" data-ip="192.168.10.21"><g><rect class="sx-net-body" x="427.72" y="513.01" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="431.72" y1="522.85" x2="453.16" y2="522.85"/>
+<line class="sx-net-detail" x1="431.72" y1="532.69" x2="453.16" y2="532.69"/>
+<line class="sx-net-detail" x1="431.72" y1="542.53" x2="453.16" y2="542.53"/>
+<circle class="sx-net-glyph" cx="450.16" cy="519.01" r="1.6"/></g>
+<text class="sx-net-label" x="442.44" y="573.69" text-anchor="middle">dc1 (Windows Server)</text>
+<text class="sx-net-sublabel" x="442.44" y="585.69" text-anchor="middle">192.168.10.21</text></g>
+<g class="sx-net-device" data-id="dc2" data-kind="server" data-ip="192.168.10.22"><g><rect class="sx-net-body" x="123" y="505.78" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="127" y1="515.62" x2="148.44" y2="515.62"/>
+<line class="sx-net-detail" x1="127" y1="525.46" x2="148.44" y2="525.46"/>
+<line class="sx-net-detail" x1="127" y1="535.3" x2="148.44" y2="535.3"/>
+<circle class="sx-net-glyph" cx="145.44" cy="511.78" r="1.6"/></g>
+<text class="sx-net-label" x="137.72" y="566.46" text-anchor="middle">dc2 (Windows Server)</text>
+<text class="sx-net-sublabel" x="137.72" y="578.46" text-anchor="middle">192.168.10.22</text></g>
+<g class="sx-net-device" data-id="cl1" data-kind="server" data-ip="192.168.10.30"><g><rect class="sx-net-body" x="264.68" y="496.95" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="268.68" y1="506.79" x2="290.12" y2="506.79"/>
+<line class="sx-net-detail" x1="268.68" y1="516.63" x2="290.12" y2="516.63"/>
+<line class="sx-net-detail" x1="268.68" y1="526.47" x2="290.12" y2="526.47"/>
+<circle class="sx-net-glyph" cx="287.12" cy="502.95" r="1.6"/></g>
+<text class="sx-net-label" x="279.4" y="557.63" text-anchor="middle">cl1 (Windows 11)</text>
+<text class="sx-net-sublabel" x="279.4" y="569.63" text-anchor="middle">192.168.10.30</text></g></g></g></svg>

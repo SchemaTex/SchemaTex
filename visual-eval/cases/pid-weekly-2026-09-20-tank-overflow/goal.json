@@ -1,0 +1,30 @@
+{
+  "id": "pid-weekly-2026-09-20-tank-overflow",
+  "type": "pid",
+  "title": "Weekly 2026-09-20 — Three tanks sharing an overflow sump",
+  "goal": "Trace three independent overflow lines to a common sump, preserving user-pinned positions.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Three source tanks and the overflow sump are visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Each overflow line reaches its source tank and the sump."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Line service labels and tank tags remain readable at crossings."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

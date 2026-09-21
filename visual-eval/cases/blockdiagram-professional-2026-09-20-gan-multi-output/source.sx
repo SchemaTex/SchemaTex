@@ -1,0 +1,34 @@
+blockdiagram "ATX 1200 W PSU GaN - Input 24 VDC - Efisiensi >95%"
+inp = block("Input 24 V DC / 50 A\nReverse-Polarity +\nFuse 60 A + Soft-Start") [role: reference]
+emi = block("EMI / Input Filter\nInput Cap Bank\nLow-ESR DC-Link") [role: generic]
+boost = block("Interleaved GaN Boost\n3-Fasa · 24 V -> 200 V\nZVS · Pembagi Arus") [role: actuator]
+bus = block("200 V DC Bus\n+ Hold-up Cap\n(10 ms Hold-up)") [role: generic]
+llc = block("Isolated GaN LLC\nHalf-Bridge ZVS\n12 V / 1000 W") [role: plant]
+srec = block("SR MOSFET\n1 mOhm · ZCS") [role: generic]
+dc5 = block("GaN Buck DC-DC\n+5 V / 20 A") [role: plant]
+dc33 = block("GaN Buck DC-DC\n+3.3 V / 20 A") [role: plant]
+sb = block("5 VSB Aux DC-DC\n24 V -> 5 V Buck") [role: plant]
+ctrl = block("Digital Controller\nPWM + ZVS + OCP/OVP\nUVLO 18 V · Burst Mode") [role: controller]
+fb = block("Isolated Feedback\nTL431 + Opto") [role: sensor, route: above]
+sns = block("Sense Arus Input\n+ Suhu / Tegangan\nShunt 0.5 mOhm") [role: sensor]
+v12 = signal("+12 V Main / 83 A")
+v5 = signal("+5 V Rail")
+v33 = signal("+3.3 V Rail")
+v5sb = signal("+5 VSB")
+in -> inp ["24 V DC"]
+inp -> emi
+emi -> boost ["99.8%"]
+boost -> bus ["98.5%"]
+bus -> llc ["98.2%"]
+llc -> srec ["97.9%"]
+srec -> v12 ["Kaskade 95.3%"]
+v12 -> dc5 ["96.0%"]
+v12 -> dc33 ["96.0%"]
+emi -> sb ["94.0%"]
+v12 -> fb -> ctrl
+sns -> ctrl
+inp -> sns
+ctrl -> boost
+ctrl -> llc
+ctrl -> dc5
+ctrl -> dc33

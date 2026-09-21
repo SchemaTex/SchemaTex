@@ -1,0 +1,103 @@
+flowchart TD
+  start([Customer places order])
+  cancelled([Order cancelled])
+  done([Order delivered])
+
+  subgraph inventory["Inventory"]
+    stock{Stock available?}
+    backorder{Backorder acceptable?}
+    notifybo[Notify customer of delay]
+    substitute{Substitute item?}
+    swapsku[Swap to alternate SKU]
+    reserve[Reserve inventory]
+    release[Release reserved stock]
+    restock[Restock returned items]
+  end
+
+  subgraph payment["Payment"]
+    auth{Payment authorized?}
+    retry{Retry payment?}
+    altpay[Request alternate payment method]
+    fraud{Fraud check passed?}
+    review[Route to manual review]
+    capture[Capture payment]
+    refund[Issue refund]
+  end
+
+  subgraph shipping["Shipping and Delivery"]
+    address{Address validated?}
+    fixaddr[Request address correction]
+    method{Select shipping method}
+    standard[Standard 3-5 days]
+    express[Express 1-2 days]
+    sameday[Same-day courier]
+    pack[Pick and pack order]
+    label[Generate label and tracking]
+    intl{International shipment?}
+    customs{Customs cleared?}
+    hold[Customs hold - notify customer]
+    dispatch[Hand off to carrier]
+    transit[In transit]
+    delivered{Delivered successfully?}
+    attempt{Attempts remaining?}
+    redeliver[Reschedule delivery]
+    return[Return to warehouse]
+    confirm[Send delivery confirmation]
+  end
+
+  start --> stock
+  stock -->|Yes| reserve
+  stock -->|No| backorder
+  backorder -->|Yes| notifybo
+  notifybo --> reserve
+  backorder -->|No| substitute
+  substitute -->|Yes| swapsku
+  swapsku --> reserve
+  substitute -->|No| cancelled
+  cancelled --> refund
+  reserve --> auth
+  auth -->|No| retry
+  retry -->|Yes| altpay
+  altpay --> auth
+  retry -->|No| release
+  release --> cancelled
+  auth -->|Yes| fraud
+  fraud -->|No| review
+  review -->|Approved| capture
+  review -->|Rejected| release
+  fraud -->|Yes| capture
+  capture --> address
+  address -->|No| fixaddr
+  fixaddr --> address
+  address -->|Yes| method
+  method -->|Standard| standard
+  method -->|Express| express
+  method -->|Same-day| sameday
+  standard --> pack
+  express --> pack
+  sameday --> pack
+  pack --> label
+  label --> intl
+  intl -->|No| dispatch
+  intl -->|Yes| customs
+  customs -->|No| hold
+  hold --> customs
+  customs -->|Yes| dispatch
+  dispatch --> transit
+  transit --> delivered
+  delivered -->|Yes| confirm
+  delivered -->|No| attempt
+  attempt -->|Yes| redeliver
+  redeliver --> transit
+  attempt -->|No| return
+  return --> restock
+  restock --> refund
+  confirm --> done
+  refund --> done
+
+  classDef decision fill:#fff3cd,stroke:#b8860b,color:#3d2b00
+  classDef terminal fill:#d4edda,stroke:#2e7d32,color:#123d1c
+  classDef exception fill:#fde2e4,stroke:#b02a37,color:#5c1219
+  class stock,backorder,substitute,auth,retry,fraud,address,method,intl,customs,delivered,attempt decision
+  class start,cancelled,done terminal
+  class release,hold,return,review exception

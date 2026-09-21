@@ -1,0 +1,30 @@
+{
+  "id": "erd-professional-2026-09-20-training-star-schema",
+  "type": "erd",
+  "title": "Professional 2026-09-20 — Training analytics star schema",
+  "goal": "Show the flying-operations fact table connected to six dimensions. Assess logical star structure separately from whether the drawing is radially arranged.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The fact table and all six dimensions are visible, and each dimension connects directly to the fact table."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Fact measures and the dimension keys are readable without clipping or obscuring relationships."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Cardinality endpoints and relationship labels are unambiguous; a non-radial arrangement alone is not a failure."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

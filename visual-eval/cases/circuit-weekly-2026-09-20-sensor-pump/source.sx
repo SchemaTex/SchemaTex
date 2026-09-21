@@ -1,0 +1,9 @@
+circuit "ESP32 Soil Moisture Pump Controller" netlist
+U1 3V3 0 OUT type=soil_moisture label="Soil Sensor"
+R1 GPIO gate 220
+R2 gate 0 10k
+M1 drain gate 0 AO3400A type=mosfet_n
+D1 drain pump_pos 1N4007
+P1 pump_pos drain type=dc_motor label="Water Pump"
+V1 pump_pos 0 12V type=dc_supply label="Pump Supply"
+U2 3V3 0 GPIO type=esp32 label="ESP32"

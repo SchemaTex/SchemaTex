@@ -1,0 +1,33 @@
+network "Proxmox Cluster – Netzplan"
+  layout: tiered
+  internet wan "Internet"
+  router gw "Router" ip: 192.168.10.1
+  switch sw1 "Managed Switch (VLAN)" tier: core
+  server node1 "Proxmox Node1" ip: 192.168.10.11
+  server node2 "Proxmox Node2" ip: 192.168.10.12
+  server backup "Backup Server" ip: 192.168.10.20
+  server dc1 "dc1 (Windows Server)" ip: 192.168.10.21
+  server dc2 "dc2 (Windows Server)" ip: 192.168.10.22
+  server cl1 "cl1 (Windows 11)" ip: 192.168.10.30
+  wan -- gw
+  gw -- sw1
+  sw1 -- node1
+  sw1 -- node2
+  sw1 -- backup
+  node1 -- node2
+  node1 -- dc1
+  node1 -- cl1
+  node2 -- dc2
+  backup -- node1
+  backup -- node2
+
+@overrides
+pin gw 226.65,94.95
+pin sw1 254.3,198.4
+pin node1 407.5,250.88
+pin node2 107.07,253.65
+pin dc2 105.72,501.46
+pin backup 252.91,361.8
+pin dc1 410.44,508.69
+pin cl1 247.4,492.63
+pin wan 246.23,8.9

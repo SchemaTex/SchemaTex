@@ -1,0 +1,30 @@
+{
+  "id": "pid-professional-2026-09-20-dual-storage",
+  "type": "pid",
+  "title": "Professional 2026-09-20 — Dual storage heating with fixed-temperature circuits",
+  "goal": "Represent a boiler, 600 L buffer, 200 L domestic-water storage, dedicated charging pumps, check valves and two fixed-temperature heating distributors.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The two storage vessels and their separate charging and return paths are complete and separately identifiable."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Control signal types agree with their declared actuator types; contradictory capillary and pneumatic assignments are not accepted."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Pump, valve, vessel and pipe-service labels remain readable without hiding connections."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

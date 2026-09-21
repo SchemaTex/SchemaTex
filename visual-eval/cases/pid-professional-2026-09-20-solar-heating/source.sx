@@ -1,0 +1,86 @@
+pid "Heizzentrale: Gas-Brennwertkessel, Pufferspeicher, Solar und zwei Mischheizkreise"
+
+equip SP-101 : tank_atm [tag: "Kombi- und Pufferspeicher 800 l"]
+equip WT-101 : hx_shell_tube [tag: "Solar-WT Speicher unten"]
+equip K-101 : boiler [tag: "Gas-Brennwertkessel"]
+equip P-101 : pump_centrifugal [tag: "Kesselpumpe"]
+equip KOL-101 : hx_shell_tube [tag: "Thermische Solarkollektoren"]
+equip P-103 : pump_centrifugal [tag: "Solar-Umwälzpumpe"]
+equip V-101 : valve_globe [tag: "Durchflussbegrenzer"]
+equip PSV-101 : valve_psv [tag: "Sicherheitsventil Solar"]
+equip P-102 : pump_centrifugal [tag: "Ladepumpe Frischwasserstation"]
+equip XV-101 : valve_control [tag: "Umschaltventil", actuator: "motor", fail: "FL"]
+equip WT-102 : hx_shell_tube [tag: "Frischwasserstation"]
+equip CW-101 : tank_atm [tag: "Trinkwasser kalt"]
+equip WW-101 : tank_atm [tag: "Warmwasser Zapfung"]
+equip HV-101 : vessel_h [tag: "Heizkreisverteiler Vorlauf"]
+equip HV-102 : vessel_h [tag: "Heizkreisverteiler Rücklauf"]
+equip P-104 : pump_centrifugal [tag: "Heizkreispumpe HK1"]
+equip M-101 : valve_control [tag: "3-Wege-Mischer HK1", actuator: "motor", fail: "FL"]
+equip HK-101 : hx_shell_tube [tag: "Heizkreis 1 Fussbodenheizung"]
+equip P-105 : pump_centrifugal [tag: "Heizkreispumpe HK2"]
+equip M-102 : valve_control [tag: "3-Wege-Mischer HK2", actuator: "motor", fail: "FL"]
+equip HK-102 : hx_shell_tube [tag: "Heizkreis 2 Radiatoren"]
+
+line l_kv from K-101.out to P-101.in [type: process, size: "DN32", service: "Kesselvorlauf"]
+line l_ks from P-101.out to SP-101.top [type: process, size: "DN32", service: "Speicherladung Kessel"]
+line l_kr from SP-101.bottom to K-101.in [type: process, size: "DN32", service: "Kesselrücklauf"]
+
+line l_s1 from KOL-101.out to P-103.in [type: process, size: "DN20", service: "Solarkreis Vorlauf"]
+line l_s2 from P-103.out to V-101.in [type: process, size: "DN20", service: "Solarkreis Vorlauf"]
+line l_s3 from V-101.out to WT-101.in [type: process, size: "DN20", service: "Solarkreis Vorlauf"]
+line l_s4 from WT-101.out to KOL-101.in [type: process, size: "DN20", service: "Solarkreis Rücklauf"]
+line l_sv from WT-101.out to PSV-101.in [type: process_minor, size: "DN15", service: "Sicherheitsabsperrung Solar"]
+
+line l_fw1 from SP-101.top to P-102.in [type: process, size: "DN25", service: "Ladekreis Frischwasserstation"]
+line l_fw2 from P-102.out to XV-101.in [type: process, size: "DN25", service: "Ladekreis Frischwasserstation"]
+line l_fw3 from XV-101.out to WT-102.in [type: process, size: "DN25", service: "Ladekreis Frischwasserstation"]
+line l_fw4 from WT-102.out to SP-101.bottom [type: process, size: "DN25", service: "Ladekreis Rücklauf"]
+line l_tw1 from CW-101.bottom to WT-102.in [type: process_minor, size: "DN20", service: "Trinkwasser kalt"]
+line l_tw2 from WT-102.out to WW-101.top [type: process_minor, size: "DN20", service: "Trinkwasser warm"]
+
+line l_hv1 from SP-101.top to HV-101.in [type: process, size: "DN32", service: "Heizungsvorlauf"]
+line l_hv2 from HV-102.out to SP-101.bottom [type: process, size: "DN32", service: "Heizungsrücklauf"]
+
+line l_hk1 from HV-101.out to P-104.in [type: process, size: "DN25", service: "HK1 Vorlauf"]
+line l_hk2 from P-104.out to M-101.in [type: process, size: "DN25", service: "HK1 Vorlauf"]
+line l_hk3 from M-101.out to HK-101.in [type: process, size: "DN25", service: "HK1 Vorlauf gemischt"]
+line l_hk4 from HK-101.out to HV-102.in [type: process, size: "DN25", service: "HK1 Rücklauf"]
+
+line l_hk5 from HV-101.out to P-105.in [type: process, size: "DN25", service: "HK2 Vorlauf"]
+line l_hk6 from P-105.out to M-102.in [type: process, size: "DN25", service: "HK2 Vorlauf"]
+line l_hk7 from M-102.out to HK-102.in [type: process, size: "DN25", service: "HK2 Vorlauf gemischt"]
+line l_hk8 from HK-102.out to HV-102.in [type: process, size: "DN25", service: "HK2 Rücklauf"]
+
+inst TT-101 : field_discrete
+  measures SP-101
+inst TT-102 : field_discrete
+  measures SP-101
+inst TT-103 : field_discrete
+  measures SP-101
+inst TT-104 : field_discrete
+  measures K-101
+inst TT-105 : field_discrete
+  measures KOL-101
+inst FT-101 : field_discrete
+  measures l_s2
+inst R-101 : cr_shared
+  controls P-101
+  controls P-102
+  controls P-103
+  controls XV-101
+  controls M-101
+  controls M-102
+
+line s1 from TT-101 to R-101 [type: electric]
+line s2 from TT-102 to R-101 [type: electric]
+line s3 from TT-103 to R-101 [type: electric]
+line s4 from TT-104 to R-101 [type: electric]
+line s5 from TT-105 to R-101 [type: electric]
+line s6 from FT-101 to R-101 [type: electric]
+line s7 from R-101 to P-101 [type: electric]
+line s8 from R-101 to P-102 [type: electric]
+line s9 from R-101 to P-103 [type: electric]
+line s10 from R-101 to XV-101.signal [type: electric]
+line s11 from R-101 to M-101.signal [type: electric]
+line s12 from R-101 to M-102.signal [type: electric]
