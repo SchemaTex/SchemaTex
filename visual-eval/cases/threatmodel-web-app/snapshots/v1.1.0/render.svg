@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="732.5159974861317" height="508.218085389129" viewBox="-20 -20 732.5159974861317 508.218085389129" class="schematex schematex-threatmodel" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="Web Application STRIDE"><title>Web Application STRIDE</title>
+<desc>STRIDE threat model: 2 external entities, 2 process(es), 2 data store(s), 6 data flow(s). 5 boundary-crossing flow(s): User→Web, Auth→Users, Web→Users, Web→Audit, Web→API. User (external) → Spoofing, Repudiation. API (external) → Spoofing, Repudiation. Web (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. Auth (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. Users (store) → Tampering, Information disclosure, Denial of service. Audit (store) → Tampering, Repudiation, Information disclosure, Denial of service.</desc>
+<style>.sx-tm-bg { fill: #ffffff; }
+.sx-tm-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-tm-external { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-tm-process { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-tm-store-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-tm-store-bg { fill: #ffffff; stroke: none; }
+.sx-tm-label { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-tm-flow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-tm-flow[data-crossing="true"] { stroke: #dc2626; stroke-width: 2; }
+.sx-tm-arrow { fill: #334155; stroke: none; }
+.sx-tm-arrow[data-crossing="true"] { fill: #dc2626; }
+.sx-tm-flow-label { fill: #0f172a; font-size: 9px; }
+.sx-tm-flow-label[data-crossing="true"] { fill: #dc2626; font-weight: 700; }
+.sx-tm-flow-halo { fill: #ffffff; stroke: none; }
+.sx-tm-boundary { fill: none; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 6 4; }
+.sx-tm-boundary-label { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-tm-badge { fill: #2563eb; }
+.sx-tm-badge[data-cond-r="true"] { fill: #dc2626; }
+.sx-tm-badge-text { fill: #ffffff; font-size: 9px; font-weight: 700; }</style>
+<defs><marker id="sx-tm-mk" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow"/></marker>
+<marker id="sx-tm-mk-x" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow" data-crossing="true"/></marker></defs>
+<rect x="0" y="0" width="732.5159974861317" height="508.218085389129" class="sx-tm-bg"/>
+<g class="sx-tm-root"><text x="346.25799874306585" y="24" class="sx-tm-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Web Application STRIDE</text>
+<g class="sx-tm-boundary-g" data-boundary="Internet"><rect x="24" y="63" width="174.4096" height="271" rx="4" class="sx-tm-boundary"/>
+<text x="32" y="78" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Internet</text></g>
+<g class="sx-tm-boundary-g" data-boundary="DMZ"><rect x="262.4096" y="63" width="153.3063974861317" height="381.218085389129" rx="4" class="sx-tm-boundary"/>
+<text x="270.4096" y="78" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">DMZ</text></g>
+<g class="sx-tm-boundary-g" data-boundary="Internal"><rect x="482.5159974861317" y="63" width="186" height="239" rx="4" class="sx-tm-boundary"/>
+<text x="490.5159974861317" y="78" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Internal</text></g>
+<g class="sx-tm-flow-g" data-from="User" data-to="Web" data-crossing="true"><path d="M 180.41 160.7 L 280.87 173.34" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="194.32875834248205" y="154.01884930059902" width="72.62" height="13" class="sx-tm-flow-halo"/>
+<text x="230.63875834248205" y="161.01884930059902" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">HTTPS request</text></g>
+<g class="sx-tm-flow-g" data-from="Web" data-to="Auth"><path d="M 339.06 239.31 L 339.06 313.31" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="311.30279874306586" y="263.3063974861317" width="55.52" height="13" class="sx-tm-flow-halo"/>
+<text x="339.06279874306585" y="270.3063974861317" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">credentials</text></g>
+<g class="sx-tm-flow-g" data-from="Auth" data-to="Users" data-crossing="true"><path d="M 379.9 330.78 L 552.47 166" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="383.13486297772437" y="255.38785398863604" width="70.1" height="13" class="sx-tm-flow-halo"/>
+<text x="418.1848629777244" y="262.38785398863604" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">account lookup</text></g>
+<g class="sx-tm-flow-g" data-from="Web" data-to="Users" data-crossing="true"><path d="M 397.02 171.67 L 500.52 155.63" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="422.44988020444674" y="150.64723104332194" width="52.64" height="13" class="sx-tm-flow-halo"/>
+<text x="448.76988020444674" y="157.64723104332194" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">order data</text></g>
+<g class="sx-tm-flow-g" data-from="Web" data-to="Audit" data-crossing="true"><path d="M 394.53 199.73 L 511.57 240" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="426.2767576433047" y="186.86700722789686" width="53.540000000000006" height="13" class="sx-tm-flow-halo"/>
+<text x="453.04675764330466" y="193.86700722789686" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">audit event</text></g>
+<g class="sx-tm-flow-g" data-from="Web" data-to="API" data-crossing="true"><path d="M 285.82 205.27 L 171.2 258.26" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="189.05451485264794" y="218.76357519042062" width="78.92" height="13" class="sx-tm-flow-halo"/>
+<text x="228.51451485264795" y="225.76357519042062" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">shipment request</text></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="User" data-kind="external" data-stride="SR"><rect x="42" y="122" width="138.4096" height="60" class="sx-tm-external"/>
+<text x="111.2048" y="152" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="111.2048" dy="0">Customer Browser</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="99.2048" y="103" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="111.2048" y="111" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="API" data-kind="external" data-stride="SR"><rect x="51.204800000000006" y="256" width="120" height="60" class="sx-tm-external"/>
+<text x="111.2048" y="286" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="111.2048" dy="0">Shipping API</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="99.2048" y="237" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="111.2048" y="245" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="Web" data-kind="process" data-stride="STRIDE"><circle cx="339.06279874306585" cy="180.65319874306584" r="58.65319874306584" class="sx-tm-process"/>
+<text x="339.06279874306585" y="180.65319874306584" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="339.06279874306585" dy="0">Web Application</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="313.06279874306585" y="103" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="339.06279874306585" y="111" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="Auth" data-kind="process" data-stride="STRIDE"><circle cx="339.06279874306585" cy="369.76224143763034" r="56.455843951498665" class="sx-tm-process"/>
+<text x="339.06279874306585" y="369.76224143763034" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="339.06279874306585" dy="-6.5">Authentication</tspan><tspan x="339.06279874306585" dy="13">Service</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="313.06279874306585" y="294.3063974861317" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="339.06279874306585" y="302.3063974861317" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="Users" data-kind="store" data-stride="TID"><rect x="500.5159974861317" y="122" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="500.5159974861317" y1="122" x2="650.5159974861317" y2="122" class="sx-tm-store-line"/>
+<line x1="500.5159974861317" y1="166" x2="650.5159974861317" y2="166" class="sx-tm-store-line"/>
+<text x="575.5159974861317" y="144" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="575.5159974861317" dy="0">Customer Database</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TID"><rect x="560.0159974861317" y="103" width="31" height="15" rx="4" class="sx-tm-badge"/>
+<text x="575.5159974861317" y="111" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TID</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="Audit" data-kind="store" data-stride="TRID"><rect x="500.5159974861317" y="240" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="500.5159974861317" y1="240" x2="650.5159974861317" y2="240" class="sx-tm-store-line"/>
+<line x1="500.5159974861317" y1="284" x2="650.5159974861317" y2="284" class="sx-tm-store-line"/>
+<text x="575.5159974861317" y="262" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="575.5159974861317" dy="0">Audit</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TRID"><rect x="556.5159974861317" y="221" width="38" height="15" rx="4" class="sx-tm-badge" data-cond-r="true"/>
+<text x="575.5159974861317" y="229" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TRID</text></g></g></g></svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="887.8" height="674" viewBox="0 0 887.8 674" role="img" aria-label="Software Release" data-diagram-type="idef0"><title>Software Release</title>
+<desc>IDEF0 function model &quot;Software Release&quot; (node A0): 3 functions on a diagonal staircase. ICOM arrows: 3 input, 3 control, 3 mechanism, 1 output. Boxes: 1. Build release (A1); 2. Test candidate (A2); 3. Deploy to production (A3).</desc>
+<style>.sx-idef0-bg { fill: #ffffff; }
+.sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box-name { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-idef0-box-num { fill: #475569; font-size: 10px; font-weight: 700; }
+.sx-idef0-arrow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-arrow[data-margin="true"] { stroke: #2563eb; }
+.sx-idef0-arrow[data-tunneled="true"] { stroke-dasharray: 5 3; }
+.sx-idef0-head { fill: #334155; }
+.sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: #2563eb; }
+.sx-idef0-label { fill: #0f172a; font-size: 10px; }
+.sx-idef0-icom { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-idef0-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-idef0-meta { fill: #475569; font-size: 10px; }
+.sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
+.sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
+<rect x="0" y="0" width="887.8" height="674" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="423.9" y="24" class="sx-idef0-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Software Release</text>
+<rect x="36.666666666666664" y="76.66666666666666" width="774.4666666666666" height="523.3333333333334" class="sx-idef0-frame"/>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 36.666666666666664 190 L 118.4 190" class="sx-idef0-arrow"/>
+<polygon points="118.4,190 109.4,185.5 109.4,194.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="184" class="sx-idef0-label" text-anchor="start">Merged code</text>
+<text x="42.666666666666664" y="197" class="sx-idef0-icom" text-anchor="start">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 193.4 76.66666666666666 L 193.4 150" class="sx-idef0-arrow"/>
+<polygon points="193.4,150 188.9,141 197.9,141" class="sx-idef0-head"/>
+<text x="199.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Release branch policy</text>
+<text x="199.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C1</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 193.4 600 L 193.4 230" class="sx-idef0-arrow"/>
+<polygon points="193.4,230 188.9,239 197.9,239" class="sx-idef0-head"/>
+<text x="199.4" y="578" class="sx-idef0-label" text-anchor="start">CI pipeline</text>
+<text x="199.4" y="591" class="sx-idef0-icom" text-anchor="start">M1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 268.4 190 L 308.4 190 L 308.4 320 L 348.4 320" class="sx-idef0-arrow"/>
+<polygon points="348.4,320 339.4,315.5 339.4,324.5" class="sx-idef0-head"/>
+<text x="274.4" y="184" class="sx-idef0-label" text-anchor="start">Release candidate</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 423.4 76.66666666666666 L 423.4 280" class="sx-idef0-arrow"/>
+<polygon points="423.4,280 418.9,271 427.9,271" class="sx-idef0-head"/>
+<text x="429.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Test plan</text>
+<text x="429.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C2</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 423.4 600 L 423.4 360" class="sx-idef0-arrow"/>
+<polygon points="423.4,360 418.9,369 427.9,369" class="sx-idef0-head"/>
+<text x="429.4" y="578" class="sx-idef0-label" text-anchor="start">QA engineers</text>
+<text x="429.4" y="591" class="sx-idef0-icom" text-anchor="start">M2</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 498.4 320 L 538.4 320 L 538.4 450 L 578.4 450" class="sx-idef0-arrow"/>
+<polygon points="578.4,450 569.4,445.5 569.4,454.5" class="sx-idef0-head"/>
+<text x="504.4" y="314" class="sx-idef0-label" text-anchor="start">Signed-off build</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C3"><path d="M 653.4 76.66666666666666 L 653.4 410" class="sx-idef0-arrow"/>
+<polygon points="653.4,410 648.9,401 657.9,401" class="sx-idef0-head"/>
+<text x="659.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Change approval</text>
+<text x="659.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C3</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M3"><path d="M 653.4 600 L 653.4 490" class="sx-idef0-arrow"/>
+<polygon points="653.4,490 648.9,499 657.9,499" class="sx-idef0-head"/>
+<text x="659.4" y="578" class="sx-idef0-label" text-anchor="start">Deployment tool</text>
+<text x="659.4" y="591" class="sx-idef0-icom" text-anchor="start">M3</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 728.4 450 L 811.8 450" class="sx-idef0-arrow"/>
+<polygon points="811.8,450 802.8,445.5 802.8,454.5" class="sx-idef0-head"/>
+<text x="805.8" y="444" class="sx-idef0-label" text-anchor="end">Live release</text>
+<text x="805.8" y="457" class="sx-idef0-icom" text-anchor="end">O1</text></g>
+<g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="118.4" y="150" width="150" height="80" class="sx-idef0-box"/>
+<text x="193.4" y="190" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="193.4" dy="0">Build release</tspan></text>
+<text x="262.4" y="224" class="sx-idef0-box-num" text-anchor="end">1</text></g>
+<g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="348.4" y="280" width="150" height="80" class="sx-idef0-box"/>
+<text x="423.4" y="320" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="423.4" dy="0">Test candidate</tspan></text>
+<text x="492.4" y="354" class="sx-idef0-box-num" text-anchor="end">2</text></g>
+<g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="578.4" y="410" width="150" height="80" class="sx-idef0-box"/>
+<text x="653.4" y="450" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="653.4" dy="-7">Deploy to</tspan><tspan x="653.4" dy="14">production</tspan></text>
+<text x="722.4" y="484" class="sx-idef0-box-num" text-anchor="end">3</text></g>
+<g class="sx-idef0-titleblock"><rect x="36.666666666666664" y="600" width="774.4666666666667" height="34" class="sx-idef0-tb"/>
+<line x1="207.04933333333332" y1="600" x2="207.04933333333332" y2="634" class="sx-idef0-tb"/>
+<line x1="640.7506666666667" y1="600" x2="640.7506666666667" y2="634" class="sx-idef0-tb"/>
+<text x="42.666666666666664" y="613" class="sx-idef0-tb-key">NODE</text>
+<text x="42.666666666666664" y="627" class="sx-idef0-tb-text">A0</text>
+<text x="213.04933333333332" y="613" class="sx-idef0-tb-key">TITLE</text>
+<text x="213.04933333333332" y="627" class="sx-idef0-tb-text">Software Release</text>
+<text x="646.7506666666667" y="613" class="sx-idef0-tb-key">NUMBER</text>
+<text x="646.7506666666667" y="627" class="sx-idef0-tb-text">A0</text></g></g></svg>

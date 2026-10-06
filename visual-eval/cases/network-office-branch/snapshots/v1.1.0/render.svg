@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="North Harbor Branch Office" width="972.17" height="722.5" viewBox="-3.75 0 972.17 722.5" data-diagram-type="network"><title>Network diagram — North Harbor Branch Office</title>
+<desc>13 devices, 12 links, 7 boundaries. Topology: hierarchical. Links: 1 serial, 6 copper, 1 fiber, 3 poe, 1 wireless.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="483.71" y="21" class="sx-net-title" text-anchor="middle">North Harbor Branch Office</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Staff"><rect class="sx-net-boundary-vlan" x="27.25" y="643.5" width="91.66" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="39.25" y="656.5">VLAN 10 Staff</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Staff"><rect class="sx-net-boundary-vlan" x="152.25" y="643.5" width="91.66" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="164.25" y="656.5">VLAN 10 Staff</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Staff"><rect class="sx-net-boundary-vlan" x="552.45" y="643.5" width="91.66" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="564.45" y="656.5">VLAN 10 Staff</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 20 Guest Wi-Fi"><rect class="sx-net-boundary-vlan" x="658.25" y="496.5" width="126.21" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="670.25" y="509.5">VLAN 20 Guest Wi-Fi</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 20 Guest Wi-Fi"><rect class="sx-net-boundary-vlan" x="811.21" y="496.5" width="126.21" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="823.21" y="509.5">VLAN 20 Guest Wi-Fi</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 30 Services"><rect class="sx-net-boundary-vlan" x="413.29" y="643.5" width="113.49" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="425.29" y="656.5">VLAN 30 Services</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 40 Voice"><rect class="sx-net-boundary-vlan" x="283.92" y="643.5" width="96.32" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="295.92" y="656.5">VLAN 40 Voice</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="inet" data-to="r1" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="369.4,62 369.4,94 369.4,164.5 369.4,188.5"/>
+<text class="sx-net-linklabel" x="369.4" y="126.25" text-anchor="middle">ISP 500M</text></g>
+<g class="sx-net-link-g" data-from="r1" data-to="fw1" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="369.4,188.5 401.4,188.5 450,188.5 482,188.5"/>
+<text class="sx-net-linklabel" x="425.7" y="193" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="fw1" data-to="core" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="482,188.5 482,212.5 482,293.5 482,317.5"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="485" y1="240.1" x2="479" y2="240.1"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="485" y1="259.45" x2="479" y2="259.45"/>
+<text class="sx-net-linklabel" x="482" y="250" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="sw1" data-type="copper" data-vlan="10,20,30,40" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="482,317.5 450,334.88 276.55,429.12 244.55,446.5"/>
+<text class="sx-net-linklabel" x="366.42" y="384.79" text-anchor="middle">Trunk · VLAN 10,20,30,40 · 1G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="sw2" data-type="copper" data-vlan="10,20,30,40" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="482,317.5 479.57,341.5 471.38,422.5 468.95,446.5"/>
+<text class="sx-net-linklabel" x="516.02" y="383.1" text-anchor="middle">Trunk · VLAN 10,20,30,40 · 1G</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="ap1" data-type="poe" data-vlan="20" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="244.55,446.5 244.55,470.5 244.55,470.5 673.35,470.5 673.35,446.5 689.35,446.5 721.35,446.5"/>
+<line x1="430.952" y1="470.5" x2="430.952" y2="481" stroke="#059669" stroke-width="1"/>
+<text class="sx-net-linklabel" x="430.95" y="492" text-anchor="middle">Access · VLAN 20 · 1G · PoE</text></g>
+<g class="sx-net-link-g" data-from="sw2" data-to="ap2" data-type="poe" data-vlan="20" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="468.95,446.5 468.95,422.5 468.95,406.5 874.31,406.5 874.31,422.5 874.31,446.5"/>
+<text class="sx-net-linklabel" x="671.63" y="411" text-anchor="middle">Access · VLAN 20 · 1G · PoE</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="pc1" data-type="copper" data-vlan="10" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="244.55,446.5 214.07,470.5 103.56,557.5 73.08,581.5"/>
+<text class="sx-net-linklabel" x="124.75" y="545.32" text-anchor="middle">Access · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="pc2" data-type="copper" data-vlan="10" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="244.55,446.5 236.29,470.5 206.34,557.5 198.08,581.5"/>
+<line x1="214.58935261624237" y1="533.5407427441745" x2="214.58935261624237" y2="540.0604062348706" stroke="#7c3aed" stroke-width="1"/>
+<text class="sx-net-linklabel" x="252.41" y="551.06" text-anchor="middle">Access · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="sw2" data-to="lt1" data-type="wireless"><polyline class="sx-net-link sx-net-link-wireless" stroke="#2563eb" points="468.95,446.5 491.94,470.5 575.29,557.5 598.28,581.5"/></g>
+<g class="sx-net-link-g" data-from="sw2" data-to="pr1" data-type="copper" data-vlan="30" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#d97706" points="468.95,446.5 469.15,470.5 469.85,557.5 470.04,581.5"/>
+<text class="sx-net-linklabel" x="469.58" y="528.82" text-anchor="middle">Access · VLAN 30 · 1G</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="ph1" data-type="poe" data-vlan="40" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="244.55,446.5 260.11,470.5 316.52,557.5 332.08,581.5"/>
+<line x1="311.0053305041704" y1="548.9951971719108" x2="311.0053305041704" y2="533.7344773099228" stroke="#059669" stroke-width="1"/>
+<text class="sx-net-linklabel" x="344.57" y="531.73" text-anchor="middle">Access · VLAN 40 · 1G · PoE</text></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="inet" data-kind="internet"><g class="sx-net-symbol"><g><path class="sx-net-cloud-body" d="M 337.5 89.52 C 316.05 89.52 313.85 53.04 334.2 49.84 C 335.3 25.52 361.7 22.32 371.6 41.52 C 389.2 27.44 405.7 39.6 405.7 56.24 C 423.3 58.16 424.4 89.52 403.5 89.52 Z"/>
+<circle class="sx-net-detail" cx="360.6019999999999" cy="45" r="8"/>
+<ellipse class="sx-net-detail" cx="360.6019999999999" cy="45" rx="3" ry="8"/>
+<path class="sx-net-detail" d="M 352.6019999999999 45 H 368.6019999999999 M 354.6019999999999 41 H 366.6019999999999 M 354.6019999999999 49 H 366.6019999999999"/>
+<text class="sx-net-cloudtext" x="369.40199999999993" y="71.75999999999999" text-anchor="middle">Internet</text></g></g></g>
+<g class="sx-net-device" data-id="r1" data-kind="router" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="340.27" y="171.85" width="58.27" height="33.29" rx="16.65"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 350.67 179.48 L 363.16 186.42 M 388.13 197.52 L 375.64 190.58"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 363.16 186.42 L 356.63 186.76 L 359.99 180.69 Z"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 375.64 190.58 L 382.18 190.24 L 378.81 196.31 Z"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 365.24 191.27 L 352.75 197.52 M 373.56 185.73 L 386.05 179.48"/>
+<path class="sx-net-glyph" d="M 350.67 198.56 L 354.09 192.97 L 357.19 199.18 Z"/>
+<path class="sx-net-glyph" d="M 388.13 178.44 L 384.72 184.03 L 381.62 177.82 Z"/></g></g>
+<text class="sx-net-label" x="369.4" y="229.5" text-anchor="middle">ISP Router</text></g>
+<g class="sx-net-device" data-id="fw1" data-kind="firewall" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="452.68" y="172.21" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 452.68 183.07 L 511.32 183.07 M 452.68 193.93 L 511.32 193.93 M 472.23 172.21 L 472.23 183.07 M 491.78 172.21 L 491.78 183.07 M 462.45 183.07 L 462.45 193.93 M 482 183.07 L 482 193.93 M 501.55 183.07 L 501.55 193.93 M 472.23 193.93 L 472.23 204.79 M 491.78 193.93 L 491.78 204.79" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="547.84" y="192.5" text-anchor="middle">NGFW</text></g>
+<g class="sx-net-device" data-id="core" data-kind="l3switch" data-tier="core"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="452.66" y="306.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="459.47" y="314.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="469.95" y="314.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="480.43" y="314.88" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 492.48 313.83 L 505.06 313.83 M 502.44 311.21 L 505.06 313.83 L 502.44 316.45 M 505.06 322.22 L 492.48 322.22 M 495.1 319.6 L 492.48 322.22 L 495.1 324.84"/>
+<circle class="sx-net-glyph" cx="462.61" cy="310.69" r="1.31"/></g></g>
+<text class="sx-net-label" x="565.84" y="321.5" text-anchor="middle">Core Switch</text></g>
+<g class="sx-net-device" data-id="sw1" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="215.21" y="435.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="222.02" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="232.5" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="242.98" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="253.46" y="443.88" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="267.08" cy="447.02" r="2.1"/></g></g>
+<text class="sx-net-label" x="340.75" y="450.5" text-anchor="middle">Access Switch 1</text></g>
+<g class="sx-net-device" data-id="sw2" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="439.61" y="435.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="446.42" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="456.9" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="467.38" y="443.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="477.86" y="443.88" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="491.48" cy="447.02" r="2.1"/></g></g>
+<text class="sx-net-label" x="565.15" y="450.5" text-anchor="middle">Access Switch 2</text></g>
+<g class="sx-net-device" data-id="ap1" data-kind="ap" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="699.17" y="449.83" width="44.37" height="17.75" rx="8.87"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 711 445.39 Q 721.35 434.3 731.7 445.39"/>
+<path class="sx-net-glyph-line" d="M 702.86 440.21 Q 721.35 420.25 739.84 440.21"/>
+<path class="sx-net-detail" d="M 714.7 458.7 L 728.01 458.7"/></g></g>
+<text class="sx-net-label" x="721.35" y="487.5" text-anchor="middle">Reception Wi-Fi AP</text></g>
+<g class="sx-net-device" data-id="ap2" data-kind="ap" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="852.13" y="449.83" width="44.37" height="17.75" rx="8.87"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 863.96 445.39 Q 874.31 434.3 884.66 445.39"/>
+<path class="sx-net-glyph-line" d="M 855.82 440.21 Q 874.31 420.25 892.8 440.21"/>
+<path class="sx-net-detail" d="M 867.66 458.7 L 880.97 458.7"/></g></g>
+<text class="sx-net-label" x="874.31" y="487.5" text-anchor="middle">Office Wi-Fi AP</text></g>
+<g class="sx-net-device" data-id="pr1" data-kind="printer" data-ip="10.20.30.50"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="456.59" y="560.2" width="26.9" height="16.25" rx="0.56"/>
+<path class="sx-net-detail" d="M 461.07 565.25 L 479.01 565.25 M 461.07 569.17 L 476.21 569.17"/>
+<rect class="sx-net-body" x="448.74" y="574.21" width="42.6" height="24.1" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="454.91" y="585.42" width="30.27" height="7.29"/>
+<rect class="sx-net-body" x="457.15" y="588.23" width="25.78" height="14.57" rx="0.56"/>
+<path class="sx-net-detail" d="M 461.63 593.27 L 478.45 593.27 M 461.63 597.19 L 474.52 597.19"/>
+<circle class="sx-net-glyph" cx="485.17" cy="579.82" r="1.4"/></g></g>
+<text class="sx-net-label" x="470.04" y="622.5" text-anchor="middle">Finance MFP</text>
+<text class="sx-net-sublabel" x="470.04" y="634.5" text-anchor="middle">10.20.30.50</text></g>
+<g class="sx-net-device" data-id="pc1" data-kind="pc" data-ip="10.20.10.21"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="46.59" y="560.24" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="51.3" y="564.94" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 73.08 593.2 L 73.08 602.62 M 58.36 602.62 L 87.8 602.62" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="73.08" y="622.5" text-anchor="middle">Reception PC</text>
+<text class="sx-net-sublabel" x="73.08" y="634.5" text-anchor="middle">10.20.10.21</text></g>
+<g class="sx-net-device" data-id="pc2" data-kind="pc" data-ip="10.20.10.22"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="171.59" y="560.24" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="176.3" y="564.94" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 198.08 593.2 L 198.08 602.62 M 183.36 602.62 L 212.8 602.62" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="198.08" y="622.5" text-anchor="middle">Finance PC</text>
+<text class="sx-net-sublabel" x="198.08" y="634.5" text-anchor="middle">10.20.10.22</text></g>
+<g class="sx-net-device" data-id="lt1" data-kind="laptop" data-ip="10.20.20.31"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="575.58" y="562.36" width="45.41" height="27.89" rx="1.95"/>
+<rect class="sx-net-body sx-net-screen" x="579.47" y="566.26" width="37.62" height="20.11"/>
+<path class="sx-net-body" d="M 575.58 590.26 L 620.98 590.26 L 627.47 600.64 L 569.09 600.64 Z"/>
+<path class="sx-net-detail" d="M 580.77 593.5 L 615.79 593.5"/>
+<rect class="sx-net-body sx-net-panel" x="591.79" y="596.09" width="12.97" height="2.59"/></g></g>
+<text class="sx-net-label" x="598.28" y="622.5" text-anchor="middle">Sales Laptop</text>
+<text class="sx-net-sublabel" x="598.28" y="634.5" text-anchor="middle">10.20.20.31</text></g>
+<g class="sx-net-device" data-id="ph1" data-kind="ipphone" data-ip="10.20.40.21"><g class="sx-net-symbol"><g><path class="sx-net-body" d="M 313.59 560.42 L 352.79 560.42 L 357.96 602.58 L 306.2 602.58 Z"/>
+<rect class="sx-net-body sx-net-panel" x="329.86" y="567.08" width="17.75" height="10.35"/>
+<path class="sx-net-body sx-net-panel" d="M 318.03 564.12 L 323.95 564.12 Q 325.42 564.12 325.42 565.6 L 325.42 571.52 L 321.73 574.47 Q 319.51 578.17 321.73 581.87 L 325.42 584.83 L 325.42 590.74 Q 325.42 592.22 323.95 592.22 L 318.03 592.22 C 312.11 586.31 312.11 570.04 318.03 564.12 Z"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="333.56" y="583.35" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="340.21" y="583.35" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="346.87" y="583.35" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="333.56" y="590.74" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="340.21" y="590.74" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="346.87" y="590.74" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="333.56" y="598.14" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="340.21" y="598.14" width="2.96" height="2.96"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="346.87" y="598.14" width="2.96" height="2.96"/></g></g>
+<text class="sx-net-label" x="332.08" y="622.5" text-anchor="middle">Reception Phone</text>
+<text class="sx-net-sublabel" x="332.08" y="634.5" text-anchor="middle">10.20.40.21</text></g></g></g></svg>

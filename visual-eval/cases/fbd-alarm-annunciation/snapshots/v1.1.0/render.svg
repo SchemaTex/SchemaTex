@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="638.4" height="850" viewBox="0 0 638.4 850" class="lt-fbd" data-diagram-type="fbd"><defs><style>
+.lt-fbd-bg { fill: #ffffff; }
+.lt-fbd-block-body { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+.lt-fbd-block-header { fill: #f0f0f0; stroke: #333; stroke-width: 1.5; }
+.lt-fbd-block-name { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; font-weight: 700; fill: #111; }
+.lt-fbd-inner-symbol { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 18px; font-weight: 700; fill: #111; }
+.lt-fbd-instance-tag { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-style: italic; font-size: 10px; fill: #555; }
+.lt-fbd-port-label { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #333; }
+.lt-fbd-const-box { fill: #fffde7; stroke: #c9b14b; stroke-width: 1; }
+.lt-fbd-const-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #5a4a00; }
+.lt-fbd-var-term { fill: #eef4ff; stroke: #3a5fbf; stroke-width: 1.2; }
+.lt-fbd-var-term-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; font-weight: 600; fill: #1a3380; }
+.lt-fbd-wire-bool   { stroke: #000;     stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-int    { stroke: #1976d2;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-real   { stroke: #f57c00;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-time   { stroke: #c2185b;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-string { stroke: #2e7d32;  stroke-width: 1.5; fill: none; }
+.lt-fbd-wire-bits   { stroke: #000;     stroke-width: 1.5; stroke-dasharray: 5 3; fill: none; }
+.lt-fbd-wire-any    { stroke: #555;     stroke-width: 1.5; fill: none; }
+.lt-fbd-junction { fill: #000; }
+.lt-fbd-negation { fill: #fff; stroke: #333; stroke-width: 1; }
+.lt-fbd-port-stub { stroke: #333; stroke-width: 1.2; fill: none; }
+.lt-fbd-network-frame { fill: none; stroke: #bbb; stroke-dasharray: 4 3; }
+.lt-fbd-network-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #555; }
+.lt-fbd-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
+</style></defs>
+<title>FBD: Pressure alarm annunciation</title>
+<desc>FBD with 4 network(s).</desc>
+<rect class="lt-fbd-bg" x="0" y="0" width="638.4" height="850"/>
+<text x="319.2" y="22" class="lt-fbd-title" text-anchor="middle">Pressure alarm annunciation</text>
+<g transform="translate(24,54)"><g class="lt-fbd-network" data-network="0"><rect class="lt-fbd-network-frame" x="4" y="4" width="566.4" height="120" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="16">0 — Detect a new alarm</text>
+<rect class="lt-fbd-var-term" x="16" y="46" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="61" text-anchor="middle">HighPressure</text>
+<g><path class="lt-fbd-wire-bool" d="M 106 57 L 130 57 L 130 69 L 154 69" data-wire-type="bool"/></g>
+<g class="lt-fbd-block" data-block-type="R_TRIG" data-instance="NewAlarm"><rect class="lt-fbd-block-body" x="166" y="42" width="64" height="42" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="42" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="54.6" text-anchor="middle">R_TRIG</text>
+<line class="lt-fbd-port-stub" x1="166" y1="69" x2="154" y2="69"/>
+<text class="lt-fbd-port-label" x="170" y="72">CLK</text>
+<line class="lt-fbd-port-stub" x1="230" y1="69" x2="242" y2="69"/>
+<text class="lt-fbd-port-label" x="226" y="72" text-anchor="end">Q</text></g></g>
+<g class="lt-fbd-network" data-network="1"><rect class="lt-fbd-network-frame" x="4" y="168" width="566.4" height="138" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="180">1 — Hold until acknowledged</text>
+<rect class="lt-fbd-var-term" x="16" y="210" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="225" text-anchor="middle">Unacked</text>
+<rect class="lt-fbd-var-term" x="16" y="238" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="253" text-anchor="middle">AckBtn</text>
+<rect class="lt-fbd-var-term" x="468.4" y="210" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="513.4" y="225" text-anchor="middle">Unacked</text>
+<g><path class="lt-fbd-wire-bool" d="M 558.4 221 L 263.2 221 L 263.2 233 L 154 233" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 106 249 L 130 249 L 130 251 L 154 251" data-wire-type="bool"/></g>
+<circle class="lt-fbd-negation" cx="150" cy="251" r="4"/>
+<g><path class="lt-fbd-wire-bool" d="M 259.2 233 L 273.2 233 L 273.2 251 L 315.2 251" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 420.4 233 L 444.4 233 L 444.4 221 L 468.4 221" data-wire-type="bool"/></g>
+<g class="lt-fbd-block" data-block-type="OR" data-instance="Unacked"><rect class="lt-fbd-block-body" x="327.2" y="206" width="81.2" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="327.2" y="206" width="81.2" height="18"/>
+<text class="lt-fbd-block-name" x="367.8" y="218.6" text-anchor="middle">OR</text>
+<text class="lt-fbd-inner-symbol" x="367.8" y="249" text-anchor="middle">≥1</text>
+<line class="lt-fbd-port-stub" x1="327.2" y1="233" x2="315.2" y2="233"/>
+<text class="lt-fbd-port-label" x="331.2" y="236">IN1</text>
+<line class="lt-fbd-port-stub" x1="327.2" y1="251" x2="315.2" y2="251"/>
+<text class="lt-fbd-port-label" x="331.2" y="254">IN2</text>
+<line class="lt-fbd-port-stub" x1="408.4" y1="233" x2="420.4" y2="233"/>
+<text class="lt-fbd-port-label" x="404.4" y="236" text-anchor="end">OUT</text></g>
+<g class="lt-fbd-block" data-block-type="AND" data-instance=""><rect class="lt-fbd-block-body" x="166" y="206" width="81.2" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="206" width="81.2" height="18"/>
+<text class="lt-fbd-block-name" x="206.6" y="218.6" text-anchor="middle">AND</text>
+<text class="lt-fbd-inner-symbol" x="206.6" y="249" text-anchor="middle">&amp;</text>
+<line class="lt-fbd-port-stub" x1="166" y1="233" x2="154" y2="233"/>
+<text class="lt-fbd-port-label" x="170" y="236">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="251" x2="154" y2="251"/>
+<text class="lt-fbd-port-label" x="170" y="254">IN2</text>
+<line class="lt-fbd-port-stub" x1="247.2" y1="233" x2="259.2" y2="233"/>
+<text class="lt-fbd-port-label" x="243.2" y="236" text-anchor="end">OUT</text></g></g>
+<g class="lt-fbd-network" data-network="2"><rect class="lt-fbd-network-frame" x="4" y="350" width="566.4" height="120" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="362">2 — Sound horn</text>
+<rect class="lt-fbd-var-term" x="16" y="392" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="407" text-anchor="middle">Unacked</text>
+<rect class="lt-fbd-var-term" x="290" y="392" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="335" y="407" text-anchor="middle">Horn</text>
+<g><path class="lt-fbd-wire-bool" d="M 106 403 L 130 403 L 130 415 L 154 415" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-any" d="M 242 415 L 266 415 L 266 403 L 290 403" data-wire-type="any"/></g>
+<g class="lt-fbd-block" data-block-type="MOVE" data-instance="Horn"><rect class="lt-fbd-block-body" x="166" y="388" width="64" height="42" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="388" width="64" height="18"/>
+<text class="lt-fbd-block-name" x="198" y="400.6" text-anchor="middle">MOVE</text>
+<line class="lt-fbd-port-stub" x1="166" y1="415" x2="154" y2="415"/>
+<text class="lt-fbd-port-label" x="170" y="418">IN</text>
+<line class="lt-fbd-port-stub" x1="230" y1="415" x2="242" y2="415"/>
+<text class="lt-fbd-port-label" x="226" y="418" text-anchor="end">OUT</text></g></g>
+<g class="lt-fbd-network" data-network="3"><rect class="lt-fbd-network-frame" x="4" y="514" width="566.4" height="218" rx="4" ry="4"/>
+<text class="lt-fbd-network-title" x="12" y="526">3 — Flash while unacknowledged, steady while the fault remains</text>
+<rect class="lt-fbd-var-term" x="16" y="556" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="571" text-anchor="middle">Unacked</text>
+<rect class="lt-fbd-var-term" x="16" y="584" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="599" text-anchor="middle">FlashClock</text>
+<rect class="lt-fbd-var-term" x="16" y="612" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="61" y="627" text-anchor="middle">HighPressure</text>
+<rect class="lt-fbd-var-term" x="468.4" y="556" width="90" height="22" rx="3" ry="3"/>
+<text class="lt-fbd-var-term-text" x="513.4" y="571" text-anchor="middle">Lamp</text>
+<g><path class="lt-fbd-wire-bool" d="M 106 567 L 130 567 L 130 579 L 154 579" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 106 595 L 130 595 L 130 597 L 154 597" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 259.2 579 L 315.2 579" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 106 623 L 130 623 L 130 659 L 154 659" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 106 567 L 130 567 L 130 677 L 154 677" data-wire-type="bool"/></g>
+<circle class="lt-fbd-negation" cx="150" cy="677" r="4"/>
+<g><path class="lt-fbd-wire-bool" d="M 259.2 659 L 273.2 659 L 273.2 597 L 315.2 597" data-wire-type="bool"/></g>
+<g><path class="lt-fbd-wire-bool" d="M 420.4 579 L 444.4 579 L 444.4 567 L 468.4 567" data-wire-type="bool"/></g>
+<circle class="lt-fbd-junction" cx="106" cy="567" r="3"/>
+<g class="lt-fbd-block" data-block-type="OR" data-instance="Lamp"><rect class="lt-fbd-block-body" x="327.2" y="552" width="81.2" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="327.2" y="552" width="81.2" height="18"/>
+<text class="lt-fbd-block-name" x="367.8" y="564.6" text-anchor="middle">OR</text>
+<text class="lt-fbd-inner-symbol" x="367.8" y="595" text-anchor="middle">≥1</text>
+<line class="lt-fbd-port-stub" x1="327.2" y1="579" x2="315.2" y2="579"/>
+<text class="lt-fbd-port-label" x="331.2" y="582">IN1</text>
+<line class="lt-fbd-port-stub" x1="327.2" y1="597" x2="315.2" y2="597"/>
+<text class="lt-fbd-port-label" x="331.2" y="600">IN2</text>
+<line class="lt-fbd-port-stub" x1="408.4" y1="579" x2="420.4" y2="579"/>
+<text class="lt-fbd-port-label" x="404.4" y="582" text-anchor="end">OUT</text></g>
+<g class="lt-fbd-block" data-block-type="AND" data-instance=""><rect class="lt-fbd-block-body" x="166" y="552" width="81.2" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="552" width="81.2" height="18"/>
+<text class="lt-fbd-block-name" x="206.6" y="564.6" text-anchor="middle">AND</text>
+<text class="lt-fbd-inner-symbol" x="206.6" y="595" text-anchor="middle">&amp;</text>
+<line class="lt-fbd-port-stub" x1="166" y1="579" x2="154" y2="579"/>
+<text class="lt-fbd-port-label" x="170" y="582">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="597" x2="154" y2="597"/>
+<text class="lt-fbd-port-label" x="170" y="600">IN2</text>
+<line class="lt-fbd-port-stub" x1="247.2" y1="579" x2="259.2" y2="579"/>
+<text class="lt-fbd-port-label" x="243.2" y="582" text-anchor="end">OUT</text></g>
+<g class="lt-fbd-block" data-block-type="AND" data-instance=""><rect class="lt-fbd-block-body" x="166" y="632" width="81.2" height="60" rx="2" ry="2"/>
+<rect class="lt-fbd-block-header" x="166" y="632" width="81.2" height="18"/>
+<text class="lt-fbd-block-name" x="206.6" y="644.6" text-anchor="middle">AND</text>
+<text class="lt-fbd-inner-symbol" x="206.6" y="675" text-anchor="middle">&amp;</text>
+<line class="lt-fbd-port-stub" x1="166" y1="659" x2="154" y2="659"/>
+<text class="lt-fbd-port-label" x="170" y="662">IN1</text>
+<line class="lt-fbd-port-stub" x1="166" y1="677" x2="154" y2="677"/>
+<text class="lt-fbd-port-label" x="170" y="680">IN2</text>
+<line class="lt-fbd-port-stub" x1="247.2" y1="659" x2="259.2" y2="659"/>
+<text class="lt-fbd-port-label" x="243.2" y="662" text-anchor="end">OUT</text></g></g></g></svg>

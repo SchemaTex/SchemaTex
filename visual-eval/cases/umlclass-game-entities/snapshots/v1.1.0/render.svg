@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="751" height="968" viewBox="0 0 751 968" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 9 class; 3 generalization, 2 composition, 1 aggregation, 1 realization, 1 dependency; 1 merged inheritance tree (1 warning).</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="751" height="968" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Entity" data-kind="class"><rect x="121.78118896484375" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="121.78118896484375" y="62" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="121.78118896484375" y="32" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="121.78118896484375" y1="62" x2="281.78118896484375" y2="62" class="sx-umlclass-divider"/>
+<line x1="121.78118896484375" y1="122" x2="281.78118896484375" y2="122" class="sx-umlclass-divider"/>
+<text x="201.78118896484375" y="53" class="sx-umlclass-classname" text-anchor="middle">Entity</text>
+<text x="135.78118896484375" y="86" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;abstract&gt;&gt;</tspan></text>
+<text x="135.78118896484375" y="108" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan><tspan>position</tspan>: <tspan>Vector</tspan></text>
+<text x="135.78118896484375" y="146" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>update</tspan>(): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Player" data-kind="class"><rect x="301.878662109375" y="422" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="301.878662109375" y="452" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="301.878662109375" y="422" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="301.878662109375" y1="452" x2="461.878662109375" y2="452" class="sx-umlclass-divider"/>
+<line x1="301.878662109375" y1="490" x2="461.878662109375" y2="490" class="sx-umlclass-divider"/>
+<text x="381.878662109375" y="443" class="sx-umlclass-classname" text-anchor="middle">Player</text>
+<text x="315.878662109375" y="476" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>score</tspan>: <tspan>int</tspan></text>
+<text x="315.878662109375" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>move</tspan>(): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="NonPlayerCharacter" data-kind="class"><rect x="54.3115234375" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="54.3115234375" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="54.3115234375" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="54.3115234375" y1="268" x2="214.3115234375" y2="268" class="sx-umlclass-divider"/>
+<line x1="54.3115234375" y1="306" x2="214.3115234375" y2="306" class="sx-umlclass-divider"/>
+<text x="134.3115234375" y="259" class="sx-umlclass-classname" text-anchor="middle">NonPlayerCharacter</text>
+<text x="68.3115234375" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>behavior</tspan>(): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Boss" data-kind="class"><rect x="32" y="422" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="452" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="422" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="452" x2="192" y2="452" class="sx-umlclass-divider"/>
+<line x1="32" y1="490" x2="192" y2="490" class="sx-umlclass-divider"/>
+<text x="112" y="443" class="sx-umlclass-classname" text-anchor="middle">Boss</text>
+<text x="46" y="476" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>phase</tspan>: <tspan>int</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="HealthComponent" data-kind="class"><rect x="471.00732421875" y="606" width="207" height="30" class="sx-umlclass-header-fill"/>
+<rect x="471.00732421875" y="636" width="207" height="76" class="sx-umlclass-box-fill"/>
+<rect x="471.00732421875" y="606" width="207" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="471.00732421875" y1="636" x2="678.00732421875" y2="636" class="sx-umlclass-divider"/>
+<line x1="471.00732421875" y1="674" x2="678.00732421875" y2="674" class="sx-umlclass-divider"/>
+<text x="574.50732421875" y="627" class="sx-umlclass-classname" text-anchor="middle">HealthComponent</text>
+<text x="485.00732421875" y="660" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>hitPoints</tspan>: <tspan>int</tspan></text>
+<text x="485.00732421875" y="698" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>damage</tspan>(amount: int): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="InventoryComponent" data-kind="class"><rect x="237.00732421875" y="606" width="180" height="30" class="sx-umlclass-header-fill"/>
+<rect x="237.00732421875" y="636" width="180" height="76" class="sx-umlclass-box-fill"/>
+<rect x="237.00732421875" y="606" width="180" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="237.00732421875" y1="636" x2="417.00732421875" y2="636" class="sx-umlclass-divider"/>
+<line x1="237.00732421875" y1="674" x2="417.00732421875" y2="674" class="sx-umlclass-divider"/>
+<text x="327.00732421875" y="627" class="sx-umlclass-classname" text-anchor="middle">InventoryComponent</text>
+<text x="251.00732421875" y="698" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>add</tspan>(item: Item): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Item" data-kind="class"><rect x="218.9208984375" y="790" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="218.9208984375" y="820" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="218.9208984375" y="790" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="218.9208984375" y1="820" x2="378.9208984375" y2="820" class="sx-umlclass-divider"/>
+<line x1="218.9208984375" y1="858" x2="378.9208984375" y2="858" class="sx-umlclass-divider"/>
+<text x="298.9208984375" y="811" class="sx-umlclass-classname" text-anchor="middle">Item</text>
+<text x="232.9208984375" y="844" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>name</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Renderable" data-kind="class"><rect x="323.2508544921875" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="323.2508544921875" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="323.2508544921875" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="323.2508544921875" y1="268" x2="483.2508544921875" y2="268" class="sx-umlclass-divider"/>
+<line x1="323.2508544921875" y1="306" x2="483.2508544921875" y2="306" class="sx-umlclass-divider"/>
+<text x="403.2508544921875" y="259" class="sx-umlclass-classname" text-anchor="middle">Renderable</text>
+<text x="337.2508544921875" y="292" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;interface&gt;&gt;</tspan></text>
+<text x="337.2508544921875" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>draw</tspan>(): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Renderer" data-kind="class"><rect x="335.78118896484375" y="43" width="253" height="30" class="sx-umlclass-header-fill"/>
+<rect x="335.78118896484375" y="73" width="253" height="76" class="sx-umlclass-box-fill"/>
+<rect x="335.78118896484375" y="43" width="253" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="335.78118896484375" y1="73" x2="588.7811889648438" y2="73" class="sx-umlclass-divider"/>
+<line x1="335.78118896484375" y1="111" x2="588.7811889648438" y2="111" class="sx-umlclass-divider"/>
+<text x="462.28118896484375" y="64" class="sx-umlclass-classname" text-anchor="middle">Renderer</text>
+<text x="349.78118896484375" y="135" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>render</tspan>(target: Renderable): <tspan>void</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Boss" data-to="NonPlayerCharacter" data-kind="generalization"><path d="M 118.4 422 L 127.9 358" class="sx-umlclass-rel-line"/>
+<polygon points="127.8848346212636,344 118.8848346212636,358 136.8848346212636,358" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel" data-from="Player" data-to="HealthComponent" data-kind="composition"><path d="M 437.4 548 L 519 606" class="sx-umlclass-rel-line"/>
+
+<polygon points="437.3640919560971,528 443.3640919560971,538 437.3640919560971,548 431.3640919560971,538" class="sx-umlclass-diamond-filled"/></g>
+<g class="sx-umlclass-rel" data-from="Player" data-to="InventoryComponent" data-kind="composition"><path d="M 366.1 548 L 342.8 606" class="sx-umlclass-rel-line"/>
+
+<polygon points="366.07333108653194,528 372.07333108653194,538 366.07333108653194,548 360.07333108653194,538" class="sx-umlclass-diamond-filled"/></g>
+<g class="sx-umlclass-rel" data-from="InventoryComponent" data-to="Item" data-kind="aggregation" data-target-mult="0..*"><path d="M 318.9 732 L 307 790" class="sx-umlclass-rel-line"/>
+
+<polygon points="318.917212444803,712 324.917212444803,722 318.917212444803,732 312.917212444803,722" class="sx-umlclass-diamond-hollow"/>
+<text x="307.011010211447" y="781" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text></g>
+<g class="sx-umlclass-rel" data-from="Player" data-to="Renderable" data-kind="realization"><path d="M 388 422 L 397.1 358" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="397.09473386018175,344 388.09473386018175,358 406.09473386018175,358" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel" data-from="Renderer" data-to="Renderable" data-kind="dependency" data-name="draws"><path d="M 446.2 149 L 419.3 227" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 413.7949966821915 227 L 419.2949966821915 238 L 424.7949966821915 227" class="sx-umlclass-arrowhead"/>
+<text x="432.7660217285156" y="183" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">draws</text>
+<text x="432.7660217285156" y="183" class="sx-umlclass-edge-name" text-anchor="middle">draws</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Entity" data-children="Player,NonPlayerCharacter"><path d="M 381.9 422 L 381.9 199 L 258.1 199" class="sx-umlclass-rel-line"/>
+<path d="M 134.3 238 L 134.3 199 L 258.1 199" class="sx-umlclass-rel-line"/>
+<path d="M 258.1 199 L 258.1 174" class="sx-umlclass-rel-line"/>
+<polygon points="258.0950927734375,160 249.0950927734375,174 267.0950927734375,174" class="sx-umlclass-triangle"/></g></g></svg>

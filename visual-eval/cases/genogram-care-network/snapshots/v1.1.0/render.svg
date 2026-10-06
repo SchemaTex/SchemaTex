@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 533.04 612" class="schematex-diagram schematex-genogram" width="533.04" height="612"><title>Genogram: Care Network</title>
+<desc>Genogram diagram with 8 individuals across 3 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="266.52" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">Care Network</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="grandfather" data-to="grandmother"><path d="M 244.51999999999998 60 L 324.52 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="grandfather" data-to="grandmother"><path d="M 284.52 60 L 284.52 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="grandfather+grandmother" data-to="mother"><path d="M 284.52 141 L 284.52 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="father" data-to="mother"><path d="M 184.51999999999998 226 L 264.52 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father" data-to="mother"><path d="M 224.51999999999998 226 L 224.51999999999998 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father+mother" data-to="child"><path d="M 224.51999999999998 307 L 224.51999999999998 368" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="child" data-to="counsellor" data-relationship-type="close"><path d="M 200.51999999999998 394.5 L 194.76545454545453 394.5 L 189.01090909090908 394.5 L 183.25636363636363 394.5 L 177.50181818181818 394.5 L 171.74727272727273 394.5 L 165.99272727272725 394.5 L 160.2381818181818 394.5 L 154.48363636363635 394.5 L 148.7290909090909 394.5 L 142.97454545454545 394.5 L 137.22 394.5 L 131.46545454545452 394.5 L 125.71090909090908 394.5 L 119.95636363636363 394.5 L 114.20181818181817 394.5 L 108.44727272727272 394.5 L 102.69272727272727 394.5 L 96.93818181818182 394.5 L 91.18363636363637 394.5 L 85.42909090909092 394.5 L 79.67454545454547 394.5 L 73.92000000000002 394.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 200.51999999999998 389.5 L 194.76545454545453 389.5 L 189.01090909090908 389.5 L 183.25636363636363 389.5 L 177.50181818181818 389.5 L 171.74727272727273 389.5 L 165.99272727272725 389.5 L 160.2381818181818 389.5 L 154.48363636363635 389.5 L 148.7290909090909 389.5 L 142.97454545454545 389.5 L 137.22 389.5 L 131.46545454545452 389.5 L 125.71090909090908 389.5 L 119.95636363636363 389.5 L 114.20181818181817 389.5 L 108.44727272727272 389.5 L 102.69272727272727 389.5 L 96.93818181818182 389.5 L 91.18363636363637 389.5 L 85.42909090909092 389.5 L 79.67454545454547 389.5 L 73.92000000000002 389.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-friendship" data-from="mother" data-to="caseworker" data-relationship-type="friendship"><path d="M 304.52 223.5 L 310.4533333333333 223.5 L 316.38666666666666 223.5 L 322.32 223.5 L 328.25333333333333 223.5 L 334.18666666666667 223.5 L 340.12 223.5 L 346.05333333333334 223.5 L 351.9866666666667 223.5 L 357.91999999999996 223.5 L 363.85333333333335 223.5 L 369.78666666666663 223.5 L 375.72 223.5 L 381.6533333333333 223.5 L 387.58666666666664 223.5 L 393.52 223.5 L 399.4533333333333 223.5 L 405.38666666666666 223.5 L 411.32 223.5 L 417.25333333333333 223.5 L 423.18666666666667 223.5 L 429.12 223.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 304.52 228.5 L 310.4533333333333 228.5 L 316.38666666666666 228.5 L 322.32 228.5 L 328.25333333333333 228.5 L 334.18666666666667 228.5 L 340.12 228.5 L 346.05333333333334 228.5 L 351.9866666666667 228.5 L 357.91999999999996 228.5 L 363.85333333333335 228.5 L 369.78666666666663 228.5 L 375.72 228.5 L 381.6533333333333 228.5 L 387.58666666666664 228.5 L 393.52 228.5 L 399.4533333333333 228.5 L 405.38666666666666 228.5 L 411.32 228.5 L 417.25333333333333 228.5 L 423.18666666666667 228.5 L 429.12 228.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="child" data-to="neighbour" data-relationship-type="close"><path d="M 248.51999999999998 389.5 L 254.2357894736842 389.5 L 259.95157894736843 389.5 L 265.66736842105263 389.5 L 271.3831578947368 389.5 L 277.098947368421 389.5 L 282.8147368421053 389.5 L 288.5305263157895 389.5 L 294.24631578947367 389.5 L 299.96210526315787 389.5 L 305.6778947368421 389.5 L 311.3936842105263 389.5 L 317.1094736842105 389.5 L 322.8252631578947 389.5 L 328.54105263157896 389.5 L 334.25684210526316 389.5 L 339.97263157894736 389.5 L 345.68842105263155 389.5 L 351.4042105263158 389.5 L 357.12 389.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 248.51999999999998 394.5 L 254.2357894736842 394.5 L 259.95157894736843 394.5 L 265.66736842105263 394.5 L 271.3831578947368 394.5 L 277.098947368421 394.5 L 282.8147368421053 394.5 L 288.5305263157895 394.5 L 294.24631578947367 394.5 L 299.96210526315787 394.5 L 305.6778947368421 394.5 L 311.3936842105263 394.5 L 317.1094736842105 394.5 L 322.8252631578947 394.5 L 328.54105263157896 394.5 L 334.25684210526316 394.5 L 339.97263157894736 394.5 L 345.68842105263155 394.5 L 351.4042105263158 394.5 L 357.12 394.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="grandfather" data-status="alive" transform="translate(224.51999999999998, 60)"><title>偉明 (1948)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">78</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="grandmother" data-status="alive" transform="translate(344.52, 60)"><title>美玲 (1950)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">76</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="father" data-status="alive" transform="translate(164.51999999999998, 226)"><title>建國 (1975)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">51</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="mother" data-status="alive" transform="translate(284.52, 226)"><title>麗華 (1977)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">49</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-unknown schematex-genogram-external" data-individual-id="caseworker" data-status="alive" transform="translate(449.12, 226)"><title>個案社工 王女士</title>
+<rect x="-20" y="-20" width="40" height="40" rx="6" class="schematex-genogram-shape" stroke-dasharray="4,3"/>
+<text x="0" y="15" class="schematex-genogram-unknown-mark" text-anchor="middle" font-size="43" data-contrast="halo">?</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female schematex-genogram-index-person" data-individual-id="child" data-status="alive" transform="translate(224.51999999999998, 392)"><title>小安 (2008)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">18</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-unknown schematex-genogram-external" data-individual-id="counsellor" data-status="alive" transform="translate(53.92, 392)"><title>學校輔導員 陳老師</title>
+<rect x="-20" y="-20" width="40" height="40" rx="6" class="schematex-genogram-shape" stroke-dasharray="4,3"/>
+<text x="0" y="15" class="schematex-genogram-unknown-mark" text-anchor="middle" font-size="43" data-contrast="halo">?</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-unknown schematex-genogram-external" data-individual-id="neighbour" data-status="alive" transform="translate(377.12, 392)"><title>鄰居 張阿姨</title>
+<rect x="-20" y="-20" width="40" height="40" rx="6" class="schematex-genogram-shape" stroke-dasharray="4,3"/>
+<text x="0" y="15" class="schematex-genogram-unknown-mark" text-anchor="middle" font-size="43" data-contrast="halo">?</text></g></g>
+<g class="schematex-genogram-labels"><text x="224.51999999999998" y="98" class="schematex-genogram-label" data-individual-id="grandfather">偉明 (b. 1948)</text>
+<text x="344.52" y="98" class="schematex-genogram-label" data-individual-id="grandmother">美玲 (b. 1950)</text>
+<text x="164.51999999999998" y="264" class="schematex-genogram-label" data-individual-id="father">建國 (b. 1975)</text>
+<text x="284.52" y="264" class="schematex-genogram-label" data-individual-id="mother">麗華 (b. 1977)</text>
+<text x="224.51999999999998" y="430" class="schematex-genogram-label" data-individual-id="child">小安 (b. 2008)</text>
+<text x="53.92" y="430" class="schematex-genogram-label" data-individual-id="counsellor">學校輔導員 陳老師</text>
+<text x="449.12" y="264" class="schematex-genogram-label" data-individual-id="caseworker">個案社工 王女士</text>
+<text x="377.12" y="430" class="schematex-genogram-label" data-individual-id="neighbour">鄰居 張阿姨</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="child" data-to="counsellor"><line x1="137.22" y1="392" x2="137.22" y2="361" stroke="#94a3b8" stroke-width="1"/>
+<rect x="113.22" y="345" width="48" height="16" fill="white" fill-opacity="0.9"/>
+<text x="137.22" y="356" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">學校支持</text></g>
+<g data-from="mother" data-to="caseworker"><line x1="366.82" y1="226" x2="366.82" y2="215" stroke="#94a3b8" stroke-width="1"/>
+<rect x="342.82" y="199" width="48" height="16" fill="white" fill-opacity="0.9"/>
+<text x="366.82" y="210" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">個案支持</text></g>
+<g data-from="child" data-to="neighbour"><line x1="302.82" y1="392" x2="302.82" y2="361" stroke="#94a3b8" stroke-width="1"/>
+<rect x="278.82" y="345" width="48" height="16" fill="white" fill-opacity="0.9"/>
+<text x="302.82" y="356" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">鄰里照顧</text></g></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="554.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.other" data-legend-section="symbols"><text x="140.45" y="557.5" class="schematex-genogram-unknown-mark" text-anchor="middle" font-size="24">?</text><text x="159.45" y="554.5" class="schematex-legend-label">Other</text></g>
+<g class="schematex-legend-row" data-legend-key="external" data-legend-section="symbols"><rect rx="3" stroke-dasharray="4,3" x="211.45" y="546" width="20" height="10" fill="#ffffff" stroke="#334155"/>
+<text x="240.45" y="554.5" class="schematex-legend-label">External contact</text></g>
+<text x="16" y="572.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><path d="M 130.45 566.5 L 135.45 566.5 L 140.45 566.5 L 145.45 566.5 L 150.45 566.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 130.45 571.5 L 135.45 571.5 L 140.45 571.5 L 145.45 571.5 L 150.45 571.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><text x="159.45" y="572.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="friendship" data-legend-section="relationships"><path d="M 211.45 566.5 L 216.45 566.5 L 221.45 566.5 L 226.45 566.5 L 231.45 566.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 211.45 571.5 L 216.45 571.5 L 221.45 571.5 L 226.45 571.5 L 231.45 571.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><text x="240.45" y="572.5" class="schematex-legend-label">Friendship</text></g>
+<text x="16" y="590.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="584" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="130.45" y="582" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="590.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

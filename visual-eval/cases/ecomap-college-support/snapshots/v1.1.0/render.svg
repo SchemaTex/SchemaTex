@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 516 640" class="schematex-diagram schematex-ecomap" width="516" height="640"><title>Nia&apos;s College Support Network</title>
+<desc>Ecomap diagram with 6 external systems</desc>
+<defs><marker id="schematex-ecomap-eco-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="schematex-ecomap-eco-arrow-start" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 10 0 L 0 5 L 10 10 z" fill="#334155"/></marker></defs>
+<style>
+.schematex-ecomap {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3; color: #0f172a;
+}
+.schematex-ecomap-center-shape { fill: #ffffff; stroke: #334155; stroke-width: 3; }
+.schematex-ecomap-center-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: #0f172a; font-weight: 600; }
+.schematex-ecomap-center-age { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 400; text-anchor: middle; dominant-baseline: central; fill: #475569; }
+.schematex-ecomap-system-shape { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.schematex-ecomap-system-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-ecomap-eco-line { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-parallel { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-weak { stroke: #334155; stroke-width: 2; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-broken { stroke: #334155; stroke-width: 2; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-stressful { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-conn-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; text-anchor: middle; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.schematex-ecomap-eco-arrow { fill: #94a3b8; }
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-parallel,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-weak,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-broken,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-stressful { stroke-opacity: 0.55; }
+.schematex-ecomap-system-family .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.schematex-ecomap-system-friends .schematex-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.schematex-ecomap-system-work .schematex-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.schematex-ecomap-system-education .schematex-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.schematex-ecomap-system-health .schematex-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.schematex-ecomap-system-mental-health .schematex-ecomap-system-shape { fill: #AB47BC18; stroke: #AB47BC; }
+.schematex-ecomap-system-religion .schematex-ecomap-system-shape { fill: #CCBB3318; stroke: #CCBB33; }
+.schematex-ecomap-system-recreation .schematex-ecomap-system-shape { fill: #26C6DA18; stroke: #26C6DA; }
+.schematex-ecomap-system-legal .schematex-ecomap-system-shape { fill: #78909C18; stroke: #78909C; }
+.schematex-ecomap-system-government .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.schematex-ecomap-system-financial .schematex-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.schematex-ecomap-system-community .schematex-ecomap-system-shape { fill: #29B6F618; stroke: #29B6F6; }
+.schematex-ecomap-system-cultural .schematex-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.schematex-ecomap-system-substance .schematex-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.schematex-ecomap-system-technology .schematex-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.schematex-ecomap-system-pet .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+</style>
+<g transform="translate(0, 40)"><g class="schematex-ecomap-connections"><g class="schematex-ecomap-connection schematex-ecomap-connection-strong" data-from="nia" data-to="roommates"><line x1="254" y1="208" x2="254" y2="128" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="258" y1="208" x2="258" y2="128" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="262" y1="208" x2="262" y2="128" class="schematex-ecomap-eco-line-parallel"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="nia" data-to="advisor"><line x1="304.7653718043597" y1="231" x2="377.51150572225254" y2="189" class="schematex-ecomap-eco-line" marker-start="url(#schematex-ecomap-eco-arrow-start)"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-moderate" data-from="nia" data-to="family"><line x1="302.30127018922195" y1="281.2679491924311" x2="378.51150572225254" y2="325.2679491924311" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="300.30127018922195" y1="284.7320508075689" x2="376.51150572225254" y2="328.7320508075689" class="schematex-ecomap-eco-line-parallel"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="nia" data-to="counselor"><line x1="258" y1="312" x2="258" y2="392" class="schematex-ecomap-eco-line" marker-start="url(#schematex-ecomap-eco-arrow-start)" marker-end="url(#schematex-ecomap-eco-arrow)"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="nia" data-to="job"><line x1="214.69872981077808" y1="283" x2="138.4884942777475" y2="327.00000000000006" class="schematex-ecomap-eco-line"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-strong" data-from="nia" data-to="club"><line x1="212.69872981077805" y1="236.46410161513776" x2="136.48849427774746" y2="192.46410161513776" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="214.69872981077805" y1="233" x2="138.48849427774746" y2="189" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="216.69872981077805" y1="229.53589838486224" x2="140.48849427774746" y2="185.53589838486224" class="schematex-ecomap-eco-line-parallel"/></g></g>
+<g class="schematex-ecomap-center" data-id="nia"><circle cx="258" cy="258" r="50" class="schematex-ecomap-center-shape"/>
+<text x="258" y="250" class="schematex-ecomap-center-label">Nia</text>
+<text x="258" y="267" class="schematex-ecomap-center-age">Age 19</text></g>
+<g class="schematex-ecomap-systems"><g class="schematex-ecomap-system schematex-ecomap-system-friends" data-system-id="roommates"><circle cx="258" cy="78" r="50" class="schematex-ecomap-system-shape"/>
+<text x="258" y="82.2" class="schematex-ecomap-system-label">Roommates</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-education" data-system-id="advisor"><circle cx="413.88457268119896" cy="168" r="42" class="schematex-ecomap-system-shape"/>
+<text x="413.88457268119896" y="164.7" class="schematex-ecomap-system-label">Academic</text>
+<text x="413.88457268119896" y="179.7" class="schematex-ecomap-system-label">Advisor</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-family" data-system-id="family"><circle cx="413.88457268119896" cy="348" r="42" class="schematex-ecomap-system-shape"/>
+<text x="413.88457268119896" y="352.2" class="schematex-ecomap-system-label">Family</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-mental-health" data-system-id="counselor"><circle cx="258" cy="438" r="42" class="schematex-ecomap-system-shape"/>
+<text x="258" y="434.7" class="schematex-ecomap-system-label">Campus</text>
+<text x="258" y="449.7" class="schematex-ecomap-system-label">Counseling</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-work" data-system-id="job"><circle cx="102.11542731880107" cy="348.00000000000006" r="42" class="schematex-ecomap-system-shape"/>
+<text x="102.11542731880107" y="352.20000000000005" class="schematex-ecomap-system-label">Campus Job</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-community" data-system-id="club"><circle cx="102.11542731880104" cy="168" r="42" class="schematex-ecomap-system-shape"/>
+<text x="102.11542731880104" y="157.2" class="schematex-ecomap-system-label">Cultural</text>
+<text x="102.11542731880104" y="172.2" class="schematex-ecomap-system-label">Student</text>
+<text x="102.11542731880104" y="187.2" class="schematex-ecomap-system-label">Club</text></g></g>
+<g class="schematex-ecomap-connection-labels"></g></g>
+<g transform="translate(0, 40)"><g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="542.5" class="schematex-legend-section">SYSTEMS</text>
+<g class="schematex-legend-row" data-legend-key="cat.community" data-legend-section="systems"><circle cx="94.55" cy="539" r="5" fill="#29B6F618" stroke="#29B6F6"/>
+<text x="113.55" y="542.5" class="schematex-legend-label">Community</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.education" data-legend-section="systems"><circle cx="202.55" cy="539" r="5" fill="#FFA72618" stroke="#FFA726"/>
+<text x="221.55" y="542.5" class="schematex-legend-label">Education</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.family" data-legend-section="systems"><circle cx="310.55" cy="539" r="5" fill="#8D6E6318" stroke="#8D6E63"/>
+<text x="329.55" y="542.5" class="schematex-legend-label">Family</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.friends" data-legend-section="systems"><circle cx="398.55" cy="539" r="5" fill="#42A5F518" stroke="#42A5F5"/>
+<text x="417.55" y="542.5" class="schematex-legend-label">Friends</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.mental-health" data-legend-section="systems"><circle cx="94.55" cy="557" r="5" fill="#AB47BC18" stroke="#AB47BC"/>
+<text x="113.55" y="560.5" class="schematex-legend-label">Mental Health</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.work" data-legend-section="systems"><circle cx="228.55" cy="557" r="5" fill="#66BB6A18" stroke="#66BB6A"/>
+<text x="247.55" y="560.5" class="schematex-legend-label">Work</text></g>
+<text x="16" y="578.5" class="schematex-legend-section">TIES</text>
+<g class="schematex-legend-row" data-legend-key="strong" data-legend-section="ties"><line x1="84.55" y1="573" x2="104.55" y2="573" stroke="#334155" stroke-width="1.5"/><line x1="84.55" y1="577" x2="104.55" y2="577" stroke="#334155" stroke-width="1.5"/><line x1="84.55" y1="575" x2="104.55" y2="575" stroke="#334155" stroke-width="1.5"/>
+<text x="113.55" y="578.5" class="schematex-legend-label">Strong</text></g>
+<g class="schematex-legend-row" data-legend-key="moderate" data-legend-section="ties"><line x1="172.55" y1="573" x2="192.55" y2="573" stroke="#334155" stroke-width="1.5"/><line x1="172.55" y1="577" x2="192.55" y2="577" stroke="#334155" stroke-width="1.5"/>
+<text x="201.55" y="578.5" class="schematex-legend-label">Moderate</text></g>
+<g class="schematex-legend-row" data-legend-key="energy" data-legend-section="ties"><line x1="273.55" y1="575" x2="293.55" y2="575" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/><line x1="288.55" y1="575" x2="294.55" y2="575" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/><polygon points="294.55,572 297.55,575 294.55,578" fill="#0f172a"/>
+<text x="302.55" y="578.5" class="schematex-legend-label">Energy flow</text></g></g></g>
+<text x="258" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Nia&apos;s College Support Network</text></svg>

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="HQ to Branch Site-to-Site VPN" width="906" height="523.5" viewBox="0 -1 906 523.5" data-diagram-type="network"><title>Network diagram — HQ to Branch Site-to-Site VPN</title>
+<desc>10 devices, 10 links, 4 boundaries. Topology: tree. Links: 7 copper, 2 serial, 1 vpn.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="452.5" y="21" class="sx-net-title" text-anchor="middle">HQ to Branch Site-to-Site VPN</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="site" data-label="Headquarters"><rect class="sx-net-boundary-site" x="213.32" y="30" width="649.44" height="132" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#334155" x="225.32" y="43">Headquarters</text></g>
+<g class="sx-net-boundary" data-kind="site" data-label="Branch Office"><rect class="sx-net-boundary-site" x="201.08" y="216.5" width="673.92" height="245" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#334155" x="213.08" y="229.5">Branch Office</text></g>
+<g class="sx-net-boundary" data-kind="subnet" data-label="10.10.0.0/24"><rect class="sx-net-boundary-subnet" x="561.32" y="30" width="301.44" height="132" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="573.32" y="43">10.10.0.0/24</text></g>
+<g class="sx-net-boundary" data-kind="subnet" data-label="10.20.0.0/24"><rect class="sx-net-boundary-subnet" x="549.08" y="216.5" width="325.92" height="245" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="561.08" y="229.5">10.20.0.0/24</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="hqpc" data-to="hqsw" data-type="copper" data-vlan="10" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="802.16,94 770.16,94 665.2,94 633.2,94"/>
+<text class="sx-net-linklabel" x="717.68" y="98.5" text-anchor="middle">Access · VLAN 10</text></g>
+<g class="sx-net-link-g" data-from="hqsw" data-to="hqfw" data-type="copper" data-vlan="10" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="633.2,94 601.2,94 493.6,94 461.6,94"/>
+<line x1="547.402" y1="94" x2="547.402" y2="83.5" stroke="#7c3aed" stroke-width="1"/>
+<text class="sx-net-linklabel" x="547.4" y="81.5" text-anchor="middle">Trunk · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="hqfw" data-to="hqr" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="461.6,94 429.6,94 319.6,94 287.6,94"/>
+<text class="sx-net-linklabel" x="374.6" y="98.5" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="hqr" data-to="inet" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="287.6,94 255.6,94 239.6,94 181.08,215.5 165.08,215.5 97.54,215.5"/>
+<text class="sx-net-linklabel" x="200.9" y="178.86" text-anchor="middle">HQ ISP</text></g>
+<g class="sx-net-link-g" data-from="inet" data-to="brr" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="97.54,215.5 147.6,247.5 255.6,316.54 287.6,337"/>
+<line x1="238.63897501124018" y1="305.6994831336554" x2="238.63897501124018" y2="278.49743760121584" stroke="#7c3aed" stroke-width="1"/>
+<text class="sx-net-linklabel" x="260.18" y="276.5" text-anchor="middle">Branch ISP</text></g>
+<g class="sx-net-link-g" data-from="brr" data-to="brfw" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="287.6,337 319.6,337 429.6,337 461.6,337"/>
+<text class="sx-net-linklabel" x="374.6" y="341.5" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="brfw" data-to="brsw" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="461.6,337 493.6,337 601.2,337 633.2,337"/>
+<line x1="547.402" y1="337" x2="547.402" y2="347.5" stroke="#475569" stroke-width="1"/>
+<text class="sx-net-linklabel" x="547.4" y="358.5" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="brsw" data-to="brpc" data-type="copper" data-vlan="20" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="633.2,337 665.2,326.3 770.16,291.2 802.16,280.5"/>
+<line x1="718.1526419377535" y1="308.5926179599723" x2="718.1526419377535" y2="282.4956812394721" stroke="#475569" stroke-width="1"/>
+<text class="sx-net-linklabel" x="707.25" y="280.5" text-anchor="middle">Access · VLAN 20</text></g>
+<g class="sx-net-link-g" data-from="brsw" data-to="brpr" data-type="copper" data-vlan="20" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="633.2,337 665.2,347.7 770.16,382.8 802.16,393.5"/>
+<line x1="751.7674243119384" y1="376.6481207009027" x2="751.7674243119384" y2="348.2830637411727" stroke="#475569" stroke-width="1"/>
+<text class="sx-net-linklabel" x="763.43" y="346.28" text-anchor="middle">Access · VLAN 20</text></g>
+<g class="sx-net-link-g" data-from="hqfw" data-to="brfw" data-type="vpn"><polyline class="sx-net-link sx-net-link-vpn" stroke="#0891b2" points="461.6,94 493.6,94 509.6,94 509.6,337 493.6,337 461.6,337"/>
+<text class="sx-net-linklabel" x="509.6" y="195.5" text-anchor="middle">VPN · IPsec AES-256</text></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="hqfw" data-kind="firewall"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="432.28" y="77.71" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 432.28 88.57 L 490.92 88.57 M 432.28 99.43 L 490.92 99.43 M 451.83 77.71 L 451.83 88.57 M 471.38 77.71 L 471.38 88.57 M 442.05 88.57 L 442.05 99.43 M 461.6 88.57 L 461.6 99.43 M 481.15 88.57 L 481.15 99.43 M 451.83 99.43 L 451.83 110.29 M 471.38 99.43 L 471.38 110.29" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="461.6" y="135" text-anchor="middle">HQ Firewall</text></g>
+<g class="sx-net-device" data-id="hqr" data-kind="router"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="258.47" y="77.35" width="58.27" height="33.29" rx="16.65"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 268.87 84.98 L 281.36 91.92 M 306.33 103.02 L 293.84 96.08"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 281.36 91.92 L 274.83 92.26 L 278.19 86.19 Z"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 293.84 96.08 L 300.38 95.74 L 297.01 101.81 Z"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 283.44 96.77 L 270.95 103.02 M 291.76 91.23 L 304.25 84.98"/>
+<path class="sx-net-glyph" d="M 268.87 104.06 L 272.29 98.47 L 275.39 104.68 Z"/>
+<path class="sx-net-glyph" d="M 306.33 83.94 L 302.92 89.53 L 299.82 83.32 Z"/></g></g>
+<text class="sx-net-label" x="287.6" y="135" text-anchor="middle">HQ Edge Router</text></g>
+<g class="sx-net-device" data-id="hqsw" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="603.86" y="83" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="610.67" y="91.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="621.15" y="91.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="631.63" y="91.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="642.11" y="91.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="655.73" cy="94.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="633.2" y="135" text-anchor="middle">HQ LAN Switch</text></g>
+<g class="sx-net-device" data-id="hqpc" data-kind="pc"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="775.67" y="72.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="780.38" y="77.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 802.16 105.7 L 802.16 115.12 M 787.45 115.12 L 816.88 115.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="802.16" y="135" text-anchor="middle">HQ Analyst</text></g>
+<g class="sx-net-device" data-id="brfw" data-kind="firewall"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="432.28" y="320.71" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 432.28 331.57 L 490.92 331.57 M 432.28 342.43 L 490.92 342.43 M 451.83 320.71 L 451.83 331.57 M 471.38 320.71 L 471.38 331.57 M 442.05 331.57 L 442.05 342.43 M 461.6 331.57 L 461.6 342.43 M 481.15 331.57 L 481.15 342.43 M 451.83 342.43 L 451.83 353.29 M 471.38 342.43 L 471.38 353.29" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="461.6" y="378" text-anchor="middle">Branch Firewall</text></g>
+<g class="sx-net-device" data-id="brr" data-kind="router"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="258.47" y="320.35" width="58.27" height="33.29" rx="16.65"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 268.87 327.98 L 281.36 334.92 M 306.33 346.02 L 293.84 339.08"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 281.36 334.92 L 274.83 335.26 L 278.19 329.19 Z"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 293.84 339.08 L 300.38 338.74 L 297.01 344.81 Z"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 283.44 339.77 L 270.95 346.02 M 291.76 334.23 L 304.25 327.98"/>
+<path class="sx-net-glyph" d="M 268.87 347.06 L 272.29 341.47 L 275.39 347.68 Z"/>
+<path class="sx-net-glyph" d="M 306.33 326.94 L 302.92 332.53 L 299.82 326.32 Z"/></g></g>
+<text class="sx-net-label" x="287.6" y="378" text-anchor="middle">Branch Edge Router</text></g>
+<g class="sx-net-device" data-id="brsw" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="603.86" y="326" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="610.67" y="334.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="621.15" y="334.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="631.63" y="334.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="642.11" y="334.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="655.73" cy="337.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="633.2" y="378" text-anchor="middle">Branch LAN Switch</text></g>
+<g class="sx-net-device" data-id="brpc" data-kind="pc"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="775.67" y="259.24" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="780.38" y="263.94" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 802.16 292.2 L 802.16 301.62 M 787.45 301.62 L 816.88 301.62" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="802.16" y="321.5" text-anchor="middle">Branch Analyst</text></g>
+<g class="sx-net-device" data-id="brpr" data-kind="printer"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="788.71" y="372.2" width="26.9" height="16.25" rx="0.56"/>
+<path class="sx-net-detail" d="M 793.19 377.25 L 811.13 377.25 M 793.19 381.17 L 808.33 381.17"/>
+<rect class="sx-net-body" x="780.86" y="386.21" width="42.6" height="24.1" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="787.03" y="397.42" width="30.27" height="7.29"/>
+<rect class="sx-net-body" x="789.27" y="400.23" width="25.78" height="14.57" rx="0.56"/>
+<path class="sx-net-detail" d="M 793.75 405.27 L 810.57 405.27 M 793.75 409.19 L 806.65 409.19"/>
+<circle class="sx-net-glyph" cx="817.3" cy="391.82" r="1.4"/></g></g>
+<text class="sx-net-label" x="802.16" y="434.5" text-anchor="middle">Branch Printer</text></g>
+<g class="sx-net-device" data-id="inet" data-kind="internet"><g class="sx-net-symbol"><g><path class="sx-net-cloud-body" d="M 58.37 243.02 C 32.03 243.02 29.32 206.54 54.31 203.34 C 55.67 179.02 88.09 175.82 100.24 195.02 C 121.86 180.94 142.12 193.1 142.12 209.74 C 163.73 211.66 165.08 243.02 139.42 243.02 Z"/>
+<circle class="sx-net-detail" cx="86.73443999999999" cy="198.5" r="8"/>
+<ellipse class="sx-net-detail" cx="86.73443999999999" cy="198.5" rx="3" ry="8"/>
+<path class="sx-net-detail" d="M 78.73443999999999 198.5 H 94.73443999999999 M 80.73443999999999 194.5 H 92.73443999999999 M 80.73443999999999 202.5 H 92.73443999999999"/>
+<text class="sx-net-cloudtext" x="97.541" y="225.26" text-anchor="middle">Public Internet</text></g></g></g></g></g></svg>

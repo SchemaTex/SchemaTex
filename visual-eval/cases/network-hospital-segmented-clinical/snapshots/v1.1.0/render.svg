@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="Hospital segmented clinical network" width="940.89" height="768" viewBox="-2.05 0 940.89 768" data-diagram-type="network"><title>Network diagram — Hospital segmented clinical network</title>
+<desc>11 devices, 10 links, 5 boundaries. Topology: hierarchical. Links: 1 serial, 1 fiber, 6 copper, 1 poe, 1 wireless.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="469.42" y="21" class="sx-net-title" text-anchor="middle">Hospital segmented clinical network</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Clinical"><rect class="sx-net-boundary-vlan" x="28.95" y="674" width="106.5" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="40.95" y="687">VLAN 10 Clinical</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 20 Biomedical"><rect class="sx-net-boundary-vlan" x="238.87" y="689" width="121.55" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="250.87" y="702">VLAN 20 Biomedical</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 30 Administration"><rect class="sx-net-boundary-vlan" x="464.23" y="674" width="139.78" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="476.23" y="687">VLAN 30 Administration</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 40 Guest"><rect class="sx-net-boundary-vlan" x="698.36" y="492" width="96.32" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="710.36" y="505">VLAN 40 Guest</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 40 Guest"><rect class="sx-net-boundary-vlan" x="698.36" y="674" width="96.32" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="710.36" y="687">VLAN 40 Guest</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="inet" data-to="fw" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="305.32,66 305.32,102 305.32,172.5 305.32,196.5"/>
+<text class="sx-net-linklabel" x="305.32" y="134.25" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="fw" data-to="core" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="305.32,196.5 305.32,220.5 305.32,301.5 305.32,325.5"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="308.32" y1="248.1" x2="302.32" y2="248.1"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="308.32" y1="267.45" x2="302.32" y2="267.45"/>
+<text class="sx-net-linklabel" x="305.32" y="258" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="clinical" data-type="copper" data-vlan="10" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="305.32,325.5 273.32,345.08 114.2,442.42 82.2,462"/>
+<text class="sx-net-linklabel" x="197.1" y="396.21" text-anchor="middle">Trunk · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="biomed" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="305.32,325.5 304.32,349.5 300.64,438 299.64,462"/>
+<text class="sx-net-linklabel" x="302.79" y="390.76" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="admin" data-type="copper" data-vlan="30,40" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="305.32,325.5 337.32,344.59 502.12,442.91 534.12,462"/>
+<text class="sx-net-linklabel" x="416.42" y="396.28" text-anchor="middle">Trunk · VLAN 30,40 · 1G</text></g>
+<g class="sx-net-link-g" data-from="clinical" data-to="ehr" data-type="copper" data-vlan="10" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="82.2,462 82.2,486 82.2,588 82.2,612"/>
+<text class="sx-net-linklabel" x="82.2" y="534" text-anchor="middle">Access · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="biomed" data-to="monitorgw" data-type="copper" data-vlan="20" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="299.64,462 299.64,486 299.64,588 299.64,612"/>
+<text class="sx-net-linklabel" x="299.64" y="534" text-anchor="middle">Access · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="admin" data-to="billing" data-type="copper" data-vlan="30" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#d97706" points="534.12,462 534.12,486 534.12,588 534.12,612"/>
+<text class="sx-net-linklabel" x="534.12" y="534" text-anchor="middle">Access · VLAN 30 · 1G</text></g>
+<g class="sx-net-link-g" data-from="admin" data-to="guest" data-type="poe" data-vlan="40" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="534.12,462 534.12,438 534.12,422 746.52,422 746.52,438 746.52,462"/>
+<text class="sx-net-linklabel" x="640.32" y="426.5" text-anchor="middle">Access · VLAN 40 · 1G · PoE</text></g>
+<g class="sx-net-link-g" data-from="guest" data-to="visitor" data-type="wireless"><polyline class="sx-net-link sx-net-link-wireless" stroke="#2563eb" points="746.52,462 714.52,462 698.52,462 698.52,612 714.52,612 746.52,612"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="inet" data-kind="internet"><g class="sx-net-symbol"><g><path class="sx-net-cloud-body" d="M 258.87 96.96 C 227.64 96.96 224.44 55.92 254.07 52.32 C 255.67 24.96 294.11 21.36 308.52 42.96 C 334.15 27.12 358.17 40.8 358.17 59.52 C 383.8 61.68 385.4 96.96 354.97 96.96 Z"/>
+<circle class="sx-net-detail" cx="292.50707200000005" cy="45" r="8"/>
+<ellipse class="sx-net-detail" cx="292.50707200000005" cy="45" rx="3" ry="8"/>
+<path class="sx-net-detail" d="M 284.50707200000005 45 H 300.50707200000005 M 286.50707200000005 41 H 298.50707200000005 M 286.50707200000005 49 H 298.50707200000005"/>
+<text class="sx-net-cloudtext" x="305.32000000000005" y="67.97999999999999" text-anchor="middle">Internet and health</text>
+<text class="sx-net-cloudtext" x="305.32000000000005" y="84.97999999999999" text-anchor="middle">exchange</text></g></g></g>
+<g class="sx-net-device" data-id="fw" data-kind="firewall" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="276" y="180.21" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 276 191.07 L 334.64 191.07 M 276 201.93 L 334.64 201.93 M 295.55 180.21 L 295.55 191.07 M 315.09 180.21 L 315.09 191.07 M 285.77 191.07 L 285.77 201.93 M 305.32 191.07 L 305.32 201.93 M 324.87 191.07 L 324.87 201.93 M 295.55 201.93 L 295.55 212.79 M 315.09 201.93 L 315.09 212.79" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="403.56" y="200.5" text-anchor="middle">Healthcare NGFW</text></g>
+<g class="sx-net-device" data-id="core" data-kind="l3switch" data-tier="core"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="275.98" y="314.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="282.79" y="322.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="293.27" y="322.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="303.75" y="322.88" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 315.8 321.83 L 328.38 321.83 M 325.76 319.21 L 328.38 321.83 L 325.76 324.45 M 328.38 330.22 L 315.8 330.22 M 318.42 327.6 L 315.8 330.22 L 318.42 332.84"/>
+<circle class="sx-net-glyph" cx="285.93" cy="318.69" r="1.31"/></g></g>
+<text class="sx-net-label" x="411" y="329.5" text-anchor="middle">Clinical core switch</text></g>
+<g class="sx-net-device" data-id="clinical" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="52.86" y="451" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="59.67" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="70.15" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="80.63" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="91.11" y="459.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="104.73" cy="462.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="174.92" y="458.5" text-anchor="middle">Clinical access</text>
+<text class="sx-net-label" x="174.92" y="473.5" text-anchor="middle">switch</text></g>
+<g class="sx-net-device" data-id="biomed" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="270.3" y="451" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="277.11" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="287.59" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="298.07" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="308.55" y="459.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="322.17" cy="462.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="400.88" y="458.5" text-anchor="middle">Biomedical access</text>
+<text class="sx-net-label" x="400.88" y="473.5" text-anchor="middle">switch</text></g>
+<g class="sx-net-device" data-id="admin" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="504.78" y="451" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="511.59" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="522.07" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="532.55" y="459.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="543.03" y="459.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="556.65" cy="462.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="624.32" y="458.5" text-anchor="middle">Administrative</text>
+<text class="sx-net-label" x="624.32" y="473.5" text-anchor="middle">access switch</text></g>
+<g class="sx-net-device" data-id="guest" data-kind="ap" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="724.34" y="465.33" width="44.37" height="17.75" rx="8.87"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 736.17 460.89 Q 746.52 449.8 756.87 460.89"/>
+<path class="sx-net-glyph-line" d="M 728.03 455.71 Q 746.52 435.75 765.01 455.71"/>
+<path class="sx-net-detail" d="M 739.86 474.2 L 753.18 474.2"/></g></g>
+<text class="sx-net-label" x="849.68" y="466" text-anchor="middle">Patient guest Wi-Fi</text></g>
+<g class="sx-net-device" data-id="ehr" data-kind="pc" data-ip="10.60.10.15"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="55.71" y="590.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="60.42" y="595.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 82.2 623.7 L 82.2 633.12 M 67.48 633.12 L 96.92 633.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="82.2" y="653" text-anchor="middle">EHR workstation</text>
+<text class="sx-net-sublabel" x="82.2" y="665" text-anchor="middle">10.60.10.15</text></g>
+<g class="sx-net-device" data-id="monitorgw" data-kind="pc" data-ip="10.60.20.15"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="273.15" y="590.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="277.86" y="595.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 299.64 623.7 L 299.64 633.12 M 284.92 633.12 L 314.36 633.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="299.64" y="653" text-anchor="middle">Patient monitor</text>
+<text class="sx-net-label" x="299.64" y="668" text-anchor="middle">gateway</text>
+<text class="sx-net-sublabel" x="299.64" y="680" text-anchor="middle">10.60.20.15</text></g>
+<g class="sx-net-device" data-id="billing" data-kind="pc" data-ip="10.60.30.15"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="507.63" y="590.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="512.34" y="595.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 534.12 623.7 L 534.12 633.12 M 519.4 633.12 L 548.84 633.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="534.12" y="653" text-anchor="middle">Billing workstation</text>
+<text class="sx-net-sublabel" x="534.12" y="665" text-anchor="middle">10.60.30.15</text></g>
+<g class="sx-net-device" data-id="visitor" data-kind="laptop" data-ip="10.60.40.15"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="723.82" y="592.86" width="45.41" height="27.89" rx="1.95"/>
+<rect class="sx-net-body sx-net-screen" x="727.71" y="596.76" width="37.62" height="20.11"/>
+<path class="sx-net-body" d="M 723.82 620.76 L 769.22 620.76 L 775.71 631.14 L 717.33 631.14 Z"/>
+<path class="sx-net-detail" d="M 729.01 624 L 764.03 624"/>
+<rect class="sx-net-body sx-net-panel" x="740.03" y="626.59" width="12.97" height="2.59"/></g></g>
+<text class="sx-net-label" x="746.52" y="653" text-anchor="middle">Visitor device</text>
+<text class="sx-net-sublabel" x="746.52" y="665" text-anchor="middle">10.60.40.15</text></g></g></g></svg>

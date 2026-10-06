@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 2815 350" width="2815" height="350" role="img" data-diagram-type="blockdiagram"><title>ATX 1200 W PSU GaN - Input 24 VDC - Efisiensi &gt;95%</title>
+<desc>Block diagram with 12 blocks, 0 summing junctions, 17 signals</desc>
+<defs><style>.schematex-bd { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.schematex-bd-block { stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-tf { font-size: 14px; font-weight: 600; fill: #16202b; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #63707f; }
+.schematex-bd-sum { fill: #ffffff; stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #16202b; }
+.schematex-bd-signal { stroke: #16202b; stroke-width: 1.5; fill: none; }
+.schematex-bd-signal-discrete { stroke: #16202b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font-size: 12px; font-style: italic; fill: #63707f; }
+.schematex-bd-port-label { font-size: 13px; fill: #16202b; }
+.schematex-bd-title { font-size: 16px; font-weight: 700; fill: #16202b; }
+.schematex-bd-branch { fill: #16202b; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="9" markerUnits="userSpaceOnUse" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202b"/></marker></defs>
+<text x="34" y="24" text-anchor="start" class="schematex-bd-title">ATX 1200 W PSU GaN - Input 24 VDC - Efisiensi &gt;95%</text>
+<g transform="translate(0, 40)"><g class="schematex-bd-signals"><path d="M 1900 108 L 1924 108 L 1924 66 L 2634 66" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="srec" data-to="dc5"/>
+<rect x="2222" y="41" width="114" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2279" y="53" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2279" dy="0">Kaskade 95.3%</tspan></text>
+<path d="M 1900 138 L 1924 138 L 1924 180 L 2610 180 L 2610 162 L 2634 162" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="srec" data-to="dc33"/>
+<rect x="2210" y="155" width="114" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2267" y="167" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2267" dy="0">Kaskade 95.3%</tspan></text>
+<path d="M 1900 123 L 2152 123" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="srec" data-to="fb"/>
+<rect x="1969" y="98" width="114" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2026" y="110" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2026" dy="0">Kaskade 95.3%</tspan></text>
+<path d="M 107 123 L 322 123" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="in" data-to="inp"/>
+<rect x="180" y="98" width="69" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="214.5" y="110" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="214.5" dy="0">24 V DC</tspan></text>
+<path d="M 513 114 L 546 114 L 546 67 L 579 67" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="inp" data-to="emi"/>
+<path d="M 735 58 L 804 58 L 804 66 L 873 66" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="emi" data-to="boost"/>
+<rect x="810.5" y="41" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="838.5" y="53" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="838.5" dy="0">99.8%</tspan></text>
+<path d="M 1076 75 L 1144 75 L 1144 123 L 1212 123" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="boost" data-to="bus"/>
+<rect x="1150" y="98" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1178" y="110" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1178" dy="0">98.5%</tspan></text>
+<path d="M 1352 123 L 1420 123 L 1420 114 L 1488 114" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="bus" data-to="llc"/>
+<rect x="1426" y="89" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1454" y="101" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1454" dy="0">98.2%</tspan></text>
+<path d="M 1637 123 L 1773 123" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="llc" data-to="srec"/>
+<rect x="1677" y="98" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1705" y="110" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1705" dy="0">97.9%</tspan></text>
+<path d="M 735 76 L 816 76 L 816 179 L 897 179" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="emi" data-to="sb"/>
+<rect x="828.5" y="154" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="856.5" y="166" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="856.5" dy="0">94.0%</tspan></text>
+<path d="M 2305 123 L 2337 123 L 2337 114 L 2369 114" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="fb" data-to="ctrl"/>
+<path d="M 737 179 L 761 179 L 761 222 L 2345 222 L 2345 132 L 2369 132" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="sns" data-to="ctrl"/>
+<path d="M 513 132 L 545 132 L 545 179 L 577 179" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="inp" data-to="sns"/>
+<path d="M 2469.5 158 L 2469.5 248 L 974.5 248 L 974.5 110" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="ctrl" data-to="boost"/>
+<path d="M 2469.5 158 L 2469.5 276 L 1562.5 276 L 1562.5 158" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="ctrl" data-to="llc"/>
+<path d="M 2570 115.33333333333333 L 2602 115.33333333333333 L 2602 84 L 2634 84" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="ctrl" data-to="dc5"/>
+<path d="M 2570 146 L 2602 146 L 2602 180 L 2634 180" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="ctrl" data-to="dc33"/></g>
+<g class="schematex-bd-nodes"><g transform="translate(322, 88)" data-block-id="inp" data-block-role="reference"><rect width="191" height="70" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="95.5" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="95.5" dy="-16">Input 24 V DC / 50 A</tspan><tspan x="95.5" dy="16">Reverse-Polarity +</tspan><tspan x="95.5" dy="16">Fuse 60 A + Soft-Start</tspan></text></g>
+<g transform="translate(579, 32)" data-block-id="emi" data-block-role="generic"><rect width="156" height="70" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="78" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="78" dy="-16">EMI / Input Filter</tspan><tspan x="78" dy="16">Input Cap Bank</tspan><tspan x="78" dy="16">Low-ESR DC-Link</tspan></text></g>
+<g transform="translate(873, 40)" data-block-id="boost" data-block-role="actuator"><rect width="203" height="70" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="101.5" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="101.5" dy="-16">Interleaved GaN Boost</tspan><tspan x="101.5" dy="16">3-Fasa · 24 V -&gt; 200 V</tspan><tspan x="101.5" dy="16">ZVS · Pembagi Arus</tspan></text></g>
+<g transform="translate(1212, 88)" data-block-id="bus" data-block-role="generic"><rect width="140" height="70" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="70" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="70" dy="-16">200 V DC Bus</tspan><tspan x="70" dy="16">+ Hold-up Cap</tspan><tspan x="70" dy="16">(10 ms Hold-up)</tspan></text></g>
+<g transform="translate(1488, 88)" data-block-id="llc" data-block-role="plant"><rect width="149" height="70" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="74.5" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="74.5" dy="-16">Isolated GaN LLC</tspan><tspan x="74.5" dy="16">Half-Bridge ZVS</tspan><tspan x="74.5" dy="16">12 V / 1000 W</tspan></text></g>
+<g transform="translate(1773, 96)" data-block-id="srec" data-block-role="generic"><rect width="127" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="63.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63.5" dy="-8">SR MOSFET</tspan><tspan x="63.5" dy="16">1 mOhm · ZCS</tspan></text></g>
+<g transform="translate(2634, 48)" data-block-id="dc5" data-block-role="plant"><rect width="147" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="73.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="73.5" dy="-8">GaN Buck DC-DC</tspan><tspan x="73.5" dy="16">+5 V / 20 A</tspan></text></g>
+<g transform="translate(2634, 144)" data-block-id="dc33" data-block-role="plant"><rect width="147" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="73.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="73.5" dy="-8">GaN Buck DC-DC</tspan><tspan x="73.5" dy="16">+3.3 V / 20 A</tspan></text></g>
+<g transform="translate(897, 152)" data-block-id="sb" data-block-role="plant"><rect width="155" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="77.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="77.5" dy="-8">5 VSB Aux DC-DC</tspan><tspan x="77.5" dy="16">24 V -&gt; 5 V Buck</tspan></text></g>
+<g transform="translate(2369, 88)" data-block-id="ctrl" data-block-role="controller"><rect width="201" height="70" fill="#dbeafe" class="schematex-bd-block" rx="4"/>
+<text x="100.5" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="100.5" dy="-16">Digital Controller</tspan><tspan x="100.5" dy="16">PWM + ZVS + OCP/OVP</tspan><tspan x="100.5" dy="16">UVLO 18 V · Burst Mode</tspan></text></g>
+<g transform="translate(2152, 96)" data-block-id="fb" data-block-role="sensor"><rect width="153" height="54" fill="#f3e8ff" class="schematex-bd-block" rx="4"/>
+<text x="76.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="76.5" dy="-8">Isolated Feedback</tspan><tspan x="76.5" dy="16">TL431 + Opto</tspan></text></g>
+<g transform="translate(577, 144)" data-block-id="sns" data-block-role="sensor"><rect width="160" height="70" fill="#f3e8ff" class="schematex-bd-block" rx="4"/>
+<text x="80" y="39" text-anchor="middle" class="schematex-bd-tf"><tspan x="80" dy="-16">Sense Arus Input</tspan><tspan x="80" dy="16">+ Suhu / Tegangan</tspan><tspan x="80" dy="16">Shunt 0.5 mOhm</tspan></text></g>
+<g data-port-id="in"><text x="93" y="127" text-anchor="end" class="schematex-bd-port-label">in</text></g></g>
+<g class="schematex-bd-branches"><circle cx="513" cy="123" r="3.5" class="schematex-bd-branch"/>
+<circle cx="735" cy="67" r="3.5" class="schematex-bd-branch"/>
+<circle cx="1900" cy="123" r="3.5" class="schematex-bd-branch"/>
+<circle cx="2570" cy="123" r="3.5" class="schematex-bd-branch"/></g></g></svg>

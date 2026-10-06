@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="Water Plant Industrial Ethernet" width="810.32" height="1239.85" viewBox="-1 0 810.32 1239.85" data-diagram-type="network"><title>Network diagram — Water Plant Industrial Ethernet</title>
+<desc>13 devices, 13 links, 2 boundaries. Topology: ring. Links: 5 fiber, 8 copper.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="404.16" y="21" class="sx-net-title" text-anchor="middle">Water Plant Industrial Ethernet</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="dmz" data-label="Industrial DMZ"><rect class="sx-net-boundary-dmz" x="232.33" y="99.1" width="156" height="299.68" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#dc2626" x="244.33" y="112.1">Industrial DMZ</text></g>
+<g class="sx-net-boundary" data-kind="zone" data-label="OT Control Zone"><rect class="sx-net-boundary-zone" x="30" y="426.98" width="748.32" height="751.87" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#dc2626" x="42" y="439.98">OT Control Zone</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="itfw" data-to="otfw" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="120.98,54 152.98,54 168.98,54 215.66,152.39 215.66,168.39 215.66,192.39"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="184.87" y1="80.51" x2="179.45" y2="83.08"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="197.53" y1="107.19" x2="192.11" y2="109.76"/>
+<text class="sx-net-linklabel" x="189.41" y="101.57" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="otfw" data-to="dmzsw" data-type="copper" data-vlan="10" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="215.66,192.39 183.66,192.39 167.66,192.39 167.66,330.78 278.33,330.78 310.33,330.78"/>
+<text class="sx-net-linklabel" x="167.66" y="305.93" text-anchor="middle">Trunk · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="dmzsw" data-to="hist" data-type="copper" data-vlan="10" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="310.33,330.78 342.33,330.78 376.33,330.78 376.33,163.1 342.33,163.1 310.33,163.1"/>
+<text class="sx-net-linklabel" x="343.64" y="243.94" text-anchor="middle">Access · VLAN 10</text></g>
+<g class="sx-net-link-g" data-from="dmzsw" data-to="scada" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="310.33,330.78 342.33,330.78 358.33,330.78 359.89,450.98 359.89,466.98 359.89,490.98"/>
+<text class="sx-net-linklabel" x="334.82" y="391.78" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="sw2" data-type="fiber"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="409.44,651.17 441.44,651.17 457.44,651.17 549.44,751.17 549.44,767.17 549.44,791.17"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="487.78" y1="679.72" x2="483.37" y2="683.78"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="510.52" y1="704.43" x2="506.1" y2="708.49"/>
+<text class="sx-net-linklabel" x="499.7" y="701.6" text-anchor="middle">MRP ring</text></g>
+<g class="sx-net-link-g" data-from="sw2" data-to="sw3" data-type="fiber"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="549.44,791.17 517.44,791.17 501.44,791.17 409.44,891.17 409.44,907.17 409.44,931.17"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="475.51" y1="823.78" x2="471.1" y2="819.72"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="452.78" y1="848.49" x2="448.36" y2="844.43"/>
+<text class="sx-net-linklabel" x="459.18" y="841.6" text-anchor="middle">MRP ring</text></g>
+<g class="sx-net-link-g" data-from="sw3" data-to="sw4" data-type="fiber"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="409.44,931.17 409.44,907.17 409.44,891.17 317.44,791.17 301.44,791.17 269.44,791.17"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="373.68" y1="856.73" x2="378.1" y2="852.67"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="350.94" y1="832.02" x2="355.36" y2="827.95"/>
+<text class="sx-net-linklabel" x="359.7" y="841.6" text-anchor="middle">MRP ring</text></g>
+<g class="sx-net-link-g" data-from="sw4" data-to="sw1" data-type="fiber"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="269.44,791.17 269.44,767.17 269.44,751.17 361.44,651.17 377.44,651.17 409.44,651.17"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="300.78" y1="712.67" x2="305.2" y2="716.73"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="323.52" y1="687.95" x2="327.94" y2="692.02"/>
+<text class="sx-net-linklabel" x="319.18" y="701.6" text-anchor="middle">MRP ring</text></g>
+<g class="sx-net-link-g" data-from="scada" data-to="sw1" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="359.89,490.98 327.89,490.98 293.89,490.98 293.89,651.17 377.44,651.17 409.44,651.17"/>
+<text class="sx-net-linklabel" x="293.89" y="592.85" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="sw1" data-to="hmi1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="409.44,651.17 441.44,651.17 506.99,651.17 506.99,490.98 490.99,490.98 458.99,490.98"/></g>
+<g class="sx-net-link-g" data-from="sw2" data-to="plc1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="549.44,791.17 581.44,791.17 685.12,791.17 717.12,791.17"/></g>
+<g class="sx-net-link-g" data-from="sw3" data-to="hmi2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="409.44,931.17 377.44,931.17 333.6,931.17 333.6,1098.85 377.44,1098.85 409.44,1098.85"/></g>
+<g class="sx-net-link-g" data-from="sw4" data-to="plc2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="269.44,791.17 237.44,791.17 133.76,791.17 101.76,791.17"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="itfw" data-kind="firewall" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="91.65" y="37.71" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 91.65 48.57 L 150.3 48.57 M 91.65 59.43 L 150.3 59.43 M 111.2 37.71 L 111.2 48.57 M 130.75 37.71 L 130.75 48.57 M 101.43 48.57 L 101.43 59.43 M 120.98 48.57 L 120.98 59.43 M 140.52 48.57 L 140.52 59.43 M 111.2 59.43 L 111.2 70.29 M 130.75 59.43 L 130.75 70.29" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="120.98" y="95" text-anchor="middle">IT Firewall</text></g>
+<g class="sx-net-device" data-id="otfw" data-kind="firewall" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="186.33" y="176.1" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 186.33 186.96 L 244.98 186.96 M 186.33 197.82 L 244.98 197.82 M 205.88 176.1 L 205.88 186.96 M 225.43 176.1 L 225.43 186.96 M 196.11 186.96 L 196.11 197.82 M 215.66 186.96 L 215.66 197.82 M 235.2 186.96 L 235.2 197.82 M 205.88 197.82 L 205.88 208.68 M 225.43 197.82 L 225.43 208.68" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="215.66" y="233.39" text-anchor="middle">OT Firewall</text></g>
+<g class="sx-net-device" data-id="dmzsw" data-kind="switch" data-tier="distribution"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="280.99" y="319.78" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="287.8" y="328.16" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="298.28" y="328.16" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="308.76" y="328.16" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="319.24" y="328.16" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="332.87" cy="331.31" r="2.1"/></g></g>
+<text class="sx-net-label" x="310.33" y="371.78" text-anchor="middle">DMZ Switch</text></g>
+<g class="sx-net-device" data-id="hist" data-kind="server" data-ip="10.50.10.20"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="293.52" y="141.81" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="298.56" y="149.65" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="298.56" y="162.54" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="319.3" cy="153.58" r="1.4"/>
+<circle class="sx-net-glyph" cx="319.3" cy="166.47" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 299.68 178.24 L 313.7 178.24"/></g></g>
+<text class="sx-net-label" x="310.33" y="204.1" text-anchor="middle">Historian Server</text>
+<text class="sx-net-sublabel" x="310.33" y="216.1" text-anchor="middle">10.50.10.20</text></g>
+<g class="sx-net-device" data-id="scada" data-kind="server" data-ip="10.50.20.10"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="343.07" y="469.68" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="348.12" y="477.52" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="348.12" y="490.41" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="368.86" cy="481.45" r="1.4"/>
+<circle class="sx-net-glyph" cx="368.86" cy="494.34" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 349.24 506.11 L 363.25 506.11"/></g></g>
+<text class="sx-net-label" x="359.89" y="531.98" text-anchor="middle">SCADA Server</text>
+<text class="sx-net-sublabel" x="359.89" y="543.98" text-anchor="middle">10.50.20.10</text></g>
+<g class="sx-net-device" data-id="sw1" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="380.1" y="640.16" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="386.91" y="648.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="397.39" y="648.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="407.87" y="648.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="418.35" y="648.55" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="431.97" cy="651.69" r="2.1"/></g></g>
+<text class="sx-net-label" x="409.44" y="692.17" text-anchor="middle">Managed Ring Switch</text>
+<text class="sx-net-label" x="409.44" y="707.17" text-anchor="middle">A</text></g>
+<g class="sx-net-device" data-id="sw2" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="520.1" y="780.16" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="526.91" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="537.39" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="547.87" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="558.35" y="788.55" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="571.97" cy="791.69" r="2.1"/></g></g>
+<text class="sx-net-label" x="549.44" y="832.17" text-anchor="middle">Managed Ring Switch</text>
+<text class="sx-net-label" x="549.44" y="847.17" text-anchor="middle">B</text></g>
+<g class="sx-net-device" data-id="sw3" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="380.1" y="920.16" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="386.91" y="928.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="397.39" y="928.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="407.87" y="928.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="418.35" y="928.55" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="431.97" cy="931.69" r="2.1"/></g></g>
+<text class="sx-net-label" x="409.44" y="972.17" text-anchor="middle">Managed Ring Switch</text>
+<text class="sx-net-label" x="409.44" y="987.17" text-anchor="middle">C</text></g>
+<g class="sx-net-device" data-id="sw4" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="240.1" y="780.16" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="246.91" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="257.39" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="267.87" y="788.55" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="278.35" y="788.55" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="291.97" cy="791.69" r="2.1"/></g></g>
+<text class="sx-net-label" x="269.44" y="832.17" text-anchor="middle">Managed Ring Switch</text>
+<text class="sx-net-label" x="269.44" y="847.17" text-anchor="middle">D</text></g>
+<g class="sx-net-device" data-id="hmi1" data-kind="pc" data-ip="10.50.20.31"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="432.5" y="469.71" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="437.21" y="474.42" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 458.99 502.67 L 458.99 512.09 M 444.28 512.09 L 473.71 512.09" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="458.99" y="531.98" text-anchor="middle">HMI Intake</text>
+<text class="sx-net-sublabel" x="458.99" y="543.98" text-anchor="middle">10.50.20.31</text></g>
+<g class="sx-net-device" data-id="hmi2" data-kind="pc" data-ip="10.50.20.32"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="382.95" y="1077.58" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="387.66" y="1082.29" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 409.44 1110.55 L 409.44 1119.96 M 394.72 1119.96 L 424.16 1119.96" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="409.44" y="1139.85" text-anchor="middle">HMI Treatment</text>
+<text class="sx-net-sublabel" x="409.44" y="1151.85" text-anchor="middle">10.50.20.32</text></g>
+<g class="sx-net-device" data-id="plc1" data-kind="server" data-ip="10.50.20.41"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="700.3" y="769.87" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="705.35" y="777.71" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="705.35" y="790.61" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="726.09" cy="781.64" r="1.4"/>
+<circle class="sx-net-glyph" cx="726.09" cy="794.53" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 706.47 806.3 L 720.48 806.3"/></g></g>
+<text class="sx-net-label" x="717.12" y="832.17" text-anchor="middle">PLC Intake</text>
+<text class="sx-net-sublabel" x="717.12" y="844.17" text-anchor="middle">10.50.20.41</text></g>
+<g class="sx-net-device" data-id="plc2" data-kind="server" data-ip="10.50.20.42"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="84.94" y="769.87" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="89.99" y="777.71" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="89.99" y="790.61" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="110.73" cy="781.64" r="1.4"/>
+<circle class="sx-net-glyph" cx="110.73" cy="794.53" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 91.11 806.3 L 105.12 806.3"/></g></g>
+<text class="sx-net-label" x="101.76" y="832.17" text-anchor="middle">PLC Treatment</text>
+<text class="sx-net-sublabel" x="101.76" y="844.17" text-anchor="middle">10.50.20.42</text></g></g></g></svg>

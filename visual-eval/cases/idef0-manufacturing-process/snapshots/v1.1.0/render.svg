@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="881.6" height="674" viewBox="0 0 881.6 674" role="img" aria-label="Manufacturing Process" data-diagram-type="idef0"><title>Manufacturing Process</title>
+<desc>IDEF0 function model &quot;Manufacturing Process&quot; (node A0): 3 functions on a diagonal staircase. ICOM arrows: 2 control, 4 input, 2 mechanism, 1 output. Boxes: 1. Plan production (A1); 2. Make parts (A2); 3. Assemble product (A3).</desc>
+<style>.sx-idef0-bg { fill: #ffffff; }
+.sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box-name { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-idef0-box-num { fill: #475569; font-size: 10px; font-weight: 700; }
+.sx-idef0-arrow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-arrow[data-margin="true"] { stroke: #2563eb; }
+.sx-idef0-arrow[data-tunneled="true"] { stroke-dasharray: 5 3; }
+.sx-idef0-head { fill: #334155; }
+.sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: #2563eb; }
+.sx-idef0-label { fill: #0f172a; font-size: 10px; }
+.sx-idef0-icom { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-idef0-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-idef0-meta { fill: #475569; font-size: 10px; }
+.sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
+.sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
+<rect x="0" y="0" width="881.6" height="674" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="420.8" y="24" class="sx-idef0-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Manufacturing Process</text>
+<rect x="36.666666666666664" y="76.66666666666666" width="768.2666666666667" height="523.3333333333334" class="sx-idef0-frame"/>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 196.6 76.66666666666666 L 196.6 150" class="sx-idef0-arrow"/>
+<polygon points="196.6,150 192.1,141 201.1,141" class="sx-idef0-head"/>
+<text x="202.6" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Production schedule</text>
+<text x="202.6" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 36.666666666666664 190 L 121.6 190" class="sx-idef0-arrow"/>
+<polygon points="121.6,190 112.6,185.5 112.6,194.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="184" class="sx-idef0-label" text-anchor="start">Sales orders</text>
+<text x="42.666666666666664" y="197" class="sx-idef0-icom" text-anchor="start">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 271.6 190 L 311.6 190 L 311.6 320 L 351.6 320" class="sx-idef0-arrow"/>
+<polygon points="351.6,320 342.6,315.5 342.6,324.5" class="sx-idef0-head"/>
+<text x="277.6" y="184" class="sx-idef0-label" text-anchor="start">Work plan</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I2"><path d="M 36.666666666666664 320 L 351.6 320" class="sx-idef0-arrow"/>
+<polygon points="351.6,320 342.6,315.5 342.6,324.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="314" class="sx-idef0-label" text-anchor="start">Raw material</text>
+<text x="42.666666666666664" y="327" class="sx-idef0-icom" text-anchor="start">I2</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 426.6 600 L 426.6 360" class="sx-idef0-arrow"/>
+<polygon points="426.6,360 422.1,369 431.1,369" class="sx-idef0-head"/>
+<text x="432.6" y="578" class="sx-idef0-label" text-anchor="start">CNC machines</text>
+<text x="432.6" y="591" class="sx-idef0-icom" text-anchor="start">M1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 501.6 320 L 541.6 320 L 541.6 450 L 581.6 450" class="sx-idef0-arrow"/>
+<polygon points="581.6,450 572.6,445.5 572.6,454.5" class="sx-idef0-head"/>
+<text x="507.6" y="314" class="sx-idef0-label" text-anchor="start">Finished parts</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 656.6 76.66666666666666 L 656.6 410" class="sx-idef0-arrow"/>
+<polygon points="656.6,410 652.1,401 661.1,401" class="sx-idef0-head"/>
+<text x="662.6" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Quality standard</text>
+<text x="662.6" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C2</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 731.6 450 L 804.9333333333334 450" class="sx-idef0-arrow"/>
+<polygon points="804.9333333333334,450 795.9333333333334,445.5 795.9333333333334,454.5" class="sx-idef0-head"/>
+<text x="798.9333333333334" y="444" class="sx-idef0-label" text-anchor="end">Product</text>
+<text x="798.9333333333334" y="457" class="sx-idef0-icom" text-anchor="end">O1</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 656.6 600 L 656.6 490" class="sx-idef0-arrow"/>
+<polygon points="656.6,490 652.1,499 661.1,499" class="sx-idef0-head"/>
+<text x="662.6" y="578" class="sx-idef0-label" text-anchor="start">Assembly line</text>
+<text x="662.6" y="591" class="sx-idef0-icom" text-anchor="start">M2</text></g>
+<g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="121.6" y="150" width="150" height="80" class="sx-idef0-box"/>
+<text x="196.6" y="190" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="196.6" dy="0">Plan production</tspan></text>
+<text x="265.6" y="224" class="sx-idef0-box-num" text-anchor="end">1</text></g>
+<g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="351.6" y="280" width="150" height="80" class="sx-idef0-box"/>
+<text x="426.6" y="320" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="426.6" dy="0">Make parts</tspan></text>
+<text x="495.6" y="354" class="sx-idef0-box-num" text-anchor="end">2</text></g>
+<g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="581.6" y="410" width="150" height="80" class="sx-idef0-box"/>
+<text x="656.6" y="450" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="656.6" dy="0">Assemble product</tspan></text>
+<text x="725.6" y="484" class="sx-idef0-box-num" text-anchor="end">3</text></g>
+<g class="sx-idef0-titleblock"><rect x="36.666666666666664" y="600" width="768.2666666666668" height="34" class="sx-idef0-tb"/>
+<line x1="205.68533333333335" y1="600" x2="205.68533333333335" y2="634" class="sx-idef0-tb"/>
+<line x1="635.9146666666667" y1="600" x2="635.9146666666667" y2="634" class="sx-idef0-tb"/>
+<text x="42.666666666666664" y="613" class="sx-idef0-tb-key">NODE</text>
+<text x="42.666666666666664" y="627" class="sx-idef0-tb-text">A0</text>
+<text x="211.68533333333335" y="613" class="sx-idef0-tb-key">TITLE</text>
+<text x="211.68533333333335" y="627" class="sx-idef0-tb-text">Manufacturing Process</text>
+<text x="641.9146666666667" y="613" class="sx-idef0-tb-key">NUMBER</text>
+<text x="641.9146666666667" y="627" class="sx-idef0-tb-text">A0</text></g></g></svg>

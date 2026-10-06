@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="954.5999999999999" height="674" viewBox="0 0 954.5999999999999 674" role="img" aria-label="Clinical Pathway" data-diagram-type="idef0"><title>Clinical Pathway</title>
+<desc>IDEF0 function model &quot;Clinical Pathway&quot; (node A0): 3 functions on a diagonal staircase. ICOM arrows: 3 input, 3 control, 3 mechanism, 1 output. Boxes: 1. Triage patient (A1); 2. Assess and test (A2); 3. Decide disposition (A3).</desc>
+<style>.sx-idef0-bg { fill: #ffffff; }
+.sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box-name { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-idef0-box-num { fill: #475569; font-size: 10px; font-weight: 700; }
+.sx-idef0-arrow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-arrow[data-margin="true"] { stroke: #2563eb; }
+.sx-idef0-arrow[data-tunneled="true"] { stroke-dasharray: 5 3; }
+.sx-idef0-head { fill: #334155; }
+.sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: #2563eb; }
+.sx-idef0-label { fill: #0f172a; font-size: 10px; }
+.sx-idef0-icom { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-idef0-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-idef0-meta { fill: #475569; font-size: 10px; }
+.sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
+.sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
+<rect x="0" y="0" width="954.5999999999999" height="674" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="457.29999999999995" y="24" class="sx-idef0-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Clinical Pathway</text>
+<rect x="36.666666666666664" y="76.66666666666666" width="841.2666666666665" height="523.3333333333334" class="sx-idef0-frame"/>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 36.666666666666664 190 L 134.4 190" class="sx-idef0-arrow"/>
+<polygon points="134.4,190 125.4,185.5 125.4,194.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="184" class="sx-idef0-label" text-anchor="start">Arriving patient</text>
+<text x="42.666666666666664" y="197" class="sx-idef0-icom" text-anchor="start">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 209.4 76.66666666666666 L 209.4 150" class="sx-idef0-arrow"/>
+<polygon points="209.4,150 204.9,141 213.9,141" class="sx-idef0-head"/>
+<text x="215.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Triage protocol</text>
+<text x="215.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C1</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 209.4 600 L 209.4 230" class="sx-idef0-arrow"/>
+<polygon points="209.4,230 204.9,239 213.9,239" class="sx-idef0-head"/>
+<text x="215.4" y="578" class="sx-idef0-label" text-anchor="start">Triage nurse</text>
+<text x="215.4" y="591" class="sx-idef0-icom" text-anchor="start">M1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 284.4 190 L 324.4 190 L 324.4 320 L 364.4 320" class="sx-idef0-arrow"/>
+<polygon points="364.4,320 355.4,315.5 355.4,324.5" class="sx-idef0-head"/>
+<text x="290.4" y="184" class="sx-idef0-label" text-anchor="start">Triage category</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 439.4 76.66666666666666 L 439.4 280" class="sx-idef0-arrow"/>
+<polygon points="439.4,280 434.9,271 443.9,271" class="sx-idef0-head"/>
+<text x="445.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Chest-pain guideline</text>
+<text x="445.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C2</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 439.4 600 L 439.4 360" class="sx-idef0-arrow"/>
+<polygon points="439.4,360 434.9,369 443.9,369" class="sx-idef0-head"/>
+<text x="445.4" y="578" class="sx-idef0-label" text-anchor="start">ECG and troponin lab</text>
+<text x="445.4" y="591" class="sx-idef0-icom" text-anchor="start">M2</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 514.4 320 L 554.4 320 L 554.4 450 L 594.4 450" class="sx-idef0-arrow"/>
+<polygon points="594.4,450 585.4,445.5 585.4,454.5" class="sx-idef0-head"/>
+<text x="520.4" y="314" class="sx-idef0-label" text-anchor="start">Test results</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C3"><path d="M 669.4 76.66666666666666 L 669.4 410" class="sx-idef0-arrow"/>
+<polygon points="669.4,410 664.9,401 673.9,401" class="sx-idef0-head"/>
+<text x="675.4" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Risk score thresholds</text>
+<text x="675.4" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C3</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M3"><path d="M 669.4 600 L 669.4 490" class="sx-idef0-arrow"/>
+<polygon points="669.4,490 664.9,499 673.9,499" class="sx-idef0-head"/>
+<text x="675.4" y="578" class="sx-idef0-label" text-anchor="start">Emergency physician</text>
+<text x="675.4" y="591" class="sx-idef0-icom" text-anchor="start">M3</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 744.4 450 L 878.5999999999999 450" class="sx-idef0-arrow"/>
+<polygon points="878.5999999999999,450 869.5999999999999,445.5 869.5999999999999,454.5" class="sx-idef0-head"/>
+<text x="872.5999999999999" y="444" class="sx-idef0-label" text-anchor="end">Admission or discharge</text>
+<text x="872.5999999999999" y="457" class="sx-idef0-icom" text-anchor="end">O1</text></g>
+<g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="134.4" y="150" width="150" height="80" class="sx-idef0-box"/>
+<text x="209.4" y="190" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="209.4" dy="0">Triage patient</tspan></text>
+<text x="278.4" y="224" class="sx-idef0-box-num" text-anchor="end">1</text></g>
+<g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="364.4" y="280" width="150" height="80" class="sx-idef0-box"/>
+<text x="439.4" y="320" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="439.4" dy="0">Assess and test</tspan></text>
+<text x="508.4" y="354" class="sx-idef0-box-num" text-anchor="end">2</text></g>
+<g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="594.4" y="410" width="150" height="80" class="sx-idef0-box"/>
+<text x="669.4" y="450" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="669.4" dy="0">Decide disposition</tspan></text>
+<text x="738.4" y="484" class="sx-idef0-box-num" text-anchor="end">3</text></g>
+<g class="sx-idef0-titleblock"><rect x="36.666666666666664" y="600" width="841.2666666666667" height="34" class="sx-idef0-tb"/>
+<line x1="221.74533333333332" y1="600" x2="221.74533333333332" y2="634" class="sx-idef0-tb"/>
+<line x1="692.8546666666666" y1="600" x2="692.8546666666666" y2="634" class="sx-idef0-tb"/>
+<text x="42.666666666666664" y="613" class="sx-idef0-tb-key">NODE</text>
+<text x="42.666666666666664" y="627" class="sx-idef0-tb-text">A0</text>
+<text x="227.74533333333332" y="613" class="sx-idef0-tb-key">TITLE</text>
+<text x="227.74533333333332" y="627" class="sx-idef0-tb-text">Clinical Pathway</text>
+<text x="698.8546666666666" y="613" class="sx-idef0-tb-key">NUMBER</text>
+<text x="698.8546666666666" y="627" class="sx-idef0-tb-text">A0</text></g></g></svg>

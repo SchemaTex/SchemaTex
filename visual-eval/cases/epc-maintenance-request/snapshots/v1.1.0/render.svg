@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="432" height="1520" viewBox="0 0 432 1520" role="img" aria-label="Facility maintenance request" data-diagram-type="epc"><title>Facility maintenance request</title>
+<desc>Event-driven process chain &quot;Facility maintenance request&quot;: 7 events, 5 functions, 2 connectors. Well-formed.</desc>
+<style>.sx-epc-bg { fill: #ffffff; }
+.sx-epc-event { fill: #f6a5b8; stroke: #1f2937; stroke-width: 2; stroke-linejoin: round; }
+.sx-epc-func { fill: #86d29a; stroke: #1f2937; stroke-width: 2; }
+.sx-epc-conn { fill: #e5e7eb; stroke: #374151; stroke-width: 2; }
+.sx-epc-node[data-flagged="true"] .sx-epc-event,
+.sx-epc-node[data-flagged="true"] .sx-epc-func,
+.sx-epc-node[data-flagged="true"] .sx-epc-conn { stroke: #dc2626; stroke-width: 3; }
+.sx-epc-flagring { fill: none; stroke: #dc2626; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-epc-label { fill: #1f2937; font-size: 12px; font-weight: 600; }
+.sx-epc-glyph { fill: #111827; font-size: 17px; font-weight: 700; }
+.sx-epc-edge { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-epc-edge[data-back="true"] { stroke: #94a3b8; stroke-dasharray: 5 4; }
+.sx-epc-arrow { fill: #334155; stroke: none; }
+.sx-epc-arrow-back { fill: #94a3b8; stroke: none; }
+.sx-epc-edge-label { fill: #475569; font-size: 9px; }
+.sx-epc-title { fill: #1f2937; font-size: 16px; font-weight: 700; }</style>
+<defs><marker id="sx-epc-arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow"/></marker>
+<marker id="sx-epc-arrowhead-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow-back"/></marker></defs>
+<rect x="0" y="0" width="432" height="1520" class="sx-epc-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="196" y="24" class="sx-epc-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Facility maintenance request</text>
+<g class="sx-epc-edge-g" data-from="E1" data-to="F1"><path d="M 196 122 L 196 178" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F1" data-to="E2"><path d="M 196 242 L 196 298" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E2" data-to="F2"><path d="M 196 352 L 196 408" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F2" data-to="X1"><path d="M 196 472 L 196 528" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 184.4227850846592 557.4486181885385 L 128.11 618" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E3" data-to="F3"><path d="M 124.83478260869565 672 L 170.12173913043478 728" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F3" data-to="E5"><path d="M 196 792 L 196 848" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E5" data-to="X2"><path d="M 196 902 L 196 958" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E4"><path d="M 207.5772149153408 557.4486181885385 L 263.89 618" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E4" data-to="X2"><path d="M 281.3909090909091 672 L 200.61128962844052 958.637359382953" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X2" data-to="F4"><path d="M 196 992 L 196 1048" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F4" data-to="E6"><path d="M 196 1112 L 196 1168" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E6" data-to="F5"><path d="M 196 1222 L 196 1278" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F5" data-to="E7"><path d="M 196 1342 L 196 1398" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-node" data-id="E1" data-kind="event"><polygon points="135,68 257,68 271,95 257,122 135,122 121,95" class="sx-epc-event"/>
+<text x="196" y="95" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Fault reported</tspan></text></g>
+<g class="sx-epc-node" data-id="F1" data-kind="function"><rect x="116" y="178" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="210" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Log work order</tspan></text></g>
+<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="135,298 257,298 271,325 257,352 135,352 121,325" class="sx-epc-event"/>
+<text x="196" y="325" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Work order logged</tspan></text></g>
+<g class="sx-epc-node" data-id="F2" data-kind="function"><rect x="116" y="408" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="440" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Diagnose fault</tspan></text></g>
+<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="196" cy="545" r="17" class="sx-epc-conn"/>
+<text x="196" y="545" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="42,618 164,618 178,645 164,672 42,672 28,645" class="sx-epc-event"/>
+<text x="103" y="645" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="103" dy="0">Parts needed</tspan></text></g>
+<g class="sx-epc-node" data-id="E4" data-kind="event"><polygon points="228,618 350,618 364,645 350,672 228,672 214,645" class="sx-epc-event"/>
+<text x="289" y="645" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="289" dy="0">Repairable on site</tspan></text></g>
+<g class="sx-epc-node" data-id="F3" data-kind="function"><rect x="116" y="728" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="760" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Order parts</tspan></text></g>
+<g class="sx-epc-node" data-id="E5" data-kind="event"><polygon points="135,848 257,848 271,875 257,902 135,902 121,875" class="sx-epc-event"/>
+<text x="196" y="875" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Parts delivered</tspan></text></g>
+<g class="sx-epc-node" data-id="X2" data-kind="connector" data-operator="xor"><circle cx="196" cy="975" r="17" class="sx-epc-conn"/>
+<text x="196" y="975" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="F4" data-kind="function"><rect x="116" y="1048" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="1080" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Carry out repair</tspan></text></g>
+<g class="sx-epc-node" data-id="E6" data-kind="event"><polygon points="135,1168 257,1168 271,1195 257,1222 135,1222 121,1195" class="sx-epc-event"/>
+<text x="196" y="1195" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Repair done</tspan></text></g>
+<g class="sx-epc-node" data-id="F5" data-kind="function"><rect x="116" y="1278" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="196" y="1310" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Close work order</tspan></text></g>
+<g class="sx-epc-node" data-id="E7" data-kind="event"><polygon points="135,1398 257,1398 271,1425 257,1452 135,1452 121,1425" class="sx-epc-event"/>
+<text x="196" y="1425" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="196" dy="0">Work order closed</tspan></text></g></g></svg>

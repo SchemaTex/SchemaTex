@@ -27,6 +27,7 @@ interface FamilyUnit {
   relationship: RelationshipType;
   label?: string;
   children: string[];
+  descentGap?: [string, string];
 }
 
 interface LayoutGraph {
@@ -80,6 +81,16 @@ export function layoutGenogram(
       const pin = pins.get(position.id);
       if (pin) position.x = pin.x + config.nodeWidth / 2 - padding;
     }
+  }
+  // Union reordering and interactive pins can introduce collisions after the
+  // earlier spacing pass. Resolve the final painted row before routing.
+  resolveOverlaps(positions, ordered, config, graph);
+  // Reserve bracket bands before secondary placements allocate their tracks.
+  const brackets = nonAdjacentUnions(graph, positions);
+  for (const generation of [...new Set(brackets.map(route => route.left.generation))].sort((a, b) => a - b)) {
+    const extra = Math.max(...brackets.filter(route => route.left.generation === generation)
+      .map(route => 32 + route.level * 24));
+    for (const position of positions.values()) if (position.generation >= generation) position.y += extra;
   }
   const secondaryEdges = computeSecondaryParentEdges(
     ast.relationships,
@@ -548,7 +559,8 @@ function buildSegments(
 
 /** Connected partnerships in source order, starting at the earliest union's end. */
 function partnershipChains(graph: LayoutGraph): string[][] {
-  const ended = (fu: FamilyUnit) => ["divorced", "separated", "cohabiting-ended"].includes(fu.relationship) ? 0 : 1;
+  const ended = (fu: FamilyUnit) => ["divorced", "separated", "cohabiting-ended"].includes(fu.relationship) ||
+    fu.partners.some(id => graph.individuals.get(id)?.status === "deceased") ? 0 : 1;
   const units = graph.familyUnits.map((fu, index) => ({ fu, index }))
     .sort((a, b) => ended(a.fu) - ended(b.fu) || a.index - b.index).map(entry => entry.fu);
   const adjacent = new Map<string, string[]>();
@@ -569,21 +581,60 @@ function partnershipChains(graph: LayoutGraph): string[][] {
     };
     collect(fu.partners[0]);
     const start = component.find(id => adjacent.get(id)!.length === 1) ?? component[0];
+    const shared = component.filter(id => adjacent.get(id)!.length > 2).sort((a, b) =>
+      adjacent.get(b)!.length - adjacent.get(a)!.length ||
+      units.filter(fu => fu.partners.includes(b) && ended(fu) === 0).length -
+      units.filter(fu => fu.partners.includes(a) && ended(fu) === 0).length ||
+      [...graph.individuals.keys()].indexOf(a) - [...graph.individuals.keys()].indexOf(b))[0];
     const chain: string[] = [];
-    const walk = (id: string) => {
+    const walk = (id: string, outwardLeft = false) => {
       if (visited.has(id)) return;
-      visited.add(id); chain.push(id);
-      for (const other of adjacent.get(id) ?? []) walk(other);
+      visited.add(id);
+      const remaining = (adjacent.get(id) ?? []).filter(other => !visited.has(other));
+      if (outwardLeft) for (const other of remaining) walk(other, true);
+      chain.push(id);
+      if (!outwardLeft) for (const other of remaining) walk(other);
     };
-    walk(start); chains.push(chain);
+    if (shared) {
+      visited.add(shared);
+      const partners = adjacent.get(shared)!;
+      for (const former of partners.slice(0, -1)) walk(former, true);
+      chain.push(shared);
+      walk(partners.at(-1)!);
+    } else walk(start);
+    chains.push(chain);
   }
   return chains;
+}
+
+/** Each neighbouring gap carries children from only one union. */
+function assignDescentGaps(chain: string[], graph: LayoutGraph): void {
+  const units = graph.familyUnits.filter(fu => fu.children.length && fu.partners.every(id => chain.includes(id)));
+  const owners = new Map<number, FamilyUnit>();
+  const interval = (fu: FamilyUnit) => fu.partners.map(id => chain.indexOf(id)).sort((a, b) => a - b);
+  const claim = (fu: FamilyUnit, seen: Set<number>): boolean => {
+    const [left, right] = interval(fu);
+    for (let gap = left; gap < right; gap++) {
+      if (seen.has(gap)) continue;
+      seen.add(gap);
+      const owner = owners.get(gap);
+      if (!owner || claim(owner, seen)) {
+        owners.set(gap, fu);
+        fu.descentGap = [chain[gap], chain[gap + 1]];
+        return true;
+      }
+    }
+    return false;
+  };
+  units.sort((a, b) => { const x = interval(a), y = interval(b); return x[1] - x[0] - (y[1] - y[0]); });
+  for (const fu of units) claim(fu, new Set());
 }
 
 /** Reserve each connected union's child footprint inside its partnership interval. */
 function alignUnionBlocks(positions: Map<string, NodePosition>, graph: LayoutGraph, config: GenogramLayoutConfig): void {
   const chains = partnershipChains(graph).filter(chain => chain.length > 2);
   for (const chain of chains) {
+    assignDescentGaps(chain, graph);
     const children = graph.familyUnits.filter(fu => fu.partners.every(id => chain.includes(id))).flatMap(fu => fu.children);
     const blockGap = Math.max(config.nodeWidth + config.nodeSpacingX,
       ...children.map(id => captionWidth(graph.individuals.get(id)!, config) + LABEL_GAP)) *
@@ -594,7 +645,8 @@ function alignUnionBlocks(positions: Map<string, NodePosition>, graph: LayoutGra
     const blocks: Array<{ fu: FamilyUnit; offsets: number[]; width: number }> = [];
     let x = 0;
     for (let i = 1; i < chain.length; i++) {
-      const fu = graph.familyUnits.find(fu => fu.partners.includes(chain[i - 1]) && fu.partners.includes(chain[i]));
+      // Placement and descent routing share the same exclusive gap owner.
+      const fu = graph.familyUnits.find(fu => fu.descentGap?.[0] === chain[i - 1] && fu.descentGap[1] === chain[i]);
       const children = fu?.children ?? [];
       const childOffsets = [0];
       for (let j = 1; j < children.length; j++) {
@@ -612,11 +664,19 @@ function alignUnionBlocks(positions: Map<string, NodePosition>, graph: LayoutGra
     const origin = anchorX - offsets.get(anchor)!;
     for (const id of chain) positions.get(id)!.x = origin + offsets.get(id)!;
     for (const block of blocks) {
-      const [a, b] = block.fu.partners.map(id => positions.get(id)!);
-      const left = (a.x + b.x) / 2 - block.width / 2;
+      const left = unionDescentX(block.fu, positions) - block.width / 2;
       block.fu.children.forEach((id, i) => { positions.get(id)!.x = left + block.offsets[i]; });
     }
   }
+}
+
+/** Use the reserved gap; isolated couples use their ordinary midpoint. */
+function unionDescentX(fu: FamilyUnit, positions: Map<string, NodePosition>): number {
+  if (fu.descentGap) return fu.descentGap.reduce((sum, id) => sum + positions.get(id)!.x, 0) / 2;
+  const [left, right] = fu.partners.map(id => positions.get(id)!).sort((a, b) => a.x - b.x);
+  const next = [...positions.values()].filter(p => p.generation === left.generation && p.x > left.x && p.x <= right.x)
+    .sort((a, b) => a.x - b.x)[0];
+  return (left.x + next.x) / 2;
 }
 
 function centerChildrenUnderParents(
@@ -868,6 +928,20 @@ function resolveOverlaps(
 
 // ─── Step 6: Compute edge paths ─────────────────────────────
 
+function nonAdjacentUnions(graph: LayoutGraph, positions: Map<string, NodePosition>) {
+  const routes = graph.familyUnits.map(fu => {
+    const [left, right] = fu.partners.map(id => positions.get(id)!).sort((a, b) => a.x - b.x);
+    const between = [...positions.values()].filter(p => p.generation === left.generation && p.x > left.x && p.x < right.x);
+    return { fu, left, right, between, level: between.length - 1 };
+  }).filter(route => route.between.length > 0).sort((a, b) => a.level - b.level);
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
+    while (routes.slice(0, i).some(other => other.left.generation === route.left.generation && other.level === route.level &&
+      Math.max(other.left.x, route.left.x) < Math.min(other.right.x, route.right.x))) route.level++;
+  }
+  return routes;
+}
+
 function computeEdges(
   graph: LayoutGraph,
   positions: Map<string, NodePosition>,
@@ -876,13 +950,15 @@ function computeEdges(
 ): LayoutEdge[] {
   const edges: LayoutEdge[] = [];
   const dropY_offset = config.nodeHeight / 2 + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + LABEL_GAP + config.nodeSpacingY * 0.35 + captionExtra(graph, config);
+  const attachmentHalf = (id: string) => individualPerimeter(graph.individuals.get(id)!, config.nodeWidth).half;
+  // Longer brackets sit above shorter ones, with descent in separate gaps.
+  const brackets = nonAdjacentUnions(graph, positions);
 
   for (const fu of graph.familyUnits) {
     const posA = positions.get(fu.partners[0]);
     const posB = positions.get(fu.partners[1]);
     if (!posA || !posB) continue;
 
-    const attachmentHalf = (id: string) => individualPerimeter(graph.individuals.get(id)!, config.nodeWidth).half;
     const leftPos = posA.x < posB.x ? posA : posB;
     const rightPos = posA.x < posB.x ? posB : posA;
     const leftId = posA.x < posB.x ? fu.partners[0] : fu.partners[1];
@@ -895,19 +971,41 @@ function computeEdges(
       to: rightId,
       label: fu.label,
     };
-    const couplePath = `M ${leftPos.x + attachmentHalf(leftId)} ${leftPos.y} L ${rightPos.x - attachmentHalf(rightId)} ${rightPos.y}`;
+    const bracket = brackets.find(route => route.fu === fu);
+    const coupleY = bracket ? leftPos.y - Math.max(attachmentHalf(leftId), attachmentHalf(rightId),
+      ...bracket.between.map(p => attachmentHalf(p.id))) - 32 - bracket.level * 24 : leftPos.y;
+    const port = (pos: NodePosition, other: NodePosition) => {
+      const incoming = brackets.filter(route => route.fu.partners.includes(pos.id));
+      const index = incoming.findIndex(route => route.fu === fu);
+      const side = other.x < pos.x ? -1 : 1;
+      const half = attachmentHalf(pos.id);
+      const dx = incoming.length > 1 || graph.childOf.has(pos.id)
+        ? side * half * (0.35 + index * 0.5 / incoming.length) : 0;
+      const shape = individualPerimeter(graph.individuals.get(pos.id)!, config.nodeWidth).shape;
+      const dy = shape === "circle" ? -Math.sqrt(half ** 2 - dx ** 2)
+        : shape === "diamond" ? -half + Math.abs(dx) : -half;
+      return { x: pos.x + dx, y: pos.y + dy };
+    };
+    const start = bracket ? port(leftPos, rightPos) : { x: leftPos.x + attachmentHalf(leftId), y: leftPos.y };
+    const end = bracket ? port(rightPos, leftPos) : { x: rightPos.x - attachmentHalf(rightId), y: rightPos.y };
+    const couplePath = bracket
+      ? `M ${start.x} ${start.y} L ${start.x} ${coupleY} L ${end.x} ${coupleY} L ${end.x} ${end.y}`
+      : `M ${leftPos.x + attachmentHalf(leftId)} ${leftPos.y} L ${rightPos.x - attachmentHalf(rightId)} ${rightPos.y}`;
+    const midX = unionDescentX(fu, positions);
     edges.push({
       from: leftId,
       to: rightId,
       relationship: coupleRel,
       path: couplePath,
+      unionRoute: { kind: bracket ? "bracket" : "horizontal",
+        left: bracket ? start.x : leftPos.x + attachmentHalf(leftId),
+        right: bracket ? end.x : rightPos.x - attachmentHalf(rightId), y: coupleY,
+        markX: fu.children.length ? midX + Math.min(28, (positions.get(fu.descentGap?.[1] ?? rightId)!.x - midX) / 3) : (leftPos.x + rightPos.x) / 2 },
     });
 
     // Parent-child connections
     if (fu.children.length > 0) {
-      const midX = (posA.x + posB.x) / 2;
-      const coupleY = posA.y;
-      const dropY = coupleY + dropY_offset;
+      const dropY = posA.y + dropY_offset;
 
       const childPositions = fu.children
         .map((cid) => ({
@@ -990,6 +1088,33 @@ function computeEdges(
     }
   }
 
+  for (const edge of edges) {
+    const run = edge.unionRoute;
+    if (run?.kind !== "bracket") continue;
+    const crossings = new Set<number>();
+    for (const other of edges) {
+      if (other.relationship.from === `${edge.from}+${edge.to}` ||
+          other.relationship.from === `${edge.to}+${edge.from}`) continue;
+      const points = (other.path.match(/-?[\d.]+/g) ?? []).map(Number);
+      for (let i = 2; i < points.length; i += 2) {
+        const [x1, y1, x2, y2] = points.slice(i - 2, i + 2);
+        if (x1 === x2 && x1 > run.left + 6 && x1 < run.right - 6 &&
+            Math.min(y1, y2) < run.y && Math.max(y1, y2) > run.y) crossings.add(x1);
+      }
+    }
+    let horizontal = `L ${run.right} ${run.y}`;
+    if (crossings.size) {
+      horizontal = [...crossings].sort((a, b) => a - b).map(x =>
+        `L ${x - 5} ${run.y} M ${x + 5} ${run.y}`).join(" ") + ` L ${run.right} ${run.y}`;
+      edge.path = edge.path.replace(`L ${run.right} ${run.y}`, horizontal);
+    }
+    // Marks and captions occupy a clear part of the horizontal run.
+    const blocked = [...crossings, unionDescentX(graph.familyUnits.find(fu => fu.partners.includes(edge.from) && fu.partners.includes(edge.to))!, positions)];
+    const width = Math.max(20, estimateTextWidth(edge.relationship.label ?? "", 10) + 12);
+    const gaps = [run.left, ...blocked.sort((a, b) => a - b), run.right];
+    const free = gaps.slice(1).map((right, i) => ({ left: gaps[i], right })).sort((a, b) => (b.right - b.left) - (a.right - a.left));
+    if (blocked.some(x => Math.abs(x - run.markX) < width / 2 + 8)) run.markX = (free[0].left + free[0].right) / 2;
+  }
   return edges;
 }
 
@@ -1023,6 +1148,7 @@ function packageResult(
   const shiftedEdges = edges.map((e) => ({
     ...e,
     path: shiftPath(e.path, padding, padding),
+    ...(e.unionRoute ? { unionRoute: { ...e.unionRoute, left: e.unionRoute.left + padding, right: e.unionRoute.right + padding, y: e.unionRoute.y + padding, markX: e.unionRoute.markX + padding } } : {}),
   }));
 
   let maxX = 0;
@@ -1047,6 +1173,7 @@ function packageResult(
     }
     for (const edge of shiftedEdges) {
       edge.path = shiftPath(edge.path, shift, 0);
+      if (edge.unionRoute) { edge.unionRoute.left += shift; edge.unionRoute.right += shift; edge.unionRoute.markX += shift; }
     }
     maxX += shift;
   }

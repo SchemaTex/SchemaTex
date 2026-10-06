@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="University campus three-tier network" width="754.37" height="897" viewBox="0 0 754.37 897" data-diagram-type="network"><title>Network diagram — University campus three-tier network</title>
+<desc>12 devices, 11 links, 4 boundaries. Topology: hierarchical. Links: 1 serial, 2 fiber, 6 copper, 1 poe, 1 wireless.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="377.19" y="21" class="sx-net-title" text-anchor="middle">University campus three-tier network</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 10 Science"><rect class="sx-net-boundary-vlan" x="55.77" y="818" width="107.77" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="67.77" y="831">VLAN 10 Science</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 20 Staff"><rect class="sx-net-boundary-vlan" x="308.39" y="818" width="91.66" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="320.39" y="831">VLAN 20 Staff</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 30 Wireless"><rect class="sx-net-boundary-vlan" x="517.51" y="621" width="111.16" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="529.51" y="634">VLAN 30 Wireless</text></g>
+<g class="sx-net-boundary" data-kind="vlan" data-label="VLAN 30 Wireless"><rect class="sx-net-boundary-vlan" x="517.51" y="803" width="111.16" height="18" rx="3" ry="3"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="529.51" y="816">VLAN 30 Wireless</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="inet" data-to="edge" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="121.38,66 121.38,102 121.38,172.5 121.38,196.5"/>
+<text class="sx-net-linklabel" x="121.38" y="134.25" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="edge" data-to="fw" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="121.38,196.5 153.38,196.5 227.18,196.5 259.18,196.5"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="176.5" y1="193.5" x2="176.5" y2="199.5"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="197.17" y1="193.5" x2="197.17" y2="199.5"/>
+<text class="sx-net-linklabel" x="190.28" y="201" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="fw" data-to="core" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="259.18,196.5 259.18,220.5 259.18,301.5 259.18,325.5"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="262.18" y1="248.1" x2="256.18" y2="248.1"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="262.18" y1="267.45" x2="256.18" y2="267.45"/>
+<text class="sx-net-linklabel" x="259.18" y="258" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="dista" data-type="copper" data-vlan="10,20,30" data-speed="10G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="259.18,325.5 236.43,349.5 159.65,430.5 136.9,454.5"/>
+<text class="sx-net-linklabel" x="201.79" y="390.55" text-anchor="middle">Trunk · VLAN 10,20,30 · 10G</text></g>
+<g class="sx-net-link-g" data-from="core" data-to="distb" data-type="copper" data-vlan="10,20,30" data-speed="10G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="259.18,325.5 281.93,349.5 358.71,430.5 381.46,454.5"/>
+<line x1="349.5973892306135" y1="420.8859307388709" x2="349.5973892306135" y2="399.8679064693007" stroke="#334155" stroke-width="1"/>
+<text class="sx-net-linklabel" x="378.63" y="397.87" text-anchor="middle">Trunk · VLAN 10,20,30 · 10G</text></g>
+<g class="sx-net-link-g" data-from="dista" data-to="acca" data-type="copper" data-vlan="10,30" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="136.9,454.5 132.11,478.5 114.44,567 109.65,591"/>
+<text class="sx-net-linklabel" x="124.72" y="520.04" text-anchor="middle">Trunk · VLAN 10,30 · 1G</text></g>
+<g class="sx-net-link-g" data-from="distb" data-to="accb" data-type="copper" data-vlan="20,30" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="381.46,454.5 376.67,478.5 359,567 354.21,591"/>
+<text class="sx-net-linklabel" x="369.28" y="520.04" text-anchor="middle">Trunk · VLAN 20,30 · 1G</text></g>
+<g class="sx-net-link-g" data-from="acca" data-to="lab" data-type="copper" data-vlan="10" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#7c3aed" points="109.65,591 109.65,615 109.65,717 109.65,741"/>
+<text class="sx-net-linklabel" x="109.65" y="663" text-anchor="middle">Access · VLAN 10 · 1G</text></g>
+<g class="sx-net-link-g" data-from="accb" data-to="staffpc" data-type="copper" data-vlan="20" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="354.21,591 354.21,615 354.21,717 354.21,741"/>
+<text class="sx-net-linklabel" x="354.21" y="663" text-anchor="middle">Access · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="acca" data-to="campusap" data-type="poe" data-vlan="30" data-speed="1G" data-mode="access"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="109.65,591 109.65,615 109.65,615 525.09,615 525.09,591 541.09,591 573.09,591"/>
+<line x1="337.3737333333333" y1="615" x2="337.3737333333333" y2="625.5" stroke="#059669" stroke-width="1"/>
+<text class="sx-net-linklabel" x="337.37" y="636.5" text-anchor="middle">Access · VLAN 30 · 1G · PoE</text></g>
+<g class="sx-net-link-g" data-from="campusap" data-to="student" data-type="wireless"><polyline class="sx-net-link sx-net-link-wireless" stroke="#2563eb" points="573.09,591 541.09,591 507.09,591 507.09,741 541.09,741 573.09,741"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="inet" data-kind="internet"><g class="sx-net-symbol"><g><path class="sx-net-cloud-body" d="M 68.38 96.96 C 32.74 96.96 29.09 55.92 62.9 52.32 C 64.72 24.96 108.59 21.36 125.04 42.96 C 154.28 27.12 181.69 40.8 181.69 59.52 C 210.93 61.68 212.76 96.96 178.04 96.96 Z"/>
+<circle class="sx-net-detail" cx="106.75953600000001" cy="45" r="8"/>
+<ellipse class="sx-net-detail" cx="106.75953600000001" cy="45" rx="3" ry="8"/>
+<path class="sx-net-detail" d="M 98.75953600000001 45 H 114.75953600000001 M 100.75953600000001 41 H 112.75953600000001 M 100.75953600000001 49 H 112.75953600000001"/>
+<text class="sx-net-cloudtext" x="121.38040000000001" y="67.97999999999999" text-anchor="middle">Research and Internet</text>
+<text class="sx-net-cloudtext" x="121.38040000000001" y="84.97999999999999" text-anchor="middle">WAN</text></g></g></g>
+<g class="sx-net-device" data-id="edge" data-kind="router" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="92.25" y="179.85" width="58.27" height="33.29" rx="16.65"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 102.65 187.48 L 115.14 194.42 M 140.11 205.52 L 127.62 198.58"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 115.14 194.42 L 108.6 194.76 L 111.97 188.69 Z"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 127.62 198.58 L 134.16 198.24 L 130.79 204.31 Z"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 117.22 199.27 L 104.73 205.52 M 125.54 193.73 L 138.03 187.48"/>
+<path class="sx-net-glyph" d="M 102.65 206.56 L 106.06 200.97 L 109.17 207.18 Z"/>
+<path class="sx-net-glyph" d="M 140.11 186.44 L 136.7 192.03 L 133.6 185.82 Z"/></g></g>
+<text class="sx-net-label" x="121.38" y="237.5" text-anchor="middle">Campus edge router</text></g>
+<g class="sx-net-device" data-id="fw" data-kind="firewall" data-tier="edge"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="229.86" y="180.21" width="58.64" height="32.58" rx="1.09"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 229.86 191.07 L 288.5 191.07 M 229.86 201.93 L 288.5 201.93 M 249.41 180.21 L 249.41 191.07 M 268.95 180.21 L 268.95 191.07 M 239.63 191.07 L 239.63 201.93 M 259.18 191.07 L 259.18 201.93 M 278.73 191.07 L 278.73 201.93 M 249.41 201.93 L 249.41 212.79 M 268.95 201.93 L 268.95 212.79" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="360.42" y="200.5" text-anchor="middle">Perimeter firewall</text></g>
+<g class="sx-net-device" data-id="core" data-kind="l3switch" data-tier="core"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="229.84" y="314.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="236.65" y="322.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="247.13" y="322.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="257.61" y="322.88" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 269.66 321.83 L 282.24 321.83 M 279.62 319.21 L 282.24 321.83 L 279.62 324.45 M 282.24 330.22 L 269.66 330.22 M 272.28 327.6 L 269.66 330.22 L 272.28 332.84"/>
+<circle class="sx-net-glyph" cx="239.79" cy="318.69" r="1.31"/></g></g>
+<text class="sx-net-label" x="355.86" y="329.5" text-anchor="middle">Core switch pair</text></g>
+<g class="sx-net-device" data-id="dista" data-kind="l3switch" data-tier="distribution"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="107.56" y="443.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="114.37" y="451.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="124.85" y="451.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="135.33" y="451.88" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 147.38 450.83 L 159.96 450.83 M 157.34 448.21 L 159.96 450.83 L 157.34 453.45 M 159.96 459.22 L 147.38 459.22 M 150 456.6 L 147.38 459.22 L 150 461.84"/>
+<circle class="sx-net-glyph" cx="117.51" cy="447.69" r="1.31"/></g></g>
+<text class="sx-net-label" x="243.18" y="458.5" text-anchor="middle">Science distribution</text></g>
+<g class="sx-net-device" data-id="distb" data-kind="l3switch" data-tier="distribution"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="352.12" y="443.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="358.93" y="451.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="369.41" y="451.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="379.89" y="451.88" width="6.29" height="6.29"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 391.94 450.83 L 404.52 450.83 M 401.9 448.21 L 404.52 450.83 L 401.9 453.45 M 404.52 459.22 L 391.94 459.22 M 394.56 456.6 L 391.94 459.22 L 394.56 461.84"/>
+<circle class="sx-net-glyph" cx="362.07" cy="447.69" r="1.31"/></g></g>
+<text class="sx-net-label" x="487.74" y="458.5" text-anchor="middle">Library distribution</text></g>
+<g class="sx-net-device" data-id="acca" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="80.31" y="580" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="87.12" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="97.6" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="108.08" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="118.56" y="588.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="132.19" cy="591.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="203.09" y="587.5" text-anchor="middle">Science access</text>
+<text class="sx-net-label" x="203.09" y="602.5" text-anchor="middle">switch</text></g>
+<g class="sx-net-device" data-id="accb" data-kind="switch" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="324.87" y="580" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="331.68" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="342.16" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="352.64" y="588.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="363.12" y="588.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="376.75" cy="591.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="447.65" y="587.5" text-anchor="middle">Library access</text>
+<text class="sx-net-label" x="447.65" y="602.5" text-anchor="middle">switch</text></g>
+<g class="sx-net-device" data-id="campusap" data-kind="ap" data-tier="access"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="550.91" y="594.33" width="44.37" height="17.75" rx="8.87"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 562.74 589.89 Q 573.09 578.8 583.45 589.89"/>
+<path class="sx-net-glyph-line" d="M 554.61 584.71 Q 573.09 564.75 591.58 584.71"/>
+<path class="sx-net-detail" d="M 566.44 603.2 L 579.75 603.2"/></g></g>
+<text class="sx-net-label" x="670.73" y="595" text-anchor="middle">Campus Wi-Fi AP</text></g>
+<g class="sx-net-device" data-id="lab" data-kind="pc" data-ip="10.10.10.21"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="83.17" y="719.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="87.87" y="724.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 109.65 752.7 L 109.65 762.12 M 94.94 762.12 L 124.37 762.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="109.65" y="782" text-anchor="middle">Science lab</text>
+<text class="sx-net-label" x="109.65" y="797" text-anchor="middle">workstation</text>
+<text class="sx-net-sublabel" x="109.65" y="809" text-anchor="middle">10.10.10.21</text></g>
+<g class="sx-net-device" data-id="staffpc" data-kind="pc" data-ip="10.10.20.21"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="327.73" y="719.74" width="52.98" height="32.96" rx="1.77"/>
+<rect class="sx-net-body sx-net-screen" x="332.43" y="724.44" width="43.56" height="23.55"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 354.21 752.7 L 354.21 762.12 M 339.5 762.12 L 368.93 762.12" stroke-linecap="butt"/></g></g>
+<text class="sx-net-label" x="354.21" y="782" text-anchor="middle">Library staff</text>
+<text class="sx-net-label" x="354.21" y="797" text-anchor="middle">workstation</text>
+<text class="sx-net-sublabel" x="354.21" y="809" text-anchor="middle">10.10.20.21</text></g>
+<g class="sx-net-device" data-id="student" data-kind="laptop" data-ip="10.10.30.21"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="550.39" y="721.86" width="45.41" height="27.89" rx="1.95"/>
+<rect class="sx-net-body sx-net-screen" x="554.28" y="725.76" width="37.62" height="20.11"/>
+<path class="sx-net-body" d="M 550.39 749.76 L 595.8 749.76 L 602.28 760.14 L 543.9 760.14 Z"/>
+<path class="sx-net-detail" d="M 555.58 753 L 590.61 753"/>
+<rect class="sx-net-body sx-net-panel" x="566.61" y="755.59" width="12.97" height="2.59"/></g></g>
+<text class="sx-net-label" x="573.09" y="782" text-anchor="middle">Student laptop</text>
+<text class="sx-net-sublabel" x="573.09" y="794" text-anchor="middle">10.10.30.21</text></g></g></g></svg>

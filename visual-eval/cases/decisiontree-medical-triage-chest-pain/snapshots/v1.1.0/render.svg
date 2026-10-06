@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Chest Pain Triage" width="1160" height="616" viewBox="0 0 1160 616"><title>Chest Pain Triage</title>
+<desc>Decision tree (taxonomy mode) with 9 nodes and 8 edges</desc>
+<style>.lt-dtree { font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.lt-dtree-title { font-size: 20px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-edge { fill: none; stroke: #3E4C59; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #2B7A4B; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #3E4C59; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font-size: 11px; font-weight: 500; fill: #1F2933; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font-size: 10px; font-weight: 400; font-style: italic; fill: #52606D; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.4; }
+.lt-dtree-node-label { font-size: 12px; font-weight: 500; fill: #1F2933; }
+.lt-dtree-ev { font-size: 10px; font-weight: 500; fill: #52606D; }
+.lt-dtree-ev-optimal { font-size: 10px; font-weight: 600; fill: #2B7A4B; }
+.lt-dtree-payoff { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-payoff-neg { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-card { stroke-width: 1.5; }
+.lt-dtree-card-label { font-size: 13px; fill: #1F2933; text-anchor: middle; }
+.lt-dtree-card-stats { font-size: 11px; fill: #52606D; text-anchor: middle; }
+.lt-dtree-card-header { font-size: 10px; font-weight: 700; text-anchor: middle; }
+.lt-dtree-badge { font-size: 10px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+.lt-dtree-legend { font-size: 11px; fill: #52606D; }</style>
+<text x="40" y="32" class="lt-dtree-title" text-anchor="start">Chest Pain Triage</text>
+<defs><marker id="dtree-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 8 4 L 0 8 Z" fill="#3E4C59"/></marker></defs>
+<g transform="translate(0, 52)" data-mode="taxonomy"><path d="M 488.25 98 L 488.25 120 Q 488.25 126 482.25 126 L 249 126 Q 243 126 243 132 L 243 179" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 488.25 98 L 488.25 120 Q 488.25 126 494.25 126 L 727.5 126 Q 733.5 126 733.5 132 L 733.5 178" class="lt-dtree-edge" data-edge="n1-&gt;n5" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 235 L 243 257 Q 243 263 237 263 L 140 263 Q 134 263 134 269 L 134 460" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 235 L 243 257 Q 243 263 249 263 L 346 263 Q 352 263 352 269 L 352 460" class="lt-dtree-edge" data-edge="n2-&gt;n4" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 733.5 236 L 733.5 258 Q 733.5 264 727.5 264 L 576 264 Q 570 264 570 270 L 570 460" class="lt-dtree-edge" data-edge="n5-&gt;n6" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 733.5 236 L 733.5 258 Q 733.5 264 739.5 264 L 891 264 Q 897 264 897 270 L 897 319" class="lt-dtree-edge" data-edge="n5-&gt;n7" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 377 L 897 399 Q 897 405 891 405 L 794 405 Q 788 405 788 411 L 788 460" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 377 L 897 399 Q 897 405 903 405 L 1000 405 Q 1006 405 1006 411 L 1006 460" class="lt-dtree-edge" data-edge="n7-&gt;n9" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<rect x="203.86" y="137" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="218.43" y="144" class="lt-dtree-edge-label">Yes</text>
+<rect x="743.5" y="137" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="755.1" y="144" class="lt-dtree-edge-label">No</text>
+<rect x="94.86000000000001" y="274" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="109.43" y="281" class="lt-dtree-edge-label">Yes</text>
+<rect x="362" y="274" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="373.6" y="281" class="lt-dtree-edge-label">No</text>
+<rect x="530.8599999999999" y="275" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="545.43" y="282" class="lt-dtree-edge-label">Yes</text>
+<rect x="907" y="275" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="918.6" y="282" class="lt-dtree-edge-label">No</text>
+<rect x="748.8599999999999" y="416" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="763.43" y="423" class="lt-dtree-edge-label">Yes</text>
+<rect x="1015.9999999999999" y="416" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1027.6" y="423" class="lt-dtree-edge-label">No</text>
+<g data-node-id="n1" data-node-kind="question"><polygon points="340.4200000000001,69 358.4200000000001,40 618.0799999999999,40 636.0799999999999,69 618.0799999999999,98 358.4200000000001,98" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="340.4200000000001" cy="69" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="340.4200000000001" y="72.5" class="lt-dtree-badge">1</text>
+<text x="488.25" y="65" class="lt-dtree-card-label">Haemodynamically unstable or ongoing</text>
+<text x="488.25" y="82" class="lt-dtree-card-label">severe pain?</text></g>
+<g data-node-id="n2" data-node-kind="question"><polygon points="110.90000000000003,207 128.90000000000003,179 357.09999999999997,179 375.09999999999997,207 357.09999999999997,235 128.90000000000003,235" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="110.90000000000003" cy="207" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="110.90000000000003" y="210.5" class="lt-dtree-badge">2</text>
+<text x="243" y="211.5" class="lt-dtree-card-label">ECG shows STEMI or equivalent?</text></g>
+<g data-node-id="n3" data-node-kind="answer"><rect x="40" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="134" y="488" class="lt-dtree-card-label">Immediate reperfusion</text>
+<text x="134" y="505" class="lt-dtree-card-label">pathway</text></g>
+<g data-node-id="n4" data-node-kind="answer"><rect x="258" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="352" y="488" class="lt-dtree-card-label">Resuscitation area and</text>
+<text x="352" y="505" class="lt-dtree-card-label">urgent cardiology review</text></g>
+<g data-node-id="n5" data-node-kind="question"><polygon points="585.02,207 603.02,178 863.9799999999999,178 881.9799999999999,207 863.9799999999999,236 603.02,236" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="585.02" cy="207" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="585.02" y="210.5" class="lt-dtree-badge">3</text>
+<text x="733.5" y="203" class="lt-dtree-card-label">ECG or serial troponin concerning for</text>
+<text x="733.5" y="220" class="lt-dtree-card-label">acute coronary syndrome?</text></g>
+<g data-node-id="n6" data-node-kind="answer"><rect x="476" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="570" y="488" class="lt-dtree-card-label">Monitored observation and</text>
+<text x="570" y="505" class="lt-dtree-card-label">cardiology assessment</text></g>
+<g data-node-id="n7" data-node-kind="question"><polygon points="752.6800000000001,348 770.6800000000001,319 1023.3199999999999,319 1041.32,348 1023.3199999999999,377 770.6800000000001,377" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="752.6800000000001" cy="348" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="752.6800000000001" y="351.5" class="lt-dtree-badge">4</text>
+<text x="897" y="344" class="lt-dtree-card-label">Low-risk assessment and alternative</text>
+<text x="897" y="361" class="lt-dtree-card-label">diagnosis likely?</text></g>
+<g data-node-id="n8" data-node-kind="answer"><rect x="694" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="788" y="488" class="lt-dtree-card-label">Discharge with safety-net</text>
+<text x="788" y="505" class="lt-dtree-card-label">advice and follow-up</text></g>
+<g data-node-id="n9" data-node-kind="answer"><rect x="912" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="1006" y="488" class="lt-dtree-card-label">Observation unit for serial</text>
+<text x="1006" y="505" class="lt-dtree-card-label">testing</text></g></g></svg>

@@ -1,0 +1,45 @@
+{
+  "id": "genogram-three-unions-mother",
+  "type": "genogram",
+  "title": "One parent, three unions",
+  "goal": "A reader can tell Dana's three unions apart (two divorces, then living with Rick), see that each union line connects only its two partners, and trace Maya, Leo and Tess each to the right pair of parents.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "unions-connect-their-partners",
+      "severity": "blocker",
+      "must": "Exactly three union lines leave Dana: a divorce-marked one to Mark (m. 1995 · div. 2004), a divorce-marked one to Chris (m. 2006 · div. 2015) and a dashed one to Rick (together since 2018). No union line ends at, or appears to connect, Chris and Rick or Mark and Chris."
+    },
+    {
+      "id": "descent",
+      "severity": "blocker",
+      "must": "Maya descends only from Mark and Dana's union, Leo only from Chris and Dana's, and Tess only from Dana and Rick's; no child hangs from a line between two men."
+    },
+    {
+      "id": "no-line-through-people",
+      "severity": "blocker",
+      "must": "No union or descent line passes through a person symbol or a name; a union between partners who are not side by side is routed around the person between them."
+    },
+    {
+      "id": "partner-order",
+      "severity": "major",
+      "must": "Dana's partners read in the order of the unions: Mark and Chris on one side in the order she met them, and the current partner Rick next to her."
+    },
+    {
+      "id": "sibling-order-and-labels",
+      "severity": "major",
+      "must": "Maya (2009), Leo (2010) and Tess (2019) appear left to right in birth order; every name, birth year and union label is readable without overlapping another element."
+    },
+    {
+      "id": "legend",
+      "severity": "minor",
+      "must": "The legend shows the symbols used: male, female, index person, marriage/descent, divorced (two slashes) and living together (dashed)."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Dana has three unions. Mark and Chris stand to her left in the order she met them, Rick to her right. The union with Mark passes over Chris instead of through him, so each union line touches only its two partners and nothing crosses; Maya, Leo and Tess hang from their own parents' unions."
+  }
+}

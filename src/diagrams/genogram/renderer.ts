@@ -323,7 +323,7 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
 
     // cohabiting-ended: single slash mark like separation
     if (relType === "cohabiting-ended" && !isSecondary) {
-      const mid = pathMidpoint(edge.path);
+      const mid = pathMidpoint(edge);
       if (mid) {
         elements.push(
           el("line", {
@@ -341,7 +341,7 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
 
     // Divorce markers: two short slashes at midpoint
     if (relType === "divorced") {
-      const mid = pathMidpoint(edge.path);
+      const mid = pathMidpoint(edge);
       if (mid) {
         elements.push(
           el("line", {
@@ -368,7 +368,7 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
 
     // Separation marker: single slash
     if (relType === "separated") {
-      const mid = pathMidpoint(edge.path);
+      const mid = pathMidpoint(edge);
       if (mid) {
         elements.push(
           el("line", {
@@ -417,9 +417,10 @@ function stepConnector(pathData: string): string {
 }
 
 function pathMidpoint(
-  pathData: string
+  edge: LayoutEdge
 ): { x: number; y: number } | null {
-  const coords = pathData.match(/[\d.-]+/g);
+  if (edge.unionRoute) return { x: edge.unionRoute.markX, y: edge.unionRoute.y };
+  const coords = edge.path.match(/[\d.-]+/g);
   if (!coords || coords.length < 4) return null;
   const x1 = parseFloat(coords[0]);
   const y1 = parseFloat(coords[1]);

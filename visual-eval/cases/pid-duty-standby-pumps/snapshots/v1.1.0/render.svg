@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1340.5104000000001" height="518" viewBox="0 0 1340.5104000000001 518" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Duty and Standby Pump Set</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="670.2552000000001" y="22" class="lt-pid-title" text-anchor="middle">Duty and Standby Pump Set</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="suctionDuty"><path d="M 162.62619999999998 216 L 228.76219999999998 216 L 228.76219999999998 129 L 294.8982 129" class="lt-pid-process lt-pid-line-path" data-line-id="suctionDuty" data-service="pump suction"/></g>
+<g class="lt-pid-line" data-id="dutyIn"><path d="M 330.8982 129 L 499.2748 129" class="lt-pid-process lt-pid-line-path" data-line-id="dutyIn" data-service="pump suction"/></g>
+<g class="lt-pid-line" data-id="dutyOut"><path d="M 557.2748 107 L 646.2526 107 L 646.2526 129 L 735.2303999999999 129" class="lt-pid-process lt-pid-line-path" data-line-id="dutyOut" data-service="pump discharge"/></g>
+<g class="lt-pid-line" data-id="dutyCheck"><path d="M 771.2303999999999 129 L 964.7828 129" class="lt-pid-process lt-pid-line-path" data-line-id="dutyCheck" data-service="pump discharge"/></g>
+<g class="lt-pid-line" data-id="dutyHeader"><path d="M 1000.7828 129 L 1084.9466 129 L 1084.9466 303 L 1169.1104 303" class="lt-pid-process lt-pid-line-path" data-line-id="dutyHeader" data-service="discharge header"/></g>
+<g class="lt-pid-line" data-id="suctionStandby"><path d="M 117.6262 261 L 117.6262 271 L 274.8982 271 L 274.8982 303 L 294.8982 303" class="lt-pid-process lt-pid-line-path" data-line-id="suctionStandby" data-service="pump suction"/></g>
+<g class="lt-pid-line" data-id="standbyIn"><path d="M 330.8982 303 L 499.2748 303" class="lt-pid-process lt-pid-line-path" data-line-id="standbyIn" data-service="pump suction"/></g>
+<g class="lt-pid-line" data-id="standbyOut"><path d="M 557.2748 281 L 646.2526 281 L 646.2526 303 L 735.2303999999999 303" class="lt-pid-process lt-pid-line-path" data-line-id="standbyOut" data-service="pump discharge"/></g>
+<g class="lt-pid-line" data-id="standbyCheck"><path d="M 771.2303999999999 303 L 964.7828 303" class="lt-pid-process lt-pid-line-path" data-line-id="standbyCheck" data-service="pump discharge"/></g>
+<g class="lt-pid-line" data-id="standbyHeader"><path d="M 1000.7828 303 L 1020.7828 303 L 1020.7828 248 L 1214.1104 248 L 1214.1104 258" class="lt-pid-process lt-pid-line-path" data-line-id="standbyHeader" data-service="discharge header"/></g>
+<g class="lt-pid-line" data-id="bypassTakeoff"><path d="M 1000.7828 129 L 1196.1104 129" class="lt-pid-process-min lt-pid-line-path" data-line-id="bypassTakeoff" data-service="minimum flow bypass"/></g>
+<g class="lt-pid-line" data-id="bypassReturn"><path d="M 1232.1104 129 L 1250.1104 129 L 1250.1104 488 L 54.6262 488 L 54.6262 153 L 117.6262 153 L 117.6262 171" class="lt-pid-process-min lt-pid-line-path" data-line-id="bypassReturn" data-service="minimum flow bypass"/></g></g>
+<g class="lt-pid-junctions"><circle cx="1000.7828" cy="129" r="3.6" class="lt-pid-junction"/></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="TK-101" data-type="tank_atm" transform="translate(117.6262 216)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">Suction Source</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-101" data-type="valve_gate" transform="translate(312.8982 129)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-101 Suction Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-201" data-type="valve_gate" transform="translate(312.8982 303)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-102 Suction Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-101" data-type="pump_centrifugal" transform="translate(529.2748 129)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Duty Pump 45 m3/h</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-102" data-type="pump_centrifugal" transform="translate(529.2748 303)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Standby Pump 45 m3/h</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-102" data-type="valve_gate" transform="translate(753.2303999999999 129)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-101 Discharge Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-202" data-type="valve_gate" transform="translate(753.2303999999999 303)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-102 Discharge Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="NRV-101" data-type="valve_check" transform="translate(982.7828 129)"><g><g><g><line x1="-18" y1="0" x2="-12.1" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="12.1" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -12.1 -7.7 L -12.1 7.7 L 0 0 Z M 12.1 -7.7 L 12.1 7.7 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g>
+<g class="lt-pid-tray-line"><circle cx="-12.1" cy="-7.7" r="2.475" fill="#1d1d1d" stroke="none"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-101 Non-return Valve</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="NRV-201" data-type="valve_check" transform="translate(982.7828 303)"><g><g><g><line x1="-18" y1="0" x2="-12.1" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="12.1" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -12.1 -7.7 L -12.1 7.7 L 0 0 Z M 12.1 -7.7 L 12.1 7.7 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g>
+<g class="lt-pid-tray-line"><circle cx="-12.1" cy="-7.7" r="2.475" fill="#1d1d1d" stroke="none"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">P-102 Non-return Valve</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-301" data-type="valve_gate" transform="translate(1214.1104 129)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">Minimum-flow Bypass</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="TK-102" data-type="tank_atm" transform="translate(1214.1104 303)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">Discharge Header</text>
+<text x="0" y="83" text-anchor="middle" class="lt-pid-equip-tag">Destination</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="pressureTap"><path d="M 1169.1104 303 L 1191.6104 303 L 1191.6104 424 L 1214.1104 424" class="lt-pid-capillary lt-pid-line-path" data-line-id="pressureTap" data-service=""/></g>
+<g><path d="M 1214.1104 424 L 1214.1104 356 L 1214.1104 356 L 1214.1104 348" class="lt-pid-electric"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="PI-101" data-category="field_discrete" transform="translate(1214.1104 424)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">PI</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g></g></svg>

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Customer Churn Triage" width="1378" height="614" viewBox="0 0 1378 614"><title>Customer Churn Triage</title>
+<desc>Decision tree (taxonomy mode) with 11 nodes and 10 edges</desc>
+<style>.lt-dtree { font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.lt-dtree-title { font-size: 20px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-edge { fill: none; stroke: #3E4C59; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #2B7A4B; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #3E4C59; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font-size: 11px; font-weight: 500; fill: #1F2933; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font-size: 10px; font-weight: 400; font-style: italic; fill: #52606D; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.4; }
+.lt-dtree-node-label { font-size: 12px; font-weight: 500; fill: #1F2933; }
+.lt-dtree-ev { font-size: 10px; font-weight: 500; fill: #52606D; }
+.lt-dtree-ev-optimal { font-size: 10px; font-weight: 600; fill: #2B7A4B; }
+.lt-dtree-payoff { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-payoff-neg { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-card { stroke-width: 1.5; }
+.lt-dtree-card-label { font-size: 13px; fill: #1F2933; text-anchor: middle; }
+.lt-dtree-card-stats { font-size: 11px; fill: #52606D; text-anchor: middle; }
+.lt-dtree-card-header { font-size: 10px; font-weight: 700; text-anchor: middle; }
+.lt-dtree-badge { font-size: 10px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+.lt-dtree-legend { font-size: 11px; fill: #52606D; }</style>
+<text x="40" y="32" class="lt-dtree-title" text-anchor="start">Customer Churn Triage</text>
+<defs><marker id="dtree-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 8 4 L 0 8 Z" fill="#3E4C59"/></marker></defs>
+<g transform="translate(0, 52)" data-mode="taxonomy"><path d="M 733.5 96 L 733.5 118 Q 733.5 124 727.5 124 L 412.5 124 Q 406.5 124 406.5 130 L 406.5 176" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 733.5 96 L 733.5 118 Q 733.5 124 739.5 124 L 1054.5 124 Q 1060.5 124 1060.5 130 L 1060.5 177" class="lt-dtree-edge" data-edge="n1-&gt;n7" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 406.5 234 L 406.5 256 Q 406.5 262 400.5 262 L 249 262 Q 243 262 243 268 L 243 318" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 406.5 234 L 406.5 256 Q 406.5 262 412.5 262 L 564 262 Q 570 262 570 268 L 570 458" class="lt-dtree-edge" data-edge="n2-&gt;n6" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 374 L 243 396 Q 243 402 237 402 L 140 402 Q 134 402 134 408 L 134 458" class="lt-dtree-edge" data-edge="n3-&gt;n4" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 374 L 243 396 Q 243 402 249 402 L 346 402 Q 352 402 352 408 L 352 458" class="lt-dtree-edge" data-edge="n3-&gt;n5" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 1060.5 233 L 1060.5 255 Q 1060.5 261 1054.5 261 L 903 261 Q 897 261 897 267 L 897 318" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 1060.5 233 L 1060.5 255 Q 1060.5 261 1066.5 261 L 1218 261 Q 1224 261 1224 267 L 1224 458" class="lt-dtree-edge" data-edge="n7-&gt;n11" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 374 L 897 396 Q 897 402 891 402 L 794 402 Q 788 402 788 408 L 788 458" class="lt-dtree-edge" data-edge="n8-&gt;n9" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 374 L 897 396 Q 897 402 903 402 L 1000 402 Q 1006 402 1006 408 L 1006 458" class="lt-dtree-edge" data-edge="n8-&gt;n10" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<rect x="367.36" y="135" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="381.93" y="142" class="lt-dtree-edge-label">Yes</text>
+<rect x="1070.5" y="135" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1082.1" y="142" class="lt-dtree-edge-label">No</text>
+<rect x="203.86" y="273" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="218.43" y="280" class="lt-dtree-edge-label">Yes</text>
+<rect x="580" y="273" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="591.6" y="280" class="lt-dtree-edge-label">No</text>
+<rect x="94.86000000000001" y="413" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="109.43" y="420" class="lt-dtree-edge-label">Yes</text>
+<rect x="362" y="413" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="373.6" y="420" class="lt-dtree-edge-label">No</text>
+<rect x="857.8599999999999" y="272" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="872.43" y="279" class="lt-dtree-edge-label">Yes</text>
+<rect x="1234" y="272" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1245.6" y="279" class="lt-dtree-edge-label">No</text>
+<rect x="748.8599999999999" y="413" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="763.43" y="420" class="lt-dtree-edge-label">Yes</text>
+<rect x="1015.9999999999999" y="413" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1027.6" y="420" class="lt-dtree-edge-label">No</text>
+<g data-node-id="n1" data-node-kind="question"><polygon points="608.8100000000001,68 626.8100000000001,40 840.19,40 858.19,68 840.19,96 626.8100000000001,96" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="608.8100000000001" cy="68" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="608.8100000000001" y="71.5" class="lt-dtree-badge">1</text>
+<text x="733.5" y="72.5" class="lt-dtree-card-label">Is the renewal within 90 days?</text></g>
+<g data-node-id="n2" data-node-kind="question"><polygon points="265.1700000000001,205 283.1700000000001,176 529.8299999999999,176 547.8299999999999,205 529.8299999999999,234 283.1700000000001,234" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="265.1700000000001" cy="205" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="265.1700000000001" y="208.5" class="lt-dtree-badge">2</text>
+<text x="406.5" y="201" class="lt-dtree-card-label">Has product usage declined for four</text>
+<text x="406.5" y="218" class="lt-dtree-card-label">weeks?</text></g>
+<g data-node-id="n3" data-node-kind="question"><polygon points="108.69000000000005,346 126.69000000000005,318 359.30999999999995,318 377.30999999999995,346 359.30999999999995,374 126.69000000000005,374" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="108.69000000000005" cy="346" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="108.69000000000005" y="349.5" class="lt-dtree-badge">4</text>
+<text x="243" y="350.5" class="lt-dtree-card-label">Is an executive sponsor engaged?</text></g>
+<g data-node-id="n4" data-node-kind="answer"><rect x="40" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="134" y="494.5" class="lt-dtree-card-label">Run sponsor recovery plan</text></g>
+<g data-node-id="n5" data-node-kind="answer"><rect x="258" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="352" y="486" class="lt-dtree-card-label">Escalate executive</text>
+<text x="352" y="503" class="lt-dtree-card-label">outreach</text></g>
+<g data-node-id="n6" data-node-kind="answer"><rect x="476" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="570" y="486" class="lt-dtree-card-label">Confirm value and renewal</text>
+<text x="570" y="503" class="lt-dtree-card-label">plan</text></g>
+<g data-node-id="n7" data-node-kind="question"><polygon points="920.34,205 938.34,177 1182.6599999999999,177 1200.6599999999999,205 1182.6599999999999,233 938.34,233" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="920.34" cy="205" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="920.34" y="208.5" class="lt-dtree-badge">3</text>
+<text x="1060.5" y="209.5" class="lt-dtree-card-label">Is customer health score below 60?</text></g>
+<g data-node-id="n8" data-node-kind="question"><polygon points="750.21,346 768.21,318 1025.79,318 1043.79,346 1025.79,374 768.21,374" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="750.21" cy="346" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="750.21" y="349.5" class="lt-dtree-badge">5</text>
+<text x="897" y="350.5" class="lt-dtree-card-label">Is there an unresolved critical issue?</text></g>
+<g data-node-id="n9" data-node-kind="answer"><rect x="694" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="788" y="486" class="lt-dtree-card-label">Assign incident and</text>
+<text x="788" y="503" class="lt-dtree-card-label">success leadership</text></g>
+<g data-node-id="n10" data-node-kind="answer"><rect x="912" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="1006" y="486" class="lt-dtree-card-label">Schedule proactive</text>
+<text x="1006" y="503" class="lt-dtree-card-label">success review</text></g>
+<g data-node-id="n11" data-node-kind="answer"><rect x="1130" y="458" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="1224" y="486" class="lt-dtree-card-label">Continue standard success</text>
+<text x="1224" y="503" class="lt-dtree-card-label">cadence</text></g></g></svg>

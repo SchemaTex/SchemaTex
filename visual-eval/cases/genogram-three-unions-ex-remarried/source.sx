@@ -1,0 +1,12 @@
+genogram "Three unions, and an ex-partner who remarried" [asOf: 2026]
+  mark [male, 1972, label: "Mark"]
+  dana [female, 1975, label: "Dana"]
+  mark -x- dana "m. 1995 · div. 2004"
+    maya [female, 2009, index, label: "Maya"]
+  chris [male, 1970, label: "Chris"]
+  chris -x- dana "m. 2006 · div. 2015"
+    leo [male, 2010, label: "Leo"]
+  dana ~ rick [male, 1968, label: "Rick"] "together since 2018"
+    tess [female, 2019, label: "Tess"]
+  mark -- lisa [female, 1980, label: "Lisa"] "m. 2010"
+    zoe [female, 2012, label: "Zoe"]

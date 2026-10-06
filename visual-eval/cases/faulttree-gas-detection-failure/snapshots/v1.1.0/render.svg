@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="991" height="796" viewBox="0 0 991 796" role="img" aria-label="Failure to detect gas release" data-diagram-type="faulttree"><title>Failure to detect gas release</title>
+<desc>Fault tree for &quot;Gas release is not detected and alarmed&quot;: 1 top, 3 intermediate, 5 basic, 1 house. 3 minimal cut sets: {ALARM_DEMAND_PATH_FAIL, GAS_RELEASE}, {GAS_RELEASE, LOGIC_SOLVER_FAIL}, {DETECTOR_A_FAIL, DETECTOR_B_FAIL, GAS_RELEASE}. P(top) = 3.17e-5 (exact).</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="991" height="796" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="475.5" y="22" class="sx-ft-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Failure to detect gas release</text>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="GAS_RELEASE#1"><path d="M 332 182 L 332 215 L 96 215 L 96 248" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="DETECTION_FUNCTION_FAILS#2"><path d="M 332 182 L 332 213 L 568 213 L 568 244" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DETECTION_FUNCTION_FAILS#2" data-to="ALL_DETECTORS_FAIL#3"><path d="M 568 344 L 568 375 L 342 375 L 342 406" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DETECTION_FUNCTION_FAILS#2" data-to="LOGIC_SOLVER_FAIL#6"><path d="M 568 344 L 568 377 L 588 377 L 588 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DETECTION_FUNCTION_FAILS#2" data-to="INHIBITED_ALARM_PATH#7"><path d="M 568 344 L 568 375 L 794 375 L 794 406" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="ALL_DETECTORS_FAIL#3" data-to="DETECTOR_A_FAIL#4"><path d="M 342 506 L 342 539 L 260 539 L 260 572" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="ALL_DETECTORS_FAIL#3" data-to="DETECTOR_B_FAIL#5"><path d="M 342 506 L 342 539 L 424 539 L 424 572" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="INHIBITED_ALARM_PATH#7" data-to="ALARM_DEMAND_PATH_FAIL#8"><path d="M 794 506 L 794 539 L 794 539 L 794 572" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="TOP#0" data-gate="and"><line x1="332" y1="144" x2="332" y2="132" class="sx-ft-pin"/>
+<path d="M 305 182 L 305 163 A 27 19 0 0 1 359 163 L 359 182 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="DETECTION_FUNCTION_FAILS#2" data-gate="or"><line x1="568" y1="306" x2="568" y2="294" class="sx-ft-pin"/>
+<path d="M 541 344 Q 568 335 595 344 Q 595 315.5 568 306 Q 541 315.5 541 344 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="ALL_DETECTORS_FAIL#3" data-gate="and"><line x1="342" y1="468" x2="342" y2="456" class="sx-ft-pin"/>
+<path d="M 315 506 L 315 487 A 27 19 0 0 1 369 487 L 369 506 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="INHIBITED_ALARM_PATH#7" data-gate="inhibit" data-condition="MAINTENANCE_INHIBIT"><line x1="794" y1="468" x2="794" y2="456" class="sx-ft-pin"/>
+<path d="M 794 468 L 821 477.5 L 821 496.5 L 794 506 L 767 496.5 L 767 477.5 Z" class="sx-ft-gate"/>
+<line x1="821" y1="487" x2="843" y2="487" class="sx-ft-pin"/>
+<ellipse cx="882" cy="487" rx="39" ry="17" class="sx-ft-cond"/>
+<text x="882" y="487" class="sx-ft-cond-text" text-anchor="middle" dominant-baseline="middle"><tspan x="882" dy="-5.5">Maintenance</tspan><tspan x="882" dy="11">inhibit active</tspan></text></g>
+<g class="sx-ft-event-g" data-id="TOP" data-role="top"><rect x="247" y="82" width="170" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="332" y="107" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="332" dy="-7">Gas release is not</tspan><tspan x="332" dy="14">detected and alarmed</tspan></text></g>
+<g class="sx-ft-event-g" data-id="GAS_RELEASE" data-role="basic" data-prob="0.002"><circle cx="96" cy="269" r="21" class="sx-ft-basic"/>
+<text x="96" y="309" class="sx-ft-cap" text-anchor="middle">GAS_RELEASE</text>
+<text x="96" y="322" class="sx-ft-cap" text-anchor="middle">Flammable gas release</text>
+<text x="96" y="335" class="sx-ft-cap" text-anchor="middle">occurs</text>
+<text x="96" y="348" class="sx-ft-prob" text-anchor="middle">p=0.002</text></g>
+<g class="sx-ft-event-g" data-id="DETECTION_FUNCTION_FAILS" data-role="intermediate"><rect x="502" y="244" width="132" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="568" y="269" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="568" dy="-7">Gas detection</tspan><tspan x="568" dy="14">function fails</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ALL_DETECTORS_FAIL" data-role="intermediate"><rect x="276" y="406" width="132" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="342" y="431" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="342" dy="-7">Both detector</tspan><tspan x="342" dy="14">channels fail</tspan></text></g>
+<g class="sx-ft-event-g" data-id="DETECTOR_A_FAIL" data-role="basic" data-prob="0.03"><circle cx="260" cy="593" r="21" class="sx-ft-basic"/>
+<text x="260" y="633" class="sx-ft-cap" text-anchor="middle">DETECTOR_A_FAIL</text>
+<text x="260" y="646" class="sx-ft-cap" text-anchor="middle">Detector A fails</text>
+<text x="260" y="659" class="sx-ft-cap" text-anchor="middle">dangerously</text>
+<text x="260" y="672" class="sx-ft-prob" text-anchor="middle">p=0.03</text></g>
+<g class="sx-ft-event-g" data-id="DETECTOR_B_FAIL" data-role="basic" data-prob="0.03"><circle cx="424" cy="593" r="21" class="sx-ft-basic"/>
+<text x="424" y="633" class="sx-ft-cap" text-anchor="middle">DETECTOR_B_FAIL</text>
+<text x="424" y="646" class="sx-ft-cap" text-anchor="middle">Detector B fails</text>
+<text x="424" y="659" class="sx-ft-cap" text-anchor="middle">dangerously</text>
+<text x="424" y="672" class="sx-ft-prob" text-anchor="middle">p=0.03</text></g>
+<g class="sx-ft-event-g" data-id="LOGIC_SOLVER_FAIL" data-role="basic" data-prob="0.005"><circle cx="588" cy="431" r="21" class="sx-ft-basic"/>
+<text x="588" y="471" class="sx-ft-cap" text-anchor="middle">LOGIC_SOLVER_FAIL</text>
+<text x="588" y="484" class="sx-ft-cap" text-anchor="middle">Logic solver fails</text>
+<text x="588" y="497" class="sx-ft-cap" text-anchor="middle">dangerously</text>
+<text x="588" y="510" class="sx-ft-prob" text-anchor="middle">p=0.005</text></g>
+<g class="sx-ft-event-g" data-id="INHIBITED_ALARM_PATH" data-role="intermediate"><rect x="686" y="406" width="216" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="794" y="431" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="794" dy="-7">Alarm demand</tspan><tspan x="794" dy="14">suppressed during maintenance</tspan></text></g>
+<g class="sx-ft-event-g" data-id="ALARM_DEMAND_PATH_FAIL" data-role="basic" data-prob="0.01"><circle cx="794" cy="593" r="21" class="sx-ft-basic"/>
+<text x="794" y="633" class="sx-ft-cap" text-anchor="middle">ALARM_DEMAND_PATH_</text>
+<text x="794" y="646" class="sx-ft-cap" text-anchor="middle">FAIL</text>
+<text x="794" y="659" class="sx-ft-cap" text-anchor="middle">Alarm demand path</text>
+<text x="794" y="672" class="sx-ft-cap" text-anchor="middle">unavailable</text>
+<text x="794" y="685" class="sx-ft-prob" text-anchor="middle">p=0.01</text></g>
+<text x="332" y="73" class="sx-ft-ptop" text-anchor="middle">P(top) = 3.17e-5 (exact)</text>
+<line x1="30" y1="723" x2="921" y2="723" class="sx-ft-pin"/>
+<text x="30" y="743" class="sx-ft-cap">3 minimal cut sets · 2 of order 2; 1 of order 3</text></g></svg>

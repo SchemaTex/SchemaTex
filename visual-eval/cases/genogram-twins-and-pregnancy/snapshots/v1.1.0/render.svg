@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 881.32 428" class="schematex-diagram schematex-genogram" width="881.32" height="428"><title>Genogram: Twins, pregnancy and pregnancy losses</title>
+<desc>Genogram diagram with 9 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="440.66" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">Twins, pregnancy and pregnancy losses</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="morgan" data-to="riley"><path d="M 380 60 L 460 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-twin-identical" data-from="nina" data-to="nora"><path d="M 120 141 L 60 206 M 120 141 L 180 206 M 87 176.75 L 153 176.75" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-twin-fraternal" data-from="owen" data-to="iris"><path d="M 360 141 L 300 206 M 360 141 L 420 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="morgan" data-to="riley"><path d="M 420 60 L 420 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="morgan" data-to="riley"><path d="M 120 141 L 801.12 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="morgan+riley" data-to="loss"><path d="M 543.12 141 L 543.12 220" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="morgan+riley" data-to="stillbirth"><path d="M 681.12 141 L 681.12 216" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="morgan+riley" data-to="expected"><path d="M 801.12 141 L 801.12 216" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="morgan" data-status="alive" transform="translate(360, 60)"><title>Morgan (1988)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">38</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="riley" data-status="alive" transform="translate(480, 60)"><title>Riley (1990)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">36</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="nina" data-status="alive" transform="translate(60, 226)"><title>Nina (2018)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">8</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="nora" data-status="alive" transform="translate(180, 226)"><title>Nora (2018)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">8</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="owen" data-status="alive" transform="translate(300, 226)"><title>Owen (2021)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">5</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="iris" data-status="alive" transform="translate(420, 226)"><title>Iris (2021)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">5</text></g>
+<g class="schematex-genogram-node schematex-genogram-miscarriage schematex-genogram-unknown" data-individual-id="loss" data-status="miscarriage" transform="translate(543.12, 226)"><title>Loss at 10 weeks (2023)</title>
+<circle cx="0" cy="0" r="6" class="schematex-genogram-shape"/></g>
+<g class="schematex-genogram-node schematex-genogram-stillborn schematex-genogram-male" data-individual-id="stillbirth" data-status="stillborn" transform="translate(681.12, 226)"><title>Stillbirth (2024)</title>
+<rect x="-10" y="-10" width="20" height="20" class="schematex-genogram-shape"/>
+<line x1="-10" y1="-10" x2="10" y2="10" class="schematex-genogram-status-cross" data-mark="stillbirth-cross"/>
+<line x1="10" y1="-10" x2="-10" y2="10" class="schematex-genogram-status-cross" data-mark="stillbirth-cross"/></g>
+<g class="schematex-genogram-node schematex-genogram-pregnancy schematex-genogram-unknown" data-individual-id="expected" data-status="pregnancy" transform="translate(801.12, 226)"><title>Expected baby</title>
+<polygon points="0,-10 10,10 -10,10" class="schematex-genogram-shape"/></g></g>
+<g class="schematex-genogram-labels"><text x="360" y="98" class="schematex-genogram-label" data-individual-id="morgan">Morgan (b. 1988)</text>
+<text x="480" y="98" class="schematex-genogram-label" data-individual-id="riley">Riley (b. 1990)</text>
+<text x="60" y="264" class="schematex-genogram-label" data-individual-id="nina">Nina (b. 2018)</text>
+<text x="180" y="264" class="schematex-genogram-label" data-individual-id="nora">Nora (b. 2018)</text>
+<text x="300" y="264" class="schematex-genogram-label" data-individual-id="owen">Owen (b. 2021)</text>
+<text x="420" y="264" class="schematex-genogram-label" data-individual-id="iris">Iris (b. 2021)</text>
+<text x="543.12" y="264" class="schematex-genogram-label" data-individual-id="loss">Loss at 10 weeks (b. 2023)</text>
+<text x="681.12" y="264" class="schematex-genogram-label" data-individual-id="stillbirth">Stillbirth (b. 2024)</text>
+<text x="801.12" y="264" class="schematex-genogram-label" data-individual-id="expected">Expected baby</text></g>
+<g class="schematex-genogram-edge-labels"></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="388.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="sex.unknown" data-legend-section="symbols"><text x="117.5" y="391.5" class="schematex-genogram-unknown-mark" text-anchor="middle" font-size="24">?</text><text x="136.5" y="388.5" class="schematex-legend-label">Unknown</text></g>
+<g class="schematex-legend-row" data-legend-key="status.stillborn" data-legend-section="symbols"><rect x="207.5" y="380" width="10" height="10" class="schematex-genogram-condition-outline"/><line x1="217.5" y1="380" x2="207.5" y2="390" class="schematex-genogram-status-cross" data-mark="stillbirth-cross"/><line x1="207.5" y1="380" x2="217.5" y2="390" class="schematex-genogram-status-cross" data-mark="stillbirth-cross"/><text x="231.5" y="388.5" class="schematex-legend-label">Stillborn</text></g>
+<g class="schematex-legend-row" data-legend-key="status.miscarriage" data-legend-section="symbols"><circle cx="320.5" cy="385" r="5" fill="none" stroke="#334155"/>
+<text x="339.5" y="388.5" class="schematex-legend-label">Miscarriage</text></g>
+<g class="schematex-legend-row" data-legend-key="status.pregnancy" data-legend-section="symbols"><polygon points="441.5,380 446.5,389 436.5,389" fill="none" stroke="#334155"/>
+<text x="460.5" y="388.5" class="schematex-legend-label">Pregnancy</text></g>
+<text x="16" y="406.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="twin-identical" data-legend-section="structural"><path d="M 117.5 397 L 107.5 409" fill="none" stroke="#334155" stroke-width="2"/><path d="M 117.5 397 L 127.5 409" fill="none" stroke="#334155" stroke-width="2"/><path d="M 112 403.6 L 123 403.6" fill="none" stroke="#334155" stroke-width="2"/><text x="136.5" y="406.5" class="schematex-legend-label">Twin Identical</text></g>
+<g class="schematex-legend-row" data-legend-key="twin-fraternal" data-legend-section="structural"><path d="M 258.5 397 L 248.5 409" fill="none" stroke="#334155" stroke-width="2"/><path d="M 258.5 397 L 268.5 409" fill="none" stroke="#334155" stroke-width="2"/><text x="277.5" y="406.5" class="schematex-legend-label">Twin Fraternal</text></g></g></svg>

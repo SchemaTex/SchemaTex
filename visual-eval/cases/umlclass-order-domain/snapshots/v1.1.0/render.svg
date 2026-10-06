@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="978" height="666" viewBox="0 0 978 666" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 7 class; 1 composition, 2 directed, 1 association, 1 aggregation, 1 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="978" height="666" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Order" data-kind="class"><rect x="317.263671875" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="317.263671875" y="62" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="317.263671875" y="32" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="317.263671875" y1="62" x2="477.263671875" y2="62" class="sx-umlclass-divider"/>
+<line x1="317.263671875" y1="100" x2="477.263671875" y2="100" class="sx-umlclass-divider"/>
+<text x="397.263671875" y="53" class="sx-umlclass-classname" text-anchor="middle">Order</text>
+<text x="331.263671875" y="86" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>id</tspan>: <tspan>UUID</tspan></text>
+<text x="331.263671875" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>place</tspan>(): <tspan>void</tspan></text>
+<text x="331.263671875" y="146" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>total</tspan>(): <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="LineItem" data-kind="class"><rect x="103.263671875" y="260" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="103.263671875" y="290" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="103.263671875" y="260" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="103.263671875" y1="290" x2="263.263671875" y2="290" class="sx-umlclass-divider"/>
+<line x1="103.263671875" y1="328" x2="263.263671875" y2="328" class="sx-umlclass-divider"/>
+<text x="183.263671875" y="281" class="sx-umlclass-classname" text-anchor="middle">LineItem</text>
+<text x="117.263671875" y="314" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>quantity</tspan>: <tspan>int</tspan></text>
+<text x="117.263671875" y="352" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>subtotal</tspan>(): <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Product" data-kind="class"><rect x="32" y="466" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="496" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="32" y="466" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="496" x2="192" y2="496" class="sx-umlclass-divider"/>
+<line x1="32" y1="556" x2="192" y2="556" class="sx-umlclass-divider"/>
+<text x="112" y="487" class="sx-umlclass-classname" text-anchor="middle">Product</text>
+<text x="46" y="520" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>sku</tspan>: <tspan>String</tspan></text>
+<text x="46" y="542" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>price</tspan>: <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Customer" data-kind="class"><rect x="745.263671875" y="43" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="745.263671875" y="73" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="745.263671875" y="43" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="745.263671875" y1="73" x2="905.263671875" y2="73" class="sx-umlclass-divider"/>
+<line x1="745.263671875" y1="111" x2="905.263671875" y2="111" class="sx-umlclass-divider"/>
+<text x="825.263671875" y="64" class="sx-umlclass-classname" text-anchor="middle">Customer</text>
+<text x="759.263671875" y="97" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>email</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Address" data-kind="class"><rect x="745.263671875" y="260" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="745.263671875" y="290" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="745.263671875" y="260" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="745.263671875" y1="290" x2="905.263671875" y2="290" class="sx-umlclass-divider"/>
+<line x1="745.263671875" y1="328" x2="905.263671875" y2="328" class="sx-umlclass-divider"/>
+<text x="825.263671875" y="281" class="sx-umlclass-classname" text-anchor="middle">Address</text>
+<text x="759.263671875" y="314" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>city</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="TaxPolicy" data-kind="class"><rect x="317.263671875" y="260" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="317.263671875" y="290" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="317.263671875" y="260" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="317.263671875" y1="290" x2="477.263671875" y2="290" class="sx-umlclass-divider"/>
+<line x1="317.263671875" y1="328" x2="477.263671875" y2="328" class="sx-umlclass-divider"/>
+<text x="397.263671875" y="281" class="sx-umlclass-classname" text-anchor="middle">TaxPolicy</text>
+<text x="331.263671875" y="352" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>calculate</tspan>(): <tspan>Money</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="OrderStatus" data-kind="class"><rect x="531.263671875" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="531.263671875" y="268" width="160" height="120" class="sx-umlclass-box-fill"/>
+<rect x="531.263671875" y="238" width="160" height="150" class="sx-umlclass-box-stroke"/>
+<line x1="531.263671875" y1="268" x2="691.263671875" y2="268" class="sx-umlclass-divider"/>
+<line x1="531.263671875" y1="350" x2="691.263671875" y2="350" class="sx-umlclass-divider"/>
+<text x="611.263671875" y="259" class="sx-umlclass-classname" text-anchor="middle">OrderStatus</text>
+<text x="545.263671875" y="292" class="sx-umlclass-member" data-visibility="public"><tspan>PENDING</tspan></text>
+<text x="545.263671875" y="314" class="sx-umlclass-member" data-visibility="public"><tspan>PAID</tspan></text>
+<text x="545.263671875" y="336" class="sx-umlclass-member" data-visibility="public"><tspan>SHIPPED</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Order" data-to="LineItem" data-kind="composition" data-source-mult="1" data-target-mult="1..*" data-name="contains"><path d="M 334.1 180 L 235.5 260" class="sx-umlclass-rel-line"/>
+
+<polygon points="334.1484645017281,160 340.1484645017281,170 334.1484645017281,180 328.1484645017281,170" class="sx-umlclass-diamond-filled"/>
+<text x="334.1484645017281" y="177" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="235.53095298099078" y="251" class="sx-umlclass-edge-label" text-anchor="middle">1..*</text>
+<text x="284.83970874135946" y="215" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">contains</text>
+<text x="284.83970874135946" y="215" class="sx-umlclass-edge-name" text-anchor="middle">contains</text></g>
+<g class="sx-umlclass-rel" data-from="LineItem" data-to="Product" data-kind="directed" data-source-mult="*" data-target-mult="1" data-name="product"><path d="M 165.9 366 L 133 455" class="sx-umlclass-rel-line"/>
+<path d="M 127.51785714285714 455 L 133.01785714285714 466 L 138.51785714285714 455" class="sx-umlclass-arrowhead"/>
+<text x="165.85825892857142" y="383" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="133.01785714285714" y="457" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="149.43805803571428" y="405.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">product</text>
+<text x="149.43805803571428" y="405.5" class="sx-umlclass-edge-name" text-anchor="middle">product</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Order" data-kind="association" data-source-mult="1" data-target-mult="0..*" data-name="places"><path d="M 825.3 43 L 825.3 6 L 397.3 6 L 397.3 32" class="sx-umlclass-rel-line"/>
+
+<text x="825.263671875" y="34" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="397.263671875" y="23" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="611.263671875" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">places</text>
+<text x="611.263671875" y="1" class="sx-umlclass-edge-name" text-anchor="middle">places</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Address" data-kind="aggregation" data-target-mult="0..*" data-name="saves"><path d="M 825.3 169 L 825.3 260" class="sx-umlclass-rel-line"/>
+
+<polygon points="825.263671875,149 831.263671875,159 825.263671875,169 819.263671875,159" class="sx-umlclass-diamond-hollow"/>
+<text x="825.263671875" y="251" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="825.263671875" y="209.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">saves</text>
+<text x="825.263671875" y="209.5" class="sx-umlclass-edge-name" text-anchor="middle">saves</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="OrderStatus" data-kind="directed" data-name="status"><path d="M 460.4 160 L 537.3 227" class="sx-umlclass-rel-line"/>
+<path d="M 531.800538234447 227 L 537.300538234447 238 L 542.800538234447 227" class="sx-umlclass-arrowhead"/>
+<text x="498.83970874135946" y="188.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">status</text>
+<text x="498.83970874135946" y="188.5" class="sx-umlclass-edge-name" text-anchor="middle">status</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="TaxPolicy" data-kind="dependency" data-name="calculates tax with"><path d="M 397.3 160 L 397.3 249" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 391.763671875 249 L 397.263671875 260 L 402.763671875 249" class="sx-umlclass-arrowhead"/>
+<text x="397.263671875" y="199.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">calculates tax with</text>
+<text x="397.263671875" y="199.5" class="sx-umlclass-edge-name" text-anchor="middle">calculates tax with</text></g></g></svg>

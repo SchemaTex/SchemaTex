@@ -1,6 +1,6 @@
 import type { Individual, LayoutNode, LayoutEdge } from "../../core/types";
 import { estimateTextWidth } from "../../core/text-metrics";
-import { placeLabel, labelLeader, type LabelBox } from "../../core/label-placement";
+import { placeLabel, labelLeader, edgeLabelObstacles, type LabelBox } from "../../core/label-placement";
 import { relationshipPoints } from "./line-forms";
 
 /** The same caption lines drive rendering, spacing, and canvas bounds. */
@@ -49,11 +49,16 @@ export function structuralCaptions(edges: LayoutEdge[], nodes: LayoutNode[], fon
     const points = relationshipPoints(edge.path);
     const mid = points[Math.floor(points.length / 2)];
     const previous = points[Math.max(0, Math.floor(points.length / 2) - 1)];
-    const anchor = points.length === 2
+    const anchor = edge.unionRoute?.kind === "bracket"
+      ? { x: edge.unionRoute.markX, y: edge.unionRoute.y - 12 }
+      : points.length === 2
       ? { x: (points[0].x + mid.x) / 2, y: (points[0].y + mid.y) / 2 - 12 }
       : { x: mid.x, y: mid.y - 12 };
-    const box = placeLabel(anchor, { width: estimateTextWidth(edge.relationship.label, 10) + 8, height: 16 }, occupied,
-      { x: mid.x - previous.x, y: mid.y - previous.y });
+    const bracket = edge.unionRoute?.kind === "bracket";
+    const obstacles = bracket ? [...occupied, ...edges.filter(other => other !== edge)
+      .flatMap(other => edgeLabelObstacles(relationshipPoints(other.path)))] : occupied;
+    const box = placeLabel(anchor, { width: estimateTextWidth(edge.relationship.label, 10) + 8, height: 16 }, obstacles,
+      bracket ? { x: 1, y: 0 } : { x: mid.x - previous.x, y: mid.y - previous.y });
     occupied.push(box);
     labels.push({ edge, box, leader: labelLeader(box, points) });
   }

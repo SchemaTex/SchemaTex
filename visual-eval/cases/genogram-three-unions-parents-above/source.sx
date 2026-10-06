@@ -1,0 +1,16 @@
+genogram "Three unions, with parents above" [asOf: 2026]
+  gus [male, 1940, label: "Gus"]
+  fay [female, 1944, label: "Fay"]
+  gus -- fay "m. 1965"
+    chris [male, 1970, label: "Chris"]
+  hal [male, 1945, label: "Hal"]
+  jo [female, 1948, label: "Jo"]
+  hal -- jo "m. 1968"
+    dana [female, 1975, label: "Dana"]
+  mark [male, 1972, label: "Mark"]
+  mark -x- dana "m. 1995 · div. 2004"
+    maya [female, 2009, index, label: "Maya"]
+  chris -x- dana "m. 2006 · div. 2015"
+    leo [male, 2010, label: "Leo"]
+  dana ~ rick [male, 1968, label: "Rick"] "together since 2018"
+    tess [female, 2019, label: "Tess"]

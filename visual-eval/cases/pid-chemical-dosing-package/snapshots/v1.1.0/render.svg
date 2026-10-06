@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1902.2168" height="348" viewBox="0 0 1902.2168 348" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Chemical Dosing Package</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="951.1084" y="22" class="lt-pid-title" text-anchor="middle">Chemical Dosing Package</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="tankToAgitator"><path d="M 151 194 L 151 204 L 324 204 L 324 139 L 344 139" class="lt-pid-process lt-pid-line-path" data-line-id="tankToAgitator" data-service="chemical solution"/></g>
+<g class="lt-pid-line" data-id="pumpSuction"><path d="M 389 204 L 389 214 L 556.5826 214 L 556.5826 149 L 576.5826 149" class="lt-pid-process lt-pid-line-path" data-line-id="pumpSuction" data-service="chemical solution"/></g>
+<g class="lt-pid-line" data-id="pumpDischarge"><path d="M 646.5826 149 L 721.1118 149 L 721.1118 124 L 795.6410000000001 124" class="lt-pid-process lt-pid-line-path" data-line-id="pumpDischarge" data-service="dosing solution"/></g>
+<g class="lt-pid-line" data-id="calibrationOutlet"><path d="M 865.6410000000001 174 L 956.3789 174 L 956.3789 149 L 1047.1168 149" class="lt-pid-process lt-pid-line-path" data-line-id="calibrationOutlet" data-service="dosing solution"/></g>
+<g class="lt-pid-line" data-id="dosingControl"><path d="M 1083.1168 149 L 1184.1168 149 L 1184.1168 161 L 1285.1168 161" class="lt-pid-process lt-pid-line-path" data-line-id="dosingControl" data-service="dosing solution"/></g>
+<g class="lt-pid-line" data-id="injection"><path d="M 1321.1168 161 L 1422.1168 161 L 1422.1168 149 L 1523.1168 149" class="lt-pid-process lt-pid-line-path" data-line-id="injection" data-service="dosing solution"/></g>
+<g class="lt-pid-line" data-id="processInjection"><path d="M 1559.1168 149 L 1714.1168 149" class="lt-pid-process lt-pid-line-path" data-line-id="processInjection" data-service="chemical injection"/></g></g>
+<g class="lt-pid-junctions"></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="TK-701" data-type="tank_atm" transform="translate(151 149)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">TK-701 Chemical Dosing</text>
+<text x="0" y="83" text-anchor="middle" class="lt-pid-equip-tag">Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="AG-701" data-type="reactor_cstr" transform="translate(389 149)"><g><g><path d="M 0 -55 V -50 H -14 V -38.12 M 0 -50 H 14 V -38.12 M 0 44 V 55 M -45 -10 H -28 M -45 -4 H -34 M 34 28 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -28 -26 A 28 14 0 0 1 28 -26 V 30 A 28 14 0 0 1 -28 30 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -28 -15 H -34 V 30 A 34 20 0 0 0 -6.6 49.5 M 6.6 49.5 A 34 20 0 0 0 34 30 V -15 H 28 M 0 -55 V 20 M -10 -55 H 10" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -16 16 L 0 20 L 16 16 V 24 L 0 20 L -16 24 Z" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="79" text-anchor="middle" class="lt-pid-equip-tag">AG-701 Agitated Dosing</text>
+<text x="0" y="93" text-anchor="middle" class="lt-pid-equip-tag">Tank</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-701" data-type="pump_diaphragm" transform="translate(611.5826 149)"><g><g><path d="M -35 0 H -29 M 29 0 H 35" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M 0 -29 C -15.47 -13.53 -15.47 13.53 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">P-701 Metering Pump</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="C-701" data-type="vessel_v" transform="translate(830.6410000000001 149)"><g><g><path d="M 0 -65 V -62 H -14.5 V -53.06 M 0 -62 H 14.5 V -53.06 M 0 55 V 65 M -35 0 H -29 M 29 0 H 35 M -35 -25 H -29 M 29 25 H 35" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -29 -40.5 A 29 14.5 0 0 1 29 -40.5 V 40.5 A 29 14.5 0 0 1 -29 40.5 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="89" text-anchor="middle" class="lt-pid-equip-tag">C-701 Calibration Column</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-701" data-type="valve_gate" transform="translate(1065.1168 149)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">XV-701 Calibration</text>
+<text x="0" y="49" text-anchor="middle" class="lt-pid-equip-tag">Isolation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="FV-701" data-type="valve_control" transform="translate(1303.1168 149)"><g><g><g transform="translate(0 12)"><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<g class="lt-pid-actuator" data-actuator="diaphragm" data-fail="FC"><line x1="0" y1="12" x2="0" y2="-4.1" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<path d="M -14 -13.2 A 14 9.8 0 0 1 14 -13.2 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<line x1="0" y1="-4.1" x2="0" y2="-13.2" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<line x1="0" y1="-34" x2="0" y2="-23" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FC</text></g></g>
+<text x="0" y="62" text-anchor="middle" class="lt-pid-equip-tag">FV-701 Dosing Control</text>
+<text x="0" y="76" text-anchor="middle" class="lt-pid-equip-tag">Valve</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="NRV-701" data-type="valve_check" transform="translate(1541.1168 149)"><g><g><g><line x1="-18" y1="0" x2="-12.1" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="12.1" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -12.1 -7.7 L -12.1 7.7 L 0 0 Z M 12.1 -7.7 L 12.1 7.7 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g>
+<g class="lt-pid-tray-line"><circle cx="-12.1" cy="-7.7" r="2.475" fill="#1d1d1d" stroke="none"/></g></g>
+<text x="0" y="35" text-anchor="middle" class="lt-pid-equip-tag">NRV-701 Injection Check</text>
+<text x="0" y="49" text-anchor="middle" class="lt-pid-equip-tag">Valve</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="V-702" data-type="vessel_h" transform="translate(1779.1168 149)"><g><g><path d="M -65 0 H -57 M 57 0 H 65 M 0 -35 H -32 V -25 M 0 -35 H 32 V -25 M 32 25 V 35 H 0" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -44.5 -25 H 44.5 A 12.5 25 0 0 1 44.5 25 H -44.5 A 12.5 25 0 0 1 -44.5 -25 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="59" text-anchor="middle" class="lt-pid-equip-tag">V-702 Process Mixing</text>
+<text x="0" y="73" text-anchor="middle" class="lt-pid-equip-tag">Header</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="phSignal"><path d="M 1779.1168 260 L 1541.1168 260 L 1541.1168 70 L 1303.1168 70" class="lt-pid-electric lt-pid-line-path" data-line-id="phSignal" data-service=""/></g>
+<g class="lt-pid-line" data-id="dosingCommand"><path d="M 1303.1168 70 L 1303.1168 115" class="lt-pid-pneumatic lt-pid-line-path" data-line-id="dosingCommand" data-service=""/>
+<line x1="1299.1168" y1="84" x2="1307.1168" y2="92" class="lt-pid-pneumatic-tick"/>
+<line x1="1299.1168" y1="110" x2="1307.1168" y2="118" class="lt-pid-pneumatic-tick"/></g>
+<g class="lt-pid-line" data-id="calibrationSignal"><path d="M 830.6410000000001 290 L 830.6410000000001 70" class="lt-pid-electric lt-pid-line-path" data-line-id="calibrationSignal" data-service=""/></g>
+<g><path d="M 1779.1168 260 L 1779.1168 192 L 1779.1168 192 L 1779.1168 184" class="lt-pid-electric"/></g>
+<g><path d="M 1303.1168 84 L 1303.1168 84 L 1303.1168 111" class="lt-pid-pneumatic"/></g>
+<g><path d="M 830.6410000000001 290 L 830.6410000000001 222 L 830.6410000000001 222 L 830.6410000000001 214" class="lt-pid-electric"/></g>
+<g><path d="M 830.6410000000001 70 L 830.6410000000001 222 L 830.6410000000001 222 L 830.6410000000001 214" class="lt-pid-electric"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="AT-701" data-category="field_discrete" transform="translate(1779.1168 260)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">AT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">701</text></g></g>
+<g class="lt-inst" data-tag="AIC-701" data-category="cr_shared" transform="translate(1303.1168 70)"><g class="lt-inst-symbol"><rect x="-14" y="-14" width="28" height="28" class="lt-inst-body"/>
+<circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">AIC</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">701</text></g></g>
+<g class="lt-inst" data-tag="FT-701" data-category="field_discrete" transform="translate(830.6410000000001 290)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">FT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">701</text></g></g>
+<g class="lt-inst" data-tag="FI-701" data-category="cr_discrete" transform="translate(830.6410000000001 70)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">FI</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">701</text></g></g></g></svg>

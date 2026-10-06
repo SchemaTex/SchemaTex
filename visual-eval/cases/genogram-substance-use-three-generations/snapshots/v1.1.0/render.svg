@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 550.3397518056224 630" class="schematex-diagram schematex-genogram" width="550.3397518056224" height="630"><title>Genogram: Morris Family · Substance Use Pattern</title>
+<desc>Genogram diagram with 7 individuals across 3 generations</desc>
+<defs><clipPath id="schematex-genogram-clip-half-left-rect" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-left-circle" clipPathUnits="objectBoundingBox"><rect x="0" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-rect" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath>
+<clipPath id="schematex-genogram-clip-half-right-circle" clipPathUnits="objectBoundingBox"><rect x="0.5" y="0" width="0.5" height="1"/></clipPath></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="275.1698759028112" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">Morris Family · Substance Use Pattern</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="arthur" data-to="joan"><path d="M 236.1597518056223 60 L 344.83975180562237 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="joan"><path d="M 290.49975180562234 60 L 290.49975180562234 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="joan"><path d="M 170.49975180562234 141 L 445.2997518056224 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+joan" data-to="peter"><path d="M 170.49975180562234 141 L 170.49975180562234 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+joan" data-to="linda"><path d="M 445.2997518056224 141 L 445.2997518056224 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="peter" data-to="susan"><path d="M 190.49975180562234 226 L 287.8997518056224 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter" data-to="susan"><path d="M 239.19975180562236 226 L 239.19975180562236 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter" data-to="susan"><path d="M 170.49975180562234 307 L 305.97975180562236 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter+susan" data-to="caleb"><path d="M 170.49975180562234 307 L 170.49975180562234 368" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="peter+susan" data-to="emily"><path d="M 305.97975180562236 307 L 305.97975180562236 372" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-cutoff" data-from="caleb" data-to="peter" data-relationship-type="cutoff"><path d="M 146.49975180562234 392 L 141.12101215481835 390.6106758118616 L 136.9246813326698 386.3821299009334 L 132.72835051052124 382.15358399000525 L 128.5320196883727 377.925038079077 L 124.53744674647106 373.5099437977796 L 120.65008317305714 368.99572212202685 L 116.76271959964322 364.48150044627414 L 112.96092331547526 359.8991827307041 L 109.43461663296762 355.0976252676882 L 105.90830995046 350.29606780467236 L 102.41443959343547 345.4727765134707 L 99.31470406214699 340.38539678262606 L 96.21496853085853 335.2980170517814 L 93.19903917601945 330.1650180804248 L 90.6091513280666 324.80010672749756 L 88.01926348011372 319.43519537457036 L 85.733530873786 313.9439206079846 L 83.75936309405267 308.32320406405495 L 82.46210436464467 304.6297370360774" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 79.10373030024235 289.01298175705614 L 78.89176164214209 285.10406270113214 L 78.56918782887831 279.1554713531962 L 79.08314402659511 273.2365652917685 L 79.82656148845177 267.3258019428306 L 81.63573393641474 261.6621087918798 L 83.69996437295622 256.089324229925 L 86.84072923212703 251.02717162563314 L 90.36684051350382 246.27061112107913 L 94.58033529801348 242.0591678303947 L 99.26169593339426 238.4315759415596 L 104.29010867294471 235.2370715652176 L 109.67450824361855 232.74676352085453 L 115.22837658921543 230.5916906010863 L 120.95126041358805 229.01087743755994 L 126.78707106206777 227.81375298085868 L 132.6538254529116 226.85000879236316 L 138.59996211851026 226.4849722958804 L 144.54609878410892 226.11993579939764 L 150.49975180562234 226" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 76.80112981973339 306.6180446586214 L 88.12307890955596 302.64142941353344" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 73.11253257028149 289.3378659833766 L 85.0949280302032 288.68809753073566" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="caleb" data-to="susan" data-relationship-type="close"><path d="M 146.49975180562234 394.5 L 139.4505599745288 392.9123488962481 L 134.56685747000512 389.47905968180737 L 129.6831549654814 386.04577046736665 L 124.79945246095771 382.61248125292593 L 119.915749956434 379.1791920384852 L 115.03204745191032 375.7459028240445 L 110.29724064777076 371.1552540684292 L 106.51744539791699 366.5345211339405 L 102.73765014806321 361.91378819945174 L 98.95785489820942 357.293055264963 L 95.17805964835564 352.6723223304743 L 91.96096157362574 346.857720959056 L 89.69336542918542 341.33539964384755 L 87.42576928474509 335.81307832863916 L 85.15817314030475 330.2907570134307 L 82.802473228783 324.06408377043255 L 82.16534949315546 318.12842051110033 L 81.52822575752792 312.19275725176817 L 80.89110202190037 306.257093992436 L 80.25397828627283 300.3214307331038 L 80.45173386621627 293.7886909288952 L 81.27060875008785 287.87536116409683 L 82.0894836339594 281.9620313992985 L 82.90835851783098 276.0487016345001 L 83.72723340170255 270.13537186970177 L 85.82751539120305 264.01168810808156 L 87.82538468405107 258.3861620641119 L 89.82325397689908 252.76063602014221 L 91.8211232697471 247.13510997617257 L 94.22808547473514 241.22209039319247 L 97.1630313139258 236.0236177421436 L 100.09797715311647 230.8251450910947 L 103.03292299230715 225.6266724400458 L 105.96786883149781 220.42819978899692 L 109.40781172235415 215.10290280690538 L 113.10959482099858 210.4194396786982 L 116.81137791964301 205.73597655049102 L 120.51316101828745 201.0525134222838 L 124.21494411693189 196.3690502940766 L 128.47118021594721 191.6865944810423 L 132.831368656761 187.60899938794148 L 137.19155709757473 183.53140429484066 L 141.5517455383885 179.45380920173983 L 145.91193397920225 175.376214108639 L 150.92463928454893 171.48332471492105 L 155.87294471640467 168.14381901261225 L 160.8212501482604 164.80431331030346 L 165.76955558011613 161.4648076079947 L 170.71786101197188 158.1253019056859 L 176.50887461377363 155.37950711008315 L 181.97760960089366 152.98556420697636 L 187.4463445880137 150.59162130386957 L 192.91507957513372 148.1976784007628 L 199.04705370193145 146.08500606535893 L 204.90660231469522 144.9432026508676 L 210.766150927459 143.80139923637626 L 216.62569954022277 142.65959582188492 L 223.17182979631625 141.630654993963 L 229.12246949351342 142.10805647786015 L 235.07310919071057 142.58545796175733 L 241.0237488879077 143.06285944565448 L 246.97438858510483 143.54026092955164 L 253.2518082620399 146.02802906252748 L 258.7520186685522 148.34874241552478 L 264.25222907506446 150.66945576852206 L 269.7524394815768 152.99016912151936 L 275.1016696233134 157.0763384124665 L 279.56414207141853 161.0417343110608 L 284.02661451952366 165.00713020965506 L 288.48908696762885 168.97252610824935 L 293.1752710505141 173.6828651880036 L 296.33578113192476 178.74736921189248 L 299.49629121333555 183.81187323578146 L 302.65680129474623 188.87637725967033 L 305.81731137615697 193.94088128355924 L 308.9778214575677 199.0053853074482 L 310.3997518056224 206.00000000000006" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 146.49975180562234 389.5 L 142.32612756086132 388.8219808130026 L 137.44242505633764 385.3886915985619 L 132.55872255181393 381.95540238412116 L 127.67502004729026 378.52211316968044 L 122.79131754276655 375.0888239552397 L 117.90761503824287 371.655534740799 L 114.16735732644372 367.989468716663 L 110.38756207658994 363.36873578217427 L 106.60776682673617 358.74800284768554 L 102.82797157688238 354.1272699131968 L 99.0481763270286 349.5065369787081 L 96.58620785597644 344.9584851054557 L 94.31861171153612 339.43616379024724 L 92.05101556709579 333.91384247503885 L 89.78341942265546 328.3915211598304 L 87.77391600736671 323.53045777849815 L 87.13679227173917 317.59479451916593 L 86.49966853611163 311.65913125983377 L 85.86254480048407 305.7234680005016 L 85.22542106485653 299.7878047411694 L 85.40447112104133 294.4745434528885 L 86.2233460049129 288.5612136880901 L 87.04222088878446 282.6478839232918 L 87.86109577265603 276.7345541584934 L 88.6799706565276 270.82122439369505 L 90.53920128124359 265.68501296404736 L 92.53707057409162 260.0594869200777 L 94.53493986693962 254.43396087610802 L 96.53280915978765 248.80843483213837 L 98.58209077988607 243.680268133454 L 101.51703661907673 238.48179548240515 L 104.45198245826741 233.28332283135623 L 107.38692829745808 228.08485018030734 L 110.32187413664874 222.88637752925845 L 113.33046837085621 218.2033487132167 L 117.03225146950064 213.51988558500955 L 120.73403456814506 208.83642245680235 L 124.4358176667895 204.15295932859513 L 128.13760076543394 199.46949620038794 L 131.8863892320101 195.33849088929415 L 136.24657767282386 191.26089579619332 L 140.6067661136376 187.1833007030925 L 144.96695455445138 183.10570560999167 L 149.32714299526512 179.02811051689085 L 153.72165804764668 175.6278012848728 L 158.66996347950243 172.288295582564 L 163.61826891135814 168.9487898802552 L 168.5665743432139 165.60928417794642 L 173.51487977506963 162.26977847563762 L 178.513932791439 159.95987191042136 L 183.98266777855903 157.56592900731457 L 189.45140276567906 155.17198610420778 L 194.9201377527991 152.778043201101 L 200.00337654093525 150.99269866245584 L 205.86292515369902 149.8508952479645 L 211.7224737664628 148.70909183347317 L 217.58202237922657 147.56728841898183 L 222.77197993019146 146.61464135876776 L 228.72261962738864 147.0920428426649 L 234.67325932458579 147.5694443265621 L 240.6238990217829 148.04684581045925 L 246.57453871898005 148.5242472943564 L 251.3080838397048 150.63475624893846 L 256.8082942462171 152.95546960193576 L 262.30850465272937 155.27618295493303 L 267.8087150592417 157.59689630793034 L 271.7804335721783 160.8139032737954 L 276.24290602028344 164.7792991723897 L 280.7053784683886 168.74469507098397 L 285.16785091649376 172.71009096957826 L 288.93347180135936 176.32996532397695 L 292.09398188277004 181.39446934786582 L 295.25449196418083 186.4589733717548 L 298.4150020455915 191.52347739564368 L 301.57551212700224 196.58798141953258 L 304.736022208413 201.65248544342154 L 305.3997518056224 206.00000000000006" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-conflict" data-from="peter" data-to="susan" data-relationship-type="conflict"><path d="M 190.49975180562234 226 L 197.87681374533702 228.78741502475376 L 199.48902749685755 219.0494433938937 L 208.21475165611199 223.69219686088917 L 210.01571190164725 213.98597601479014 L 218.51476219354038 218.9413892571835 L 220.97500742373862 209.32771986258996 L 228.88196575784374 215.1361949154222 L 232.75623791838981 206.07719891330527 L 238.9590762454551 213.49275284418385 L 245.64326569285492 206.07719891330527 L 249.517537853401 215.13619491542218 L 257.4244961875061 209.32771986258996 L 259.88474141770433 218.94138925718346 L 268.38379170959746 213.98597601479014 L 270.18475195513275 223.69219686088914 L 278.91047611438717 219.0494433938937 L 280.5226898659077 228.78741502475376 L 287.8997518056224 226" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-male" data-individual-id="arthur" data-status="deceased" transform="translate(216.1597518056223, 60)"><title>Arthur Morris (1945-2015)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-alcohol-use" clip-path="url(#schematex-genogram-clip-half-left-rect)" fill="#FFB300"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-depression" clip-path="url(#schematex-genogram-clip-half-right-rect)" fill="#5C6BC0"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-outline"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="on-dark">70</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="joan" data-status="alive" transform="translate(364.83975180562237, 60)"><title>Joan Morris (1947)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">79</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="peter" data-status="alive" transform="translate(170.49975180562234, 226)"><title>Peter Morris (1970)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-alcohol-use" fill="#FFB300"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-outline"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">56</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="susan" data-status="alive" transform="translate(307.8997518056224, 226)"><title>Susan Morris (1972)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">54</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="linda" data-status="alive" transform="translate(445.2997518056224, 226)"><title>Linda Morris (1973)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">53</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male schematex-genogram-index-person" data-individual-id="caleb" data-status="alive" transform="translate(170.49975180562234, 392)"><title>Caleb Morris (1996)</title>
+<rect x="-24" y="-24" width="48" height="48" class="schematex-genogram-index-border"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-fill schematex-genogram-condition-opioid-use" fill="#F4511E"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-condition-outline"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">30</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="emily" data-status="alive" transform="translate(305.97975180562236, 392)"><title>Emily Morris (1999)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">27</text></g></g>
+<g class="schematex-genogram-labels"><text x="216.1597518056223" y="98" class="schematex-genogram-label" data-individual-id="arthur">Arthur Morris (1945–2015)</text>
+<text x="364.83975180562237" y="98" class="schematex-genogram-label" data-individual-id="joan">Joan Morris (b. 1947)</text>
+<text x="170.49975180562234" y="264" class="schematex-genogram-label" data-individual-id="peter">Peter Morris (b. 1970)</text>
+<text x="307.8997518056224" y="264" class="schematex-genogram-label" data-individual-id="susan">Susan Morris (b. 1972)</text>
+<text x="445.2997518056224" y="264" class="schematex-genogram-label" data-individual-id="linda">Linda Morris (b. 1973)</text>
+<text x="170.49975180562234" y="430" class="schematex-genogram-label" data-individual-id="caleb">Caleb Morris (b. 1996)</text>
+<text x="305.97975180562236" y="430" class="schematex-genogram-label" data-individual-id="emily">Emily Morris (b. 1999)</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="caleb" data-to="peter"><line x1="98.85700322457727" y1="238.68867349825405" x2="98.85700322457727" y2="187.25604368945818" stroke="#94a3b8" stroke-width="1"/>
+<rect x="3.9999999999999787" y="171.25604368945818" width="114.20000000000002" height="16" fill="white" fill-opacity="0.9"/>
+<text x="61.09999999999999" y="182.25604368945818" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">No contact since 2023</text></g></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="554.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="136.45" y1="547" x2="144.45" y2="555" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="144.45" y1="547" x2="136.45" y2="555" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="159.45" y="554.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="572.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><path d="M 130.45 566.5 L 135.45 566.5 L 140.45 566.5 L 145.45 566.5 L 150.45 566.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 130.45 571.5 L 135.45 571.5 L 140.45 571.5 L 145.45 571.5 L 150.45 571.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><text x="159.45" y="572.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="conflict" data-legend-section="relationships"><path d="M 211.45 569 L 216.45 573 L 221.45 565 L 226.45 573 L 231.45 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/><text x="240.45" y="572.5" class="schematex-legend-label">Conflict</text></g>
+<g class="schematex-legend-row" data-legend-key="cutoff" data-legend-section="relationships"><path d="M 312.45 569 L 317.45 569 L 319.1166666666667 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 325.7833333333333 569 L 327.45 569 L 332.45 569" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 319.1166666666667 563 L 319.1166666666667 575" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><path d="M 325.7833333333333 563 L 325.7833333333333 575" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="cutoff" stroke-width="2"/><text x="341.45" y="572.5" class="schematex-legend-label">Cutoff</text></g>
+<text x="16" y="590.5" class="schematex-legend-section">CONDITIONS</text>
+<g class="schematex-legend-row" data-legend-key="alcohol-use" data-legend-section="conditions"><rect x="130.45" y="582" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="130.45" y="582" width="10" height="10" fill="#FFB300"/>
+<text x="159.45" y="590.5" class="schematex-legend-label">Alcohol Use</text></g>
+<g class="schematex-legend-row" data-legend-key="depression" data-legend-section="conditions"><rect x="251.45" y="582" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="261.45" y="582" width="10" height="10" fill="#5C6BC0"/>
+<text x="280.45" y="590.5" class="schematex-legend-label">Depression</text></g>
+<g class="schematex-legend-row" data-legend-key="opioid-use" data-legend-section="conditions"><rect x="365.45" y="582" width="20" height="10" fill="#F4511E" stroke="#334155"/>
+<text x="394.45" y="590.5" class="schematex-legend-label">Opioid Use</text></g>
+<text x="16" y="608.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="602" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="130.45" y="600" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="608.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

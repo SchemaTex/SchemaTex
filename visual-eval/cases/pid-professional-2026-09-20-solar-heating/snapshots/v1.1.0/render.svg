@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1856.9236" height="869" viewBox="0 0 1856.9236 869" class="lt-pid" data-diagram-type="pid"><title>P&amp;ID — Heizzentrale: Gas-Brennwertkessel, Pufferspeicher, Solar und zwei Mischheizkreise</title>
+<desc>ISA-5.1 / ISO 10628 P&amp;ID rendered by Schematex</desc>
+<defs><marker id="lt-pid-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#1d1d1d"/></marker>
+<style>
+.lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
+.lt-pid-equip-tag { font: 600 11px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-equip-tag-bg { fill: #ffffff; stroke: none; }
+.lt-pid-tray-line { stroke: #555; stroke-width: 1; fill: none; }
+.lt-pid-actuator-letter { font: 700 11px ui-monospace, monospace; fill: #1d1d1d; }
+.lt-pid-fail-position { font: 700 8px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-process { stroke: #1d1d1d; stroke-width: 2.6; fill: none; }
+.lt-pid-process-min { stroke: #1d1d1d; stroke-width: 1.5; fill: none; }
+.lt-pid-pneumatic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; }
+.lt-pid-electric { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.lt-pid-hydraulic { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 10 4; }
+.lt-pid-capillary { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 1 5; stroke-linecap: round; }
+.lt-pid-software { stroke: #6a6a6a; stroke-width: 1.3; fill: none; stroke-dasharray: 2 4; }
+.lt-pid-mechanical { stroke: #1d1d1d; stroke-width: 1.4; fill: none; stroke-dasharray: 3 2 1 2; }
+
+.lt-pid-pneumatic-tick { stroke: #1d1d1d; stroke-width: 1.2; }
+
+.lt-inst-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+.lt-inst-tag { font: 600 9.5px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-inst-cr-line { stroke: #1d1d1d; stroke-width: 1; }
+.lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
+.lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
+
+.lt-pid-line-path { fill: none; }
+.lt-pid-junction { fill: #1d1d1d; stroke: #ffffff; stroke-width: 0.8; }
+.lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
+.lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
+
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
+</style></defs>
+<text x="928.4618" y="22" class="lt-pid-title" text-anchor="middle">Heizzentrale: Gas-Brennwertkessel, Pufferspeicher, Solar und zwei Mischheizkreise</text>
+<g class="lt-pid-lines lt-pid-process-lines"><g class="lt-pid-line" data-id="l_kv"><path d="M 902.588 106 L 972.2469 106 L 972.2469 134 L 1041.9058 134" class="lt-pid-process lt-pid-line-path" data-line-id="l_kv" data-service="Kesselvorlauf"/></g>
+<g class="lt-pid-line" data-id="l_ks"><path d="M 1099.9058 112 L 1124.9058 112 L 1124.9058 755 L 551.588 755 L 551.588 163 L 614.588 163 L 614.588 181" class="lt-pid-process lt-pid-line-path" data-line-id="l_ks" data-service="Speicherladung Kessel"/></g>
+<g class="lt-pid-line" data-id="l_kr"><path d="M 614.588 271 L 614.588 281 L 782.588 281 L 782.588 154 L 802.588 154" class="lt-pid-process lt-pid-line-path" data-line-id="l_kr" data-service="Kesselrücklauf"/></g>
+<g class="lt-pid-line" data-id="l_s1"><path d="M 441.58799999999997 226 L 513.088 226 L 513.088 410 L 584.588 410" class="lt-pid-process lt-pid-line-path" data-line-id="l_s1" data-service="Solarkreis Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_s2"><path d="M 642.588 388 L 738.588 388 L 738.588 318 L 834.588 318" class="lt-pid-process lt-pid-line-path" data-line-id="l_s2" data-service="Solarkreis Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_s3"><path d="M 870.588 318 L 888.588 318 L 888.588 783 L 61.79399999999998 783 L 61.79399999999998 318 L 79.79399999999998 318" class="lt-pid-process lt-pid-line-path" data-line-id="l_s3" data-service="Solarkreis Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_s4"><path d="M 209.79399999999998 318 L 260.691 318 L 260.691 226 L 311.58799999999997 226" class="lt-pid-process lt-pid-line-path" data-line-id="l_s4" data-service="Solarkreis Rücklauf"/></g>
+<g class="lt-pid-line" data-id="l_sv"><path d="M 209.79399999999998 318 L 284.191 318 L 284.191 422 L 358.58799999999997 422" class="lt-pid-process-min lt-pid-line-path" data-line-id="l_sv" data-service="Sicherheitsabsperrung Solar"/></g>
+<g class="lt-pid-line" data-id="l_fw1"><path d="M 614.588 181 L 614.588 171 L 802.588 171 L 802.588 502 L 822.588 502" class="lt-pid-process lt-pid-line-path" data-line-id="l_fw1" data-service="Ladekreis Frischwasserstation"/></g>
+<g class="lt-pid-line" data-id="l_fw2"><path d="M 880.588 480 L 967.2469 480 L 967.2469 330 L 1053.9058 330" class="lt-pid-process lt-pid-line-path" data-line-id="l_fw2" data-service="Ladekreis Frischwasserstation"/></g>
+<g class="lt-pid-line" data-id="l_fw3"><path d="M 1089.9058 330 L 1111.9058 330 L 1111.9058 811 L 293.58799999999997 811 L 293.58799999999997 594 L 311.58799999999997 594" class="lt-pid-process lt-pid-line-path" data-line-id="l_fw3" data-service="Ladekreis Frischwasserstation"/></g>
+<g class="lt-pid-line" data-id="l_fw4"><path d="M 441.58799999999997 594 L 461.58799999999997 594 L 461.58799999999997 281 L 614.588 281 L 614.588 271" class="lt-pid-process lt-pid-line-path" data-line-id="l_fw4" data-service="Ladekreis Rücklauf"/></g>
+<g class="lt-pid-line" data-id="l_tw1"><path d="M 144.79399999999998 547 L 144.79399999999998 557 L 291.58799999999997 557 L 291.58799999999997 594 L 311.58799999999997 594" class="lt-pid-process-min lt-pid-line-path" data-line-id="l_tw1" data-service="Trinkwasser kalt"/></g>
+<g class="lt-pid-line" data-id="l_tw2"><path d="M 441.58799999999997 594 L 461.58799999999997 594 L 461.58799999999997 539 L 614.588 539 L 614.588 549" class="lt-pid-process-min lt-pid-line-path" data-line-id="l_tw2" data-service="Trinkwasser warm"/></g>
+<g class="lt-pid-line" data-id="l_hv1"><path d="M 614.588 181 L 614.588 171 L 767.588 171 L 767.588 686 L 787.588 686" class="lt-pid-process lt-pid-line-path" data-line-id="l_hv1" data-service="Heizungsvorlauf"/></g>
+<g class="lt-pid-line" data-id="l_hv2"><path d="M 1798.8236000000002 410 L 1816.8236000000002 410 L 1816.8236000000002 839 L 614.588 839 L 614.588 271" class="lt-pid-process lt-pid-line-path" data-line-id="l_hv2" data-service="Heizungsrücklauf"/></g>
+<g class="lt-pid-line" data-id="l_hk1"><path d="M 917.588 686 L 979.7469 686 L 979.7469 502 L 1041.9058 502" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk1" data-service="HK1 Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_hk2"><path d="M 1099.9058 480 L 1178.2147 480 L 1178.2147 330 L 1256.5236 330" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk2" data-service="HK1 Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_hk3"><path d="M 1292.5236 330 L 1361.6736 330 L 1361.6736 318 L 1430.8236000000002 318" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk3" data-service="HK1 Vorlauf gemischt"/></g>
+<g class="lt-pid-line" data-id="l_hk4"><path d="M 1560.8236000000002 318 L 1614.8236000000002 318 L 1614.8236000000002 410 L 1668.8236000000002 410" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk4" data-service="HK1 Rücklauf"/></g>
+<g class="lt-pid-line" data-id="l_hk5"><path d="M 917.588 686 L 1041.9058 686" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk5" data-service="HK2 Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_hk6"><path d="M 1099.9058 664 L 1178.2147 664 L 1178.2147 514 L 1256.5236 514" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk6" data-service="HK2 Vorlauf"/></g>
+<g class="lt-pid-line" data-id="l_hk7"><path d="M 1292.5236 514 L 1361.6736 514 L 1361.6736 502 L 1430.8236000000002 502" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk7" data-service="HK2 Vorlauf gemischt"/></g>
+<g class="lt-pid-line" data-id="l_hk8"><path d="M 1560.8236000000002 502 L 1614.8236000000002 502 L 1614.8236000000002 410 L 1668.8236000000002 410" class="lt-pid-process lt-pid-line-path" data-line-id="l_hk8" data-service="HK2 Rücklauf"/></g></g>
+<g class="lt-pid-junctions"><circle cx="614.588" cy="181" r="3.6" class="lt-pid-junction"/>
+<circle cx="614.588" cy="271" r="3.6" class="lt-pid-junction"/>
+<circle cx="209.79399999999998" cy="318" r="3.6" class="lt-pid-junction"/>
+<circle cx="311.58799999999997" cy="594" r="3.6" class="lt-pid-junction"/>
+<circle cx="441.58799999999997" cy="594" r="3.6" class="lt-pid-junction"/>
+<circle cx="917.588" cy="686" r="3.6" class="lt-pid-junction"/>
+<circle cx="1668.8236000000002" cy="410" r="3.6" class="lt-pid-junction"/></g>
+<g class="lt-pid-equipment"><g class="lt-pid-equip-wrap" data-id="WT-101" data-type="hx_shell_tube" transform="translate(144.79399999999998 318)"><g><g><path d="M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-59" y="-25" width="118" height="50" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Solar-WT Speicher unten</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="CW-101" data-type="tank_atm" transform="translate(144.79399999999998 502)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">Trinkwasser kalt</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="KOL-101" data-type="hx_shell_tube" transform="translate(376.58799999999997 226)"><g><g><path d="M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-59" y="-25" width="118" height="50" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Thermische</text>
+<text x="0" y="68" text-anchor="middle" class="lt-pid-equip-tag">Solarkollektoren</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="PSV-101" data-type="valve_psv" transform="translate(376.58799999999997 410)"><g><g><path d="M -18 12 H 0 V 6.96 M 14.96 -8 H 18" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -9.52 6.96 L 9.52 6.96 L 0 -8 Z M 14.96 -17.52 L 14.96 1.52 L 0 -8 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M 0 -8 L 0 -16 L -8.84 -19 L 8.84 -22 L -8.84 -25 L 8.84 -28 L 0 -29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Sicherheitsventil Solar</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="WT-102" data-type="hx_shell_tube" transform="translate(376.58799999999997 594)"><g><g><path d="M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-59" y="-25" width="118" height="50" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Frischwasserstation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="SP-101" data-type="tank_atm" transform="translate(614.588 226)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">Kombi- und Pufferspeicher</text>
+<text x="0" y="83" text-anchor="middle" class="lt-pid-equip-tag">800 l</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-103" data-type="pump_centrifugal" transform="translate(614.588 410)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Solar-Umwälzpumpe</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="WW-101" data-type="tank_atm" transform="translate(614.588 594)"><g><g><path d="M 0 -45 V -35 M 0 35 V 45 M -45 0 H -40 M 40 0 H 45" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -40 -22 V 35 H 40 V -22 A 40 13 0 0 0 -40 -22 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="69" text-anchor="middle" class="lt-pid-equip-tag">Warmwasser Zapfung</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="K-101" data-type="boiler" transform="translate(852.588 134)"><g><g><path d="M -50 20 H -45 V -16 H -39 M 39 -29 H 50 V -28 M -50 38 H -39 M 0 -50 V -45 M 0 45 V 50" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-39" y="-45" width="78" height="90" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -39 -16 H -24.7 V 9.6 H 24.7 V -3.2 H -11.7 V -29 H 39 M -39 38 H -10" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -7.8 32.8 C -15.6 22.5 -3.9 19.9 -2.6 12.9 C 5.2 19.9 2.6 23.8 8.45 27 C 14.95 36.6 3.9 41.1 0 40.5 C -4.55 40.5 -8.45 37.3 -7.8 32.8 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="74" text-anchor="middle" class="lt-pid-equip-tag">Gas-Brennwertkessel</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="V-101" data-type="valve_globe" transform="translate(852.588 318)"><g><g><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g>
+<g class="lt-pid-valve-body"><circle cx="0" cy="0" r="3.5" fill="#1d1d1d" stroke="none"/></g></g>
+<text x="0" y="38" text-anchor="middle" class="lt-pid-equip-tag">Durchflussbegrenzer</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-102" data-type="pump_centrifugal" transform="translate(852.588 502)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Ladepumpe</text>
+<text x="0" y="68" text-anchor="middle" class="lt-pid-equip-tag">Frischwasserstation</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HV-101" data-type="vessel_h" transform="translate(852.588 686)"><g><g><path d="M -65 0 H -57 M 57 0 H 65 M 0 -35 H -32 V -25 M 0 -35 H 32 V -25 M 32 25 V 35 H 0" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -44.5 -25 H 44.5 A 12.5 25 0 0 1 44.5 25 H -44.5 A 12.5 25 0 0 1 -44.5 -25 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="59" text-anchor="middle" class="lt-pid-equip-tag">Heizkreisverteiler Vorlauf</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-101" data-type="pump_centrifugal" transform="translate(1071.9058 134)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Kesselpumpe</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="XV-101" data-type="valve_control" transform="translate(1071.9058 318)"><g><g><g transform="translate(0 12)"><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<g class="lt-pid-actuator" data-actuator="motor" data-fail="FL"><line x1="0" y1="12" x2="0" y2="-4.1" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<circle cx="0" cy="-13.2" r="9.1" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<text x="0" y="-9.2" text-anchor="middle" class="lt-pid-actuator-letter" font-size="11" font-weight="700">M</text>
+<line x1="0" y1="-34" x2="0" y2="-22.3" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g></g>
+<text x="0" y="62" text-anchor="middle" class="lt-pid-equip-tag">Umschaltventil</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-104" data-type="pump_centrifugal" transform="translate(1071.9058 502)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Heizkreispumpe HK1</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="P-105" data-type="pump_centrifugal" transform="translate(1071.9058 686)"><g><g><path d="M -30 0 H -29 M 29 0 H 33 V -22 H 28" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<circle cx="0" cy="0" r="29" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M 0 -29 L 29 0 L 0 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/>
+<path d="M -29 0 H 29" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Heizkreispumpe HK2</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="M-101" data-type="valve_control" transform="translate(1274.5236 318)"><g><g><g transform="translate(0 12)"><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<g class="lt-pid-actuator" data-actuator="motor" data-fail="FL"><line x1="0" y1="12" x2="0" y2="-4.1" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<circle cx="0" cy="-13.2" r="9.1" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<text x="0" y="-9.2" text-anchor="middle" class="lt-pid-actuator-letter" font-size="11" font-weight="700">M</text>
+<line x1="0" y1="-34" x2="0" y2="-22.3" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g></g>
+<text x="0" y="62" text-anchor="middle" class="lt-pid-equip-tag">3-Wege-Mischer HK1</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="M-102" data-type="valve_control" transform="translate(1274.5236 502)"><g><g><g transform="translate(0 12)"><g><line x1="-18" y1="0" x2="-15.4" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<line x1="15.4" y1="0" x2="18" y2="0" class="lt-pid-process" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -15.4 -9.8 L -15.4 9.8 L 0 0 Z M 15.4 -9.8 L 15.4 9.8 L 0 0 Z" class="lt-pid-valve-body" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.4" stroke-linejoin="round"/></g></g>
+<g class="lt-pid-actuator" data-actuator="motor" data-fail="FL"><line x1="0" y1="12" x2="0" y2="-4.1" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<circle cx="0" cy="-13.2" r="9.1" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<text x="0" y="-9.2" text-anchor="middle" class="lt-pid-actuator-letter" font-size="11" font-weight="700">M</text>
+<line x1="0" y1="-34" x2="0" y2="-22.3" class="lt-pid-tray-line" stroke="#555" stroke-width="1"/>
+<text x="18" y="-14" text-anchor="start" class="lt-pid-fail-position">FL</text></g></g>
+<text x="0" y="62" text-anchor="middle" class="lt-pid-equip-tag">3-Wege-Mischer HK2</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HK-101" data-type="hx_shell_tube" transform="translate(1495.8236000000002 318)"><g><g><path d="M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-59" y="-25" width="118" height="50" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Heizkreis 1</text>
+<text x="0" y="68" text-anchor="middle" class="lt-pid-equip-tag">Fussbodenheizung</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HK-102" data-type="hx_shell_tube" transform="translate(1495.8236000000002 502)"><g><g><path d="M -65 0 H -59 M 59 0 H 65 M 0 -30 V -25 M 0 25 V 30" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<rect x="-59" y="-25" width="118" height="50" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/>
+<path d="M -44.84 -25 V 25 M 44.84 -25 V 25 M -44.84 -15 H 44.84 M -44.84 -5 H 44.84 M -44.84 5 H 44.84 M -44.84 15 H 44.84" class="lt-pid-tray-line" fill="none" stroke="#555" stroke-width="1"/></g>
+<text x="0" y="54" text-anchor="middle" class="lt-pid-equip-tag">Heizkreis 2 Radiatoren</text></g></g>
+<g class="lt-pid-equip-wrap" data-id="HV-102" data-type="vessel_h" transform="translate(1733.8236000000002 410)"><g><g><path d="M -65 0 H -57 M 57 0 H 65 M 0 -35 H -32 V -25 M 0 -35 H 32 V -25 M 32 25 V 35 H 0" class="lt-pid-process" fill="none" stroke="#1d1d1d" stroke-width="2.6"/>
+<path d="M -44.5 -25 H 44.5 A 12.5 25 0 0 1 44.5 25 H -44.5 A 12.5 25 0 0 1 -44.5 -25 Z" class="lt-pid-equip" fill="#ffffff" stroke="#1d1d1d" stroke-width="1.6"/></g>
+<text x="0" y="59" text-anchor="middle" class="lt-pid-equip-tag">Heizkreisverteiler</text>
+<text x="0" y="73" text-anchor="middle" class="lt-pid-equip-tag">Rücklauf</text></g></g></g>
+<g class="lt-pid-lines lt-pid-signal-lines"><g class="lt-pid-line" data-id="s1"><path d="M 614.588 347 L 944.5558 347 L 944.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s1" data-service=""/></g>
+<g class="lt-pid-line" data-id="s2"><path d="M 654.588 347 L 964.5558 347 L 964.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s2" data-service=""/></g>
+<g class="lt-pid-line" data-id="s3"><path d="M 694.588 347 L 984.5558 347 L 984.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s3" data-service=""/></g>
+<g class="lt-pid-line" data-id="s4"><path d="M 852.588 260 L 1063.5558 260 L 1063.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s4" data-service=""/></g>
+<g class="lt-pid-line" data-id="s5"><path d="M 376.58799999999997 332 L 825.5558 332 L 825.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s5" data-service=""/></g>
+<g class="lt-pid-line" data-id="s6"><path d="M 738.588 429 L 1006.5558 429 L 1006.5558 70 L 1274.5236 70" class="lt-pid-electric lt-pid-line-path" data-line-id="s6" data-service=""/></g>
+<g class="lt-pid-line" data-id="s7"><path d="M 1274.5236 70 L 1158.2147 70 L 1158.2147 134 L 1041.9058 134" class="lt-pid-electric lt-pid-line-path" data-line-id="s7" data-service=""/></g>
+<g class="lt-pid-line" data-id="s8"><path d="M 1274.5236 70 L 1048.5558 70 L 1048.5558 502 L 822.588 502" class="lt-pid-electric lt-pid-line-path" data-line-id="s8" data-service=""/></g>
+<g class="lt-pid-line" data-id="s9"><path d="M 1274.5236 70 L 929.5558 70 L 929.5558 410 L 584.588 410" class="lt-pid-electric lt-pid-line-path" data-line-id="s9" data-service=""/></g>
+<g class="lt-pid-line" data-id="s10"><path d="M 1274.5236 70 L 1294.5236 70 L 1294.5236 274 L 1071.9058 274 L 1071.9058 284" class="lt-pid-electric lt-pid-line-path" data-line-id="s10" data-service=""/></g>
+<g class="lt-pid-line" data-id="s11"><path d="M 1274.5236 70 L 1274.5236 284" class="lt-pid-electric lt-pid-line-path" data-line-id="s11" data-service=""/></g>
+<g class="lt-pid-line" data-id="s12"><path d="M 1274.5236 70 L 1274.5236 468" class="lt-pid-electric lt-pid-line-path" data-line-id="s12" data-service=""/></g>
+<g><path d="M 614.588 347 L 614.588 279 L 614.588 279 L 614.588 271" class="lt-pid-electric"/></g>
+<g><path d="M 654.588 347 L 654.588 279 L 614.588 279 L 614.588 271" class="lt-pid-electric"/></g>
+<g><path d="M 694.588 347 L 694.588 279 L 614.588 279 L 614.588 271" class="lt-pid-electric"/></g>
+<g><path d="M 852.588 260 L 852.588 192 L 852.588 192 L 852.588 184" class="lt-pid-electric"/></g>
+<g><path d="M 376.58799999999997 332 L 376.58799999999997 264 L 376.58799999999997 264 L 376.58799999999997 256" class="lt-pid-electric"/></g>
+<g><path d="M 1274.5236 84 L 1274.5236 84 L 1274.5236 464" class="lt-pid-pneumatic"/></g></g>
+<g class="lt-pid-instruments"><g class="lt-inst" data-tag="TT-101" data-category="field_discrete" transform="translate(614.588 347)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g>
+<g class="lt-inst" data-tag="TT-102" data-category="field_discrete" transform="translate(654.588 347)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">102</text></g></g>
+<g class="lt-inst" data-tag="TT-103" data-category="field_discrete" transform="translate(694.588 347)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">103</text></g></g>
+<g class="lt-inst" data-tag="TT-104" data-category="field_discrete" transform="translate(852.588 260)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">104</text></g></g>
+<g class="lt-inst" data-tag="TT-105" data-category="field_discrete" transform="translate(376.58799999999997 332)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">TT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">105</text></g></g>
+<g class="lt-inst" data-tag="FT-101" data-category="field_discrete" transform="translate(738.588 429)"><g class="lt-inst-symbol"><circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">FT</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g>
+<g class="lt-inst" data-tag="R-101" data-category="cr_shared" transform="translate(1274.5236 70)"><g class="lt-inst-symbol"><rect x="-14" y="-14" width="28" height="28" class="lt-inst-body"/>
+<circle cx="0" cy="0" r="14" class="lt-inst-body"/>
+<line x1="-14" y1="0" x2="14" y2="0" class="lt-inst-cr-line"/>
+<text x="0" y="-3" text-anchor="middle" class="lt-inst-tag">R</text>
+<text x="0" y="9" text-anchor="middle" class="lt-inst-tag">101</text></g></g></g></svg>

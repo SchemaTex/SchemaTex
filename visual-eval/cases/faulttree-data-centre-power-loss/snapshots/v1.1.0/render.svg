@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="886" height="783" viewBox="0 0 886 783" role="img" aria-label="Data centre critical power loss" data-diagram-type="faulttree"><title>Data centre critical power loss</title>
+<desc>Fault tree for &quot;Critical IT load de-energised&quot;: 1 top, 3 intermediate, 5 basic. 3 minimal cut sets: {UPS_ROOM_FIRE}, {GENERATOR_FAIL, UTILITY_FAIL}, {UPS_A_FAIL, UPS_B_FAIL}. Single point of failure: UPS_ROOM_FIRE. P(top) = 8.64e-4 (exact).</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="886" height="783" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="423" y="22" class="sx-ft-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Data centre critical power loss</text>
+<rect x="396" y="403" width="56" height="56" rx="6" class="sx-ft-cutset" data-cutset="UPS_ROOM_FIRE" data-cutset-index="0" data-order="1" data-spof="true" data-cutset-prob="0.0005"/>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="UPS_OUTPUT_LOSS#1"><path d="M 484.4 182 L 484.4 213 L 301 213 L 301 244" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="DISTRIBUTION_LOSS#6"><path d="M 484.4 182 L 484.4 213 L 667.9 213 L 667.9 244" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="UPS_OUTPUT_LOSS#1" data-to="BOTH_UPS_FAIL#2"><path d="M 301 344 L 301 375 L 178 375 L 178 406" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="UPS_OUTPUT_LOSS#1" data-to="UPS_ROOM_FIRE#5"><path d="M 301 344 L 301 377 L 424 377 L 424 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="BOTH_UPS_FAIL#2" data-to="UPS_A_FAIL#3"><path d="M 178 506 L 178 539 L 96 539 L 96 572" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="BOTH_UPS_FAIL#2" data-to="UPS_B_FAIL#4"><path d="M 178 506 L 178 539 L 260 539 L 260 572" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DISTRIBUTION_LOSS#6" data-to="UTILITY_FAIL#7"><path d="M 667.9 344 L 667.9 377 L 586.6 377 L 586.6 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="DISTRIBUTION_LOSS#6" data-to="GENERATOR_FAIL#8"><path d="M 667.9 344 L 667.9 377 L 749.1 377 L 749.1 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="TOP#0" data-gate="or"><line x1="484.4275" y1="144" x2="484.4275" y2="132" class="sx-ft-pin"/>
+<path d="M 457.4275 182 Q 484.4275 173 511.4275 182 Q 511.4275 153.5 484.4275 144 Q 457.4275 153.5 457.4275 182 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="UPS_OUTPUT_LOSS#1" data-gate="or"><line x1="301" y1="306" x2="301" y2="294" class="sx-ft-pin"/>
+<path d="M 274 344 Q 301 335 328 344 Q 328 315.5 301 306 Q 274 315.5 274 344 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="BOTH_UPS_FAIL#2" data-gate="and"><line x1="178" y1="468" x2="178" y2="456" class="sx-ft-pin"/>
+<path d="M 151 506 L 151 487 A 27 19 0 0 1 205 487 L 205 506 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="DISTRIBUTION_LOSS#6" data-gate="and"><line x1="667.855" y1="306" x2="667.855" y2="294" class="sx-ft-pin"/>
+<path d="M 640.855 344 L 640.855 325 A 27 19 0 0 1 694.855 325 L 694.855 344 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-event-g" data-id="TOP" data-role="top"><rect x="412.9275" y="82" width="143" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="484.4275" y="107" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="484.4275" dy="-7">Critical IT load</tspan><tspan x="484.4275" dy="14">de-energised</tspan></text></g>
+<g class="sx-ft-event-g" data-id="UPS_OUTPUT_LOSS" data-role="intermediate"><rect x="235" y="244" width="132" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="301" y="269" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="301" dy="-7">UPS output</tspan><tspan x="301" dy="14">unavailable</tspan></text></g>
+<g class="sx-ft-event-g" data-id="BOTH_UPS_FAIL" data-role="intermediate"><rect x="106.5" y="406" width="143" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="178" y="431" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="178" dy="-7">Both UPS modules</tspan><tspan x="178" dy="14">fail</tspan></text></g>
+<g class="sx-ft-event-g" data-id="UPS_A_FAIL" data-role="basic" data-prob="0.008"><circle cx="96" cy="593" r="21" class="sx-ft-basic"/>
+<text x="96" y="633" class="sx-ft-cap" text-anchor="middle">UPS_A_FAIL</text>
+<text x="96" y="646" class="sx-ft-cap" text-anchor="middle">UPS module A fails on</text>
+<text x="96" y="659" class="sx-ft-cap" text-anchor="middle">demand</text>
+<text x="96" y="672" class="sx-ft-prob" text-anchor="middle">p=0.008</text></g>
+<g class="sx-ft-event-g" data-id="UPS_B_FAIL" data-role="basic" data-prob="0.008"><circle cx="260" cy="593" r="21" class="sx-ft-basic"/>
+<text x="260" y="633" class="sx-ft-cap" text-anchor="middle">UPS_B_FAIL</text>
+<text x="260" y="646" class="sx-ft-cap" text-anchor="middle">UPS module B fails on</text>
+<text x="260" y="659" class="sx-ft-cap" text-anchor="middle">demand</text>
+<text x="260" y="672" class="sx-ft-prob" text-anchor="middle">p=0.008</text></g>
+<g class="sx-ft-event-g" data-id="UPS_ROOM_FIRE" data-role="basic" data-prob="0.0005"><circle cx="424" cy="431" r="21" class="sx-ft-basic"/>
+<text x="424" y="471" class="sx-ft-cap" text-anchor="middle">UPS_ROOM_FIRE</text>
+<text x="424" y="484" class="sx-ft-cap" text-anchor="middle">UPS room fire disables</text>
+<text x="424" y="497" class="sx-ft-cap" text-anchor="middle">both modules</text>
+<text x="424" y="510" class="sx-ft-prob" text-anchor="middle">p=5.00e-4</text></g>
+<g class="sx-ft-event-g" data-id="DISTRIBUTION_LOSS" data-role="intermediate"><rect x="585.855" y="244" width="164" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="667.855" y="269" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="667.855" dy="-7">Both upstream</tspan><tspan x="667.855" dy="14">sources unavailable</tspan></text></g>
+<g class="sx-ft-event-g" data-id="UTILITY_FAIL" data-role="basic" data-prob="0.015"><circle cx="586.5699999999999" cy="431" r="21" class="sx-ft-basic"/>
+<text x="586.5699999999999" y="471" class="sx-ft-cap" text-anchor="middle">UTILITY_FAIL</text>
+<text x="586.5699999999999" y="484" class="sx-ft-cap" text-anchor="middle">Utility feeder unavailable</text>
+<text x="586.5699999999999" y="497" class="sx-ft-prob" text-anchor="middle">p=0.015</text></g>
+<g class="sx-ft-event-g" data-id="GENERATOR_FAIL" data-role="basic" data-prob="0.02"><circle cx="749.14" cy="431" r="21" class="sx-ft-basic"/>
+<text x="749.14" y="471" class="sx-ft-cap" text-anchor="middle">GENERATOR_FAIL</text>
+<text x="749.14" y="484" class="sx-ft-cap" text-anchor="middle">Standby generator fails</text>
+<text x="749.14" y="497" class="sx-ft-cap" text-anchor="middle">to supply</text>
+<text x="749.14" y="510" class="sx-ft-prob" text-anchor="middle">p=0.02</text></g>
+<text x="484.4275" y="73" class="sx-ft-ptop" text-anchor="middle">P(top) = 8.64e-4 (exact)</text>
+<line x1="30" y1="710" x2="816" y2="710" class="sx-ft-pin"/>
+<text x="30" y="730" class="sx-ft-cap">3 minimal cut sets · 1 of order 1; 2 of order 2</text></g></svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-timing" viewBox="0 0 1100 170" width="1100" height="170" role="img" data-diagram-type="timing"><title>UART frame: 0x55, 8N1</title>
+<desc>Digital timing diagram with 3 signals</desc>
+<defs><pattern id="schematex-timing-xhatch" patternUnits="userSpaceOnUse" width="6" height="6"><rect x="0" y="0" width="6" height="6" fill="#f1f5f9"/>
+<path d="M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5" stroke="#475569" stroke-width="0.8"/></pattern>
+<style>.schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-timing-name { font: 12px monospace; fill: #0f172a; }
+.schematex-timing-name-activelow { text-decoration: overline; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: #0f172a; }
+.schematex-timing-wave { stroke: #334155; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: #334155; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: #0f172a; }
+.schematex-timing-unknown { stroke: #475569; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: #f1f5f9; stroke-width: 0.5; }
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.sx-native-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
+.sx-native-handle:hover { fill: #f1f5f9; stroke-width: 2; }</style></defs>
+<g class="schematex-timing-grid-g"><line x1="120" y1="40" x2="120" y2="158" class="schematex-timing-grid"/>
+<line x1="200" y1="40" x2="200" y2="158" class="schematex-timing-grid"/>
+<line x1="280" y1="40" x2="280" y2="158" class="schematex-timing-grid"/>
+<line x1="360" y1="40" x2="360" y2="158" class="schematex-timing-grid"/>
+<line x1="440" y1="40" x2="440" y2="158" class="schematex-timing-grid"/>
+<line x1="520" y1="40" x2="520" y2="158" class="schematex-timing-grid"/>
+<line x1="600" y1="40" x2="600" y2="158" class="schematex-timing-grid"/>
+<line x1="680" y1="40" x2="680" y2="158" class="schematex-timing-grid"/>
+<line x1="760" y1="40" x2="760" y2="158" class="schematex-timing-grid"/>
+<line x1="840" y1="40" x2="840" y2="158" class="schematex-timing-grid"/>
+<line x1="920" y1="40" x2="920" y2="158" class="schematex-timing-grid"/>
+<line x1="1000" y1="40" x2="1000" y2="158" class="schematex-timing-grid"/>
+<line x1="1080" y1="40" x2="1080" y2="158" class="schematex-timing-grid"/></g>
+<g class="schematex-timing-waves"><g transform="translate(120, 0)" data-signal="TX"><path class="schematex-timing-wave" d="M 0,46 L 80,46 L 80,70 L 160,70 L 160,46 L 240,46 L 240,70 L 320,70 L 320,46 L 400,46 L 400,70 L 480,70 L 480,46 L 560,46 L 560,70 L 640,70 L 640,46 L 720,46 L 720,70 L 800,70 L 800,46 L 880,46 L 960,46"/></g>
+<g transform="translate(120, 0)" data-signal="BIT"><rect x="0" y="82" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><rect x="880" y="82" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><path class="schematex-timing-bus" d="M 85,82 L 155,82 L 160,94 L 155,106 L 85,106 L 80,94 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 165,82 L 235,82 L 240,94 L 235,106 L 165,106 L 160,94 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 245,82 L 315,82 L 320,94 L 315,106 L 245,106 L 240,94 Z" data-bus-index="2"/><path class="schematex-timing-bus" d="M 325,82 L 395,82 L 400,94 L 395,106 L 325,106 L 320,94 Z" data-bus-index="3"/><path class="schematex-timing-bus" d="M 405,82 L 475,82 L 480,94 L 475,106 L 405,106 L 400,94 Z" data-bus-index="4"/><path class="schematex-timing-bus" d="M 485,82 L 555,82 L 560,94 L 555,106 L 485,106 L 480,94 Z" data-bus-index="5"/><path class="schematex-timing-bus" d="M 565,82 L 635,82 L 640,94 L 635,106 L 565,106 L 560,94 Z" data-bus-index="6"/><path class="schematex-timing-bus" d="M 645,82 L 715,82 L 720,94 L 715,106 L 645,106 L 640,94 Z" data-bus-index="7"/><path class="schematex-timing-bus" d="M 725,82 L 795,82 L 800,94 L 795,106 L 725,106 L 720,94 Z" data-bus-index="8"/><path class="schematex-timing-bus" d="M 805,82 L 875,82 L 880,94 L 875,106 L 805,106 L 800,94 Z" data-bus-index="9"/></g>
+<g transform="translate(120, 0)" data-signal="RX_READY"><path class="schematex-timing-wave" d="M 0,142 L 80,142 L 160,142 L 240,142 L 320,142 L 400,142 L 480,142 L 560,142 L 640,142 L 720,142 L 800,142 L 880,142 L 880,118 L 960,118"/></g></g>
+<g class="schematex-timing-labels"><g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"><text x="120" y="98" class="schematex-timing-bus-label" text-anchor="middle">START</text><text x="200" y="98" class="schematex-timing-bus-label" text-anchor="middle">D0</text><text x="280" y="98" class="schematex-timing-bus-label" text-anchor="middle">D1</text><text x="360" y="98" class="schematex-timing-bus-label" text-anchor="middle">D2</text><text x="440" y="98" class="schematex-timing-bus-label" text-anchor="middle">D3</text><text x="520" y="98" class="schematex-timing-bus-label" text-anchor="middle">D4</text><text x="600" y="98" class="schematex-timing-bus-label" text-anchor="middle">D5</text><text x="680" y="98" class="schematex-timing-bus-label" text-anchor="middle">D6</text><text x="760" y="98" class="schematex-timing-bus-label" text-anchor="middle">D7</text><text x="840" y="98" class="schematex-timing-bus-label" text-anchor="middle">STOP</text></g>
+<g transform="translate(120, 0)"></g></g>
+<g class="schematex-timing-names"><text x="112" y="62" class="schematex-timing-name" text-anchor="end">TX</text>
+<text x="112" y="98" class="schematex-timing-name" text-anchor="end">BIT</text>
+<text x="112" y="134" class="schematex-timing-name" text-anchor="end">RX_READY</text></g>
+<g class="sx-native-handles"></g>
+<text x="550" y="24" text-anchor="middle" class="schematex-timing-title">UART frame: 0x55, 8N1</text></svg>

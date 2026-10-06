@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 536.7199999999998 498" class="schematex-diagram schematex-genogram" width="536.7199999999998" height="498"><title>Genogram: Eleanor&apos;s family caregiving</title>
+<desc>Genogram diagram with 4 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="268.3599999999999" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">Eleanor&apos;s family caregiving</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="arthur" data-to="eleanor"><path d="M 129.53999999999996 60 L 254.77999999999992 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="eleanor"><path d="M 192.15999999999997 60 L 192.15999999999997 167" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur" data-to="eleanor"><path d="M 132.15999999999994 167 L 381.51999999999987 167" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="dana"><path d="M 132.15999999999994 167 L 132.15999999999994 228" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="arthur+eleanor" data-to="paul"><path d="M 381.51999999999987 167 L 381.51999999999987 232" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"><g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="dana" data-to="eleanor" data-relationship-type="close"><path d="M 129.65999999999994 228 L 129.65999999999994 222.04172122608824 L 129.65999999999994 216.08344245217648 L 129.70316785977053 210.03892412749926 L 135.25616695134946 203.6066249362628 L 141.40841105307322 203.5 L 147.36668982698498 203.5 L 153.32496860089674 203.5 L 159.2832473748085 203.5 L 165.24152614872025 203.5 L 171.19980492263204 203.5 L 177.1580836965438 203.5 L 183.11636247045556 203.5 L 189.0746412443673 203.5 L 195.03292001827907 203.5 L 200.99119879219083 203.5 L 206.9494775661026 203.5 L 212.90775634001437 203.5 L 218.8660351139261 203.5 L 224.8243138878379 203.5 L 230.78259266174965 203.5 L 236.7408714356614 203.5 L 242.6991502095732 203.5 L 248.65742898348492 203.5 L 254.61570775739665 203.5 L 260.57398653130844 203.5 L 266.5322653052202 203.5 L 272.49054407913195 203.5 L 278.4488228530437 203.5 L 284.40710162695547 203.5 L 290.36538040086725 203.5 L 296.323659174779 203.5 L 302.28193794869077 203.5 L 308.2402167226025 203.5 L 314.1984954965143 203.5 L 320.156774270426 203.5 L 326.1150530443378 203.5 L 332.0733318182496 203.5 L 338.0316105921613 203.5 L 343.98988936607304 203.5 L 349.9481681399849 203.5 L 355.9064469138966 203.5 L 361.86472568780835 203.5 L 367.82300446172013 203.5 L 373.7812832356319 203.5 L 379.73956200954365 203.5 L 385.69437319012104 203.49972800708392 L 391.5686530264137 203.43989193214225 L 396.88025210402094 202.75964952865814 L 398.5525239218908 200.34426810661273 L 398.9743537962407 194.76224134464326 L 398.9999999999999 188.8318187647722 L 398.9999999999999 182.87353999086042 L 398.9999999999999 176.91526121694864 L 398.9999999999999 170.9569824430369 L 398.9999999999999 164.99870366912512 L 398.9999999999999 159.0404248952134 L 398.9999999999999 153.0821461213016 L 398.9999999999999 147.12386734738988 L 398.9999999999999 141.1655885734781 L 398.9999999999999 135.20730979956636 L 398.9999999999999 129.24903102565457 L 398.9999999999999 123.29075225174279 L 398.9999999999999 117.33247347783106 L 398.9999999999999 111.37419470391927 L 398.9999999999999 105.41591593000754 L 398.9999999999999 99.45763715609581 L 398.9999999999999 93.49935838218403 L 398.9999999999999 87.54107960827224 L 398.9999999999999 81.58280083436046 L 398.9994816312374 75.62798982464012 L 398.9337254389992 69.75381688152261 L 398.339468475049 64.85395389683227 L 395.668691459406 62.92049830612019 L 390.0846151180675 62.52367570679243 L 384.1541816086763 62.5 L 378.1959028347646 62.5 L 372.2376240608528 62.5 L 366.27934528694107 62.5 L 360.3210665130293 62.5 L 354.3627877391175 62.5 L 348.4045089652058 62.5 L 342.44623019129403 62.5 L 336.48795141738225 62.5 L 330.52967264347046 62.5 L 324.57139386955873 62.5 L 318.61311509564695 62.5 L 312.6548363217352 62.5 L 306.6965575478234 62.5 L 300.73827877391176 62.5 L 294.7799999999999 62.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 134.65999999999994 228 L 134.65999999999994 222.04172122608824 L 134.65999999999994 216.08344245217648 L 134.70015430014928 210.21249404041922 L 135.6494014270913 208.59113761526038 L 141.40841105307322 208.5 L 147.36668982698498 208.5 L 153.32496860089674 208.5 L 159.2832473748085 208.5 L 165.24152614872025 208.5 L 171.19980492263204 208.5 L 177.1580836965438 208.5 L 183.11636247045556 208.5 L 189.0746412443673 208.5 L 195.03292001827907 208.5 L 200.99119879219083 208.5 L 206.9494775661026 208.5 L 212.90775634001437 208.5 L 218.8660351139261 208.5 L 224.8243138878379 208.5 L 230.78259266174965 208.5 L 236.7408714356614 208.5 L 242.6991502095732 208.5 L 248.65742898348492 208.5 L 254.61570775739665 208.5 L 260.57398653130844 208.5 L 266.5322653052202 208.5 L 272.49054407913195 208.5 L 278.4488228530437 208.5 L 284.40710162695547 208.5 L 290.36538040086725 208.5 L 296.323659174779 208.5 L 302.28193794869077 208.5 L 308.2402167226025 208.5 L 314.1984954965143 208.5 L 320.156774270426 208.5 L 326.1150530443378 208.5 L 332.0733318182496 208.5 L 338.0316105921613 208.5 L 343.98988936607304 208.5 L 349.9481681399849 208.5 L 355.9064469138966 208.5 L 361.86472568780835 208.5 L 367.82300446172013 208.5 L 373.7812832356319 208.5 L 379.73956200954365 208.5 L 385.70130799621097 208.4997231979281 L 391.7422229393336 208.436878372521 L 398.2056959843673 207.58076957695107 L 403.49452623338715 201.10361858772427 L 403.97404616014757 194.8177054437674 L 403.9999999999999 188.8318187647722 L 403.9999999999999 182.87353999086042 L 403.9999999999999 176.91526121694864 L 403.9999999999999 170.9569824430369 L 403.9999999999999 164.99870366912512 L 403.9999999999999 159.0404248952134 L 403.9999999999999 153.0821461213016 L 403.9999999999999 147.12386734738988 L 403.9999999999999 141.1655885734781 L 403.9999999999999 135.20730979956636 L 403.9999999999999 129.24903102565457 L 403.9999999999999 123.29075225174279 L 403.9999999999999 117.33247347783106 L 403.9999999999999 111.37419470391927 L 403.9999999999999 105.41591593000754 L 403.9999999999999 99.45763715609581 L 403.9999999999999 93.49935838218403 L 403.9999999999999 87.54107960827224 L 403.9999999999999 81.58280083436046 L 403.9994768220816 75.6210550185502 L 403.9307118793779 69.58024696860268 L 402.86696377461794 62.732212557181875 L 396.4280419405176 57.97849599462378 L 390.14007921719167 57.52398334288557 L 384.1541816086763 57.5 L 378.1959028347646 57.5 L 372.2376240608528 57.5 L 366.27934528694107 57.5 L 360.3210665130293 57.5 L 354.3627877391175 57.5 L 348.4045089652058 57.5 L 342.44623019129403 57.5 L 336.48795141738225 57.5 L 330.52967264347046 57.5 L 324.57139386955873 57.5 L 318.61311509564695 57.5 L 312.6548363217352 57.5 L 306.6965575478234 57.5 L 300.73827877391176 57.5 L 294.7799999999999 57.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-close" data-from="paul" data-to="eleanor" data-relationship-type="close"><path d="M 379.01999999999987 232 L 379.58457861251736 225.45875253112612 L 381.0545384787162 219.653553696641 L 382.52449834491506 213.84835486215587 L 383.9944582111139 208.04315602767073 L 385.46441807731276 202.2379571931856 L 386.95714722978454 196.35642807971294 L 388.61123847577045 190.6009873784203 L 390.2653297217564 184.84554667712771 L 391.9194209677423 179.09010597583512 L 393.57351221372824 173.3346652745425 L 395.2944811313314 167.5345210059497 L 397.0909636586601 161.8219238693449 L 398.88744618598884 156.10932673274007 L 400.6839287133175 150.39672959613526 L 402.5134079452964 144.65965029451633 L 404.38608027619534 138.97157383078724 L 406.2587526070942 133.28349736705817 L 408.13142493799313 127.59542090332907 L 409.9730922575448 121.91181597481747 L 411.8141894055722 116.21344104790471 L 413.65528655359964 110.51506612099192 L 415.2606762151883 104.84445374622004 L 416.8844590610529 99.08038879294106 L 418.1122799058768 93.47224214041806 L 419.17392271129785 87.57868378660154 L 419.2737732417562 82.1255417245276 L 418.60765757291176 77.20639789458487 L 416.64389715154687 72.86975845453009 L 412.0457151063597 69.03337508011856 L 407.2631664947824 67.2525422594875 L 401.99748255261215 65.67845394823249 L 396.0852527833109 64.72626979003056 L 390.3942094974754 63.91486209058624 L 384.4185997509636 63.52344968207541 L 378.4429900044518 63.132037273564585 L 372.5747747920068 62.86666112482385 L 366.58759663880363 62.74495131441644 L 360.6004184856004 62.62324150400904 L 354.61324033239725 62.501531693601635 L 348.67105213681805 62.4891284269123 L 342.68264722896856 62.47807511125711 L 336.694242321119 62.467021795601916 L 330.70583741326953 62.455968479946726 L 324.7259010974827 62.459979631707014 L 318.737493113374 62.46921716421805 L 312.7490851292654 62.478454696729095 L 306.76067714515676 62.48769222924013 L 300.7722691610481 62.49692976175117 L 294.7799999999999 62.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 384.01999999999987 232 L 384.4316030162586 226.68608884588954 L 385.9015628824574 220.88089001140443 L 387.3715227486563 215.0756911769193 L 388.8414826148551 209.27049234243415 L 390.311442481054 203.465293507949 L 391.762626306183 197.73750405383498 L 393.4167175521689 191.98206335254235 L 395.07080879815487 186.22662265124976 L 396.7249000441408 180.47118194995716 L 398.3789912901267 174.71574124866453 L 400.06418816795895 169.03448593378826 L 401.86067069528764 163.32188879718345 L 403.6571532226164 157.60929166057863 L 405.4536357499451 151.89669452397382 L 407.26264155746196 146.2232295528455 L 409.1353138883609 140.53515308911642 L 411.00798621925975 134.84707662538736 L 412.88065855015867 129.15900016165827 L 414.7309245247772 123.44903167760032 L 416.5720216728046 117.75065675068755 L 418.41311882083204 112.05228182377476 L 420.0733560716175 106.20022385930008 L 421.6971389174821 100.4361589060211 L 423.0330796890172 94.35865597957273 L 424.09472249443826 88.46509762575621 L 424.2719668356949 81.99115125794053 L 423.20707016975575 75.24542778670634 L 419.84706802786866 69.03052723759563 L 415.2488859826815 65.19414386318411 L 408.9675265339743 62.551993689713335 L 402.792504391355 60.742064551525424 L 396.8802746220538 59.78988039332349 L 390.7210175104429 58.925553869734344 L 384.7454077639311 58.53414146122351 L 378.7697980174193 58.14272905271269 L 372.67639584548647 57.86769391534051 L 366.6892176922833 57.7459841049331 L 360.7020395390801 57.6242742945257 L 354.71486138587693 57.502564484118295 L 348.680281052528 57.48913694420807 L 342.69187614467853 57.47808362855288 L 336.703471236829 57.467030312897684 L 330.7150663289795 57.455976997242495 L 324.718188261663 57.45998558049419 L 318.7297802775543 57.46922311300523 L 312.7413722934457 57.47846064551627 L 306.7529643093371 57.48769817802731 L 300.7645563252284 57.496935710538345 L 294.7799999999999 57.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/></g>
+<g class="schematex-genogram-emotional schematex-genogram-emotional-conflict" data-from="dana" data-to="paul" data-relationship-type="conflict"><path d="M 156.15999999999994 252 L 162.02742857142852 256 L 167.8948571428571 248 L 173.76228571428564 256 L 179.62971428571421 248 L 185.4971428571428 256 L 191.36457142857137 248 L 197.2319999999999 256 L 203.0994285714285 248 L 208.96685714285707 256 L 214.83428571428564 248 L 220.70171428571422 256 L 226.56914285714277 248 L 232.43657142857134 256 L 238.30399999999992 248 L 244.17142857142846 256 L 250.03885714285707 248 L 255.90628571428562 256 L 261.77371428571416 248 L 267.64114285714277 256 L 273.5085714285714 248 L 279.3759999999999 256 L 285.24342857142847 248 L 291.110857142857 256 L 296.9782857142856 248 L 302.84571428571417 256 L 308.71314285714277 248 L 314.5805714285713 256 L 320.44799999999987 248 L 326.31542857142847 256 L 332.182857142857 248 L 338.05028571428556 256 L 343.91771428571417 248 L 349.7851428571427 256 L 355.6525714285713 248 L 361.51999999999987 252" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-male" data-individual-id="arthur" data-status="deceased" transform="translate(109.53999999999995, 60)"><title>Arthur (1940-2019)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-halo"/>
+<line x1="-20" y1="-20" x2="20" y2="20" class="schematex-genogram-deceased-mark"/>
+<line x1="20" y1="-20" x2="-20" y2="20" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">79</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="eleanor" data-status="alive" transform="translate(274.7799999999999, 60)"><title>Eleanor (1942)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">84</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female schematex-genogram-index-person" data-individual-id="dana" data-status="alive" transform="translate(132.15999999999994, 252)"><title>Dana (1968)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">58</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="paul" data-status="alive" transform="translate(381.51999999999987, 252)"><title>Paul (1971)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">55</text></g></g>
+<g class="schematex-genogram-labels"><text x="109.53999999999995" y="98" class="schematex-genogram-label" data-individual-id="arthur">Arthur (1940–2019)</text>
+<text x="274.7799999999999" y="98" class="schematex-genogram-label" data-individual-id="eleanor">Eleanor (b. 1942)</text>
+<text x="274.7799999999999" y="111" class="schematex-genogram-annotation" data-individual-id="eleanor">medical: Dementia; needs daily care</text>
+<text x="132.15999999999994" y="290" class="schematex-genogram-label" data-individual-id="dana">Dana (b. 1968)</text>
+<text x="132.15999999999994" y="303" class="schematex-genogram-annotation" data-individual-id="dana">burden: Exhausted; no regular respite</text>
+<text x="132.15999999999994" y="316" class="schematex-genogram-annotation" data-individual-id="dana">care: Lives with Eleanor; daily personal care</text>
+<text x="381.51999999999987" y="290" class="schematex-genogram-label" data-individual-id="paul">Paul (b. 1971)</text>
+<text x="381.51999999999987" y="303" class="schematex-genogram-annotation" data-individual-id="paul">care: Lives separately; weekly transport</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="dana" data-to="eleanor"><line x1="306.74916666666655" y1="206" x2="306.74916666666655" y2="195" stroke="#94a3b8" stroke-width="1"/>
+<rect x="249.34916666666655" y="179" width="114.8" height="16" fill="white" fill-opacity="0.9"/>
+<text x="306.74916666666655" y="190" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Daily care and support</text></g>
+<g data-from="paul" data-to="eleanor"><line x1="413.2113085937499" y1="66.75" x2="413.2113085937499" y2="40.9999566743764" stroke="#94a3b8" stroke-width="1"/>
+<rect x="384.7231744655887" y="24.9999566743764" width="86.80000000000001" height="16" fill="white" fill-opacity="0.9"/>
+<text x="428.1231744655887" y="35.9999566743764" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Weekly transport</text></g>
+<g data-from="dana" data-to="paul"><line x1="258.8399999999999" y1="252" x2="258.8399999999999" y2="241" stroke="#94a3b8" stroke-width="1"/>
+<rect x="201.33999999999992" y="225" width="115" height="16" fill="white" fill-opacity="0.9"/>
+<text x="258.8399999999999" y="236" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Unequal care workload</text></g></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="440.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="136.45" y1="433" x2="144.45" y2="441" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="144.45" y1="433" x2="136.45" y2="441" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="159.45" y="440.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="458.5" class="schematex-legend-section">RELATIONSHIPS</text>
+<g class="schematex-legend-row" data-legend-key="close" data-legend-section="relationships"><path d="M 130.45 452.5 L 135.45 452.5 L 140.45 452.5 L 145.45 452.5 L 150.45 452.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><path d="M 130.45 457.5 L 135.45 457.5 L 140.45 457.5 L 145.45 457.5 L 150.45 457.5" class="schematex-genogram-emotional-stroke schematex-genogram-ink-positive" data-mark="parallel" stroke-width="2"/><text x="159.45" y="458.5" class="schematex-legend-label">Close</text></g>
+<g class="schematex-legend-row" data-legend-key="conflict" data-legend-section="relationships"><path d="M 211.45 455 L 216.45 459 L 221.45 451 L 226.45 459 L 231.45 455" class="schematex-genogram-emotional-stroke schematex-genogram-ink-negative" data-mark="zigzag" stroke-width="2"/><text x="240.45" y="458.5" class="schematex-legend-label">Conflict</text></g>
+<text x="16" y="476.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="132.45" y="470" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="130.45" y="468" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="159.45" y="476.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

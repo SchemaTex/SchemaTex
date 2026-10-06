@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1471.6000000000001" height="644" viewBox="0 0 1471.6000000000001 644" class="schematex-bpmn"><title>Insurance Claim</title>
+<desc>BPMN LR — 2 pool(s), 9 flow object(s).</desc>
+<defs><style>
+.schematex-bpmn .bpmn-service-gear,
+.schematex-bpmn .bpmn-service-hub { fill: #eff6ff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-ring { fill: none; stroke: #92400e; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-pentagon { fill: none; stroke: #92400e; stroke-width: 1.2; }
+.schematex-bpmn .bpmn-flow-conditional { fill: #ffffff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-flow-default { fill: none; stroke: #334155; stroke-width: 1.5; }
+.schematex-bpmn .bpmn-msg-start { fill: #ffffff; stroke: #94a3b8; stroke-width: 0.84; }
+</style>
+<marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker></defs>
+<g transform="translate(0, 40)"><g class="schematex-bpmn-pool blackbox"><rect x="16" y="16" width="1439.6000000000001" height="60" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="60" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="46" transform="rotate(-90 29 46)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Policyholder</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="112" width="1439.6000000000001" height="476" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="112" width="26" height="476" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="350" transform="rotate(-90 29 350)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Insurer</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="112" width="1391.6000000000001" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="112" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="176" transform="rotate(-90 53 176)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Claims</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="240" width="1391.6000000000001" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="240" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="304" transform="rotate(-90 53 304)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Fraud</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="368" width="1391.6000000000001" height="220" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="368" width="22" height="220" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="478" transform="rotate(-90 53 478)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Settlement</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 735.8 76 L 735.8 117 L 187.4 117 L 187.4 158" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="461.6" y="111" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Claim</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 205.4 176 L 261.3 176 L 261.3 176 L 317.2 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 439.2 176 L 493.1 176 L 493.1 176 L 547 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 591 176 L 647.9 176 L 647.9 176 L 704.8 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="647.9000000000001" y="170" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 814.8 176 L 871.7 176 L 871.7 432 L 928.6 432" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 591 176 L 952.6 176 L 952.6 524 L 1314.2 524" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="952.6000000000001" y="344" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 972.6 432 L 1023.3 432 L 1023.3 304 L 1074 304" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="1023.3" y="362" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">risk</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 1208.8 304 L 1261.5 304 L 1261.5 524 L 1314.2 524" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 972.6 432 L 1028.1 432 L 1028.1 432 L 1083.6 432" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="1028.1000000000001" y="426" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">clear</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 1199.2 432 L 1256.7 432 L 1256.7 432 L 1314.2 432" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 1332.2 414 L 1332.2 245 L 735.8 245 L 735.8 76" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="1034.0000000000002" y="239" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Settlement notice</text></g>
+<g class="schematex-bpmn-event kind-start trigger-message"><circle cx="187.4" cy="176" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<g class="trigger-message"><rect x="182.45000000000002" y="172.535" width="9.9" height="6.93" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<path d="M 182.45000000000002 172.535 L 187.4 176.3465 L 192.35000000000002 172.535" stroke="#334155" stroke-width="1" fill="none"/></g>
+<text x="187.4" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Claim received</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="317.20000000000005" y="146" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="378.20000000000005" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="378.20000000000005" dy="0">Validate policy</tspan></text>
+<g class="marker-user"><circle cx="330.20000000000005" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 325.20000000000005 165 Q 330.20000000000005 160 335.20000000000005 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="569,154 591,176 569,198 547,176" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 559.76 166.76 L 578.24 185.24 M 578.24 166.76 L 559.76 185.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="569" y="148" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Covered?</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="704.8000000000001" y="146" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="759.8000000000001" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="759.8000000000001" dy="0">Assess damage</tspan></text>
+<g class="marker-user"><circle cx="717.8000000000001" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 712.8000000000001 165 Q 717.8000000000001 160 722.8000000000001 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-user"><rect x="1074" y="274" width="134.8" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="1141.4" y="304" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="1141.4" dy="0">Investigate fraud</tspan></text>
+<g class="marker-user"><circle cx="1087" cy="286" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 1082 293 Q 1087 288 1092 293" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="950.6,410 972.6,432 950.6,454 928.6,432" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 941.36 422.76 L 959.84 441.24 M 959.84 422.76 L 941.36 441.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="950.6" y="404" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Fraud risk?</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="1083.6000000000001" y="402" width="115.60000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="1141.4" y="432" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="1141.4" dy="0">Pay settlement</tspan></text>
+<g class="marker-service"><polygon points="1099.9320000000002,414 1101.2512357098308,414.7439992956543 1101.105777209848,415.47526855708435 1100.8661133353144,416.181295564481 1099.3516220491942,416.166 1099.0368066701417,416.6371545104658 1098.6631865761003,417.0631865761001 1099.0699401453498,418.52211403966004 1098.45,418.9363448015713 1097.781295564481,419.26611333531434 1096.7212041033843,418.18439067948424 1096.1654394646973,418.29493913947135 1095.6000000000001,418.332 1094.856000704346,419.6512357098307 1094.1247314429158,419.5057772098477 1093.4187044355192,419.26611333531434 1093.4340000000002,417.75162204919417 1092.9628454895344,417.4368066701416 1092.5368134239,417.0631865761001 1091.0778859603402,417.4699401453497 1090.6636551984288,416.85 1090.333886664686,416.181295564481 1091.4156093205158,415.1212041033841 1091.3050608605288,414.56543946469725 1091.268,414 1089.9487642901695,413.2560007043457 1090.0942227901523,412.52473144291565 1090.333886664686,411.818704435519 1091.848377950806,411.834 1092.1631933298586,411.3628454895342 1092.5368134239,410.9368134238999 1092.1300598546504,409.47788596033996 1092.7500000000002,409.0636551984287 1093.4187044355192,408.73388666468566 1094.478795896616,409.81560932051576 1095.034560535303,409.70506086052865 1095.6000000000001,409.668 1096.3439992956544,408.3487642901693 1097.0752685570844,408.4942227901523 1097.781295564481,408.73388666468566 1097.766,410.24837795080583 1098.2371545104659,410.5631933298584 1098.6631865761003,410.9368134238999 1100.1221140396601,410.5300598546503 1100.5363448015714,411.15 1100.8661133353144,411.818704435519 1099.7843906794844,412.8787958966159 1099.8949391394715,413.43456053530275" class="bpmn-service-gear"/>
+<circle cx="1095.6000000000001" cy="414" r="1.71" class="bpmn-service-hub"/>
+<polygon points="1106.3768,420.84 1107.3442395205425,421.3855994834798 1107.2375699538884,421.9218636085285 1107.0618164458972,422.43961674728604 1105.9511895027424,422.42839999999995 1105.7203248914373,422.7739133076749 1105.4463368224735,423.0863368224734 1105.7446227732564,424.1562169624173 1105.29,424.4599861878189 1104.799616747286,424.7018164458972 1104.0222163424817,423.9085531649551 1103.6146556074448,423.9896220356123 1103.2,424.0168 1102.6544005165201,424.9842395205425 1102.1181363914716,424.87756995388827 1101.600383252714,424.7018164458972 1101.6116,423.5911895027424 1101.2660866923252,423.3603248914372 1100.9536631775266,423.0863368224734 1099.8837830375826,423.3846227732564 1099.580013812181,422.92999999999995 1099.338183554103,422.43961674728604 1100.131446835045,421.66221634248166 1100.0503779643877,421.25465560744465 1100.0232,420.84 1099.0557604794576,420.29440051652017 1099.1624300461117,419.75813639147145 1099.338183554103,419.2403832527139 1100.4488104972577,419.2516 1100.6796751085628,418.90608669232506 1100.9536631775266,418.59366317752654 1100.6553772267437,417.52378303758263 1101.1100000000001,417.22001381218104 1101.600383252714,416.97818355410277 1102.3777836575184,417.77144683504486 1102.7853443925553,417.69037796438766 1103.2,417.66319999999996 1103.74559948348,416.6957604794574 1104.2818636085285,416.8024300461117 1104.799616747286,416.97818355410277 1104.7884000000001,418.08881049725755 1105.133913307675,418.31967510856276 1105.4463368224735,418.59366317752654 1106.5162169624175,418.29537722674354 1106.819986187819,418.75 1107.0618164458972,419.2403832527139 1106.2685531649552,420.0177836575183 1106.3496220356124,420.4253443925553" class="bpmn-service-gear"/>
+<circle cx="1103.2" cy="420.84" r="1.2539999999999998" class="bpmn-service-hub"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="1332.2000000000003" cy="432" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="1332.2000000000003" y="464" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Settled</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="1332.2000000000003" cy="524" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="1332.2000000000003" y="556" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Declined</text></g>
+<g class="schematex-bpmn-source-markers"><circle cx="735.8" cy="76" r="2.52" class="bpmn-msg-start"/>
+
+
+
+
+<path d="M 595,180 L 603,172" class="bpmn-flow-default"/>
+
+
+<path d="M 976.6,436 L 984.6,428" class="bpmn-flow-default"/>
+
+<circle cx="1332.2" cy="414" r="2.52" class="bpmn-msg-start"/></g></g>
+<text x="735.8000000000001" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Insurance Claim</text></svg>

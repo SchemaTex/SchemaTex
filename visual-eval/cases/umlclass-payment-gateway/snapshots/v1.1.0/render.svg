@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1811" height="622" viewBox="0 0 1811 622" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 8 class; 3 directed, 2 realization, 1 dependency, 1 composition; 1 merged inheritance tree (2 warnings).</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="1811" height="622" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="PaymentService" data-kind="class"><rect x="588.7065887451172" y="32" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="588.7065887451172" y="62" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="588.7065887451172" y="32" width="320" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="588.7065887451172" y1="62" x2="908.7065887451172" y2="62" class="sx-umlclass-divider"/>
+<line x1="588.7065887451172" y1="100" x2="908.7065887451172" y2="100" class="sx-umlclass-divider"/>
+<text x="748.7065887451172" y="53" class="sx-umlclass-classname" text-anchor="middle">PaymentService</text>
+<text x="602.7065887451172" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>authorize</tspan>(request: <tspan>Payment</tspan>Request): Payme…</text></g>
+<g class="sx-umlclass-classifier" data-id="PaymentRequest" data-kind="class"><rect x="268.235595703125" y="227" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="268.235595703125" y="257" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="268.235595703125" y="227" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="268.235595703125" y1="257" x2="428.235595703125" y2="257" class="sx-umlclass-divider"/>
+<line x1="268.235595703125" y1="317" x2="428.235595703125" y2="317" class="sx-umlclass-divider"/>
+<text x="348.235595703125" y="248" class="sx-umlclass-classname" text-anchor="middle">PaymentRequest</text>
+<text x="282.235595703125" y="281" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>amount</tspan>: <tspan>Money</tspan></text>
+<text x="282.235595703125" y="303" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>currency</tspan>: <tspan>String</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Payment" data-kind="class"><rect x="150.1177978515625" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="150.1177978515625" y="62" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="150.1177978515625" y="32" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="150.1177978515625" y1="62" x2="310.1177978515625" y2="62" class="sx-umlclass-divider"/>
+<line x1="150.1177978515625" y1="100" x2="310.1177978515625" y2="100" class="sx-umlclass-divider"/>
+<text x="230.1177978515625" y="53" class="sx-umlclass-classname" text-anchor="middle">Payment</text>
+<text x="164.1177978515625" y="86" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan><tspan>id</tspan>: <tspan>UUID</tspan></text>
+<text x="164.1177978515625" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>capture</tspan>(): <tspan>Receipt</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="PaymentProvider" data-kind="class"><rect x="989.1775817871094" y="238" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="989.1775817871094" y="268" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="989.1775817871094" y="238" width="320" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="989.1775817871094" y1="268" x2="1309.1775817871094" y2="268" class="sx-umlclass-divider"/>
+<line x1="989.1775817871094" y1="306" x2="1309.1775817871094" y2="306" class="sx-umlclass-divider"/>
+<text x="1149.1775817871094" y="259" class="sx-umlclass-classname" text-anchor="middle">PaymentProvider</text>
+<text x="1003.1775817871094" y="292" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;interface&gt;&gt;</tspan></text>
+<text x="1003.1775817871094" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>authorize</tspan>(request: PaymentRequest): Provi…</text></g>
+<g class="sx-umlclass-classifier" data-id="CardProvider" data-kind="class"><rect x="830.0797119140625" y="444" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="830.0797119140625" y="474" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="830.0797119140625" y="444" width="320" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="830.0797119140625" y1="474" x2="1150.0797119140625" y2="474" class="sx-umlclass-divider"/>
+<line x1="830.0797119140625" y1="512" x2="1150.0797119140625" y2="512" class="sx-umlclass-divider"/>
+<text x="990.0797119140625" y="465" class="sx-umlclass-classname" text-anchor="middle">CardProvider</text>
+<text x="844.0797119140625" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>authorize</tspan>(request: PaymentRequest): Provi…</text></g>
+<g class="sx-umlclass-classifier" data-id="WalletProvider" data-kind="class"><rect x="1204.0797119140625" y="444" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1204.0797119140625" y="474" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="1204.0797119140625" y="444" width="320" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="1204.0797119140625" y1="474" x2="1524.0797119140625" y2="474" class="sx-umlclass-divider"/>
+<line x1="1204.0797119140625" y1="512" x2="1524.0797119140625" y2="512" class="sx-umlclass-divider"/>
+<text x="1364.0797119140625" y="465" class="sx-umlclass-classname" text-anchor="middle">WalletProvider</text>
+<text x="1218.0797119140625" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>authorize</tspan>(request: PaymentRequest): Provi…</text></g>
+<g class="sx-umlclass-classifier" data-id="ProviderResult" data-kind="class"><rect x="1578.0797119140625" y="444" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="1578.0797119140625" y="474" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="1578.0797119140625" y="444" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="1578.0797119140625" y1="474" x2="1738.0797119140625" y2="474" class="sx-umlclass-divider"/>
+<line x1="1578.0797119140625" y1="512" x2="1738.0797119140625" y2="512" class="sx-umlclass-divider"/>
+<text x="1658.0797119140625" y="465" class="sx-umlclass-classname" text-anchor="middle">ProviderResult</text>
+<text x="1592.0797119140625" y="498" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>approved</tspan>: <tspan>boolean</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="PaymentStatus" data-kind="class"><rect x="32" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="246" width="160" height="120" class="sx-umlclass-box-fill"/>
+<rect x="32" y="216" width="160" height="150" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="246" x2="192" y2="246" class="sx-umlclass-divider"/>
+<line x1="32" y1="328" x2="192" y2="328" class="sx-umlclass-divider"/>
+<text x="112" y="237" class="sx-umlclass-classname" text-anchor="middle">PaymentStatus</text>
+<text x="46" y="270" class="sx-umlclass-member" data-visibility="public"><tspan>PENDING</tspan></text>
+<text x="46" y="292" class="sx-umlclass-member" data-visibility="public"><tspan>AUTHORIZED</tspan></text>
+<text x="46" y="314" class="sx-umlclass-member" data-visibility="public"><tspan>DECLINED</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="PaymentService" data-to="PaymentProvider" data-kind="directed" data-name="selects"><path d="M 851.7 138 L 1046.1 227" class="sx-umlclass-rel-line"/>
+<path d="M 1040.6437826064027 227 L 1046.1437826064027 238 L 1051.6437826064027 227" class="sx-umlclass-arrowhead"/>
+<text x="948.9420852661133" y="177.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">selects</text>
+<text x="948.9420852661133" y="177.5" class="sx-umlclass-edge-name" text-anchor="middle">selects</text></g>
+<g class="sx-umlclass-rel" data-from="PaymentService" data-to="PaymentRequest" data-kind="dependency" data-name="uses"><path d="M 645.7 138 L 439.2 249.8" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 439.235595703125 244.34845522813694 L 428.235595703125 249.84845522813694 L 439.235595703125 255.34845522813694" class="sx-umlclass-arrowhead"/>
+<text x="542.4541926337677" y="188.92422761406846" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">uses</text>
+<text x="542.4541926337677" y="188.92422761406846" class="sx-umlclass-edge-name" text-anchor="middle">uses</text></g>
+<g class="sx-umlclass-rel" data-from="Payment" data-to="PaymentRequest" data-kind="composition" data-source-mult="1" data-target-mult="1" data-name="records"><path d="M 260.5 158 L 311.5 227" class="sx-umlclass-rel-line"/>
+
+<polygon points="260.5073283667703,138 266.5073283667703,148 260.5073283667703,158 254.5073283667703,148" class="sx-umlclass-diamond-filled"/>
+<text x="260.5073283667703" y="155" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="311.538804137591" y="218" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="286.0230662521807" y="187.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">records</text>
+<text x="286.0230662521807" y="187.5" class="sx-umlclass-edge-name" text-anchor="middle">records</text></g>
+<g class="sx-umlclass-rel" data-from="Payment" data-to="PaymentStatus" data-kind="directed" data-name="state"><path d="M 199.7 138 L 155 205" class="sx-umlclass-rel-line"/>
+<path d="M 149.50405261586013 205 L 155.00405261586013 216 L 160.50405261586013 205" class="sx-umlclass-arrowhead"/>
+<text x="177.36615997610738" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">state</text>
+<text x="177.36615997610738" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">state</text></g>
+<g class="sx-umlclass-rel" data-from="PaymentProvider" data-to="ProviderResult" data-kind="directed" data-name="returns"><path d="M 1280.1 344 L 1567.1 464.6" class="sx-umlclass-rel-line"/>
+<path d="M 1567.0797119140625 459.1165631378104 L 1578.0797119140625 464.6165631378104 L 1567.0797119140625 470.1165631378104" class="sx-umlclass-arrowhead"/>
+<text x="1423.5942121339076" y="399.30828156890516" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">returns</text>
+<text x="1423.5942121339076" y="399.30828156890516" class="sx-umlclass-edge-name" text-anchor="middle">returns</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="realization" data-parent="PaymentProvider" data-children="CardProvider,WalletProvider"><path d="M 990.1 444 L 990.1 394 L 1177.1 394" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 1364.1 444 L 1364.1 394 L 1177.1 394" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 1177.1 394 L 1177.1 358" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="1177.0797119140625,344 1168.0797119140625,358 1186.0797119140625,358" class="sx-umlclass-triangle"/></g></g></svg>

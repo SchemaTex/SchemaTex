@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-sld" role="img" aria-labelledby="lt-sld-title lt-sld-desc" width="1120" height="683" viewBox="0 0 1120 683"><title>EV Charging Hub · 12 Bay</title>
+<desc>Single-line diagram with 11 nodes and 10 connections</desc>
+<style>.lt-sld { font-family: "Inter", "Helvetica Neue", sans-serif; }
+.lt-sld-stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+.lt-sld-stroke-thick { stroke: #222222; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+.lt-sld-fill { fill: #ffffff; stroke: #222222; stroke-width: 1.4; }
+.lt-sld-fill-dark { fill: #222222; stroke: #222222; stroke-width: 1; }
+.lt-sld-dot { fill: #222222; stroke: none; }
+.lt-sld-wire-clearance { stroke: #ffffff; stroke-width: 5; fill: none; }
+.lt-sld-control { stroke: #222222; stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+.lt-sld-wire { stroke: #222222; stroke-width: 1.4; fill: none; }
+.lt-sld-bus { stroke: #111111; stroke-width: 3; stroke-linecap: square; }
+.lt-sld-title { font-size: 16px; font-weight: 700; fill: #111111; }
+.lt-sld-id { font-size: 11px; font-weight: 700; fill: #111111; text-anchor: middle; }
+.lt-sld-id-side { font-size: 11px; font-weight: 700; fill: #111111; text-anchor: start; }
+.lt-sld-rating { font-size: 9px; fill: #555555; text-anchor: middle; }
+.lt-sld-rating-side { font-size: 9px; fill: #555555; text-anchor: start; }
+.lt-sld-voltage { font-size: 10px; font-weight: 700; fill: #555555; }
+.lt-sld-nameplate { font-size: 9px; fill: #555555; }
+.lt-sld-cable { font-size: 9px; fill: #555555; }
+.lt-sld-symbol-text:not([font-size]) { font-size: 11px; }
+.lt-sld-symbol-text { fill: #111111; dominant-baseline: middle; }
+.lt-sld-wdg:not([font-size]) { font-size: 10px; }
+.lt-sld-wdg { font-weight: 700; fill: #222222; dominant-baseline: middle; }
+.lt-sld-bus-label { font-size: 11px; font-weight: 700; fill: #1d4e89; }
+.lt-sld-standard-badge { font-size: 10px; font-weight: 700; fill: #555555; letter-spacing: 0.3px; }
+.lt-sld-unknown-box { fill: none; stroke: #1d4e89; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-sld-unknown-mark { font-size: 16px; font-weight: 700; fill: #1d4e89; dominant-baseline: middle; }
+.lt-sld-unknown-type { font-size: 9px; font-family: monospace; fill: #555555; }</style>
+<text x="20" y="22" class="lt-sld-title" data-sld-role="title">EV Charging Hub · 12 Bay</text>
+<g transform="translate(0, 12)"><path d="M 631.2758 74 L 631.2758 136" class="lt-sld-wire-clearance"/>
+<path d="M 631.2758 74 L 631.2758 136" data-from="GRID" data-to="TX" class="lt-sld-wire"/>
+<path d="M 631.2758 184 L 631.2758 234" class="lt-sld-wire-clearance"/>
+<path d="M 631.2758 184 L 631.2758 234" data-from="TX" data-to="MAIN" class="lt-sld-wire"/>
+<path d="M 631.2758 270 L 631.2758 344" class="lt-sld-wire-clearance"/>
+<path d="M 631.2758 270 L 631.2758 344" data-from="MAIN" data-to="BUS" class="lt-sld-wire"/>
+<path d="M 249.6788 344 L 249.6788 454" class="lt-sld-wire-clearance"/>
+<path d="M 249.6788 344 L 249.6788 454" data-from="BUS" data-to="F1" class="lt-sld-wire"/>
+<path d="M 249.6788 490 L 249.6788 580" class="lt-sld-wire-clearance"/>
+<path d="M 249.6788 490 L 249.6788 580" data-from="F1" data-to="DC1" class="lt-sld-wire"/>
+<path d="M 499.063 344 L 499.063 454" class="lt-sld-wire-clearance"/>
+<path d="M 499.063 344 L 499.063 454" data-from="BUS" data-to="F2" class="lt-sld-wire"/>
+<path d="M 499.063 490 L 499.063 580" class="lt-sld-wire-clearance"/>
+<path d="M 499.063 490 L 499.063 580" data-from="F2" data-to="DC2" class="lt-sld-wire"/>
+<path d="M 752.2950000000001 344 L 752.2950000000001 454" class="lt-sld-wire-clearance"/>
+<path d="M 752.2950000000001 344 L 752.2950000000001 454" data-from="BUS" data-to="F3" class="lt-sld-wire"/>
+<path d="M 752.2950000000001 490 L 752.2950000000001 580" class="lt-sld-wire-clearance"/>
+<path d="M 752.2950000000001 490 L 752.2950000000001 580" data-from="F3" data-to="AC" class="lt-sld-wire"/>
+<path d="M 1012.8728000000001 344 L 1012.8728000000001 460" class="lt-sld-wire-clearance"/>
+<path d="M 1012.8728000000001 344 L 1012.8728000000001 460" data-from="BUS" data-to="LMC" class="lt-sld-wire"/>
+<g transform="translate(631.2758, 56)" data-type="utility" data-id="GRID"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<g><line x1="0" y1="-24" x2="0" y2="-17" class="lt-sld-stroke"/>
+<line x1="0" y1="17" x2="0" y2="18" class="lt-sld-stroke"/>
+<circle cx="0" cy="0" r="17" class="lt-sld-fill"/>
+<path d="M -9 0 Q -4.5 -9 0 0 T 9 0" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-fine"/></g></g></g>
+<text x="663.2758" y="53" class="lt-sld-id-side">11 kV Utility Supply</text>
+<text x="663.2758" y="67" class="lt-sld-rating-side">250 MVA</text>
+<text x="663.2758" y="79" class="lt-sld-rating-side">11kV</text>
+<g transform="translate(631.2758, 160)" data-type="transformer" data-id="TX"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-24" x2="0" y2="-15.2" class="lt-sld-stroke"/>
+<line x1="0" y1="15.2" x2="0" y2="24" class="lt-sld-stroke"/>
+<path d="M -17.1 -9.5 A 5.7 5.7 0 0 1 -5.7 -9.5 A 5.7 5.7 0 0 1 5.7 -9.5 A 5.7 5.7 0 0 1 17.1 -9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -17.1 9.5 A 5.7 5.7 0 0 0 -5.7 9.5 A 5.7 5.7 0 0 0 5.7 9.5 A 5.7 5.7 0 0 0 17.1 9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -20.9 -2.85 L 20.9 -2.85 M -20.9 2.85 L 20.9 2.85" class="lt-sld-stroke lt-sld-ansi-core"/></g></g>
+<text x="667.2758" y="157" class="lt-sld-id-side">Charging Hub Transformer</text>
+<text x="667.2758" y="171" class="lt-sld-rating-side">1600 kVA, 11kV/400V</text>
+<g transform="translate(631.2758, 252)" data-type="breaker" data-id="MAIN"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="663.2758" y="249" class="lt-sld-id-side">Main LV Breaker</text>
+<text x="663.2758" y="263" class="lt-sld-rating-side">2500 A, 50 kA</text>
+<line x1="201.6788" y1="344" x2="1060.8728" y2="344" class="lt-sld-bus" data-id="BUS"/>
+<text x="36" y="341" class="lt-sld-id-side">Charging Distribution Board</text>
+<text x="36" y="355" class="lt-sld-id-side">400V</text>
+<g transform="translate(249.6788, 472)" data-type="breaker" data-id="F1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="281.6788" y="469" class="lt-sld-id-side">Feeder DC Chargers A</text>
+<text x="281.6788" y="483" class="lt-sld-rating-side">630 A</text>
+<g transform="translate(499.063, 472)" data-type="breaker" data-id="F2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="531.063" y="469" class="lt-sld-id-side">Feeder DC Chargers B</text>
+<text x="531.063" y="483" class="lt-sld-rating-side">630 A</text>
+<g transform="translate(752.2950000000001, 472)" data-type="breaker" data-id="F3"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="784.2950000000001" y="469" class="lt-sld-id-side">Feeder AC Chargers</text>
+<text x="784.2950000000001" y="483" class="lt-sld-rating-side">250 A</text>
+<g transform="translate(249.6788, 592)" data-type="load" data-id="DC1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="201.523" y="620" class="lt-sld-id-side">DC Chargers 1–4</text>
+<text x="233.9288" y="634" class="lt-sld-rating-side">300 kW</text>
+<g transform="translate(499.063, 592)" data-type="load" data-id="DC2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="450.9072" y="620" class="lt-sld-id-side">DC Chargers 5–8</text>
+<text x="483.313" y="634" class="lt-sld-rating-side">300 kW</text>
+<g transform="translate(752.2950000000001, 592)" data-type="load" data-id="AC"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="700.2914000000001" y="620" class="lt-sld-id-side">AC Chargers 9–12</text>
+<text x="736.5450000000001" y="634" class="lt-sld-rating-side">176 kW</text>
+<g transform="translate(1012.8728000000001, 472)" data-type="load" data-id="LMC"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="942.0966000000001" y="500" class="lt-sld-id-side">Dynamic Load Management</text>
+<text x="954.0128000000001" y="514" class="lt-sld-rating-side">Load management controller</text></g></svg>

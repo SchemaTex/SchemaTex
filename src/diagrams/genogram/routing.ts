@@ -327,6 +327,9 @@ export function routeEmotionalEdges(layout: LayoutResult, relationships: Relatio
   layout.width = Math.max(layout.width, Math.max(...bounds.map(b => b.x + b.width)) + GAP) + dx;
   layout.height = Math.max(layout.height, Math.max(...bounds.map(b => b.y + b.height)) + GAP) + dy;
   for (const node of layout.nodes) { node.x += dx; node.y += dy; }
-  for (const edge of layout.edges) edge.path = edge.path.replace(/([\d.e+-]+)\s+([\d.e+-]+)/g,
+  for (const edge of layout.edges) {
+    if (edge.unionRoute) { edge.unionRoute.left += dx; edge.unionRoute.right += dx; edge.unionRoute.markX += dx; edge.unionRoute.y += dy; }
+    edge.path = edge.path.replace(/([\d.e+-]+)\s+([\d.e+-]+)/g,
     (_, x: string, y: string) => `${Number(x) + dx} ${Number(y) + dy}`);
+  }
 }

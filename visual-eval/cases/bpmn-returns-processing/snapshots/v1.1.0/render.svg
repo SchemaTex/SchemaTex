@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1204" height="424" viewBox="0 0 1204 424" class="schematex-bpmn"><title>Returns Processing</title>
+<desc>BPMN LR — 2 pool(s), 7 flow object(s).</desc>
+<defs><style>
+.schematex-bpmn .bpmn-service-gear,
+.schematex-bpmn .bpmn-service-hub { fill: #eff6ff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-ring { fill: none; stroke: #92400e; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-pentagon { fill: none; stroke: #92400e; stroke-width: 1.2; }
+.schematex-bpmn .bpmn-flow-conditional { fill: #ffffff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-flow-default { fill: none; stroke: #334155; stroke-width: 1.5; }
+.schematex-bpmn .bpmn-msg-start { fill: #ffffff; stroke: #94a3b8; stroke-width: 0.84; }
+</style>
+<marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker></defs>
+<g transform="translate(0, 40)"><g class="schematex-bpmn-pool blackbox"><rect x="16" y="16" width="1172" height="60" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="60" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="46" transform="rotate(-90 29 46)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Customer</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="112" width="1172" height="256" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="112" width="26" height="256" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="240" transform="rotate(-90 29 240)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Retailer</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="112" width="1124" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="112" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="176" transform="rotate(-90 53 176)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Returns</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="240" width="1124" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="240" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="304" transform="rotate(-90 53 304)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Finance</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 602 76 L 602 117 L 181 117 L 181 158" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="391.5" y="111" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Return request</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 199 176 L 248.5 176 L 248.5 176 L 298 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 420 176 L 467.5 176 L 467.5 176 L 515 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-conditional"><path d="M 559 176 L 609.5 176 L 609.5 176 L 660 176" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="609.5" y="170" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">yes</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 770 176 L 804 176 L 804 304 L 838 304" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 948 304 L 1000.5 304 L 1000.5 304 L 1053 304" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-default"><path d="M 559 176 L 628 176 L 628 304 L 697 304" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/>
+<text x="628" y="234" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">no</text></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 1071 286 L 1071 181 L 602 181 L 602 76" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="836.5" y="175" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Refund notice</text></g>
+<g class="schematex-bpmn-event kind-start trigger-message"><circle cx="181" cy="176" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<g class="trigger-message"><rect x="176.05" y="172.535" width="9.9" height="6.93" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<path d="M 176.05 172.535 L 181 176.3465 L 185.95000000000002 172.535" stroke="#334155" stroke-width="1" fill="none"/></g>
+<text x="181" y="208" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Return request</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="298" y="146" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="359" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="359" dy="0">Validate return</tspan></text>
+<g class="marker-user"><circle cx="311" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 306 165 Q 311 160 316 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-xor"><polygon points="537,154 559,176 537,198 515,176" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<path d="M 527.76 166.76 L 546.24 185.24 M 546.24 166.76 L 527.76 185.24" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"/>
+<text x="537" y="148" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Eligible?</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="660" y="146" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="715" y="176" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="715" dy="0">Receive item</tspan></text>
+<g class="marker-user"><circle cx="673" cy="158" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 668 165 Q 673 160 678 165" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-service"><rect x="838" y="274" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="893" y="304" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="893" dy="0">Issue refund</tspan></text>
+<g class="marker-service"><polygon points="854.332,286 855.6512357098308,286.7439992956543 855.5057772098477,287.47526855708435 855.2661133353143,288.181295564481 853.7516220491942,288.166 853.4368066701417,288.6371545104658 853.0631865761002,289.0631865761001 853.4699401453497,290.52211403966004 852.85,290.9363448015713 852.181295564481,291.26611333531434 851.1212041033841,290.18439067948424 850.5654394646973,290.29493913947135 850,290.332 849.2560007043458,291.6512357098307 848.5247314429156,291.5057772098477 847.818704435519,291.26611333531434 847.834,289.75162204919417 847.3628454895343,289.4368066701416 846.9368134238998,289.0631865761001 845.4778859603399,289.4699401453497 845.0636551984287,288.85 844.7338866646857,288.181295564481 845.8156093205157,287.1212041033841 845.7050608605286,286.56543946469725 845.668,286 844.3487642901692,285.2560007043457 844.4942227901523,284.52473144291565 844.7338866646857,283.818704435519 846.2483779508058,283.834 846.5631933298583,283.3628454895342 846.9368134238998,282.9368134238999 846.5300598546503,281.47788596033996 847.15,281.0636551984287 847.818704435519,280.73388666468566 848.8787958966159,281.81560932051576 849.4345605353027,281.70506086052865 850,281.668 850.7439992956542,280.3487642901693 851.4752685570844,280.4942227901523 852.181295564481,280.73388666468566 852.166,282.24837795080583 852.6371545104657,282.5631933298584 853.0631865761002,282.9368134238999 854.52211403966,282.5300598546503 854.9363448015713,283.15 855.2661133353143,283.818704435519 854.1843906794843,284.8787958966159 854.2949391394714,285.43456053530275" class="bpmn-service-gear"/>
+<circle cx="850" cy="286" r="1.71" class="bpmn-service-hub"/>
+<polygon points="860.7768,292.84 861.7442395205426,293.3855994834798 861.6375699538884,293.9218636085285 861.4618164458972,294.43961674728604 860.3511895027424,294.42839999999995 860.1203248914372,294.7739133076749 859.8463368224734,295.0863368224734 860.1446227732565,296.1562169624173 859.69,296.4599861878189 859.1996167472861,296.7018164458972 858.4222163424818,295.9085531649551 858.0146556074446,295.9896220356123 857.6,296.0168 857.0544005165202,296.9842395205425 856.5181363914714,296.87756995388827 856.000383252714,296.7018164458972 856.0116,295.5911895027424 855.6660866923252,295.3603248914372 855.3536631775266,295.0863368224734 854.2837830375827,295.3846227732564 853.980013812181,294.92999999999995 853.7381835541029,294.43961674728604 854.5314468350449,293.66221634248166 854.4503779643877,293.25465560744465 854.4232000000001,292.84 853.4557604794575,292.29440051652017 853.5624300461117,291.75813639147145 853.7381835541029,291.2403832527139 854.8488104972577,291.2516 855.0796751085628,290.90608669232506 855.3536631775266,290.59366317752654 855.0553772267435,289.52378303758263 855.51,289.22001381218104 856.000383252714,288.97818355410277 856.7777836575183,289.77144683504486 857.1853443925554,289.69037796438766 857.6,289.66319999999996 858.1455994834798,288.6957604794574 858.6818636085286,288.8024300461117 859.1996167472861,288.97818355410277 859.1884,290.08881049725755 859.5339133076749,290.31967510856276 859.8463368224734,290.59366317752654 860.9162169624174,290.29537722674354 861.219986187819,290.75 861.4618164458972,291.2403832527139 860.6685531649551,292.0177836575183 860.7496220356123,292.4253443925553" class="bpmn-service-gear"/>
+<circle cx="857.6" cy="292.84" r="1.2539999999999998" class="bpmn-service-hub"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="1071" cy="304" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="1071" y="336" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Refunded</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="715" cy="304" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="715" y="336" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Rejected</text></g>
+<g class="schematex-bpmn-source-markers"><circle cx="602" cy="76" r="2.52" class="bpmn-msg-start"/>
+
+
+
+
+
+<path d="M 563,180 L 571,172" class="bpmn-flow-default"/>
+<circle cx="1071" cy="286" r="2.52" class="bpmn-msg-start"/></g></g>
+<text x="602" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Returns Processing</text></svg>

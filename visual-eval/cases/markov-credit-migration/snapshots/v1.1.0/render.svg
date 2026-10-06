@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Annual credit rating migration" width="468.07865746257886" height="493.1692101715304" viewBox="0 0 468.07865746257886 493.1692101715304" data-diagram-type="markov"><title>Markov chain — Annual credit rating migration</title>
+<desc>5 states, 15 transitions. Classification: 0 recurrent, 4 transient, 1 absorbing. Absorbing: D. Expected steps to absorption t: { AA=47.637, A=40.072, BBB=27.898, BB=14.764 }. Absorption probabilities B: AA→(D=1); A→(D=1); BBB→(D=1); BB→(D=1).</desc>
+<style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
+.sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
+.sx-markov-state-absorbing { stroke: #2563eb; }
+.sx-markov-state-label { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-markov-state-sublabel { font: 10px sans-serif; fill: #475569; }
+.sx-markov-pi { font: 600 10px sans-serif; fill: #2563eb; }
+.sx-markov-arc { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-arc-self { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
+.sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-markov-head" viewBox="-1 -1 12 12" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linejoin="round"/></marker></defs>
+<text x="234.03932873128943" y="24" class="sx-markov-title" text-anchor="middle">Annual credit rating migration</text>
+<g transform="translate(0, 40)"><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="AA" data-to="AA" data-prob="0.9"><path class="sx-markov-arc-self" d="M 208.58 90.5 C 190.58 60.5 263.62 59.04 245.62 89.04" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="226.5846050857652" y="51" text-anchor="middle">0.9</text></g>
+<g class="sx-markov-arc-g" data-from="AA" data-to="A" data-prob="0.08"><path class="sx-markov-arc" d="M 255.67 123.36 C 275.06 128.27 304.31 148.83 314.17 164.49" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="294.1093850280219" y="134.61586975836985" text-anchor="middle">0.08</text></g>
+<g class="sx-markov-arc-g" data-from="AA" data-to="BBB" data-prob="0.02"><path class="sx-markov-arc" d="M 232.56 145.4 C 240.12 182.57 262.78 252.88 277.89 286.02" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="261.9265521997124" y="217.1961315966709" text-anchor="middle">0.02</text></g>
+<g class="sx-markov-arc-g" data-from="A" data-to="AA" data-prob="0.03"><path class="sx-markov-arc" d="M 302.67 185.05 C 283.28 180.15 254.03 159.58 244.17 143.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="264.23203441225166" y="179.7962130396517" text-anchor="middle">0.03</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="A" data-to="A" data-prob="0.88"><path class="sx-markov-arc-self" d="M 350.45 167.41 C 373.42 141.02 397.37 210.03 363.28 202.18" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="396.4286574625788" y="174.3989271805251" text-anchor="middle">0.88</text></g>
+<g class="sx-markov-arc-g" data-from="A" data-to="BBB" data-prob="0.08"><path class="sx-markov-arc" d="M 333.75 222.35 C 335.07 242.31 324.55 276.48 312.71 290.7" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="337.77154420678016" y="264.4575339107831" text-anchor="middle">0.08</text></g>
+<g class="sx-markov-arc-g" data-from="A" data-to="BB" data-prob="0.01"><path class="sx-markov-arc" d="M 309.64 212.68 C 281.68 238.31 222.02 281.87 190.31 299.8" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="245.44634054033037" y="254.08094674072828" text-anchor="middle">0.01</text></g>
+<g class="sx-markov-arc-g" data-from="BBB" data-to="A" data-prob="0.05"><path class="sx-markov-arc" d="M 289.6 286.12 C 288.27 266.16 298.79 231.98 310.63 217.76" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="304.78019390910134" y="255.56847845603224" text-anchor="middle">0.05</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="BBB" data-to="BBB" data-prob="0.85"><path class="sx-markov-arc-self" d="M 321.14 326.1 C 353.33 339.79 295.11 383.9 292.04 349.05" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="331.55400224165334" y="374.06258553388795" text-anchor="middle">0.85</text></g>
+<g class="sx-markov-arc-g" data-from="BBB" data-to="BB" data-prob="0.08"><path class="sx-markov-arc" d="M 263.73 304.91 C 245.16 297.48 209.4 296.92 192.22 303.79" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="227.13297134157904" y="311.98248783283475" text-anchor="middle">0.08</text></g>
+<g class="sx-markov-arc-g" data-from="BBB" data-to="D" data-prob="0.02"><path class="sx-markov-arc" d="M 265.47 301.28 C 232.46 282.61 172.59 239.32 145.74 214.71" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="197.47458572147755" y="271.3558764254862" text-anchor="middle">0.02</text></g>
+<g class="sx-markov-arc-g" data-from="BB" data-to="BBB" data-prob="0.07"><path class="sx-markov-arc" d="M 189.44 327.19 C 208.01 334.62 243.76 335.18 260.94 328.31" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="225.39207754616913" y="346.1059957142776" text-anchor="middle">0.07</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="BB" data-to="BB" data-prob="0.8"><path class="sx-markov-arc-self" d="M 161.16 347.26 C 158.09 382.11 98.15 340.36 130.34 326.67" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="121.61520792987702" y="374.06258553388795" text-anchor="middle">0.8</text></g>
+<g class="sx-markov-arc-g" data-from="BB" data-to="D" data-prob="0.13"><path class="sx-markov-arc" d="M 147.29 289.67 C 138.69 273.81 127.91 241.53 125.74 225.13" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="124.64340957273276" y="263.84153423457303" text-anchor="middle">0.13</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="D" data-to="D" data-prob="1"><path class="sx-markov-arc-self" d="M 91.6 201.65 C 57.5 209.5 78.68 139.59 101.65 165.98" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="56.74055270895158" y="174.3989271805251" text-anchor="middle">1</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="AA" data-class="transient"><circle class="sx-markov-state" cx="226.5846050857652" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="226.5846050857652" y="120" text-anchor="middle">AA</text></g>
+<g class="sx-markov-state-g" data-id="A" data-class="transient"><circle class="sx-markov-state" cx="331.7568143545084" cy="192.41208279802152" r="30"/>
+<text class="sx-markov-state-label" x="331.7568143545084" y="196.41208279802152" text-anchor="middle">A</text></g>
+<g class="sx-markov-state-g" data-id="BBB" data-class="transient"><circle class="sx-markov-state" cx="291.5846050857652" cy="316.0494299163915" r="30"/>
+<text class="sx-markov-state-label" x="291.5846050857652" y="320.0494299163915" text-anchor="middle">BBB</text></g>
+<g class="sx-markov-state-g" data-id="BB" data-class="transient"><circle class="sx-markov-state" cx="161.5846050857652" cy="316.0494299163915" r="30"/>
+<text class="sx-markov-state-label" x="161.5846050857652" y="320.0494299163915" text-anchor="middle">BB</text></g>
+<g class="sx-markov-state-g" data-id="D" data-class="absorbing"><circle class="sx-markov-state sx-markov-state-absorbing" cx="121.41239581702202" cy="192.41208279802152" r="30"/>
+<circle class="sx-markov-absorb-ring" cx="121.41239581702202" cy="192.41208279802152" r="25"/>
+<text class="sx-markov-state-label" x="121.41239581702202" y="196.41208279802152" text-anchor="middle">Default</text></g></g></g></svg>
