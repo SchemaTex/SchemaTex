@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-sld" role="img" aria-labelledby="lt-sld-title lt-sld-desc" width="767" height="667" viewBox="0 0 767 667"><title>Battery Energy Storage Plant</title>
+<desc>Single-line diagram with 10 nodes and 9 connections</desc>
+<style>.lt-sld { font-family: "Inter", "Helvetica Neue", sans-serif; }
+.lt-sld-stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+.lt-sld-stroke-thick { stroke: #222222; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+.lt-sld-fill { fill: #ffffff; stroke: #222222; stroke-width: 1.4; }
+.lt-sld-fill-dark { fill: #222222; stroke: #222222; stroke-width: 1; }
+.lt-sld-dot { fill: #222222; stroke: none; }
+.lt-sld-wire-clearance { stroke: #ffffff; stroke-width: 5; fill: none; }
+.lt-sld-control { stroke: #222222; stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+.lt-sld-wire { stroke: #222222; stroke-width: 1.4; fill: none; }
+.lt-sld-bus { stroke: #111111; stroke-width: 3; stroke-linecap: square; }
+.lt-sld-title { font-size: 16px; font-weight: 700; fill: #111111; }
+.lt-sld-id { font-size: 11px; font-weight: 700; fill: #111111; text-anchor: middle; }
+.lt-sld-id-side { font-size: 11px; font-weight: 700; fill: #111111; text-anchor: start; }
+.lt-sld-rating { font-size: 9px; fill: #555555; text-anchor: middle; }
+.lt-sld-rating-side { font-size: 9px; fill: #555555; text-anchor: start; }
+.lt-sld-voltage { font-size: 10px; font-weight: 700; fill: #555555; }
+.lt-sld-nameplate { font-size: 9px; fill: #555555; }
+.lt-sld-cable { font-size: 9px; fill: #555555; }
+.lt-sld-symbol-text:not([font-size]) { font-size: 11px; }
+.lt-sld-symbol-text { fill: #111111; dominant-baseline: middle; }
+.lt-sld-wdg:not([font-size]) { font-size: 10px; }
+.lt-sld-wdg { font-weight: 700; fill: #222222; dominant-baseline: middle; }
+.lt-sld-bus-label { font-size: 11px; font-weight: 700; fill: #1d4e89; }
+.lt-sld-standard-badge { font-size: 10px; font-weight: 700; fill: #555555; letter-spacing: 0.3px; }
+.lt-sld-unknown-box { fill: none; stroke: #1d4e89; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-sld-unknown-mark { font-size: 16px; font-weight: 700; fill: #1d4e89; dominant-baseline: middle; }
+.lt-sld-unknown-type { font-size: 9px; font-family: monospace; fill: #555555; }</style>
+<text x="20" y="22" class="lt-sld-title" data-sld-role="title">Battery Energy Storage Plant</text>
+<g transform="translate(0, 12)"><path d="M 237.54880000000003 74 L 237.54880000000003 154" class="lt-sld-wire-clearance"/>
+<path d="M 237.54880000000003 74 L 237.54880000000003 154" data-from="GRID" data-to="POC" class="lt-sld-wire"/>
+<path d="M 237.54880000000003 190 L 237.54880000000003 264" class="lt-sld-wire-clearance"/>
+<path d="M 237.54880000000003 190 L 237.54880000000003 264" data-from="POC" data-to="MV" class="lt-sld-wire"/>
+<path d="M 237.54880000000003 264 L 237.54880000000003 368" class="lt-sld-wire-clearance"/>
+<path d="M 237.54880000000003 264 L 237.54880000000003 368" data-from="MV" data-to="TX" class="lt-sld-wire"/>
+<path d="M 237.54880000000003 416 L 237.54880000000003 466" class="lt-sld-wire-clearance"/>
+<path d="M 237.54880000000003 416 L 237.54880000000003 466" data-from="TX" data-to="ACB" class="lt-sld-wire"/>
+<path d="M 237.54880000000003 502 L 237.54880000000003 514 L 145.7744 514 L 145.7744 564" class="lt-sld-wire-clearance"/>
+<path d="M 237.54880000000003 502 L 237.54880000000003 514 L 145.7744 514 L 145.7744 564" data-from="ACB" data-to="PCS" class="lt-sld-wire"/>
+<path d="M 52 68 L 52 154" class="lt-sld-wire-clearance"/>
+<path d="M 52 68 L 52 154" data-from="BAT1" data-to="DC1" class="lt-sld-wire"/>
+<path d="M 52 190 L 52 552 L 133.7744 552 L 133.7744 564" class="lt-sld-wire-clearance"/>
+<path d="M 52 190 L 52 552 L 133.7744 552 L 133.7744 564" data-from="DC1" data-to="PCS" class="lt-sld-wire"/>
+<path d="M 606.9188 68 L 606.9188 154" class="lt-sld-wire-clearance"/>
+<path d="M 606.9188 68 L 606.9188 154" data-from="BAT2" data-to="DC2" class="lt-sld-wire"/>
+<path d="M 606.9188 190 L 606.9188 552 L 157.7744 552 L 157.7744 564" class="lt-sld-wire-clearance"/>
+<path d="M 606.9188 190 L 606.9188 552 L 157.7744 552 L 157.7744 564" data-from="DC2" data-to="PCS" class="lt-sld-wire"/>
+<g transform="translate(237.54880000000003, 56)" data-type="utility" data-id="GRID"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<g><line x1="0" y1="-24" x2="0" y2="-17" class="lt-sld-stroke"/>
+<line x1="0" y1="17" x2="0" y2="18" class="lt-sld-stroke"/>
+<circle cx="0" cy="0" r="17" class="lt-sld-fill"/>
+<path d="M -9 0 Q -4.5 -9 0 0 T 9 0" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-fine"/></g></g></g>
+<text x="269.5488" y="53" class="lt-sld-id-side">33 kV Grid Point of</text>
+<text x="269.5488" y="67" class="lt-sld-id-side">Connection</text>
+<text x="269.5488" y="81" class="lt-sld-rating-side">500 MVA</text>
+<text x="269.5488" y="93" class="lt-sld-rating-side">33kV</text>
+<g transform="translate(237.54880000000003, 172)" data-type="breaker" data-id="POC"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="269.5488" y="169" class="lt-sld-id-side">POC Breaker 52-G</text>
+<text x="269.5488" y="183" class="lt-sld-rating-side">1250 A, 25 kA</text>
+<line x1="189.54880000000003" y1="264" x2="285.5488" y2="264" class="lt-sld-bus" data-id="MV"/>
+<text x="66.31240000000001" y="261" class="lt-sld-id-side">33 kV Collector Bus</text>
+<text x="66.31240000000001" y="275" class="lt-sld-id-side">33kV</text>
+<g transform="translate(237.54880000000003, 392)" data-type="transformer" data-id="TX"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-24" x2="0" y2="-15.2" class="lt-sld-stroke"/>
+<line x1="0" y1="15.2" x2="0" y2="24" class="lt-sld-stroke"/>
+<path d="M -17.1 -9.5 A 5.7 5.7 0 0 1 -5.7 -9.5 A 5.7 5.7 0 0 1 5.7 -9.5 A 5.7 5.7 0 0 1 17.1 -9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -17.1 9.5 A 5.7 5.7 0 0 0 -5.7 9.5 A 5.7 5.7 0 0 0 5.7 9.5 A 5.7 5.7 0 0 0 17.1 9.5" stroke-linecap="round" class="lt-sld-stroke"/>
+<path d="M -20.9 -2.85 L 20.9 -2.85 M -20.9 2.85 L 20.9 2.85" class="lt-sld-stroke lt-sld-ansi-core"/></g></g>
+<text x="273.5488" y="389" class="lt-sld-id-side">Step-up Transformer</text>
+<text x="273.5488" y="403" class="lt-sld-rating-side">10 MVA, 33kV/690V</text>
+<g transform="translate(237.54880000000003, 484)" data-type="breaker" data-id="ACB"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="269.5488" y="481" class="lt-sld-id-side">PCS AC Breaker</text>
+<text x="269.5488" y="495" class="lt-sld-rating-side">2500 A, 50 kA</text>
+<g transform="translate(145.7744, 576)" data-type="load" data-id="PCS"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="72.66620000000005" y="604" class="lt-sld-id-side">Bidirectional PCS Inverter</text>
+<text x="114.36440000000002" y="618" class="lt-sld-rating-side">5 MW / 10 MWh</text>
+<g transform="translate(52, 56)" data-type="load" data-id="BAT1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="86" y="53" class="lt-sld-id-side">Battery String A</text>
+<text x="86" y="67" class="lt-sld-rating-side">1000 V DC, 5 MWh</text>
+<g transform="translate(606.9188, 56)" data-type="load" data-id="BAT2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-12" x2="0" y2="-10.4" class="lt-sld-stroke"/>
+<line x1="0" y1="10.4" x2="0" y2="12" class="lt-sld-stroke"/>
+<path d="M -11.2 -10.4 L 11.2 -10.4 L 0 10.4 Z" stroke-linejoin="miter" class="lt-sld-fill"/></g></g>
+<text x="640.9188" y="53" class="lt-sld-id-side">Battery String B</text>
+<text x="640.9188" y="67" class="lt-sld-rating-side">1000 V DC, 5 MWh</text>
+<g transform="translate(52, 172)" data-type="breaker" data-id="DC1"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="84" y="169" class="lt-sld-id-side">DC Isolator A</text>
+<text x="84" y="183" class="lt-sld-rating-side">1600 A DC</text>
+<g transform="translate(606.9188, 172)" data-type="breaker" data-id="DC2"><g class="lt-sld-ansi"><style>.lt-sld-ansi .lt-sld-stroke, .lt-sld-ansi .lt-sld-fill { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-stroke-thick { stroke-width: 1.8; }
+.lt-sld-ansi .lt-sld-ansi-fine { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-core { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-grid { stroke-width: 1.4; }
+.lt-sld-ansi .lt-sld-ansi-hook { stroke-width: 1.4; }
+.lt-sld-ansi text { dominant-baseline: auto; }
+.lt-sld-ansi text[font-weight="600"] { font-weight: 600; }</style>
+<line x1="0" y1="-18" x2="0" y2="-14.25" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="0" y2="18" class="lt-sld-stroke"/>
+<line x1="0" y1="14.25" x2="8.25" y2="-8.25" class="lt-sld-stroke-thick" data-sld-role="blade"/>
+<circle cx="0" cy="14.25" r="2.1" class="lt-sld-dot"/>
+<circle cx="0" cy="-14.25" r="2.1" class="lt-sld-dot"/>
+<path d="M 8.25 -8.25 A 4.5 4.5 0 0 0 6 -13.125" stroke-linecap="round" class="lt-sld-stroke lt-sld-ansi-hook"/></g></g>
+<text x="638.9188" y="169" class="lt-sld-id-side">DC Isolator B</text>
+<text x="638.9188" y="183" class="lt-sld-rating-side">1600 A DC</text></g></svg>

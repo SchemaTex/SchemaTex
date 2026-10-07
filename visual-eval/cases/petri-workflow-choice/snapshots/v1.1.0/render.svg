@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Review Workflow Choice and Merge" width="716" height="262" viewBox="0 0 716 262" data-diagram-type="petri"><title>Petri net — Review Workflow Choice and Merge</title>
+<desc>5 places, 5 transitions, 10 arcs. Marking {Complete:1}. No enabled transitions. Class: state machine, workflow net.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="358" y="22" class="sx-petri-title" text-anchor="middle">Review Workflow Choice and Merge</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="Start" data-to="ChooseStandard" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 57.54992877478425 124 L 147.4 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ChooseStandard" data-to="Standard" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 155.4 70 L 244.8 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Start" data-to="ChooseExpedite" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 57.54992877478425 132 L 77.54992877478425 132 L 77.54992877478425 186 L 147.4 186" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ChooseExpedite" data-to="Expedite" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 155.4 186 L 244.8 186" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Standard" data-to="ReviewStandard" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 280.8 70 L 370.2 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ReviewStandard" data-to="Reviewed" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 378.2 70 L 468.0500712252158 124" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Expedite" data-to="ReviewExpedite" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 280.8 186 L 370.2 186" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="ReviewExpedite" data-to="Reviewed" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 378.2 186 L 448.0500712252158 186 L 448.0500712252158 132 L 468.0500712252158 132" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Reviewed" data-to="Close" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 503.6 128 L 573.6 128" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="Close" data-to="Complete" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 581.6 128 L 651.6 128" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="Start" data-tokens="0" data-source="true"><circle class="sx-petri-place" cx="40" cy="128" r="18"/>
+
+<text class="sx-petri-label" x="40" y="104" text-anchor="middle">Start</text></g>
+<g class="sx-petri-place-g" data-id="Standard" data-tokens="0"><circle class="sx-petri-place" cx="262.8" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="262.8" y="46" text-anchor="middle">Standard</text></g>
+<g class="sx-petri-place-g" data-id="Expedite" data-tokens="0"><circle class="sx-petri-place" cx="262.8" cy="186" r="18"/>
+
+<text class="sx-petri-label" x="262.8" y="162" text-anchor="middle">Expedite</text></g>
+<g class="sx-petri-place-g" data-id="Reviewed" data-tokens="0"><circle class="sx-petri-place" cx="485.6" cy="128" r="18"/>
+
+<text class="sx-petri-label" x="485.6" y="104" text-anchor="middle">Reviewed</text></g>
+<g class="sx-petri-place-g" data-id="Complete" data-tokens="1" data-sink="true"><circle class="sx-petri-place" cx="669.6" cy="128" r="18"/>
+<circle class="sx-petri-token" cx="669.6" cy="128" r="3.5"/>
+<text class="sx-petri-label" x="669.6" y="104" text-anchor="middle">Complete</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g sx-petri-dead" data-id="ChooseStandard" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="147.4" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="151.4" y="42" text-anchor="middle">ChooseStandard</text></g>
+<g class="sx-petri-trans-g sx-petri-dead" data-id="ChooseExpedite" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="147.4" y="164" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="151.4" y="158" text-anchor="middle">ChooseExpedite</text></g>
+<g class="sx-petri-trans-g" data-id="ReviewStandard" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="370.2" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="374.2" y="42" text-anchor="middle">ReviewStandard</text></g>
+<g class="sx-petri-trans-g" data-id="ReviewExpedite" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="370.2" y="164" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="374.2" y="158" text-anchor="middle">ReviewExpedite</text></g>
+<g class="sx-petri-trans-g" data-id="Close" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="573.6" y="106" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="577.6" y="100" text-anchor="middle">Close</text></g></g></g></svg>

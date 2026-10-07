@@ -1,0 +1,12 @@
+genogram "One parent, three marriages" [asOf: 2026]
+  walter [male, 1938, index, label: "Walter"]
+  ruth [female, 1942, 1975, deceased, label: "Ruth"]
+  walter -- ruth "m. 1962"
+    paul [male, 1964, label: "Paul"]
+    anne [female, 1967, label: "Anne"]
+  carol [female, 1948, label: "Carol"]
+  walter -x- carol "m. 1977 · div. 1983"
+  june [female, 1955, label: "June"]
+  walter -- june "m. 1985"
+    ben [male, 1987, label: "Ben"]
+    lucy [female, 1990, label: "Lucy"]

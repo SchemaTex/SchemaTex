@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 848.9600000000002 594" class="schematex-diagram schematex-genogram" width="848.9600000000002" height="594"><title>Genogram: The Bennett Blended Family</title>
+<desc>Genogram diagram with 9 individuals across 3 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="424.4800000000001" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">The Bennett Blended Family</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="george" data-to="helen"><path d="M 355.7200000000001 60 L 460.2000000000001 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="george" data-to="helen"><path d="M 407.9600000000001 60 L 407.9600000000001 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="george+helen" data-to="david"><path d="M 407.9600000000001 141 L 407.9600000000001 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-divorced" data-from="laura" data-to="david"><path d="M 87.68 226 L 387.9600000000001 226" class="schematex-genogram-edge-path"/>
+<line x1="233.82000000000005" y1="220" x2="241.82000000000005" y2="232" class="schematex-genogram-divorce-mark" stroke-width="2"/>
+<line x1="239.82000000000005" y1="220" x2="247.82000000000005" y2="232" class="schematex-genogram-divorce-mark" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="laura"><path d="M 237.82000000000005 226 L 237.82000000000005 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="laura"><path d="M 165.28000000000003 307 L 310.36000000000007 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+laura" data-to="sophie"><path d="M 165.28000000000003 307 L 165.28000000000003 368" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+laura" data-to="oliver"><path d="M 310.36000000000007 307 L 310.36000000000007 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="david" data-to="emma"><path d="M 427.9600000000001 226 L 722.4800000000001 226" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="emma"><path d="M 575.2200000000001 226 L 575.2200000000001 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david" data-to="emma"><path d="M 505.56000000000006 307 L 644.8800000000001 307" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+emma" data-to="lucy"><path d="M 505.56000000000006 307 L 505.56000000000006 372" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="david+emma" data-to="henry"><path d="M 644.8800000000001 307 L 644.8800000000001 372" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="george" data-status="alive" transform="translate(335.7200000000001, 60)"><title>George Bennett (1944)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">82</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="helen" data-status="alive" transform="translate(480.2000000000001, 60)"><title>Helen Bennett (1947)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">79</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="laura" data-status="alive" transform="translate(67.68, 226)"><title>Laura Morgan (1974)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">52</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="david" data-status="alive" transform="translate(407.9600000000001, 226)"><title>David Bennett (1972)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">54</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="emma" data-status="alive" transform="translate(742.4800000000001, 226)"><title>Emma Bennett (1978)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">48</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-2" data-generation="2"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female schematex-genogram-index-person" data-individual-id="sophie" data-status="alive" transform="translate(165.28000000000003, 392)"><title>Sophie Bennett (1998)</title>
+<circle cx="0" cy="0" r="24" class="schematex-genogram-index-border"/>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">28</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="oliver" data-status="alive" transform="translate(310.36000000000007, 392)"><title>Oliver Bennett (2001)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">25</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="lucy" data-status="alive" transform="translate(505.56000000000006, 392)"><title>Lucy Bennett (2008)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">18</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="henry" data-status="alive" transform="translate(644.8800000000001, 392)"><title>Henry Bennett (2011)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">15</text></g></g>
+<g class="schematex-genogram-labels"><text x="335.7200000000001" y="98" class="schematex-genogram-label" data-individual-id="george">George Bennett (b. 1944)</text>
+<text x="480.2000000000001" y="98" class="schematex-genogram-label" data-individual-id="helen">Helen Bennett (b. 1947)</text>
+<text x="67.68" y="264" class="schematex-genogram-label" data-individual-id="laura">Laura Morgan (b. 1974)</text>
+<text x="407.9600000000001" y="264" class="schematex-genogram-label" data-individual-id="david">David Bennett (b. 1972)</text>
+<text x="742.4800000000001" y="264" class="schematex-genogram-label" data-individual-id="emma">Emma Bennett (b. 1978)</text>
+<text x="165.28000000000003" y="430" class="schematex-genogram-label" data-individual-id="sophie">Sophie Bennett (b. 1998)</text>
+<text x="310.36000000000007" y="430" class="schematex-genogram-label" data-individual-id="oliver">Oliver Bennett (b. 2001)</text>
+<text x="505.56000000000006" y="430" class="schematex-genogram-label" data-individual-id="lucy">Lucy Bennett (b. 2008)</text>
+<text x="644.8800000000001" y="430" class="schematex-genogram-label" data-individual-id="henry">Henry Bennett (b. 2011)</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="laura" data-to="david"><rect x="162.12000000000006" y="206" width="151.39999999999998" height="16" fill="white" fill-opacity="0.9"/>
+<text x="237.82000000000005" y="217" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Married 1996; divorced 2004</text></g>
+<g data-from="david" data-to="emma"><rect x="538.0200000000001" y="206" width="74.4" height="16" fill="white" fill-opacity="0.9"/>
+<text x="575.2200000000001" y="217" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">Married 2006</text></g></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="554.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="divorced" data-legend-section="structural"><line x1="107.5" y1="551" x2="127.5" y2="551" stroke="#334155" stroke-width="2" stroke-linecap="round"/><line x1="122.5" y1="547" x2="130.5" y2="555" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/><line x1="130.5" y1="547" x2="122.5" y2="555" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/>
+<text x="136.5" y="554.5" class="schematex-legend-label">Divorced</text></g>
+<text x="16" y="572.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="109.5" y="566" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="107.5" y="564" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="136.5" y="572.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

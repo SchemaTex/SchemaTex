@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 741.64 446" class="schematex-diagram schematex-genogram" width="741.64" height="446"><title>Genogram: One parent, three marriages</title>
+<desc>Genogram diagram with 8 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.schematex-genogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+}
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
+.schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
+.schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-vitals { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #475569; }
+.schematex-genogram-note, .schematex-genogram-annotation { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-style: italic; text-anchor: middle; fill: #475569; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+.schematex-genogram-edge-secondary-step path { stroke-dasharray: none; }
+.schematex-genogram-edge-secondary .schematex-genogram-placement-halo { stroke: #ffffff; stroke-width: 4.5; stroke-dasharray: none; opacity: 1; fill: none; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
+.schematex-genogram-deceased-halo { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; }
+.schematex-genogram-status-attachment { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-status-cross { stroke: #b71c1c; stroke-width: 2; stroke-linecap: butt; }
+.schematex-genogram-miscarriage .schematex-genogram-shape,
+.schematex-genogram-pregnancy .schematex-genogram-shape { fill: none; }
+.schematex-genogram-condition-outline { fill: none; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-pattern-hatch { fill: none; stroke: #334155; stroke-width: 1; }
+.schematex-genogram-pattern-dot { fill: #334155; }
+.schematex-genogram-emotional-stroke { fill: none; stroke: currentColor; stroke-linecap: butt; stroke-linejoin: round; }
+.schematex-genogram-arrow-filled { fill: currentColor; }
+.schematex-genogram-ink-positive { color: #059669; }
+.schematex-genogram-ink-negative { color: #dc2626; }
+.schematex-genogram-ink-neutral { color: #94a3b8; }
+.schematex-genogram-ink-accent { color: #2563eb; }
+.schematex-genogram-ink-warn { color: #d97706; }
+.schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-unknown-mark { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; fill: #334155; pointer-events: none; }
+.schematex-genogram-unknown-mark[data-contrast="halo"], .schematex-genogram-age[data-contrast="halo"] { stroke: #ffffff; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-unknown-mark[data-contrast="on-dark"], .schematex-genogram-age[data-contrast="on-dark"] { fill: #ffffff; stroke: #0f172a; stroke-width: 2; paint-order: stroke; stroke-linejoin: round; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
+</style>
+<g><text x="370.82" y="28" class="schematex-genogram-title" text-anchor="middle" font-size="20" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">One parent, three marriages</text>
+<g transform="translate(0, 40)"><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="walter" data-to="ruth"><path d="M 244 60 L 480 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter" data-to="ruth"><path d="M 360 60 L 360 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter" data-to="ruth"><path d="M 300 141 L 420 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter+ruth" data-to="paul"><path d="M 300 141 L 300 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter+ruth" data-to="anne"><path d="M 420 141 L 420 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-divorced" data-from="carol" data-to="walter"><path d="M 80 60 L 196 60" class="schematex-genogram-edge-path"/>
+<line x1="134" y1="54" x2="142" y2="66" class="schematex-genogram-divorce-mark" stroke-width="2"/>
+<line x1="140" y1="54" x2="148" y2="66" class="schematex-genogram-divorce-mark" stroke-width="2"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="walter" data-to="june"><path d="M 244 60 L 640 60" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter" data-to="june"><path d="M 440 60 L 440 129 L 460 129 L 460 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter" data-to="june"><path d="M 460 141 L 580 141" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter+june" data-to="ben"><path d="M 460 141 L 460 206" class="schematex-genogram-edge-path"/></g>
+<g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="walter+june" data-to="lucy"><path d="M 580 141 L 580 206" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
+<g class="schematex-genogram-emotional-edges"></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="carol" data-status="alive" transform="translate(60, 60)"><title>Carol (1948)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">78</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male schematex-genogram-index-person" data-individual-id="walter" data-status="alive" transform="translate(220, 60)"><title>Walter (1938)</title>
+<rect x="-24" y="-24" width="48" height="48" class="schematex-genogram-index-border"/>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">88</text></g>
+<g class="schematex-genogram-node schematex-genogram-deceased schematex-genogram-female" data-individual-id="ruth" data-status="deceased" transform="translate(500, 60)"><title>Ruth (1942-1975)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-halo"/>
+<line x1="-14.139999999999999" y1="-14.139999999999999" x2="14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="schematex-genogram-deceased-mark"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11" data-contrast="halo">33</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="june" data-status="alive" transform="translate(660, 60)"><title>June (1955)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">71</text></g></g>
+<g class="schematex-genogram-generation schematex-genogram-generation-1" data-generation="1"><g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="paul" data-status="alive" transform="translate(300, 226)"><title>Paul (1964)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">62</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="anne" data-status="alive" transform="translate(420, 226)"><title>Anne (1967)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">59</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-male" data-individual-id="ben" data-status="alive" transform="translate(460, 226)"><title>Ben (1987)</title>
+<rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">39</text></g>
+<g class="schematex-genogram-node schematex-genogram-alive schematex-genogram-female" data-individual-id="lucy" data-status="alive" transform="translate(580, 226)"><title>Lucy (1990)</title>
+<circle cx="0" cy="0" r="20" class="schematex-genogram-shape"/>
+<text x="0" y="5" class="schematex-genogram-age" text-anchor="middle" font-size="11">36</text></g></g>
+<g class="schematex-genogram-labels"><text x="60" y="98" class="schematex-genogram-label" data-individual-id="carol">Carol (b. 1948)</text>
+<text x="220" y="98" class="schematex-genogram-label" data-individual-id="walter">Walter (b. 1938)</text>
+<text x="500" y="98" class="schematex-genogram-label" data-individual-id="ruth">Ruth (1942–1975)</text>
+<text x="660" y="98" class="schematex-genogram-label" data-individual-id="june">June (b. 1955)</text>
+<text x="300" y="264" class="schematex-genogram-label" data-individual-id="paul">Paul (b. 1964)</text>
+<text x="420" y="264" class="schematex-genogram-label" data-individual-id="anne">Anne (b. 1967)</text>
+<text x="460" y="264" class="schematex-genogram-label" data-individual-id="ben">Ben (b. 1987)</text>
+<text x="580" y="264" class="schematex-genogram-label" data-individual-id="lucy">Lucy (b. 1990)</text></g>
+<g class="schematex-genogram-edge-labels"><g data-from="walter" data-to="ruth"><rect x="338.3" y="40" width="47.400000000000006" height="16" fill="white" fill-opacity="0.9"/>
+<text x="362" y="51" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">m. 1962</text></g>
+<g data-from="carol" data-to="walter"><rect x="84.99999999999999" y="40" width="106.00000000000003" height="16" fill="white" fill-opacity="0.9"/>
+<text x="138" y="51" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">m. 1977 · div. 1983</text></g>
+<g data-from="walter" data-to="june"><rect x="418.3" y="40" width="47.400000000000006" height="16" fill="white" fill-opacity="0.9"/>
+<text x="442" y="51" class="schematex-genogram-edge-label" text-anchor="middle" font-size="10" font-family="system-ui, -apple-system, sans-serif">m. 1985</text></g></g></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="388.5" class="schematex-legend-section">SYMBOLS</text>
+<g class="schematex-legend-row" data-legend-key="status.deceased" data-legend-section="symbols"><line x1="113.5" y1="381" x2="121.5" y2="389" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/><line x1="121.5" y1="381" x2="113.5" y2="389" stroke="#b71c1c" stroke-width="1.6" stroke-linecap="round"/>
+<text x="136.5" y="388.5" class="schematex-legend-label">Deceased</text></g>
+<text x="16" y="406.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="divorced" data-legend-section="structural"><line x1="107.5" y1="403" x2="127.5" y2="403" stroke="#334155" stroke-width="2" stroke-linecap="round"/><line x1="122.5" y1="399" x2="130.5" y2="407" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/><line x1="130.5" y1="399" x2="122.5" y2="407" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/>
+<text x="136.5" y="406.5" class="schematex-legend-label">Divorced</text></g>
+<text x="16" y="424.5" class="schematex-legend-section">MARKERS</text>
+<g class="schematex-legend-row" data-legend-key="marker.index-person" data-legend-section="markers"><rect x="109.5" y="418" width="16" height="6" fill="#ffffff" stroke="#334155"/><rect x="107.5" y="416" width="20" height="10" fill="none" stroke="#334155" stroke-width="1.2"/>
+<text x="136.5" y="424.5" class="schematex-legend-label">Index person (focal subject)</text></g></g></svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1178.2" height="804" viewBox="0 0 1178.2 804" role="img" aria-label="Procurement" data-diagram-type="idef0"><title>Procurement</title>
+<desc>IDEF0 function model &quot;Procurement&quot; (node A0): 4 functions on a diagonal staircase. ICOM arrows: 5 input, 4 control, 4 mechanism, 1 output. Boxes: 1. Approve requisition (A1); 2. Select supplier (A2); 3. Place purchase order (A3); 4. Match and pay invoice (A4).</desc>
+<style>.sx-idef0-bg { fill: #ffffff; }
+.sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box-name { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-idef0-box-num { fill: #475569; font-size: 10px; font-weight: 700; }
+.sx-idef0-arrow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-arrow[data-margin="true"] { stroke: #2563eb; }
+.sx-idef0-arrow[data-tunneled="true"] { stroke-dasharray: 5 3; }
+.sx-idef0-head { fill: #334155; }
+.sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: #2563eb; }
+.sx-idef0-label { fill: #0f172a; font-size: 10px; }
+.sx-idef0-icom { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-idef0-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-idef0-meta { fill: #475569; font-size: 10px; }
+.sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
+.sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1178.2" height="804" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="569.1" y="24" class="sx-idef0-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Procurement</text>
+<rect x="36.666666666666664" y="76.66666666666666" width="1064.8666666666668" height="653.3333333333334" class="sx-idef0-frame"/>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 36.666666666666664 190 L 158.2 190" class="sx-idef0-arrow"/>
+<polygon points="158.2,190 149.2,185.5 149.2,194.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="184" class="sx-idef0-label" text-anchor="start">Purchase requisition</text>
+<text x="42.666666666666664" y="197" class="sx-idef0-icom" text-anchor="start">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 233.2 76.66666666666666 L 233.2 150" class="sx-idef0-arrow"/>
+<polygon points="233.2,150 228.7,141 237.7,141" class="sx-idef0-head"/>
+<text x="239.2" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Spend authority limits</text>
+<text x="239.2" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C1</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 233.2 730 L 233.2 230" class="sx-idef0-arrow"/>
+<polygon points="233.2,230 228.7,239 237.7,239" class="sx-idef0-head"/>
+<text x="239.2" y="708" class="sx-idef0-label" text-anchor="start">Budget holder</text>
+<text x="239.2" y="721" class="sx-idef0-icom" text-anchor="start">M1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 308.2 190 L 348.2 190 L 348.2 320 L 388.2 320" class="sx-idef0-arrow"/>
+<polygon points="388.2,320 379.2,315.5 379.2,324.5" class="sx-idef0-head"/>
+<text x="314.2" y="184" class="sx-idef0-label" text-anchor="start">Approved requisition</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 463.2 76.66666666666666 L 463.2 280" class="sx-idef0-arrow"/>
+<polygon points="463.2,280 458.7,271 467.7,271" class="sx-idef0-head"/>
+<text x="469.2" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Preferred supplier list</text>
+<text x="469.2" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C2</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 463.2 730 L 463.2 360" class="sx-idef0-arrow"/>
+<polygon points="463.2,360 458.7,369 467.7,369" class="sx-idef0-head"/>
+<text x="469.2" y="708" class="sx-idef0-label" text-anchor="start">Buyer</text>
+<text x="469.2" y="721" class="sx-idef0-icom" text-anchor="start">M2</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 538.2 320 L 578.2 320 L 578.2 450 L 618.2 450" class="sx-idef0-arrow"/>
+<polygon points="618.2,450 609.2,445.5 609.2,454.5" class="sx-idef0-head"/>
+<text x="544.2" y="314" class="sx-idef0-label" text-anchor="start">Chosen supplier</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C3"><path d="M 693.2 76.66666666666666 L 693.2 410" class="sx-idef0-arrow"/>
+<polygon points="693.2,410 688.7,401 697.7,401" class="sx-idef0-head"/>
+<text x="699.2" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Contract terms</text>
+<text x="699.2" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C3</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M3"><path d="M 693.2 730 L 693.2 490" class="sx-idef0-arrow"/>
+<polygon points="693.2,490 688.7,499 697.7,499" class="sx-idef0-head"/>
+<text x="699.2" y="708" class="sx-idef0-label" text-anchor="start">ERP system</text>
+<text x="699.2" y="721" class="sx-idef0-icom" text-anchor="start">M3</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 768.2 450 L 808.2 450 L 808.2 580 L 848.2 580" class="sx-idef0-arrow"/>
+<polygon points="848.2,580 839.2,575.5 839.2,584.5" class="sx-idef0-head"/>
+<text x="774.2" y="444" class="sx-idef0-label" text-anchor="start">Purchase order</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I2"><path d="M 36.666666666666664 580 L 848.2 580" class="sx-idef0-arrow"/>
+<polygon points="848.2,580 839.2,575.5 839.2,584.5" class="sx-idef0-head"/>
+<text x="42.666666666666664" y="574" class="sx-idef0-label" text-anchor="start">Supplier invoice</text>
+<text x="42.666666666666664" y="587" class="sx-idef0-icom" text-anchor="start">I2</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C4"><path d="M 923.2 76.66666666666666 L 923.2 540" class="sx-idef0-arrow"/>
+<polygon points="923.2,540 918.7,531 927.7,531" class="sx-idef0-head"/>
+<text x="929.2" y="90.66666666666666" class="sx-idef0-label" text-anchor="start">Three-way match rule</text>
+<text x="929.2" y="103.66666666666666" class="sx-idef0-icom" text-anchor="start">C4</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M4"><path d="M 923.2 730 L 923.2 620" class="sx-idef0-arrow"/>
+<polygon points="923.2,620 918.7,629 927.7,629" class="sx-idef0-head"/>
+<text x="929.2" y="708" class="sx-idef0-label" text-anchor="start">Accounts payable</text>
+<text x="929.2" y="721" class="sx-idef0-icom" text-anchor="start">M4</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 998.2 580 L 1102.2 580" class="sx-idef0-arrow"/>
+<polygon points="1102.2,580 1093.2,575.5 1093.2,584.5" class="sx-idef0-head"/>
+<text x="1096.2" y="574" class="sx-idef0-label" text-anchor="end">Supplier payment</text>
+<text x="1096.2" y="587" class="sx-idef0-icom" text-anchor="end">O1</text></g>
+<g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="158.2" y="150" width="150" height="80" class="sx-idef0-box"/>
+<text x="233.2" y="190" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="233.2" dy="-7">Approve</tspan><tspan x="233.2" dy="14">requisition</tspan></text>
+<text x="302.2" y="224" class="sx-idef0-box-num" text-anchor="end">1</text></g>
+<g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="388.2" y="280" width="150" height="80" class="sx-idef0-box"/>
+<text x="463.2" y="320" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="463.2" dy="0">Select supplier</tspan></text>
+<text x="532.2" y="354" class="sx-idef0-box-num" text-anchor="end">2</text></g>
+<g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="618.2" y="410" width="150" height="80" class="sx-idef0-box"/>
+<text x="693.2" y="450" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="693.2" dy="-7">Place purchase</tspan><tspan x="693.2" dy="14">order</tspan></text>
+<text x="762.2" y="484" class="sx-idef0-box-num" text-anchor="end">3</text></g>
+<g class="sx-idef0-box-g" data-id="A4" data-number="4" data-node="A4"><rect x="848.2" y="540" width="150" height="80" class="sx-idef0-box"/>
+<text x="923.2" y="580" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="923.2" dy="-7">Match and pay</tspan><tspan x="923.2" dy="14">invoice</tspan></text>
+<text x="992.2" y="614" class="sx-idef0-box-num" text-anchor="end">4</text></g>
+<g class="sx-idef0-titleblock"><rect x="36.666666666666664" y="730" width="1064.8666666666666" height="34" class="sx-idef0-tb"/>
+<line x1="270.9373333333333" y1="730" x2="270.9373333333333" y2="764" class="sx-idef0-tb"/>
+<line x1="867.2626666666665" y1="730" x2="867.2626666666665" y2="764" class="sx-idef0-tb"/>
+<text x="42.666666666666664" y="743" class="sx-idef0-tb-key">NODE</text>
+<text x="42.666666666666664" y="757" class="sx-idef0-tb-text">A0</text>
+<text x="276.9373333333333" y="743" class="sx-idef0-tb-key">TITLE</text>
+<text x="276.9373333333333" y="757" class="sx-idef0-tb-text">Procurement</text>
+<text x="873.2626666666665" y="743" class="sx-idef0-tb-key">NUMBER</text>
+<text x="873.2626666666665" y="757" class="sx-idef0-tb-text">A0</text></g></g></svg>

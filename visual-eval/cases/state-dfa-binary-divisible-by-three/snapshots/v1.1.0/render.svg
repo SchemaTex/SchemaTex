@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="156" height="488" viewBox="0 0 156 488" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="64" cy="64" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="R0"><rect x="28" y="180" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<rect x="32" y="184" width="64" height="36" rx="4" ry="4" class="lt-state-body"/>
+<text x="64" y="206" text-anchor="middle" class="lt-state-name"><tspan x="64" dy="0">R0</tspan></text></g>
+<g class="lt-state lt-simple" data-id="R1"><rect x="28" y="300" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="64" y="326" text-anchor="middle" class="lt-state-name"><tspan x="64" dy="0">R1</tspan></text></g>
+<g class="lt-state lt-simple" data-id="R2"><rect x="28" y="420" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="64" y="446" text-anchor="middle" class="lt-state-name"><tspan x="64" dy="0">R2</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="R0"><path d="M 64 72 L 64 142 L 64 142 L 64 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="R0"/></g>
+<g class="lt-edge" data-edge-id="t3" data-from="R0" data-to="R1"><path d="M 56 224 L 56 262 L 56 262 L 56 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R0" data-to="R1"/>
+<line x1="56" y1="262" x2="94" y2="262" class="lt-transition"/>
+<rect x="94" y="254" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="94" y="265" text-anchor="start" class="lt-transition-label"><tspan x="94" dy="0">1</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="R1" data-to="R2"><path d="M 56 344 L 56 382 L 56 382 L 56 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R1" data-to="R2"/>
+<line x1="56" y1="382" x2="94" y2="382" class="lt-transition"/>
+<rect x="94" y="374" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="94" y="385" text-anchor="start" class="lt-transition-label"><tspan x="94" dy="0">0</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="R1" data-to="R0"><path d="M 72 300 L 72 262 L 72 262 L 72 224" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R1" data-to="R0"/>
+<line x1="72" y1="242" x2="94" y2="242" class="lt-transition"/>
+<rect x="94" y="234" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="94" y="245" text-anchor="start" class="lt-transition-label"><tspan x="94" dy="0">1</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="R2" data-to="R1"><path d="M 72 420 L 72 382 L 72 382 L 72 344" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R2" data-to="R1"/>
+<line x1="72" y1="362" x2="94" y2="362" class="lt-transition"/>
+<rect x="94" y="354" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="94" y="365" text-anchor="start" class="lt-transition-label"><tspan x="94" dy="0">0</tspan></text></g>
+<g class="lt-edge" data-edge-id="t2" data-from="R0" data-to="R0"><path d="M 100 195.4 C 128 183.4 102.8 152 74.8 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R0" data-to="R0"/>
+<line x1="112.2021484375" y1="180.87119140625" x2="128" y2="180.87119140625" class="lt-transition"/>
+<rect x="128" y="169.4" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="128" y="180.4" text-anchor="start" class="lt-transition-label"><tspan x="128" dy="0">0</tspan></text></g>
+<g class="lt-edge" data-edge-id="t7" data-from="R2" data-to="R2"><path d="M 100 435.4 C 128 423.4 102.8 392 74.8 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="R2" data-to="R2"/>
+<line x1="112.2021484375" y1="420.87119140625" x2="128" y2="420.87119140625" class="lt-transition"/>
+<rect x="128" y="409.4" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="128" y="420.4" text-anchor="start" class="lt-transition-label"><tspan x="128" dy="0">1</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

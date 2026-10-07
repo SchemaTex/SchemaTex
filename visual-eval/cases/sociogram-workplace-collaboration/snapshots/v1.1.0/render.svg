@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-diagram schematex-sociogram" viewBox="0 0 472 520" width="472" height="520"><title>Sociogram: Product Team Collaboration</title>
+<desc>Sociogram with 6 members and 7 connections</desc>
+<style>.schematex-sociogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.schematex-sociogram-node { fill: #ffffff; stroke: #2563eb; stroke-width: 2; }
+.schematex-sociogram-node-star { fill: #d97706; stroke: #d97706; stroke-width: 3; }
+.schematex-sociogram-node-isolate { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-neglectee { fill: #f1f5f9; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-rejected { fill: #dc2626; stroke: #dc2626; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-edge { stroke-linecap: round; }
+.schematex-sociogram-edge-positive { stroke: #059669; }
+.schematex-sociogram-edge-negative { stroke: #dc2626; stroke-dasharray: 6 3; }
+.schematex-sociogram-edge-neutral { stroke: #94a3b8; stroke-dasharray: 2 3; }
+.schematex-sociogram-label { font-size: 11px; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-edge-label { font-size: 9px; fill: #475569; text-anchor: middle; }
+.schematex-sociogram-title { font-size: 16px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-star-badge { font-size: 10px; fill: #d97706; }
+.schematex-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }</style>
+<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
+<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker>
+<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+<text x="212" y="20" class="schematex-sociogram-title">Product Team Collaboration</text>
+<g class="schematex-sociogram-edges" transform="translate(0,30)"><line x1="223" y1="99.05255888325765" x2="311.3153532995459" y2="252.01923788646684" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="alex" data-to="chen" marker-end="url(#sociogram-arrow)"/>
+<line x1="326.3153532995459" y1="168" x2="326.3153532995459" y2="248" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="bri" data-to="chen" marker-end="url(#sociogram-arrow)"/>
+<line x1="231.05255888325766" y1="333" x2="300.33459118601274" y2="293" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="dev" data-to="chen" marker-end="url(#sociogram-arrow)"/>
+<line x1="119.68464670045412" y1="278.00000000000006" x2="296.3153532995459" y2="278" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="eli" data-to="chen" marker-end="url(#sociogram-arrow)"/>
+<line x1="307.2627944162883" y1="267" x2="123.66540881398723" y2="161.00000000000009" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="chen" data-to="fran" marker-end="url(#sociogram-arrow)" marker-start="url(#sociogram-arrow)"/>
+<line x1="231.05255888325766" y1="91" x2="300.33459118601274" y2="131" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="alex" data-to="bri" marker-end="url(#sociogram-arrow)" marker-start="url(#sociogram-arrow)"/>
+<line x1="201" y1="324.94744111674237" x2="112.68464670045407" y2="171.98076211353325" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="dev" data-to="fran" marker-end="url(#sociogram-arrow)"/></g>
+<g class="schematex-sociogram-nodes" transform="translate(0,30)"><circle cx="212" cy="80" r="20" class="schematex-sociogram-node" data-node-id="alex"/>
+<circle cx="326.3153532995459" cy="146" r="20" class="schematex-sociogram-node" data-node-id="bri"/>
+<circle cx="326.3153532995459" cy="278" r="20" class="schematex-sociogram-node schematex-sociogram-node-star" data-node-id="chen"/>
+<polygon points="338.3153532995459,260 339.72603790504786,264.0583592135001 344.0216923973168,264.1458980337503 340.59788893865425,266.7416407864999 341.84206481330074,270.8541019662497 338.3153532995459,268.4 334.78864178579107,270.8541019662497 336.03281766043756,266.7416407864999 332.609014201775,264.1458980337503 336.90466869404395,264.0583592135001" fill="#d97706" class="schematex-sociogram-star-badge"/>
+<circle cx="212" cy="344" r="20" class="schematex-sociogram-node schematex-sociogram-node-neglectee" data-node-id="dev"/>
+<circle cx="97.68464670045412" cy="278.00000000000006" r="20" class="schematex-sociogram-node schematex-sociogram-node-neglectee" data-node-id="eli"/>
+<circle cx="97.68464670045405" cy="146.00000000000009" r="20" class="schematex-sociogram-node" data-node-id="fran"/></g>
+<g class="schematex-sociogram-labels" transform="translate(0,30)"><text x="212" y="115" class="schematex-sociogram-label" data-node-id="alex">alex</text>
+<text x="326.3153532995459" y="181" class="schematex-sociogram-label" data-node-id="bri">bri</text>
+<text x="326.3153532995459" y="313" class="schematex-sociogram-label" data-node-id="chen">chen</text>
+<text x="212" y="379" class="schematex-sociogram-label" data-node-id="dev">dev</text>
+<text x="97.68464670045412" y="313.00000000000006" class="schematex-sociogram-label" data-node-id="eli">eli</text>
+<text x="97.68464670045405" y="181.00000000000009" class="schematex-sociogram-label" data-node-id="fran">fran</text></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="480.5" class="schematex-legend-section">ROLES</text>
+<g class="schematex-legend-row" data-legend-key="role.star" data-legend-section="roles"><circle cx="79.25" cy="477" r="5" fill="#d97706" stroke="#d97706"/>
+<text x="98.25" y="480.5" class="schematex-legend-label">Star (sociometric center)</text></g>
+<g class="schematex-legend-row" data-legend-key="role.neglectee" data-legend-section="roles"><circle cx="292.25" cy="477" r="5" fill="#f1f5f9" stroke="#2563eb"/>
+<text x="311.25" y="480.5" class="schematex-legend-label">Neglectee</text></g>
+<text x="16" y="498.5" class="schematex-legend-section">TIES</text>
+<g class="schematex-legend-row" data-legend-key="valence.positive" data-legend-section="ties"><line x1="69.25" y1="495" x2="89.25" y2="495" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+<text x="98.25" y="498.5" class="schematex-legend-label">Positive tie</text></g></g></svg>

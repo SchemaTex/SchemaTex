@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-entity" role="img" aria-label="Riverbend Health system" width="1209" height="646" viewBox="0 0 1209 646"><title>Riverbend Health system</title>
+<desc>Entity structure diagram with 6 entities and 6 relationships</desc>
+<style>.lt-entity { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.lt-entity-title { font-size: 20px; font-weight: 600; fill: #0f172a; }
+.lt-entity-name { font-size: 13px; font-weight: 600; fill: #0f172a; text-anchor: middle; }
+.lt-entity-type { font-size: 11px; font-weight: 400; fill: #475569; text-anchor: middle; }
+.lt-entity-role { font: italic 10px sans-serif; fill: #475569; text-anchor: middle; }
+.lt-entity-note { font: 10px sans-serif; fill: #475569; text-anchor: middle; }
+.lt-entity-edge { stroke: #334155; stroke-width: 1.5; fill: none; }
+.lt-entity-edge-pool { stroke: #94a3b8; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-license { stroke: #475569; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-distribution { stroke: #b45309; stroke-width: 1.5; fill: none; stroke-dasharray: 2,4; }
+.lt-entity-edge-voting-pref { stroke: #2563eb; stroke-width: 1.5; fill: none; stroke-dasharray: 7,4; }
+.lt-entity-label { font-size: 11px; font-weight: 600; fill: #0f172a; text-anchor: middle; }
+.lt-entity-cluster { fill: none; stroke-dasharray: 6,4; stroke-width: 1.2; }
+.lt-entity-cluster-label { font: 600 11px sans-serif; letter-spacing: 0.5px; }
+.lt-entity-status-new { stroke: #059669; stroke-width: 2.2; }
+.lt-entity-status-eliminated { stroke: #dc2626; stroke-width: 2.2; }
+.lt-entity-status-modified { stroke: #d97706; stroke-width: 2.2; }
+.lt-entity-status-tag { font: 700 8px sans-serif; text-anchor: middle; letter-spacing: 0.5px; }</style>
+<defs><marker id="lt-entity-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#334155"/></marker>
+<marker id="lt-entity-arrow-contract" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#475569"/></marker>
+<marker id="lt-entity-arrow-green" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#b45309"/></marker>
+<marker id="lt-entity-arrow-grey" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#94a3b8"/></marker>
+<marker id="lt-entity-arrow-blue" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#2563eb"/></marker></defs>
+<text x="40" y="30" class="lt-entity-title" text-anchor="start">Riverbend Health system</text>
+<g transform="translate(0, 54)"><path d="M 595.1800000000001 124 L 595.1800000000001 179 L 188 179 L 188 234" class="lt-entity-edge"/>
+<path d="M 719.1800000000001 82 L 854.3600000000001 82 L 854.3600000000001 276 L 878.3600000000001 276" class="lt-entity-edge-voting-pref" marker-end="url(#lt-entity-arrow-blue)"/>
+<path d="M 595.1800000000001 124 L 595.1800000000001 234" class="lt-entity-edge"/>
+<path d="M 595.1800000000001 318 L 595.1800000000001 373 L 218 373 L 218 428" class="lt-entity-edge"/>
+<path d="M 878.3600000000001 82 L 854.3600000000001 82 L 854.3600000000001 74 L 743.1800000000001 74 L 743.1800000000001 82 L 719.1800000000001 82" class="lt-entity-edge-distribution" marker-end="url(#lt-entity-arrow-green)"/>
+<path d="M 64 470 L 40 470 L 40 342 L 336 342 L 336 276 L 312 276" class="lt-entity-edge-license" marker-end="url(#lt-entity-arrow-contract)"/>
+<g><text x="620.5712000000001" y="205" class="lt-entity-label">100%</text></g>
+<g><text x="243.3912" y="415.5" class="lt-entity-label">100%</text></g>
+<g><text x="798.7700000000001" y="64" class="lt-entity-label">Annual distributions</text></g>
+<g><text x="188" y="360" class="lt-entity-label">Pharmacy services contract</text></g>
+<g transform="translate(595.1800000000001, 82)" data-entity-id="parent" data-entity-type="foundation" data-jurisdiction=""><rect x="-124" y="-42" width="248" height="84" fill="#dbeafe" stroke="#334155" stroke-width="1.4"/>
+<text x="0" y="-12" class="lt-entity-name">Riverbend Health Foundation</text>
+<text x="0" y="4" class="lt-entity-type">Foundation</text>
+<text x="0" y="19" class="lt-entity-type">Tax-exempt parent</text></g>
+<g transform="translate(1023.3600000000001, 82)" data-entity-id="endow" data-entity-type="trust" data-jurisdiction="OH"><ellipse cx="0" cy="0" rx="145" ry="42" fill="#ede9fe" stroke="#334155" stroke-width="1.4"/>
+<text x="0" y="-4" class="lt-entity-name">Riverbend Endowment Trust</text>
+<text x="0" y="12" class="lt-entity-type">Trust · OH</text></g>
+<g transform="translate(188, 276)" data-entity-id="hosp" data-entity-type="corp" data-jurisdiction="OH"><rect x="-124" y="-42" width="248" height="84" rx="0" fill="#dbeafe" stroke="#334155" stroke-width="1.4"/>
+<text x="0" y="-12" class="lt-entity-name">Riverbend Community Hospital</text>
+<text x="0" y="4" class="lt-entity-type">Corporation · OH</text>
+<text x="0" y="19" class="lt-entity-type">501(c)(3), sole member: parent</text></g>
+<g transform="translate(1002.3600000000001, 276)" data-entity-id="clinics" data-entity-type="corp" data-jurisdiction="OH"><rect x="-124" y="-42" width="248" height="84" rx="0" fill="#dbeafe" stroke="#334155" stroke-width="1.4"/>
+<text x="0" y="-4" class="lt-entity-name">Riverbend Clinics, Inc.</text>
+<text x="0" y="12" class="lt-entity-type">Corporation · OH</text></g>
+<g transform="translate(595.1800000000001, 276)" data-entity-id="ventures" data-entity-type="llc" data-jurisdiction="OH"><rect x="-124" y="-42" width="248" height="84" rx="10" ry="10" fill="#dcfce7" stroke="#334155" stroke-width="1.4"/>
+<text x="0" y="-12" class="lt-entity-name">Riverbend Ventures, LLC</text>
+<text x="0" y="4" class="lt-entity-type">LLC · OH</text>
+<text x="0" y="19" class="lt-entity-type">Taxable subsidiary</text></g>
+<g transform="translate(218, 470)" data-entity-id="pharmacy" data-entity-type="disregarded" data-jurisdiction="OH"><g><rect x="-154" y="-42" width="308" height="84" rx="8" fill="#dcfce7" stroke="#334155" stroke-width="1.4"/>
+<ellipse cx="0" cy="0" rx="144" ry="32" fill="#f4fdf7" stroke="#334155" stroke-width="1.4"/></g>
+<text x="0" y="-4" class="lt-entity-name">Riverbend Pharmacy Services</text>
+<text x="0" y="12" class="lt-entity-type">Disregarded entity · OH</text></g></g></svg>

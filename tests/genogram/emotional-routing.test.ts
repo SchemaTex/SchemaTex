@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { genogram } from "../../src/diagrams/genogram";
+import { genogram, layoutGenogram, parseGenogram } from "../../src/diagrams/genogram";
+import { EMOTIONAL_REL_TYPES } from "../../src/diagrams/genogram/routing";
+import { relationshipPoints } from "../../src/diagrams/genogram/line-forms";
 import { estimateTextWidth } from "../../src/core/text-metrics";
 
 interface Point { x: number; y: number }
@@ -140,14 +142,18 @@ function verify(svg: string, checkCurrentPatterns = true) {
         for (const v of triangle) { expect(v.x).toBeGreaterThanOrEqual(0); expect(v.y).toBeGreaterThanOrEqual(0); expect(v.x).toBeLessThanOrEqual(width); expect(v.y).toBeLessThanOrEqual(height); }
       }
     }
-    // The average parallel endpoint lies on the declared owner's cardinal perimeter.
+    // The average parallel endpoint lies on the declared owner's perimeter.
     const runCount = type === "cutoff" ? 2 : type === "conflict" ? 1 : runs.length;
     const arrow = strokes.find(e => e.attrs["data-mark"] === "arrow");
     const first = points(runs[0])[0], last = arrow ? points(arrow)[1] : points(runs[runCount - 1]).at(-1)!;
     for (const [id, point] of [[group.attrs["data-from"], first], [group.attrs["data-to"], last]] as const) {
       const node = nodes.find(n => n.attrs["data-individual-id"] === id)!;
       const box = symbolBox(node, all), cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-      const distance = Math.min(Math.hypot(point.x - cx, point.y - box.y), Math.hypot(point.x - box.x, point.y - cy), Math.hypot(point.x - box.x - box.width, point.y - cy));
+      const shape = all.find(e => e.ancestors.includes(node) && hasClass(e, "schematex-genogram-shape"))!;
+      const sideY = Math.max(box.y, Math.min(box.y + box.height, point.y));
+      const distance = shape.tag === "rect"
+        ? Math.min(Math.hypot(point.x - cx, point.y - box.y), Math.hypot(point.x - box.x, point.y - sideY), Math.hypot(point.x - box.x - box.width, point.y - sideY))
+        : Math.min(Math.hypot(point.x - cx, point.y - box.y), Math.hypot(point.x - box.x, point.y - cy), Math.hypot(point.x - box.x - box.width, point.y - cy));
       expect(distance).toBeLessThanOrEqual(4.01);
     }
   }
@@ -371,6 +377,45 @@ ${children}
     expect(new Set(runs.map(e => e.attrs.d)).size).toBe(runs.length);
     expect(strokes.filter(e => e.attrs["data-mark"] === "arrow")).toHaveLength(3);
   });
+  it("keeps cutoff, hostile and close ties on separate tracks with direct endpoint approaches", () => {
+    const ast = parseGenogram(`genogram
+  a [male]
+  b [female]
+  a -- b
+    older [female, 1958]
+    younger [female, 1960]
+  older -- spouse [male]
+    cousin [male]
+  younger -- partner [male]
+    child [male, index]
+  child -cutoff- older
+  child -hostile- cousin
+  child -close- younger`);
+    const layout = layoutGenogram(ast, { nodeSpacingX: 80, nodeSpacingY: 100, nodeWidth: 40, nodeHeight: 40 });
+    const runs = layout.edges.map(edge => ({ edge, points: relationshipPoints(edge.path) }));
+    for (const { edge, points: p } of runs.filter(run => EMOTIONAL_REL_TYPES.has(run.edge.relationship.type))) {
+      for (const other of runs.filter(run => run.edge !== edge)) {
+        for (let i = 1; i < p.length; i++) for (let j = 1; j < other.points.length; j++) {
+          const a = p[i - 1], b = p[i], c = other.points[j - 1], d = other.points[j];
+          const horizontal = Math.abs(a.y - b.y) < 0.001 && Math.abs(c.y - d.y) < 0.001 && Math.abs(a.y - c.y) < 1;
+          const vertical = Math.abs(a.x - b.x) < 0.001 && Math.abs(c.x - d.x) < 0.001 && Math.abs(a.x - c.x) < 1;
+          if (!horizontal && !vertical) continue;
+          const values = horizontal ? [a.x, b.x, c.x, d.x] : [a.y, b.y, c.y, d.y];
+          const overlap = Math.min(Math.max(values[0], values[1]), Math.max(values[2], values[3])) -
+            Math.max(Math.min(values[0], values[1]), Math.min(values[2], values[3]));
+          // A shared person's attachment may coincide for the four-pixel port
+          // stub; the actual relationship runs must remain distinct.
+          expect(overlap).toBeLessThanOrEqual(4.001);
+        }
+      }
+      for (const atEnd of [false, true]) {
+        const end = atEnd ? p.at(-1)! : p[0];
+        const approach = atEnd ? p.at(-2)! : p[1];
+        expect(end.x === approach.x || end.y === approach.y).toBe(true);
+      }
+    }
+  });
+
   it("keeps a titleless chart within a legend-widened viewBox, including scene and pins", () => {
     const input = 'genogram\n a [male]\n b [female]\n a -conflict- b [label: "Disagreement"]';
     verify(genogram.render(input));

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Buy vs Build Decision" width="1378" height="616" viewBox="0 0 1378 616"><title>Buy vs Build Decision</title>
+<desc>Decision tree (taxonomy mode) with 11 nodes and 10 edges</desc>
+<style>.lt-dtree { font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.lt-dtree-title { font-size: 20px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-edge { fill: none; stroke: #3E4C59; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #2B7A4B; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #3E4C59; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font-size: 11px; font-weight: 500; fill: #1F2933; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font-size: 10px; font-weight: 400; font-style: italic; fill: #52606D; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.4; }
+.lt-dtree-node-label { font-size: 12px; font-weight: 500; fill: #1F2933; }
+.lt-dtree-ev { font-size: 10px; font-weight: 500; fill: #52606D; }
+.lt-dtree-ev-optimal { font-size: 10px; font-weight: 600; fill: #2B7A4B; }
+.lt-dtree-payoff { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-payoff-neg { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-card { stroke-width: 1.5; }
+.lt-dtree-card-label { font-size: 13px; fill: #1F2933; text-anchor: middle; }
+.lt-dtree-card-stats { font-size: 11px; fill: #52606D; text-anchor: middle; }
+.lt-dtree-card-header { font-size: 10px; font-weight: 700; text-anchor: middle; }
+.lt-dtree-badge { font-size: 10px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+.lt-dtree-legend { font-size: 11px; fill: #52606D; }</style>
+<text x="40" y="32" class="lt-dtree-title" text-anchor="start">Buy vs Build Decision</text>
+<defs><marker id="dtree-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 8 4 L 0 8 Z" fill="#3E4C59"/></marker></defs>
+<g transform="translate(0, 52)" data-mode="taxonomy"><path d="M 733.5 98 L 733.5 120 Q 733.5 126 727.5 126 L 412.5 126 Q 406.5 126 406.5 132 L 406.5 178" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 733.5 98 L 733.5 120 Q 733.5 126 739.5 126 L 1054.5 126 Q 1060.5 126 1060.5 132 L 1060.5 178" class="lt-dtree-edge" data-edge="n1-&gt;n7" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 406.5 236 L 406.5 258 Q 406.5 264 400.5 264 L 249 264 Q 243 264 243 270 L 243 319" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 406.5 236 L 406.5 258 Q 406.5 264 412.5 264 L 564 264 Q 570 264 570 270 L 570 460" class="lt-dtree-edge" data-edge="n2-&gt;n6" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 377 L 243 399 Q 243 405 237 405 L 140 405 Q 134 405 134 411 L 134 460" class="lt-dtree-edge" data-edge="n3-&gt;n4" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 243 377 L 243 399 Q 243 405 249 405 L 346 405 Q 352 405 352 411 L 352 460" class="lt-dtree-edge" data-edge="n3-&gt;n5" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 1060.5 236 L 1060.5 258 Q 1060.5 264 1054.5 264 L 903 264 Q 897 264 897 270 L 897 319" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 1060.5 236 L 1060.5 258 Q 1060.5 264 1066.5 264 L 1218 264 Q 1224 264 1224 270 L 1224 460" class="lt-dtree-edge" data-edge="n7-&gt;n11" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 377 L 897 399 Q 897 405 891 405 L 794 405 Q 788 405 788 411 L 788 460" class="lt-dtree-edge" data-edge="n8-&gt;n9" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 897 377 L 897 399 Q 897 405 903 405 L 1000 405 Q 1006 405 1006 411 L 1006 460" class="lt-dtree-edge" data-edge="n8-&gt;n10" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<rect x="367.36" y="137" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="381.93" y="144" class="lt-dtree-edge-label">Yes</text>
+<rect x="1070.5" y="137" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1082.1" y="144" class="lt-dtree-edge-label">No</text>
+<rect x="203.86" y="275" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="218.43" y="282" class="lt-dtree-edge-label">Yes</text>
+<rect x="580" y="275" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="591.6" y="282" class="lt-dtree-edge-label">No</text>
+<rect x="94.86000000000001" y="416" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="109.43" y="423" class="lt-dtree-edge-label">Yes</text>
+<rect x="362" y="416" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="373.6" y="423" class="lt-dtree-edge-label">No</text>
+<rect x="857.8599999999999" y="275" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="872.43" y="282" class="lt-dtree-edge-label">Yes</text>
+<rect x="1234" y="275" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1245.6" y="282" class="lt-dtree-edge-label">No</text>
+<rect x="748.8599999999999" y="416" width="29.14" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="763.43" y="423" class="lt-dtree-edge-label">Yes</text>
+<rect x="1015.9999999999999" y="416" width="23.200000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1027.6" y="423" class="lt-dtree-edge-label">No</text>
+<g data-node-id="n1" data-node-kind="question"><polygon points="615.96,69 633.96,40 833.04,40 851.04,69 833.04,98 633.96,98" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="615.96" cy="69" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="615.96" y="72.5" class="lt-dtree-badge">1</text>
+<text x="733.5" y="65" class="lt-dtree-card-label">Does a product meet critical</text>
+<text x="733.5" y="82" class="lt-dtree-card-label">requirements?</text></g>
+<g data-node-id="n2" data-node-kind="question"><polygon points="284.02000000000004,207 302.02000000000004,178 510.98,178 528.98,207 510.98,236 302.02000000000004,236" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="284.02000000000004" cy="207" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="284.02000000000004" y="210.5" class="lt-dtree-badge">2</text>
+<text x="406.5" y="203" class="lt-dtree-card-label">Can vendor pass security and</text>
+<text x="406.5" y="220" class="lt-dtree-card-label">compliance review?</text></g>
+<g data-node-id="n3" data-node-kind="question"><polygon points="114.41000000000003,348 132.41000000000003,319 353.59,319 371.59,348 353.59,377 132.41000000000003,377" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="114.41000000000003" cy="348" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="114.41000000000003" y="351.5" class="lt-dtree-badge">4</text>
+<text x="243" y="344" class="lt-dtree-card-label">Is total cost within the approved</text>
+<text x="243" y="361" class="lt-dtree-card-label">budget?</text></g>
+<g data-node-id="n4" data-node-kind="answer"><rect x="40" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="134" y="496.5" class="lt-dtree-card-label">Buy and integrate</text></g>
+<g data-node-id="n5" data-node-kind="answer"><rect x="258" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="352" y="488" class="lt-dtree-card-label">Negotiate or seek another</text>
+<text x="352" y="505" class="lt-dtree-card-label">vendor</text></g>
+<g data-node-id="n6" data-node-kind="answer"><rect x="476" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="570" y="488" class="lt-dtree-card-label">Build internally or use a</text>
+<text x="570" y="505" class="lt-dtree-card-label">compliant platform</text></g>
+<g data-node-id="n7" data-node-kind="question"><polygon points="916.83,207 934.83,178 1186.17,178 1204.17,207 1186.17,236 934.83,236" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="916.83" cy="207" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="916.83" y="210.5" class="lt-dtree-badge">3</text>
+<text x="1060.5" y="203" class="lt-dtree-card-label">Can the team build a safe MVP before</text>
+<text x="1060.5" y="220" class="lt-dtree-card-label">the deadline?</text></g>
+<g data-node-id="n8" data-node-kind="question"><polygon points="767.5,348 785.5,319 1008.5,319 1026.5,348 1008.5,377 785.5,377" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<circle cx="767.5" cy="348" r="9" fill="#3E4C59" stroke="#ffffff" stroke-width="1.5"/>
+<text x="767.5" y="351.5" class="lt-dtree-badge">5</text>
+<text x="897" y="344" class="lt-dtree-card-label">Is long-term ownership capacity</text>
+<text x="897" y="361" class="lt-dtree-card-label">funded?</text></g>
+<g data-node-id="n9" data-node-kind="answer"><rect x="694" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="788" y="496.5" class="lt-dtree-card-label">Build in-house</text></g>
+<g data-node-id="n10" data-node-kind="answer"><rect x="912" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="1006" y="488" class="lt-dtree-card-label">Reduce scope or use a</text>
+<text x="1006" y="505" class="lt-dtree-card-label">managed service</text></g>
+<g data-node-id="n11" data-node-kind="answer"><rect x="1130" y="460" width="188" height="64" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="1224" y="488" class="lt-dtree-card-label">Buy adjacent capability and</text>
+<text x="1224" y="505" class="lt-dtree-card-label">defer custom features</text></g></g></svg>

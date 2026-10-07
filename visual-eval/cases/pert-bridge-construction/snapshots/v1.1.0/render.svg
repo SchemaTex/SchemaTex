@@ -1,0 +1,317 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-pert" role="img" aria-label="Bridge Construction" width="2643" height="450" viewBox="0 0 2643 450" data-diagram-type="pert"><title>PERT network — Bridge Construction</title>
+<desc>13 activities, project duration 88 days, critical path A → B → D → E → F → H → I → J → K → L → M.</desc>
+<style>.sx-pert { font-family: system-ui, -apple-system, sans-serif; }
+.sx-pert-task .task-box { fill: #fbfdff; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task .name-band { fill: #e7f0fb; }
+.sx-pert-task.critical .task-box { stroke: #d2604f; stroke-width: 2.2; fill: #fffaf8; }
+.sx-pert-task.critical .name-band { fill: #fbe6e0; }
+.sx-pert-div { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-task.critical .sx-pert-div { stroke: #f0d0c7; }
+.sx-pert-field { font-size: 11px; fill: #2c4257; }
+.sx-pert-field-label { font-size: 8px; fill: #8497ad; letter-spacing: 0.3px; }
+.sx-pert-name { font-size: 13px; font-weight: 600; fill: #234567; }
+.sx-pert-task.critical .sx-pert-name { fill: #8a3322; }
+.sx-pert-id { font-size: 10px; fill: #728198; }
+.sx-pert-sigma { font-size: 9px; fill: #8497ad; }
+.sx-pert-task.critical .slack { font-weight: 700; fill: #d2604f; }
+.sx-pert-ms { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .sx-pert-ms { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-task .ts-bar { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .ts-bar { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge { stroke: #9fb0c6; stroke-width: 1.5; fill: none; }
+.sx-pert-edge.critical { stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge-label { font-size: 10px; fill: #2c4257; }
+.sx-pert-edge-label.critical { fill: #d2604f; }
+.sx-pert-edge-halo { fill: #ffffff; opacity: 0.92; }
+.sx-pert-sentinel circle { fill: #eef2f8; stroke: #8497ad; stroke-width: 1.4; }
+.sx-pert-sentinel text { font-size: 10px; fill: #728198; }
+.sx-pert-title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+.sx-pert-lane line { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-lane .lane-fill { fill: #f6f9fd; }
+.sx-pert-lane .lane-fill.alt { fill: #eef3fa; }
+.sx-pert-lane-label { font-size: 12px; font-weight: 600; fill: #234567; }
+.sx-pert-axis line { stroke: #aebccf; }
+.sx-pert-axis .baseline { stroke: #8497ad; stroke-width: 1.2; }
+.sx-pert-axis text { font-size: 9px; fill: #728198; }
+.sx-pert-grid { stroke: #e3eaf3; stroke-width: 1; }
+.sx-pert-summary { font-size: 11px; fill: #728198; }
+.sx-pert-summary .crit { fill: #d2604f; font-weight: 600; }
+.sx-pert-aoa-event circle { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.6; }
+.sx-pert-aoa-event.critical circle { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-event text { font-size: 13px; font-weight: 700; fill: #234567; }
+.sx-pert-aoa-event.critical text { fill: #8a3322; }
+.sx-pert-aoa-arc { stroke: #9fb0c6; stroke-width: 1.6; fill: none; }
+.sx-pert-aoa-arc.critical { stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-arc.dummy { stroke: #9fb0c6; stroke-width: 1.3; stroke-dasharray: 5 4; }
+.sx-pert-aoa-name { font-size: 11px; font-weight: 600; fill: #234567; }
+.sx-pert-aoa-name.critical { fill: #d2604f; }
+.sx-pert-aoa-dur { font-size: 10px; fill: #8497ad; }
+.sx-pert-aoa-dur.critical { fill: #d2604f; }</style>
+<defs><marker id="sx-pert-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#9fb0c6"/></marker>
+<marker id="sx-pert-arrow-crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#d2604f"/></marker></defs>
+<text x="1321.5" y="26" class="sx-pert-title" text-anchor="middle">Bridge Construction</text>
+<g class="sx-pert-edges"><path class="sx-pert-edge critical" d="M 159 233 L 214.5 233 L 214.5 109 L 270 109" marker-end="url(#sx-pert-arrow-crit)" data-from="A" data-to="B" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 159 233 L 214.5 233 L 214.5 233 L 270 233" marker-end="url(#sx-pert-arrow)" data-from="A" data-to="C" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 450 109 L 483 109 L 483 233 L 516 233" marker-end="url(#sx-pert-arrow-crit)" data-from="B" data-to="D" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 450 233 L 483 233 L 483 233 L 516 233" marker-end="url(#sx-pert-arrow)" data-from="C" data-to="D" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 696 233 L 729 233 L 729 233 L 762 233" marker-end="url(#sx-pert-arrow-crit)" data-from="D" data-to="E" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 942 233 L 975 233 L 975 233 L 1008 233" marker-end="url(#sx-pert-arrow-crit)" data-from="E" data-to="F" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 159 233 L 214.5 233 L 214.5 357 L 270 357" marker-end="url(#sx-pert-arrow)" data-from="A" data-to="G" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 1188 233 L 1221 233 L 1221 233 L 1254 233" marker-end="url(#sx-pert-arrow-crit)" data-from="F" data-to="H" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 450 357 L 852 357 L 852 233 L 1254 233" marker-end="url(#sx-pert-arrow)" data-from="G" data-to="H" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 1434 233 L 1467 233 L 1467 233 L 1500 233" marker-end="url(#sx-pert-arrow-crit)" data-from="H" data-to="I" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 1680 233 L 1713 233 L 1713 233 L 1746 233" marker-end="url(#sx-pert-arrow-crit)" data-from="I" data-to="J" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 1926 233 L 1959 233 L 1959 233 L 1992 233" marker-end="url(#sx-pert-arrow-crit)" data-from="J" data-to="K" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 2172 233 L 2205 233 L 2205 233 L 2238 233" marker-end="url(#sx-pert-arrow-crit)" data-from="K" data-to="L" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 2418 233 L 2473.5 233 L 2473.5 233 L 2529 233" marker-end="url(#sx-pert-arrow-crit)" data-from="L" data-to="M" data-type="FS" data-lag="0" data-critical="true"/></g>
+<g class="sx-pert-tasks"><g class="sx-pert-task critical" data-id="A" data-es="0" data-ef="0" data-ls="0" data-lf="0" data-slack="0" data-duration="0" data-critical="true"><polygon class="sx-pert-ms" points="114,188 159,233 114,278 69,233"/>
+<text class="sx-pert-name" x="114" y="231" text-anchor="middle">Notice to proceed</text>
+<text class="sx-pert-id" x="114" y="245" text-anchor="middle">@ 0</text></g>
+<g class="sx-pert-task critical" data-id="B" data-es="0" data-ef="8" data-ls="0" data-lf="8" data-slack="0" data-duration="8" data-critical="true" data-tag="engineering"><rect class="task-box" x="270" y="64" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="270.7" y="86" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="270" y1="86" x2="450" y2="86"/>
+<line class="sx-pert-div" x1="270" y1="132" x2="450" y2="132"/>
+<line class="sx-pert-div" x1="330" y1="64" x2="330" y2="86"/>
+<line class="sx-pert-div" x1="390" y1="64" x2="390" y2="86"/>
+<line class="sx-pert-div" x1="330" y1="132" x2="330" y2="154"/>
+<line class="sx-pert-div" x1="390" y1="132" x2="390" y2="154"/>
+<g><text class="sx-pert-field-label" x="300" y="73" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="300" y="83" text-anchor="middle">0</text></g>
+<g><text class="sx-pert-field-label" x="360" y="73" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="360" y="83" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field-label" x="420" y="73" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="420" y="83" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field" x="300" y="145" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="300" y="153" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="360" y="145" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="360" y="153" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="420" y="145" text-anchor="middle">8</text>
+<text class="sx-pert-field-label" x="420" y="153" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="360" y="105" text-anchor="middle">Survey and setting out</text>
+<text class="sx-pert-id" x="360" y="119" text-anchor="middle">B</text></g>
+<g class="sx-pert-task" data-id="C" data-es="0" data-ef="6" data-ls="2" data-lf="8" data-slack="2" data-duration="6" data-critical="false" data-tag="compliance"><rect class="task-box" x="270" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="270.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="270" y1="210" x2="450" y2="210"/>
+<line class="sx-pert-div" x1="270" y1="256" x2="450" y2="256"/>
+<line class="sx-pert-div" x1="330" y1="188" x2="330" y2="210"/>
+<line class="sx-pert-div" x1="390" y1="188" x2="390" y2="210"/>
+<line class="sx-pert-div" x1="330" y1="256" x2="330" y2="278"/>
+<line class="sx-pert-div" x1="390" y1="256" x2="390" y2="278"/>
+<g><text class="sx-pert-field-label" x="300" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="300" y="207" text-anchor="middle">0</text></g>
+<g><text class="sx-pert-field-label" x="360" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="360" y="207" text-anchor="middle">6</text></g>
+<g><text class="sx-pert-field-label" x="420" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="420" y="207" text-anchor="middle">6</text></g>
+<g><text class="sx-pert-field" x="300" y="269" text-anchor="middle">2</text>
+<text class="sx-pert-field-label" x="300" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="360" y="269" text-anchor="middle">2</text>
+<text class="sx-pert-field-label" x="360" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="420" y="269" text-anchor="middle">8</text>
+<text class="sx-pert-field-label" x="420" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="360" y="229" text-anchor="middle">Environmental controls</text>
+<text class="sx-pert-id" x="360" y="243" text-anchor="middle">C</text></g>
+<g class="sx-pert-task" data-id="G" data-es="0" data-ef="20" data-ls="28" data-lf="48" data-slack="28" data-duration="20" data-critical="false" data-tag="steel"><rect class="task-box" x="270" y="312" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="270.7" y="334" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="270" y1="334" x2="450" y2="334"/>
+<line class="sx-pert-div" x1="270" y1="380" x2="450" y2="380"/>
+<line class="sx-pert-div" x1="330" y1="312" x2="330" y2="334"/>
+<line class="sx-pert-div" x1="390" y1="312" x2="390" y2="334"/>
+<line class="sx-pert-div" x1="330" y1="380" x2="330" y2="402"/>
+<line class="sx-pert-div" x1="390" y1="380" x2="390" y2="402"/>
+<g><text class="sx-pert-field-label" x="300" y="321" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="300" y="331" text-anchor="middle">0</text></g>
+<g><text class="sx-pert-field-label" x="360" y="321" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="360" y="331" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field-label" x="420" y="321" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="420" y="331" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field" x="300" y="393" text-anchor="middle">28</text>
+<text class="sx-pert-field-label" x="300" y="401" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="360" y="393" text-anchor="middle">28</text>
+<text class="sx-pert-field-label" x="360" y="401" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="420" y="393" text-anchor="middle">48</text>
+<text class="sx-pert-field-label" x="420" y="401" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="360" y="353" text-anchor="middle">Fabricate girders</text>
+<text class="sx-pert-id" x="360" y="367" text-anchor="middle">G</text></g>
+<g class="sx-pert-task critical" data-id="D" data-es="8" data-ef="20" data-ls="8" data-lf="20" data-slack="0" data-duration="12" data-critical="true" data-tag="civil"><rect class="task-box" x="516" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="516.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="516" y1="210" x2="696" y2="210"/>
+<line class="sx-pert-div" x1="516" y1="256" x2="696" y2="256"/>
+<line class="sx-pert-div" x1="576" y1="188" x2="576" y2="210"/>
+<line class="sx-pert-div" x1="636" y1="188" x2="636" y2="210"/>
+<line class="sx-pert-div" x1="576" y1="256" x2="576" y2="278"/>
+<line class="sx-pert-div" x1="636" y1="256" x2="636" y2="278"/>
+<g><text class="sx-pert-field-label" x="546" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="546" y="207" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field-label" x="606" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="606" y="207" text-anchor="middle">12</text></g>
+<g><text class="sx-pert-field-label" x="666" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="666" y="207" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field" x="546" y="269" text-anchor="middle">8</text>
+<text class="sx-pert-field-label" x="546" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="606" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="606" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="666" y="269" text-anchor="middle">20</text>
+<text class="sx-pert-field-label" x="666" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="606" y="229" text-anchor="middle">Excavate foundations</text>
+<text class="sx-pert-id" x="606" y="243" text-anchor="middle">D</text></g>
+<g class="sx-pert-task critical" data-id="E" data-es="20" data-ef="30" data-ls="20" data-lf="30" data-slack="0" data-duration="10" data-critical="true" data-tag="civil"><rect class="task-box" x="762" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="762.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="762" y1="210" x2="942" y2="210"/>
+<line class="sx-pert-div" x1="762" y1="256" x2="942" y2="256"/>
+<line class="sx-pert-div" x1="822" y1="188" x2="822" y2="210"/>
+<line class="sx-pert-div" x1="882" y1="188" x2="882" y2="210"/>
+<line class="sx-pert-div" x1="822" y1="256" x2="822" y2="278"/>
+<line class="sx-pert-div" x1="882" y1="256" x2="882" y2="278"/>
+<g><text class="sx-pert-field-label" x="792" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="792" y="207" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field-label" x="852" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="852" y="207" text-anchor="middle">10</text></g>
+<g><text class="sx-pert-field-label" x="912" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="912" y="207" text-anchor="middle">30</text></g>
+<g><text class="sx-pert-field" x="792" y="269" text-anchor="middle">20</text>
+<text class="sx-pert-field-label" x="792" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="852" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="852" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="912" y="269" text-anchor="middle">30</text>
+<text class="sx-pert-field-label" x="912" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="852" y="229" text-anchor="middle">Pour foundations</text>
+<text class="sx-pert-id" x="852" y="243" text-anchor="middle">E</text></g>
+<g class="sx-pert-task critical" data-id="F" data-es="30" data-ef="48" data-ls="30" data-lf="48" data-slack="0" data-duration="18" data-critical="true" data-tag="civil"><rect class="task-box" x="1008" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1008.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1008" y1="210" x2="1188" y2="210"/>
+<line class="sx-pert-div" x1="1008" y1="256" x2="1188" y2="256"/>
+<line class="sx-pert-div" x1="1068" y1="188" x2="1068" y2="210"/>
+<line class="sx-pert-div" x1="1128" y1="188" x2="1128" y2="210"/>
+<line class="sx-pert-div" x1="1068" y1="256" x2="1068" y2="278"/>
+<line class="sx-pert-div" x1="1128" y1="256" x2="1128" y2="278"/>
+<g><text class="sx-pert-field-label" x="1038" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="1038" y="207" text-anchor="middle">30</text></g>
+<g><text class="sx-pert-field-label" x="1098" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="1098" y="207" text-anchor="middle">18</text></g>
+<g><text class="sx-pert-field-label" x="1158" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="1158" y="207" text-anchor="middle">48</text></g>
+<g><text class="sx-pert-field" x="1038" y="269" text-anchor="middle">30</text>
+<text class="sx-pert-field-label" x="1038" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="1098" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="1098" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="1158" y="269" text-anchor="middle">48</text>
+<text class="sx-pert-field-label" x="1158" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="1098" y="229" text-anchor="middle">Build piers and abutments</text>
+<text class="sx-pert-id" x="1098" y="243" text-anchor="middle">F</text></g>
+<g class="sx-pert-task critical" data-id="H" data-es="48" data-ef="56" data-ls="48" data-lf="56" data-slack="0" data-duration="8" data-critical="true" data-tag="steel"><rect class="task-box" x="1254" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1254.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1254" y1="210" x2="1434" y2="210"/>
+<line class="sx-pert-div" x1="1254" y1="256" x2="1434" y2="256"/>
+<line class="sx-pert-div" x1="1314" y1="188" x2="1314" y2="210"/>
+<line class="sx-pert-div" x1="1374" y1="188" x2="1374" y2="210"/>
+<line class="sx-pert-div" x1="1314" y1="256" x2="1314" y2="278"/>
+<line class="sx-pert-div" x1="1374" y1="256" x2="1374" y2="278"/>
+<g><text class="sx-pert-field-label" x="1284" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="1284" y="207" text-anchor="middle">48</text></g>
+<g><text class="sx-pert-field-label" x="1344" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="1344" y="207" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field-label" x="1404" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="1404" y="207" text-anchor="middle">56</text></g>
+<g><text class="sx-pert-field" x="1284" y="269" text-anchor="middle">48</text>
+<text class="sx-pert-field-label" x="1284" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="1344" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="1344" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="1404" y="269" text-anchor="middle">56</text>
+<text class="sx-pert-field-label" x="1404" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="1344" y="229" text-anchor="middle">Erect girders</text>
+<text class="sx-pert-id" x="1344" y="243" text-anchor="middle">H</text></g>
+<g class="sx-pert-task critical" data-id="I" data-es="56" data-ef="70" data-ls="56" data-lf="70" data-slack="0" data-duration="14" data-critical="true" data-tag="civil"><rect class="task-box" x="1500" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1500.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1500" y1="210" x2="1680" y2="210"/>
+<line class="sx-pert-div" x1="1500" y1="256" x2="1680" y2="256"/>
+<line class="sx-pert-div" x1="1560" y1="188" x2="1560" y2="210"/>
+<line class="sx-pert-div" x1="1620" y1="188" x2="1620" y2="210"/>
+<line class="sx-pert-div" x1="1560" y1="256" x2="1560" y2="278"/>
+<line class="sx-pert-div" x1="1620" y1="256" x2="1620" y2="278"/>
+<g><text class="sx-pert-field-label" x="1530" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="1530" y="207" text-anchor="middle">56</text></g>
+<g><text class="sx-pert-field-label" x="1590" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="1590" y="207" text-anchor="middle">14</text></g>
+<g><text class="sx-pert-field-label" x="1650" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="1650" y="207" text-anchor="middle">70</text></g>
+<g><text class="sx-pert-field" x="1530" y="269" text-anchor="middle">56</text>
+<text class="sx-pert-field-label" x="1530" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="1590" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="1590" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="1650" y="269" text-anchor="middle">70</text>
+<text class="sx-pert-field-label" x="1650" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="1590" y="229" text-anchor="middle">Cast bridge deck</text>
+<text class="sx-pert-id" x="1590" y="243" text-anchor="middle">I</text></g>
+<g class="sx-pert-task critical" data-id="J" data-es="70" data-ef="78" data-ls="70" data-lf="78" data-slack="0" data-duration="8" data-critical="true" data-tag="finishes"><rect class="task-box" x="1746" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1746.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1746" y1="210" x2="1926" y2="210"/>
+<line class="sx-pert-div" x1="1746" y1="256" x2="1926" y2="256"/>
+<line class="sx-pert-div" x1="1806" y1="188" x2="1806" y2="210"/>
+<line class="sx-pert-div" x1="1866" y1="188" x2="1866" y2="210"/>
+<line class="sx-pert-div" x1="1806" y1="256" x2="1806" y2="278"/>
+<line class="sx-pert-div" x1="1866" y1="256" x2="1866" y2="278"/>
+<g><text class="sx-pert-field-label" x="1776" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="1776" y="207" text-anchor="middle">70</text></g>
+<g><text class="sx-pert-field-label" x="1836" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="1836" y="207" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field-label" x="1896" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="1896" y="207" text-anchor="middle">78</text></g>
+<g><text class="sx-pert-field" x="1776" y="269" text-anchor="middle">70</text>
+<text class="sx-pert-field-label" x="1776" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="1836" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="1836" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="1896" y="269" text-anchor="middle">78</text>
+<text class="sx-pert-field-label" x="1896" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="1836" y="229" text-anchor="middle">Install barriers and drainage</text>
+<text class="sx-pert-id" x="1836" y="243" text-anchor="middle">J</text></g>
+<g class="sx-pert-task critical" data-id="K" data-es="78" data-ef="85" data-ls="78" data-lf="85" data-slack="0" data-duration="7" data-critical="true" data-tag="finishes"><rect class="task-box" x="1992" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1992.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1992" y1="210" x2="2172" y2="210"/>
+<line class="sx-pert-div" x1="1992" y1="256" x2="2172" y2="256"/>
+<line class="sx-pert-div" x1="2052" y1="188" x2="2052" y2="210"/>
+<line class="sx-pert-div" x1="2112" y1="188" x2="2112" y2="210"/>
+<line class="sx-pert-div" x1="2052" y1="256" x2="2052" y2="278"/>
+<line class="sx-pert-div" x1="2112" y1="256" x2="2112" y2="278"/>
+<g><text class="sx-pert-field-label" x="2022" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="2022" y="207" text-anchor="middle">78</text></g>
+<g><text class="sx-pert-field-label" x="2082" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="2082" y="207" text-anchor="middle">7</text></g>
+<g><text class="sx-pert-field-label" x="2142" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="2142" y="207" text-anchor="middle">85</text></g>
+<g><text class="sx-pert-field" x="2022" y="269" text-anchor="middle">78</text>
+<text class="sx-pert-field-label" x="2022" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="2082" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="2082" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="2142" y="269" text-anchor="middle">85</text>
+<text class="sx-pert-field-label" x="2142" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="2082" y="229" text-anchor="middle">Pave approaches</text>
+<text class="sx-pert-id" x="2082" y="243" text-anchor="middle">K</text></g>
+<g class="sx-pert-task critical" data-id="L" data-es="85" data-ef="88" data-ls="85" data-lf="88" data-slack="0" data-duration="3" data-critical="true" data-tag="quality"><rect class="task-box" x="2238" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="2238.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="2238" y1="210" x2="2418" y2="210"/>
+<line class="sx-pert-div" x1="2238" y1="256" x2="2418" y2="256"/>
+<line class="sx-pert-div" x1="2298" y1="188" x2="2298" y2="210"/>
+<line class="sx-pert-div" x1="2358" y1="188" x2="2358" y2="210"/>
+<line class="sx-pert-div" x1="2298" y1="256" x2="2298" y2="278"/>
+<line class="sx-pert-div" x1="2358" y1="256" x2="2358" y2="278"/>
+<g><text class="sx-pert-field-label" x="2268" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="2268" y="207" text-anchor="middle">85</text></g>
+<g><text class="sx-pert-field-label" x="2328" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="2328" y="207" text-anchor="middle">3</text></g>
+<g><text class="sx-pert-field-label" x="2388" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="2388" y="207" text-anchor="middle">88</text></g>
+<g><text class="sx-pert-field" x="2268" y="269" text-anchor="middle">85</text>
+<text class="sx-pert-field-label" x="2268" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="2328" y="269" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="2328" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="2388" y="269" text-anchor="middle">88</text>
+<text class="sx-pert-field-label" x="2388" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="2328" y="229" text-anchor="middle">Load test</text>
+<text class="sx-pert-id" x="2328" y="243" text-anchor="middle">L</text></g>
+<g class="sx-pert-task critical" data-id="M" data-es="88" data-ef="88" data-ls="88" data-lf="88" data-slack="0" data-duration="0" data-critical="true"><polygon class="sx-pert-ms" points="2574,188 2619,233 2574,278 2529,233"/>
+<text class="sx-pert-name" x="2574" y="231" text-anchor="middle">Open to traffic</text>
+<text class="sx-pert-id" x="2574" y="245" text-anchor="middle">@ 88</text></g></g>
+<g class="sx-pert-labels"></g>
+<g class="sx-pert-footer"><text class="sx-pert-summary" x="24" y="438" text-anchor="start">Project duration 88 days · 13 tasks · 14 dependencies · 11 critical</text>
+<text class="sx-pert-summary crit" x="2619" y="438" text-anchor="end">Critical path: A → B → D → E → F → H → I → J → K → L → M</text></g></svg>

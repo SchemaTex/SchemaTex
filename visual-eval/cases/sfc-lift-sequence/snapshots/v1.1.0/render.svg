@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1255.6" height="558" viewBox="0 0 1255.6 558" class="lt-sfc" data-diagram-type="sfc"><defs><style>
+.lt-sfc-bg { fill: #ffffff; }
+.lt-sfc-step-body { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+.lt-sfc-step-inner { fill: none; stroke: #333; stroke-width: 1.2; }
+.lt-sfc-step-name { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; fill: #111; }
+.lt-sfc-transition-bar { fill: #000; }
+.lt-sfc-transition-condition { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #333; }
+.lt-sfc-transition-id { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #888; }
+.lt-sfc-branch-bar { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-wire { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-action-block { fill: #fafafa; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier { fill: #f0f0f0; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-weight: 700; font-size: 11px; fill: #111; }
+.lt-sfc-action-body { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #222; }
+.lt-sfc-action-time { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
+.lt-sfc-jump { stroke: #000; stroke-width: 1.5; fill: none; marker-end: url(#sfc-arrow); }
+.lt-sfc-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
+</style>
+<marker id="sfc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs>
+<title>SFC: Lift trip sequence</title>
+<desc>SFC with 5 step(s), 6 transition(s).</desc>
+<rect class="lt-sfc-bg" x="0" y="0" width="1255.6" height="558"/>
+<text class="lt-sfc-title" x="627.8" y="22" text-anchor="middle">Lift trip sequence</text>
+<path class="lt-sfc-wire" d="M 591.8 76 L 591.8 132"/>
+<path class="lt-sfc-wire" d="M 283.79999999999995 252 L 283.79999999999995 308"/>
+<path class="lt-sfc-wire" d="M 691.8 252 L 691.8 308"/>
+<path class="lt-sfc-wire" d="M 283.79999999999995 344 L 283.79999999999995 400"/>
+<path class="lt-sfc-wire" d="M 691.8 344 L 691.8 400"/>
+<path class="lt-sfc-wire" d="M 591.8 168 L 591.8 252"/>
+<path class="lt-sfc-wire" d="M 591.8 400 L 591.8 456"/>
+<line class="lt-sfc-branch-bar" x1="191.79999999999995" y1="252" x2="991.8" y2="252"/>
+<line class="lt-sfc-branch-bar" x1="191.79999999999995" y1="400" x2="991.8" y2="400"/>
+<rect class="lt-sfc-transition-bar" x="567.8" y="102.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="563.8" y="106.5" text-anchor="end">T0</text>
+<text class="lt-sfc-transition-condition" x="621.8" y="106.5">CallPending</text>
+<rect class="lt-sfc-transition-bar" x="259.79999999999995" y="278.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="313.79999999999995" y="282.5">DoorsClosed AND TargetAbove</text>
+<rect class="lt-sfc-transition-bar" x="259.79999999999995" y="370.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="313.79999999999995" y="374.5">AtFloor</text>
+<rect class="lt-sfc-transition-bar" x="667.8" y="278.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="721.8" y="282.5">DoorsClosed AND TargetBelow</text>
+<rect class="lt-sfc-transition-bar" x="667.8" y="370.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="721.8" y="374.5">AtFloor</text>
+<rect class="lt-sfc-transition-bar" x="24" y="264.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="20" y="268.5" text-anchor="end">T1</text>
+<text class="lt-sfc-transition-condition" x="78" y="268.5">DoorTimerDone</text>
+<g class="lt-sfc-step" data-step-id="S0" data-step-kind="initial"><rect class="lt-sfc-step-body" x="511.79999999999995" y="40" width="160" height="36"/>
+<rect class="lt-sfc-step-inner" x="515.8" y="44" width="152" height="28"/>
+<text class="lt-sfc-step-name" x="591.8" y="62" text-anchor="middle">S0</text></g>
+<line class="lt-sfc-wire" x1="671.8" y1="58" x2="679.8" y2="58"/>
+<g class="lt-sfc-step" data-step-id="S1" data-step-kind="normal"><rect class="lt-sfc-step-body" x="511.79999999999995" y="132" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="591.8" y="144" text-anchor="middle">S1</text>
+<text class="lt-sfc-step-name" x="591.8" y="160" text-anchor="middle">Close doors</text></g>
+<line class="lt-sfc-wire" x1="671.8" y1="150" x2="679.8" y2="150"/>
+<g class="lt-sfc-step" data-step-id="S2" data-step-kind="normal"><rect class="lt-sfc-step-body" x="203.79999999999995" y="308" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="283.79999999999995" y="320" text-anchor="middle">S2</text>
+<text class="lt-sfc-step-name" x="283.79999999999995" y="336" text-anchor="middle">Travel up</text></g>
+<line class="lt-sfc-wire" x1="363.79999999999995" y1="326" x2="371.79999999999995" y2="326"/>
+<g class="lt-sfc-step" data-step-id="S3" data-step-kind="normal"><rect class="lt-sfc-step-body" x="611.8" y="308" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="691.8" y="320" text-anchor="middle">S3</text>
+<text class="lt-sfc-step-name" x="691.8" y="336" text-anchor="middle">Travel down</text></g>
+<line class="lt-sfc-wire" x1="771.8" y1="326" x2="779.8" y2="326"/>
+<g class="lt-sfc-step" data-step-id="S4" data-step-kind="normal"><rect class="lt-sfc-step-body" x="511.79999999999995" y="456" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="591.8" y="468" text-anchor="middle">S4</text>
+<text class="lt-sfc-step-name" x="591.8" y="484" text-anchor="middle">Open doors</text></g>
+<line class="lt-sfc-wire" x1="671.8" y1="474" x2="679.8" y2="474"/>
+<g class="lt-sfc-action-block-g" data-step-id="S0" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="679.8" y="40" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="705.8" y="40" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="692.8" y="56" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="711.8" y="56">DoorsOpenIdle</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S1" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="679.8" y="132" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="705.8" y="132" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="692.8" y="148" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="711.8" y="148">DoorCloseMotor</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S2" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="371.79999999999995" y="308" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="397.79999999999995" y="308" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="384.79999999999995" y="324" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="403.79999999999995" y="324">HoistUp</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S3" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="779.8" y="308" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="805.8" y="308" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="792.8" y="324" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="811.8" y="324">HoistDown</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S4" data-action-index="0" data-qualifier="P"><rect class="lt-sfc-action-qualifier" x="679.8" y="456" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="705.8" y="456" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="692.8" y="472" text-anchor="middle">P</text>
+<text class="lt-sfc-action-body" x="711.8" y="472">BrakeSet</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S4" data-action-index="1" data-qualifier="D"><rect class="lt-sfc-action-qualifier" x="679.8" y="480" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="705.8" y="480" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="692.8" y="496" text-anchor="middle">D</text>
+<text class="lt-sfc-action-body" x="711.8" y="496">DoorOpenMotor</text>
+<rect class="lt-sfc-action-block" x="679.8" y="504" width="200" height="14"/>
+<text class="lt-sfc-action-time" x="685.8" y="515">T#1s</text></g>
+<path class="lt-sfc-jump" d="M 511.79999999999995 474 L 48 474 L 48 58 L 511.79999999999995 58"/></svg>

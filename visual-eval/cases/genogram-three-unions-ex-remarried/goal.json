@@ -1,0 +1,40 @@
+{
+  "id": "genogram-three-unions-ex-remarried",
+  "type": "genogram",
+  "title": "Three unions, and an ex-partner who remarried",
+  "goal": "A reader can tell which of Dana's former partners also remarried, and trace each of the four children to exactly one couple without two couples' children ever sharing a line.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "ex-spouse-outside",
+      "severity": "blocker",
+      "must": "Lisa, the other wife of Dana's former partner Mark, stands on Mark's far side from Dana, not between any of Dana's partners."
+    },
+    {
+      "id": "one-union-per-gap",
+      "severity": "blocker",
+      "must": "Each child descends from a line that belongs to one couple only: Zoe from Mark and Lisa, Maya from Mark and Dana, Leo from Chris and Dana, Tess from Dana and Rick. No two couples' descent lines meet, overlap or share a sibling bar."
+    },
+    {
+      "id": "unions-connect-their-partners",
+      "severity": "blocker",
+      "must": "Every union line touches exactly its two partners; the union between Mark and Dana is routed around Chris rather than through him."
+    },
+    {
+      "id": "no-overlaps",
+      "severity": "major",
+      "must": "No two symbols overlap, no name or label overlaps another, and no line passes through a symbol or a name."
+    },
+    {
+      "id": "legend",
+      "severity": "minor",
+      "must": "The legend shows male, female, index person, marriage/descent, divorced and living together."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Lisa stands on Mark's far side, so every gap between neighbours carries one couple's children: Zoe from Lisa and Mark, Maya from Mark and Dana's union over Chris, Leo from Chris and Dana, Tess from Dana and Rick."
+  }
+}

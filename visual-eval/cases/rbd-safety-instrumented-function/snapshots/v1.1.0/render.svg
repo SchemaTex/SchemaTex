@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="858" height="385" viewBox="0 0 858 385" role="img" aria-label="Safety instrumented function" data-diagram-type="rbd"><title>Safety instrumented function</title>
+<desc>Reliability block diagram: 7 blocks. System reliability R = 0.99817. Highest reliability-importance block: SDV_A. No single point of failure — every block has redundancy in the success path.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="858" height="385" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="22" class="sx-rbd-title" font-family="system-ui, -apple-system, sans-serif">Safety instrumented function</text>
+<text x="409" y="50" class="sx-rbd-rsys" text-anchor="middle">System reliability  R = 0.99817</text>
+<path d="M 61.5 181 L 61.5 145 L 88 145" class="sx-rbd-wire"/>
+<path d="M 268 145 L 294.5 145 L 294.5 181" class="sx-rbd-wire"/>
+<path d="M 61.5 181 L 61.5 217 L 88 217" class="sx-rbd-wire"/>
+<path d="M 268 217 L 294.5 217 L 294.5 181" class="sx-rbd-wire"/>
+<path d="M 342 181 L 342 109 L 368.5 109" class="sx-rbd-wire"/>
+<path d="M 493.5 109 L 520 109 L 520 181" class="sx-rbd-wire"/>
+<path d="M 342 181 L 342 181 L 368.5 181" class="sx-rbd-wire"/>
+<path d="M 493.5 181 L 520 181 L 520 181" class="sx-rbd-wire"/>
+<path d="M 342 181 L 342 253 L 368.5 253" class="sx-rbd-wire"/>
+<path d="M 493.5 253 L 520 253 L 520 181" class="sx-rbd-wire"/>
+<path d="M 294.5 181 L 342 181" class="sx-rbd-wire"/>
+<path d="M 567.5 181 L 567.5 145 L 594 145" class="sx-rbd-wire"/>
+<path d="M 733 145 L 759.5 145 L 759.5 181" class="sx-rbd-wire"/>
+<path d="M 567.5 181 L 567.5 217 L 594 217" class="sx-rbd-wire"/>
+<path d="M 733 217 L 759.5 217 L 759.5 181" class="sx-rbd-wire"/>
+<path d="M 520 181 L 567.5 181" class="sx-rbd-wire"/>
+<path d="M 28 181 L 61.5 181" class="sx-rbd-wire"/>
+<path d="M 759.5 181 L 789.5 181" class="sx-rbd-wire"/>
+<circle cx="61.5" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="294.5" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="342" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="520" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="567.5" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="759.5" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="181" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="789.5" cy="181" r="6" class="sx-rbd-term" data-node="out"/>
+<text x="526" y="80" class="sx-rbd-mark">2/3</text>
+<g class="sx-rbd-block-g" data-id="PSH_A" data-r="0.985"><rect x="88" y="122" width="180" height="46" rx="5" class="sx-rbd-block"/>
+<text x="178" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="178" dy="-6.5">High-pressure</tspan><tspan x="178" dy="13">sensor A</tspan></text>
+<text x="178" y="183" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="PSH_B" data-r="0.985"><rect x="88" y="194" width="180" height="46" rx="5" class="sx-rbd-block"/>
+<text x="178" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="178" dy="-6.5">High-pressure</tspan><tspan x="178" dy="13">sensor B</tspan></text>
+<text x="178" y="255" class="sx-rbd-r" text-anchor="middle">R=0.985</text></g>
+<g class="sx-rbd-block-g" data-id="LS_A" data-r="0.999"><rect x="368.5" y="86" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="431" y="109" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="431" dy="0">Logic solver A</tspan></text>
+<text x="431" y="147" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="LS_B" data-r="0.999"><rect x="368.5" y="158" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="431" y="181" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="431" dy="0">Logic solver B</tspan></text>
+<text x="431" y="219" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="LS_C" data-r="0.999"><rect x="368.5" y="230" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="431" y="253" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="431" dy="0">Logic solver C</tspan></text>
+<text x="431" y="291" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="SDV_A" data-r="0.96" data-critical="true"><rect x="594" y="122" width="139" height="46" rx="5" class="sx-rbd-block" data-critical="true"/>
+<text x="663.5" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="663.5" dy="0">Shutdown valve A</tspan></text>
+<text x="663.5" y="183" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g>
+<g class="sx-rbd-block-g" data-id="SDV_B" data-r="0.96"><rect x="594" y="194" width="139" height="46" rx="5" class="sx-rbd-block"/>
+<text x="663.5" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="663.5" dy="0">Shutdown valve B</tspan></text>
+<text x="663.5" y="255" class="sx-rbd-r" text-anchor="middle">R=0.96</text></g></g></svg>

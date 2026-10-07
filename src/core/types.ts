@@ -686,6 +686,8 @@ export interface LayoutEdge {
   relationship: Relationship;
   /** SVG path data (d attribute) */
   path: string;
+  /** Explicit genogram union routing and its reserved mark position. */
+  unionRoute?: { kind: "bracket" | "horizontal"; left: number; right: number; y: number; markX: number };
 }
 
 // ─── Diagram Plugin Interface ────────────────────────────────

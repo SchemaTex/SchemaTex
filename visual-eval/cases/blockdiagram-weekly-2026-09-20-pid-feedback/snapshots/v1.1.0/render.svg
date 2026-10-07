@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 1561 346" width="1561" height="346" role="img" data-diagram-type="blockdiagram"><title>PID Control Loop</title>
+<desc>Block diagram with 4 blocks, 1 summing junctions, 8 signals</desc>
+<defs><style>.schematex-bd { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.schematex-bd-block { stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-tf { font-size: 14px; font-weight: 600; fill: #16202b; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #63707f; }
+.schematex-bd-sum { fill: #ffffff; stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #16202b; }
+.schematex-bd-signal { stroke: #16202b; stroke-width: 1.5; fill: none; }
+.schematex-bd-signal-discrete { stroke: #16202b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font-size: 12px; font-style: italic; fill: #63707f; }
+.schematex-bd-port-label { font-size: 13px; fill: #16202b; }
+.schematex-bd-title { font-size: 16px; font-weight: 700; fill: #16202b; }
+.schematex-bd-branch { fill: #16202b; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="9" markerUnits="userSpaceOnUse" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202b"/></marker></defs>
+<text x="34" y="24" text-anchor="start" class="schematex-bd-title">PID Control Loop</text>
+<g transform="translate(0, 40)"><g class="schematex-bd-signals"><path d="M 107 166 L 262 166 L 262 197 L 417 197" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="in" data-to="err"/>
+<rect x="294" y="172" width="91" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="339.5" y="184" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="339.5" dy="0">r(t) setpoint</tspan></text>
+<text x="409" y="202" text-anchor="middle" class="schematex-bd-sum-sign">+</text>
+<path d="M 1087 206 L 1270.5 206 L 1270.5 197 L 1454 197" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G" data-to="out"/>
+<rect x="1289.75" y="172" width="145" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1362.25" y="184" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1362.25" dy="0">y(t) measured output</tspan></text>
+<path d="M 1087 188 L 1244 188 L 1244 87 L 1401 87" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G" data-to="H"/>
+<rect x="1250" y="62" width="145" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1322.5" y="74" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1322.5" dy="0">y(t) measured output</tspan></text>
+<path d="M 107 228 L 131 228 L 131 246 L 937 246 L 937 206 L 961 206" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="d" data-to="G"/>
+<rect x="476" y="253" width="116" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="534" y="265" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="534" dy="0">d(t) disturbance</tspan></text>
+<path d="M 441 197 L 556 197" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="err" data-to="C"/>
+<path d="M 689 197 L 753 197" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="C" data-to="V"/>
+<path d="M 897 197 L 929 197 L 929 188 L 961 188" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="V" data-to="G"/>
+<path d="M 1464 60 L 1464 32 L 429 32 L 429 185" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="H" data-to="err"/>
+<text x="421" y="181" text-anchor="middle" class="schematex-bd-sum-sign">+</text></g>
+<g class="schematex-bd-nodes"><g transform="translate(556, 170)" data-block-id="C" data-block-role="controller"><rect width="133" height="54" fill="#dbeafe" class="schematex-bd-block" rx="4"/>
+<text x="66.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="66.5" dy="-8">PID</tspan><tspan x="66.5" dy="16">Controller C(s)</tspan></text></g>
+<g transform="translate(753, 170)" data-block-id="V" data-block-role="actuator"><rect width="144" height="54" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="72" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="72" dy="0">Actuator / Valve</tspan></text></g>
+<g transform="translate(961, 170)" data-block-id="G" data-block-role="plant"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="-8">Plant</tspan><tspan x="63" dy="16">G(s)</tspan></text></g>
+<g transform="translate(1401, 60)" data-block-id="H" data-block-role="sensor"><rect width="126" height="54" fill="#f3e8ff" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Sensor H(s)</tspan></text></g>
+<g data-sum-id="err"><circle cx="429" cy="197" r="12" class="schematex-bd-sum"/></g>
+<g data-port-id="in"><text x="93" y="170" text-anchor="end" class="schematex-bd-port-label">in</text></g>
+<g data-port-id="out"><text x="1468" y="201" text-anchor="start" class="schematex-bd-port-label">out</text></g>
+<g data-port-id="d"><text x="93" y="232" text-anchor="end" class="schematex-bd-port-label"></text></g></g>
+<g class="schematex-bd-branches"><circle cx="1087" cy="197" r="3.5" class="schematex-bd-branch"/></g></g></svg>

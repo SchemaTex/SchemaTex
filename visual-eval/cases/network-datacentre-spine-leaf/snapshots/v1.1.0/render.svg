@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="DC1 Spine-Leaf Fabric" width="771.52" height="564" viewBox="0 0 771.52 564" data-diagram-type="network"><title>Network diagram — DC1 Spine-Leaf Fabric</title>
+<desc>12 devices, 19 links, 0 boundaries. Topology: spine-leaf. Links: 19 copper.</desc>
+<style>.sx-net { font-family: Inter, "Helvetica Neue", sans-serif; }
+.sx-net-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.4; }
+.sx-net-detail { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-net-glyph { fill: #256b8a; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #256b8a; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #256b8a; }
+.sx-net-icontag { font: 700 8px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-symbol { stroke-linecap: round; stroke-linejoin: round; }
+.sx-net-bezel { stroke-width: 1; }
+.sx-net-panel { fill: #e0e4e8; stroke-width: 1; }
+.sx-net-screen { fill: #e0e4e8; stroke: none; }
+.sx-net-port-solid { fill: #334155; }
+.sx-net-ink-line { stroke-width: 1.4; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 1.4; }
+.sx-net-cloudtext { font: 600 13px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #334155; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px Inter, "Helvetica Neue", sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-link { fill: none; stroke-width: 1.4; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px Inter, "Helvetica Neue", sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-vlan { stroke-dasharray: none; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px Inter, "Helvetica Neue", sans-serif; }
+.sx-net-title { font: 700 16px Inter, "Helvetica Neue", sans-serif; fill: #0f172a; }</style>
+<text x="385.76" y="21" class="sx-net-title" text-anchor="middle">DC1 Spine-Leaf Fabric</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="lf1" data-to="srv1" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="136.11,183 124.25,207 80.5,295.5 68.64,319.5"/>
+<text class="sx-net-linklabel" x="105.36" y="249.72" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf2" data-to="srv2" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="304.59,183 292.73,207 248.98,295.5 237.12,319.5"/>
+<text class="sx-net-linklabel" x="284.27" y="228.61" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf3" data-to="srv3" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="473.07,183 492.41,207 563.7,295.5 583.04,319.5"/>
+<text class="sx-net-linklabel" x="540.27" y="270.91" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf4" data-to="srv4" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="641.55,183 652.46,207 692.69,295.5 703.6,319.5"/>
+<text class="sx-net-linklabel" x="669.75" y="249.53" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="mgmt" data-to="oob" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,456 351.76,432 351.76,343.5 351.76,319.5"/>
+<text class="sx-net-linklabel" x="351.76" y="384.75" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="sp1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 319.76,319.5 269.35,319.5 269.35,54 269.35,54 301.35,54"/>
+<line x1="269.352" y1="256.95376" x2="282.26199999999994" y2="256.95376" stroke="#334155" stroke-width="1"/>
+<text class="sx-net-linklabel" x="291.17" y="261.45" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="sp2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 363.02,295.5 465.05,78 476.31,54"/>
+<text class="sx-net-linklabel" x="416.92" y="185.1" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 319.76,299.24 168.11,203.26 136.11,183"/>
+<text class="sx-net-linklabel" x="207.18" y="232.49" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 343.47,295.5 312.89,207 304.59,183"/>
+<text class="sx-net-linklabel" x="319.13" y="229.58" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 373.09,295.5 451.74,207 473.07,183"/>
+<text class="sx-net-linklabel" x="416.14" y="251.56" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="oob" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="351.76,319.5 351.76,295.5 351.76,279.5 641.55,223 641.55,207 641.55,183"/>
+<line x1="425.2397868902004" y1="265.17383516696003" x2="425.2397868902004" y2="278.47093691178105" stroke="#334155" stroke-width="1"/>
+<text class="sx-net-linklabel" x="429.1" y="289.47" text-anchor="middle">OOB</text></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="301.35,54 270.61,78 166.85,159 136.11,183"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="301.35,54 301.95,78 303.99,159 304.59,183"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="301.35,54 333.3,78 441.12,159 473.07,183"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="301.35,54 333.35,66.13 609.55,170.87 641.55,183"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="476.31,54 444.31,66.13 168.11,170.87 136.11,183"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="476.31,54 444.36,78 336.54,159 304.59,183"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="476.31,54 475.71,78 473.67,159 473.07,183"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="476.31,54 507.05,78 610.81,159 641.55,183"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="sp1" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="272.01" y="43" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="278.82" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="289.3" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="299.78" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="310.26" y="51.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="323.88" cy="54.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="372.83" y="58" text-anchor="middle">Spine 1</text></g>
+<g class="sx-net-device" data-id="sp2" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="446.97" y="43" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="453.78" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="464.26" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="474.74" y="51.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="485.22" y="51.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="498.84" cy="54.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="547.79" y="58" text-anchor="middle">Spine 2</text></g>
+<g class="sx-net-device" data-id="lf1" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="106.77" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="113.58" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="124.06" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="134.54" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="145.02" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="158.64" cy="183.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="204.35" y="187" text-anchor="middle">Leaf 1</text></g>
+<g class="sx-net-device" data-id="lf2" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="275.25" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="282.06" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="292.54" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="303.02" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="313.5" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="327.12" cy="183.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="372.83" y="187" text-anchor="middle">Leaf 2</text></g>
+<g class="sx-net-device" data-id="lf3" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="443.73" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="450.54" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="461.02" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="471.5" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="481.98" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="495.6" cy="183.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="541.31" y="187" text-anchor="middle">Leaf 3</text></g>
+<g class="sx-net-device" data-id="lf4" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="612.21" y="172" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="619.02" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="629.5" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="639.98" y="180.38" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="650.46" y="180.38" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="664.08" cy="183.52" r="2.1"/></g></g>
+<text class="sx-net-label" x="709.79" y="187" text-anchor="middle">Leaf 4</text></g>
+<g class="sx-net-device" data-id="srv1" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="51.82" y="298.2" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="56.87" y="306.05" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="56.87" y="318.94" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="77.61" cy="309.97" r="1.4"/>
+<circle class="sx-net-glyph" cx="77.61" cy="322.86" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 57.99 334.63 L 72 334.63"/></g></g>
+<text class="sx-net-label" x="68.64" y="360.5" text-anchor="middle">Compute 01</text></g>
+<g class="sx-net-device" data-id="srv2" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="220.3" y="298.2" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="225.35" y="306.05" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="225.35" y="318.94" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="246.09" cy="309.97" r="1.4"/>
+<circle class="sx-net-glyph" cx="246.09" cy="322.86" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 226.47 334.63 L 240.48 334.63"/></g></g>
+<text class="sx-net-label" x="237.12" y="360.5" text-anchor="middle">Compute 02</text></g>
+<g class="sx-net-device" data-id="srv3" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="566.22" y="298.2" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="571.27" y="306.05" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="571.27" y="318.94" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="592.01" cy="309.97" r="1.4"/>
+<circle class="sx-net-glyph" cx="592.01" cy="322.86" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 572.39 334.63 L 586.4 334.63"/></g></g>
+<text class="sx-net-label" x="583.04" y="360.5" text-anchor="middle">Compute 03</text></g>
+<g class="sx-net-device" data-id="srv4" data-kind="server"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="686.78" y="298.2" width="33.63" height="42.6" rx="1.68"/>
+<rect class="sx-net-body sx-net-panel" x="691.83" y="306.05" width="23.54" height="8.41"/>
+<rect class="sx-net-body sx-net-panel" x="691.83" y="318.94" width="23.54" height="8.41"/>
+<circle class="sx-net-glyph" cx="712.57" cy="309.97" r="1.4"/>
+<circle class="sx-net-glyph" cx="712.57" cy="322.86" r="1.4"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 692.95 334.63 L 706.96 334.63"/></g></g>
+<text class="sx-net-label" x="703.6" y="360.5" text-anchor="middle">Storage 01</text></g>
+<g class="sx-net-device" data-id="oob" data-kind="switch"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="322.42" y="308.5" width="58.69" height="22.01" rx="1.57"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="329.23" y="316.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="339.71" y="316.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="350.19" y="316.88" width="6.29" height="6.29"/>
+<rect class="sx-net-glyph sx-net-port-solid" x="360.67" y="316.88" width="6.29" height="6.29"/>
+<circle class="sx-net-glyph" cx="374.29" cy="320.02" r="2.1"/></g></g>
+<text class="sx-net-label" x="448.08" y="316" text-anchor="middle">OOB Management</text>
+<text class="sx-net-label" x="448.08" y="331" text-anchor="middle">Switch</text></g>
+<g class="sx-net-device" data-id="mgmt" data-kind="router"><g class="sx-net-symbol"><g><rect class="sx-net-body" x="322.63" y="439.35" width="58.27" height="33.29" rx="16.65"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 333.03 446.98 L 345.52 453.92 M 370.49 465.02 L 358 458.08"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 345.52 453.92 L 338.98 454.26 L 342.35 448.19 Z"/>
+<path class="sx-net-glyph sx-net-port-solid" d="M 358 458.08 L 364.54 457.74 L 361.17 463.81 Z"/>
+<path class="sx-net-detail sx-net-ink-line" d="M 347.6 458.77 L 335.11 465.02 M 355.92 453.23 L 368.41 446.98"/>
+<path class="sx-net-glyph" d="M 333.03 466.06 L 336.44 460.47 L 339.54 466.68 Z"/>
+<path class="sx-net-glyph" d="M 370.49 445.94 L 367.08 451.53 L 363.98 445.32 Z"/></g></g>
+<text class="sx-net-label" x="351.76" y="497" text-anchor="middle">Management Gateway</text></g></g></g></svg>

@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1150" height="530.5" viewBox="0 0 1150 530.5" class="lt-erd"><title>Schematex ERD</title>
+<desc>Entity-Relationship Diagram with 9 entities and 8 relationships.</desc>
+<style>.lt-erd { font-family: system-ui, -apple-system, sans-serif; }
+.lt-erd-title { font: bold 16px sans-serif; fill: #0f172a; }
+.lt-erd-entity-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header { font: 600 13px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-erd-attr-name { font: 500 12px sans-serif; fill: #0f172a; dominant-baseline: middle; }
+.lt-erd-attr-name-pk { font: 600 12px sans-serif; fill: #0f172a; text-decoration: underline; dominant-baseline: middle; }
+.lt-erd-attr-type { font: 11px monospace; fill: #475569; dominant-baseline: middle; }
+.lt-erd-attr-marker { font: 700 10px sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0.3px; }
+.lt-erd-attr-marker-bg-pk { fill: #2563eb; stroke: none; }
+.lt-erd-attr-marker-bg-fk { fill: #d97706; stroke: none; }
+.lt-erd-attr-marker-bg-uk { fill: #059669; stroke: none; }
+.lt-erd-attr-marker-bg-nn { fill: #94a3b8; stroke: none; }
+.lt-erd-row-divider { stroke: #f1f5f9; stroke-width: 1; }
+.lt-erd-edge { fill: none; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-edge-non-identifying { stroke-dasharray: 5,4; }
+.lt-erd-glyph { stroke: #334155; stroke-width: 1.5; fill: none; }
+.lt-erd-glyph-circle { stroke: #334155; stroke-width: 1.5; fill: #ffffff; }
+.lt-erd-edge-label { font: 500 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }</style>
+
+<g class="lt-erd-edges" transform="translate(0, 0)"><g class="lt-erd-edge-group"><path d="M 212 59 L 306 59 L 306 114 L 334 114" class="lt-erd-edge"/>
+<line x1="230" y1="65" x2="230" y2="53" class="lt-erd-glyph"/>
+<circle cx="316" cy="114" r="4" class="lt-erd-glyph-circle"/><line x1="324" y1="114" x2="334" y2="114" class="lt-erd-glyph"/><line x1="324" y1="114" x2="334" y2="108" class="lt-erd-glyph"/><line x1="324" y1="114" x2="334" y2="120" class="lt-erd-glyph"/>
+<text x="282.5" y="45" class="lt-erd-edge-label">places</text></g>
+<g class="lt-erd-edge-group"><path d="M 514 114 L 608 114 L 608 251.5 L 636 251.5" class="lt-erd-edge"/>
+<line x1="532" y1="120" x2="532" y2="108" class="lt-erd-glyph"/>
+<line x1="618" y1="245.5" x2="618" y2="257.5" class="lt-erd-glyph"/><line x1="626" y1="251.5" x2="636" y2="251.5" class="lt-erd-glyph"/><line x1="626" y1="251.5" x2="636" y2="245.5" class="lt-erd-glyph"/><line x1="626" y1="251.5" x2="636" y2="257.5" class="lt-erd-glyph"/>
+<text x="584.5" y="100" class="lt-erd-edge-label">fulfils</text></g>
+<g class="lt-erd-edge-group"><path d="M 816 251.5 L 938 251.5" class="lt-erd-edge"/>
+<line x1="834" y1="257.5" x2="834" y2="245.5" class="lt-erd-glyph"/>
+<line x1="920" y1="245.5" x2="920" y2="257.5" class="lt-erd-glyph"/><line x1="928" y1="251.5" x2="938" y2="251.5" class="lt-erd-glyph"/><line x1="928" y1="251.5" x2="938" y2="245.5" class="lt-erd-glyph"/><line x1="928" y1="251.5" x2="938" y2="257.5" class="lt-erd-glyph"/>
+<text x="877" y="237.5" class="lt-erd-edge-label">contains</text></g>
+<g class="lt-erd-edge-group"><path d="M 726 278.5 L 726 306.5 L 910 306.5 L 910 361.5 L 938 361.5" class="lt-erd-edge"/>
+<line x1="720" y1="296.5" x2="732" y2="296.5" class="lt-erd-glyph"/>
+<line x1="920" y1="355.5" x2="920" y2="367.5" class="lt-erd-glyph"/><line x1="928" y1="361.5" x2="938" y2="361.5" class="lt-erd-glyph"/><line x1="928" y1="361.5" x2="938" y2="355.5" class="lt-erd-glyph"/><line x1="928" y1="361.5" x2="938" y2="367.5" class="lt-erd-glyph"/>
+<text x="818" y="292.5" class="lt-erd-edge-label">moves_by</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 279 L 240 279 L 240 314.5 L 1028 314.5 L 1028 334.5" class="lt-erd-edge"/>
+<line x1="230" y1="285" x2="230" y2="273" class="lt-erd-glyph"/>
+<circle cx="1028" cy="316.5" r="4" class="lt-erd-glyph-circle"/><line x1="1028" y1="324.5" x2="1028" y2="334.5" class="lt-erd-glyph"/><line x1="1028" y1="324.5" x2="1034" y2="334.5" class="lt-erd-glyph"/><line x1="1028" y1="324.5" x2="1022" y2="334.5" class="lt-erd-glyph"/>
+<text x="634" y="300.5" class="lt-erd-edge-label">operates</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 389 L 704 389 L 704 278.5" class="lt-erd-edge"/>
+<line x1="230" y1="395" x2="230" y2="383" class="lt-erd-glyph"/>
+<circle cx="704" cy="296.5" r="4" class="lt-erd-glyph-circle"/><line x1="704" y1="288.5" x2="704" y2="278.5" class="lt-erd-glyph"/><line x1="704" y1="288.5" x2="698" y2="278.5" class="lt-erd-glyph"/><line x1="704" y1="288.5" x2="710" y2="278.5" class="lt-erd-glyph"/>
+<text x="458" y="375" class="lt-erd-edge-label">dispatches</text></g>
+<g class="lt-erd-edge-group"><path d="M 212 169 L 424 169 L 424 141" class="lt-erd-edge"/>
+<line x1="230" y1="175" x2="230" y2="163" class="lt-erd-glyph"/>
+<circle cx="424" cy="159" r="4" class="lt-erd-glyph-circle"/><line x1="424" y1="151" x2="424" y2="141" class="lt-erd-glyph"/><line x1="424" y1="151" x2="418" y2="141" class="lt-erd-glyph"/><line x1="424" y1="151" x2="430" y2="141" class="lt-erd-glyph"/>
+<text x="318" y="155" class="lt-erd-edge-label">delivers_to</text></g>
+<g class="lt-erd-edge-group"><path d="M 748 278.5 L 748 471.5 L 938 471.5" class="lt-erd-edge"/>
+<line x1="742" y1="296.5" x2="754" y2="296.5" class="lt-erd-glyph"/>
+<circle cx="920" cy="471.5" r="4" class="lt-erd-glyph-circle"/>
+<text x="843" y="457.5" class="lt-erd-edge-label">confirms</text></g></g>
+<g class="lt-erd-entities" transform="translate(0, 0)"><g class="lt-erd-entity" data-id="CUSTOMER"><rect x="32" y="32" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 36 Q 32 32 36 32 L 208 32 Q 212 32 212 36 L 212 60 L 32 60 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="46" class="lt-erd-entity-header">CUSTOMER</text>
+<text x="46" y="71" class="lt-erd-attr-name-pk">customer_id</text>
+<text x="164" y="71" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="63" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="72" class="lt-erd-attr-marker">PK</text></g>
+<g class="lt-erd-entity" data-id="ADDRESS"><rect x="32" y="142" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 146 Q 32 142 36 142 L 208 142 Q 212 142 212 146 L 212 170 L 32 170 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="156" class="lt-erd-entity-header">ADDRESS</text>
+<text x="46" y="181" class="lt-erd-attr-name-pk">address_id</text>
+<text x="164" y="181" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="173" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="182" class="lt-erd-attr-marker">PK</text></g>
+<g class="lt-erd-entity" data-id="CARRIER"><rect x="32" y="252" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 256 Q 32 252 36 252 L 208 252 Q 212 252 212 256 L 212 280 L 32 280 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="266" class="lt-erd-entity-header">CARRIER</text>
+<text x="46" y="291" class="lt-erd-attr-name-pk">carrier_id</text>
+<text x="164" y="291" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="283" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="292" class="lt-erd-attr-marker">PK</text></g>
+<g class="lt-erd-entity" data-id="WAREHOUSE"><rect x="32" y="362" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 366 Q 32 362 36 362 L 208 362 Q 212 362 212 366 L 212 390 L 32 390 Z" class="lt-erd-entity-header-bg"/>
+<text x="122" y="376" class="lt-erd-entity-header">WAREHOUSE</text>
+<text x="46" y="401" class="lt-erd-attr-name-pk">warehouse_id</text>
+<text x="164" y="401" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="172" y="393" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="185" y="402" class="lt-erd-attr-marker">PK</text></g>
+<g class="lt-erd-entity" data-id="SALES_ORDER"><rect x="334" y="87" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 334 91 Q 334 87 338 87 L 510 87 Q 514 87 514 91 L 514 115 L 334 115 Z" class="lt-erd-entity-header-bg"/>
+<text x="424" y="101" class="lt-erd-entity-header">SALES_ORDER</text>
+<text x="348" y="126" class="lt-erd-attr-name-pk">order_id</text>
+<text x="436" y="126" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="444" y="118" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="457" y="127" class="lt-erd-attr-marker">PK</text>
+<rect x="474" y="118" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="487" y="127" class="lt-erd-attr-marker">FK</text></g>
+<g class="lt-erd-entity" data-id="SHIPMENT"><rect x="636" y="224.5" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 636 228.5 Q 636 224.5 640 224.5 L 812 224.5 Q 816 224.5 816 228.5 L 816 252.5 L 636 252.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="726" y="238.5" class="lt-erd-entity-header">SHIPMENT</text>
+<text x="650" y="263.5" class="lt-erd-attr-name-pk">shipment_id</text>
+<text x="738" y="263.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="746" y="255.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="759" y="264.5" class="lt-erd-attr-marker">PK</text>
+<rect x="776" y="255.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="789" y="264.5" class="lt-erd-attr-marker">FK</text></g>
+<g class="lt-erd-entity" data-id="PACKAGE"><rect x="938" y="224.5" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 938 228.5 Q 938 224.5 942 224.5 L 1114 224.5 Q 1118 224.5 1118 228.5 L 1118 252.5 L 938 252.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1028" y="238.5" class="lt-erd-entity-header">PACKAGE</text>
+<text x="952" y="263.5" class="lt-erd-attr-name-pk">package_id</text>
+<text x="1040" y="263.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1048" y="255.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1061" y="264.5" class="lt-erd-attr-marker">PK</text>
+<rect x="1078" y="255.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1091" y="264.5" class="lt-erd-attr-marker">FK</text></g>
+<g class="lt-erd-entity" data-id="SHIPMENT_LEG"><rect x="938" y="334.5" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 938 338.5 Q 938 334.5 942 334.5 L 1114 334.5 Q 1118 334.5 1118 338.5 L 1118 362.5 L 938 362.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1028" y="348.5" class="lt-erd-entity-header">SHIPMENT_LEG</text>
+<text x="952" y="373.5" class="lt-erd-attr-name-pk">leg_id</text>
+<text x="1040" y="373.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1048" y="365.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1061" y="374.5" class="lt-erd-attr-marker">PK</text>
+<rect x="1078" y="365.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1091" y="374.5" class="lt-erd-attr-marker">FK</text></g>
+<g class="lt-erd-entity" data-id="DELIVERY_PROOF"><rect x="938" y="444.5" width="180" height="54" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 938 448.5 Q 938 444.5 942 444.5 L 1114 444.5 Q 1118 444.5 1118 448.5 L 1118 472.5 L 938 472.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1028" y="458.5" class="lt-erd-entity-header">DELIVERY_PROOF</text>
+<text x="952" y="483.5" class="lt-erd-attr-name-pk">proof_id</text>
+<text x="1040" y="483.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1048" y="475.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1061" y="484.5" class="lt-erd-attr-marker">PK</text>
+<rect x="1078" y="475.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1091" y="484.5" class="lt-erd-attr-marker">FK</text></g></g></svg>

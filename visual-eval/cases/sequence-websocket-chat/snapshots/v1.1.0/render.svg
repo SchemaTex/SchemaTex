@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-seq" role="img" aria-label="UML sequence diagram" width="983" height="771" viewBox="0 0 983 771" data-diagram-type="sequence"><title>Sequence Diagram</title>
+<desc>7 participants, 12 messages, 2 combined fragments.</desc>
+<style>.sx-seq { font-family: system-ui, -apple-system, sans-serif; }
+.sx-seq-axis { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 4; }
+.sx-seq-head rect, .sx-seq-head path { fill: #e8f0fb; stroke: #5b85c0; stroke-width: 1.4; }
+.sx-seq-head-name { font: 600 12.5px sans-serif; fill: #0f172a; }
+.sx-seq-head-stereo { font: italic 10px sans-serif; fill: #475569; }
+.sx-seq-actor line, .sx-seq-actor circle { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-seq-actor-head { fill: #ffffff; }
+.sx-seq-icon { fill: #ffffff; stroke: #5b85c0; stroke-width: 1.6; }
+.sx-seq-icon-line { stroke: #5b85c0; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-seq-icon-fill { fill: #5b85c0; stroke: none; }
+.sx-seq-act { fill: #ffffff; stroke: #5b85c0; stroke-width: 1.2; }
+.sx-seq-msg { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-seq-msg-reply { stroke: #334155; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+.sx-seq-msg-label { font: 11px sans-serif; fill: #0f172a; }
+.sx-seq-msg-num { font: 600 10px sans-serif; fill: #475569; }
+.sx-seq-endpoint { fill: #334155; }
+.sx-seq-frame { fill: none; stroke: #94a3b8; stroke-width: 1.2; }
+.sx-seq-frame-neg { fill: #dc2626; fill-opacity: 0.06; }
+.sx-seq-frame-sep { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 5 4; }
+.sx-seq-frame-tab { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+.sx-seq-frame-op { font: 700 11px sans-serif; fill: #0f172a; }
+.sx-seq-guard { font: italic 10.5px sans-serif; fill: #475569; }
+.sx-seq-ref-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-seq-note rect { fill: #fdf6da; stroke: #d9c97e; stroke-width: 1.1; }
+.sx-seq-note path { fill: #efe2a6; stroke: #d9c97e; stroke-width: 1.1; }
+.sx-seq-note-text { font: 11px sans-serif; fill: #0f172a; }
+.sx-seq-div line { stroke: #94a3b8; stroke-width: 1; }
+.sx-seq-div rect { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
+.sx-seq-div-text { font: 600 11px sans-serif; fill: #475569; }
+.sx-seq-inv rect { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.1; }
+.sx-seq-inv-text { font: italic 10.5px sans-serif; fill: #475569; }
+.sx-seq-destroy { stroke: #dc2626; stroke-width: 2; }
+.sx-seq-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-seq-filled" viewBox="0 0 12 10" refX="10" refY="5" markerWidth="11" markerHeight="9" orient="auto"><polygon points="0,0 11,5 0,10" fill="#334155"/></marker>
+<marker id="sx-seq-open" viewBox="0 0 12 10" refX="10" refY="5" markerWidth="12" markerHeight="10" orient="auto"><polyline points="0,0 10,5 0,10" fill="none" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<g><g class="sx-seq-lifelines"><g class="sx-seq-lifeline" data-id="Sender" data-kind="actor"><line class="sx-seq-axis" x1="69" y1="54" x2="69" y2="771"/>
+<g class="sx-seq-actor sx-seq-head"><circle class="sx-seq-actor-head" cx="69" cy="22" r="4.5"/>
+<line x1="69" y1="26" x2="69" y2="38"/>
+<line x1="61" y1="30" x2="77" y2="30"/>
+<line x1="69" y1="38" x2="62" y2="48"/>
+<line x1="69" y1="38" x2="76" y2="48"/>
+<text class="sx-seq-head-name" x="69" y="60" text-anchor="middle">Sender</text></g></g>
+<g class="sx-seq-lifeline" data-id="WebApp" data-kind="participant"><line class="sx-seq-axis" x1="209" y1="54" x2="209" y2="771"/>
+<g class="sx-seq-head"><rect x="164" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="209" y="40" text-anchor="middle">WebApp</text></g></g>
+<g class="sx-seq-lifeline" data-id="Gateway" data-kind="participant"><line class="sx-seq-axis" x1="349" y1="54" x2="349" y2="771"/>
+<g class="sx-seq-head"><rect x="304" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="349" y="40" text-anchor="middle">Gateway</text></g></g>
+<g class="sx-seq-lifeline" data-id="Chat" data-kind="participant"><line class="sx-seq-axis" x1="489.95" y1="54" x2="489.95" y2="771"/>
+<g class="sx-seq-head"><rect x="444.95" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="489.95" y="40" text-anchor="middle">Chat</text></g></g>
+<g class="sx-seq-lifeline" data-id="Presence" data-kind="participant"><line class="sx-seq-axis" x1="629.95" y1="54" x2="629.95" y2="771"/>
+<g class="sx-seq-head"><rect x="584.95" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="629.95" y="40" text-anchor="middle">Presence</text></g></g>
+<g class="sx-seq-lifeline" data-id="Recipient" data-kind="participant"><line class="sx-seq-axis" x1="769.95" y1="54" x2="769.95" y2="771"/>
+<g class="sx-seq-head"><rect x="724.95" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="769.95" y="40" text-anchor="middle">Recipient</text></g></g>
+<g class="sx-seq-lifeline" data-id="Push" data-kind="participant"><line class="sx-seq-axis" x1="909.95" y1="54" x2="909.95" y2="771"/>
+<g class="sx-seq-head"><rect x="864.95" y="16" width="90" height="38" rx="3" ry="3"/>
+<text class="sx-seq-head-name" x="909.95" y="40" text-anchor="middle">Push</text></g></g></g>
+<g class="sx-seq-frames"><g class="sx-seq-fragment" data-op="loop"><rect class="sx-seq-frame" x="479.95" y="308" width="300.00000000000006" height="84" rx="2" ry="2"/></g>
+<g class="sx-seq-fragment" data-op="opt"><rect class="sx-seq-frame" x="479.95" y="404" width="440.00000000000006" height="84" rx="2" ry="2"/></g></g>
+<g class="sx-seq-acts"><rect class="sx-seq-act" data-id="Chat" x="484.95" y="220" width="10" height="336"/>
+<rect class="sx-seq-act" data-id="Gateway" x="344" y="152" width="10" height="472"/></g>
+<g class="sx-seq-frame-tabs"><g class="sx-seq-fragment-tab-g" data-op="loop"><path class="sx-seq-frame-tab" d="M 479.95 308 H 533.95 V 320 L 527.95 326 H 479.95 Z"/>
+<text class="sx-seq-frame-op" x="487.95" y="321">loop</text>
+<text class="sx-seq-guard" x="541.95" y="321">[each recipient]</text></g>
+<g class="sx-seq-fragment-tab-g" data-op="opt"><path class="sx-seq-frame-tab" d="M 479.95 404 H 525.95 V 416 L 519.95 422 H 479.95 Z"/>
+<text class="sx-seq-frame-op" x="487.95" y="417">opt</text>
+<text class="sx-seq-guard" x="533.95" y="417">[offline]</text></g></g>
+<g class="sx-seq-refs"></g>
+<g class="sx-seq-messages"><g class="sx-seq-message" data-kind="sync" data-from="Sender" data-to="WebApp"><line class="sx-seq-msg" x1="69" y1="84" x2="209" y2="84" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="139" y="78" text-anchor="middle">Send message</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="WebApp" data-to="Gateway"><line class="sx-seq-msg" x1="209" y1="122" x2="349" y2="122" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="279" y="116" text-anchor="middle">WebSocket frame</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Gateway" data-to="Chat"><line class="sx-seq-msg" x1="354" y1="190" x2="489.95" y2="190" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="421.975" y="184" text-anchor="middle">Persist and publish</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Chat" data-to="Presence"><line class="sx-seq-msg" x1="494.95" y1="258" x2="629.95" y2="258" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="562.45" y="252" text-anchor="middle">Find members</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Presence" data-to="Chat"><line class="sx-seq-msg-reply" x1="629.95" y1="296" x2="494.95" y2="296" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="562.45" y="290" text-anchor="middle">Recipients</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Chat" data-to="Recipient"><line class="sx-seq-msg" x1="494.95" y1="342" x2="769.95" y2="342" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="632.45" y="336" text-anchor="middle">Deliver</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Recipient" data-to="Chat"><line class="sx-seq-msg-reply" x1="769.95" y1="380" x2="494.95" y2="380" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="632.45" y="374" text-anchor="middle">Acknowledge</text></g>
+<g class="sx-seq-message" data-kind="sync" data-from="Chat" data-to="Push"><line class="sx-seq-msg" x1="494.95" y1="438" x2="909.95" y2="438" marker-end="url(#sx-seq-filled)"/>
+<text class="sx-seq-msg-label" x="702.45" y="432" text-anchor="middle">Push notification</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Push" data-to="Chat"><line class="sx-seq-msg-reply" x1="909.95" y1="476" x2="494.95" y2="476" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="702.45" y="470" text-anchor="middle">Accepted</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Chat" data-to="Gateway"><line class="sx-seq-msg-reply" x1="484.95" y1="526" x2="354" y2="526" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="419.475" y="520" text-anchor="middle">Accepted</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="Gateway" data-to="WebApp"><line class="sx-seq-msg-reply" x1="344" y1="594" x2="209" y2="594" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="276.5" y="588" text-anchor="middle">Receipt</text></g>
+<g class="sx-seq-message" data-kind="reply" data-from="WebApp" data-to="Sender"><line class="sx-seq-msg-reply" x1="209" y1="662" x2="69" y2="662" marker-end="url(#sx-seq-open)"/>
+<text class="sx-seq-msg-label" x="139" y="656" text-anchor="middle">Sent</text></g></g>
+<g class="sx-seq-notes"><g class="sx-seq-note"><path d="M 304 672 H 526.95 L 534.95 680 V 703 H 304 Z"/>
+<path d="M 526.95 672 V 680 H 534.95 Z"/>
+<text class="sx-seq-note-text" x="419.475" y="691.5" text-anchor="middle">Persist before receipt</text></g></g>
+<g class="sx-seq-divs"></g>
+<g class="sx-seq-invs"></g>
+<g class="sx-seq-destroys"></g></g></svg>

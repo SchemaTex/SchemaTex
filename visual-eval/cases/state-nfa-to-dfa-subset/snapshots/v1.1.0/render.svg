@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="237.25" height="608" viewBox="0 0 237.25 608" class="lt-state" data-diagram-type="state"><title>State Diagram</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#334155"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #334155; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-state-div  { stroke: #334155; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #475569; }
+
+.lt-composite-body { fill: #f8fafc; stroke: #334155; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #0f172a; }
+.lt-composite-titlebar { fill: #eef2f7; stroke: #334155; stroke-width: 1; }
+.lt-region-div { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #0f172a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #0f172a; }
+.lt-ps-choice { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #0f172a; }
+.lt-ps-bar { fill: #0f172a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #0f172a; }
+.lt-ps-terminate { stroke: #0f172a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #0f172a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #334155; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #0f172a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #374151; }
+.lt-note-leader { stroke: #ca8a04; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+</style></defs>
+
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="__initial_1" data-kind="initial"><circle cx="117.25" cy="64" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="Start"><rect x="81.25" y="180" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="117.25" y="206" text-anchor="middle" class="lt-state-name"><tspan x="117.25" dy="0">Start</tspan></text></g>
+<g class="lt-state lt-simple" data-id="SeenA"><rect x="25.25" y="300" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="61.25" y="326" text-anchor="middle" class="lt-state-name"><tspan x="61.25" dy="0">SeenA</tspan></text></g>
+<g class="lt-state lt-simple" data-id="SeenB"><rect x="137.25" y="300" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="173.25" y="326" text-anchor="middle" class="lt-state-name"><tspan x="173.25" dy="0">SeenB</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Accept"><rect x="80.75" y="420" width="73" height="44" rx="8" ry="8" class="lt-state-body"/>
+<rect x="84.75" y="424" width="65" height="36" rx="4" ry="4" class="lt-state-body"/>
+<text x="117.25" y="446" text-anchor="middle" class="lt-state-name"><tspan x="117.25" dy="0">Accept</tspan></text></g>
+<g class="lt-state lt-simple" data-id="Dead"><rect x="81.25" y="540" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="117.25" y="566" text-anchor="middle" class="lt-state-name"><tspan x="117.25" dy="0">Dead</tspan></text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1" data-from="__initial_1" data-to="Start"><path d="M 117.25 72 L 117.25 142 L 117.25 142 L 117.25 180" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="__initial_1" data-to="Start"/></g>
+<g class="lt-edge" data-edge-id="t2" data-from="Start" data-to="SeenA"><path d="M 117.25 224 L 117.25 262 L 61.25 262 L 61.25 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Start" data-to="SeenA"/>
+<line x1="65.25" y1="262" x2="65.25" y2="242" class="lt-transition"/>
+<rect x="55.25" y="226" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="65.25" y="237" text-anchor="middle" class="lt-transition-label"><tspan x="65.25" dy="0">a</tspan></text></g>
+<g class="lt-edge" data-edge-id="t3" data-from="Start" data-to="SeenB"><path d="M 117.25 224 L 117.25 262 L 173.25 262 L 173.25 300" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Start" data-to="SeenB"/>
+<line x1="169.25" y1="262" x2="169.25" y2="242" class="lt-transition"/>
+<rect x="159.25" y="226" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="169.25" y="237" text-anchor="middle" class="lt-transition-label"><tspan x="169.25" dy="0">b</tspan></text></g>
+<g class="lt-edge" data-edge-id="t4" data-from="SeenA" data-to="Accept"><path d="M 61.25 344 L 61.25 382 L 117.25 382 L 117.25 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SeenA" data-to="Accept"/>
+<line x1="113.25" y1="382" x2="113.25" y2="362" class="lt-transition"/>
+<rect x="103.25" y="346" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="113.25" y="357" text-anchor="middle" class="lt-transition-label"><tspan x="113.25" dy="0">b</tspan></text></g>
+<g class="lt-edge" data-edge-id="t5" data-from="SeenA" data-to="Dead"><path d="M 61.25 344 L 61.25 382 L 22.75 382 L 22.75 442 L 22.75 502 L 117.25 502 L 117.25 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SeenA" data-to="Dead"/>
+<line x1="22.75" y1="382" x2="22.75" y2="362" class="lt-transition"/>
+<rect x="8" y="346" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="18" y="357" text-anchor="middle" class="lt-transition-label"><tspan x="18" dy="0">a</tspan></text></g>
+<g class="lt-edge" data-edge-id="t6" data-from="SeenB" data-to="Accept"><path d="M 173.25 344 L 173.25 382 L 117.25 382 L 117.25 420" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SeenB" data-to="Accept"/>
+<line x1="173.25" y1="354" x2="155.25" y2="354" class="lt-transition"/>
+<rect x="135.25" y="346" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="145.25" y="357" text-anchor="middle" class="lt-transition-label"><tspan x="145.25" dy="0">a</tspan></text></g>
+<g class="lt-edge" data-edge-id="t7" data-from="SeenB" data-to="Dead"><path d="M 173.25 344 L 173.25 382 L 211.75 382 L 211.75 442 L 211.75 502 L 117.25 502 L 117.25 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="SeenB" data-to="Dead"/>
+<line x1="211.75" y1="382" x2="211.75" y2="362" class="lt-transition"/>
+<rect x="206.5" y="346" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="216.5" y="357" text-anchor="middle" class="lt-transition-label"><tspan x="216.5" dy="0">b</tspan></text></g>
+<g class="lt-edge" data-edge-id="t8" data-from="Accept" data-to="Dead"><path d="M 109.25 464 L 109.25 502 L 109.25 502 L 109.25 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Accept" data-to="Dead"/>
+<line x1="109.25" y1="482" x2="147.25" y2="482" class="lt-transition"/>
+<rect x="147.25" y="474" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="147.25" y="485" text-anchor="start" class="lt-transition-label"><tspan x="147.25" dy="0">a</tspan></text></g>
+<g class="lt-edge" data-edge-id="t9" data-from="Accept" data-to="Dead"><path d="M 125.25 464 L 125.25 502 L 125.25 502 L 125.25 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Accept" data-to="Dead"/>
+<line x1="125.25" y1="502" x2="147.25" y2="502" class="lt-transition"/>
+<rect x="147.25" y="494" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="147.25" y="505" text-anchor="start" class="lt-transition-label"><tspan x="147.25" dy="0">b</tspan></text></g>
+<g class="lt-edge" data-edge-id="t10" data-from="Dead" data-to="Dead"><path d="M 153.25 555.4 C 181.25 543.4 156.05 512 128.05 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Dead" data-to="Dead"/>
+<line x1="163.86562046890293" y1="546.786556053085" x2="184.94394558432785" y2="552.1054226282787" class="lt-transition"/>
+<rect x="184.94394558432785" y="552.1054226282787" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="184.94394558432785" y="563.1054226282787" text-anchor="start" class="lt-transition-label"><tspan x="184.94394558432785" dy="0">a</tspan></text></g>
+<g class="lt-edge" data-edge-id="t11" data-from="Dead" data-to="Dead"><path d="M 153.25 555.4 C 209.25 543.4 184.05 484 128.05 540" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Dead" data-to="Dead"/>
+<line x1="184.3439453125" y1="526.06494140625" x2="209.25" y2="526.06494140625" class="lt-transition"/>
+<rect x="209.25" y="515.4" width="20" height="16" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="209.25" y="526.4" text-anchor="start" class="lt-transition-label"><tspan x="209.25" dy="0">b</tspan></text></g></g>
+<g class="lt-notes"></g></svg>

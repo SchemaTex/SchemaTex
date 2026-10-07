@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 2014 290" width="2014" height="290" role="img" data-diagram-type="blockdiagram"><title>Electric vehicle powertrain</title>
+<desc>Block diagram with 7 blocks, 0 summing junctions, 7 signals</desc>
+<defs><style>.schematex-bd { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.schematex-bd-block { stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-tf { font-size: 14px; font-weight: 600; fill: #16202b; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #63707f; }
+.schematex-bd-sum { fill: #ffffff; stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #16202b; }
+.schematex-bd-signal { stroke: #16202b; stroke-width: 1.5; fill: none; }
+.schematex-bd-signal-discrete { stroke: #16202b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font-size: 12px; font-style: italic; fill: #63707f; }
+.schematex-bd-port-label { font-size: 13px; fill: #16202b; }
+.schematex-bd-title { font-size: 16px; font-weight: 700; fill: #16202b; }
+.schematex-bd-branch { fill: #16202b; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="9" markerUnits="userSpaceOnUse" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202b"/></marker></defs>
+<text x="34" y="24" text-anchor="start" class="schematex-bd-title">Electric vehicle powertrain</text>
+<g transform="translate(0, 40)"><g class="schematex-bd-signals"><path d="M 206 59 L 318 59 L 318 107 L 430 107" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="grid" data-to="charger"/>
+<rect x="335.5" y="82" width="77" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="374" y="94" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="374" dy="0">AC power</tspan></text>
+<path d="M 587 107 L 681 107 L 681 98 L 775 98" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="charger" data-to="battery"/>
+<rect x="687" y="73" width="82" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="728" y="85" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="728" dy="0">DC charge</tspan></text>
+<path d="M 950 107 L 1018 107 L 1018 98 L 1086 98" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="battery" data-to="inverter"/>
+<rect x="1024" y="73" width="56" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1052" y="85" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1052" dy="0">HV DC</tspan></text>
+<path d="M 1236 107 L 1444 107" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="inverter" data-to="motor"/>
+<rect x="1294" y="82" width="92" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1340" y="94" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1340" dy="0">3-phase AC</tspan></text>
+<path d="M 1636 107 L 1854 107" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="motor" data-to="wheel"/>
+<rect x="1696.5" y="82" width="97" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1745" y="94" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1745" dy="0">wheel torque</tspan></text>
+<path d="M 252 146 L 276 146 L 276 164 L 751 164 L 751 116 L 775 116" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="bms" data-to="battery"/>
+<rect x="633" y="131" width="111" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="688.5" y="143" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="688.5" dy="0">cell monitoring</tspan></text>
+<path d="M 252 164 L 276 164 L 276 172 L 1062 172 L 1062 116 L 1086 116" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="bms" data-to="inverter"/>
+<rect x="959" y="135" width="96" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1007" y="147" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1007" dy="0">torque limits</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(80, 32)" data-block-id="grid" data-block-role="input"><rect width="126" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Charging Grid</tspan></text></g>
+<g transform="translate(430, 80)" data-block-id="charger" data-block-role="generic"><rect width="157" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="78.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="78.5" dy="0">On-board Charger</tspan></text></g>
+<g transform="translate(775, 80)" data-block-id="battery" data-block-role="generic"><rect width="175" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="87.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="87.5" dy="0">High-Voltage Battery</tspan></text></g>
+<g transform="translate(1086, 80)" data-block-id="inverter" data-block-role="actuator"><rect width="150" height="54" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="75" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="75" dy="0">Traction Inverter</tspan></text></g>
+<g transform="translate(1444, 80)" data-block-id="motor" data-block-role="actuator"><rect width="192" height="54" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="96" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="96" dy="0">Electric Traction Motor</tspan></text></g>
+<g transform="translate(1854, 80)" data-block-id="wheel" data-block-role="output"><rect width="126" height="54" fill="#ecfccb" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Drive Wheels</tspan></text></g>
+<g transform="translate(34, 128)" data-block-id="bms" data-block-role="controller"><rect width="218" height="54" fill="#dbeafe" class="schematex-bd-block" rx="4"/>
+<text x="109" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="109" dy="0">Battery Management System</tspan></text></g></g>
+<g class="schematex-bd-branches"><circle cx="252" cy="155" r="3.5" class="schematex-bd-branch"/></g></g></svg>

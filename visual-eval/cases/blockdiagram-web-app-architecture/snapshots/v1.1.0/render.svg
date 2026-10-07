@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 2495 290" width="2495" height="290" role="img" data-diagram-type="blockdiagram"><title>Web Application Architecture</title>
+<desc>Block diagram with 10 blocks, 0 summing junctions, 14 signals</desc>
+<defs><style>.schematex-bd { font-family: "Inter", "Helvetica Neue", Helvetica, sans-serif; }
+.schematex-bd-block { stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-tf { font-size: 14px; font-weight: 600; fill: #16202b; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #63707f; }
+.schematex-bd-sum { fill: #ffffff; stroke: #16202b; stroke-width: 1.5; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #16202b; }
+.schematex-bd-signal { stroke: #16202b; stroke-width: 1.5; fill: none; }
+.schematex-bd-signal-discrete { stroke: #16202b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label-bg { fill: #ffffff; opacity: .94; stroke: none; }
+.schematex-bd-signal-label { font-size: 12px; font-style: italic; fill: #63707f; }
+.schematex-bd-port-label { font-size: 13px; fill: #16202b; }
+.schematex-bd-title { font-size: 16px; font-weight: 700; fill: #16202b; }
+.schematex-bd-branch { fill: #16202b; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="9" markerUnits="userSpaceOnUse" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#16202b"/></marker></defs>
+<text x="34" y="24" text-anchor="start" class="schematex-bd-title">Web Application Architecture</text>
+<g transform="translate(0, 40)"><g class="schematex-bd-signals"><path d="M 167 107 L 311 107" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="client" data-to="cdn"/>
+<rect x="209" y="82" width="60" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="239" y="94" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="239" dy="0">HTTPS</tspan></text>
+<path d="M 437 107 L 669 107" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="cdn" data-to="lb"/>
+<rect x="501" y="82" width="104" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="553" y="94" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="553" dy="0">origin HTTPS</tspan></text>
+<path d="M 799 98 L 883 98 L 883 59 L 967 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="lb" data-to="app1"/>
+<rect x="889" y="34" width="72" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="925" y="46" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="925" dy="0">requests</tspan></text>
+<path d="M 799 116 L 883 116 L 883 155 L 967 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="lb" data-to="app2"/>
+<rect x="889" y="130" width="72" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="925" y="142" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="925" dy="0">requests</tspan></text>
+<path d="M 1093 44 L 1232 44 L 1232 50 L 1510 50" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app1" data-to="cache"/>
+<rect x="1307.5" y="25" width="127" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1371" y="37" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1371" dy="0">cache read/write</tspan></text>
+<path d="M 1093 140 L 1371 140 L 1371 68 L 1510 68" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app2" data-to="cache"/>
+<rect x="1377" y="75" width="127" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1440.5" y="87" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1440.5" dy="0">cache read/write</tspan></text>
+<path d="M 1093 59 L 1117 59 L 1117 104 L 2257 104 L 2257 92 L 2281 92" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app1" data-to="db"/>
+<rect x="1666" y="79" width="42" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1687" y="91" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1687" dy="0">SQL</tspan></text>
+<path d="M 1093 155 L 1486 155 L 1486 112 L 2281 112" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app2" data-to="db"/>
+<rect x="1663.75" y="119" width="42" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1684.75" y="131" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1684.75" dy="0">SQL</tspan></text>
+<path d="M 1093 74 L 1232 74 L 1232 146 L 1510 146" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app1" data-to="queue"/>
+<rect x="1239" y="83" width="99" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1288.5" y="95" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1288.5" dy="0">enqueue jobs</tspan></text>
+<path d="M 1093 170 L 1371 170 L 1371 164 L 1510 164" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="app2" data-to="queue"/>
+<rect x="1391" y="171" width="99" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1440.5" y="183" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1440.5" dy="0">enqueue jobs</tspan></text>
+<path d="M 1636 146 L 1741 146 L 1741 59 L 1846 59" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="queue" data-to="worker1"/>
+<rect x="1747" y="34" width="93" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1793.5" y="46" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1793.5" dy="0">job message</tspan></text>
+<path d="M 1636 164 L 1741 164 L 1741 155 L 1846 155" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="queue" data-to="worker2"/>
+<rect x="1747" y="130" width="93" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="1793.5" y="142" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="1793.5" dy="0">job message</tspan></text>
+<path d="M 1972 59 L 2075 59 L 2075 102 L 2281 102" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="worker1" data-to="db"/>
+<rect x="2132.5" y="77" width="91" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2178" y="89" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2178" dy="0">result write</tspan></text>
+<path d="M 1972 155 L 2178 155 L 2178 122 L 2281 122" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="worker2" data-to="db"/>
+<rect x="2184" y="129" width="91" height="18" rx="2" class="schematex-bd-signal-label-bg"/>
+<text x="2229.5" y="141" text-anchor="middle" class="schematex-bd-signal-label"><tspan x="2229.5" dy="0">result write</tspan></text></g>
+<g class="schematex-bd-nodes"><g transform="translate(34, 80)" data-block-id="client" data-block-role="input"><rect width="133" height="54" fill="#e0f2fe" class="schematex-bd-block" rx="4"/>
+<text x="66.5" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="66.5" dy="0">Browser Client</tspan></text></g>
+<g transform="translate(311, 80)" data-block-id="cdn" data-block-role="generic"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">CDN / WAF</tspan></text></g>
+<g transform="translate(669, 80)" data-block-id="lb" data-block-role="generic"><rect width="130" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="65" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="65" dy="0">Load Balancer</tspan></text></g>
+<g transform="translate(967, 32)" data-block-id="app1" data-block-role="controller"><rect width="126" height="54" fill="#dbeafe" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">App Server A</tspan></text></g>
+<g transform="translate(967, 128)" data-block-id="app2" data-block-role="controller"><rect width="126" height="54" fill="#dbeafe" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">App Server B</tspan></text></g>
+<g transform="translate(1510, 32)" data-block-id="cache" data-block-role="generic"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Redis Cache</tspan></text></g>
+<g transform="translate(2281, 80)" data-block-id="db" data-block-role="generic"><rect width="180" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="90" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="90" dy="0">PostgreSQL Database</tspan></text></g>
+<g transform="translate(1510, 128)" data-block-id="queue" data-block-role="generic"><rect width="126" height="54" fill="#ffffff" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Job Queue</tspan></text></g>
+<g transform="translate(1846, 32)" data-block-id="worker1" data-block-role="actuator"><rect width="126" height="54" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Worker A</tspan></text></g>
+<g transform="translate(1846, 128)" data-block-id="worker2" data-block-role="actuator"><rect width="126" height="54" fill="#dcfce7" class="schematex-bd-block" rx="4"/>
+<text x="63" y="31" text-anchor="middle" class="schematex-bd-tf"><tspan x="63" dy="0">Worker B</tspan></text></g></g>
+<g class="schematex-bd-branches"><circle cx="799" cy="107" r="3.5" class="schematex-bd-branch"/>
+<circle cx="1093" cy="59" r="3.5" class="schematex-bd-branch"/>
+<circle cx="1093" cy="155" r="3.5" class="schematex-bd-branch"/>
+<circle cx="1636" cy="155" r="3.5" class="schematex-bd-branch"/></g></g></svg>

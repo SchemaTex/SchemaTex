@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="995" height="806" viewBox="0 0 995 806" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 8 class; 2 generalization, 2 realization, 1 aggregation, 2 directed, 1 dependency; 2 merged inheritance trees (2 warnings).</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="995" height="806" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Plugin" data-kind="class"><rect x="340.10832638937495" y="400" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="340.10832638937495" y="430" width="160" height="120" class="sx-umlclass-box-fill"/>
+<rect x="340.10832638937495" y="400" width="160" height="150" class="sx-umlclass-box-stroke"/>
+<line x1="340.10832638937495" y1="430" x2="500.10832638937495" y2="430" class="sx-umlclass-divider"/>
+<line x1="340.10832638937495" y1="490" x2="500.10832638937495" y2="490" class="sx-umlclass-divider"/>
+<text x="420.10832638937495" y="421" class="sx-umlclass-classname" text-anchor="middle">Plugin</text>
+<text x="354.10832638937495" y="454" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;abstract&gt;&gt;</tspan></text>
+<text x="354.10832638937495" y="476" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan><tspan>name</tspan>: <tspan>String</tspan></text>
+<text x="354.10832638937495" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>initialize</tspan>(): <tspan>void</tspan></text>
+<text x="354.10832638937495" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>execute</tspan>(): <tspan>Result</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="ExportPlugin" data-kind="class"><rect x="548.309954904375" y="628" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="548.309954904375" y="658" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="548.309954904375" y="628" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="548.309954904375" y1="658" x2="708.309954904375" y2="658" class="sx-umlclass-divider"/>
+<line x1="548.309954904375" y1="696" x2="708.309954904375" y2="696" class="sx-umlclass-divider"/>
+<text x="628.309954904375" y="649" class="sx-umlclass-classname" text-anchor="middle">ExportPlugin</text>
+<text x="562.309954904375" y="720" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>execute</tspan>(): <tspan>Result</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="ValidationPlugin" data-kind="class"><rect x="762.309954904375" y="628" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="762.309954904375" y="658" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="762.309954904375" y="628" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="762.309954904375" y1="658" x2="922.309954904375" y2="658" class="sx-umlclass-divider"/>
+<line x1="762.309954904375" y1="696" x2="922.309954904375" y2="696" class="sx-umlclass-divider"/>
+<text x="842.309954904375" y="649" class="sx-umlclass-classname" text-anchor="middle">ValidationPlugin</text>
+<text x="776.309954904375" y="720" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>execute</tspan>(): <tspan>Result</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="PluginContext" data-kind="class"><rect x="120.30995490437499" y="628" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="120.30995490437499" y="658" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="120.30995490437499" y="628" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="120.30995490437499" y1="658" x2="280.309954904375" y2="658" class="sx-umlclass-divider"/>
+<line x1="120.30995490437499" y1="696" x2="280.309954904375" y2="696" class="sx-umlclass-divider"/>
+<text x="200.309954904375" y="649" class="sx-umlclass-classname" text-anchor="middle">PluginContext</text>
+<text x="134.309954904375" y="682" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>tenantId</tspan>: <tspan>UUID</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="PluginRegistry" data-kind="class"><rect x="32" y="216" width="240" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="246" width="240" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="216" width="240" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="246" x2="272" y2="246" class="sx-umlclass-divider"/>
+<line x1="32" y1="284" x2="272" y2="284" class="sx-umlclass-divider"/>
+<text x="152" y="237" class="sx-umlclass-classname" text-anchor="middle">PluginRegistry</text>
+<text x="46" y="308" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>register</tspan>(plugin: Plugin): <tspan>void</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="AnalyticsHost" data-kind="class"><rect x="42" y="32" width="220" height="30" class="sx-umlclass-header-fill"/>
+<rect x="42" y="62" width="220" height="76" class="sx-umlclass-box-fill"/>
+<rect x="42" y="32" width="220" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="42" y1="62" x2="262" y2="62" class="sx-umlclass-divider"/>
+<line x1="42" y1="100" x2="262" y2="100" class="sx-umlclass-divider"/>
+<text x="152" y="53" class="sx-umlclass-classname" text-anchor="middle">AnalyticsHost</text>
+<text x="56" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>run</tspan>(plugin: Plugin): <tspan>Result</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Result" data-kind="class"><rect x="334.309954904375" y="628" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="334.309954904375" y="658" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="334.309954904375" y="628" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="334.309954904375" y1="658" x2="494.309954904375" y2="658" class="sx-umlclass-divider"/>
+<line x1="334.309954904375" y1="696" x2="494.309954904375" y2="696" class="sx-umlclass-divider"/>
+<text x="414.309954904375" y="649" class="sx-umlclass-classname" text-anchor="middle">Result</text>
+<text x="348.309954904375" y="682" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>success</tspan>: <tspan>boolean</tspan></text></g>
+<g class="sx-umlclass-classifier" data-id="Configurable" data-kind="class"><rect x="316" y="32" width="299" height="30" class="sx-umlclass-header-fill"/>
+<rect x="316" y="62" width="299" height="76" class="sx-umlclass-box-fill"/>
+<rect x="316" y="32" width="299" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="316" y1="62" x2="615" y2="62" class="sx-umlclass-divider"/>
+<line x1="316" y1="100" x2="615" y2="100" class="sx-umlclass-divider"/>
+<text x="465.5" y="53" class="sx-umlclass-classname" text-anchor="middle">Configurable</text>
+<text x="330" y="86" class="sx-umlclass-member" data-visibility="public"><tspan>&lt;&lt;interface&gt;&gt;</tspan></text>
+<text x="330" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan><tspan>configure</tspan>(context: PluginContext): <tspan>void</tspan></text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="PluginRegistry" data-to="Plugin" data-kind="aggregation" data-target-mult="0..*" data-name="registered plugins"><path d="M 221 342 L 340.1 413.5" class="sx-umlclass-rel-line"/>
+
+<polygon points="220.979326692412,322 226.979326692412,332 220.979326692412,342 214.979326692412,332" class="sx-umlclass-diamond-hollow"/>
+<text x="333.10832638937495" y="410.53230810867836" class="sx-umlclass-edge-label" text-anchor="end">0..*</text>
+<text x="280.54382654089346" y="372.76615405433915" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">registered plugins</text>
+<text x="280.54382654089346" y="372.76615405433915" class="sx-umlclass-edge-name" text-anchor="middle">registered plugins</text></g>
+<g class="sx-umlclass-rel" data-from="AnalyticsHost" data-to="PluginRegistry" data-kind="directed" data-name="resolves"><path d="M 152 138 L 152 205" class="sx-umlclass-rel-line"/>
+<path d="M 146.5 205 L 152 216 L 157.5 205" class="sx-umlclass-arrowhead"/>
+<text x="152" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">resolves</text>
+<text x="152" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">resolves</text></g>
+<g class="sx-umlclass-rel" data-from="Plugin" data-to="PluginContext" data-kind="dependency" data-name="executes in"><path d="M 340.1 550 L 256.9 617" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 251.36002135439924 617 L 256.86002135439924 628 L 262.36002135439924 617" class="sx-umlclass-arrowhead"/>
+<text x="298.4841738718871" y="578.4889037818114" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">executes in</text>
+<text x="298.4841738718871" y="578.4889037818114" class="sx-umlclass-edge-name" text-anchor="middle">executes in</text></g>
+<g class="sx-umlclass-rel" data-from="Plugin" data-to="Result" data-kind="directed" data-name="produces"><path d="M 418 550 L 415.8 617" class="sx-umlclass-rel-line"/>
+<path d="M 410.30176892721477 617 L 415.80176892721477 628 L 421.30176892721477 617" class="sx-umlclass-arrowhead"/>
+<text x="416.89951886854976" y="578.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">produces</text>
+<text x="416.89951886854976" y="578.5" class="sx-umlclass-edge-name" text-anchor="middle">produces</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Plugin" data-children="ExportPlugin,ValidationPlugin"><path d="M 628.3 628 L 628.3 589 L 490.1 589" class="sx-umlclass-rel-line"/>
+<path d="M 842.3 628 L 842.3 589 L 490.1 589" class="sx-umlclass-rel-line"/>
+<path d="M 490.1 589 L 490.1 564" class="sx-umlclass-rel-line"/>
+<polygon points="490.10832638937495,550 481.10832638937495,564 499.10832638937495,564" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="realization" data-parent="Configurable" data-children="ExportPlugin,ValidationPlugin"><path d="M 628.3 628 L 628.3 383 L 605 383" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 842.3 628 L 842.3 383 L 605 383" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 605 383 L 605 152" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="605,138 596,152 614,152" class="sx-umlclass-triangle"/></g></g></svg>

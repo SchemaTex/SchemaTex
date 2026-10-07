@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-uc" role="img" aria-label="Hospital Admission" width="1404" height="598" viewBox="0 0 1404 598" data-diagram-type="usecase"><title>Use Case Diagram — Hospital Admission</title>
+<desc>Subject: Hospital Admission System. 4 actors, 7 use cases, 4 include, 1 extend.</desc>
+<style>.sx-uc { font-family: system-ui, -apple-system, sans-serif; }
+.sx-uc-subject rect { stroke: #c2cede; stroke-width: 1.4; fill: #fafbfd; }
+.sx-uc-subject-title { font: 700 14px sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+.sx-uc-actor circle, .sx-uc-actor line { stroke: #334155; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.sx-uc-actor-head { fill: #ffffff; }
+.sx-uc-actor-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-actor-system rect { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-usecase ellipse { stroke: #5b85c0; stroke-width: 1.4; fill: #eaf2fc; }
+.sx-uc-name { font: 600 12px sans-serif; fill: #0f172a; }
+.sx-uc-stereotype { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint-head { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-extpoint { font: 10px sans-serif; fill: #475569; }
+.sx-uc-div { stroke: #5b85c0; stroke-width: 1; opacity: 0.5; }
+.sx-uc-assoc { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-include { stroke: #475569; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-extend { stroke: #2563eb; stroke-width: 1.4; fill: none; stroke-dasharray: 5 3; }
+.sx-uc-general { stroke: #475569; stroke-width: 1.4; fill: none; }
+.sx-uc-pill { fill: #ffffff; opacity: 0.92; }
+.sx-uc-edge-label { font: italic 10px sans-serif; fill: #475569; }
+.sx-uc-edge-label-accent { fill: #2563eb; }
+.sx-uc-mult { font: 10px sans-serif; fill: #475569; }
+.sx-uc-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-uc-open-arrow" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="sx-uc-open-arrow-accent" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="11" markerHeight="9" orient="auto"><polyline points="0,0 9,4 0,8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+<marker id="sx-uc-gen-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="13" markerHeight="11" orient="auto"><polygon points="0,0 11,5 0,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker></defs>
+<text x="702" y="24" class="sx-uc-title" text-anchor="middle">Hospital Admission</text>
+<g class="sx-uc-subject" data-id="subject"><rect x="158.4" y="58" width="1030" height="516" rx="8" ry="8"/>
+<text class="sx-uc-subject-title" x="673.4" y="82" text-anchor="middle">Hospital Admission System</text></g>
+<g class="sx-uc-edges"><path class="sx-uc-general" d="M 62.4 368 L 42.4 368 L 42.4 248 L 62.4 248" data-source="EP" data-target="P" marker-end="url(#sx-uc-gen-arrow)"/>
+<path class="sx-uc-assoc" d="M 98.4 250 L 257.19 167.94" data-source="P" data-target="Register"/>
+<path class="sx-uc-assoc" d="M 1248.4 250 L 400.8 152.72" data-source="R" data-target="Register"/>
+<path class="sx-uc-assoc" d="M 1248.4 250 L 608.4 222 L 416.62 250.03" data-source="R" data-target="Triage"/>
+<path class="sx-uc-include" d="M 407.4 142 L 602.4 142" data-source="Register" data-target="Demographics" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 377.82 163.3 L 648.79 245.25" data-source="Register" data-target="Coverage" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-assoc" d="M 796.83 282.46 L 1248.4 376" data-source="Coverage" data-target="IC"/>
+<path class="sx-uc-include" d="M 817.4 390 L 1012.4 390" data-source="Admit" data-target="Bed" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-include" d="M 351.83 168.88 L 672.97 363.12" data-source="Register" data-target="Admit" marker-end="url(#sx-uc-open-arrow)"/>
+<path class="sx-uc-extend" d="M 672.19 486.65 L 375.4 307.13" data-source="Escalate" data-target="Triage" marker-end="url(#sx-uc-open-arrow-accent)"/></g>
+<g class="sx-uc-actors"><g class="sx-uc-actor" data-id="P" transform="translate(58.400000000000006, 226)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Patient</text></g>
+<g class="sx-uc-actor" data-id="EP" transform="translate(58.400000000000006, 346)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Emergency Patient</text></g>
+<g class="sx-uc-actor" data-id="R" transform="translate(1248.4, 226)"><circle class="sx-uc-actor-head" cx="20" cy="8" r="6"/>
+<line x1="20" y1="14" x2="20" y2="36"/>
+<line x1="6" y1="22" x2="34" y2="22"/>
+<line x1="20" y1="36" x2="8" y2="56"/>
+<line x1="20" y1="36" x2="32" y2="56"/>
+<line class="sx-uc-actor-slash" x1="8" y1="14" x2="32" y2="36"/>
+<text class="sx-uc-actor-name" x="20" y="72" text-anchor="middle">Registrar</text></g>
+<g class="sx-uc-actor sx-uc-actor-system" data-id="IC" transform="translate(1248.4, 352)"><rect x="0" y="0" width="132" height="48" rx="2" ry="2"/>
+<text class="sx-uc-stereotype" x="66" y="18" text-anchor="middle">«actor»</text>
+<text class="sx-uc-actor-name" x="66" y="36" text-anchor="middle">Insurance Clearinghouse</text></g></g>
+<g class="sx-uc-usecases"><g class="sx-uc-usecase" data-id="Register"><ellipse cx="307.4" cy="142" rx="100" ry="30"/>
+<text class="sx-uc-name" x="307.4" y="146" text-anchor="middle">Register Patient</text></g>
+<g class="sx-uc-usecase" data-id="Triage"><ellipse cx="307.4" cy="266" rx="115" ry="51"/>
+<text class="sx-uc-name" x="307.4" y="233" text-anchor="middle">Perform Triage</text>
+<line class="sx-uc-div" x1="200.39999999999998" y1="241" x2="414.4" y2="241"/>
+<text class="sx-uc-extpoint-head" x="208.39999999999998" y="255">extension points</text>
+<text class="sx-uc-extpoint" x="208.39999999999998" y="268">emergency escalation</text></g>
+<g class="sx-uc-usecase" data-id="Demographics"><ellipse cx="717.4" cy="142" rx="115" ry="30"/>
+<text class="sx-uc-name" x="717.4" y="146" text-anchor="middle">Record Demographics</text></g>
+<g class="sx-uc-usecase" data-id="Coverage"><ellipse cx="717.4" cy="266" rx="95" ry="30"/>
+<text class="sx-uc-name" x="717.4" y="270" text-anchor="middle">Verify Coverage</text></g>
+<g class="sx-uc-usecase" data-id="Admit"><ellipse cx="717.4" cy="390" rx="100" ry="30"/>
+<text class="sx-uc-name" x="717.4" y="394" text-anchor="middle">Create Admission</text></g>
+<g class="sx-uc-usecase" data-id="Escalate"><ellipse cx="717.4" cy="514" rx="110" ry="30"/>
+<text class="sx-uc-name" x="717.4" y="518" text-anchor="middle">Escalate Emergency</text></g>
+<g class="sx-uc-usecase" data-id="Bed"><ellipse cx="1083.4" cy="390" rx="71" ry="30"/>
+<text class="sx-uc-name" x="1083.4" y="394" text-anchor="middle">Assign Bed</text></g></g>
+<g class="sx-uc-labels"><g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="478.79999999999995" y="134" width="52.2" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="504.9" y="145" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="487.20702410458114" y="196.27431948528795" width="52.2" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="513.3070241045812" y="207.27431948528795" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="888.8000000000001" y="382" width="52.2" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="914.9000000000001" y="393" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="486.29999999999995" y="258" width="52.2" height="16" rx="4" ry="4"/>
+<text class="sx-uc-edge-label" x="512.4" y="269" text-anchor="middle">«include»</text></g>
+<g class="sx-uc-edge-label-g"><rect class="sx-uc-pill" x="455.09174253339876" y="370.8906149958119" width="137.39999999999998" height="52" rx="4" ry="4"/>
+<text class="sx-uc-edge-label sx-uc-edge-label-accent" x="523.7917425333987" y="381.8906149958119" text-anchor="middle">«extend»</text>
+<text class="sx-uc-edge-label" x="523.7917425333987" y="393.8906149958119" text-anchor="middle">[unstable patient]</text>
+<text class="sx-uc-edge-label" x="523.7917425333987" y="405.8906149958119" text-anchor="middle">(extension point: emergency</text>
+<text class="sx-uc-edge-label" x="523.7917425333987" y="417.8906149958119" text-anchor="middle">escalation)</text></g></g></svg>

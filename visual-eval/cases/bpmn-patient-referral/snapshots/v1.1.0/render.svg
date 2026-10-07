@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1154" height="364" viewBox="0 0 1154 364" class="schematex-bpmn"><title>Patient Referral</title>
+<desc>BPMN LR — 2 pool(s), 9 flow object(s).</desc>
+<defs><style>
+.schematex-bpmn .bpmn-service-gear,
+.schematex-bpmn .bpmn-service-hub { fill: #eff6ff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-ring { fill: none; stroke: #92400e; stroke-width: 1; }
+.schematex-bpmn .bpmn-event-gateway-pentagon { fill: none; stroke: #92400e; stroke-width: 1.2; }
+.schematex-bpmn .bpmn-flow-conditional { fill: #ffffff; stroke: #334155; stroke-width: 1; }
+.schematex-bpmn .bpmn-flow-default { fill: none; stroke: #334155; stroke-width: 1.5; }
+.schematex-bpmn .bpmn-msg-start { fill: #ffffff; stroke: #94a3b8; stroke-width: 0.84; }
+</style>
+<marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/></marker></defs>
+<g transform="translate(0, 40)"><g class="schematex-bpmn-pool"><rect x="16" y="16" width="1122" height="128" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="80" transform="rotate(-90 29 80)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Clinic</text></g>
+<g class="schematex-bpmn-pool"><rect x="16" y="180" width="1122" height="128" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<rect x="16" y="180" width="26" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="29" y="244" transform="rotate(-90 29 244)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Specialist</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="16" width="1074" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="16" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="80" transform="rotate(-90 53 80)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">GP</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="180" width="1074" height="128" fill="#fbfcfe" stroke="#334155" stroke-width="1"/>
+<rect x="42" y="180" width="22" height="128" fill="#eef2f7" stroke="#334155" stroke-width="1"/>
+<text x="53" y="244" transform="rotate(-90 53 244)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a">Intake</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 211.8 80 L 272.5 80 L 272.5 80 L 333.2 80" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 461.6 80 L 503.8 80 L 503.8 80 L 546 80" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 656 80 L 721.3 80 L 721.3 80 L 786.6 80" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 601 110 L 601 168 L 193.8 168 L 193.8 226" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="397.4" y="162" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Referral</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 211.8 244 L 274.1 244 L 274.1 244 L 336.4 244" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 458.4 244 L 518.7 244 L 518.7 244 L 579 244" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 623 244 L 676.9 244 L 676.9 244 L 730.8 244" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 878.4 244 L 934.3 244 L 934.3 244 L 990.2 244" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-message"><path d="M 804.6 214 L 804.6 179 L 577 179 L 577 144" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#bpmn-arrow-msg)"/>
+<text x="690.8000000000001" y="173" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="10" fill="#0f172a">Appointment</text></g>
+<g class="schematex-bpmn-event kind-start trigger-none"><circle cx="193.8" cy="80" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<text x="193.8" y="112" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Referral needed</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="333.20000000000005" y="50" width="128.40000000000003" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="397.4000000000001" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="397.4000000000001" dy="0">Prepare referral</tspan></text>
+<g class="marker-user"><circle cx="346.20000000000005" cy="62" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 341.20000000000005 69 Q 346.20000000000005 64 351.20000000000005 69" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-send"><rect x="546" y="50" width="110" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="601" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="601" dy="0">Send referral</tspan></text>
+<g class="marker-send"><rect x="554" y="60" width="10" height="7" fill="#334155"/>
+<path d="M 554 60 L 559 64 L 564 60" stroke="#ffffff" stroke-width="1" fill="none"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="804.6000000000001" cy="80" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="804.6000000000001" y="112" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Referral sent</text></g>
+<g class="schematex-bpmn-event kind-start trigger-message"><circle cx="193.8" cy="244" r="18" fill="#dcfce7" stroke="#059669" stroke-width="1.2"/>
+<g class="trigger-message"><rect x="188.85000000000002" y="240.535" width="9.9" height="6.93" fill="#ffffff" stroke="#334155" stroke-width="1"/>
+<path d="M 188.85000000000002 240.535 L 193.8 244.3465 L 198.75000000000003 240.535" stroke="#334155" stroke-width="1" fill="none"/></g>
+<text x="193.8" y="276" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Referral received</text></g>
+<g class="schematex-bpmn-task marker-user"><rect x="336.40000000000003" y="214" width="122.00000000000001" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="397.40000000000003" y="244" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="397.40000000000003" dy="0">Triage referral</tspan></text>
+<g class="marker-user"><circle cx="349.40000000000003" cy="226" r="2.5" fill="none" stroke="#334155" stroke-width="1"/>
+<path d="M 344.40000000000003 233 Q 349.40000000000003 228 354.40000000000003 233" fill="none" stroke="#334155" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-event"><polygon points="601,222 623,244 601,266 579,244" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<circle cx="601" cy="244" r="12.100000000000001" class="bpmn-event-gateway-ring"/>
+<circle cx="601" cy="244" r="9.350000000000001" class="bpmn-event-gateway-ring"/>
+<polygon points="601,236.96 607.6954378747179,241.82452035960037 605.138008176139,249.69547964039964 596.861991823861,249.69547964039964 594.3045621252821,241.82452035960037" class="bpmn-event-gateway-pentagon"/>
+<text x="601" y="216" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Appointment response</text></g>
+<g class="schematex-bpmn-task marker-send"><rect x="730.8000000000002" y="214" width="147.60000000000002" height="60" rx="10" ry="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="804.6000000000001" y="244" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#0f172a"><tspan x="804.6000000000001" dy="0">Confirm appointment</tspan></text>
+<g class="marker-send"><rect x="738.8000000000002" y="224" width="10" height="7" fill="#334155"/>
+<path d="M 738.8000000000002 224 L 743.8000000000002 228 L 748.8000000000002 224" stroke="#ffffff" stroke-width="1" fill="none"/></g></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="1008.2" cy="244" r="18" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/>
+<text x="1008.2" y="276" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#0f172a">Booked</text></g>
+<g class="schematex-bpmn-source-markers">
+
+
+<circle cx="601" cy="110" r="2.52" class="bpmn-msg-start"/>
+
+
+
+
+<circle cx="804.6" cy="214" r="2.52" class="bpmn-msg-start"/></g></g>
+<text x="577" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Patient Referral</text></svg>

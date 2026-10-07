@@ -1,0 +1,45 @@
+{
+  "id": "genogram-three-unions-father",
+  "type": "genogram",
+  "title": "One parent, three marriages",
+  "goal": "A reader can tell Walter's three marriages apart (Ruth, who died; Carol, divorced, no children; June, current), see each marriage line connect only its two partners, and trace Paul and Anne to Ruth and Ben and Lucy to June.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "unions-connect-their-partners",
+      "severity": "blocker",
+      "must": "Exactly three marriage lines leave Walter: to Ruth (m. 1962, no divorce marks because it ended in her death), to Carol (m. 1977 · div. 1983, divorce-marked) and to June (m. 1985). No marriage line appears to connect two of the wives."
+    },
+    {
+      "id": "descent",
+      "severity": "blocker",
+      "must": "Paul and Anne descend only from Walter and Ruth's marriage; Ben and Lucy only from Walter and June's. Carol's marriage has no children."
+    },
+    {
+      "id": "no-line-through-people",
+      "severity": "blocker",
+      "must": "No marriage or descent line passes through a person symbol or a name; a marriage between partners who are not side by side is routed around the person between them."
+    },
+    {
+      "id": "partner-order",
+      "severity": "major",
+      "must": "The wives read in the order of the marriages: Ruth and Carol on one side in order, June, the current wife, next to Walter."
+    },
+    {
+      "id": "deceased-and-index",
+      "severity": "major",
+      "must": "Ruth is crossed out with 1942–1975 under her name; Walter carries the index-person double outline and the marriage line stops at its edge."
+    },
+    {
+      "id": "legend",
+      "severity": "minor",
+      "must": "The legend shows male, female, deceased, index person, marriage/descent and divorced."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "Walter's wives stand in marriage order: Ruth and Carol to his left, June to his right. The marriage to Ruth passes over Carol and carries no divorce marks because it ended in her death. Paul and Anne hang from Walter and Ruth's line, Ben and Lucy from Walter and June's; nothing crosses."
+  }
+}

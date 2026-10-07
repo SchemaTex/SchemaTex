@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1176.4" height="654" viewBox="0 0 1176.4 654" class="lt-sfc" data-diagram-type="sfc"><defs><style>
+.lt-sfc-bg { fill: #ffffff; }
+.lt-sfc-step-body { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+.lt-sfc-step-inner { fill: none; stroke: #333; stroke-width: 1.2; }
+.lt-sfc-step-name { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; fill: #111; }
+.lt-sfc-transition-bar { fill: #000; }
+.lt-sfc-transition-condition { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #333; }
+.lt-sfc-transition-id { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #888; }
+.lt-sfc-branch-bar { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-wire { stroke: #000; stroke-width: 1.5; fill: none; }
+.lt-sfc-action-block { fill: #fafafa; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier { fill: #f0f0f0; stroke: #333; stroke-width: 1; }
+.lt-sfc-action-qualifier-text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-weight: 700; font-size: 11px; fill: #111; }
+.lt-sfc-action-body { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 11px; fill: #222; }
+.lt-sfc-action-time { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 10px; fill: #555; }
+.lt-sfc-jump { stroke: #000; stroke-width: 1.5; fill: none; marker-end: url(#sfc-arrow); }
+.lt-sfc-title { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 14px; font-weight: 700; fill: #111; }
+</style>
+<marker id="sfc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs>
+<title>SFC: Car wash cycle</title>
+<desc>SFC with 5 step(s), 4 transition(s).</desc>
+<rect class="lt-sfc-bg" x="0" y="0" width="1176.4" height="654"/>
+<text class="lt-sfc-title" x="588.2" y="22" text-anchor="middle">Car wash cycle</text>
+<path class="lt-sfc-wire" d="M 552.2 76 L 552.2 132"/>
+<path class="lt-sfc-wire" d="M 244.20000000000005 286 L 244.20000000000005 342"/>
+<path class="lt-sfc-wire" d="M 652.2 286 L 652.2 342"/>
+<path class="lt-sfc-wire" d="M 552.2 226 L 552.2 282"/>
+<path class="lt-sfc-wire" d="M 244.20000000000005 378 L 244.20000000000005 436"/>
+<path class="lt-sfc-wire" d="M 652.2 378 L 652.2 436"/>
+<path class="lt-sfc-wire" d="M 552.2 440 L 552.2 496"/>
+<path class="lt-sfc-wire" d="M 552.2 168 L 552.2 226"/>
+<path class="lt-sfc-wire" d="M 552.2 496 L 552.2 552"/>
+<line class="lt-sfc-branch-bar" x1="152.20000000000005" y1="282" x2="952.2" y2="282"/>
+<line class="lt-sfc-branch-bar" x1="152.20000000000005" y1="286" x2="952.2" y2="286"/>
+<line class="lt-sfc-branch-bar" x1="152.20000000000005" y1="436" x2="952.2" y2="436"/>
+<line class="lt-sfc-branch-bar" x1="152.20000000000005" y1="440" x2="952.2" y2="440"/>
+<rect class="lt-sfc-transition-bar" x="528.2" y="102.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="524.2" y="106.5" text-anchor="end">T0</text>
+<text class="lt-sfc-transition-condition" x="582.2" y="106.5">CarInBay</text>
+<rect class="lt-sfc-transition-bar" x="528.2" y="252.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="582.2" y="256.5">SoakDone</text>
+<rect class="lt-sfc-transition-bar" x="528.2" y="466.5" width="48" height="3"/>
+<text class="lt-sfc-transition-condition" x="582.2" y="470.5">BrushDone AND WheelDone</text>
+<rect class="lt-sfc-transition-bar" x="24" y="312.5" width="48" height="3"/>
+<text class="lt-sfc-transition-id" x="20" y="316.5" text-anchor="end">T1</text>
+<text class="lt-sfc-transition-condition" x="78" y="316.5">DryDone</text>
+<g class="lt-sfc-step" data-step-id="S0" data-step-kind="initial"><rect class="lt-sfc-step-body" x="472.20000000000005" y="40" width="160" height="36"/>
+<rect class="lt-sfc-step-inner" x="476.20000000000005" y="44" width="152" height="28"/>
+<text class="lt-sfc-step-name" x="552.2" y="62" text-anchor="middle">S0</text></g>
+<line class="lt-sfc-wire" x1="632.2" y1="58" x2="640.2" y2="58"/>
+<g class="lt-sfc-step" data-step-id="S1" data-step-kind="normal"><rect class="lt-sfc-step-body" x="472.20000000000005" y="132" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="552.2" y="144" text-anchor="middle">S1</text>
+<text class="lt-sfc-step-name" x="552.2" y="160" text-anchor="middle">Pre-soak</text></g>
+<line class="lt-sfc-wire" x1="632.2" y1="150" x2="640.2" y2="150"/>
+<g class="lt-sfc-step" data-step-id="S2" data-step-kind="normal"><rect class="lt-sfc-step-body" x="164.20000000000005" y="342" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="244.20000000000005" y="354" text-anchor="middle">S2</text>
+<text class="lt-sfc-step-name" x="244.20000000000005" y="370" text-anchor="middle">Brush body</text></g>
+<line class="lt-sfc-wire" x1="324.20000000000005" y1="360" x2="332.20000000000005" y2="360"/>
+<g class="lt-sfc-step" data-step-id="S3" data-step-kind="normal"><rect class="lt-sfc-step-body" x="572.2" y="342" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="652.2" y="354" text-anchor="middle">S3</text>
+<text class="lt-sfc-step-name" x="652.2" y="370" text-anchor="middle">Wash wheels</text></g>
+<line class="lt-sfc-wire" x1="732.2" y1="360" x2="740.2" y2="360"/>
+<g class="lt-sfc-step" data-step-id="S4" data-step-kind="normal"><rect class="lt-sfc-step-body" x="472.20000000000005" y="552" width="160" height="36"/>
+<text class="lt-sfc-transition-id" x="552.2" y="564" text-anchor="middle">S4</text>
+<text class="lt-sfc-step-name" x="552.2" y="580" text-anchor="middle">Rinse and dry</text></g>
+<line class="lt-sfc-wire" x1="632.2" y1="570" x2="640.2" y2="570"/>
+<g class="lt-sfc-action-block-g" data-step-id="S0" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="640.2" y="40" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="666.2" y="40" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="653.2" y="56" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="672.2" y="56">EntryLightGreen</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S1" data-action-index="0" data-qualifier="D"><rect class="lt-sfc-action-qualifier" x="640.2" y="132" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="666.2" y="132" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="653.2" y="148" text-anchor="middle">D</text>
+<text class="lt-sfc-action-body" x="672.2" y="148">SoapPump</text>
+<rect class="lt-sfc-action-block" x="640.2" y="156" width="200" height="14"/>
+<text class="lt-sfc-action-time" x="646.2" y="167">T#20s</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S2" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="332.20000000000005" y="342" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="358.20000000000005" y="342" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="345.20000000000005" y="358" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="364.20000000000005" y="358">BrushMotors</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S3" data-action-index="0" data-qualifier="L"><rect class="lt-sfc-action-qualifier" x="740.2" y="342" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="766.2" y="342" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="753.2" y="358" text-anchor="middle">L</text>
+<text class="lt-sfc-action-body" x="772.2" y="358">WheelJets</text>
+<rect class="lt-sfc-action-block" x="740.2" y="366" width="200" height="14"/>
+<text class="lt-sfc-action-time" x="746.2" y="377">T#30s</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S4" data-action-index="0" data-qualifier="N"><rect class="lt-sfc-action-qualifier" x="640.2" y="552" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="666.2" y="552" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="653.2" y="568" text-anchor="middle">N</text>
+<text class="lt-sfc-action-body" x="672.2" y="568">RinseArch</text></g>
+<g class="lt-sfc-action-block-g" data-step-id="S4" data-action-index="1" data-qualifier="D"><rect class="lt-sfc-action-qualifier" x="640.2" y="576" width="26" height="24"/>
+<rect class="lt-sfc-action-block" x="666.2" y="576" width="174" height="24"/>
+<text class="lt-sfc-action-qualifier-text" x="653.2" y="592" text-anchor="middle">D</text>
+<text class="lt-sfc-action-body" x="672.2" y="592">Blowers</text>
+<rect class="lt-sfc-action-block" x="640.2" y="600" width="200" height="14"/>
+<text class="lt-sfc-action-time" x="646.2" y="611">T#5s</text></g>
+<path class="lt-sfc-jump" d="M 472.20000000000005 570 L 48 570 L 48 58 L 472.20000000000005 58"/></svg>

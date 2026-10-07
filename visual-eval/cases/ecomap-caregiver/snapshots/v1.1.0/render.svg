@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 554 678" class="schematex-diagram schematex-ecomap" width="554" height="678"><title>Caregiver Support Map</title>
+<desc>Ecomap diagram with 6 external systems</desc>
+<defs><marker id="schematex-ecomap-eco-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker>
+<marker id="schematex-ecomap-eco-arrow-start" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 10 0 L 0 5 L 10 10 z" fill="#334155"/></marker></defs>
+<style>
+.schematex-ecomap {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3; color: #0f172a;
+}
+.schematex-ecomap-center-shape { fill: #ffffff; stroke: #334155; stroke-width: 3; }
+.schematex-ecomap-center-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: #0f172a; font-weight: 600; }
+.schematex-ecomap-center-age { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 400; text-anchor: middle; dominant-baseline: central; fill: #475569; }
+.schematex-ecomap-system-shape { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.schematex-ecomap-system-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-ecomap-eco-line { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-parallel { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-weak { stroke: #334155; stroke-width: 2; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-broken { stroke: #334155; stroke-width: 2; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-stressful { stroke: #334155; stroke-width: 2; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-conn-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; text-anchor: middle; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.schematex-ecomap-eco-arrow { fill: #94a3b8; }
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-parallel,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-weak,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-broken,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-stressful { stroke-opacity: 0.55; }
+.schematex-ecomap-system-family .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.schematex-ecomap-system-friends .schematex-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.schematex-ecomap-system-work .schematex-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.schematex-ecomap-system-education .schematex-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.schematex-ecomap-system-health .schematex-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.schematex-ecomap-system-mental-health .schematex-ecomap-system-shape { fill: #AB47BC18; stroke: #AB47BC; }
+.schematex-ecomap-system-religion .schematex-ecomap-system-shape { fill: #CCBB3318; stroke: #CCBB33; }
+.schematex-ecomap-system-recreation .schematex-ecomap-system-shape { fill: #26C6DA18; stroke: #26C6DA; }
+.schematex-ecomap-system-legal .schematex-ecomap-system-shape { fill: #78909C18; stroke: #78909C; }
+.schematex-ecomap-system-government .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.schematex-ecomap-system-financial .schematex-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.schematex-ecomap-system-community .schematex-ecomap-system-shape { fill: #29B6F618; stroke: #29B6F6; }
+.schematex-ecomap-system-cultural .schematex-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.schematex-ecomap-system-substance .schematex-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.schematex-ecomap-system-technology .schematex-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.schematex-ecomap-system-pet .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+</style>
+<g transform="translate(0, 40)"><g class="schematex-ecomap-connections"><g class="schematex-ecomap-connection schematex-ecomap-connection-strong" data-from="caregiver" data-to="son"><line x1="273" y1="208" x2="273" y2="128" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="277" y1="208" x2="277" y2="128" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="281" y1="208" x2="281" y2="128" class="schematex-ecomap-eco-line-parallel"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="caregiver" data-to="respite"><line x1="340.219854476264" y1="240.5" x2="412.96598839415685" y2="198.5" class="schematex-ecomap-eco-line" marker-start="url(#schematex-ecomap-eco-arrow-start)"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-stressful" data-from="caregiver" data-to="disability"><path d="M 336.75575286112627 311.5 Q 342.2820323027551 323.9282032302755 355.8083117443839 322.5 Q 369.33459118601274 321.0717967697245 374.8608706276416 333.5 Q 380.3871500692704 345.9282032302755 393.9134295108992 344.5 Q 407.439708952528 343.0717967697245 412.96598839415685 355.5" class="schematex-ecomap-eco-line-stressful" stroke-width="2"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-moderate" data-from="caregiver" data-to="support"><line x1="279" y1="346" x2="279" y2="434" class="schematex-ecomap-eco-line-parallel"/>
+<line x1="275" y1="346" x2="275" y2="434" class="schematex-ecomap-eco-line-parallel"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="caregiver" data-to="employer"><line x1="217.24424713887373" y1="311.5" x2="141.03401160584318" y2="355.50000000000006" class="schematex-ecomap-eco-line"/></g>
+<g class="schematex-ecomap-connection schematex-ecomap-connection-normal" data-from="caregiver" data-to="physician"><line x1="213.78014552373597" y1="240.5" x2="144.4981132209809" y2="200.49999999999997" class="schematex-ecomap-eco-line" marker-start="url(#schematex-ecomap-eco-arrow-start)" marker-end="url(#schematex-ecomap-eco-arrow)"/></g></g>
+<g class="schematex-ecomap-center" data-id="caregiver"><circle cx="277" cy="277" r="69" class="schematex-ecomap-center-shape"/>
+<text x="277" y="269" class="schematex-ecomap-center-label">Elena, caregiver</text>
+<text x="277" y="286" class="schematex-ecomap-center-age">Age 52</text></g>
+<g class="schematex-ecomap-systems"><g class="schematex-ecomap-system schematex-ecomap-system-family" data-system-id="son"><circle cx="277" cy="78" r="50" class="schematex-ecomap-system-shape"/>
+<text x="277" y="82.2" class="schematex-ecomap-system-label">Adult Son</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-government" data-system-id="respite"><circle cx="449.3390553531033" cy="177.5" r="42" class="schematex-ecomap-system-shape"/>
+<text x="449.3390553531033" y="174.2" class="schematex-ecomap-system-label">Respite</text>
+<text x="449.3390553531033" y="189.2" class="schematex-ecomap-system-label">Provider</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-government" data-system-id="disability"><circle cx="449.3390553531033" cy="376.5" r="42" class="schematex-ecomap-system-shape"/>
+<text x="449.3390553531033" y="373.2" class="schematex-ecomap-system-label">Disability</text>
+<text x="449.3390553531033" y="388.2" class="schematex-ecomap-system-label">Services</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-community" data-system-id="support"><circle cx="277" cy="476" r="42" class="schematex-ecomap-system-shape"/>
+<text x="277" y="472.7" class="schematex-ecomap-system-label">Caregiver</text>
+<text x="277" y="487.7" class="schematex-ecomap-system-label">Group</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-work" data-system-id="employer"><circle cx="104.66094464689675" cy="376.50000000000006" r="42" class="schematex-ecomap-system-shape"/>
+<text x="104.66094464689675" y="373.20000000000005" class="schematex-ecomap-system-label">Part-time</text>
+<text x="104.66094464689675" y="388.20000000000005" class="schematex-ecomap-system-label">Employer</text></g>
+<g class="schematex-ecomap-system schematex-ecomap-system-health" data-system-id="physician"><circle cx="104.66094464689672" cy="177.49999999999997" r="42" class="schematex-ecomap-system-shape"/>
+<text x="104.66094464689672" y="174.19999999999996" class="schematex-ecomap-system-label">Primary</text>
+<text x="104.66094464689672" y="189.19999999999996" class="schematex-ecomap-system-label">Care Team</text></g></g>
+<g class="schematex-ecomap-connection-labels"></g></g>
+<g transform="translate(0, 40)"><g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="580.5" class="schematex-legend-section">SYSTEMS</text>
+<g class="schematex-legend-row" data-legend-key="cat.community" data-legend-section="systems"><circle cx="94.55" cy="577" r="5" fill="#29B6F618" stroke="#29B6F6"/>
+<text x="113.55" y="580.5" class="schematex-legend-label">Community</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.family" data-legend-section="systems"><circle cx="202.55" cy="577" r="5" fill="#8D6E6318" stroke="#8D6E63"/>
+<text x="221.55" y="580.5" class="schematex-legend-label">Family</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.government" data-legend-section="systems"><circle cx="290.55" cy="577" r="5" fill="#8D6E6318" stroke="#8D6E63"/>
+<text x="309.55" y="580.5" class="schematex-legend-label">Government</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.health" data-legend-section="systems"><circle cx="404.55" cy="577" r="5" fill="#EF535018" stroke="#EF5350"/>
+<text x="423.55" y="580.5" class="schematex-legend-label">Health</text></g>
+<g class="schematex-legend-row" data-legend-key="cat.work" data-legend-section="systems"><circle cx="94.55" cy="595" r="5" fill="#66BB6A18" stroke="#66BB6A"/>
+<text x="113.55" y="598.5" class="schematex-legend-label">Work</text></g>
+<text x="16" y="616.5" class="schematex-legend-section">TIES</text>
+<g class="schematex-legend-row" data-legend-key="strong" data-legend-section="ties"><line x1="84.55" y1="611" x2="104.55" y2="611" stroke="#334155" stroke-width="1.5"/><line x1="84.55" y1="615" x2="104.55" y2="615" stroke="#334155" stroke-width="1.5"/><line x1="84.55" y1="613" x2="104.55" y2="613" stroke="#334155" stroke-width="1.5"/>
+<text x="113.55" y="616.5" class="schematex-legend-label">Strong</text></g>
+<g class="schematex-legend-row" data-legend-key="moderate" data-legend-section="ties"><line x1="172.55" y1="611" x2="192.55" y2="611" stroke="#334155" stroke-width="1.5"/><line x1="172.55" y1="615" x2="192.55" y2="615" stroke="#334155" stroke-width="1.5"/>
+<text x="201.55" y="616.5" class="schematex-legend-label">Moderate</text></g>
+<g class="schematex-legend-row" data-legend-key="stressful" data-legend-section="ties"><path d="M 273.55 613 Q 276.55 610 279.55 613 Q 282.55 616 285.55 613 Q 288.55 610 291.55 613 Q 294.55 616 293.55 613" fill="none" stroke="#334155" stroke-width="2"/>
+<text x="302.55" y="616.5" class="schematex-legend-label">Stressful</text></g>
+<g class="schematex-legend-row" data-legend-key="energy" data-legend-section="ties"><line x1="381.55" y1="613" x2="401.55" y2="613" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/><line x1="396.55" y1="613" x2="402.55" y2="613" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/><polygon points="402.55,610 405.55,613 402.55,616" fill="#0f172a"/>
+<text x="410.55" y="616.5" class="schematex-legend-label">Energy flow</text></g></g></g>
+<text x="277" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Caregiver Support Map</text></svg>

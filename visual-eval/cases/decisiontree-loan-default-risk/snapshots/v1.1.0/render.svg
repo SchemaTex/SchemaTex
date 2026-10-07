@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Loan Default Risk" width="1220" height="884" viewBox="0 0 1220 884"><title>Loan Default Risk</title>
+<desc>Decision tree (ml mode) with 9 nodes and 8 edges</desc>
+<style>.lt-dtree { font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.lt-dtree-title { font-size: 20px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-edge { fill: none; stroke: #3E4C59; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-optimal { fill: none; stroke: #2B7A4B; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-edge-leader { fill: none; stroke: #3E4C59; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
+.lt-dtree-edge-label { font-size: 11px; font-weight: 500; fill: #1F2933; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-prob { font-size: 10px; font-weight: 400; font-style: italic; fill: #52606D; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-edge-label-bg { fill: #ffffff; stroke: none; }
+.lt-dtree-decision { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.6; }
+.lt-dtree-outcome { fill: #F0F4F8; stroke: #3E4C59; stroke-width: 1.4; }
+.lt-dtree-node-label { font-size: 12px; font-weight: 500; fill: #1F2933; }
+.lt-dtree-ev { font-size: 10px; font-weight: 500; fill: #52606D; }
+.lt-dtree-ev-optimal { font-size: 10px; font-weight: 600; fill: #2B7A4B; }
+.lt-dtree-payoff { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-payoff-neg { font-size: 12px; font-weight: 600; fill: #1F2933; }
+.lt-dtree-card { stroke-width: 1.5; }
+.lt-dtree-card-label { font-size: 13px; fill: #1F2933; text-anchor: middle; }
+.lt-dtree-card-stats { font-size: 11px; fill: #52606D; text-anchor: middle; }
+.lt-dtree-card-header { font-size: 10px; font-weight: 700; text-anchor: middle; }
+.lt-dtree-badge { font-size: 10px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+.lt-dtree-legend { font-size: 11px; fill: #52606D; }</style>
+<text x="40" y="32" class="lt-dtree-title" text-anchor="start">Loan Default Risk</text>
+<rect x="40" y="65" width="8" height="8" rx="2" fill="#1D64A8"/>
+<text x="54" y="73" class="lt-dtree-legend">low-risk</text>
+<rect x="120" y="65" width="8" height="8" rx="2" fill="#F2B233"/>
+<text x="134" y="73" class="lt-dtree-legend">elevated-risk</text>
+<rect x="225.96" y="65" width="8" height="8" rx="2" fill="#B42318"/>
+<text x="239.96" y="73" class="lt-dtree-legend">high-risk</text>
+<defs><marker id="dtree-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 8 4 L 0 8 Z" fill="#3E4C59"/></marker></defs>
+<g transform="translate(0, 80)" data-mode="ml"><path d="M 629 149 L 629 171 Q 629 177 623 177 L 316 177 Q 310 177 310 183 L 310 229" class="lt-dtree-edge" data-edge="n1-&gt;n2" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 629 149 L 629 171 Q 629 177 635 177 L 942 177 Q 948 177 948 183 L 948 229" class="lt-dtree-edge" data-edge="n1-&gt;n7" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 310 338 L 310 360 Q 310 366 304 366 L 142 366 Q 136 366 136 372 L 136 631" class="lt-dtree-edge" data-edge="n2-&gt;n3" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 310 338 L 310 360 Q 310 366 316 366 L 478 366 Q 484 366 484 372 L 484 430" class="lt-dtree-edge" data-edge="n2-&gt;n4" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 484 539 L 484 561 Q 484 567 478 567 L 374 567 Q 368 567 368 573 L 368 631" class="lt-dtree-edge" data-edge="n4-&gt;n5" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 484 539 L 484 561 Q 484 567 490 567 L 594 567 Q 600 567 600 573 L 600 631" class="lt-dtree-edge" data-edge="n4-&gt;n6" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 948 338 L 948 360 Q 948 366 942 366 L 838 366 Q 832 366 832 372 L 832 631" class="lt-dtree-edge" data-edge="n7-&gt;n8" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<path d="M 948 338 L 948 360 Q 948 366 954 366 L 1058 366 Q 1064 366 1064 372 L 1064 631" class="lt-dtree-edge" data-edge="n7-&gt;n9" stroke-width="1.6" marker-end="url(#dtree-arrow)"/>
+<rect x="266.02" y="188" width="33.980000000000004" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="283.01" y="195" class="lt-dtree-edge-label">≤ 45</text>
+<rect x="958" y="188" width="35.300000000000004" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="975.65" y="195" class="lt-dtree-edge-label">&gt; 45</text>
+<rect x="84.75999999999999" y="377" width="41.24" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="105.38" y="384" class="lt-dtree-edge-label">≤ 620</text>
+<rect x="494" y="377" width="42.56" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="515.28" y="384" class="lt-dtree-edge-label">&gt; 620</text>
+<rect x="331.28" y="578" width="26.72" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="344.64" y="585" class="lt-dtree-edge-label">≤ 2</text>
+<rect x="610" y="578" width="28.040000000000003" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="624.02" y="585" class="lt-dtree-edge-label">&gt; 2</text>
+<rect x="780.76" y="377" width="41.24" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="801.38" y="384" class="lt-dtree-edge-label">≤ 700</text>
+<rect x="1074" y="377" width="42.56" height="14" class="lt-dtree-edge-label-bg" rx="3" ry="3"/>
+<text x="1095.28" y="384" class="lt-dtree-edge-label">&gt; 700</text>
+<g data-node-id="n1" data-node-kind="split"><rect x="533" y="40" width="192" height="109" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="629" y="62" class="lt-dtree-card-label">Income ≤ 45k</text>
+<text x="629" y="79" class="lt-dtree-card-stats">1,000 samples</text>
+<text x="629" y="96" class="lt-dtree-card-stats">gini 0.66</text>
+<rect x="545" y="109" width="63.84" height="7" fill="#1D64A8"/>
+<rect x="608.84" y="109" width="60.48" height="7" fill="#C98A0E"/>
+<rect x="669.32" y="109" width="43.68" height="7" fill="#B42318"/>
+<rect x="555.815" y="125" width="6" height="6" fill="#1D64A8"/>
+<text x="576.21" y="131" class="lt-dtree-card-stats">380</text>
+<rect x="604.605" y="125" width="6" height="6" fill="#C98A0E"/>
+<text x="625" y="131" class="lt-dtree-card-stats">360</text>
+<rect x="653.395" y="125" width="6" height="6" fill="#B42318"/>
+<text x="673.79" y="131" class="lt-dtree-card-stats">260</text></g>
+<g data-node-id="n2" data-node-kind="split"><rect x="214" y="229" width="192" height="109" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="310" y="251" class="lt-dtree-card-label">Credit score ≤ 620</text>
+<text x="310" y="268" class="lt-dtree-card-stats">410 samples</text>
+<text x="310" y="285" class="lt-dtree-card-stats">gini 0.61</text>
+<rect x="226" y="298" width="24.585365853658534" height="7" fill="#1D64A8"/>
+<rect x="250.58536585365854" y="298" width="61.46341463414634" height="7" fill="#C98A0E"/>
+<rect x="312.0487804878049" y="298" width="81.95121951219512" height="7" fill="#B42318"/>
+<rect x="240.28" y="314" width="6" height="6" fill="#1D64A8"/>
+<text x="257.21" y="320" class="lt-dtree-card-stats">60</text>
+<rect x="282.14" y="314" width="6" height="6" fill="#C98A0E"/>
+<text x="302.53499999999997" y="320" class="lt-dtree-card-stats">150</text>
+<rect x="330.93" y="314" width="6" height="6" fill="#B42318"/>
+<text x="351.325" y="320" class="lt-dtree-card-stats">200</text></g>
+<g data-node-id="n3" data-node-kind="leaf" data-class="high-risk"><rect x="40" y="631" width="192" height="133" rx="6" fill="#FDECEA" stroke="#B42318" class="lt-dtree-card"/>
+<path d="M 40 655 V 637 Q 40 631 46 631 H 226 Q 232 631 232 637 V 655 Z" fill="#B42318"/>
+<text x="136" y="647" fill="#FFFFFF" class="lt-dtree-card-header">HIGH-RISK</text>
+<text x="136" y="675" class="lt-dtree-card-label">High risk</text>
+<text x="136" y="692" class="lt-dtree-card-stats">180 samples</text>
+<text x="136" y="709" class="lt-dtree-card-stats">gini 0.43</text>
+<rect x="52" y="722" width="9.333333333333332" height="7" fill="#1D64A8"/>
+<rect x="61.33333333333333" y="722" width="37.33333333333333" height="7" fill="#C98A0E"/>
+<rect x="98.66666666666666" y="722" width="121.33333333333333" height="7" fill="#B42318"/>
+<rect x="69.745" y="738" width="6" height="6" fill="#1D64A8"/>
+<text x="86.67500000000001" y="744" class="lt-dtree-card-stats">10</text>
+<rect x="111.605" y="738" width="6" height="6" fill="#C98A0E"/>
+<text x="128.535" y="744" class="lt-dtree-card-stats">40</text>
+<rect x="153.465" y="738" width="6" height="6" fill="#B42318"/>
+<text x="173.86" y="744" class="lt-dtree-card-stats">130</text></g>
+<g data-node-id="n4" data-node-kind="split"><rect x="388" y="430" width="192" height="109" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="484" y="452" class="lt-dtree-card-label">Employment ≤ 2 years</text>
+<text x="484" y="469" class="lt-dtree-card-stats">230 samples</text>
+<text x="484" y="486" class="lt-dtree-card-stats">gini 0.63</text>
+<rect x="400" y="499" width="36.52173913043478" height="7" fill="#1D64A8"/>
+<rect x="436.52173913043475" y="499" width="80.34782608695653" height="7" fill="#C98A0E"/>
+<rect x="516.8695652173913" y="499" width="51.1304347826087" height="7" fill="#B42318"/>
+<rect x="417.745" y="515" width="6" height="6" fill="#1D64A8"/>
+<text x="434.675" y="521" class="lt-dtree-card-stats">50</text>
+<rect x="459.605" y="515" width="6" height="6" fill="#C98A0E"/>
+<text x="480" y="521" class="lt-dtree-card-stats">110</text>
+<rect x="508.39500000000004" y="515" width="6" height="6" fill="#B42318"/>
+<text x="525.3249999999999" y="521" class="lt-dtree-card-stats">70</text></g>
+<g data-node-id="n5" data-node-kind="leaf" data-class="elevated-risk"><rect x="272" y="631" width="192" height="133" rx="6" fill="#FFF6DD" stroke="#C98A0E" class="lt-dtree-card"/>
+<path d="M 272 655 V 637 Q 272 631 278 631 H 458 Q 464 631 464 637 V 655 Z" fill="#F2B233"/>
+<text x="368" y="647" fill="#1F2933" class="lt-dtree-card-header">ELEVATED-RISK</text>
+<text x="368" y="675" class="lt-dtree-card-label">Elevated risk</text>
+<text x="368" y="692" class="lt-dtree-card-stats">100 samples</text>
+<text x="368" y="709" class="lt-dtree-card-stats">gini 0.59</text>
+<rect x="284" y="722" width="16.8" height="7" fill="#1D64A8"/>
+<rect x="300.8" y="722" width="75.60000000000001" height="7" fill="#C98A0E"/>
+<rect x="376.40000000000003" y="722" width="75.60000000000001" height="7" fill="#B42318"/>
+<rect x="305.21" y="738" width="6" height="6" fill="#1D64A8"/>
+<text x="322.14" y="744" class="lt-dtree-card-stats">10</text>
+<rect x="347.07" y="738" width="6" height="6" fill="#C98A0E"/>
+<text x="364" y="744" class="lt-dtree-card-stats">45</text>
+<rect x="388.93" y="738" width="6" height="6" fill="#B42318"/>
+<text x="405.86" y="744" class="lt-dtree-card-stats">45</text></g>
+<g data-node-id="n6" data-node-kind="leaf" data-class="elevated-risk"><rect x="504" y="631" width="192" height="133" rx="6" fill="#FFF6DD" stroke="#C98A0E" class="lt-dtree-card"/>
+<path d="M 504 655 V 637 Q 504 631 510 631 H 690 Q 696 631 696 637 V 655 Z" fill="#F2B233"/>
+<text x="600" y="647" fill="#1F2933" class="lt-dtree-card-header">ELEVATED-RISK</text>
+<text x="600" y="675" class="lt-dtree-card-label">Elevated risk</text>
+<text x="600" y="692" class="lt-dtree-card-stats">130 samples</text>
+<text x="600" y="709" class="lt-dtree-card-stats">gini 0.62</text>
+<rect x="516" y="722" width="51.69230769230769" height="7" fill="#1D64A8"/>
+<rect x="567.6923076923077" y="722" width="84" height="7" fill="#C98A0E"/>
+<rect x="651.6923076923077" y="722" width="32.30769230769231" height="7" fill="#B42318"/>
+<rect x="537.21" y="738" width="6" height="6" fill="#1D64A8"/>
+<text x="554.14" y="744" class="lt-dtree-card-stats">40</text>
+<rect x="579.07" y="738" width="6" height="6" fill="#C98A0E"/>
+<text x="596" y="744" class="lt-dtree-card-stats">65</text>
+<rect x="620.9300000000001" y="738" width="6" height="6" fill="#B42318"/>
+<text x="637.86" y="744" class="lt-dtree-card-stats">25</text></g>
+<g data-node-id="n7" data-node-kind="split"><rect x="852" y="229" width="192" height="109" rx="6" fill="#F0F4F8" stroke="#3E4C59" class="lt-dtree-card"/>
+<text x="948" y="251" class="lt-dtree-card-label">Credit score ≤ 700</text>
+<text x="948" y="268" class="lt-dtree-card-stats">590 samples</text>
+<text x="948" y="285" class="lt-dtree-card-stats">gini 0.56</text>
+<rect x="864" y="298" width="91.11864406779661" height="7" fill="#1D64A8"/>
+<rect x="955.1186440677966" y="298" width="59.79661016949152" height="7" fill="#C98A0E"/>
+<rect x="1014.9152542372881" y="298" width="17.084745762711865" height="7" fill="#B42318"/>
+<rect x="878.28" y="314" width="6" height="6" fill="#1D64A8"/>
+<text x="898.675" y="320" class="lt-dtree-card-stats">320</text>
+<rect x="927.0699999999999" y="314" width="6" height="6" fill="#C98A0E"/>
+<text x="947.4649999999999" y="320" class="lt-dtree-card-stats">210</text>
+<rect x="975.8599999999999" y="314" width="6" height="6" fill="#B42318"/>
+<text x="992.7899999999998" y="320" class="lt-dtree-card-stats">60</text></g>
+<g data-node-id="n8" data-node-kind="leaf" data-class="elevated-risk"><rect x="736" y="631" width="192" height="133" rx="6" fill="#FFF6DD" stroke="#C98A0E" class="lt-dtree-card"/>
+<path d="M 736 655 V 637 Q 736 631 742 631 H 922 Q 928 631 928 637 V 655 Z" fill="#F2B233"/>
+<text x="832" y="647" fill="#1F2933" class="lt-dtree-card-header">ELEVATED-RISK</text>
+<text x="832" y="675" class="lt-dtree-card-label">Elevated risk</text>
+<text x="832" y="692" class="lt-dtree-card-stats">260 samples</text>
+<text x="832" y="709" class="lt-dtree-card-stats">gini 0.60</text>
+<rect x="748" y="722" width="64.61538461538461" height="7" fill="#1D64A8"/>
+<rect x="812.6153846153846" y="722" width="84" height="7" fill="#C98A0E"/>
+<rect x="896.6153846153846" y="722" width="19.384615384615387" height="7" fill="#B42318"/>
+<rect x="762.28" y="738" width="6" height="6" fill="#1D64A8"/>
+<text x="782.675" y="744" class="lt-dtree-card-stats">100</text>
+<rect x="811.0699999999999" y="738" width="6" height="6" fill="#C98A0E"/>
+<text x="831.4649999999999" y="744" class="lt-dtree-card-stats">130</text>
+<rect x="859.8599999999999" y="738" width="6" height="6" fill="#B42318"/>
+<text x="876.7899999999998" y="744" class="lt-dtree-card-stats">30</text></g>
+<g data-node-id="n9" data-node-kind="leaf" data-class="low-risk"><rect x="968" y="631" width="192" height="133" rx="6" fill="#E7F1F9" stroke="#1D64A8" class="lt-dtree-card"/>
+<path d="M 968 655 V 637 Q 968 631 974 631 H 1154 Q 1160 631 1160 637 V 655 Z" fill="#1D64A8"/>
+<text x="1064" y="647" fill="#FFFFFF" class="lt-dtree-card-header">LOW-RISK</text>
+<text x="1064" y="675" class="lt-dtree-card-label">Low risk</text>
+<text x="1064" y="692" class="lt-dtree-card-stats">330 samples</text>
+<text x="1064" y="709" class="lt-dtree-card-stats">gini 0.49</text>
+<rect x="980" y="722" width="112" height="7" fill="#1D64A8"/>
+<rect x="1092" y="722" width="40.72727272727273" height="7" fill="#C98A0E"/>
+<rect x="1132.7272727272727" y="722" width="15.272727272727273" height="7" fill="#B42318"/>
+<rect x="997.745" y="738" width="6" height="6" fill="#1D64A8"/>
+<text x="1018.14" y="744" class="lt-dtree-card-stats">220</text>
+<rect x="1046.535" y="738" width="6" height="6" fill="#C98A0E"/>
+<text x="1063.4650000000001" y="744" class="lt-dtree-card-stats">80</text>
+<rect x="1088.395" y="738" width="6" height="6" fill="#B42318"/>
+<text x="1105.325" y="744" class="lt-dtree-card-stats">30</text></g></g></svg>

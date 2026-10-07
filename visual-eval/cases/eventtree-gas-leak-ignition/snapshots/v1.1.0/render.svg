@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="890" height="436" viewBox="0 0 890 436" role="img" aria-label="Gas leak and ignition" data-diagram-type="eventtree"><title>Gas leak and ignition</title>
+<desc>Event tree for &quot;Pressurised gas leak&quot; (f₀ = 0.008): 3 functions, 5 sequences. Leak isolated without ignition: 0.005881. Flash fire; limited damage: 0.001038. Late-detected leak; escalation risk: 6.400e-4. Unisolated leak; no ignition: 3.754e-4. Jet fire; major damage: 6.624e-5. Dominant sequence: &quot;Leak isolated without ignition&quot; [1s 2s 3s] at 0.005881.</desc>
+<style>.sx-et-bg { fill: #ffffff; }
+.sx-et-title { fill: #334155; font-size: 16px; font-weight: 700; }
+.sx-et-header { fill: #334155; font-size: 12px; font-weight: 700; }
+.sx-et-grid { fill: none; stroke: #475569; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+.sx-et-headrule { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-et-ie { fill: none; stroke: #1e293b; stroke-width: 3; }
+.sx-et-ie-label { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-et-ie-freq { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-et-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-et-edge[data-leg="s"] {}
+.sx-et-leg-label { fill: #334155; font-size: 9px; }
+.sx-et-leg-prob { fill: #2563eb; font-size: 9px; }
+.sx-et-outcome { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-et-freq { fill: #2563eb; font-size: 10px; font-weight: 600; }
+.sx-et-seqid { fill: #334155; font-size: 9px; opacity: 0.7; }
+.sx-et-dot { fill: #334155; stroke: none; }
+.sx-et-edge[data-dominant="true"] { stroke: #dc2626; stroke-width: 3; }
+.sx-et-outcome[data-dominant="true"] { fill: #b91c1c; }
+.sx-et-freq[data-dominant="true"] { fill: #b91c1c; font-weight: 700; }
+.sx-et-dot[data-dominant="true"] { fill: #b91c1c; }</style>
+<rect x="0" y="0" width="890" height="436" class="sx-et-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="425" y="32" class="sx-et-title" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Gas leak and ignition</text>
+<text x="60" y="76" class="sx-et-header" text-anchor="middle" data-col="initiating">Initiating Event</text>
+<text x="242" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Gas detection and alarm</text>
+<text x="392" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Automatic isolation</text>
+<text x="542" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Ignition-source control</text>
+<text x="658.8" y="76" class="sx-et-header" text-anchor="middle" data-col="outcome">Outcome</text>
+<text x="778.8" y="76" class="sx-et-header" text-anchor="middle" data-col="frequency">Frequency</text>
+<line x1="28" y1="82" x2="822" y2="82" class="sx-et-headrule"/>
+<line x1="242" y1="88" x2="242" y2="368" class="sx-et-grid"/>
+<line x1="392" y1="88" x2="392" y2="368" class="sx-et-grid"/>
+<line x1="542" y1="88" x2="542" y2="368" class="sx-et-grid"/>
+<g class="sx-et-ie-g" data-id="LEAK"><line x1="28" y1="228" x2="92" y2="228" class="sx-et-ie"/>
+<text x="28" y="218" class="sx-et-ie-label">Pressurised gas leak</text>
+<text x="28" y="244" class="sx-et-ie-freq">f₀ = 0.008</text></g>
+<path d="M 92 228 L 242 228 L 242 200" class="sx-et-edge" data-leg="s" data-fn="DET" data-tag="1s"/>
+<text x="167" y="193" class="sx-et-leg-label" text-anchor="middle">Success (1s)</text>
+<text x="167" y="204" class="sx-et-leg-prob" text-anchor="middle">0.92</text>
+<path d="M 242 200 L 392 200 L 392 144" class="sx-et-edge" data-leg="s" data-fn="ISO" data-tag="2s"/>
+<text x="317" y="137" class="sx-et-leg-label" text-anchor="middle">Success (2s)</text>
+<text x="317" y="148" class="sx-et-leg-prob" text-anchor="middle">0.94</text>
+<path d="M 392 144 L 542 144 L 542 116" class="sx-et-edge" data-leg="s" data-fn="IGN" data-tag="3s"/>
+<text x="467" y="109" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="120" class="sx-et-leg-prob" text-anchor="middle">0.85</text>
+<path d="M 392 144 L 542 144 L 542 172" class="sx-et-edge" data-leg="f" data-fn="IGN" data-tag="3f"/>
+<text x="467" y="165" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="176" class="sx-et-leg-prob" text-anchor="middle">0.15</text>
+<path d="M 242 200 L 392 200 L 392 256" class="sx-et-edge" data-leg="f" data-fn="ISO" data-tag="2f"/>
+<text x="317" y="249" class="sx-et-leg-label" text-anchor="middle">Failure (2f)</text>
+<text x="317" y="260" class="sx-et-leg-prob" text-anchor="middle">0.06</text>
+<path d="M 392 256 L 542 256 L 542 228" class="sx-et-edge" data-leg="s" data-fn="IGN" data-tag="3s"/>
+<text x="467" y="221" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="232" class="sx-et-leg-prob" text-anchor="middle">0.85</text>
+<path d="M 392 256 L 542 256 L 542 284" class="sx-et-edge" data-leg="f" data-fn="IGN" data-tag="3f"/>
+<text x="467" y="277" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="288" class="sx-et-leg-prob" text-anchor="middle">0.15</text>
+<path d="M 92 228 L 242 228 L 242 340" class="sx-et-edge" data-leg="f" data-fn="DET" data-tag="1f"/>
+<text x="167" y="333" class="sx-et-leg-label" text-anchor="middle">Failure (1f)</text>
+<text x="167" y="344" class="sx-et-leg-prob" text-anchor="middle">0.08</text>
+<path d="M 542 116 L 582 116" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 542 172 L 582 172" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 542 228 L 582 228" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 542 284 L 582 284" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 242 340 L 582 340" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<g class="sx-et-leaf-g" data-seq="1" data-outcome="Leak isolated without ignition" data-frequency="0.00588064" data-designator="1s 2s 3s" data-dominant="true"><circle cx="582" cy="116" r="3" class="sx-et-dot" data-dominant="true"/>
+<text x="592" y="112" class="sx-et-outcome" data-dominant="true">Leak isolated without ignition</text>
+<text x="592" y="128" class="sx-et-freq" data-dominant="true">0.005881  ·  1s 2s 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="2" data-outcome="Flash fire; limited damage" data-frequency="0.00103776" data-designator="1s 2s 3f"><circle cx="582" cy="172" r="3" class="sx-et-dot"/>
+<text x="592" y="168" class="sx-et-outcome">Flash fire; limited damage</text>
+<text x="592" y="184" class="sx-et-freq">0.001038  ·  1s 2s 3f</text></g>
+<g class="sx-et-leaf-g" data-seq="3" data-outcome="Unisolated leak; no ignition" data-frequency="0.00037536" data-designator="1s 2f 3s"><circle cx="582" cy="228" r="3" class="sx-et-dot"/>
+<text x="592" y="224" class="sx-et-outcome">Unisolated leak; no ignition</text>
+<text x="592" y="240" class="sx-et-freq">3.754e-4  ·  1s 2f 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="4" data-outcome="Jet fire; major damage" data-frequency="0.00006624" data-designator="1s 2f 3f"><circle cx="582" cy="284" r="3" class="sx-et-dot"/>
+<text x="592" y="280" class="sx-et-outcome">Jet fire; major damage</text>
+<text x="592" y="296" class="sx-et-freq">6.624e-5  ·  1s 2f 3f</text></g>
+<g class="sx-et-leaf-g" data-seq="5" data-outcome="Late-detected leak; escalation risk" data-frequency="0.00064" data-designator="1f"><circle cx="582" cy="340" r="3" class="sx-et-dot"/>
+<text x="592" y="336" class="sx-et-outcome">Late-detected leak; escalatio…</text>
+<text x="592" y="352" class="sx-et-freq">6.400e-4  ·  1f</text></g></g></svg>

@@ -1,0 +1,40 @@
+{
+  "id": "genogram-three-unions-parents-above",
+  "type": "genogram",
+  "title": "Three unions, with parents above",
+  "goal": "A reader can follow Dana's three unions and, separately, the lines from Dana's and Chris's parents, without ever mistaking a parent's line for a union line.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "unions-connect-their-partners",
+      "severity": "blocker",
+      "must": "Exactly three union lines leave Dana (to Mark, Chris and Rick), each touching only its two partners; the union with Mark is routed around Chris."
+    },
+    {
+      "id": "parent-lines-distinct",
+      "severity": "blocker",
+      "must": "The line from Gus and Fay down to Chris and the line from Hal and Jo down to Dana never run along, merge with or end on a union line. Where a parent line crosses a union line, the crossing is visibly a crossing (a hop or a clear gap), not a junction."
+    },
+    {
+      "id": "descent",
+      "severity": "blocker",
+      "must": "Maya descends only from Mark and Dana's union, Leo only from Chris and Dana's, Tess only from Dana and Rick's."
+    },
+    {
+      "id": "no-overlaps",
+      "severity": "major",
+      "must": "No two symbols overlap, no name or label overlaps another, and no line passes through a symbol or a name."
+    },
+    {
+      "id": "legend",
+      "severity": "minor",
+      "must": "The legend shows male, female, index person, marriage/descent, divorced and living together."
+    }
+  ],
+  "ideal": {
+    "file": "ideal.svg",
+    "source": "hand-authored",
+    "reviewed": false,
+    "notes": "The union between Mark and Dana runs above Chris. Gus and Fay's line down to Chris passes under it with a small hop, and the union's leg into Dana lands beside the line from her own parents instead of on top of it."
+  }
+}
