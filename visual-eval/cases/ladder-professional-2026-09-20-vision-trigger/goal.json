@@ -1,0 +1,30 @@
+{
+  "id": "ladder-professional-2026-09-20-vision-trigger",
+  "type": "ladder",
+  "title": "Professional 2026-09-20 — Vision trigger delay and 10 ms pulse",
+  "goal": "Represent the supplied trigger program with D0 times 10 ms delay, a K10 pulse with 1 ms time base, and the supplied set/reset sequence. PLC runtime behavior needs model-specific review.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The delay and pulse timers show their presets and time bases consistently; labels must not contradict each other."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The M10, M14, M15, T128, T127 and Y0 sequence is represented without missing set/reset operations."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Timer blocks, tag labels and rung comments do not overlap wires or each other."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

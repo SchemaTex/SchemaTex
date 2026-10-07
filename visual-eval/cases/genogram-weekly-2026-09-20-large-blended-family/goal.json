@@ -1,0 +1,30 @@
+{
+  "id": "genogram-weekly-2026-09-20-large-blended-family",
+  "type": "genogram",
+  "title": "Weekly 2026-09-20 — Large blended family with pinned positions",
+  "goal": "Separate several generations, multiple partners and emotional links. All personal labels, ages and diagnoses are replaced or removed; layout and pin structure are retained.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Every synthetic member is visibly represented with the specified sex symbol."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Children connect to their own parental union without a false junction to another family."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Labels and relationship annotations do not obscure people or descent paths."
+    }
+  ],
+  "provenance": {
+    "kind": "anonymized-production-structure",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

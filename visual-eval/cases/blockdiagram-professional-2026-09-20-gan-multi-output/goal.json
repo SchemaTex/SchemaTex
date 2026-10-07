@@ -1,0 +1,30 @@
+{
+  "id": "blockdiagram-professional-2026-09-20-gan-multi-output",
+  "type": "blockdiagram",
+  "title": "Professional 2026-09-20 — GaN multi-output DC power supply",
+  "goal": "Evaluate the generated 1200 W DC-DC supply architecture, including its own declared output rails, feedback and controller branches. Efficiency and power feasibility are outside visual grading.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Every declared output rail (+12 V, +5 V, +3.3 V and +5 VSB) is visibly connected to its supplying stage."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Power paths and feedback/control paths are independently traceable without implying a false power junction."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Multiline stage labels, branch annotations and return paths remain legible at a useful viewing scale."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

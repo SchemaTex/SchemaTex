@@ -1,0 +1,76 @@
+floorplan "Planta Baixa Residencial" unit m
+wall exterior thickness 0.25
+wall interior thickness 0.15
+
+room garagem "Garagem" at 4.0,4.0 size 15.0x5.0
+room sala "Sala" at 2.0,9.0 size 3.5x3.8
+room gourmet "Espaço Gourmet" right-of sala size 7.0x8.0
+room cozinha "Cozinha" right-of gourmet size 4.0x8.0
+room despensa "Despensa" right-of cozinha size 2.0x5.0
+room lavabo "Lavabo" below sala size 1.8x2.2
+room banh_soc "Banheiro" below lavabo size 2.0x4.0
+room lavand "Lavanderia" below despensa size 3.0x3.0
+room varais "Varais (Área Aberta)" below lavand size 3.0x4.0
+room escr "Escritório" below varais size 3.0x4.0
+
+room circ_leste "Circulação" at 15.5,17.0 size 1.0x12.0
+room circ_sul "Corredor Íntimo" at 6.0,27.0 size 9.5x1.0
+
+room suit_mast "Suíte Master" at 2.0,21.0 size 4.0x5.0
+room banh_mast "Banheiro Master" below suit_mast size 2.0x4.0
+room closet "Closet" below banh_mast size 2.0x4.0
+room suit2 "Suíte 2" at 6.0,21.0 size 4.0x4.0
+room banh_suit2 "Banheiro Suíte 2" at 6.0,25.0 size 2.0x2.0
+room suit1 "Suíte 1" at 10.0,21.0 size 4.0x4.0
+room banh_suit1 "Banheiro Suíte 1" at 10.0,25.0 size 2.0x2.0
+
+door garagem south at 65% width 1.6 type double
+door sala north at 50% width 1.4 type double
+door sala south at 80% width 0.8
+door between gourmet garagem at 20% width 1.6 type double
+door between gourmet cozinha at 50% width 3.0 type sliding
+door between cozinha despensa at 30% width 0.8
+door despensa south at 50% width 0.8
+door between lavand varais at 50% width 0.9
+door varais south at 50% width 0.9
+door escr south at 50% width 0.8
+
+door gourmet south at 50% width 6.0 type sliding
+door suit_mast north at 50% width 1.8 type sliding
+door suit2 north at 50% width 1.8 type sliding
+door suit1 north at 50% width 1.8 type sliding
+
+door between suit_mast banh_mast at 70% width 0.8
+door between banh_mast closet at 50% width 0.8
+door between suit2 banh_suit2 at 50% width 0.8
+door between suit1 banh_suit1 at 50% width 0.8
+
+door suit_mast south at 80% width 0.8
+door suit2 south at 20% width 0.8
+door suit1 south at 80% width 0.8
+
+window sala west at 50% width 1.6
+window lavabo west at 50% width 0.8
+window banh_soc south at 50% width 0.8
+window lavand east at 50% width 1.2
+window escr south at 50% width 1.4
+window banh_mast west at 50% width 0.8
+window banh_suit2 south at 50% width 0.8
+window banh_suit1 south at 50% width 0.8
+
+furniture car in garagem at 3.84,0.51
+furniture car in garagem at 6.5,0.42
+furniture sofa in sala at 0.4,0.6 size 2.2x0.9
+furniture tv in sala at 0.5,3.4 size 1.4x0.2
+furniture dining-table in gourmet at 1.5,2.0 size 3.0x1.1
+furniture counter in gourmet at 2.58,0.31 size 4.0x0.7
+furniture counter in cozinha at 0.3,0.3 size 3.4x0.6
+furniture stove in cozinha at 1,0.38
+furniture fridge in cozinha at 3.0,0.35
+furniture washer in lavand at 0.3,0.3
+furniture dryer in lavand at 1.2,0.3
+furniture desk in escr at 0.5,1.0 size 1.6x0.8
+furniture bed-king in suit_mast at 0.5,1.0
+furniture bed-double in suit2 at 0.8,0.8
+furniture bed-double in suit1 at 0.8,0.8
+furniture wardrobe in closet at 0.2,0.2 size 1.6x3.6

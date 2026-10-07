@@ -1,0 +1,20 @@
+circuit "Comando 220 V — Local/Remoto com Soft Starters" netlist
+V1 R 0 220Vac type=acsource label="Fase R (apos disjuntor geral 200 A)"
+F1 R CF 6A label="F1 - Disjuntor do comando 6 A C"
+S1 CF 0 type=emergency_stop label="S0 - Botao de emergencia (NF)"
+S2 CF SEL type=selector_switch label="S1 - Seletor LOCAL / REMOTO"
+H1 SEL 0 type=pilot_light label="H1 - Sinalizacao de comando energizado"
+S3 SEL REM type=switch_spst label="S2 - Contato LOCAL (campo) + REMOTO"
+K1 REM 0 type=relay label="KA1 - Rele de comando geral"
+K2 REM 0 type=relay label="KA2 - Rele de habilitacao remoto (CLP)"
+K3 REM 0 type=relay label="KA3 - Rele de falha geral (27/47)"
+T1 REM N1 N2 N3 type=transformer label="TC - Transmissao de sinal aos soft starters"
+L1 N1 0 type=lamp label="H2 - Bomba 1 em operacao"
+L2 N2 0 type=lamp label="H3 - Bomba 2 em operacao"
+L3 N3 0 type=lamp label="H4 - Bomba 3 em operacao"
+
+@overrides
+pin K3 348.22,248.51
+pin T1 403.1,449.19
+pin L2 492.48,527.97
+pin K2 486.19,301.08

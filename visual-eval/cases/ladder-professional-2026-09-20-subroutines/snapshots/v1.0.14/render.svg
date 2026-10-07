@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="405.34999999999997" height="1095" viewBox="0 0 405.34999999999997 1095"><title>ControlLogix Lab - Tasks, Subroutines and Passed Parameters</title>
+<desc>PLC ladder logic diagram with 9 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="202.67499999999998" y="20" class="lt-ladder-title" text-anchor="middle">ControlLogix Lab - Tasks, Subroutines and Passed Parameters</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="1065" class="lt-ladder-rail"/>
+<line x1="375.34999999999997" y1="0" x2="375.34999999999997" y2="1065" class="lt-ladder-rail"/>
+<text x="54" y="149" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="80" class="lt-ladder-comment">— P_Continuous / R_Main: call R_Calc while Convert is ON (Input := Furlongs, Kroners := Output) —</text>
+<text x="54" y="257" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="188" class="lt-ladder-comment">— P_Continuous / R_Main: call R_Decr once per rising edge of Decrement (ONS one-shot) —</text>
+<text x="54" y="348" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="296" class="lt-ladder-comment">— R_Calc: input parameter pass - local DINT Input := controller tag Furlongs —</text>
+<text x="54" y="455" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="403" class="lt-ladder-comment">— R_Calc: TERM_A := Input + 2 —</text>
+<text x="54" y="562" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="510" class="lt-ladder-comment">— R_Calc: TERM_B := Input - 2 —</text>
+<text x="54" y="669" class="lt-ladder-rung-num">Rung 006</text>
+<text x="70" y="617" class="lt-ladder-comment">— R_Calc: Output := TERM_A x TERM_B  =&gt;  Output = (Input+2)*(Input-2) —</text>
+<text x="54" y="776" class="lt-ladder-rung-num">Rung 007</text>
+<text x="70" y="724" class="lt-ladder-comment">— R_Calc: return parameter pass - controller tag Kroners := local DINT Output —</text>
+<text x="54" y="883" class="lt-ladder-rung-num">Rung 008</text>
+<text x="70" y="831" class="lt-ladder-comment">— R_Decr (no parameters): decrement controller DINT Counts by 1000 per active call —</text>
+<text x="54" y="990" class="lt-ladder-rung-num">Rung 009</text>
+<text x="70" y="938" class="lt-ladder-comment">— P_Periodic / R_Main (periodic task, 10 ms): increment controller DINT Counts by 1 every scan —</text>
+<path d="M 60 146 L 105.69999999999999 146" class="lt-ladder-wire"/>
+<path d="M 137.7 146 L 203.95 146" class="lt-ladder-wire"/>
+<path d="M 60 254 L 105.69999999999999 254" class="lt-ladder-wire"/>
+<path d="M 137.7 254 L 213.09999999999997 254" class="lt-ladder-wire"/>
+<path d="M 245.09999999999997 254 L 311.34999999999997 254" class="lt-ladder-wire"/>
+<path d="M 60 345 L 79 345" class="lt-ladder-wire"/>
+<path d="M 60 452 L 79 452" class="lt-ladder-wire"/>
+<path d="M 60 559 L 79 559" class="lt-ladder-wire"/>
+<path d="M 60 666 L 79 666" class="lt-ladder-wire"/>
+<path d="M 60 773 L 79 773" class="lt-ladder-wire"/>
+<path d="M 60 880 L 79 880" class="lt-ladder-wire"/>
+<path d="M 60 987 L 79 987" class="lt-ladder-wire"/>
+<path d="M 235.95 146 L 375.34999999999997 146" class="lt-ladder-wire"/>
+<path d="M 343.34999999999997 254 L 375.34999999999997 254" class="lt-ladder-wire"/>
+<path d="M 159 345 L 375.34999999999997 345" class="lt-ladder-wire"/>
+<path d="M 159 452 L 375.34999999999997 452" class="lt-ladder-wire"/>
+<path d="M 159 559 L 375.34999999999997 559" class="lt-ladder-wire"/>
+<path d="M 159 666 L 375.34999999999997 666" class="lt-ladder-wire"/>
+<path d="M 159 773 L 375.34999999999997 773" class="lt-ladder-wire"/>
+<path d="M 159 880 L 375.34999999999997 880" class="lt-ladder-wire"/>
+<path d="M 159 987 L 375.34999999999997 987" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="Convert"><line x1="105.69999999999999" y1="146" x2="109.69999999999999" y2="146" class="lt-ladder-wire"/>
+<line x1="133.7" y1="146" x2="137.7" y2="146" class="lt-ladder-wire"/>
+<line x1="109.69999999999999" y1="134" x2="109.69999999999999" y2="158" class="lt-ladder-element"/>
+<line x1="133.7" y1="134" x2="133.7" y2="158" class="lt-ladder-element"/>
+<text x="121.69999999999999" y="97" class="lt-ladder-name">Convert - BOOL</text>
+<text x="121.69999999999999" y="108" class="lt-ladder-name">controller tag</text>
+<text x="121.69999999999999" y="119" class="lt-ladder-name">enables R_Calc</text>
+<text x="121.69999999999999" y="130" class="lt-ladder-tag">Convert</text></g>
+<g data-element="coil" data-tag="CALL_R_CALC"><path d="M 209.95 134 A 10 12 0 0 0 209.95 158" class="lt-ladder-coil"/>
+<path d="M 229.95 134 A 10 12 0 0 1 229.95 158" class="lt-ladder-coil"/>
+<line x1="203.95" y1="146" x2="209.95" y2="146" class="lt-ladder-wire"/>
+<line x1="229.95" y1="146" x2="235.95" y2="146" class="lt-ladder-wire"/>
+<text x="219.95" y="119" class="lt-ladder-name">JSR R_Calc</text>
+<text x="219.95" y="130" class="lt-ladder-tag">CALL_R_CALC</text></g>
+<g data-element="contact" data-tag="Decrement"><line x1="105.69999999999999" y1="254" x2="109.69999999999999" y2="254" class="lt-ladder-wire"/>
+<line x1="133.7" y1="254" x2="137.7" y2="254" class="lt-ladder-wire"/>
+<line x1="109.69999999999999" y1="242" x2="109.69999999999999" y2="266" class="lt-ladder-element"/>
+<line x1="133.7" y1="242" x2="133.7" y2="266" class="lt-ladder-element"/>
+<text x="121.69999999999999" y="205" class="lt-ladder-name">Decrement -</text>
+<text x="121.69999999999999" y="216" class="lt-ladder-name">BOOL</text>
+<text x="121.69999999999999" y="227" class="lt-ladder-name">controller tag</text>
+<text x="121.69999999999999" y="238" class="lt-ladder-tag">Decrement</text></g>
+<g data-element="contact" data-tag="DECR_ONS"><line x1="213.09999999999997" y1="254" x2="217.09999999999997" y2="254" class="lt-ladder-wire"/>
+<line x1="241.09999999999997" y1="254" x2="245.09999999999997" y2="254" class="lt-ladder-wire"/>
+<line x1="217.09999999999997" y1="242" x2="217.09999999999997" y2="266" class="lt-ladder-element"/>
+<line x1="241.09999999999997" y1="242" x2="241.09999999999997" y2="266" class="lt-ladder-element"/>
+<text x="229.09999999999997" y="257" class="lt-ladder-symbol-label">↑</text>
+<text x="229.09999999999997" y="205" class="lt-ladder-name">One-shot - JSR</text>
+<text x="229.09999999999997" y="216" class="lt-ladder-name">active only</text>
+<text x="229.09999999999997" y="227" class="lt-ladder-name">once per</text>
+<text x="229.09999999999997" y="238" class="lt-ladder-tag">DECR_ONS</text></g>
+<g data-element="coil" data-tag="CALL_R_DECR"><path d="M 317.34999999999997 242 A 10 12 0 0 0 317.34999999999997 266" class="lt-ladder-coil"/>
+<path d="M 337.34999999999997 242 A 10 12 0 0 1 337.34999999999997 266" class="lt-ladder-coil"/>
+<line x1="311.34999999999997" y1="254" x2="317.34999999999997" y2="254" class="lt-ladder-wire"/>
+<line x1="337.34999999999997" y1="254" x2="343.34999999999997" y2="254" class="lt-ladder-wire"/>
+<text x="327.34999999999997" y="227" class="lt-ladder-name">JSR R_Decr</text>
+<text x="327.34999999999997" y="238" class="lt-ladder-tag">CALL_R_DECR</text></g>
+<g data-element="function_block" data-tag="Input"><rect x="79" y="317" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="331" class="lt-ladder-fb-name">MOV</text>
+<line x1="73" y1="345" x2="79" y2="345" class="lt-ladder-wire"/>
+<line x1="159" y1="345" x2="165" y2="345" class="lt-ladder-wire"/>
+<text x="83" y="345" class="lt-ladder-pin">name=Input := Furlongs</text>
+<text x="119" y="313" class="lt-ladder-tag">Input</text></g>
+<g data-element="function_block" data-tag="TERM_A"><rect x="79" y="424" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="438" class="lt-ladder-fb-name">ADD</text>
+<line x1="73" y1="452" x2="79" y2="452" class="lt-ladder-wire"/>
+<line x1="159" y1="452" x2="165" y2="452" class="lt-ladder-wire"/>
+<text x="83" y="452" class="lt-ladder-pin">name=TERM_A := Input + 2</text>
+<text x="119" y="420" class="lt-ladder-tag">TERM_A</text></g>
+<g data-element="function_block" data-tag="TERM_B"><rect x="79" y="531" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="545" class="lt-ladder-fb-name">SUB</text>
+<line x1="73" y1="559" x2="79" y2="559" class="lt-ladder-wire"/>
+<line x1="159" y1="559" x2="165" y2="559" class="lt-ladder-wire"/>
+<text x="83" y="559" class="lt-ladder-pin">name=TERM_B := Input - 2</text>
+<text x="119" y="527" class="lt-ladder-tag">TERM_B</text></g>
+<g data-element="function_block" data-tag="Output"><rect x="79" y="638" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="652" class="lt-ladder-fb-name">MUL</text>
+<line x1="73" y1="666" x2="79" y2="666" class="lt-ladder-wire"/>
+<line x1="159" y1="666" x2="165" y2="666" class="lt-ladder-wire"/>
+<text x="83" y="666" class="lt-ladder-pin">name=Output := (Input+2)*(Input-2)</text>
+<text x="119" y="634" class="lt-ladder-tag">Output</text></g>
+<g data-element="function_block" data-tag="Kroners"><rect x="79" y="745" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="759" class="lt-ladder-fb-name">MOV</text>
+<line x1="73" y1="773" x2="79" y2="773" class="lt-ladder-wire"/>
+<line x1="159" y1="773" x2="165" y2="773" class="lt-ladder-wire"/>
+<text x="83" y="773" class="lt-ladder-pin">name=Kroners := Output</text>
+<text x="119" y="741" class="lt-ladder-tag">Kroners</text></g>
+<g data-element="function_block" data-tag="Counts"><rect x="79" y="852" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="866" class="lt-ladder-fb-name">SUB</text>
+<line x1="73" y1="880" x2="79" y2="880" class="lt-ladder-wire"/>
+<line x1="159" y1="880" x2="165" y2="880" class="lt-ladder-wire"/>
+<text x="83" y="880" class="lt-ladder-pin">name=Counts := Counts - 1000</text>
+<text x="119" y="848" class="lt-ladder-tag">Counts</text></g>
+<g data-element="function_block" data-tag="Counts"><rect x="79" y="959" width="80" height="56" class="lt-ladder-fb"/>
+<text x="119" y="973" class="lt-ladder-fb-name">ADD</text>
+<line x1="73" y1="987" x2="79" y2="987" class="lt-ladder-wire"/>
+<line x1="159" y1="987" x2="165" y2="987" class="lt-ladder-wire"/>
+<text x="83" y="987" class="lt-ladder-pin">name=Counts := Counts + 1</text>
+<text x="119" y="955" class="lt-ladder-tag">Counts</text></g></g></svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="524.05" height="343" viewBox="0 0 524.05 343"><title>コンベヤーベルトシステム</title>
+<desc>PLC ladder logic diagram with 1 rung</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="262.025" y="20" class="lt-ladder-title" text-anchor="middle">コンベヤーベルトシステム</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="313" class="lt-ladder-rail"/>
+<line x1="494.04999999999995" y1="0" x2="494.04999999999995" y2="313" class="lt-ladder-rail"/>
+<text x="54" y="185" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="80" class="lt-ladder-comment">— シールイン回路 —</text>
+<path d="M 60 182 L 76 182" class="lt-ladder-wire"/>
+<path d="M 76 112 L 76 252" class="lt-ladder-wire"/>
+<path d="M 168.9 112 L 168.9 252" class="lt-ladder-wire"/>
+<path d="M 76 146 L 106.45000000000002 146" class="lt-ladder-wire"/>
+<path d="M 138.45000000000002 146 L 168.9 146" class="lt-ladder-wire"/>
+<path d="M 76 223 L 106.45 223" class="lt-ladder-wire"/>
+<path d="M 138.45 223 L 168.9 223" class="lt-ladder-wire"/>
+<path d="M 168.9 182 L 193.25 182" class="lt-ladder-wire"/>
+<path d="M 225.25 182 L 261 182" class="lt-ladder-wire"/>
+<path d="M 293 182 L 344 182" class="lt-ladder-wire"/>
+<path d="M 376 182 L 430.04999999999995 182" class="lt-ladder-wire"/>
+<path d="M 462.04999999999995 182 L 494.04999999999995 182" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="START_PB"><line x1="106.45000000000002" y1="146" x2="110.45000000000002" y2="146" class="lt-ladder-wire"/>
+<line x1="134.45000000000002" y1="146" x2="138.45000000000002" y2="146" class="lt-ladder-wire"/>
+<line x1="110.45000000000002" y1="134" x2="110.45000000000002" y2="158" class="lt-ladder-element"/>
+<line x1="134.45000000000002" y1="134" x2="134.45000000000002" y2="158" class="lt-ladder-element"/>
+<text x="122.45000000000002" y="119" class="lt-ladder-name">起動ボタン</text>
+<text x="122.45000000000002" y="130" class="lt-ladder-tag">START_PB</text>
+<text x="122.45000000000002" y="168" class="lt-ladder-addr">IN 1.0</text></g>
+<g data-element="contact" data-tag="MOTOR_AUX"><line x1="106.45" y1="223" x2="110.45" y2="223" class="lt-ladder-wire"/>
+<line x1="134.45" y1="223" x2="138.45" y2="223" class="lt-ladder-wire"/>
+<line x1="110.45" y1="211" x2="110.45" y2="235" class="lt-ladder-element"/>
+<line x1="134.45" y1="211" x2="134.45" y2="235" class="lt-ladder-element"/>
+<text x="122.45" y="196" class="lt-ladder-name">モーター補助接点</text>
+<text x="122.45" y="207" class="lt-ladder-tag">MOTOR_AUX</text>
+<text x="122.45" y="245" class="lt-ladder-addr">BIT 3.0</text></g>
+<g data-element="contact" data-tag="STOP_PB"><line x1="193.25" y1="182" x2="197.25" y2="182" class="lt-ladder-wire"/>
+<line x1="221.25" y1="182" x2="225.25" y2="182" class="lt-ladder-wire"/>
+<line x1="197.25" y1="170" x2="197.25" y2="194" class="lt-ladder-element"/>
+<line x1="221.25" y1="170" x2="221.25" y2="194" class="lt-ladder-element"/>
+<line x1="199.25" y1="192" x2="219.25" y2="172" class="lt-ladder-element"/>
+<text x="209.25" y="155" class="lt-ladder-name">停止ボタン</text>
+<text x="209.25" y="166" class="lt-ladder-tag">STOP_PB</text>
+<text x="209.25" y="204" class="lt-ladder-addr">IN 1.1</text></g>
+<g data-element="contact" data-tag="PHOTOEYE"><line x1="261" y1="182" x2="265" y2="182" class="lt-ladder-wire"/>
+<line x1="289" y1="182" x2="293" y2="182" class="lt-ladder-wire"/>
+<line x1="265" y1="170" x2="265" y2="194" class="lt-ladder-element"/>
+<line x1="289" y1="170" x2="289" y2="194" class="lt-ladder-element"/>
+<line x1="267" y1="192" x2="287" y2="172" class="lt-ladder-element"/>
+<text x="277" y="155" class="lt-ladder-name">フォトアイ</text>
+<text x="277" y="166" class="lt-ladder-tag">PHOTOEYE</text>
+<text x="277" y="204" class="lt-ladder-addr">IN 1.2</text></g>
+<g data-element="contact" data-tag="OVERLOAD_RLY"><line x1="344" y1="182" x2="348" y2="182" class="lt-ladder-wire"/>
+<line x1="372" y1="182" x2="376" y2="182" class="lt-ladder-wire"/>
+<line x1="348" y1="170" x2="348" y2="194" class="lt-ladder-element"/>
+<line x1="372" y1="170" x2="372" y2="194" class="lt-ladder-element"/>
+<line x1="350" y1="192" x2="370" y2="172" class="lt-ladder-element"/>
+<text x="360" y="155" class="lt-ladder-name">過負荷リレー</text>
+<text x="360" y="166" class="lt-ladder-tag">OVERLOAD_RLY</text>
+<text x="360" y="204" class="lt-ladder-addr">IN 1.3</text></g>
+<g data-element="coil" data-tag="MOTOR_CMD"><path d="M 436.04999999999995 170 A 10 12 0 0 0 436.04999999999995 194" class="lt-ladder-coil"/>
+<path d="M 456.04999999999995 170 A 10 12 0 0 1 456.04999999999995 194" class="lt-ladder-coil"/>
+<line x1="430.04999999999995" y1="182" x2="436.04999999999995" y2="182" class="lt-ladder-wire"/>
+<line x1="456.04999999999995" y1="182" x2="462.04999999999995" y2="182" class="lt-ladder-wire"/>
+<text x="446.04999999999995" y="155" class="lt-ladder-name">モーターコイル</text>
+<text x="446.04999999999995" y="166" class="lt-ladder-tag">MOTOR_CMD</text>
+<text x="446.04999999999995" y="204" class="lt-ladder-addr">OUT 2.0</text></g></g></svg>

@@ -1,0 +1,210 @@
+erd
+title: "Dental Clinic Management System"
+direction: LR
+
+table Role {
+  role_id int PK
+  name varchar UK
+  description varchar
+}
+
+table User {
+  user_id int PK
+  role_id int FK -> Role.role_id
+  username varchar UK
+  password_hash varchar
+  full_name varchar
+  email varchar UK
+  phone varchar
+  status varchar
+  last_login timestamp
+}
+
+table Patient {
+  patient_id int PK
+  first_name varchar
+  last_name varchar
+  dob date
+  gender varchar
+  phone varchar
+  email varchar
+  address varchar
+  emergency_contact varchar
+  medical_history text
+  allergies text
+  created_at timestamp
+}
+
+table Appointment {
+  appointment_id int PK
+  patient_id int FK -> Patient.patient_id
+  dentist_id int FK -> User.user_id
+  scheduled_at timestamp
+  duration_min int
+  status varchar
+  reason varchar
+  notes varchar
+}
+
+table DentalRecord {
+  record_id int PK
+  patient_id int FK -> Patient.patient_id
+  appointment_id int FK -> Appointment.appointment_id
+  dentist_id int FK -> User.user_id
+  exam_date date
+  chief_complaint varchar
+  diagnosis varchar
+  notes text
+}
+
+table ToothChart {
+  tooth_entry_id int PK
+  record_id int FK -> DentalRecord.record_id
+  tooth_number varchar
+  surface varchar
+  condition varchar
+  notes varchar
+}
+
+table TreatmentPlan {
+  plan_id int PK
+  patient_id int FK -> Patient.patient_id
+  dentist_id int FK -> User.user_id
+  created_date date
+  status varchar
+  notes text
+}
+
+table Treatment {
+  treatment_id int PK
+  plan_id int FK -> TreatmentPlan.plan_id
+  record_id int FK -> DentalRecord.record_id
+  patient_id int FK -> Patient.patient_id
+  dentist_id int FK -> User.user_id
+  procedure_name varchar
+  tooth_number varchar
+  cost decimal
+  treatment_date date
+  status varchar
+}
+
+table Invoice {
+  invoice_id int PK
+  patient_id int FK -> Patient.patient_id
+  appointment_id int FK -> Appointment.appointment_id
+  issue_date date
+  subtotal decimal
+  discount decimal
+  tax decimal
+  total_amount decimal
+  balance_due decimal
+  status varchar
+}
+
+table InvoiceItem {
+  invoice_item_id int PK
+  invoice_id int FK -> Invoice.invoice_id
+  treatment_id int FK -> Treatment.treatment_id
+  description varchar
+  qty int
+  unit_price decimal
+  amount decimal
+}
+
+table Payment {
+  payment_id int PK
+  invoice_id int FK -> Invoice.invoice_id
+  received_by int FK -> User.user_id
+  payment_date date
+  amount decimal
+  method varchar
+  reference_no varchar
+  receipt_no varchar UK
+}
+
+table Supplier {
+  supplier_id int PK
+  name varchar
+  contact_person varchar
+  phone varchar
+  email varchar
+  address varchar
+}
+
+table InventoryItem {
+  item_id int PK
+  supplier_id int FK -> Supplier.supplier_id
+  name varchar
+  category varchar
+  unit varchar
+  unit_cost decimal
+  stock_qty int
+  reorder_level int
+}
+
+table Purchase {
+  purchase_id int PK
+  supplier_id int FK -> Supplier.supplier_id
+  ordered_by int FK -> User.user_id
+  purchase_date date
+  total_amount decimal
+  status varchar
+}
+
+table PurchaseItem {
+  purchase_item_id int PK
+  purchase_id int FK -> Purchase.purchase_id
+  item_id int FK -> InventoryItem.item_id
+  qty int
+  unit_cost decimal
+}
+
+table StockTransaction {
+  txn_id int PK
+  item_id int FK -> InventoryItem.item_id
+  purchase_id int FK -> Purchase.purchase_id
+  performed_by int FK -> User.user_id
+  txn_type varchar
+  qty int
+  txn_date timestamp
+  note varchar
+}
+
+table Report {
+  report_id int PK
+  generated_by int FK -> User.user_id
+  report_type varchar
+  period_start date
+  period_end date
+  generated_at timestamp
+  format varchar
+}
+
+ref User.role_id many-mandatory -- one-mandatory Role.role_id : "granted"
+ref Appointment.patient_id many-mandatory -- one-mandatory Patient.patient_id : "booked for"
+ref Appointment.dentist_id many-mandatory -- one-mandatory User.user_id : "assigned dentist"
+ref DentalRecord.patient_id many-mandatory -- one-mandatory Patient.patient_id : "holds"
+ref DentalRecord.appointment_id many-optional -- one-mandatory Appointment.appointment_id : "documents"
+ref DentalRecord.dentist_id many-mandatory -- one-mandatory User.user_id : "examined by"
+ref ToothChart.record_id many-mandatory -- one-mandatory DentalRecord.record_id : "charts"
+ref TreatmentPlan.patient_id many-mandatory -- one-mandatory Patient.patient_id : "plans for"
+ref TreatmentPlan.dentist_id many-mandatory -- one-mandatory User.user_id : "authored by"
+ref Treatment.plan_id many-optional -- one-optional TreatmentPlan.plan_id : "delivers"
+ref Treatment.record_id many-optional -- one-mandatory DentalRecord.record_id : "recorded in"
+ref Treatment.patient_id many-mandatory -- one-mandatory Patient.patient_id : "undergone by"
+ref Treatment.dentist_id many-mandatory -- one-mandatory User.user_id : "performed by"
+ref Invoice.patient_id many-mandatory -- one-mandatory Patient.patient_id : "billed to"
+ref Invoice.appointment_id many-optional -- one-mandatory Appointment.appointment_id : "for visit"
+ref InvoiceItem.invoice_id many-mandatory -- one-mandatory Invoice.invoice_id : "lists"
+ref InvoiceItem.treatment_id many-optional -- one-optional Treatment.treatment_id : "charges"
+ref Payment.invoice_id many-mandatory -- one-mandatory Invoice.invoice_id : "settles"
+ref Payment.received_by many-mandatory -- one-mandatory User.user_id : "collected by"
+ref InventoryItem.supplier_id many-optional -- one-optional Supplier.supplier_id : "sourced from"
+ref Purchase.supplier_id many-mandatory -- one-mandatory Supplier.supplier_id : "ordered from"
+ref Purchase.ordered_by many-mandatory -- one-mandatory User.user_id : "raised by"
+ref PurchaseItem.purchase_id many-mandatory -- one-mandatory Purchase.purchase_id : "contains"
+ref PurchaseItem.item_id many-mandatory -- one-mandatory InventoryItem.item_id : "supplies"
+ref StockTransaction.item_id many-mandatory -- one-mandatory InventoryItem.item_id : "adjusts"
+ref StockTransaction.purchase_id many-optional -- one-optional Purchase.purchase_id : "arises from"
+ref StockTransaction.performed_by many-mandatory -- one-mandatory User.user_id : "recorded by"
+ref Report.generated_by many-mandatory -- one-mandatory User.user_id : "produced by"

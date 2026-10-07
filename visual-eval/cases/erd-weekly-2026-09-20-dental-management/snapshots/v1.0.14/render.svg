@@ -1,0 +1,676 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1642.6000000000001" height="1416.5" viewBox="0 0 1642.6000000000001 1416.5" class="lt-erd"><title>Dental Clinic Management System</title>
+<desc>Entity-Relationship Diagram with 17 entities and 28 relationships.</desc>
+<style>.lt-erd { font-family: system-ui, -apple-system, sans-serif; }
+.lt-erd-title { font: bold 16px sans-serif; fill: #0f172a; }
+.lt-erd-entity-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header-bg { fill: #ffffff; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-entity-header { font: 600 13px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-erd-attr-name { font: 500 12px sans-serif; fill: #0f172a; dominant-baseline: middle; }
+.lt-erd-attr-name-pk { font: 600 12px sans-serif; fill: #0f172a; text-decoration: underline; dominant-baseline: middle; }
+.lt-erd-attr-type { font: 11px monospace; fill: #475569; dominant-baseline: middle; }
+.lt-erd-attr-marker { font: 700 10px sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0.3px; }
+.lt-erd-attr-marker-bg-pk { fill: #2563eb; stroke: none; }
+.lt-erd-attr-marker-bg-fk { fill: #d97706; stroke: none; }
+.lt-erd-attr-marker-bg-uk { fill: #059669; stroke: none; }
+.lt-erd-attr-marker-bg-nn { fill: #94a3b8; stroke: none; }
+.lt-erd-row-divider { stroke: #f1f5f9; stroke-width: 1; }
+.lt-erd-edge { fill: none; stroke: #334155; stroke-width: 1.5; }
+.lt-erd-edge-non-identifying { stroke-dasharray: 5,4; }
+.lt-erd-glyph { stroke: #334155; stroke-width: 1.5; fill: none; }
+.lt-erd-glyph-circle { stroke: #334155; stroke-width: 1.5; fill: #ffffff; }
+.lt-erd-edge-label-bg { fill: #ffffff; stroke: #f1f5f9; stroke-width: 1; }
+.lt-erd-edge-label { font: 500 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }</style>
+<text x="156.5" y="18" class="lt-erd-title">Dental Clinic Management System</text>
+<g class="lt-erd-edges" transform="translate(0, 28)"><g class="lt-erd-edge-group"><path d="M 326.8 357 L 275.6 357 L 275.6 291 L 224.4 291" class="lt-erd-edge"/>
+<line x1="308.8" y1="351" x2="308.8" y2="363" class="lt-erd-glyph"/><line x1="316.8" y1="357" x2="326.8" y2="357" class="lt-erd-glyph"/><line x1="316.8" y1="357" x2="326.8" y2="351" class="lt-erd-glyph"/><line x1="316.8" y1="357" x2="326.8" y2="363" class="lt-erd-glyph"/>
+<line x1="242.4" y1="297" x2="242.4" y2="285" class="lt-erd-glyph"/>
+<rect x="247.60000000000002" y="309" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="275.6" y="318" class="lt-erd-edge-label">granted</text></g>
+<g class="lt-erd-edge-group"><path d="M 596.8 439.5 L 416.79999999999995 439.5 L 416.79999999999995 445 L 236.8 445" class="lt-erd-edge"/>
+<line x1="578.8" y1="433.5" x2="578.8" y2="445.5" class="lt-erd-glyph"/><line x1="586.8" y1="439.5" x2="596.8" y2="439.5" class="lt-erd-glyph"/><line x1="586.8" y1="439.5" x2="596.8" y2="433.5" class="lt-erd-glyph"/><line x1="586.8" y1="439.5" x2="596.8" y2="445.5" class="lt-erd-glyph"/>
+<line x1="254.8" y1="451" x2="254.8" y2="439" class="lt-erd-glyph"/>
+<rect x="379.79999999999995" y="427.25" width="74" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="416.79999999999995" y="436.25" class="lt-erd-edge-label">booked for</text></g>
+<g class="lt-erd-edge-group"><path d="M 596.8 461.5 L 551.8 461.5 L 551.8 335 L 506.8 335" class="lt-erd-edge"/>
+<line x1="578.8" y1="455.5" x2="578.8" y2="467.5" class="lt-erd-glyph"/><line x1="586.8" y1="461.5" x2="596.8" y2="461.5" class="lt-erd-glyph"/><line x1="586.8" y1="461.5" x2="596.8" y2="455.5" class="lt-erd-glyph"/><line x1="586.8" y1="461.5" x2="596.8" y2="467.5" class="lt-erd-glyph"/>
+<line x1="524.8" y1="341" x2="524.8" y2="329" class="lt-erd-glyph"/>
+<rect x="496.79999999999995" y="383.25" width="110" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="551.8" y="392.25" class="lt-erd-edge-label">assigned dentist</text></g>
+<g class="lt-erd-edge-group"><path d="M 871.5 439.5 L 554.15 439.5 L 554.15 445 L 236.8 445" class="lt-erd-edge"/>
+<line x1="853.5" y1="433.5" x2="853.5" y2="445.5" class="lt-erd-glyph"/><line x1="861.5" y1="439.5" x2="871.5" y2="439.5" class="lt-erd-glyph"/><line x1="861.5" y1="439.5" x2="871.5" y2="433.5" class="lt-erd-glyph"/><line x1="861.5" y1="439.5" x2="871.5" y2="445.5" class="lt-erd-glyph"/>
+<line x1="254.8" y1="451" x2="254.8" y2="439" class="lt-erd-glyph"/>
+<rect x="532.15" y="427.25" width="44" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="554.15" y="436.25" class="lt-erd-edge-label">holds</text></g>
+<g class="lt-erd-edge-group"><path d="M 871.5 461.5 L 826.5 461.5 L 826.5 417.5 L 781.5 417.5" class="lt-erd-edge"/>
+<circle cx="853.5" cy="461.5" r="4" class="lt-erd-glyph-circle"/><line x1="861.5" y1="461.5" x2="871.5" y2="461.5" class="lt-erd-glyph"/><line x1="861.5" y1="461.5" x2="871.5" y2="455.5" class="lt-erd-glyph"/><line x1="861.5" y1="461.5" x2="871.5" y2="467.5" class="lt-erd-glyph"/>
+<line x1="799.5" y1="423.5" x2="799.5" y2="411.5" class="lt-erd-glyph"/>
+<rect x="792.5" y="424.5" width="68" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="826.5" y="433.5" class="lt-erd-edge-label">documents</text></g>
+<g class="lt-erd-edge-group"><path d="M 871.5 483.5 L 689.15 483.5 L 689.15 335 L 506.8 335" class="lt-erd-edge"/>
+<line x1="853.5" y1="477.5" x2="853.5" y2="489.5" class="lt-erd-glyph"/><line x1="861.5" y1="483.5" x2="871.5" y2="483.5" class="lt-erd-glyph"/><line x1="861.5" y1="483.5" x2="871.5" y2="477.5" class="lt-erd-glyph"/><line x1="861.5" y1="483.5" x2="871.5" y2="489.5" class="lt-erd-glyph"/>
+<line x1="524.8" y1="341" x2="524.8" y2="329" class="lt-erd-glyph"/>
+<rect x="649.15" y="394.25" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="689.15" y="403.25" class="lt-erd-edge-label">examined by</text></g>
+<g class="lt-erd-edge-group"><path d="M 1155.25 461.5 L 1109.075 461.5 L 1109.075 417.5 L 1062.9 417.5" class="lt-erd-edge"/>
+<line x1="1137.25" y1="455.5" x2="1137.25" y2="467.5" class="lt-erd-glyph"/><line x1="1145.25" y1="461.5" x2="1155.25" y2="461.5" class="lt-erd-glyph"/><line x1="1145.25" y1="461.5" x2="1155.25" y2="455.5" class="lt-erd-glyph"/><line x1="1145.25" y1="461.5" x2="1155.25" y2="467.5" class="lt-erd-glyph"/>
+<line x1="1080.9" y1="423.5" x2="1080.9" y2="411.5" class="lt-erd-glyph"/>
+<rect x="1084.075" y="424.5" width="50" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="1109.075" y="433.5" class="lt-erd-edge-label">charts</text></g>
+<g class="lt-erd-edge-group"><path d="M 599.15 703.5 L 407.975 703.5 L 407.975 445 L 236.8 445" class="lt-erd-edge"/>
+<line x1="581.15" y1="697.5" x2="581.15" y2="709.5" class="lt-erd-glyph"/><line x1="589.15" y1="703.5" x2="599.15" y2="703.5" class="lt-erd-glyph"/><line x1="589.15" y1="703.5" x2="599.15" y2="697.5" class="lt-erd-glyph"/><line x1="589.15" y1="703.5" x2="599.15" y2="709.5" class="lt-erd-glyph"/>
+<line x1="254.8" y1="451" x2="254.8" y2="439" class="lt-erd-glyph"/>
+<rect x="373.975" y="559.25" width="68" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="407.975" y="568.25" class="lt-erd-edge-label">plans for</text></g>
+<g class="lt-erd-edge-group"><path d="M 689.15 642.5 L 689.15 584.25 L 416.8 584.25 L 416.8 526" class="lt-erd-edge"/>
+<line x1="695.15" y1="624.5" x2="683.15" y2="624.5" class="lt-erd-glyph"/><line x1="689.15" y1="632.5" x2="689.15" y2="642.5" class="lt-erd-glyph"/><line x1="689.15" y1="632.5" x2="695.15" y2="642.5" class="lt-erd-glyph"/><line x1="689.15" y1="632.5" x2="683.15" y2="642.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="544" x2="422.8" y2="544" class="lt-erd-glyph"/>
+<rect x="512.975" y="569.25" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="552.975" y="578.25" class="lt-erd-edge-label">authored by</text></g>
+<g class="lt-erd-edge-group"><path d="M 1152.9 681.5 L 966.0250000000001 681.5 L 966.0250000000001 681.5 L 779.15 681.5" class="lt-erd-edge"/>
+<circle cx="1134.9" cy="681.5" r="4" class="lt-erd-glyph-circle"/><line x1="1142.9" y1="681.5" x2="1152.9" y2="681.5" class="lt-erd-glyph"/><line x1="1142.9" y1="681.5" x2="1152.9" y2="675.5" class="lt-erd-glyph"/><line x1="1142.9" y1="681.5" x2="1152.9" y2="687.5" class="lt-erd-glyph"/>
+<circle cx="797.15" cy="681.5" r="4" class="lt-erd-glyph-circle"/>
+<rect x="935.0250000000001" y="666.5" width="62" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="966.0250000000001" y="675.5" class="lt-erd-edge-label">delivers</text></g>
+<g class="lt-erd-edge-group"><path d="M 1152.9 703.5 L 1097.9 703.5 L 1097.9 417.5 L 1062.9 417.5" class="lt-erd-edge"/>
+<circle cx="1134.9" cy="703.5" r="4" class="lt-erd-glyph-circle"/><line x1="1142.9" y1="703.5" x2="1152.9" y2="703.5" class="lt-erd-glyph"/><line x1="1142.9" y1="703.5" x2="1152.9" y2="697.5" class="lt-erd-glyph"/><line x1="1142.9" y1="703.5" x2="1152.9" y2="709.5" class="lt-erd-glyph"/>
+<line x1="1080.9" y1="423.5" x2="1080.9" y2="411.5" class="lt-erd-glyph"/>
+<rect x="1057.9" y="545.5" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="1097.9" y="554.5" class="lt-erd-edge-label">recorded in</text></g>
+<g class="lt-erd-edge-group"><path d="M 1152.9 725.5 L 694.85 725.5 L 694.85 445 L 236.8 445" class="lt-erd-edge"/>
+<line x1="1134.9" y1="719.5" x2="1134.9" y2="731.5" class="lt-erd-glyph"/><line x1="1142.9" y1="725.5" x2="1152.9" y2="725.5" class="lt-erd-glyph"/><line x1="1142.9" y1="725.5" x2="1152.9" y2="719.5" class="lt-erd-glyph"/><line x1="1142.9" y1="725.5" x2="1152.9" y2="731.5" class="lt-erd-glyph"/>
+<line x1="254.8" y1="451" x2="254.8" y2="439" class="lt-erd-glyph"/>
+<rect x="651.85" y="570.25" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="694.85" y="579.25" class="lt-erd-edge-label">undergone by</text></g>
+<g class="lt-erd-edge-group"><path d="M 1152.9 747.5 L 819.85 747.5 L 819.85 335 L 506.8 335" class="lt-erd-edge"/>
+<line x1="1134.9" y1="741.5" x2="1134.9" y2="753.5" class="lt-erd-glyph"/><line x1="1142.9" y1="747.5" x2="1152.9" y2="747.5" class="lt-erd-glyph"/><line x1="1142.9" y1="747.5" x2="1152.9" y2="741.5" class="lt-erd-glyph"/><line x1="1142.9" y1="747.5" x2="1152.9" y2="753.5" class="lt-erd-glyph"/>
+<line x1="524.8" y1="341" x2="524.8" y2="329" class="lt-erd-glyph"/>
+<rect x="776.85" y="526.25" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="819.85" y="535.25" class="lt-erd-edge-label">performed by</text></g>
+<g class="lt-erd-edge-group"><path d="M 877.2 703.5 L 547 703.5 L 547 445 L 236.8 445" class="lt-erd-edge"/>
+<line x1="859.2" y1="697.5" x2="859.2" y2="709.5" class="lt-erd-glyph"/><line x1="867.2" y1="703.5" x2="877.2" y2="703.5" class="lt-erd-glyph"/><line x1="867.2" y1="703.5" x2="877.2" y2="697.5" class="lt-erd-glyph"/><line x1="867.2" y1="703.5" x2="877.2" y2="709.5" class="lt-erd-glyph"/>
+<line x1="254.8" y1="451" x2="254.8" y2="439" class="lt-erd-glyph"/>
+<rect x="513" y="559.25" width="68" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="547" y="568.25" class="lt-erd-edge-label">billed to</text></g>
+<g class="lt-erd-edge-group"><path d="M 967.2 642.5 L 967.2 614.5 L 689.15 614.5 L 689.15 586.5" class="lt-erd-edge"/>
+<circle cx="967.2" cy="624.5" r="4" class="lt-erd-glyph-circle"/><line x1="967.2" y1="632.5" x2="967.2" y2="642.5" class="lt-erd-glyph"/><line x1="967.2" y1="632.5" x2="973.2" y2="642.5" class="lt-erd-glyph"/><line x1="967.2" y1="632.5" x2="961.2" y2="642.5" class="lt-erd-glyph"/>
+<line x1="683.15" y1="604.5" x2="695.15" y2="604.5" class="lt-erd-glyph"/>
+<rect x="794.175" y="599.5" width="68" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="828.175" y="608.5" class="lt-erd-edge-label">for visit</text></g>
+<g class="lt-erd-edge-group"><path d="M 1427.6000000000001 725.5 L 1242.4 725.5 L 1242.4 681.5 L 1057.2 681.5" class="lt-erd-edge"/>
+<line x1="1409.6000000000001" y1="719.5" x2="1409.6000000000001" y2="731.5" class="lt-erd-glyph"/><line x1="1417.6000000000001" y1="725.5" x2="1427.6000000000001" y2="725.5" class="lt-erd-glyph"/><line x1="1417.6000000000001" y1="725.5" x2="1427.6000000000001" y2="719.5" class="lt-erd-glyph"/><line x1="1417.6000000000001" y1="725.5" x2="1427.6000000000001" y2="731.5" class="lt-erd-glyph"/>
+<line x1="1075.2" y1="687.5" x2="1075.2" y2="675.5" class="lt-erd-glyph"/>
+<rect x="1220.4" y="688.5" width="44" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="1242.4" y="697.5" class="lt-erd-edge-label">lists</text></g>
+<g class="lt-erd-edge-group"><path d="M 1427.6000000000001 747.5 L 1382.6000000000001 747.5 L 1382.6000000000001 659.5 L 1337.6000000000001 659.5" class="lt-erd-edge"/>
+<circle cx="1409.6000000000001" cy="747.5" r="4" class="lt-erd-glyph-circle"/><line x1="1417.6000000000001" y1="747.5" x2="1427.6000000000001" y2="747.5" class="lt-erd-glyph"/><line x1="1417.6000000000001" y1="747.5" x2="1427.6000000000001" y2="741.5" class="lt-erd-glyph"/><line x1="1417.6000000000001" y1="747.5" x2="1427.6000000000001" y2="753.5" class="lt-erd-glyph"/>
+<circle cx="1355.6000000000001" cy="659.5" r="4" class="lt-erd-glyph-circle"/>
+<rect x="1354.6000000000001" y="688.5" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="1382.6000000000001" y="697.5" class="lt-erd-edge-label">charges</text></g>
+<g class="lt-erd-edge-group"><path d="M 1155.25 989.5 L 1116.225 989.5 L 1116.225 681.5 L 1057.2 681.5" class="lt-erd-edge"/>
+<line x1="1137.25" y1="983.5" x2="1137.25" y2="995.5" class="lt-erd-glyph"/><line x1="1145.25" y1="989.5" x2="1155.25" y2="989.5" class="lt-erd-glyph"/><line x1="1145.25" y1="989.5" x2="1155.25" y2="983.5" class="lt-erd-glyph"/><line x1="1145.25" y1="989.5" x2="1155.25" y2="995.5" class="lt-erd-glyph"/>
+<line x1="1075.2" y1="687.5" x2="1075.2" y2="675.5" class="lt-erd-glyph"/>
+<rect x="1088.225" y="820.5" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="1116.225" y="829.5" class="lt-erd-edge-label">settles</text></g>
+<g class="lt-erd-edge-group"><path d="M 1155.25 1011.5 L 831.025 1011.5 L 831.025 335 L 506.8 335" class="lt-erd-edge"/>
+<line x1="1137.25" y1="1005.5" x2="1137.25" y2="1017.5" class="lt-erd-glyph"/><line x1="1145.25" y1="1011.5" x2="1155.25" y2="1011.5" class="lt-erd-glyph"/><line x1="1145.25" y1="1011.5" x2="1155.25" y2="1005.5" class="lt-erd-glyph"/><line x1="1145.25" y1="1011.5" x2="1155.25" y2="1017.5" class="lt-erd-glyph"/>
+<line x1="524.8" y1="341" x2="524.8" y2="329" class="lt-erd-glyph"/>
+<rect x="788.025" y="658.25" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="831.025" y="667.25" class="lt-erd-edge-label">collected by</text></g>
+<g class="lt-erd-edge-group"><path d="M 326.8 93 L 266.775 93 L 266.775 71 L 226.75 71" class="lt-erd-edge"/>
+<circle cx="308.8" cy="93" r="4" class="lt-erd-glyph-circle"/><line x1="316.8" y1="93" x2="326.8" y2="93" class="lt-erd-glyph"/><line x1="316.8" y1="93" x2="326.8" y2="87" class="lt-erd-glyph"/><line x1="316.8" y1="93" x2="326.8" y2="99" class="lt-erd-glyph"/>
+<circle cx="244.75" cy="71" r="4" class="lt-erd-glyph-circle"/>
+<rect x="223.77499999999998" y="67" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="266.775" y="76" class="lt-erd-edge-label">sourced from</text></g>
+<g class="lt-erd-edge-group"><path d="M 689.15 862.5 L 689.15 529.25 L 134.4 529.25 L 134.4 196" class="lt-erd-edge"/>
+<line x1="695.15" y1="844.5" x2="683.15" y2="844.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="689.15" y2="862.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="695.15" y2="862.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="683.15" y2="862.5" class="lt-erd-glyph"/>
+<line x1="128.4" y1="214" x2="140.4" y2="214" class="lt-erd-glyph"/>
+<rect x="368.775" y="514.25" width="86" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="411.775" y="523.25" class="lt-erd-edge-label">ordered from</text></g>
+<g class="lt-erd-edge-group"><path d="M 689.15 862.5 L 689.15 694.25 L 416.8 694.25 L 416.8 526" class="lt-erd-edge"/>
+<line x1="695.15" y1="844.5" x2="683.15" y2="844.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="689.15" y2="862.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="695.15" y2="862.5" class="lt-erd-glyph"/><line x1="689.15" y1="852.5" x2="683.15" y2="862.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="544" x2="422.8" y2="544" class="lt-erd-glyph"/>
+<rect x="518.975" y="679.25" width="68" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="552.975" y="688.25" class="lt-erd-edge-label">raised by</text></g>
+<g class="lt-erd-edge-group"><path d="M 872.35 1011.5 L 825.75 1011.5 L 825.75 901.5 L 779.15 901.5" class="lt-erd-edge"/>
+<line x1="854.35" y1="1005.5" x2="854.35" y2="1017.5" class="lt-erd-glyph"/><line x1="862.35" y1="1011.5" x2="872.35" y2="1011.5" class="lt-erd-glyph"/><line x1="862.35" y1="1011.5" x2="872.35" y2="1005.5" class="lt-erd-glyph"/><line x1="862.35" y1="1011.5" x2="872.35" y2="1017.5" class="lt-erd-glyph"/>
+<line x1="797.15" y1="907.5" x2="797.15" y2="895.5" class="lt-erd-glyph"/>
+<rect x="794.75" y="941.5" width="62" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="825.75" y="950.5" class="lt-erd-edge-label">contains</text></g>
+<g class="lt-erd-edge-group"><path d="M 967.2 950.5 L 967.2 595.25 L 416.8 595.25 L 416.8 240" class="lt-erd-edge"/>
+<line x1="973.2" y1="932.5" x2="961.2" y2="932.5" class="lt-erd-glyph"/><line x1="967.2" y1="940.5" x2="967.2" y2="950.5" class="lt-erd-glyph"/><line x1="967.2" y1="940.5" x2="973.2" y2="950.5" class="lt-erd-glyph"/><line x1="967.2" y1="940.5" x2="961.2" y2="950.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="258" x2="422.8" y2="258" class="lt-erd-glyph"/>
+<rect x="661" y="580.25" width="62" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="692" y="589.25" class="lt-erd-edge-label">supplies</text></g>
+<g class="lt-erd-edge-group"><path d="M 967.2 1148.5 L 967.2 684.25 L 416.8 684.25 L 416.8 240" class="lt-erd-edge"/>
+<line x1="973.2" y1="1130.5" x2="961.2" y2="1130.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="967.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="973.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="961.2" y2="1148.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="258" x2="422.8" y2="258" class="lt-erd-glyph"/>
+<rect x="664" y="669.25" width="56" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="692" y="678.25" class="lt-erd-edge-label">adjusts</text></g>
+<g class="lt-erd-edge-group"><path d="M 967.2 1148.5 L 967.2 1087.5 L 689.15 1087.5 L 689.15 1026.5" class="lt-erd-edge"/>
+<circle cx="967.2" cy="1130.5" r="4" class="lt-erd-glyph-circle"/><line x1="967.2" y1="1138.5" x2="967.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="973.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="961.2" y2="1148.5" class="lt-erd-glyph"/>
+<circle cx="689.15" cy="1044.5" r="4" class="lt-erd-glyph-circle"/>
+<rect x="788.175" y="1072.5" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="828.175" y="1081.5" class="lt-erd-edge-label">arises from</text></g>
+<g class="lt-erd-edge-group"><path d="M 967.2 1148.5 L 967.2 837.25 L 416.8 837.25 L 416.8 526" class="lt-erd-edge"/>
+<line x1="973.2" y1="1130.5" x2="961.2" y2="1130.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="967.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="973.2" y2="1148.5" class="lt-erd-glyph"/><line x1="967.2" y1="1138.5" x2="961.2" y2="1148.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="544" x2="422.8" y2="544" class="lt-erd-glyph"/>
+<rect x="652" y="822.25" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="692" y="831.25" class="lt-erd-edge-label">recorded by</text></g>
+<g class="lt-erd-edge-group"><path d="M 689.15 1082.5 L 689.15 804.25 L 416.8 804.25 L 416.8 526" class="lt-erd-edge"/>
+<line x1="695.15" y1="1064.5" x2="683.15" y2="1064.5" class="lt-erd-glyph"/><line x1="689.15" y1="1072.5" x2="689.15" y2="1082.5" class="lt-erd-glyph"/><line x1="689.15" y1="1072.5" x2="695.15" y2="1082.5" class="lt-erd-glyph"/><line x1="689.15" y1="1072.5" x2="683.15" y2="1082.5" class="lt-erd-glyph"/>
+<line x1="410.8" y1="544" x2="422.8" y2="544" class="lt-erd-glyph"/>
+<rect x="512.975" y="789.25" width="80" height="16" rx="3" class="lt-erd-edge-label-bg"/>
+<text x="552.975" y="798.25" class="lt-erd-edge-label">produced by</text></g></g>
+<g class="lt-erd-entities" transform="translate(0, 28)"><g class="lt-erd-entity" data-id="Supplier"><rect x="42.05000000000001" y="32" width="184.7" height="164" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 42.05000000000001 36 Q 42.05000000000001 32 46.05000000000001 32 L 222.75 32 Q 226.75 32 226.75 36 L 226.75 60 L 42.05000000000001 60 Z" class="lt-erd-entity-header-bg"/>
+<text x="134.4" y="46" class="lt-erd-entity-header">Supplier</text>
+<text x="56.05000000000001" y="71" class="lt-erd-attr-name-pk">supplier_id</text>
+<text x="178.75" y="71" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="186.75" y="63" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="199.75" y="72" class="lt-erd-attr-marker">PK</text>
+<line x1="42.05000000000001" y1="82" x2="226.75" y2="82" class="lt-erd-row-divider"/>
+<text x="56.05000000000001" y="93" class="lt-erd-attr-name">name</text>
+<text x="208.75" y="93" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="42.05000000000001" y1="104" x2="226.75" y2="104" class="lt-erd-row-divider"/>
+<text x="56.05000000000001" y="115" class="lt-erd-attr-name">contact_person</text>
+<text x="208.75" y="115" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="42.05000000000001" y1="126" x2="226.75" y2="126" class="lt-erd-row-divider"/>
+<text x="56.05000000000001" y="137" class="lt-erd-attr-name">phone</text>
+<text x="208.75" y="137" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="42.05000000000001" y1="148" x2="226.75" y2="148" class="lt-erd-row-divider"/>
+<text x="56.05000000000001" y="159" class="lt-erd-attr-name">email</text>
+<text x="208.75" y="159" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="42.05000000000001" y1="170" x2="226.75" y2="170" class="lt-erd-row-divider"/>
+<text x="56.05000000000001" y="181" class="lt-erd-attr-name">address</text>
+<text x="208.75" y="181" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="Role"><rect x="44.400000000000006" y="252" width="180" height="98" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 44.400000000000006 256 Q 44.400000000000006 252 48.400000000000006 252 L 220.4 252 Q 224.4 252 224.4 256 L 224.4 280 L 44.400000000000006 280 Z" class="lt-erd-entity-header-bg"/>
+<text x="134.4" y="266" class="lt-erd-entity-header">Role</text>
+<text x="58.400000000000006" y="291" class="lt-erd-attr-name-pk">role_id</text>
+<text x="176.4" y="291" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="184.4" y="283" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="197.4" y="292" class="lt-erd-attr-marker">PK</text>
+<line x1="44.400000000000006" y1="302" x2="224.4" y2="302" class="lt-erd-row-divider"/>
+<text x="58.400000000000006" y="313" class="lt-erd-attr-name">name</text>
+<text x="176.4" y="313" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<rect x="184.4" y="305" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-uk"/>
+<text x="197.4" y="314" class="lt-erd-attr-marker">UK</text>
+<line x1="44.400000000000006" y1="324" x2="224.4" y2="324" class="lt-erd-row-divider"/>
+<text x="58.400000000000006" y="335" class="lt-erd-attr-name">description</text>
+<text x="206.4" y="335" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="Patient"><rect x="32" y="406" width="204.8" height="296" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 32 410 Q 32 406 36 406 L 232.8 406 Q 236.8 406 236.8 410 L 236.8 434 L 32 434 Z" class="lt-erd-entity-header-bg"/>
+<text x="134.4" y="420" class="lt-erd-entity-header">Patient</text>
+<text x="46" y="445" class="lt-erd-attr-name-pk">patient_id</text>
+<text x="188.8" y="445" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="196.8" y="437" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="209.8" y="446" class="lt-erd-attr-marker">PK</text>
+<line x1="32" y1="456" x2="236.8" y2="456" class="lt-erd-row-divider"/>
+<text x="46" y="467" class="lt-erd-attr-name">first_name</text>
+<text x="218.8" y="467" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="478" x2="236.8" y2="478" class="lt-erd-row-divider"/>
+<text x="46" y="489" class="lt-erd-attr-name">last_name</text>
+<text x="218.8" y="489" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="500" x2="236.8" y2="500" class="lt-erd-row-divider"/>
+<text x="46" y="511" class="lt-erd-attr-name">dob</text>
+<text x="218.8" y="511" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="32" y1="522" x2="236.8" y2="522" class="lt-erd-row-divider"/>
+<text x="46" y="533" class="lt-erd-attr-name">gender</text>
+<text x="218.8" y="533" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="544" x2="236.8" y2="544" class="lt-erd-row-divider"/>
+<text x="46" y="555" class="lt-erd-attr-name">phone</text>
+<text x="218.8" y="555" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="566" x2="236.8" y2="566" class="lt-erd-row-divider"/>
+<text x="46" y="577" class="lt-erd-attr-name">email</text>
+<text x="218.8" y="577" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="588" x2="236.8" y2="588" class="lt-erd-row-divider"/>
+<text x="46" y="599" class="lt-erd-attr-name">address</text>
+<text x="218.8" y="599" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="610" x2="236.8" y2="610" class="lt-erd-row-divider"/>
+<text x="46" y="621" class="lt-erd-attr-name">emergency_contact</text>
+<text x="218.8" y="621" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="32" y1="632" x2="236.8" y2="632" class="lt-erd-row-divider"/>
+<text x="46" y="643" class="lt-erd-attr-name">medical_history</text>
+<text x="218.8" y="643" class="lt-erd-attr-type" text-anchor="end">text</text>
+<line x1="32" y1="654" x2="236.8" y2="654" class="lt-erd-row-divider"/>
+<text x="46" y="665" class="lt-erd-attr-name">allergies</text>
+<text x="218.8" y="665" class="lt-erd-attr-type" text-anchor="end">text</text>
+<line x1="32" y1="676" x2="236.8" y2="676" class="lt-erd-row-divider"/>
+<text x="46" y="687" class="lt-erd-attr-name">created_at</text>
+<text x="218.8" y="687" class="lt-erd-attr-type" text-anchor="end">timestamp</text></g>
+<g class="lt-erd-entity" data-id="InventoryItem"><rect x="326.8" y="32" width="180" height="208" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 326.8 36 Q 326.8 32 330.8 32 L 502.8 32 Q 506.8 32 506.8 36 L 506.8 60 L 326.8 60 Z" class="lt-erd-entity-header-bg"/>
+<text x="416.8" y="46" class="lt-erd-entity-header">InventoryItem</text>
+<text x="340.8" y="71" class="lt-erd-attr-name-pk">item_id</text>
+<text x="458.8" y="71" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="466.8" y="63" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="479.8" y="72" class="lt-erd-attr-marker">PK</text>
+<line x1="326.8" y1="82" x2="506.8" y2="82" class="lt-erd-row-divider"/>
+<text x="340.8" y="93" class="lt-erd-attr-name">supplier_id</text>
+<text x="458.8" y="93" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="466.8" y="85" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="479.8" y="94" class="lt-erd-attr-marker">FK</text>
+<line x1="326.8" y1="104" x2="506.8" y2="104" class="lt-erd-row-divider"/>
+<text x="340.8" y="115" class="lt-erd-attr-name">name</text>
+<text x="488.8" y="115" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="126" x2="506.8" y2="126" class="lt-erd-row-divider"/>
+<text x="340.8" y="137" class="lt-erd-attr-name">category</text>
+<text x="488.8" y="137" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="148" x2="506.8" y2="148" class="lt-erd-row-divider"/>
+<text x="340.8" y="159" class="lt-erd-attr-name">unit</text>
+<text x="488.8" y="159" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="170" x2="506.8" y2="170" class="lt-erd-row-divider"/>
+<text x="340.8" y="181" class="lt-erd-attr-name">unit_cost</text>
+<text x="488.8" y="181" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="326.8" y1="192" x2="506.8" y2="192" class="lt-erd-row-divider"/>
+<text x="340.8" y="203" class="lt-erd-attr-name">stock_qty</text>
+<text x="488.8" y="203" class="lt-erd-attr-type" text-anchor="end">int</text>
+<line x1="326.8" y1="214" x2="506.8" y2="214" class="lt-erd-row-divider"/>
+<text x="340.8" y="225" class="lt-erd-attr-name">reorder_level</text>
+<text x="488.8" y="225" class="lt-erd-attr-type" text-anchor="end">int</text></g>
+<g class="lt-erd-entity" data-id="User"><rect x="326.8" y="296" width="180" height="230" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 326.8 300 Q 326.8 296 330.8 296 L 502.8 296 Q 506.8 296 506.8 300 L 506.8 324 L 326.8 324 Z" class="lt-erd-entity-header-bg"/>
+<text x="416.8" y="310" class="lt-erd-entity-header">User</text>
+<text x="340.8" y="335" class="lt-erd-attr-name-pk">user_id</text>
+<text x="458.8" y="335" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="466.8" y="327" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="479.8" y="336" class="lt-erd-attr-marker">PK</text>
+<line x1="326.8" y1="346" x2="506.8" y2="346" class="lt-erd-row-divider"/>
+<text x="340.8" y="357" class="lt-erd-attr-name">role_id</text>
+<text x="458.8" y="357" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="466.8" y="349" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="479.8" y="358" class="lt-erd-attr-marker">FK</text>
+<line x1="326.8" y1="368" x2="506.8" y2="368" class="lt-erd-row-divider"/>
+<text x="340.8" y="379" class="lt-erd-attr-name">username</text>
+<text x="458.8" y="379" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<rect x="466.8" y="371" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-uk"/>
+<text x="479.8" y="380" class="lt-erd-attr-marker">UK</text>
+<line x1="326.8" y1="390" x2="506.8" y2="390" class="lt-erd-row-divider"/>
+<text x="340.8" y="401" class="lt-erd-attr-name">password_hash</text>
+<text x="488.8" y="401" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="412" x2="506.8" y2="412" class="lt-erd-row-divider"/>
+<text x="340.8" y="423" class="lt-erd-attr-name">full_name</text>
+<text x="488.8" y="423" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="434" x2="506.8" y2="434" class="lt-erd-row-divider"/>
+<text x="340.8" y="445" class="lt-erd-attr-name">email</text>
+<text x="458.8" y="445" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<rect x="466.8" y="437" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-uk"/>
+<text x="479.8" y="446" class="lt-erd-attr-marker">UK</text>
+<line x1="326.8" y1="456" x2="506.8" y2="456" class="lt-erd-row-divider"/>
+<text x="340.8" y="467" class="lt-erd-attr-name">phone</text>
+<text x="488.8" y="467" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="478" x2="506.8" y2="478" class="lt-erd-row-divider"/>
+<text x="340.8" y="489" class="lt-erd-attr-name">status</text>
+<text x="488.8" y="489" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="326.8" y1="500" x2="506.8" y2="500" class="lt-erd-row-divider"/>
+<text x="340.8" y="511" class="lt-erd-attr-name">last_login</text>
+<text x="488.8" y="511" class="lt-erd-attr-type" text-anchor="end">timestamp</text></g>
+<g class="lt-erd-entity" data-id="Appointment"><rect x="596.8" y="378.5" width="184.70000000000002" height="208" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 596.8 382.5 Q 596.8 378.5 600.8 378.5 L 777.5 378.5 Q 781.5 378.5 781.5 382.5 L 781.5 406.5 L 596.8 406.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="689.15" y="392.5" class="lt-erd-entity-header">Appointment</text>
+<text x="610.8" y="417.5" class="lt-erd-attr-name-pk">appointment_id</text>
+<text x="733.5" y="417.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="741.5" y="409.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="754.5" y="418.5" class="lt-erd-attr-marker">PK</text>
+<line x1="596.8" y1="428.5" x2="781.5" y2="428.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="439.5" class="lt-erd-attr-name">patient_id</text>
+<text x="733.5" y="439.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="741.5" y="431.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="754.5" y="440.5" class="lt-erd-attr-marker">FK</text>
+<line x1="596.8" y1="450.5" x2="781.5" y2="450.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="461.5" class="lt-erd-attr-name">dentist_id</text>
+<text x="733.5" y="461.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="741.5" y="453.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="754.5" y="462.5" class="lt-erd-attr-marker">FK</text>
+<line x1="596.8" y1="472.5" x2="781.5" y2="472.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="483.5" class="lt-erd-attr-name">scheduled_at</text>
+<text x="763.5" y="483.5" class="lt-erd-attr-type" text-anchor="end">timestamp</text>
+<line x1="596.8" y1="494.5" x2="781.5" y2="494.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="505.5" class="lt-erd-attr-name">duration_min</text>
+<text x="763.5" y="505.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<line x1="596.8" y1="516.5" x2="781.5" y2="516.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="527.5" class="lt-erd-attr-name">status</text>
+<text x="763.5" y="527.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="596.8" y1="538.5" x2="781.5" y2="538.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="549.5" class="lt-erd-attr-name">reason</text>
+<text x="763.5" y="549.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="596.8" y1="560.5" x2="781.5" y2="560.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="571.5" class="lt-erd-attr-name">notes</text>
+<text x="763.5" y="571.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="TreatmentPlan"><rect x="599.15" y="642.5" width="180" height="164" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 599.15 646.5 Q 599.15 642.5 603.15 642.5 L 775.15 642.5 Q 779.15 642.5 779.15 646.5 L 779.15 670.5 L 599.15 670.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="689.15" y="656.5" class="lt-erd-entity-header">TreatmentPlan</text>
+<text x="613.15" y="681.5" class="lt-erd-attr-name-pk">plan_id</text>
+<text x="731.15" y="681.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="673.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="752.15" y="682.5" class="lt-erd-attr-marker">PK</text>
+<line x1="599.15" y1="692.5" x2="779.15" y2="692.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="703.5" class="lt-erd-attr-name">patient_id</text>
+<text x="731.15" y="703.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="695.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="752.15" y="704.5" class="lt-erd-attr-marker">FK</text>
+<line x1="599.15" y1="714.5" x2="779.15" y2="714.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="725.5" class="lt-erd-attr-name">dentist_id</text>
+<text x="731.15" y="725.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="717.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="752.15" y="726.5" class="lt-erd-attr-marker">FK</text>
+<line x1="599.15" y1="736.5" x2="779.15" y2="736.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="747.5" class="lt-erd-attr-name">created_date</text>
+<text x="761.15" y="747.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="599.15" y1="758.5" x2="779.15" y2="758.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="769.5" class="lt-erd-attr-name">status</text>
+<text x="761.15" y="769.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="599.15" y1="780.5" x2="779.15" y2="780.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="791.5" class="lt-erd-attr-name">notes</text>
+<text x="761.15" y="791.5" class="lt-erd-attr-type" text-anchor="end">text</text></g>
+<g class="lt-erd-entity" data-id="Purchase"><rect x="599.15" y="862.5" width="180" height="164" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 599.15 866.5 Q 599.15 862.5 603.15 862.5 L 775.15 862.5 Q 779.15 862.5 779.15 866.5 L 779.15 890.5 L 599.15 890.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="689.15" y="876.5" class="lt-erd-entity-header">Purchase</text>
+<text x="613.15" y="901.5" class="lt-erd-attr-name-pk">purchase_id</text>
+<text x="731.15" y="901.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="893.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="752.15" y="902.5" class="lt-erd-attr-marker">PK</text>
+<line x1="599.15" y1="912.5" x2="779.15" y2="912.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="923.5" class="lt-erd-attr-name">supplier_id</text>
+<text x="731.15" y="923.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="915.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="752.15" y="924.5" class="lt-erd-attr-marker">FK</text>
+<line x1="599.15" y1="934.5" x2="779.15" y2="934.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="945.5" class="lt-erd-attr-name">ordered_by</text>
+<text x="731.15" y="945.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="739.15" y="937.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="752.15" y="946.5" class="lt-erd-attr-marker">FK</text>
+<line x1="599.15" y1="956.5" x2="779.15" y2="956.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="967.5" class="lt-erd-attr-name">purchase_date</text>
+<text x="761.15" y="967.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="599.15" y1="978.5" x2="779.15" y2="978.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="989.5" class="lt-erd-attr-name">total_amount</text>
+<text x="761.15" y="989.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="599.15" y1="1000.5" x2="779.15" y2="1000.5" class="lt-erd-row-divider"/>
+<text x="613.15" y="1011.5" class="lt-erd-attr-name">status</text>
+<text x="761.15" y="1011.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="Report"><rect x="596.8" y="1082.5" width="184.70000000000002" height="186" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 596.8 1086.5 Q 596.8 1082.5 600.8 1082.5 L 777.5 1082.5 Q 781.5 1082.5 781.5 1086.5 L 781.5 1110.5 L 596.8 1110.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="689.15" y="1096.5" class="lt-erd-entity-header">Report</text>
+<text x="610.8" y="1121.5" class="lt-erd-attr-name-pk">report_id</text>
+<text x="733.5" y="1121.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="741.5" y="1113.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="754.5" y="1122.5" class="lt-erd-attr-marker">PK</text>
+<line x1="596.8" y1="1132.5" x2="781.5" y2="1132.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1143.5" class="lt-erd-attr-name">generated_by</text>
+<text x="733.5" y="1143.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="741.5" y="1135.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="754.5" y="1144.5" class="lt-erd-attr-marker">FK</text>
+<line x1="596.8" y1="1154.5" x2="781.5" y2="1154.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1165.5" class="lt-erd-attr-name">report_type</text>
+<text x="763.5" y="1165.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="596.8" y1="1176.5" x2="781.5" y2="1176.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1187.5" class="lt-erd-attr-name">period_start</text>
+<text x="763.5" y="1187.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="596.8" y1="1198.5" x2="781.5" y2="1198.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1209.5" class="lt-erd-attr-name">period_end</text>
+<text x="763.5" y="1209.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="596.8" y1="1220.5" x2="781.5" y2="1220.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1231.5" class="lt-erd-attr-name">generated_at</text>
+<text x="763.5" y="1231.5" class="lt-erd-attr-type" text-anchor="end">timestamp</text>
+<line x1="596.8" y1="1242.5" x2="781.5" y2="1242.5" class="lt-erd-row-divider"/>
+<text x="610.8" y="1253.5" class="lt-erd-attr-name">format</text>
+<text x="763.5" y="1253.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="DentalRecord"><rect x="871.5" y="378.5" width="191.4" height="208" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 871.5 382.5 Q 871.5 378.5 875.5 378.5 L 1058.9 378.5 Q 1062.9 378.5 1062.9 382.5 L 1062.9 406.5 L 871.5 406.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="967.2" y="392.5" class="lt-erd-entity-header">DentalRecord</text>
+<text x="885.5" y="417.5" class="lt-erd-attr-name-pk">record_id</text>
+<text x="1014.9000000000001" y="417.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.9000000000001" y="409.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1035.9" y="418.5" class="lt-erd-attr-marker">PK</text>
+<line x1="871.5" y1="428.5" x2="1062.9" y2="428.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="439.5" class="lt-erd-attr-name">patient_id</text>
+<text x="1014.9000000000001" y="439.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.9000000000001" y="431.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1035.9" y="440.5" class="lt-erd-attr-marker">FK</text>
+<line x1="871.5" y1="450.5" x2="1062.9" y2="450.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="461.5" class="lt-erd-attr-name">appointment_id</text>
+<text x="1014.9000000000001" y="461.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.9000000000001" y="453.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1035.9" y="462.5" class="lt-erd-attr-marker">FK</text>
+<line x1="871.5" y1="472.5" x2="1062.9" y2="472.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="483.5" class="lt-erd-attr-name">dentist_id</text>
+<text x="1014.9000000000001" y="483.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.9000000000001" y="475.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1035.9" y="484.5" class="lt-erd-attr-marker">FK</text>
+<line x1="871.5" y1="494.5" x2="1062.9" y2="494.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="505.5" class="lt-erd-attr-name">exam_date</text>
+<text x="1044.9" y="505.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="871.5" y1="516.5" x2="1062.9" y2="516.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="527.5" class="lt-erd-attr-name">chief_complaint</text>
+<text x="1044.9" y="527.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="871.5" y1="538.5" x2="1062.9" y2="538.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="549.5" class="lt-erd-attr-name">diagnosis</text>
+<text x="1044.9" y="549.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="871.5" y1="560.5" x2="1062.9" y2="560.5" class="lt-erd-row-divider"/>
+<text x="885.5" y="571.5" class="lt-erd-attr-name">notes</text>
+<text x="1044.9" y="571.5" class="lt-erd-attr-type" text-anchor="end">text</text></g>
+<g class="lt-erd-entity" data-id="Invoice"><rect x="877.2" y="642.5" width="180" height="252" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 877.2 646.5 Q 877.2 642.5 881.2 642.5 L 1053.2 642.5 Q 1057.2 642.5 1057.2 646.5 L 1057.2 670.5 L 877.2 670.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="967.2" y="656.5" class="lt-erd-entity-header">Invoice</text>
+<text x="891.2" y="681.5" class="lt-erd-attr-name-pk">invoice_id</text>
+<text x="1009.2" y="681.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="673.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1030.2" y="682.5" class="lt-erd-attr-marker">PK</text>
+<line x1="877.2" y1="692.5" x2="1057.2" y2="692.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="703.5" class="lt-erd-attr-name">patient_id</text>
+<text x="1009.2" y="703.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="695.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1030.2" y="704.5" class="lt-erd-attr-marker">FK</text>
+<line x1="877.2" y1="714.5" x2="1057.2" y2="714.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="725.5" class="lt-erd-attr-name">appointment_id</text>
+<text x="1009.2" y="725.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="717.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1030.2" y="726.5" class="lt-erd-attr-marker">FK</text>
+<line x1="877.2" y1="736.5" x2="1057.2" y2="736.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="747.5" class="lt-erd-attr-name">issue_date</text>
+<text x="1039.2" y="747.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="877.2" y1="758.5" x2="1057.2" y2="758.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="769.5" class="lt-erd-attr-name">subtotal</text>
+<text x="1039.2" y="769.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="877.2" y1="780.5" x2="1057.2" y2="780.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="791.5" class="lt-erd-attr-name">discount</text>
+<text x="1039.2" y="791.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="877.2" y1="802.5" x2="1057.2" y2="802.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="813.5" class="lt-erd-attr-name">tax</text>
+<text x="1039.2" y="813.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="877.2" y1="824.5" x2="1057.2" y2="824.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="835.5" class="lt-erd-attr-name">total_amount</text>
+<text x="1039.2" y="835.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="877.2" y1="846.5" x2="1057.2" y2="846.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="857.5" class="lt-erd-attr-name">balance_due</text>
+<text x="1039.2" y="857.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="877.2" y1="868.5" x2="1057.2" y2="868.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="879.5" class="lt-erd-attr-name">status</text>
+<text x="1039.2" y="879.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="PurchaseItem"><rect x="872.35" y="950.5" width="189.7" height="142" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 872.35 954.5 Q 872.35 950.5 876.35 950.5 L 1058.05 950.5 Q 1062.05 950.5 1062.05 954.5 L 1062.05 978.5 L 872.35 978.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="967.2" y="964.5" class="lt-erd-entity-header">PurchaseItem</text>
+<text x="886.35" y="989.5" class="lt-erd-attr-name-pk">purchase_item_id</text>
+<text x="1014.05" y="989.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.05" y="981.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1035.05" y="990.5" class="lt-erd-attr-marker">PK</text>
+<line x1="872.35" y1="1000.5" x2="1062.05" y2="1000.5" class="lt-erd-row-divider"/>
+<text x="886.35" y="1011.5" class="lt-erd-attr-name">purchase_id</text>
+<text x="1014.05" y="1011.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.05" y="1003.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1035.05" y="1012.5" class="lt-erd-attr-marker">FK</text>
+<line x1="872.35" y1="1022.5" x2="1062.05" y2="1022.5" class="lt-erd-row-divider"/>
+<text x="886.35" y="1033.5" class="lt-erd-attr-name">item_id</text>
+<text x="1014.05" y="1033.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1022.05" y="1025.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1035.05" y="1034.5" class="lt-erd-attr-marker">FK</text>
+<line x1="872.35" y1="1044.5" x2="1062.05" y2="1044.5" class="lt-erd-row-divider"/>
+<text x="886.35" y="1055.5" class="lt-erd-attr-name">qty</text>
+<text x="1044.05" y="1055.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<line x1="872.35" y1="1066.5" x2="1062.05" y2="1066.5" class="lt-erd-row-divider"/>
+<text x="886.35" y="1077.5" class="lt-erd-attr-name">unit_cost</text>
+<text x="1044.05" y="1077.5" class="lt-erd-attr-type" text-anchor="end">decimal</text></g>
+<g class="lt-erd-entity" data-id="StockTransaction"><rect x="877.2" y="1148.5" width="180" height="208" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 877.2 1152.5 Q 877.2 1148.5 881.2 1148.5 L 1053.2 1148.5 Q 1057.2 1148.5 1057.2 1152.5 L 1057.2 1176.5 L 877.2 1176.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="967.2" y="1162.5" class="lt-erd-entity-header">StockTransaction</text>
+<text x="891.2" y="1187.5" class="lt-erd-attr-name-pk">txn_id</text>
+<text x="1009.2" y="1187.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="1179.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1030.2" y="1188.5" class="lt-erd-attr-marker">PK</text>
+<line x1="877.2" y1="1198.5" x2="1057.2" y2="1198.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1209.5" class="lt-erd-attr-name">item_id</text>
+<text x="1009.2" y="1209.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="1201.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1030.2" y="1210.5" class="lt-erd-attr-marker">FK</text>
+<line x1="877.2" y1="1220.5" x2="1057.2" y2="1220.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1231.5" class="lt-erd-attr-name">purchase_id</text>
+<text x="1009.2" y="1231.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="1223.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1030.2" y="1232.5" class="lt-erd-attr-marker">FK</text>
+<line x1="877.2" y1="1242.5" x2="1057.2" y2="1242.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1253.5" class="lt-erd-attr-name">performed_by</text>
+<text x="1009.2" y="1253.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1017.2" y="1245.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1030.2" y="1254.5" class="lt-erd-attr-marker">FK</text>
+<line x1="877.2" y1="1264.5" x2="1057.2" y2="1264.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1275.5" class="lt-erd-attr-name">txn_type</text>
+<text x="1039.2" y="1275.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="877.2" y1="1286.5" x2="1057.2" y2="1286.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1297.5" class="lt-erd-attr-name">qty</text>
+<text x="1039.2" y="1297.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<line x1="877.2" y1="1308.5" x2="1057.2" y2="1308.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1319.5" class="lt-erd-attr-name">txn_date</text>
+<text x="1039.2" y="1319.5" class="lt-erd-attr-type" text-anchor="end">timestamp</text>
+<line x1="877.2" y1="1330.5" x2="1057.2" y2="1330.5" class="lt-erd-row-divider"/>
+<text x="891.2" y="1341.5" class="lt-erd-attr-name">note</text>
+<text x="1039.2" y="1341.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="ToothChart"><rect x="1155.25" y="400.5" width="180" height="164" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 1155.25 404.5 Q 1155.25 400.5 1159.25 400.5 L 1331.25 400.5 Q 1335.25 400.5 1335.25 404.5 L 1335.25 428.5 L 1155.25 428.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1245.25" y="414.5" class="lt-erd-entity-header">ToothChart</text>
+<text x="1169.25" y="439.5" class="lt-erd-attr-name-pk">tooth_entry_id</text>
+<text x="1287.25" y="439.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1295.25" y="431.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1308.25" y="440.5" class="lt-erd-attr-marker">PK</text>
+<line x1="1155.25" y1="450.5" x2="1335.25" y2="450.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="461.5" class="lt-erd-attr-name">record_id</text>
+<text x="1287.25" y="461.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1295.25" y="453.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1308.25" y="462.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1155.25" y1="472.5" x2="1335.25" y2="472.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="483.5" class="lt-erd-attr-name">tooth_number</text>
+<text x="1317.25" y="483.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1155.25" y1="494.5" x2="1335.25" y2="494.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="505.5" class="lt-erd-attr-name">surface</text>
+<text x="1317.25" y="505.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1155.25" y1="516.5" x2="1335.25" y2="516.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="527.5" class="lt-erd-attr-name">condition</text>
+<text x="1317.25" y="527.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1155.25" y1="538.5" x2="1335.25" y2="538.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="549.5" class="lt-erd-attr-name">notes</text>
+<text x="1317.25" y="549.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="Treatment"><rect x="1152.9" y="620.5" width="184.7" height="252" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 1152.9 624.5 Q 1152.9 620.5 1156.9 620.5 L 1333.6000000000001 620.5 Q 1337.6000000000001 620.5 1337.6000000000001 624.5 L 1337.6000000000001 648.5 L 1152.9 648.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1245.25" y="634.5" class="lt-erd-entity-header">Treatment</text>
+<text x="1166.9" y="659.5" class="lt-erd-attr-name-pk">treatment_id</text>
+<text x="1289.6000000000001" y="659.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1297.6000000000001" y="651.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1310.6000000000001" y="660.5" class="lt-erd-attr-marker">PK</text>
+<line x1="1152.9" y1="670.5" x2="1337.6000000000001" y2="670.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="681.5" class="lt-erd-attr-name">plan_id</text>
+<text x="1289.6000000000001" y="681.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1297.6000000000001" y="673.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1310.6000000000001" y="682.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1152.9" y1="692.5" x2="1337.6000000000001" y2="692.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="703.5" class="lt-erd-attr-name">record_id</text>
+<text x="1289.6000000000001" y="703.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1297.6000000000001" y="695.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1310.6000000000001" y="704.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1152.9" y1="714.5" x2="1337.6000000000001" y2="714.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="725.5" class="lt-erd-attr-name">patient_id</text>
+<text x="1289.6000000000001" y="725.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1297.6000000000001" y="717.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1310.6000000000001" y="726.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1152.9" y1="736.5" x2="1337.6000000000001" y2="736.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="747.5" class="lt-erd-attr-name">dentist_id</text>
+<text x="1289.6000000000001" y="747.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1297.6000000000001" y="739.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1310.6000000000001" y="748.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1152.9" y1="758.5" x2="1337.6000000000001" y2="758.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="769.5" class="lt-erd-attr-name">procedure_name</text>
+<text x="1319.6000000000001" y="769.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1152.9" y1="780.5" x2="1337.6000000000001" y2="780.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="791.5" class="lt-erd-attr-name">tooth_number</text>
+<text x="1319.6000000000001" y="791.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1152.9" y1="802.5" x2="1337.6000000000001" y2="802.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="813.5" class="lt-erd-attr-name">cost</text>
+<text x="1319.6000000000001" y="813.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="1152.9" y1="824.5" x2="1337.6000000000001" y2="824.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="835.5" class="lt-erd-attr-name">treatment_date</text>
+<text x="1319.6000000000001" y="835.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="1152.9" y1="846.5" x2="1337.6000000000001" y2="846.5" class="lt-erd-row-divider"/>
+<text x="1166.9" y="857.5" class="lt-erd-attr-name">status</text>
+<text x="1319.6000000000001" y="857.5" class="lt-erd-attr-type" text-anchor="end">varchar</text></g>
+<g class="lt-erd-entity" data-id="Payment"><rect x="1155.25" y="928.5" width="180" height="208" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 1155.25 932.5 Q 1155.25 928.5 1159.25 928.5 L 1331.25 928.5 Q 1335.25 928.5 1335.25 932.5 L 1335.25 956.5 L 1155.25 956.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1245.25" y="942.5" class="lt-erd-entity-header">Payment</text>
+<text x="1169.25" y="967.5" class="lt-erd-attr-name-pk">payment_id</text>
+<text x="1287.25" y="967.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1295.25" y="959.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1308.25" y="968.5" class="lt-erd-attr-marker">PK</text>
+<line x1="1155.25" y1="978.5" x2="1335.25" y2="978.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="989.5" class="lt-erd-attr-name">invoice_id</text>
+<text x="1287.25" y="989.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1295.25" y="981.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1308.25" y="990.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1155.25" y1="1000.5" x2="1335.25" y2="1000.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1011.5" class="lt-erd-attr-name">received_by</text>
+<text x="1287.25" y="1011.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1295.25" y="1003.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1308.25" y="1012.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1155.25" y1="1022.5" x2="1335.25" y2="1022.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1033.5" class="lt-erd-attr-name">payment_date</text>
+<text x="1317.25" y="1033.5" class="lt-erd-attr-type" text-anchor="end">date</text>
+<line x1="1155.25" y1="1044.5" x2="1335.25" y2="1044.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1055.5" class="lt-erd-attr-name">amount</text>
+<text x="1317.25" y="1055.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="1155.25" y1="1066.5" x2="1335.25" y2="1066.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1077.5" class="lt-erd-attr-name">method</text>
+<text x="1317.25" y="1077.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1155.25" y1="1088.5" x2="1335.25" y2="1088.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1099.5" class="lt-erd-attr-name">reference_no</text>
+<text x="1317.25" y="1099.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1155.25" y1="1110.5" x2="1335.25" y2="1110.5" class="lt-erd-row-divider"/>
+<text x="1169.25" y="1121.5" class="lt-erd-attr-name">receipt_no</text>
+<text x="1287.25" y="1121.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<rect x="1295.25" y="1113.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-uk"/>
+<text x="1308.25" y="1122.5" class="lt-erd-attr-marker">UK</text></g>
+<g class="lt-erd-entity" data-id="InvoiceItem"><rect x="1427.6000000000001" y="664.5" width="183" height="186" rx="4" class="lt-erd-entity-bg"/>
+<path d="M 1427.6000000000001 668.5 Q 1427.6000000000001 664.5 1431.6000000000001 664.5 L 1606.6000000000001 664.5 Q 1610.6000000000001 664.5 1610.6000000000001 668.5 L 1610.6000000000001 692.5 L 1427.6000000000001 692.5 Z" class="lt-erd-entity-header-bg"/>
+<text x="1519.1000000000001" y="678.5" class="lt-erd-entity-header">InvoiceItem</text>
+<text x="1441.6000000000001" y="703.5" class="lt-erd-attr-name-pk">invoice_item_id</text>
+<text x="1562.6000000000001" y="703.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1570.6000000000001" y="695.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-pk"/>
+<text x="1583.6000000000001" y="704.5" class="lt-erd-attr-marker">PK</text>
+<line x1="1427.6000000000001" y1="714.5" x2="1610.6000000000001" y2="714.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="725.5" class="lt-erd-attr-name">invoice_id</text>
+<text x="1562.6000000000001" y="725.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1570.6000000000001" y="717.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1583.6000000000001" y="726.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1427.6000000000001" y1="736.5" x2="1610.6000000000001" y2="736.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="747.5" class="lt-erd-attr-name">treatment_id</text>
+<text x="1562.6000000000001" y="747.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<rect x="1570.6000000000001" y="739.5" width="26" height="16" rx="3" class="lt-erd-attr-marker-bg-fk"/>
+<text x="1583.6000000000001" y="748.5" class="lt-erd-attr-marker">FK</text>
+<line x1="1427.6000000000001" y1="758.5" x2="1610.6000000000001" y2="758.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="769.5" class="lt-erd-attr-name">description</text>
+<text x="1592.6000000000001" y="769.5" class="lt-erd-attr-type" text-anchor="end">varchar</text>
+<line x1="1427.6000000000001" y1="780.5" x2="1610.6000000000001" y2="780.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="791.5" class="lt-erd-attr-name">qty</text>
+<text x="1592.6000000000001" y="791.5" class="lt-erd-attr-type" text-anchor="end">int</text>
+<line x1="1427.6000000000001" y1="802.5" x2="1610.6000000000001" y2="802.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="813.5" class="lt-erd-attr-name">unit_price</text>
+<text x="1592.6000000000001" y="813.5" class="lt-erd-attr-type" text-anchor="end">decimal</text>
+<line x1="1427.6000000000001" y1="824.5" x2="1610.6000000000001" y2="824.5" class="lt-erd-row-divider"/>
+<text x="1441.6000000000001" y="835.5" class="lt-erd-attr-name">amount</text>
+<text x="1592.6000000000001" y="835.5" class="lt-erd-attr-type" text-anchor="end">decimal</text></g></g></svg>

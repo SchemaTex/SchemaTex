@@ -1,0 +1,30 @@
+{
+  "id": "ladder-professional-2026-09-20-subroutines",
+  "type": "ladder",
+  "title": "Professional 2026-09-20 — PLC subroutines and parameter passing",
+  "goal": "Represent continuous and periodic tasks, conditional subroutine calls, input/return parameters and one-shot decrement. Preserve the generated approximation so missing instruction semantics can be assessed.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "R_Calc and R_Decr calls are represented as subroutine operations with their required parameters; an output coil merely labelled JSR does not meet this requirement."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "The continuous and 10 ms periodic task boundaries, one-shot decrement and arithmetic operations remain identifiable."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Instruction operands, rung comments and tag names are fully visible without overlaps or clipping."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Selected against a real first user request. Source defects are intentionally preserved. Project identity is removed; no customer IDs or private prompt text are included. These are evaluation inputs, not approved professional reference designs. Full conversation changes and domain behavior require separate review."
+  }
+}

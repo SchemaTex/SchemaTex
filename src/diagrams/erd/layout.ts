@@ -566,8 +566,10 @@ function routeOrthogonal(
       .map(glyphBox);
     if (glyphs.some(box => intersectsBox(source.anchor, source.escape, box) || intersectsBox(target.anchor, target.escape, box))) continue;
     let middle: RoutePoint[];
+    // Unlike separate electrical nets, relationships may reach the same field.
+    // Prefer separated routes, but do not make an occupied approach impassable.
     try { middle = orthogonalRoute(source.escape, target.escape, [...boxes, ...glyphs],
-      previous.map((edge, i) => ({ net: String(i), points: labelPathPoints(edge.path) })), "relationship"); }
+      previous.map((edge, i) => ({ net: String(i), points: labelPathPoints(edge.path) })), "relationship", 4); }
     catch (error) {
       if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
       continue;
@@ -602,7 +604,7 @@ function routeOrthogonal(
       best = { path: pathString(points), fromAnchor: { ...source.anchor }, toAnchor: { ...target.anchor } };
     }
   }
-  if (!best) throw new Error("ERD relationship has no clear terminal escape");
+  if (!best) throw new Error(`ERD routing failed: ${a.entity.id}${fromCol ? `.${fromCol}` : ""} -> ${b.entity.id}${toCol ? `.${toCol}` : ""}; no clear terminal route`);
   return best;
 }
 

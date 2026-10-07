@@ -1,0 +1,30 @@
+{
+  "id": "blockdiagram-weekly-2026-09-20-pid-feedback",
+  "type": "blockdiagram",
+  "title": "Weekly 2026-09-20 — PID feedback with actuator and disturbance",
+  "goal": "Follow a control loop with measured feedback and an independent disturbance input.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Setpoint, summing point, controller, actuator, plant and sensor are visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Sensor feedback visibly returns to the summing point."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Feedback and disturbance routes do not hide block labels."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

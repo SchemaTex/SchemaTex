@@ -1,0 +1,30 @@
+{
+  "id": "flowchart-weekly-2026-09-20-order-exceptions",
+  "type": "flowchart",
+  "title": "Weekly 2026-09-20 — Order fulfilment and exception paths",
+  "goal": "Follow payment, inventory and delivery exceptions without confusing return routes.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Payment, inventory and shipping groups are all visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "Yes/No labels can be associated with their own decision branches."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Return, refund and delivery-retry routes do not pass through unrelated node interiors."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

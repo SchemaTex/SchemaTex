@@ -1,0 +1,74 @@
+sld "Solar Project — Skid MT 01 — Detalhamento Unifilar 0,8/33 kV"
+INV01 = load [rating: "350 kW", voltage: "800V", label: "Inversor 01 — 350 kW / 50 Hz"]
+INV02 = load [rating: "350 kW", voltage: "800V", label: "Inversor 02 — 350 kW / 50 Hz"]
+INV03 = load [rating: "350 kW", voltage: "800V", label: "Inversor 03 — 350 kW / 50 Hz"]
+INV04 = load [rating: "350 kW", voltage: "800V", label: "Inversor 04 — 350 kW / 50 Hz"]
+INV05 = load [rating: "350 kW", voltage: "800V", label: "Inversor 05 — 350 kW / 50 Hz"]
+INV06 = load [rating: "350 kW", voltage: "800V", label: "Inversor 06 — 350 kW / 50 Hz"]
+INV07 = load [rating: "350 kW", voltage: "800V", label: "Inversor 07 — 350 kW / 50 Hz"]
+INV08 = load [rating: "350 kW", voltage: "800V", label: "Inversor 08 — 350 kW / 50 Hz"]
+INV09 = load [rating: "350 kW", voltage: "800V", label: "Inversor 09 — 350 kW / 50 Hz"]
+INV10 = load [rating: "350 kW", voltage: "800V", label: "Inversor 10 — 350 kW / 50 Hz"]
+CBD1 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 01 — dedicado ao inversor 01"]
+CBD2 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 02 — dedicado ao inversor 02"]
+CBD3 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 03 — dedicado ao inversor 03"]
+CBD4 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 04 — dedicado ao inversor 04"]
+CBD5 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 05 — dedicado ao inversor 05"]
+CBD6 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 06 — dedicado ao inversor 06"]
+CBD7 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 07 — dedicado ao inversor 07"]
+CBD8 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 08 — dedicado ao inversor 08"]
+CBD9 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 09 — dedicado ao inversor 09"]
+CBD10 = breaker [rating: "630A", voltage: "800V", label: "Disjuntor de entrada 10 — dedicado ao inversor 10"]
+BUSBT = bus [voltage: "800V", label: "Barramento do Quadro CA de Baixa Tensão do Skid 01"]
+CBC = breaker [rating: "4000A", voltage: "800V", label: "Disjuntor de acoplamento integrado do quadro CA"]
+TPBT = pt [rating: "800/√3 V", label: "TP de supervisão do barramento de BT"]
+RTU = relay [label: "RTU do skid — telemetria de 10 inversores e trackers"]
+SWDIN = relay [label: "Switch industrial gerenciável DIN — anel de fibra óptica da planta"]
+TRSK = transformer_dy [rating: "3.5 MVA", voltage: "0.8/33 kV", label: "Transformador elevador de distribuição — isolação a óleo, ONAN"]
+BUCHSK = relay [label: "Relé Buchholz + sensores de temperatura de óleo e enrolamento"]
+CBSK = breaker_vacuum [rating: "33 kV 630A", label: "Disjuntor MT a vácuo — proteção primária do transformador do Skid 01"]
+CTSK = ct [rating: "5P20", label: "3 x TC 33 kV classe 5P20 — um por fase"]
+PTSK = pt [rating: "33 kV / 110V", label: "Conjunto trifásico de TP acoplado na barra de MT"]
+SASK = surge_arrester [rating: "33 kV ZnO", label: "3 x para-raios de óxido de zinco na saída dos cabos de MT"]
+SSLSK = switch_load [rating: "33 kV 630A", label: "Seccionador MT sob carga com lâmina de aterramento para manutenção"]
+RELSK = relay [label: "Relé microprocessado do skid — 50/51, 50N/51N, 67, 67N"]
+FOR33 = bus [voltage: "33 kV", label: "Saída de 33 kV do cubículo AIS/GIS do Skid 01"]
+GND = ground_switch [label: "Malha de aterramento local em cobre nu — estruturas, carcaça e cubículos"]
+INV01 -> CBD1
+INV02 -> CBD2
+INV03 -> CBD3
+INV04 -> CBD4
+INV05 -> CBD5
+INV06 -> CBD6
+INV07 -> CBD7
+INV08 -> CBD8
+INV09 -> CBD9
+INV10 -> CBD10
+CBD1 -> BUSBT
+CBD2 -> BUSBT
+CBD3 -> BUSBT
+CBD4 -> BUSBT
+CBD5 -> BUSBT
+CBD6 -> BUSBT
+CBD7 -> BUSBT
+CBD8 -> BUSBT
+CBD9 -> BUSBT
+CBD10 -> BUSBT
+BUSBT -> TPBT
+BUSBT -> RTU
+RTU -> SWDIN
+BUSBT -> CBC
+CBC -> TRSK [cable: "Barramento de BT 800 V — interligação interna do skid", cable_insulation: "Barra nua 800V / cabos 0,6/1 kV"]
+TRSK -> BUCHSK
+TRSK -> CTSK
+TRSK -> SASK
+CTSK -> CBSK
+CBSK -> SSLSK
+SSLSK -> FOR33
+CBSK -> RELSK
+CTSK -> RELSK
+PTSK -> RELSK
+SSLSK -> GND
+SASK -> GND
+TRSK -> GND
+BUSBT -> GND [cable: "Cabo de cobre nu 70 mm2 — anel equipotencial periférico do skid"]

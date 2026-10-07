@@ -1,0 +1,71 @@
+erDiagram
+  FLYINGOPERATIONS {
+    int sortie_id PK
+    int date_key FK
+    int aircraft_key FK
+    int instructor_key FK
+    int trainee_key FK
+    int maintenance_key FK
+    int program_key FK
+    decimal planned_hours
+    decimal actual_hours
+    decimal flying_hours_achieved
+    int sortie_completed
+    int sortie_cancelled
+    decimal downtime_hours
+    decimal training_progress_score
+  }
+
+  AIRCRAFT {
+    int aircraft_key PK
+    string tail_number
+    string aircraft_type
+    string squadron
+    string serviceability_status
+  }
+
+  MAINTENANCE {
+    int maintenance_key PK
+    string defect_category
+    string maintenance_type
+    string maintenance_status
+  }
+
+  TRAINEE {
+    int trainee_key PK
+    string name
+    string rank
+    string course_number
+    string training_phase
+    string status
+  }
+
+  INSTRUCTOR {
+    int instructor_key PK
+    string name
+    string qualification
+    string currency_status
+  }
+
+  PROGRAM {
+    int program_key PK
+    string month
+    int planned_flying_hours
+    int planned_sorties
+    int planned_graduates
+  }
+
+  TIME {
+    int date_key PK
+    date date
+    int day
+    string month
+    int year
+  }
+
+  TIME ||--o{ FLYINGOPERATIONS : "occurred on"
+  AIRCRAFT ||--o{ FLYINGOPERATIONS : "flown by"
+  INSTRUCTOR ||--o{ FLYINGOPERATIONS : "instructed by"
+  TRAINEE ||--o{ FLYINGOPERATIONS : "flown by"
+  MAINTENANCE ||--o{ FLYINGOPERATIONS : "affected by"
+  PROGRAM ||--o{ FLYINGOPERATIONS : "planned under"

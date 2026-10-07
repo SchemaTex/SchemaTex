@@ -1,0 +1,31 @@
+{
+  "id": "timeline-weekly-2026-09-20-dense-french-events",
+  "type": "timeline",
+  "title": "Weekly 2026-09-20 — Closely spaced French history events",
+  "goal": "Show eight dated events with readable descriptions. The user explicitly requested no overlapping text; dates and historical wording are preserved as generation output.",
+  "split": "train",
+  "variant": "lollipop",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "All eight event cards can be separately identified."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "No event card covers another event title or date."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Descriptions and dates are readable without overlapping the time axis."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "FreeDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

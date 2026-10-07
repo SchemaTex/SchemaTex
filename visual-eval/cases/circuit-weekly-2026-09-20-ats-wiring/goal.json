@@ -1,0 +1,30 @@
+{
+  "id": "circuit-weekly-2026-09-20-ats-wiring",
+  "type": "circuit",
+  "title": "Weekly 2026-09-20 — Generator ATS power and control wiring",
+  "goal": "Trace utility and generator supply through the switching and control components.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Utility supply, generator, transfer contactors and output loads are visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "Component names are readable without wire or symbol overlap."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Power and control wires end on visible terminals rather than floating nearby."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

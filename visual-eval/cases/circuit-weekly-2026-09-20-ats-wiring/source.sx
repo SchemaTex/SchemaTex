@@ -1,0 +1,23 @@
+circuit "Backup Generator ATS Wiring Diagram" netlist
+V1 util_l1 0 480Vac type=acsource label="Utility Supply 480V"
+F1 util_l1 util_f 1200A label="Utility Main Breaker"
+V2 gen_l1 0 480Vac type=acsource label="Generator 480V"
+F2 gen_l1 gen_f 800A label="Generator Output Breaker"
+T1 util_f 0 c_h 0 type=transformer label="Control Transformer 480V/120V"
+F3 c_h c_hf 5A label="Control Circuit Fuse"
+K3 c_hf 0 c_hf k2h k1h type=relay_spdt label="K3 Utility-Present Relay"
+K1 k1h 0 util_f out_bus type=relay label="K1 Utility Contactor"
+K2 k2h 0 gen_f out_bus type=relay label="K2 Generator Contactor"
+K4 k2h 0 c_hf gen_start type=relay label="K4 Engine-Start Relay"
+X1 gen_start 0 type=terminal label="Generator Start Terminals"
+H1 k1h 0 type=pilot_light label="H1 Utility Available"
+H2 k2h 0 type=pilot_light label="H2 Generator Running"
+H3 out_bus 0 type=pilot_light label="H3 Emergency Bus Live"
+L1 out_bus 0 type=lamp label="Life-Safety Panel LP-1"
+M1 out_bus 0 type=dc_motor label="Fire Pump Motor 40kW"
+
+@overrides
+pin T1 574.11,425.18
+pin H3 509.59,403.77
+pin K1 386.77,421.54
+pin K4 395.02,294.15

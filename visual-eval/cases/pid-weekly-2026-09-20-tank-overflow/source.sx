@@ -1,0 +1,15 @@
+pid "Three-Tank Gravity Overflow System"
+
+equip TK-101 : tank_atm [tag: "Tank 1 - Feed Surge"]
+equip TK-102 : tank_atm [tag: "Tank 2 - Intermediate"]
+equip TK-103 : tank_atm [tag: "Tank 3 - Product"]
+equip TK-901 : tank_atm [tag: "Overflow / Drain Sump"]
+
+line OV1 from TK-101.top to TK-901.top [size: "10\"", service: "tank 1 gravity overflow", type: process_minor]
+line OV2 from TK-102.top to TK-901.top [size: "10\"", service: "tank 2 gravity overflow", type: process_minor]
+line OV3 from TK-103.top to TK-901.top [size: "10\"", service: "tank 3 gravity overflow", type: process_minor]
+
+@overrides
+pin TK-901 255.81,147.77
+pin TK-101 8.59,94.9
+pin TK-102 356.26,218.09

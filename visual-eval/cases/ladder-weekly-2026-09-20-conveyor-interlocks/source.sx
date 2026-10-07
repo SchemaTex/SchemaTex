@@ -1,0 +1,11 @@
+ladder "コンベヤーベルトシステム"
+rung 1 "シールイン回路":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="起動ボタン")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="モーター補助接点")
+  XIO(STOP_PB, "IN 1.1", name="停止ボタン")
+  XIO(PHOTOEYE, "IN 1.2", name="フォトアイ")
+  XIO(OVERLOAD_RLY, "IN 1.3", name="過負荷リレー")
+  OTE(MOTOR_CMD, "OUT 2.0", name="モーターコイル")

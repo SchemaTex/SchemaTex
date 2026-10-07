@@ -62,74 +62,34 @@ const labelBox = (l: SLDAnnotation): RouteBox => ({
 });
 
 function computeLevels(ast: SLDAST): Map<string, number> {
-  const levels = new Map<string, number>();
-  const inEdges = new Map<string, SLDConnection[]>();
-  const outEdges = new Map<string, SLDConnection[]>();
-  for (const n of ast.nodes) {
-    inEdges.set(n.id, []);
-    outEdges.set(n.id, []);
+  // A tie imposes equality, while a feeder imposes a downstream rank.
+  // Solve equality groups first so every descendant participates in the same
+  // ordering pass, regardless of declaration/connection order.
+  const group = new Map(ast.nodes.map(n => [n.id, n.id]));
+  const root = (id: string): string => {
+    const parent = group.get(id)!;
+    if (parent === id) return id;
+    const result = root(parent);
+    group.set(id, result);
+    return result;
+  };
+  const types = new Map(ast.nodes.map(n => [n.id, n.nodeType]));
+  for (const edge of ast.connections) {
+    if (types.get(edge.from) === "bus_tie" || types.get(edge.to) === "bus_tie")
+      group.set(root(edge.to), root(edge.from));
   }
-  for (const c of ast.connections) {
-    inEdges.get(c.to)?.push(c);
-    outEdges.get(c.from)?.push(c);
-  }
-
-  // Sources: no incoming edges
-  const roots = ast.nodes.filter((n) => (inEdges.get(n.id) ?? []).length === 0);
-  for (const r of roots) levels.set(r.id, 0);
-
-  // Identify bus_tie nodes — they are lateral at the same level as their source.
-  const typeById = new Map<string, SLDNodeType>();
-  for (const n of ast.nodes) typeById.set(n.id, n.nodeType);
-  const isTieEdge = (c: SLDConnection): boolean =>
-    typeById.get(c.from) === "bus_tie" || typeById.get(c.to) === "bus_tie";
-
-  // Relaxation: level(to) = max(level(from)+1); iterate until stable.
-  // Skip edges touching bus_tie (those are lateral).
-  const maxIter = ast.nodes.length + 2;
-  for (let iter = 0; iter < maxIter; iter++) {
+  const ranks = new Map(ast.nodes.map(n => [root(n.id), 0]));
+  const edges = ast.connections.filter(e => root(e.from) !== root(e.to));
+  for (let pass = 0; pass < ranks.size; pass++) {
     let changed = false;
-    for (const c of ast.connections) {
-      if (isTieEdge(c)) continue;
-      const fromLvl = levels.get(c.from);
-      if (fromLvl === undefined) continue;
-      const want = fromLvl + 1;
-      const curr = levels.get(c.to);
-      if (curr === undefined || want > curr) {
-        levels.set(c.to, want);
-        changed = true;
-      }
+    for (const edge of edges) {
+      const from = root(edge.from), to = root(edge.to);
+      const rank = ranks.get(from)! + 1;
+      if (rank > ranks.get(to)!) { ranks.set(to, rank); changed = true; }
     }
-    if (!changed) break;
+    if (!changed) return new Map(ast.nodes.map(n => [n.id, ranks.get(root(n.id))!]));
   }
-
-  // Tie edges: force both endpoints and the tie node itself to share level
-  // with any already-leveled participant.
-  for (let iter = 0; iter < maxIter; iter++) {
-    let changed = false;
-    for (const c of ast.connections) {
-      if (!isTieEdge(c)) continue;
-      const fromLvl = levels.get(c.from);
-      const toLvl = levels.get(c.to);
-      const shared = fromLvl ?? toLvl;
-      if (shared === undefined) continue;
-      if (fromLvl === undefined || fromLvl !== shared) {
-        levels.set(c.from, shared);
-        changed = true;
-      }
-      if (toLvl === undefined || toLvl !== shared) {
-        levels.set(c.to, shared);
-        changed = true;
-      }
-    }
-    if (!changed) break;
-  }
-
-  // Any orphaned nodes: put at level 0
-  for (const n of ast.nodes) {
-    if (!levels.has(n.id)) levels.set(n.id, 0);
-  }
-  return levels;
+  throw new Error("SLD layout failed: cyclic feeder constraints between bus-tie groups");
 }
 
 /** Power ranks, measured feeder columns and explicit terminal attachments. */
@@ -439,29 +399,41 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
     y += below + 44;
   }
   const busBounds = (n: SLDLayoutNode) => {
-    const taps = [...parents(n.node.id), ...children(n.node.id)]
+    // The bar spans outgoing taps. Incoming feeders route to the bar; their
+    // distant columns must not stretch it across unrelated equipment.
+    const taps = children(n.node.id)
       .map(id => byId.get(id))
       .filter((p): p is SLDLayoutNode => !!p && p.nodeType !== "bus_tie");
     const xs = children(n.node.id).length ? taps.map(p => p.x) : [n.x];
     return { busLeft: Math.min(...xs, n.x) - 48, busRight: Math.max(...xs, n.x) + 48 };
   };
-  for (const bus of nodes.filter((n) => n.nodeType === "bus")) {
-    for (const other of nodes.filter(
-      (n) =>
-        n !== bus &&
-        n.level === bus.level &&
-        n.nodeType !== "bus" &&
-        n.nodeType !== "bus_tie",
-    )) {
-      const bounds = busBounds(bus);
-      if (
-        other.x - other.halfWidth < bounds.busRight + GAP &&
-        other.x + rightExtent(other) > bounds.busLeft - textWidth(bus) - GAP
-      ) {
-        const shift = bounds.busRight + GAP + leftExtent(other) - other.x;
-        for (const member of chainMembers(other)) member.x += shift;
+  // Moving a feeder column can widen another bus. Settle both constraints
+  // together rather than deriving bars from an intermediate placement.
+  for (let pass = 0; pass <= nodes.length; pass++) {
+    let moved = false;
+    const settled: SLDLayoutNode[] = [];
+    for (const column of [...columns].sort((a, b) => a[0].x - b[0].x)) {
+      let shift = 0;
+      for (const n of column) for (const other of settled) {
+        if (n.level === other.level)
+          shift = Math.max(shift, other.x + rawRight(other) + GAP + rawLeft(n) - n.x);
+      }
+      if (shift > 0.001) { for (const n of column) n.x += shift; moved = true; }
+      settled.push(...column);
+    }
+    for (const bus of nodes.filter(n => n.nodeType === "bus")) {
+      for (const other of nodes.filter(n => n !== bus && n.level === bus.level &&
+        n.nodeType !== "bus" && n.nodeType !== "bus_tie")) {
+        const bounds = busBounds(bus);
+        if (other.x - rawLeft(other) < bounds.busRight + GAP &&
+          other.x + rawRight(other) > bounds.busLeft - textWidth(bus) - GAP) {
+          const shift = bounds.busRight + GAP + rawLeft(other) - other.x;
+          if (Math.abs(shift) > 0.001) { for (const member of chainMembers(other)) member.x += shift; moved = true; }
+        }
       }
     }
+    if (!moved) break;
+    if (pass === nodes.length) throw new Error("SLD layout failed: could not separate bus and feeder columns");
   }
   // All x positions are final before bars and terminal geometry are derived.
   for (const bus of nodes.filter(n => n.nodeType === "bus")) Object.assign(bus, busBounds(bus));

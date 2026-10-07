@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] — 2026-09-20
+
+### Fixed
+
+- ERD relationships can reach a shared field without being blocked by the
+  electrical-net isolation rule. Table and cardinality-symbol avoidance remain
+  enforced, and electrical diagrams retain strict net isolation.
+- SLD bus-tie constraints and downstream feeder ranks are solved together so
+  equipment after a tie is not placed back in the top row. Bus spans follow
+  outgoing taps, and final column packing accounts for changes in bus width.
+
+### Added
+
+- Twenty-two production-derived visual evaluation cases, including de-identified
+  family data and eight professional PLC, heating, electrical and analytics
+  scenarios, with 1.0.14 reference snapshots.
+- Regression coverage for renamed and reordered inputs, shared-field routing,
+  and multi-tie feeder topologies.
+
 ## [1.1.0] — 2026-09-15
 
 Engines across the library were reworked for visual correctness. Two diagram

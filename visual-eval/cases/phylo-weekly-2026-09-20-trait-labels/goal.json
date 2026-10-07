@@ -1,0 +1,31 @@
+{
+  "id": "phylo-weekly-2026-09-20-trait-labels",
+  "type": "phylo",
+  "title": "Weekly 2026-09-20 — Chordate trait labels",
+  "goal": "Display seven requested traits alongside the named taxa. This preserves generated topology; it is not a biology reference.",
+  "split": "train",
+  "variant": "slanted",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "All seven taxa are visible and legible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "blocker",
+      "must": "Notochord, vertebral column, jaws, limbs, amniotic egg, feathers and fur are all visibly labelled."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Trait brackets and labels do not collide with tip labels."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "FreeDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

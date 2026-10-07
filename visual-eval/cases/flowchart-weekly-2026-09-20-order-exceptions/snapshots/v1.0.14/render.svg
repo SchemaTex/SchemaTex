@@ -1,0 +1,316 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1906.4 4816" width="1906.4" height="4816" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>Flowchart</title>
+<desc>Flowchart with 36 nodes and 49 edges.</desc>
+<style>.sx-fc { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f1f5f9; stroke: #334155; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #334155; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #334155; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #334155; }
+.sx-fc-node-text { fill: #0f172a; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-icon { stroke: #0f172a; fill: none; }
+.sx-fc-icon-fill { fill: #0f172a; stroke: none; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #334155; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #475569; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #94a3b8; stroke-width: 0.5; }
+.sx-fc-title { fill: #0f172a; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Shape sub-elements */
+.sx-fc-node-subline { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-arc { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-fc-node-ring { fill: none; stroke: #334155; stroke-width: 1.8; }
+/* Cluster (subgraph) */
+.sx-fc-cluster { fill: #f1f5f9; fill-opacity: 0.35; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 5,3; }
+.sx-fc-cluster-title { fill: #475569; font: 500 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-class-decision > .sx-fc-node { fill:#fff3cd;stroke:#b8860b;color:#3d2b00 }
+.sx-fc-class-terminal > .sx-fc-node { fill:#d4edda;stroke:#2e7d32;color:#123d1c }
+.sx-fc-class-exception > .sx-fc-node { fill:#fde2e4;stroke:#b02a37;color:#5c1219 }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+
+<g class="sx-fc-clusters"><g data-cluster-id="inventory[&quot;Inventory&quot;]" data-depth="0" class="sx-fc-cluster-g"><rect x="24" y="144" width="481.4" height="3676" rx="8" class="sx-fc-cluster"/>
+<text x="36" y="159" class="sx-fc-cluster-title">inventory[&quot;Inventory&quot;]</text></g>
+<g data-cluster-id="payment[&quot;Payment&quot;]" data-depth="0" class="sx-fc-cluster-g"><rect x="760.4" y="1488" width="520.0000000000001" height="3184" rx="8" class="sx-fc-cluster"/>
+<text x="772.4" y="1503" class="sx-fc-cluster-title">payment[&quot;Payment&quot;]</text></g>
+<g data-cluster-id="shipping[&quot;Shipping" data-depth="0" class="sx-fc-cluster-g"><rect x="1324.4" y="2344" width="558" height="2204" rx="8" class="sx-fc-cluster"/>
+<text x="1336.4" y="2359" class="sx-fc-cluster-title">shipping[&quot;Shipping</text></g></g>
+<g class="sx-fc-edges"><g data-edge-id="start-&gt;stock" data-edge-index="0" data-kind="solid" data-from="start" data-to="stock"><path d="M 632.9 112 L 632.9 150 L 264.7 150 L 264.7 188" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>start → stock</title></g>
+<g data-edge-id="stock-&gt;reserve" data-edge-index="1" data-kind="solid" data-from="stock" data-to="reserve"><path d="M 264.7 240 L 264.7 278 L 264.7 278 L 264.7 342 L 264.7 406 L 264.7 406 L 264.7 470 L 264.7 534 L 264.7 534 L 264.7 594 L 264.7 654 L 264.7 654 L 264.7 692" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>stock → reserve: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="270.7" y="270" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="270.7" y="278" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="stock-&gt;backorder" data-edge-index="2" data-kind="solid" data-from="stock" data-to="backorder"><path d="M 264.7 240 L 264.7 278 L 264.7 278 L 264.7 316" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>stock → backorder: No</title>
+<g class="sx-fc-edge-label-g"><rect x="270.7" y="270" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="270.7" y="278" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="backorder-&gt;notifybo" data-edge-index="3" data-kind="solid" data-from="backorder" data-to="notifybo"><path d="M 264.7 368 L 264.7 406 L 146 406 L 146 448" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>backorder → notifybo: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="190.6" y="390" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="205.35" y="398" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="notifybo-&gt;reserve" data-edge-index="4" data-kind="solid" data-from="notifybo" data-to="reserve"><path d="M 146 492 L 146 534 L 264.7 534 L 264.7 594 L 264.7 654 L 264.7 654 L 264.7 692" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>notifybo → reserve</title></g>
+<g data-edge-id="backorder-&gt;substitute" data-edge-index="5" data-kind="solid" data-from="backorder" data-to="substitute"><path d="M 264.7 368 L 264.7 406 L 382.7 406 L 382.7 444" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>backorder → substitute: No</title>
+<g class="sx-fc-edge-label-g"><rect x="312.2" y="390" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="323.7" y="398" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="substitute-&gt;swapsku" data-edge-index="6" data-kind="solid" data-from="substitute" data-to="swapsku"><path d="M 382.7 496 L 382.7 534 L 264.7 534 L 264.7 572" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>substitute → swapsku: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="308.95" y="518" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="323.7" y="526" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="swapsku-&gt;reserve" data-edge-index="7" data-kind="solid" data-from="swapsku" data-to="reserve"><path d="M 264.7 616 L 264.7 654 L 264.7 654 L 264.7 692" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>swapsku → reserve</title></g>
+<g data-edge-id="substitute-&gt;cancelled" data-edge-index="8" data-kind="solid" data-from="substitute" data-to="cancelled"><path d="M 382.7 496 L 382.7 534 L 382.7 534 L 382.7 594 L 382.7 654 L 382.7 654 L 382.7 714 L 382.7 774 L 382.7 774 L 382.7 834 L 382.7 894 L 382.7 894 L 382.7 954 L 382.7 1014 L 382.7 1014 L 382.7 1074 L 382.7 1134 L 382.7 1134 L 382.7 1194 L 382.7 1254 L 382.7 1254 L 382.7 1314 L 382.7 1374 L 382.7 1374 L 382.7 1434 L 382.7 1494 L 632.9 1494 L 632.9 1558 L 632.9 1622 L 632.9 1622 L 632.9 1686 L 632.9 1750 L 632.9 1750 L 632.9 1810 L 632.9 1870 L 632.9 1870 L 632.9 1930 L 632.9 1990 L 632.9 1990 L 632.9 2028" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>substitute → cancelled: No</title>
+<g class="sx-fc-edge-label-g"><rect x="388.7" y="526" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="388.7" y="534" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="cancelled-&gt;refund" data-edge-index="9" data-kind="solid" data-from="cancelled" data-to="refund"><path d="M 632.9 2072 L 632.9 2110 L 632.9 2110 L 632.9 2170 L 632.9 2230 L 632.9 2230 L 632.9 2290 L 632.9 2350 L 632.9 2350 L 632.9 2414 L 632.9 2478 L 632.9 2478 L 632.9 2538 L 632.9 2598 L 632.9 2598 L 632.9 2658 L 632.9 2718 L 632.9 2718 L 632.9 2778 L 632.9 2838 L 632.9 2838 L 632.9 2902 L 632.9 2966 L 632.9 2966 L 632.9 3030 L 632.9 3094 L 632.9 3094 L 632.9 3154 L 632.9 3214 L 632.9 3214 L 632.9 3274 L 632.9 3334 L 632.9 3334 L 632.9 3398 L 632.9 3462 L 632.9 3462 L 632.9 3526 L 632.9 3590 L 632.9 3590 L 632.9 3650 L 632.9 3712 L 632.9 3712 L 632.9 3774 L 632.9 3834 L 632.9 3834 L 632.9 3894 L 632.9 3954 L 632.9 3954 L 632.9 4014 L 632.9 4074 L 1020.4 4074 L 1020.4 4134 L 1020.4 4194 L 1020.4 4194 L 1020.4 4254 L 1020.4 4314 L 1020.4 4314 L 1020.4 4378 L 1020.4 4442 L 1020.4 4442 L 1020.4 4502 L 1020.4 4564 L 1020.4 4564 L 1020.4 4604" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>cancelled → refund</title></g>
+<g data-edge-id="reserve-&gt;auth" data-edge-index="10" data-kind="solid" data-from="reserve" data-to="auth"><path d="M 264.7 736 L 264.7 774 L 264.7 774 L 264.7 834 L 264.7 894 L 264.7 894 L 264.7 954 L 264.7 1014 L 1020.4 1014 L 1020.4 1074 L 1020.4 1134 L 1020.4 1134 L 1020.4 1194 L 1020.4 1254 L 1020.4 1254 L 1020.4 1314 L 1020.4 1374 L 1020.4 1374 L 1020.4 1434 L 1020.4 1494 L 1020.4 1494 L 1020.4 1532" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>reserve → auth</title></g>
+<g data-edge-id="auth-&gt;retry" data-edge-index="11" data-kind="solid" data-from="auth" data-to="retry"><path d="M 1020.4 1584 L 1020.4 1622 L 887 1622 L 887 1660" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>auth → retry: No</title>
+<g class="sx-fc-edge-label-g"><rect x="942.2" y="1606" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="953.7" y="1614" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="retry-&gt;altpay" data-edge-index="12" data-kind="solid" data-from="retry" data-to="altpay"><path d="M 887 1712 L 887 1750 L 909.4 1750 L 909.4 1788" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>retry → altpay: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="883.45" y="1734" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="898.2" y="1742" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="altpay-&gt;auth" data-edge-index="13" data-kind="solid" data-from="altpay" data-to="auth"><path d="M 1020.4 1584 L 1020.4 1622 L 1020.4 1622 L 1020.4 1686 L 1020.4 1750 L 909.4 1750 L 909.4 1788" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>altpay → auth</title></g>
+<g data-edge-id="retry-&gt;release" data-edge-index="14" data-kind="solid" data-from="retry" data-to="release"><path d="M 887 1712 L 887 1750 L 887 1750 L 887 1810 L 887 1870 L 264.7 1870 L 264.7 1908" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>retry → release: No</title>
+<g class="sx-fc-edge-label-g"><rect x="893" y="1742" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="893" y="1750" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="release-&gt;cancelled" data-edge-index="15" data-kind="solid" data-from="release" data-to="cancelled"><path d="M 264.7 1952 L 264.7 1990 L 632.9 1990 L 632.9 2028" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>release → cancelled</title></g>
+<g data-edge-id="auth-&gt;fraud" data-edge-index="16" data-kind="solid" data-from="auth" data-to="fraud"><path d="M 1020.4 1584 L 1020.4 1622 L 1130 1622 L 1130 1660" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>auth → fraud: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1060.45" y="1606" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1075.2" y="1614" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="fraud-&gt;review" data-edge-index="17" data-kind="solid" data-from="fraud" data-to="review"><path d="M 1130 1712 L 1130 1750 L 1165.4 1750 L 1165.4 1788" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>fraud → review: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1136.2" y="1734" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1147.7" y="1742" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="review-&gt;capture" data-edge-index="18" data-kind="solid" data-from="review" data-to="capture"><path d="M 1165.4 1832 L 1165.4 1870 L 1020.4 1870 L 1020.4 1908" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>review → capture: Approved</title>
+<g class="sx-fc-edge-label-g"><rect x="1061.9" y="1854" width="62" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1092.9" y="1862" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Approved</text></g></g>
+<g data-edge-id="review-&gt;release" data-edge-index="19" data-kind="solid" data-from="review" data-to="release"><path d="M 1165.4 1832 L 1165.4 1870 L 264.7 1870 L 264.7 1908" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>review → release: Rejected</title>
+<g class="sx-fc-edge-label-g"><rect x="684.0500000000001" y="1854" width="62" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="715.0500000000001" y="1862" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Rejected</text></g></g>
+<g data-edge-id="fraud-&gt;capture" data-edge-index="20" data-kind="solid" data-from="fraud" data-to="capture"><path d="M 1130 1712 L 1130 1750 L 1130 1750 L 1130 1810 L 1130 1870 L 1020.4 1870 L 1020.4 1908" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>fraud → capture: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1136" y="1742" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1136" y="1750" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="capture-&gt;address" data-edge-index="21" data-kind="solid" data-from="capture" data-to="address"><path d="M 1020.4 1952 L 1020.4 1990 L 1020.4 1990 L 1020.4 2050 L 1020.4 2110 L 1020.4 2110 L 1020.4 2170 L 1020.4 2230 L 1020.4 2230 L 1020.4 2290 L 1020.4 2350 L 1020.4 2350 L 1020.4 2414 L 1020.4 2478 L 1020.4 2478 L 1020.4 2538 L 1020.4 2598 L 1020.4 2598 L 1020.4 2658 L 1020.4 2718 L 1020.4 2718 L 1020.4 2778 L 1020.4 2838 L 1020.4 2838 L 1020.4 2902 L 1020.4 2966 L 1020.4 2966 L 1020.4 3030 L 1020.4 3094 L 1020.4 3094 L 1020.4 3154 L 1020.4 3214 L 1020.4 3214 L 1020.4 3274 L 1020.4 3334 L 1020.4 3334 L 1020.4 3398 L 1020.4 3462 L 1020.4 3462 L 1020.4 3526 L 1020.4 3590 L 1020.4 3590 L 1020.4 3650 L 1020.4 3712 L 1020.4 3712 L 1020.4 3774 L 1020.4 3834 L 1603.4 3834 L 1603.4 3894 L 1603.4 3954 L 1603.4 3954 L 1603.4 4014 L 1603.4 4074 L 1603.4 4074 L 1603.4 4134 L 1603.4 4194 L 1603.4 4194 L 1603.4 4254 L 1603.4 4314 L 1603.4 4314 L 1603.4 4352" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>capture → address</title></g>
+<g data-edge-id="address-&gt;fixaddr" data-edge-index="22" data-kind="solid" data-from="address" data-to="fixaddr"><path d="M 1603.4 4404 L 1603.4 4442 L 1603.4 4442 L 1603.4 4480" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>address → fixaddr: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1609.4" y="4434" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1609.4" y="4442" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="fixaddr-&gt;address" data-edge-index="23" data-kind="solid" data-from="fixaddr" data-to="address"><path d="M 1603.4 4404 L 1603.4 4442 L 1603.4 4442 L 1603.4 4480" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>fixaddr → address</title></g>
+<g data-edge-id="address-&gt;method" data-edge-index="24" data-kind="solid" data-from="address" data-to="method"><path d="M 1603.4 2440 L 1603.4 2478 L 1603.4 2478 L 1603.4 2538 L 1603.4 2598 L 1603.4 2598 L 1603.4 2658 L 1603.4 2718 L 1603.4 2718 L 1603.4 2778 L 1603.4 2838 L 1603.4 2838 L 1603.4 2902 L 1603.4 2966 L 1603.4 2966 L 1603.4 3030 L 1603.4 3094 L 1603.4 3094 L 1603.4 3154 L 1603.4 3214 L 1603.4 3214 L 1603.4 3274 L 1603.4 3334 L 1603.4 3334 L 1603.4 3398 L 1603.4 3462 L 1603.4 3462 L 1603.4 3526 L 1603.4 3590 L 1603.4 3590 L 1603.4 3650 L 1603.4 3712 L 1603.4 3712 L 1603.4 3774 L 1603.4 3834 L 1603.4 3834 L 1603.4 3894 L 1603.4 3954 L 1603.4 3954 L 1603.4 4014 L 1603.4 4074 L 1603.4 4074 L 1603.4 4134 L 1603.4 4194 L 1603.4 4194 L 1603.4 4254 L 1603.4 4314 L 1603.4 4314 L 1603.4 4352" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>address → method: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1609.4" y="2470" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1609.4" y="2478" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="method-&gt;standard" data-edge-index="25" data-kind="solid" data-from="method" data-to="standard"><path d="M 1603.4 2440 L 1603.4 2478 L 1422.4 2478 L 1422.4 2516" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>method → standard: Standard</title>
+<g class="sx-fc-edge-label-g"><rect x="1481.9" y="2462" width="62" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1512.9" y="2470" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Standard</text></g></g>
+<g data-edge-id="method-&gt;express" data-edge-index="26" data-kind="solid" data-from="method" data-to="express"><path d="M 1603.4 2440 L 1603.4 2478 L 1606.9 2478 L 1606.9 2516" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>method → express: Express</title>
+<g class="sx-fc-edge-label-g"><rect x="1577.4" y="2462" width="55.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1605.15" y="2470" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Express</text></g></g>
+<g data-edge-id="method-&gt;sameday" data-edge-index="27" data-kind="solid" data-from="method" data-to="sameday"><path d="M 1603.4 2440 L 1603.4 2478 L 1787.9 2478 L 1787.9 2516" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>method → sameday: Same-day</title>
+<g class="sx-fc-edge-label-g"><rect x="1664.65" y="2462" width="62" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1695.65" y="2470" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Same-day</text></g></g>
+<g data-edge-id="standard-&gt;pack" data-edge-index="28" data-kind="solid" data-from="standard" data-to="pack"><path d="M 1422.4 2560 L 1422.4 2598 L 1603.4 2598 L 1603.4 2636" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>standard → pack</title></g>
+<g data-edge-id="express-&gt;pack" data-edge-index="29" data-kind="solid" data-from="express" data-to="pack"><path d="M 1606.9 2560 L 1606.9 2598 L 1603.4 2598 L 1603.4 2636" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>express → pack</title></g>
+<g data-edge-id="sameday-&gt;pack" data-edge-index="30" data-kind="solid" data-from="sameday" data-to="pack"><path d="M 1787.9 2560 L 1787.9 2598 L 1603.4 2598 L 1603.4 2636" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>sameday → pack</title></g>
+<g data-edge-id="pack-&gt;label" data-edge-index="31" data-kind="solid" data-from="pack" data-to="label"><path d="M 1603.4 2680 L 1603.4 2718 L 1603.4 2718 L 1603.4 2756" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>pack → label</title></g>
+<g data-edge-id="label-&gt;intl" data-edge-index="32" data-kind="solid" data-from="label" data-to="intl"><path d="M 1603.4 2800 L 1603.4 2838 L 1603.4 2838 L 1603.4 2876" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>label → intl</title></g>
+<g data-edge-id="intl-&gt;dispatch" data-edge-index="33" data-kind="solid" data-from="intl" data-to="dispatch"><path d="M 1603.4 2928 L 1603.4 2966 L 1603.4 2966 L 1603.4 3030 L 1603.4 3094 L 1464.9 3094 L 1464.9 3132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>intl → dispatch: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1609.4" y="2958" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1609.4" y="2966" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="intl-&gt;customs" data-edge-index="34" data-kind="solid" data-from="intl" data-to="customs"><path d="M 1603.4 2928 L 1603.4 2966 L 1603.4 2966 L 1603.4 3004" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>intl → customs: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1609.4" y="2958" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1609.4" y="2966" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="customs-&gt;hold" data-edge-index="35" data-kind="solid" data-from="customs" data-to="hold"><path d="M 1603.4 3056 L 1603.4 3094 L 1704.4 3094 L 1704.4 3132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>customs → hold: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1642.4" y="3078" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1653.9" y="3086" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="hold-&gt;customs" data-edge-index="36" data-kind="solid" data-from="hold" data-to="customs"><path d="M 1603.4 3056 L 1603.4 3094 L 1704.4 3094 L 1704.4 3132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>hold → customs</title></g>
+<g data-edge-id="customs-&gt;dispatch" data-edge-index="37" data-kind="solid" data-from="customs" data-to="dispatch"><path d="M 1603.4 3056 L 1603.4 3094 L 1464.9 3094 L 1464.9 3132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>customs → dispatch: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1519.4" y="3078" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1534.15" y="3086" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="dispatch-&gt;transit" data-edge-index="38" data-kind="solid" data-from="dispatch" data-to="transit"><path d="M 1464.9 3176 L 1464.9 3214 L 1603.4 3214 L 1603.4 3252" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>dispatch → transit</title></g>
+<g data-edge-id="transit-&gt;delivered" data-edge-index="39" data-kind="solid" data-from="transit" data-to="delivered"><path d="M 1603.4 3296 L 1603.4 3334 L 1603.4 3334 L 1603.4 3372" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>transit → delivered</title></g>
+<g data-edge-id="delivered-&gt;confirm" data-edge-index="40" data-kind="solid" data-from="delivered" data-to="confirm"><path d="M 1603.4 3424 L 1603.4 3462 L 1736.8 3462 L 1736.8 3504" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>delivered → confirm: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1655.35" y="3446" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1670.1" y="3454" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="delivered-&gt;attempt" data-edge-index="41" data-kind="solid" data-from="delivered" data-to="attempt"><path d="M 1603.4 3424 L 1603.4 3462 L 1478.9 3462 L 1478.9 3500" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>delivered → attempt: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1529.65" y="3446" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1541.15" y="3454" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="attempt-&gt;redeliver" data-edge-index="42" data-kind="solid" data-from="attempt" data-to="redeliver"><path d="M 1478.9 3552 L 1478.9 3590 L 1502.4 3590 L 1502.4 3628" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>attempt → redeliver: Yes</title>
+<g class="sx-fc-edge-label-g"><rect x="1475.9" y="3574" width="29.5" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1490.65" y="3582" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">Yes</text></g></g>
+<g data-edge-id="redeliver-&gt;transit" data-edge-index="43" data-kind="solid" data-from="redeliver" data-to="transit"><path d="M 1603.4 3296 L 1603.4 3334 L 1603.4 3334 L 1603.4 3398 L 1603.4 3462 L 1603.4 3462 L 1603.4 3526 L 1603.4 3590 L 1502.4 3590 L 1502.4 3628" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>redeliver → transit</title></g>
+<g data-edge-id="attempt-&gt;return" data-edge-index="44" data-kind="solid" data-from="attempt" data-to="return"><path d="M 1478.9 3552 L 1478.9 3590 L 1704.4 3590 L 1704.4 3628" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>attempt → return: No</title>
+<g class="sx-fc-edge-label-g"><rect x="1580.15" y="3574" width="23" height="16" rx="3" class="sx-fc-edge-label-bg"/>
+<text x="1591.65" y="3582" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">No</text></g></g>
+<g data-edge-id="return-&gt;restock" data-edge-index="45" data-kind="solid" data-from="return" data-to="restock"><path d="M 1704.4 3672 L 1704.4 3712 L 264.7 3712 L 264.7 3752" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>return → restock</title></g>
+<g data-edge-id="restock-&gt;refund" data-edge-index="46" data-kind="solid" data-from="restock" data-to="refund"><path d="M 264.7 3796 L 264.7 3834 L 264.7 3834 L 264.7 3894 L 264.7 3954 L 264.7 3954 L 264.7 4014 L 264.7 4074 L 1020.4 4074 L 1020.4 4134 L 1020.4 4194 L 1020.4 4194 L 1020.4 4254 L 1020.4 4314 L 1020.4 4314 L 1020.4 4378 L 1020.4 4442 L 1020.4 4442 L 1020.4 4502 L 1020.4 4564 L 1020.4 4564 L 1020.4 4604" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>restock → refund</title></g>
+<g data-edge-id="confirm-&gt;done" data-edge-index="47" data-kind="solid" data-from="confirm" data-to="done"><path d="M 1736.8 3548 L 1736.8 3590 L 1736.8 3590 L 1736.8 3650 L 1736.8 3712 L 1736.8 3712 L 1736.8 3774 L 1736.8 3834 L 1736.8 3834 L 1736.8 3894 L 1736.8 3954 L 1736.8 3954 L 1736.8 4014 L 1736.8 4074 L 1736.8 4074 L 1736.8 4134 L 1736.8 4194 L 1736.8 4194 L 1736.8 4254 L 1736.8 4314 L 1736.8 4314 L 1736.8 4378 L 1736.8 4442 L 1736.8 4442 L 1736.8 4502 L 1736.8 4564 L 1736.8 4564 L 1736.8 4626 L 1736.8 4686 L 632.9 4686 L 632.9 4724" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>confirm → done</title></g>
+<g data-edge-id="refund-&gt;done" data-edge-index="48" data-kind="solid" data-from="refund" data-to="done"><path d="M 1020.4 4648 L 1020.4 4686 L 632.9 4686 L 632.9 4724" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>refund → done</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="start" data-shape="stadium" data-layer="0" data-classes="terminal" class="sx-fc-node-g sx-fc-class-terminal" transform="translate(545.4 68)"><rect x="0" y="0" width="175" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="87.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="87.5" dy="0">Customer places order</tspan></text>
+<title>Customer places order</title></g>
+<g data-node-id="stock" data-shape="diamond" data-layer="1" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(166 188)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Stock available?</tspan></text>
+<title>Stock available?</title></g>
+<g data-node-id="backorder" data-shape="diamond" data-layer="2" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(142.2 316)"><polygon points="122.49999999999999,0 244.99999999999997,26 122.49999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="122.49999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="122.49999999999999" dy="0">Backorder acceptable?</tspan></text>
+<title>Backorder acceptable?</title></g>
+<g data-node-id="notifybo" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(48 448)"><rect x="0" y="0" width="196" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="98" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98" dy="0">Notify customer of delay</tspan></text>
+<title>Notify customer of delay</title></g>
+<g data-node-id="substitute" data-shape="diamond" data-layer="3" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(284 444)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Substitute item?</tspan></text>
+<title>Substitute item?</title></g>
+<g data-node-id="swapsku" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(177.2 572)"><rect x="0" y="0" width="175" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="87.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="87.5" dy="0">Swap to alternate SKU</tspan></text>
+<title>Swap to alternate SKU</title></g>
+<g data-node-id="reserve" data-shape="rect" data-layer="5" class="sx-fc-node-g" transform="translate(190.7 692)"><rect x="0" y="0" width="148" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="74" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="74" dy="0">Reserve inventory</tspan></text>
+<title>Reserve inventory</title></g>
+<g data-node-id="auth" data-shape="diamond" data-layer="12" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(907 1532)"><polygon points="113.39999999999999,0 226.79999999999998,26 113.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="113.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="113.39999999999999" dy="0">Payment authorized?</tspan></text>
+<title>Payment authorized?</title></g>
+<g data-node-id="retry" data-shape="diamond" data-layer="13" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(797.4 1660)"><polygon points="89.6,0 179.2,26 89.6,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="89.6" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="89.6" dy="0">Retry payment?</tspan></text>
+<title>Retry payment?</title></g>
+<g data-node-id="fraud" data-shape="diamond" data-layer="13" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1016.6 1660)"><polygon points="113.39999999999999,0 226.79999999999998,26 113.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="113.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="113.39999999999999" dy="0">Fraud check passed?</tspan></text>
+<title>Fraud check passed?</title></g>
+<g data-node-id="altpay" data-shape="rect" data-layer="14" class="sx-fc-node-g" transform="translate(784.4 1788)"><rect x="0" y="0" width="250" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="125" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="125" dy="0">Request alternate payment method</tspan></text>
+<title>Request alternate payment method</title></g>
+<g data-node-id="review" data-shape="rect" data-layer="14" data-classes="exception" class="sx-fc-node-g sx-fc-class-exception" transform="translate(1074.4 1788)"><rect x="0" y="0" width="182" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="91" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="91" dy="0">Route to manual review</tspan></text>
+<title>Route to manual review</title></g>
+<g data-node-id="release" data-shape="rect" data-layer="15" data-classes="exception" class="sx-fc-node-g sx-fc-class-exception" transform="translate(173.7 1908)"><rect x="0" y="0" width="182" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="91" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="91" dy="0">Release reserved stock</tspan></text>
+<title>Release reserved stock</title></g>
+<g data-node-id="capture" data-shape="rect" data-layer="15" class="sx-fc-node-g" transform="translate(953.4 1908)"><rect x="0" y="0" width="134" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="67" dy="0">Capture payment</tspan></text>
+<title>Capture payment</title></g>
+<g data-node-id="cancelled" data-shape="stadium" data-layer="16" data-classes="terminal" class="sx-fc-node-g sx-fc-class-terminal" transform="translate(565.9 2028)"><rect x="0" y="0" width="134" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="67" dy="0">Order cancelled</tspan></text>
+<title>Order cancelled</title></g>
+<g data-node-id="method" data-shape="diamond" data-layer="19" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1476 2388)"><polygon points="127.39999999999999,0 254.79999999999998,26 127.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="127.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="127.39999999999999" dy="0">Select shipping method</tspan></text>
+<title>Select shipping method</title></g>
+<g data-node-id="standard" data-shape="rect" data-layer="20" class="sx-fc-node-g" transform="translate(1348.4 2516)"><rect x="0" y="0" width="148" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="74" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="74" dy="0">Standard 3-5 days</tspan></text>
+<title>Standard 3-5 days</title></g>
+<g data-node-id="express" data-shape="rect" data-layer="20" class="sx-fc-node-g" transform="translate(1536.4 2516)"><rect x="0" y="0" width="141" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="70.5" dy="0">Express 1-2 days</tspan></text>
+<title>Express 1-2 days</title></g>
+<g data-node-id="sameday" data-shape="rect" data-layer="20" class="sx-fc-node-g" transform="translate(1717.4 2516)"><rect x="0" y="0" width="141" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="70.5" dy="0">Same-day courier</tspan></text>
+<title>Same-day courier</title></g>
+<g data-node-id="pack" data-shape="rect" data-layer="21" class="sx-fc-node-g" transform="translate(1522.4 2636)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="81" dy="0">Pick and pack order</tspan></text>
+<title>Pick and pack order</title></g>
+<g data-node-id="label" data-shape="rect" data-layer="22" class="sx-fc-node-g" transform="translate(1495.4 2756)"><rect x="0" y="0" width="216" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="108" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="108" dy="0">Generate label and tracking</tspan></text>
+<title>Generate label and tracking</title></g>
+<g data-node-id="intl" data-shape="diamond" data-layer="23" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1471.1 2876)"><polygon points="132.29999999999998,0 264.59999999999997,26 132.29999999999998,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="132.29999999999998" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="132.29999999999998" dy="0">International shipment?</tspan></text>
+<title>International shipment?</title></g>
+<g data-node-id="customs" data-shape="diamond" data-layer="24" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1504.7 3004)"><polygon points="98.69999999999999,0 197.39999999999998,26 98.69999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="98.69999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="98.69999999999999" dy="0">Customs cleared?</tspan></text>
+<title>Customs cleared?</title></g>
+<g data-node-id="dispatch" data-shape="rect" data-layer="25" class="sx-fc-node-g" transform="translate(1383.9 3132)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="81" dy="0">Hand off to carrier</tspan></text>
+<title>Hand off to carrier</title></g>
+<g data-node-id="hold" data-shape="rect" data-layer="25" data-classes="exception" class="sx-fc-node-g sx-fc-class-exception" transform="translate(1585.9 3132)"><rect x="0" y="0" width="237" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="118.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="118.5" dy="0">Customs hold - notify customer</tspan></text>
+<title>Customs hold - notify customer</title></g>
+<g data-node-id="transit" data-shape="rect" data-layer="26" class="sx-fc-node-g" transform="translate(1553.4 3252)"><rect x="0" y="0" width="100" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="50" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="50" dy="0">In transit</tspan></text>
+<title>In transit</title></g>
+<g data-node-id="delivered" data-shape="diamond" data-layer="27" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1471.1 3372)"><polygon points="132.29999999999998,0 264.59999999999997,26 132.29999999999998,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="132.29999999999998" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="132.29999999999998" dy="0">Delivered successfully?</tspan></text>
+<title>Delivered successfully?</title></g>
+<g data-node-id="attempt" data-shape="diamond" data-layer="28" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1365.5 3500)"><polygon points="113.39999999999999,0 226.79999999999998,26 113.39999999999999,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="113.39999999999999" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="113.39999999999999" dy="0">Attempts remaining?</tspan></text>
+<title>Attempts remaining?</title></g>
+<g data-node-id="confirm" data-shape="rect" data-layer="28" class="sx-fc-node-g" transform="translate(1632.3 3504)"><rect x="0" y="0" width="209" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="104.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="104.5" dy="0">Send delivery confirmation</tspan></text>
+<title>Send delivery confirmation</title></g>
+<g data-node-id="redeliver" data-shape="rect" data-layer="29" class="sx-fc-node-g" transform="translate(1421.4 3628)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="81" dy="0">Reschedule delivery</tspan></text>
+<title>Reschedule delivery</title></g>
+<g data-node-id="return" data-shape="rect" data-layer="29" data-classes="exception" class="sx-fc-node-g sx-fc-class-exception" transform="translate(1623.4 3628)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="81" dy="0">Return to warehouse</tspan></text>
+<title>Return to warehouse</title></g>
+<g data-node-id="restock" data-shape="rect" data-layer="30" class="sx-fc-node-g" transform="translate(173.7 3752)"><rect x="0" y="0" width="182" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="91" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="91" dy="0">Restock returned items</tspan></text>
+<title>Restock returned items</title></g>
+<g data-node-id="address" data-shape="diamond" data-layer="35" data-classes="decision" class="sx-fc-node-g sx-fc-class-decision" transform="translate(1494.9 4352)"><polygon points="108.5,0 217,26 108.5,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="108.5" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="108.5" dy="0">Address validated?</tspan></text>
+<title>Address validated?</title></g>
+<g data-node-id="fixaddr" data-shape="rect" data-layer="36" class="sx-fc-node-g" transform="translate(1498.9 4480)"><rect x="0" y="0" width="209" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="104.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="104.5" dy="0">Request address correction</tspan></text>
+<title>Request address correction</title></g>
+<g data-node-id="refund" data-shape="rect" data-layer="37" class="sx-fc-node-g" transform="translate(963.4 4604)"><rect x="0" y="0" width="114" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="57" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="57" dy="0">Issue refund</tspan></text>
+<title>Issue refund</title></g>
+<g data-node-id="done" data-shape="stadium" data-layer="38" data-classes="terminal" class="sx-fc-node-g sx-fc-class-terminal" transform="translate(565.9 4724)"><rect x="0" y="0" width="134" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central"><tspan x="67" dy="0">Order delivered</tspan></text>
+<title>Order delivered</title></g></g></svg>

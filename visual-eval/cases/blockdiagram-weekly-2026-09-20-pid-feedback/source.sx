@@ -1,0 +1,19 @@
+blockdiagram "PID Control Loop"
+r = signal("r(t) setpoint")
+err = sum(+r, -y)
+C = block("PID\nController C(s)") [role: controller]
+V = block("Actuator / Valve") [role: actuator]
+G = block("Plant\nG(s)") [role: plant]
+H = block("Sensor H(s)") [role: sensor, route: above]
+y = signal("y(t) measured output")
+d = signal("d(t) disturbance")
+in -> r
+r -> err
+err -> C
+C -> V
+V -> G
+d -> G
+G -> y
+y -> out
+y -> H
+H -> err

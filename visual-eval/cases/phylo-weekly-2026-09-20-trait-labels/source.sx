@@ -1,0 +1,10 @@
+phylo "Chordate Trait Evolution"
+  newick: "(Tunicate:0.1,(Lamprey:0.15,(Shark:0.2,(Amphibian:0.25,(Reptile:0.3,(Bird:0.35,Mammal:0.35):0.1):0.1):0.1):0.1):0.1);"
+  clade Notochord = (Tunicate, Lamprey, Shark, Amphibian, Reptile, Bird, Mammal) [color: "#90A4AE", label: "Notochord"]
+  clade VertebralColumn = (Lamprey, Shark, Amphibian, Reptile, Bird, Mammal) [color: "#5C6BC0", label: "Vertebral column"]
+  clade Jaws = (Shark, Amphibian, Reptile, Bird, Mammal) [color: "#26A69A", label: "Jaws"]
+  clade Limbs = (Amphibian, Reptile, Bird, Mammal) [color: "#66BB6A", label: "Limbs"]
+  clade AmnioticEgg = (Reptile, Bird, Mammal) [color: "#FFA726", label: "Amniotic egg"]
+  clade Feathers = (Bird) [color: "#EF5350", label: "Feathers"]
+  clade Fur = (Mammal) [color: "#AB47BC", label: "Fur"]
+  scale "trait divergence"

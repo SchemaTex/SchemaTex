@@ -58,6 +58,9 @@ export function orthogonalRoute(
   boxes: RouteBox[],
   routes: RoutedNet[] = [],
   net = "",
+  // Electrical nets must not merge. Relationship diagrams can instead pay
+  // a finite cost to share a short approach to an explicitly shared field.
+  overlapPenalty = Infinity,
 ): RoutePoint[] {
   const sameNet = routes.filter((r) => r.net === net);
   // Most adjacent pins have a clear straight or one-elbow connection. Check
@@ -317,7 +320,7 @@ export function orthogonalRoute(
               : Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) -
                 Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x));
             if (overlap > 0 && separation < 8) {
-              if (segmentNet !== net) penalty = Infinity;
+              if (segmentNet !== net) penalty += overlap * overlapPenalty;
               else if (separation === 0) reuse = true;
             }
           } else if (segmentNet !== net) {

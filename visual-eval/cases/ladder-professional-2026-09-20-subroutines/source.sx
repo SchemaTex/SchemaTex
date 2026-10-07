@@ -1,0 +1,31 @@
+ladder "ControlLogix Lab - Tasks, Subroutines and Passed Parameters"
+
+rung 1 "P_Continuous / R_Main: call R_Calc while Convert is ON (Input := Furlongs, Kroners := Output)":
+  XIC(Convert, name="Convert - BOOL controller tag enables R_Calc")
+  OTE(CALL_R_CALC, name="JSR R_Calc")
+
+rung 2 "P_Continuous / R_Main: call R_Decr once per rising edge of Decrement (ONS one-shot)":
+  XIC(Decrement, name="Decrement - BOOL controller tag enables R_Decr")
+  ONS(DECR_ONS, name="One-shot - JSR active only once per rising edge")
+  OTE(CALL_R_DECR, name="JSR R_Decr")
+
+rung 3 "R_Calc: input parameter pass - local DINT Input := controller tag Furlongs":
+  MOV(Input, name="Input := Furlongs")
+
+rung 4 "R_Calc: TERM_A := Input + 2":
+  ADD(TERM_A, name="TERM_A := Input + 2")
+
+rung 5 "R_Calc: TERM_B := Input - 2":
+  SUB(TERM_B, name="TERM_B := Input - 2")
+
+rung 6 "R_Calc: Output := TERM_A x TERM_B  =>  Output = (Input+2)*(Input-2)":
+  MUL(Output, name="Output := (Input+2)*(Input-2)")
+
+rung 7 "R_Calc: return parameter pass - controller tag Kroners := local DINT Output":
+  MOV(Kroners, name="Kroners := Output")
+
+rung 8 "R_Decr (no parameters): decrement controller DINT Counts by 1000 per active call":
+  SUB(Counts, name="Counts := Counts - 1000")
+
+rung 9 "P_Periodic / R_Main (periodic task, 10 ms): increment controller DINT Counts by 1 every scan":
+  ADD(Counts, name="Counts := Counts + 1")

@@ -1,0 +1,30 @@
+{
+  "id": "network-weekly-2026-09-20-proxmox-vlans",
+  "type": "network",
+  "title": "Weekly 2026-09-20 — Proxmox cluster and backup network",
+  "goal": "Trace router, managed switch, two hypervisors, backup and client links.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "Router, managed switch, both Proxmox nodes and backup server are visible."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "Device names and addresses do not overlap connection lines."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Links visibly meet device outlines rather than stopping in empty space."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}

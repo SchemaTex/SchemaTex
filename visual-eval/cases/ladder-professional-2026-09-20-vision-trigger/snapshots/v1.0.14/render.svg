@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="366.4" height="650" viewBox="0 0 366.4 650"><title>Y0 Vision Trigger - Trigger Delay + 10ms 固定脈波</title>
+<desc>PLC ladder logic diagram with 5 rungs</desc>
+<style>.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #111111; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #222222; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #222222; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #ffffff; stroke: #222222; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #222222; }
+.lt-ladder-name { font: 9px sans-serif; fill: #111111; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4e89; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #cc0000; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #555555; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #555555; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: #111111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #222222; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: #ffffff; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }</style>
+<text x="183.2" y="20" class="lt-ladder-title" text-anchor="middle">Y0 Vision Trigger - Trigger Delay + 10ms 固定脈波</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="620" class="lt-ladder-rail"/>
+<line x1="336.4" y1="0" x2="336.4" y2="620" class="lt-ladder-rail"/>
+<text x="54" y="127" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="80" class="lt-ladder-comment">— Trigger 請求 (M10 = 視覺有效 X0 確認後) —</text>
+<text x="54" y="232" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="180" class="lt-ladder-comment">— Trigger Delay：T128 100ms 解析度，預設值 D0 —</text>
+<text x="54" y="334" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="287" class="lt-ladder-comment">— 延遲時間到：復歸 M14，啟動 Y0 脈波程序 —</text>
+<text x="54" y="445" class="lt-ladder-rung-num">Rung 004</text>
+<text x="70" y="387" class="lt-ladder-comment">— Y0 10ms 固定脈波：T127 1ms 解析度，預設 K10 —</text>
+<text x="54" y="547" class="lt-ladder-rung-num">Rung 005</text>
+<text x="70" y="500" class="lt-ladder-comment">— 脈波結束：復歸 M15，等待下一次觸發 —</text>
+<path d="M 60 124 L 93.5 124" class="lt-ladder-wire"/>
+<path d="M 125.5 124 L 164.3 124" class="lt-ladder-wire"/>
+<path d="M 60 229 L 84.35 229" class="lt-ladder-wire"/>
+<path d="M 116.35 229 L 143.7 229" class="lt-ladder-wire"/>
+<path d="M 60 331 L 79 331" class="lt-ladder-wire"/>
+<path d="M 111 331 L 135.3 331" class="lt-ladder-wire"/>
+<path d="M 167.3 331 L 203.04999999999998 331" class="lt-ladder-wire"/>
+<path d="M 60 442 L 84.35 442" class="lt-ladder-wire"/>
+<path d="M 116.35 442 L 143.7 442" class="lt-ladder-wire"/>
+<path d="M 223.7 442 L 272.4 442" class="lt-ladder-wire"/>
+<path d="M 60 544 L 79 544" class="lt-ladder-wire"/>
+<path d="M 111 544 L 135.3 544" class="lt-ladder-wire"/>
+<path d="M 196.3 124 L 336.4 124" class="lt-ladder-wire"/>
+<path d="M 223.7 229 L 336.4 229" class="lt-ladder-wire"/>
+<path d="M 235.04999999999998 331 L 336.4 331" class="lt-ladder-wire"/>
+<path d="M 304.4 442 L 336.4 442" class="lt-ladder-wire"/>
+<path d="M 167.3 544 L 336.4 544" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="M10"><line x1="93.5" y1="124" x2="97.5" y2="124" class="lt-ladder-wire"/>
+<line x1="121.5" y1="124" x2="125.5" y2="124" class="lt-ladder-wire"/>
+<line x1="97.5" y1="112" x2="97.5" y2="136" class="lt-ladder-element"/>
+<line x1="121.5" y1="112" x2="121.5" y2="136" class="lt-ladder-element"/>
+<text x="109.5" y="97" class="lt-ladder-name">Trigger 請求</text>
+<text x="109.5" y="108" class="lt-ladder-tag">M10</text>
+<text x="109.5" y="146" class="lt-ladder-addr">M10</text></g>
+<g data-element="coil" data-tag="M14"><path d="M 170.3 112 A 10 12 0 0 0 170.3 136" class="lt-ladder-coil"/>
+<path d="M 190.3 112 A 10 12 0 0 1 190.3 136" class="lt-ladder-coil"/>
+<line x1="164.3" y1="124" x2="170.3" y2="124" class="lt-ladder-wire"/>
+<line x1="190.3" y1="124" x2="196.3" y2="124" class="lt-ladder-wire"/>
+<text x="180.3" y="127" class="lt-ladder-symbol-label">S</text>
+<text x="180.3" y="97" class="lt-ladder-name">延遲計時啟動</text>
+<text x="180.3" y="108" class="lt-ladder-tag">M14</text>
+<text x="180.3" y="146" class="lt-ladder-addr">M14</text></g>
+<g data-element="contact" data-tag="M14"><line x1="84.35" y1="229" x2="88.35" y2="229" class="lt-ladder-wire"/>
+<line x1="112.35" y1="229" x2="116.35" y2="229" class="lt-ladder-wire"/>
+<line x1="88.35" y1="217" x2="88.35" y2="241" class="lt-ladder-element"/>
+<line x1="112.35" y1="217" x2="112.35" y2="241" class="lt-ladder-element"/>
+<text x="100.35" y="202" class="lt-ladder-name">延遲計時執行中</text>
+<text x="100.35" y="213" class="lt-ladder-tag">M14</text>
+<text x="100.35" y="251" class="lt-ladder-addr">M14</text></g>
+<g data-element="function_block" data-tag="T128"><rect x="143.7" y="201" width="80" height="56" class="lt-ladder-fb"/>
+<text x="183.7" y="215" class="lt-ladder-fb-name">TON</text>
+<line x1="137.7" y1="229" x2="143.7" y2="229" class="lt-ladder-wire"/>
+<line x1="223.7" y1="229" x2="229.7" y2="229" class="lt-ladder-wire"/>
+<text x="147.7" y="229" class="lt-ladder-pin">name=Trigger Delay, preset = D0 x 10 ms</text>
+<text x="183.7" y="197" class="lt-ladder-tag">T128</text></g>
+<g data-element="contact" data-tag="T128"><line x1="79" y1="331" x2="83" y2="331" class="lt-ladder-wire"/>
+<line x1="107" y1="331" x2="111" y2="331" class="lt-ladder-wire"/>
+<line x1="83" y1="319" x2="83" y2="343" class="lt-ladder-element"/>
+<line x1="107" y1="319" x2="107" y2="343" class="lt-ladder-element"/>
+<text x="95" y="304" class="lt-ladder-name">延遲完成</text>
+<text x="95" y="315" class="lt-ladder-tag">T128</text>
+<text x="95" y="353" class="lt-ladder-addr">T128</text></g>
+<g data-element="coil" data-tag="M14"><path d="M 141.3 319 A 10 12 0 0 0 141.3 343" class="lt-ladder-coil"/>
+<path d="M 161.3 319 A 10 12 0 0 1 161.3 343" class="lt-ladder-coil"/>
+<line x1="135.3" y1="331" x2="141.3" y2="331" class="lt-ladder-wire"/>
+<line x1="161.3" y1="331" x2="167.3" y2="331" class="lt-ladder-wire"/>
+<text x="151.3" y="334" class="lt-ladder-symbol-label">R</text>
+<text x="151.3" y="304" class="lt-ladder-name">復歸延遲計時</text>
+<text x="151.3" y="315" class="lt-ladder-tag">M14</text>
+<text x="151.3" y="353" class="lt-ladder-addr">M14</text></g>
+<g data-element="coil" data-tag="M15"><path d="M 209.04999999999998 319 A 10 12 0 0 0 209.04999999999998 343" class="lt-ladder-coil"/>
+<path d="M 229.04999999999998 319 A 10 12 0 0 1 229.04999999999998 343" class="lt-ladder-coil"/>
+<line x1="203.04999999999998" y1="331" x2="209.04999999999998" y2="331" class="lt-ladder-wire"/>
+<line x1="229.04999999999998" y1="331" x2="235.04999999999998" y2="331" class="lt-ladder-wire"/>
+<text x="219.04999999999998" y="334" class="lt-ladder-symbol-label">S</text>
+<text x="219.04999999999998" y="304" class="lt-ladder-name">Y0 脈波程序啟動</text>
+<text x="219.04999999999998" y="315" class="lt-ladder-tag">M15</text>
+<text x="219.04999999999998" y="353" class="lt-ladder-addr">M15</text></g>
+<g data-element="contact" data-tag="M15"><line x1="84.35" y1="442" x2="88.35" y2="442" class="lt-ladder-wire"/>
+<line x1="112.35" y1="442" x2="116.35" y2="442" class="lt-ladder-wire"/>
+<line x1="88.35" y1="430" x2="88.35" y2="454" class="lt-ladder-element"/>
+<line x1="112.35" y1="430" x2="112.35" y2="454" class="lt-ladder-element"/>
+<text x="100.35" y="415" class="lt-ladder-name">脈波程序執行中</text>
+<text x="100.35" y="426" class="lt-ladder-tag">M15</text>
+<text x="100.35" y="464" class="lt-ladder-addr">M15</text></g>
+<g data-element="function_block" data-tag="T127"><rect x="143.7" y="414" width="80" height="56" class="lt-ladder-fb"/>
+<text x="183.7" y="428" class="lt-ladder-fb-name">TON</text>
+<line x1="137.7" y1="442" x2="143.7" y2="442" class="lt-ladder-wire"/>
+<line x1="223.7" y1="442" x2="229.7" y2="442" class="lt-ladder-wire"/>
+<text x="147.7" y="442" class="lt-ladder-pin">name=Y0 pulse, preset = K10 (10 ms @ 1 ms base)</text>
+<text x="183.7" y="410" class="lt-ladder-tag">T127</text></g>
+<g data-element="coil" data-tag="Y0"><path d="M 278.4 430 A 10 12 0 0 0 278.4 454" class="lt-ladder-coil"/>
+<path d="M 298.4 430 A 10 12 0 0 1 298.4 454" class="lt-ladder-coil"/>
+<line x1="272.4" y1="442" x2="278.4" y2="442" class="lt-ladder-wire"/>
+<line x1="298.4" y1="442" x2="304.4" y2="442" class="lt-ladder-wire"/>
+<text x="288.4" y="404" class="lt-ladder-name">Vision Trigger</text>
+<text x="288.4" y="415" class="lt-ladder-name">輸出</text>
+<text x="288.4" y="426" class="lt-ladder-tag">Y0</text>
+<text x="288.4" y="464" class="lt-ladder-addr">Y0</text></g>
+<g data-element="contact" data-tag="T127"><line x1="79" y1="544" x2="83" y2="544" class="lt-ladder-wire"/>
+<line x1="107" y1="544" x2="111" y2="544" class="lt-ladder-wire"/>
+<line x1="83" y1="532" x2="83" y2="556" class="lt-ladder-element"/>
+<line x1="107" y1="532" x2="107" y2="556" class="lt-ladder-element"/>
+<text x="95" y="517" class="lt-ladder-name">脈波完成</text>
+<text x="95" y="528" class="lt-ladder-tag">T127</text>
+<text x="95" y="566" class="lt-ladder-addr">T127</text></g>
+<g data-element="coil" data-tag="M15"><path d="M 141.3 532 A 10 12 0 0 0 141.3 556" class="lt-ladder-coil"/>
+<path d="M 161.3 532 A 10 12 0 0 1 161.3 556" class="lt-ladder-coil"/>
+<line x1="135.3" y1="544" x2="141.3" y2="544" class="lt-ladder-wire"/>
+<line x1="161.3" y1="544" x2="167.3" y2="544" class="lt-ladder-wire"/>
+<text x="151.3" y="547" class="lt-ladder-symbol-label">R</text>
+<text x="151.3" y="517" class="lt-ladder-name">復歸脈波程序</text>
+<text x="151.3" y="528" class="lt-ladder-tag">M15</text>
+<text x="151.3" y="566" class="lt-ladder-addr">M15</text></g></g></svg>

@@ -1,0 +1,30 @@
+{
+  "id": "erd-weekly-2026-09-20-dental-management",
+  "type": "erd",
+  "title": "Weekly 2026-09-20 — Dental practice database with many relationships",
+  "goal": "Keep a dense management schema readable and render all relationship terminals.",
+  "split": "train",
+  "rubric": [
+    {
+      "id": "requirement-1",
+      "severity": "blocker",
+      "must": "The ERD renders instead of a routing error panel."
+    },
+    {
+      "id": "requirement-2",
+      "severity": "major",
+      "must": "Entity names and attributes are readable inside their own tables."
+    },
+    {
+      "id": "requirement-3",
+      "severity": "major",
+      "must": "Relationship terminals attach to the intended entities without crossing unrelated entity boxes."
+    }
+  ],
+  "provenance": {
+    "kind": "production-output-replay",
+    "product": "ChatDiagram",
+    "window": "2026-09-13 through 2026-09-19 PT",
+    "notes": "Scenario selected from weekly demand. No customer IDs, contact details or source prompts are included. This is an evaluation input, not a certified correct example."
+  }
+}
