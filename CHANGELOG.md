@@ -30,6 +30,17 @@ also ships the 1.1.1 fixes below.
 - Genogram: where a parent's line crosses a routed union, the crossing is drawn
   as a visible gap rather than a junction, and a routed union's leg never runs
   along a parent line entering the same person.
+- Genogram: a sibling group stays contiguous in birth order, and a person who
+  marries into the family stands on the outer side of their spouse's siblings.
+  In the Potter example the Evans sisters now stand together with their husbands
+  outside, so James and Lily are neighbours and Harry and his cousin Dudley no
+  longer hang from one sibling bar. A person with several unions keeps their
+  siblings outside the whole partner sequence.
+- Genogram: after a generation is reordered, each parent couple is placed above
+  its own children, so descent lines drop straight instead of jogging sideways or
+  crossing the chart.
+- Genogram: two couples' children never share a sibling bar, and emotional
+  relationship lines never run along another emotional or structural line.
 - Genogram: the final spacing pass runs after union reordering, so the change
   introduces no new symbol or label collisions; on the eval corpus no case has
   more collisions than 1.1.0 and several have fewer.

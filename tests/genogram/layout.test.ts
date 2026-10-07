@@ -319,6 +319,126 @@ genogram
     expect(Math.max(...exWifeKidsX)).toBeLessThan(Math.min(...exGfKidsX));
   });
 
+  test("married-in partners face outward from sisters in birth order", () => {
+    const layout = layoutFromText(`genogram
+  a [male, 1930]
+  b [female, 1932]
+  a -- b
+    older [female, 1958]
+    younger [female, 1960]
+  c [male, 1931]
+  d [female, 1933]
+  c -- d
+    spouse [male, 1959]
+  spouse -- younger
+    child1 [male, 1980]
+  older -- outsider [male, 1956]
+    child2 [male, 1981]`);
+    expect(layout.nodes.filter(n => n.generation === 1).sort((a, b) => a.x - b.x).map(n => n.id))
+      .toEqual(["outsider", "older", "younger", "spouse"]);
+    const x = (id: string) => findNode(layout.nodes, id).x;
+    expect(x("child2")).toBeLessThan(x("child1"));
+    const drops = layout.edges.filter(edge => edge.relationship.to === "_drop");
+    const childDrops = drops.filter(edge => ["older+outsider", "spouse+younger"].includes(edge.relationship.from));
+    expect(childDrops).toHaveLength(2);
+    expect(layout.edges.filter(edge => edge.relationship.type === "married").every(edge => edge.unionRoute?.kind === "horizontal")).toBe(true);
+  });
+
+  test("siblings stay outside the whole sequence of former and current partners", () => {
+    const layout = layoutFromText(`genogram
+  a [male, 1946]
+  b [female, 1948]
+  a -- b
+    older [male, 1971]
+    shared [female, 1974]
+    younger [female, 1978]
+  c [male, 1944]
+  d [female, 1947]
+  c -- d
+    second [male, 1972]
+  first [male, 1970]
+  first -x- shared
+    child1 [male, 1996]
+  second -x- shared
+    child2 [female, 2004]
+  shared -- current [male, 1969]
+    child3 [female, 2016]`);
+    expect(layout.nodes.filter(n => n.generation === 1).sort((a, b) => a.x - b.x).map(n => n.id))
+      .toEqual(["older", "first", "second", "shared", "current", "younger"]);
+  });
+
+  test("overlapping descent spans use separate heights and gaps at crossings", () => {
+    const ast = parseGenogram(`genogram
+  a [male]
+  b [female]
+  a -- b
+    c [male]
+    d [female]
+  e [male]
+  f [female]
+  e -- f
+    g [male]
+    h [female]`);
+    const pins = new Map([
+      ["a", { x: 0, y: 0 }], ["b", { x: 100, y: 0 }],
+      ["e", { x: 400, y: 0 }], ["f", { x: 500, y: 0 }],
+      ["c", { x: 0, y: 200 }], ["d", { x: 300, y: 200 }],
+      ["g", { x: 200, y: 200 }], ["h", { x: 500, y: 200 }],
+    ]);
+    const layout = layoutGenogram(ast, DEFAULT_CONFIG, pins);
+    const bars = layout.edges.filter(edge => edge.relationship.to === "_sibship");
+    expect(bars).toHaveLength(2);
+    expect(bars[0].path.match(/M [\d.]+ ([\d.]+)/)?.[1])
+      .not.toBe(bars[1].path.match(/M [\d.]+ ([\d.]+)/)?.[1]);
+    expect(bars.some(edge => (edge.path.match(/M/g) ?? []).length > 1)).toBe(true);
+  });
+
+  test("re-centres every ancestral couple after outward spouse ordering", () => {
+    const layout = layoutFromText(`genogram
+  a [male, 1930]
+  b [female, 1932]
+  a -- b
+    older [male, 1950]
+    younger [female, 1955]
+  older -- spouse [female, 1952]
+    child [male, 1975]
+    sibling [female, 1978]
+  child -- partner [female, 1977]
+    grandchild [male, 2000]
+    other [female, 2002]`);
+    const centre = (id: string) => findNode(layout.nodes, id).x + DEFAULT_CONFIG.nodeWidth / 2;
+    for (const [a, b, children] of [
+      ["a", "b", ["older", "younger"]],
+      ["older", "spouse", ["child", "sibling"]],
+      ["child", "partner", ["grandchild", "other"]],
+    ] as const) {
+      const xs = children.map(centre);
+      expect((centre(a) + centre(b)) / 2).toBeCloseTo((Math.min(...xs) + Math.max(...xs)) / 2);
+    }
+  });
+
+  test("orders unrelated parent couples above their own reordered child blocks", () => {
+    const layout = layoutFromText(`genogram
+  a [male]
+  b [female]
+  a -- b
+    husband [male, 1960]
+  c [male]
+  d [female]
+  c -- d
+    older [female, 1958]
+    younger [female, 1960]
+  husband -- younger
+    child [male]
+  older -- outsider [male]
+    cousin [male]`);
+    const x = (id: string) => findNode(layout.nodes, id).x;
+    expect(x("older")).toBeLessThan(x("younger"));
+    expect(x("younger")).toBeLessThan(x("husband"));
+    expect(x("c")).toBeLessThan(x("a"));
+    expect(x("d")).toBeLessThan(x("a"));
+  });
+
   // ─── Layout dimensions are reasonable ───────────────────
   test("layout dimensions encompass all nodes", () => {
     const layout = layoutFromText(`

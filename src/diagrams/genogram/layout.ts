@@ -85,6 +85,8 @@ export function layoutGenogram(
   // Union reordering and interactive pins can introduce collisions after the
   // earlier spacing pass. Resolve the final painted row before routing.
   resolveOverlaps(positions, ordered, config, graph);
+  alignParentsToChildren(positions, graph, config, pins);
+  resolveOverlaps(positions, ordered, config, graph);
   // Reserve bracket bands before secondary placements allocate their tracks.
   const brackets = nonAdjacentUnions(graph, positions);
   for (const generation of [...new Set(brackets.map(route => route.left.generation))].sort((a, b) => a - b)) {
@@ -92,13 +94,27 @@ export function layoutGenogram(
       .map(route => 32 + route.level * 24));
     for (const position of positions.values()) if (position.generation >= generation) position.y += extra;
   }
+  const descentLevels = new Map<FamilyUnit, number>();
+  for (const generation of [...new Set([...positions.values()].map(p => p.generation))].sort((a, b) => a - b)) {
+    const bands: Array<{ left: number; right: number; level: number }> = [];
+    for (const fu of graph.familyUnits.filter(fu => fu.children.length && positions.get(fu.partners[0])?.generation === generation)) {
+      const xs = [unionDescentX(fu, positions), ...fu.children.map(id => positions.get(id)!.x)];
+      const left = Math.min(...xs), right = Math.max(...xs);
+      let level = 0;
+      while (bands.some(band => band.level === level && left <= band.right + 10 && right >= band.left - 10)) level++;
+      bands.push({ left, right, level });
+      descentLevels.set(fu, level);
+    }
+    const extra = Math.max(0, ...bands.map(band => band.level)) * 20;
+    for (const position of positions.values()) if (position.generation > generation) position.y += extra;
+  }
   const secondaryEdges = computeSecondaryParentEdges(
     ast.relationships,
     graph,
     positions,
     config
   );
-  const edges = computeEdges(graph, positions, config, ast.relationships);
+  const edges = computeEdges(graph, positions, config, ast.relationships, descentLevels);
   const result = packageResult(
     positions,
     [...edges, ...secondaryEdges],
@@ -500,6 +516,7 @@ function assignPositions(
   resolveOverlaps(positions, orderedGens, config, graph);
 
   alignUnionBlocks(positions, graph, config);
+  orderFamilyBlocks(positions, graph, config, orderedGens);
   return positions;
 }
 
@@ -667,6 +684,127 @@ function alignUnionBlocks(positions: Map<string, NodePosition>, graph: LayoutGra
       const left = unionDescentX(block.fu, positions) - block.width / 2;
       block.fu.children.forEach((id, i) => { positions.get(id)!.x = left + block.offsets[i]; });
     }
+  }
+}
+
+/** Keep sibling birth order and attach whole partnership sequences at their edges. */
+function orderFamilyBlocks(positions: Map<string, NodePosition>, graph: LayoutGraph, config: GenogramLayoutConfig, orderedGens: OrderedGeneration[]): void {
+  const chains = partnershipChains(graph);
+  // A simple couple faces the sibling group with its family member, regardless
+  // of sex. When both have ancestry, the larger sibling group fixes the side.
+  for (const chain of chains) {
+    if (chain.length !== 2) continue;
+    const member = [...chain].sort((a, b) => {
+      const size = (id: string) => graph.familyUnits.find(fu => fu.id === graph.childOf.get(id))?.children.length ?? 0;
+      return size(b) - size(a);
+    })[0];
+    const siblings = graph.familyUnits.find(fu => fu.id === graph.childOf.get(member))?.children ?? [];
+    if (siblings.length < 2) continue;
+    const index = siblings.indexOf(member);
+    if ((index === 0 && chain[0] === member) || (index > 0 && chain[1] === member)) chain.reverse();
+  }
+  for (const generation of [...new Set([...positions.values()].map(p => p.generation))].sort((a, b) => a - b)) {
+    const row = [...positions.values()].filter(p => p.generation === generation).sort((a, b) => a.x - b.x);
+    const blocks = chains.filter(chain => positions.get(chain[0])?.generation === generation)
+      .map(ids => ({ ids, x: Math.min(...ids.map(id => positions.get(id)!.x)) }));
+    for (const p of row) if (!blocks.some(block => block.ids.includes(p.id))) blocks.push({ ids: [p.id], x: p.x });
+    blocks.sort((a, b) => a.x - b.x);
+    // Pull sibling blocks together in birth order. A chain shared by two
+    // ancestral families joins those families at that chain's boundary.
+    for (const fu of graph.familyUnits.filter(fu => fu.children.length > 1 && positions.get(fu.children[0])?.generation === generation)) {
+      const siblings = [...new Set(fu.children.map(id => blocks.find(block => block.ids.includes(id))!))];
+      const start = Math.min(...siblings.map(block => blocks.indexOf(block)));
+      const rest = blocks.filter(block => !siblings.includes(block));
+      rest.splice(start, 0, ...siblings);
+      blocks.splice(0, blocks.length, ...rest);
+    }
+    const desired = blocks.flatMap(block => block.ids);
+    if (desired.every((id, i) => id === row[i].id)) continue;
+    const descendantUnits = graph.familyUnits.filter(fu => fu.children.length && positions.get(fu.partners[0])?.generation === generation);
+    let cursor = row[0].x;
+    for (const block of blocks) {
+      const xs = block.ids.map(id => positions.get(id)!.x).sort((a, b) => a - b);
+      if (block.ids.length === 2) xs[1] = xs[0] + Math.max(config.nodeWidth + config.nodeSpacingX,
+        (captionWidth(graph.individuals.get(block.ids[0])!, config) + captionWidth(graph.individuals.get(block.ids[1])!, config)) / 2 + LABEL_GAP);
+      block.ids.forEach((id, i) => { positions.get(id)!.x = cursor + xs[i] - xs[0]; });
+      cursor += xs.at(-1)! - xs[0] + config.nodeWidth + config.nodeSpacingX;
+    }
+    resolveOverlaps(positions, orderedGens, config, graph);
+    // Move descendants with their own union rather than leaving cousin trunks
+    // behind at the old midpoint. Partner sequences move as a single block.
+    const moved = new Set<string>();
+    for (const fu of descendantUnits) {
+      const childXs = fu.children.map(id => positions.get(id)!.x);
+      const delta = unionDescentX(fu, positions) - (Math.min(...childXs) + Math.max(...childXs)) / 2;
+      for (const child of fu.children) for (const id of chains.find(chain => chain.includes(child)) ?? [child]) {
+        if (moved.has(id)) continue;
+        positions.get(id)!.x += delta;
+        moved.add(id);
+      }
+    }
+  }
+}
+
+/** Follow the final child blocks upwards, moving whole partnership sequences. */
+function alignParentsToChildren(positions: Map<string, NodePosition>, graph: LayoutGraph, config: GenogramLayoutConfig,
+  pins?: Map<string, { x: number; y: number }>): void {
+  const chains = partnershipChains(graph).map(chain => [...chain].sort((a, b) => positions.get(a)!.x - positions.get(b)!.x));
+  for (const generation of [...new Set([...positions.values()].map(p => p.generation))].sort((a, b) => b - a)) {
+    const row = [...positions.values()].filter(p => p.generation === generation).sort((a, b) => a.x - b.x);
+    const blocks = chains.filter(chain => positions.get(chain[0])?.generation === generation).map(ids => ({ ids, delta: 0 }));
+    for (const p of row) if (!blocks.some(block => block.ids.includes(p.id))) blocks.push({ ids: [p.id], delta: 0 });
+    const anchored = new Set<typeof blocks[number]>();
+    for (const block of blocks) {
+      const units = graph.familyUnits.filter(fu => fu.children.length && fu.partners.every(id => block.ids.includes(id)));
+      if (!units.length || block.ids.some(id => pins?.has(id))) continue;
+      anchored.add(block);
+      block.delta = units.reduce((sum, fu) => {
+        const xs = fu.children.map(id => positions.get(id)!.x);
+        return sum + (Math.min(...xs) + Math.max(...xs)) / 2 - unionDescentX(fu, positions);
+      }, 0) / units.length;
+    }
+    // An unpartnered sibling follows the same family block; its old position
+    // must not pull the parental couple back away from the next generation.
+    for (const block of blocks) {
+      if (anchored.has(block) || block.ids.some(id => pins?.has(id))) continue;
+      const families = new Set(block.ids.map(id => graph.childOf.get(id)).filter(Boolean));
+      const siblings = blocks.filter(other => anchored.has(other) && other.ids.some(id => families.has(graph.childOf.get(id))));
+      if (siblings.length) block.delta = siblings.reduce((sum, other) => sum + other.delta, 0) / siblings.length;
+    }
+    if (blocks.every(block => Math.abs(block.delta) < 0.001)) continue;
+    const left = (block: typeof blocks[number]) => positions.get(block.ids[0])!.x + block.delta;
+    blocks.sort((a, b) => left(a) - left(b));
+    // Ancestors can also be siblings. Keep their birth order while ordering
+    // unrelated parental couples by the children they actually lead to.
+    for (const fu of graph.familyUnits.filter(fu => fu.children.length > 1 && positions.get(fu.children[0])?.generation === generation)) {
+      const siblings = [...new Set(fu.children.map(id => blocks.find(block => block.ids.includes(id))!))];
+      const start = Math.min(...siblings.map(block => blocks.indexOf(block)));
+      const rest = blocks.filter(block => !siblings.includes(block));
+      rest.splice(start, 0, ...siblings);
+      blocks.splice(0, blocks.length, ...rest);
+    }
+    const minGap = config.nodeWidth + config.nodeSpacingX;
+    const familyGap = Math.max(minGap, ...row.map(p => captionWidth(graph.individuals.get(p.id)!, config) + LABEL_GAP)) *
+      (config.nodeWidth + config.nodeSpacingX * 1.5) / minGap;
+    let previous: NodePosition | undefined;
+    let previousFamily: string | undefined;
+    let totalShift = 0;
+    for (const block of blocks) {
+      const first = positions.get(block.ids[0])!;
+      const desired = first.x + block.delta;
+      const family = block.ids.map(id => graph.childOf.get(id)).find(Boolean);
+      const gap = previous ? Math.max(previousFamily && family && previousFamily !== family ? familyGap : minGap,
+        (captionWidth(graph.individuals.get(previous.id)!, config) + captionWidth(graph.individuals.get(first.id)!, config)) / 2 + LABEL_GAP) : 0;
+      const actual = previous ? Math.max(desired, previous.x + gap) : desired;
+      const delta = actual - first.x;
+      totalShift += actual - desired;
+      for (const id of block.ids) positions.get(id)!.x += delta;
+      previous = positions.get(block.ids.at(-1)!)!;
+      previousFamily = family;
+    }
+    // Share unavoidable crowding between both sides rather than pushing every
+    // constrained couple away from its children in the same direction.
+    for (const p of row) p.x -= totalShift / blocks.length;
   }
 }
 
@@ -946,7 +1084,8 @@ function computeEdges(
   graph: LayoutGraph,
   positions: Map<string, NodePosition>,
   config: GenogramLayoutConfig,
-  relationships: Relationship[]
+  relationships: Relationship[],
+  descentLevels: Map<FamilyUnit, number>
 ): LayoutEdge[] {
   const edges: LayoutEdge[] = [];
   const dropY_offset = config.nodeHeight / 2 + Math.max(LABEL_HEIGHT, config.fontSize ?? DEFAULT_FONT_SIZE) + LABEL_GAP + config.nodeSpacingY * 0.35 + captionExtra(graph, config);
@@ -1005,7 +1144,7 @@ function computeEdges(
 
     // Parent-child connections
     if (fu.children.length > 0) {
-      const dropY = posA.y + dropY_offset;
+      const dropY = posA.y + dropY_offset + (descentLevels.get(fu) ?? 0) * 20;
 
       const childPositions = fu.children
         .map((cid) => ({
@@ -1086,6 +1225,36 @@ function computeEdges(
         });
       }
     }
+  }
+
+  // Different unions may cross, but never form a junction. Split horizontal
+  // descent runs at foreign verticals, including their endpoints.
+  const owner = (edge: LayoutEdge) => graph.familyUnits.find(fu => fu.id === edge.relationship.from)?.id ??
+    (edge.relationship.type.startsWith("twin-") ? graph.childOf.get(edge.from) : undefined);
+  const segments = edges.flatMap(edge => {
+    const points = (edge.path.match(/-?[\d.]+/g) ?? []).map(Number);
+    return points.slice(2).filter((_, i) => i % 2 === 0).map((_, i) => ({
+      owner: owner(edge), x1: points[i * 2], y1: points[i * 2 + 1], x2: points[i * 2 + 2], y2: points[i * 2 + 3],
+    }));
+  });
+  for (const edge of edges) {
+    const family = owner(edge);
+    if (!family) continue;
+    let previous: { x: number; y: number } | undefined;
+    edge.path = edge.path.replace(/([ML]) (-?[\d.]+) (-?[\d.]+)/g, (run, command, bx, by) => {
+      const x2 = Number(bx), y2 = Number(by);
+      const start = previous;
+      previous = { x: x2, y: y2 };
+      if (command === "M" || !start || start.y !== y2 || start.x === x2) return run;
+      const x1 = start.x;
+      const crossings = [...new Set(segments.filter(s => s.owner && s.owner !== family && s.x1 === s.x2 &&
+        s.x1 > Math.min(x1, x2) && s.x1 < Math.max(x1, x2) &&
+        y2 >= Math.min(s.y1, s.y2) && y2 <= Math.max(s.y1, s.y2)).map(s => s.x1))]
+        .sort((a, b) => x1 < x2 ? a - b : b - a);
+      if (!crossings.length) return run;
+      const direction = x1 < x2 ? 1 : -1;
+      return crossings.map(x => `L ${x - direction * 5} ${y2} M ${x + direction * 5} ${y2}`).join(" ") + ` L ${x2} ${y2}`;
+    });
   }
 
   for (const edge of edges) {
