@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const routes = ["website"];
 
@@ -53,5 +54,23 @@ for (const route of routes) {
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+}
+
+process.chdir(fileURLToPath(new URL('../../website', import.meta.url)));
+
+
+const configs = ["website/next.config.mjs"];
+for (const path of configs) {
+  test(`${path}: keeps scripts and removes the external event rewrite`, async () => {
+    const { default: config } = await import(new URL(`../../${path}`, import.meta.url));
+    const rewrites = await config.rewrites();
+    const rules = Array.isArray(rewrites) ? rewrites : [
+      ...(rewrites.beforeFiles ?? []),
+      ...(rewrites.afterFiles ?? []),
+      ...(rewrites.fallback ?? []),
+    ];
+    assert.ok(rules.every(({ source }) => source !== '/proxy/api/event'));
+    assert.ok(rules.some(({ source }) => source.includes('/js/script')));
   });
 }
