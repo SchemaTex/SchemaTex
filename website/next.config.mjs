@@ -79,7 +79,22 @@ const config = {
   },
 };
 
-export default withSentryConfig(withPlausibleProxyWrapper(withMDX(config)), {
+const plausibleConfig = withPlausibleProxyWrapper(withMDX(config));
+const plausibleRewrites = plausibleConfig.rewrites;
+// Events use the POST handler; keep script proxying and remove the external rewrite.
+plausibleConfig.rewrites = async () => {
+  const rewrites = await plausibleRewrites();
+  const keep = (rules = []) =>
+    rules.filter(({ source }) => source !== "/proxy/api/event");
+  if (Array.isArray(rewrites)) return keep(rewrites);
+  return {
+    beforeFiles: keep(rewrites.beforeFiles),
+    afterFiles: keep(rewrites.afterFiles),
+    fallback: keep(rewrites.fallback),
+  };
+};
+
+export default withSentryConfig(plausibleConfig, {
   org: 'imf-hy',
   project: 'schematex',
   authToken: process.env.SENTRY_AUTH_TOKEN,
