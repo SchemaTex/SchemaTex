@@ -9,7 +9,7 @@ import type {
 } from "../../core/types";
 import { labelOverlap, edgeLabelObstacles, labelPathPoints, type LabelBox } from "../../core/label-placement";
 import { estimateTextWidth } from "../../core/text-metrics";
-import { compactRoute, intersectsBox, orthogonalRoute, type RoutePoint } from "../logic/orthogonal-router";
+import { compactRoute, intersectsBox, obstacleFreeRoute, orthogonalRoute, type RoutePoint } from "../logic/orthogonal-router";
 import { applyPins } from "../../core/editing";
 
 // ─── Layout constants ─────────────────────────────────────────
@@ -568,7 +568,7 @@ function routeOrthogonal(
     let middle: RoutePoint[];
     // Unlike separate electrical nets, relationships may reach the same field.
     // Prefer separated routes, but do not make an occupied approach impassable.
-    try { middle = orthogonalRoute(source.escape, target.escape, [...boxes, ...glyphs],
+    try { middle = obstacleFreeRoute(source.escape, target.escape, [...boxes, ...glyphs],
       previous.map((edge, i) => ({ net: String(i), points: labelPathPoints(edge.path) })), "relationship", 4); }
     catch (error) {
       if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
@@ -604,7 +604,17 @@ function routeOrthogonal(
       best = { path: pathString(points), fromAnchor: { ...source.anchor }, toAnchor: { ...target.anchor } };
     }
   }
-  if (!best) throw new Error(`ERD routing failed: ${a.entity.id}${fromCol ? `.${fromCol}` : ""} -> ${b.entity.id}${toCol ? `.${toCol}` : ""}; no clear terminal route`);
+  if (!best) {
+    const fromAnchor = { ...sideAnchor(a, "right", fromCol), side: "right" as const };
+    const toAnchor = { ...sideAnchor(b, "left", toCol), side: "left" as const };
+    const escape = (anchor: typeof fromAnchor | typeof toAnchor) => {
+      const d = DIRECTIONS[anchor.side];
+      return { x: anchor.x + d.x * (clearance + 8), y: anchor.y + d.y * (clearance + 8) };
+    };
+    best = { fromAnchor, toAnchor, path: pathString(compactRoute([
+      fromAnchor, ...orthogonalRoute(escape(fromAnchor), escape(toAnchor), boxes), toAnchor,
+    ])) };
+  }
   return best;
 }
 

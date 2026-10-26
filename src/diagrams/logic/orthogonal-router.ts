@@ -52,7 +52,7 @@ export function compactRoute(points: RoutePoint[]): RoutePoint[] {
     );
   });
 }
-export function orthogonalRoute(
+export function obstacleFreeRoute(
   start: RoutePoint,
   end: RoutePoint,
   boxes: RouteBox[],
@@ -368,4 +368,24 @@ export function orthogonalRoute(
   throw new Error(
     `No obstacle-free orthogonal route from (${start.x}, ${start.y}) to (${end.x}, ${end.y}); blocked ports: ${JSON.stringify(boxes.filter((b) => [start, end].some((p) => p.x > b.left && p.x < b.right && p.y > b.top && p.y < b.bottom)))}`,
   );
+}
+
+/** Exhaust clean routes before allowing a connection to cross obstacles. */
+export function orthogonalRoute(
+  ...args: Parameters<typeof obstacleFreeRoute>
+): RoutePoint[] {
+  try { return obstacleFreeRoute(...args); }
+  catch (error) {
+    if (!(error instanceof Error) || !error.message.startsWith("No obstacle-free orthogonal route")) throw error;
+  }
+  const [start, end, boxes] = args;
+  const candidates = [
+    [start, { x: end.x, y: start.y }, end],
+    [start, { x: start.x, y: end.y }, end],
+    [start, { x: (start.x + end.x) / 2, y: start.y }, { x: (start.x + end.x) / 2, y: end.y }, end],
+    [start, { x: start.x, y: (start.y + end.y) / 2 }, { x: end.x, y: (start.y + end.y) / 2 }, end],
+  ].map(compactRoute);
+  const crossings = (path: RoutePoint[]) => path.slice(1).reduce((sum, p, i) =>
+    sum + boxes.filter(box => intersectsBox(path[i]!, p, box)).length, 0);
+  return candidates.sort((a, b) => crossings(a) - crossings(b) || a.length - b.length)[0]!;
 }

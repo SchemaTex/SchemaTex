@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
-import { orthogonalRoute, segmentEntersBox } from "../../src/diagrams/logic/orthogonal-router";
+import { obstacleFreeRoute, orthogonalRoute, segmentEntersBox } from "../../src/diagrams/logic/orthogonal-router";
 
-it("keeps electrical nets isolated while allowing penalized relationship approaches", () => {
+it("exhausts isolated electrical routes before allowing best-effort overlaps", () => {
   const start = { x: 0, y: 0 }, end = { x: 100, y: 0 };
   const boxes = [
     { left: -5, right: 20, top: -20, bottom: -5 },
@@ -9,7 +9,10 @@ it("keeps electrical nets isolated while allowing penalized relationship approac
     { left: -5, right: -1, top: -20, bottom: 20 },
   ];
   const previous = [{ net: "existing", points: [start, { x: 30, y: 0 }] }];
-  expect(() => orthogonalRoute(start, end, boxes, previous, "new")).toThrow("No obstacle-free");
+  expect(() => obstacleFreeRoute(start, end, boxes, previous, "new")).toThrow("No obstacle-free");
+  const fallback = orthogonalRoute(start, end, boxes, previous, "new");
+  expect(fallback[0]).toEqual(start);
+  expect(fallback.at(-1)).toEqual(end);
   const points = orthogonalRoute(start, end, boxes, previous, "new", 4);
   expect(points[0]).toEqual(start);
   expect(points.at(-1)).toEqual(end);

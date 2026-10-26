@@ -46,7 +46,7 @@ import type {
 import { RAIL_LABEL } from "./autolayout";
 import { measureRouting, isBetterRouting, routeSegments } from "./layout-quality";
 import { estimateTextWidth } from "../../core/text-metrics";
-import { compactRoute, intersectsBox, orthogonalRoute } from "../logic/orthogonal-router";
+import { compactRoute, intersectsBox, obstacleFreeRoute, orthogonalRoute } from "../logic/orthogonal-router";
 
 /** Horizontal distance between adjacent signal-flow layers. */
 const LAYER_W = 104;
@@ -369,7 +369,7 @@ function terminalLeads(items: LaidOutComponent[], pinMap: NonNullable<CircuitAST
 }
 
 /** Reserve terminal leads as well as bodies, so an earlier net cannot fence in a pin. */
-function routerFor(items: LaidOutComponent[], pinMap: NonNullable<CircuitAST["pinMap"]>) {
+function routerFor(items: LaidOutComponent[], pinMap: NonNullable<CircuitAST["pinMap"]>, route = obstacleFreeRoute) {
   const bodies = items.map((item) => ({ item, box: boxOf(item, 0) }));
   const boxes = bodies.filter(({ item }) => item.component.componentType !== "wire").map(({ box: b }) =>
     ({ left: b.minX - BODY_CLEARANCE, right: b.maxX + BODY_CLEARANCE,
@@ -449,7 +449,7 @@ function routerFor(items: LaidOutComponent[], pinMap: NonNullable<CircuitAST["pi
         [{ netId: net, points }], [...nets], { baseline: drawn }).cost,
       })).sort((a, b) => a.score - b.score)[0]!.points;
     }
-    return compactRoute([from, ...orthogonalRoute(start, end, routingBoxes, occupied, net), to]);
+    return compactRoute([from, ...route(start, end, routingBoxes, occupied, net), to]);
   };
 }
 
@@ -1387,7 +1387,7 @@ function placeConnected(topology: CircuitTopology, columns?: number, traversal: 
 
 type CircuitPlacement = ReturnType<typeof placeConnected>;
 
-function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, opts?: SchematicLayoutOptions) {
+function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, opts?: SchematicLayoutOptions, bestEffort = false) {
   const { ast, pinMap, allPins, groundNets, powerNets, busNets, powerBuses, explicitGrounds, railOnly } = topology;
   const { items, signalComps, channelBanks, channelOf, colLeft, colWidth, channelHeight, layers } = placement;
   const placed = new Map(items.map(item => [item.component.id, item]));
@@ -1400,7 +1400,7 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
   const physicalNets = new Set((ast.buses ?? []).flatMap(bus => bus.nets));
   const routingItems = items.filter((it) => !railOnly.includes(it.component) ||
     pinEntriesOf(ast, it.component).some(([, net]) => !busNets.has(net) || physicalNets.has(net)));
-  const routeSignal = routerFor(routingItems, pinMap);
+  const routeSignal = routerFor(routingItems, pinMap, bestEffort ? orthogonalRoute : obstacleFreeRoute);
   const obstacles = routingItems.map((it) => boxOf(it, -1));
 
   const netPins = new Map<string, Array<{ pt: PinAnchor; compId: string }>>();
@@ -1436,7 +1436,7 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
         (physicalBus.nets.length - 1 - physicalBus.nets.indexOf(net)) * (TERMINAL_LEAD + BRANCH_GAP);
       const busPins = pins.filter(pin => physicalBus.components.includes(pin.compId));
       const lo = Math.min(...busPins.map(pin => pin.pt.x)), hi = Math.max(...busPins.map(pin => pin.pt.x));
-      const trunk = routeSignal({ x: lo, y }, { x: hi, y }, routes, net);
+      const trunk = bestEffort ? [{ x: lo, y }, { x: hi, y }] : routeSignal({ x: lo, y }, { x: hi, y }, routes, net);
       const junctions: PinAnchor[] = [];
       const main: RoutedWire = { netId: net, points: trunk, junctions };
       routes.push(main);
@@ -1580,7 +1580,15 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
         }
       }
     }
-    if (!bestTree.length) throw new Error("No clear branch junction");
+    if (!bestTree.length) {
+      if (!bestEffort) throw new Error("No clear branch junction");
+      // Attach to a real pin when all clear junctions are occupied.
+      const join = sorted[0]!.pt;
+      bestTree = sorted.slice(1).map((pin, i) => ({
+        netId: i ? `${net}.${pin.compId}` : net,
+        points: routeSignal(pin.pt, join, routes, net), junctions: [join],
+      }));
+    }
     routes.push(...bestTree);
   }
 
@@ -1863,13 +1871,13 @@ function placePhysicalBus(topology: CircuitTopology, columns?: number, traversal
     layers: (ast.buses ?? []).map(bus => bus.components) };
 }
 
-function layoutCandidate(ast: CircuitAST, opts?: SchematicLayoutOptions, columns?: number, traversal: "breadth" | "depth" = "breadth"): (AutoLayoutResult & { stats?: SchematicLayoutStats }) | null {
+function layoutCandidate(ast: CircuitAST, opts?: SchematicLayoutOptions, columns?: number, traversal: "breadth" | "depth" = "breadth", bestEffort = false): (AutoLayoutResult & { stats?: SchematicLayoutStats }) | null {
   if (!ast.components.length) return finalize([], [], [], ast.title ? 24 : 0);
   if (!Object.keys(ast.pinMap ?? {}).length) return null;
   const topology = classifyCircuit(ast);
   const placement = ast.groups?.length || ast.buses?.length
     ? placeFunctional(topology, columns, traversal) : placeConnected(topology, columns, traversal);
-  return routeCircuit(topology, placement, opts);
+  return routeCircuit(topology, placement, opts, bestEffort);
 }
 
 /** Evaluate complete drawings, not just distances between un-routed nodes. */
@@ -1896,8 +1904,7 @@ export function schematicNetlistLayout(ast: CircuitAST, opts?: SchematicLayoutOp
     }
   };
   let best = candidate();
-  // Blocked terminal channels invalidate placement, not electrical constraints.
-  // Try another fold instead of painting an unchecked wire through a symbol.
+  // Try every clean placement before allowing wires to cross obstacles.
   if (!best && routingError) for (const traversal of ["breadth", "depth"] as const) {
     for (const columns of [2, 3, 4]) {
       best = candidate(columns, traversal);
@@ -1905,10 +1912,10 @@ export function schematicNetlistLayout(ast: CircuitAST, opts?: SchematicLayoutOp
     }
     if (best) break;
   }
-  if (!best) {
-    if (routingError) throw routingError;
-    return null;
-  }
+  if (!best && routingError) best = layoutCandidate({ ...ast,
+    components: ast.components.map(comp => ({ ...comp, attrs: comp.attrs ? { ...comp.attrs } : undefined })),
+  }, { collectStats: true }, undefined, "breadth", true);
+  if (!best) return null;
   const quality = (layout: AutoLayoutResult) => {
     const bodies = layout.items.map(item => boxOf(item, -1));
     const captions = layout.items.filter(item => item.labelPos && (componentCaption(item.component) || item.component.value))
