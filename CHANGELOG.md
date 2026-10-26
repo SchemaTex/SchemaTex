@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.3] — 2026-10-26
+
+### Fixed
+
+- Logic, circuit, ERD, and network diagrams render best-effort connections when
+  no clean route exists, instead of failing the entire SVG render.
+
 ## [1.1.2] — 2026-10-06
 
 1.1.1 was never published to npm, so 1.1.2 is the first release after 1.1.0 and

@@ -419,13 +419,17 @@ function ioPanel(channels: number): string {
 }
 
 describe("schematic layout — panel conventions and graceful routing", () => {
-  it("reports unroutable geometry instead of painting an unchecked connection", () => {
-    const search = vi.spyOn(router, "orthogonalRoute").mockImplementation(() => { throw new Error("No obstacle-free orthogonal route; blocked ports: []"); });
+  it.each([
+    "No obstacle-free orthogonal route; blocked ports: []",
+    "No clear branch junction",
+    "No obstacle-free orthogonal route for physical bus trunk",
+  ])("renders after every clean placement fails: %s", message => {
+    const search = vi.spyOn(router, "obstacleFreeRoute").mockImplementation(() => { throw new Error(message); });
     try {
       const result = renderResult(`circuit netlist\n${bridgeSupply}`);
       expect(search).toHaveBeenCalled();
-      expect(result.status).toBe("invalid");
-      expect(result.diagnostics.some(d => d.message.includes("No obstacle-free orthogonal route"))).toBe(true);
+      expect(result.ok).toBe(true);
+      expect(result.svg).toContain("<svg");
     } finally { search.mockRestore(); }
   });
 

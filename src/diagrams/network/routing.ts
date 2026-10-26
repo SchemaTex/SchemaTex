@@ -1,4 +1,4 @@
-import { segmentEntersBox, compactRoute, intersectsBox, orthogonalRoute, type RouteBox, type RoutedNet } from '../logic/orthogonal-router';
+import { segmentEntersBox, compactRoute, intersectsBox, obstacleFreeRoute, orthogonalRoute, type RouteBox, type RoutedNet } from '../logic/orthogonal-router';
 import type { DeviceBox, NetPoint } from './types';
 
 export { segmentEntersBox } from "../logic/orthogonal-router";
@@ -28,7 +28,7 @@ export function routeNetworkLink(a: DeviceBox, b: DeviceBox, obstacles: RouteBox
     let middle: NetPoint[];
     try {
       middle=obstacles.some(o=>segmentEntersBox(source.escape,target.escape,o))
-        ? orthogonalRoute(source.escape,target.escape,obstacles)
+        ? obstacleFreeRoute(source.escape,target.escape,obstacles)
         : [source.escape,target.escape];
     }
     catch (error) {
@@ -57,7 +57,7 @@ export function routeNetworkLink(a: DeviceBox, b: DeviceBox, obstacles: RouteBox
     const score=path.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-path[i].x,p.y-path[i].y),0)+(path.length-2)*28+wireCost;
     if(score<bestCost){best=path;bestCost=score;}
   }
-  if(!best)throw new Error(`Network link ${a.device.id} → ${b.device.id} has no clear terminal escape`);
+  if(!best)return orthogonalRoute(direct[0],direct[1],obstacles);
   return best;
 }
 
