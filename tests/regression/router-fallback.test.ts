@@ -1,11 +1,26 @@
 import { expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { render } from "../../src/core/api";
 import { layoutNetwork } from "../../src/diagrams/network/layout";
 import { parseNetwork } from "../../src/diagrams/network/parser";
 import { renderNetworkLayout } from "../../src/diagrams/network/renderer";
 import { parseNetlist } from "../../src/diagrams/circuit/netlist";
-import { schematicNetlistLayout } from "../../src/diagrams/circuit/schematic-layout";
+import { boxOf, schematicNetlistLayout } from "../../src/diagrams/circuit/schematic-layout";
 import { obstacleFreeRoute, orthogonalRoute } from "../../src/diagrams/logic/orthogonal-router";
+
+it("renders a circuit whose vertical supply connection exhausts clean routes", () => {
+  const source = readFileSync(new URL("../fixtures/regression/circuit-supply-route-blocked.sx", import.meta.url), "utf8");
+  const layout = schematicNetlistLayout(parseNetlist(source.split("\n").slice(1).join("\n")))!;
+  const upper = layout.items.find(item => item.component.id === "U1")!.anchors["6"]!;
+  const lower = layout.items.find(item => item.component.id === "U2")!.anchors["4"]!;
+  const blocker = boxOf(layout.items.find(item => item.component.id === "U1middle")!, 0);
+  expect(upper.x).toBe(lower.x);
+  expect(upper.x).toBeGreaterThan(blocker.minX);
+  expect(upper.x).toBeLessThan(blocker.maxX);
+  expect(blocker.minY).toBeGreaterThan(upper.y);
+  expect(blocker.maxY).toBeLessThan(lower.y);
+  expect(render(source)).toContain("<svg");
+});
 
 it("renders logic whose fan-out exhausts obstacle-free routes", () => {
   const gates = Array.from({ length: 12 }, (_, i) => `G${i}`);

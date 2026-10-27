@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.4] — 2026-10-27
+
+### Fixed
+
+- Circuit supply connections use best-effort routing after every clean placement
+  fails, closing a gap that could still prevent the entire SVG from rendering.
+
 ## [1.1.3] — 2026-10-26
 
 ### Fixed

@@ -1,0 +1,9 @@
+circuit netlist
+V1 VCC GND 12V
+U0 GND d type=resistor
+U1 GND d GND d GND VCC type=ic
+U1middle d GND d GND d GND type=ic
+U2 a VCC a VCC a d type=ic
+U3 d c b type=npn
+U4 d GND type=resistor
+U5 c b type=capacitor
