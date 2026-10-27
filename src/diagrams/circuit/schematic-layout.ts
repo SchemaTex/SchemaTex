@@ -1652,7 +1652,7 @@ function routeCircuit(topology: CircuitTopology, placement: CircuitPlacement, op
       routes.push({ netId: `${net}.bank`, points: [{ x, y: railY }, { x, y: endY }] });
       junctions.push({ x, y: railY });
     }
-    const routeSupply = routerFor(items, pinMap);
+    const routeSupply = routerFor(items, pinMap, bestEffort ? orthogonalRoute : obstacleFreeRoute);
     for (const pin of allPins.filter((p) => p.net === net)) {
       const host = placed.get(pin.compId);
       const anchor = host?.anchors[pin.pinName];
