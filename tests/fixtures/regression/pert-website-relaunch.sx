@@ -1,0 +1,9 @@
+pert
+title: "Website relaunch"
+unit: days
+task A "Requirements" duration: 3
+task B "Design" duration: 5 after: A
+task C "Backend API" duration: 8 after: A
+task D "Frontend build" duration: 6 after: B
+task E "Integration" duration: 2 after: C, D
+task F "QA & launch" duration: 3 after: E

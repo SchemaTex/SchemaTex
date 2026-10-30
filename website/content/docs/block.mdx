@@ -101,7 +101,9 @@ A summing junction combines multiple signals into one, with explicit polarity fo
 
 **Syntax:** `ID = sum(+a, -b, +c, …)`
 
-- Each input is a signed ID: `+x` adds signal `x`, `-y` subtracts signal `y`.
+- Signed terms map to incoming connections **in declaration order**, not by name or visual position. The first incoming edge gets the first sign, the second gets the second sign, and so on. Signal declarations preserve that order when inlined.
+- Term names describe signals; they need not match upstream block IDs. For `e = sum(+r, -h)`, declare `in -> e` before `H -> e`: the reference edge gets `+` and the feedback edge gets `−`.
+- Every incoming edge receives a sign. Connections beyond the listed terms are positive; unused terms do not create connections.
 - An input without a sign is treated as positive.
 - The summing junction ID is then used as the target of connection lines, just like a block ID.
 

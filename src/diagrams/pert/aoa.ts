@@ -29,7 +29,7 @@ const AOA = {
   VGAP: 86,
   PAD: 30,
   TITLE_H: 40,
-  FOOTER_H: 34,
+  FOOTER_H: 52,
 } as const;
 
 interface RawArc {

@@ -26,6 +26,7 @@ import type {
   PertTask,
   PertUnit,
 } from "./types";
+import { orthogonalRoute, compactRoute, intersectsBox } from "../logic/orthogonal-router";
 import { schedulePert } from "./scheduler";
 import { layoutAoa } from "./aoa";
 
@@ -37,7 +38,7 @@ export const PERT_CONST = {
   V_GAP: 34,
   PAD: 24,
   TITLE_H: 40,
-  FOOTER_H: 34,
+  FOOTER_H: 52,
   SENT_R: 14,
   // timescaled
   TS_BOX_H: 54,
@@ -186,23 +187,40 @@ function routeEdge(
   s: PertBox,
   t: PertBox,
   direction: "LR" | "TB",
+  boxes: PertBox[],
 ): { d: string; labelX: number; labelY: number } {
-  if (direction === "TB") {
-    const sx = s.x + s.width / 2;
-    const sy = s.y + s.height;
-    const tx = t.x + t.width / 2;
-    const ty = t.y;
-    const mid = (sy + ty) / 2;
-    const d = `M ${sx} ${sy} L ${sx} ${mid} L ${tx} ${mid} L ${tx} ${ty}`;
-    return { d, labelX: (sx + tx) / 2, labelY: mid };
+  const vertical = direction === "TB";
+  const start = vertical
+    ? { x: s.x + s.width / 2, y: s.y + s.height }
+    : { x: s.x + s.width, y: s.y + s.height / 2 };
+  // Separate incoming arrowheads so one dependency cannot hide another.
+  const inputFraction = (t.task.deps.findIndex((dep) => dep.pred === s.id) + 1) / (t.task.deps.length + 1);
+  const end = vertical
+    ? { x: t.x + t.width * inputFraction, y: t.y }
+    : { x: t.x, y: t.y + t.height * inputFraction };
+  const mid = vertical ? (start.y + end.y) / 2 : (start.x + end.x) / 2;
+  let points = vertical
+    ? [start, { x: start.x, y: mid }, { x: end.x, y: mid }, end]
+    : [start, { x: mid, y: start.y }, { x: mid, y: end.y }, end];
+  const obstacles = boxes.map((b) => ({
+    left: b.x - 12, right: b.x + b.width + 12,
+    top: b.y - 12, bottom: b.y + b.height + 12,
+  }));
+  const blocked = points.slice(1).some((p, i) => boxes.some((b, j) =>
+    b.id !== s.id && b.id !== t.id && intersectsBox(points[i]!, p, obstacles[j]!)
+  ));
+  if (blocked) {
+    // Escape along the flow axis before routing so the last segment always
+    // approaches the real target from outside its box.
+    const exit = vertical ? { x: start.x, y: start.y + 18 } : { x: start.x + 18, y: start.y };
+    const entry = vertical ? { x: end.x, y: end.y - 18 } : { x: end.x - 18, y: end.y };
+    points = compactRoute([start, ...orthogonalRoute(exit, entry, obstacles), end]);
   }
-  const sx = s.x + s.width;
-  const sy = s.y + s.height / 2;
-  const tx = t.x;
-  const ty = t.y + t.height / 2;
-  const mid = (sx + tx) / 2;
-  const d = `M ${sx} ${sy} L ${mid} ${sy} L ${mid} ${ty} L ${tx} ${ty}`;
-  return { d, labelX: mid, labelY: (sy + ty) / 2 };
+  return {
+    d: points.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" "),
+    labelX: vertical ? (start.x + end.x) / 2 : mid,
+    labelY: vertical ? mid : (start.y + end.y) / 2,
+  };
 }
 
 // ─── Network layout ──────────────────────────────────────────────
@@ -287,7 +305,7 @@ function layoutNetwork(ast: PertAst, schedule: PertScheduleResult): PertLayoutRe
       if (!s || !tg) continue;
       const critical =
         schedule.computed.get(dep.pred)!.critical && schedule.computed.get(t.id)!.critical;
-      const { d, labelX, labelY } = routeEdge(s, tg, dir);
+      const { d, labelX, labelY } = routeEdge(s, tg, dir, boxes);
       const edge: PertEdge = {
         from: dep.pred,
         to: t.id,
@@ -440,7 +458,7 @@ function buildDependencyEdges(
       if (!s || !tg) continue;
       const critical =
         schedule.computed.get(dep.pred)!.critical && schedule.computed.get(t.id)!.critical;
-      const { d, labelX, labelY } = routeEdge(s, tg, dir);
+      const { d, labelX, labelY } = routeEdge(s, tg, dir, [...boxById.values()]);
       const edge: PertEdge = { from: dep.pred, to: t.id, type: dep.type, lag: dep.lag, d, critical };
       const lbl = edgeLabel(dep.type, dep.lag, ast.unit);
       if (lbl) edge.label = { text: lbl, x: labelX, y: labelY };
@@ -648,7 +666,7 @@ function layoutTimescaled(ast: PertAst, schedule: PertScheduleResult): PertLayou
       if (!s || !tg) continue;
       const critical =
         schedule.computed.get(dep.pred)!.critical && schedule.computed.get(t.id)!.critical;
-      const { d, labelX, labelY } = routeEdge(s, tg, "LR");
+      const { d, labelX, labelY } = routeEdge(s, tg, "LR", boxes);
       const edge: PertEdge = {
         from: dep.pred,
         to: t.id,

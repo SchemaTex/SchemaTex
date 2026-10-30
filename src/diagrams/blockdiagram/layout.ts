@@ -558,16 +558,13 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     sourceCountsByPair.set(key, ids.length);
   }
 
-  const sumPolarity = new Map<string, Map<string, "+" | "-">>();
+  // Terms describe incoming pins in connection declaration order. Signal
+  // names are labels and need not match the upstream block ID.
+  const sumPolarity = new Map<BlockEdge, "+" | "-">();
   for (const sum of ast.sums) {
-    const values = new Map<string, "+" | "-">();
-    for (const token of sum.inputs) {
-      values.set(
-        token.replace(/^[+-]/, ""),
-        token.startsWith("-") ? "-" : "+"
-      );
-    }
-    sumPolarity.set(sum.id, values);
+    (incoming.get(sum.id) ?? []).forEach((edge, index) => {
+      sumPolarity.set(edge, sum.inputs[index]?.startsWith("-") ? "-" : "+");
+    });
   }
 
   const edges: LaidEdge[] = [];
@@ -642,7 +639,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
 
     let polarity: LaidEdgePolarity | undefined;
     if (sumById.has(edge.to)) {
-      const sign = sumPolarity.get(edge.to)?.get(edge.from) ?? "+";
+      const sign = sumPolarity.get(edge) ?? "+";
       const side = feedbackEdgeSide(edge);
       const pin = isFeedback ? side === "above" ? "top" : "bottom" : "left";
       polarity = {
@@ -651,7 +648,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
         x: isFeedback ? target.x - 8 : targetX - 8,
         y: isFeedback
           ? target.y + (side === "above" ? -SUM_R - 4 : SUM_R + 10)
-          : targetY + 5,
+          : targetY - 8,
       };
     }
 

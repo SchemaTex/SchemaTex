@@ -64,7 +64,9 @@ export async function GET(req: Request): Promise<Response> {
     MAX_W,
     Number.isFinite(wParam) && wParam > 0 ? wParam : Math.round(intrinsicW * DEFAULT_SCALE),
   );
-  const withBg = svg.replace(
+  // The bundled Noto Sans subset has no U+2192. Use its ASCII glyphs for
+  // textual arrows before rasterizing; SVG exports retain the original text.
+  const withBg = svg.replaceAll('→', '-&gt;').replace(
     /(<svg[^>]*>)/,
     '$1<rect x="-9999" y="-9999" width="99999" height="99999" fill="#ffffff"/>',
   );
