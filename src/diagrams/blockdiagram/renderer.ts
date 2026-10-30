@@ -90,8 +90,8 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
       if (n.hasBranch) {
         branchSvgs.push(
           circle({
-            cx: n.x + n.width,
-            cy: n.y + n.height / 2,
+            cx: n.branchPoint?.x ?? n.x + n.width,
+            cy: n.branchPoint?.y ?? n.y + n.height / 2,
             r: 3.5,
             class: "schematex-bd-branch",
           })
@@ -111,8 +111,8 @@ export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string
       if (n.hasBranch) {
         branchSvgs.push(
           circle({
-            cx: n.cx + n.r,
-            cy: n.cy,
+            cx: n.branchPoint?.x ?? n.cx + n.r,
+            cy: n.branchPoint?.y ?? n.cy,
             r: 3.5,
             class: "schematex-bd-branch",
           })

@@ -21,6 +21,7 @@ export interface LaidBlock {
   width: number;
   height: number;
   hasBranch?: boolean;
+  branchPoint?: { x: number; y: number };
 }
 
 export interface LaidSum {
@@ -30,6 +31,7 @@ export interface LaidSum {
   cy: number;
   r: number;
   hasBranch?: boolean;
+  branchPoint?: { x: number; y: number };
 }
 
 export interface LaidPort {
@@ -40,6 +42,7 @@ export interface LaidPort {
   y: number;
   isInput: boolean;
   hasBranch?: boolean;
+  branchPoint?: { x: number; y: number };
 }
 
 export type LaidNode = LaidBlock | LaidSum | LaidPort;
@@ -485,6 +488,26 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     belowCursor += measure.height + ROW_GAP;
   }
 
+  // A single return block sits between the pickup and the summing input,
+  // with signal flow right-to-left along the return row.
+  const returnBlocks = new Set<string>();
+  for (const [id] of feedbackNodeSide) {
+    const ins = incoming.get(id) ?? [], outs = outgoing.get(id) ?? [];
+    if (ins.length !== 1 || outs.length !== 1) continue;
+    const source = centers.get(ins[0]!.from)!, target = centers.get(outs[0]!.to)!;
+    if ((outgoing.get(ins[0]!.from)?.length ?? 0) < 2) continue;
+    const pickupX = source.x + measures.get(ins[0]!.from)!.width / 2 + 30;
+    centers.get(id)!.x = (target.x + pickupX) / 2;
+    returnBlocks.add(id);
+  }
+  const takeoffs = new Map<string, { x: number; y: number }>();
+  for (const [id, outs] of outgoing) {
+    if (outs.length > 1 && outs.some(e => returnBlocks.has(e.to) || feedback.has(e))) {
+      const center = centers.get(id)!;
+      takeoffs.set(id, { x: center.x + measures.get(id)!.width / 2 + 30, y: center.y });
+    }
+  }
+
   const nodes: LaidNode[] = [];
   const branchCount = new Map<string, number>();
   for (const edge of ast.connections) {
@@ -507,6 +530,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
         width: measure.width,
         height: measure.height,
         hasBranch: (branchCount.get(id) ?? 0) > 1,
+        branchPoint: takeoffs.get(id),
       });
     } else if (sum) {
       nodes.push({
@@ -516,6 +540,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
         cy: center.y,
         r: SUM_R,
         hasBranch: (branchCount.get(id) ?? 0) > 1,
+        branchPoint: takeoffs.get(id),
       });
     } else {
       nodes.push({
@@ -526,6 +551,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
         y: center.y,
         isInput: (incoming.get(id)?.length ?? 0) === 0,
         hasBranch: (branchCount.get(id) ?? 0) > 1,
+        branchPoint: takeoffs.get(id),
       });
     }
   }
@@ -583,7 +609,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     const toLayer = layer.get(edge.to) ?? 0;
     const outgoingEdges = outgoing.get(edge.from) ?? [];
     const incomingEdges = incoming.get(edge.to) ?? [];
-    const sourceY =
+    const sourceY = takeoffs.has(edge.from) ? source.y :
       source.y +
       portOffset(
         outgoingOrder.get(edge) ?? 0,
@@ -606,7 +632,21 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     let midY: number;
     let isFeedback = false;
 
-    if (toLayer > fromLayer) {
+    const takeoff = takeoffs.get(edge.from);
+    if (returnBlocks.has(edge.to) && takeoff) {
+      const right = target.x + measures.get(edge.to)!.width / 2;
+      path = `M ${takeoff.x} ${takeoff.y} L ${takeoff.x} ${target.y} L ${right} ${target.y}`;
+      midX = (takeoff.x + right) / 2;
+      midY = target.y - 7;
+    } else if (returnBlocks.has(edge.from)) {
+      isFeedback = true;
+      const left = source.x - measures.get(edge.from)!.width / 2;
+      const side = feedbackEdgeSide(edge);
+      const targetEdgeY = target.y + (side === "above" ? -1 : 1) * nodeHeight(edge.to) / 2;
+      path = `M ${left} ${source.y} L ${target.x} ${source.y} L ${target.x} ${targetEdgeY}`;
+      midX = (left + target.x) / 2;
+      midY = source.y - 7;
+    } else if (toLayer > fromLayer) {
       const pairKey = `${fromLayer}:${toLayer}`;
       const sourceRank =
         sourceRanksByPair.get(pairKey)?.get(edge.from) ?? 0;
@@ -632,7 +672,9 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
       const targetEdgeY = side === "above"
         ? target.y - nodeHeight(edge.to) / 2
         : target.y + nodeHeight(edge.to) / 2;
-      path = `M ${source.x} ${sourceEdgeY} L ${source.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetEdgeY}`;
+      path = takeoff
+        ? `M ${takeoff.x} ${takeoff.y} L ${takeoff.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetEdgeY}`
+        : `M ${source.x} ${sourceEdgeY} L ${source.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetEdgeY}`;
       midX = (source.x + target.x) / 2;
       midY = laneY + (side === "above" ? 7 : -7);
     }

@@ -164,7 +164,6 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
     const total = ids.reduce((s, id) => s + heightOf(id), 0) + (ids.length - 1) * ROW_GAP;
     if (total > maxColH) maxColH = total;
   }
-  const totalH = maxColH + 80;
 
   const nodeInfo = new Map<string, LogicLayoutNode>();
   for (const [layerIdx, ids] of layers) {
@@ -311,7 +310,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
   // Module bounding boxes (dashed enclosure for sub-circuits)
   const modules: LogicLayoutModule[] = [];
   if (ast.modules && ast.modules.length > 0) {
-    const PAD = 14;
+    const PAD = 24;
     for (const mod of ast.modules) {
       const memberIds = new Set(
         ast.gates.filter((g) => g.moduleId === mod.id).map((g) => g.id)
@@ -321,7 +320,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
       for (const n of nodes) {
         if (!memberIds.has(n.id)) continue;
         const w = n.geometry?.width ?? 60;
-        const h = n.geometry?.height ?? 60;
+        const h = (n.geometry?.height ?? 60) + 20;
         if (n.x < minX) minX = n.x;
         if (n.y < minY) minY = n.y;
         if (n.x + w > maxX) maxX = n.x + w;
@@ -341,7 +340,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
 
   const points = wires.flatMap(w => [...w.path.matchAll(/[ML] ([\d.-]+),([\d.-]+)/g)].map(m => ({ x: +m[1]!, y: +m[2]! })));
   const shiftX = Math.max(0, 12 - Math.min(12, ...points.map(p => p.x)));
-  const shiftY = Math.max(0, 12 - Math.min(12, ...points.map(p => p.y)));
+  const shiftY = 24 - Math.min(maxColH + 40, ...nodes.map(n => n.y), ...modules.map(m => m.y), ...points.map(p => p.y));
   if (shiftX || shiftY) {
     for (const node of nodes) { node.x += shiftX; node.y += shiftY; }
     for (const module of modules) { module.x += shiftX; module.y += shiftY; }
@@ -350,5 +349,5 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
       wire.path = wire.path.replace(/([ML]) ([\d.-]+),([\d.-]+)/g, (_, command, x, y) => `${command} ${+x + shiftX},${+y + shiftY}`);
     }
   }
-  return { width: Math.max(totalW, ...points.map(p => p.x + 12)) + shiftX, height: Math.max(totalH, ...nodes.map(n=>n.y+(n.geometry?.height??PORT_H)+30), ...points.map(p => p.y + 12)) + shiftY, nodes, wires, modules };
+  return { width: Math.max(totalW, ...points.map(p => p.x + 12)) + shiftX, height: Math.max(...nodes.map(n=>n.y+(n.geometry?.height??PORT_H)+30), ...modules.map(m=>m.y+m.height+12), ...points.map(p => p.y + shiftY + 12)), nodes, wires, modules };
 }

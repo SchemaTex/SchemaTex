@@ -125,3 +125,21 @@ it.each(["LR", "TB"])("relaunch dependencies reach their real targets without cr
     expect(svg).toContain(`d="${e.d}" marker-end="url(#sx-pert-arrow${e.critical ? "-crit" : ""})" data-from="${e.from}" data-to="${e.to}"`);
   }
 });
+
+it.each(["LR", "TB"])("long dependencies enter the milestone boundary without crossing intermediate tasks (%s)", direction => {
+  const dsl = readFileSync(new URL("../fixtures/regression/pert-milestone-join.sx", import.meta.url), "utf8").replace("pert\n", `pert\ndirection: ${direction}\n`);
+  const layout = layoutPert(parsePert(dsl));
+  const incoming = layout.edges.filter(e => e.to === "E2");
+  expect(incoming).toHaveLength(2);
+  expect(new Set(incoming.map(e => e.d)).size).toBe(2);
+  for (const edge of incoming) {
+    const coords = edge.d.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+    const points = Array.from({ length: coords.length / 2 }, (_, i) => ({ x: coords[i * 2], y: coords[i * 2 + 1] }));
+    const target = layout.boxes.find(b => b.id === edge.to)!;
+    const end = points.at(-1)!;
+    expect(Math.abs((end.x - target.x - target.width / 2) / (target.width / 2)) + Math.abs((end.y - target.y - target.height / 2) / (target.height / 2))).toBeCloseTo(1);
+    for (let i = 1; i < points.length; i++) for (const box of layout.boxes.filter(b => b.id !== edge.from && b.id !== edge.to)) {
+      expect(segmentEntersBox(points[i - 1], points[i], { left: box.x, right: box.x + box.width, top: box.y, bottom: box.y + box.height }), `${edge.from} -> ${edge.to} crosses ${box.id}`).toBe(false);
+    }
+  }
+});

@@ -63,6 +63,8 @@ export function getGatePaths(
       }
       return { body };
     }
+    case "MUX":
+      return { body: `M 0,0 L ${width},${height / 4} V ${height * 3 / 4} L 0,${height} Z` };
     case "NOT":
     case "BUF":
     case "SCHMITT":
@@ -174,6 +176,23 @@ export function getGateGeometry(
         ansiPath: getGatePaths(gateType, bubble ? 70 : 60, 70).body,
         outputBubble: bubble,
         iecLabel: "1",
+      };
+    }
+    case "MUX": {
+      const dataCount = Math.max(2, inputCount - 1);
+      const height = Math.max(80, dataCount * 20);
+      return {
+        width: 100,
+        height,
+        inputPins: [
+          ...Array.from({ length: dataCount }, (_, i) => ({
+            id: `in${i + 1}`, x: 0, y: height * (i + 1) / (dataCount + 1), label: `I${i}`,
+          })),
+          { id: "S", x: 50, y: height, label: "S" },
+        ],
+        outputPins: [{ id: "out", x: 100, y: height / 2 }],
+        ansiPath: getGatePaths(gateType, 100, height).body,
+        iecLabel: "MUX",
       };
     }
     case "DFF": {

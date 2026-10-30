@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.6] — 2026-10-29
+
+### Fixed
+
+- PERT dependencies meet the visible milestone diamond boundary, with separate
+  incoming arrows and clear routing past intermediate activities.
+- Logic MUXes use a trapezoid with data inputs on the left and select entering
+  from below. Module frames leave room for pins and captions, and the canvas
+  crops unused space above the circuit.
+- Block feedback shares a single forward output wire with a takeoff dot beyond
+  the block. Return sensors carry signals right-to-left into the summing input.
+- Website PNG rendering embeds Unicode font subsets covering generated renderer
+  symbols, including arrows, Greek letters, combining overlines and math signs.
+  Critical paths retain real arrows. Regression coverage checks emitted text
+  against the font character maps across the documented examples.
+
 ## [1.1.5] — 2026-10-29
 
 ### Fixed

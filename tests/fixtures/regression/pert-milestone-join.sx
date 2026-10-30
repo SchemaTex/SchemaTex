@@ -1,0 +1,10 @@
+pert
+title: "Project X"
+critical-tolerance: 0.01
+task B "Design"      duration: 2/4/6
+task C "Development" duration: 5/10/15 after: B
+task D "Testing"     duration: 3/5/7   after: C
+task E "Deployment"  duration: 1/2/3   after: D
+task Q "Docs"        duration: 2/3/6
+task R "Training"    duration: 1/2/4   after: Q
+task E2 "Go-live"    milestone after: E, R

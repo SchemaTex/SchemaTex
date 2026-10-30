@@ -100,6 +100,11 @@ function renderGateBody(
     );
   }
 
+  if (style === "ansi" && n.gateType === "MUX") {
+    const select = g.inputPins.find(pin => pin.id === "S")!;
+    out.push(el("line", { x1: select.x, y1: g.height * 7 / 8, x2: select.x, y2: select.y, class: "schematex-logic-wire" }));
+  }
+
   // Output bubble
   if (g.outputBubble) {
     const op = g.outputPins[0];
@@ -147,7 +152,7 @@ function renderGateBody(
         text(
           {
             x: pin.x + 5,
-            y: pin.y + 3,
+            y: pin.id === "S" ? pin.y - 18 : pin.y + 3,
             class: "schematex-logic-pin-label",
           },
           pin.label
@@ -161,7 +166,7 @@ function renderGateBody(
         text(
           {
             x: pin.x - 6,
-            y: pin.y + 3,
+            y: pin.id === "S" ? pin.y - 18 : pin.y + 3,
             class: "schematex-logic-pin-label",
             "text-anchor": "end",
           },
@@ -174,7 +179,7 @@ function renderGateBody(
   // Gate type label (center top, small)
   if (style === "ansi" && g.iecLabel && g.height >= 60) {
     const labelX = g.width / 2;
-    const labelY = g.height + 14;
+    const labelY = n.gateType === "MUX" ? g.height / 2 + 4 : g.height + 14;
     out.push(
       text(
         {
