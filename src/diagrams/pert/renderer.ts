@@ -138,7 +138,7 @@ function markers(): string {
         refY: 5,
         markerWidth: 8,
         markerHeight: 8,
-        orient: "auto-start-reverse",
+        orient: "auto",
       },
       [polygon({ points: "0,0 10,5 0,10", fill: color })],
     );
@@ -492,12 +492,12 @@ export function renderPertLayout(layout: PertLayoutResult, config?: RenderConfig
   const { plain, critPath } = summaryText(layout.summary);
   const footerY = layout.height - 12;
   const footerParts: string[] = [
-    textEl({ class: "sx-pert-summary", x: PERT_PAD, y: footerY, "text-anchor": "start" }, plain),
+    textEl({ class: "sx-pert-summary", x: PERT_PAD, y: footerY - 18, "text-anchor": "start" }, plain),
   ];
   if (critPath) {
     footerParts.push(
       textEl(
-        { class: "sx-pert-summary crit", x: layout.width - PERT_PAD, y: footerY, "text-anchor": "end" },
+        { class: "sx-pert-summary crit", x: PERT_PAD, y: footerY, "text-anchor": "start" },
         `Critical path: ${critPath}`,
       ),
     );

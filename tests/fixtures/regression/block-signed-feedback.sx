@@ -1,0 +1,11 @@
+blockdiagram "t"
+C = block("C(s)")
+G = block("G(s)")
+H = block("H(s)")
+e = sum(+r, -h)
+in -> e ["R(s)"]
+e -> C
+C -> G
+G -> out ["Y(s)"]
+G -> H
+H -> e

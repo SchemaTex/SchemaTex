@@ -527,6 +527,8 @@ export function parseBlockDiagram(text: string): BlockAST {
       byTarget.set(edge.to, incoming);
     }
 
+    const connectionOrder = new Map(connections.map((edge, index) => [edge, index]));
+    const mergedOrder = new Map<BlockEdge, number>();
     const consumed = new Set<BlockEdge>();
     for (const signal of signals.values()) {
       const incoming = byTarget.get(signal.id) ?? [];
@@ -543,6 +545,7 @@ export function parseBlockDiagram(text: string): BlockAST {
               discrete:
                 signal.discrete || !!source.discrete || !!target.discrete,
             });
+            mergedOrder.set(merged[merged.length - 1]!, connectionOrder.get(target)!);
           }
         }
       } else if (incoming.length > 0) {
@@ -554,6 +557,7 @@ export function parseBlockDiagram(text: string): BlockAST {
             label: source.label ?? signal.label,
             discrete: signal.discrete || !!source.discrete,
           });
+          mergedOrder.set(merged[merged.length - 1]!, connectionOrder.get(source)!);
         }
       } else if (outgoing.length > 0) {
         for (const target of outgoing) {
@@ -564,12 +568,17 @@ export function parseBlockDiagram(text: string): BlockAST {
             label: target.label ?? signal.label,
             discrete: signal.discrete || !!target.discrete,
           });
+          mergedOrder.set(merged[merged.length - 1]!, connectionOrder.get(target)!);
         }
       }
     }
     for (const edge of connections) {
       if (!consumed.has(edge)) merged.push(edge);
     }
+    merged.sort((a, b) =>
+      (mergedOrder.get(a) ?? connectionOrder.get(a)!) -
+      (mergedOrder.get(b) ?? connectionOrder.get(b)!)
+    );
     connections.splice(0, connections.length, ...merged);
   }
 

@@ -53,3 +53,13 @@ task A "Spec" duration: 2/3/5`);
     expect(svg.trim().endsWith("</svg>")).toBe(true);
   });
 });
+
+  it("puts duration and critical path on separate footer lines in TB", () => {
+    const svg = renderPert(DIAMOND.replace("pert\n", "pert\ndirection: TB\n"));
+    const footer = svg.slice(svg.indexOf('<g class="sx-pert-footer">'));
+    const texts = [...footer.matchAll(/<text[^>]*y="([\d.]+)"[^>]*>([^<]+)<\/text>/g)];
+    expect(texts).toHaveLength(2);
+    expect(Number(texts[1][1]) - Number(texts[0][1])).toBeGreaterThanOrEqual(18);
+    expect(texts[0][2]).toContain("Project duration");
+    expect(texts[1][2]).toContain("Critical path: A → B → D");
+  });

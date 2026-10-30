@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.5] — 2026-10-29
+
+### Fixed
+
+- Block diagrams: assign each sum input its sign in incoming connection
+  declaration order, including negative feedback and inlined named signals.
+- PERT: route dependencies around intervening task boxes so arrowheads reach
+  their actual targets in LR and TB networks, with distinct input pins and
+  correctly oriented arrowheads in PNG output. Separate the duration summary
+  and critical path onto two footer lines.
+- Website PNG renderer: use ASCII arrows supported by the bundled font instead
+  of missing-glyph boxes in critical-path footers. SVG exports retain Unicode arrows.
+
 ## [1.1.4] — 2026-10-27
 
 ### Fixed

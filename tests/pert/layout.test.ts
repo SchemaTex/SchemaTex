@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { segmentEntersBox } from "../../src/diagrams/logic/orthogonal-router";
+import { renderPert } from "../../src/diagrams/pert/renderer";
 import { describe, expect, it } from "vitest";
 import { parsePert } from "../../src/diagrams/pert/parser";
 import { layoutPert } from "../../src/diagrams/pert/layout";
@@ -93,4 +96,32 @@ task C "C" duration: 2 after: A`));
     expect(l.axis!.ticks[0].value).toBe(0);
     expect(l.axis!.ticks.some((t) => t.value === 12)).toBe(true);
   });
+});
+
+it.each(["LR", "TB"])("relaunch dependencies reach their real targets without crossing tasks (%s)", (direction) => {
+  const dsl = readFileSync(new URL("../fixtures/regression/pert-website-relaunch.sx", import.meta.url), "utf8")
+    .replace("pert\n", `pert\ndirection: ${direction}\n`);
+  const l = layoutPert(parsePert(dsl));
+  const svg = renderPert(dsl);
+  expect(l.edges).toHaveLength(6);
+  expect(svg).toMatch(/<marker[^>]*id="sx-pert-arrow"[^>]*orient="auto"/);
+  for (const e of l.edges) {
+    const coords = e.d.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+    const points = Array.from({ length: coords.length / 2 }, (_, i) => ({ x: coords[2 * i], y: coords[2 * i + 1] }));
+    const target = l.boxes.find((b) => b.id === e.to)!;
+    const inputFraction = (target.task.deps.findIndex((dep) => dep.pred === e.from) + 1) / (target.task.deps.length + 1);
+    expect(points.at(-1)).toEqual(direction === "TB"
+      ? { x: target.x + target.width * inputFraction, y: target.y }
+      : { x: target.x, y: target.y + target.height * inputFraction });
+    const before = points.at(-2)!;
+    expect(direction === "TB" ? before.y < target.y : before.x < target.x).toBe(true);
+    for (let i = 1; i < points.length; i++) {
+      for (const box of l.boxes.filter((b) => b.id !== e.from && b.id !== e.to)) {
+        expect(segmentEntersBox(points[i - 1], points[i], {
+          left: box.x, right: box.x + box.width, top: box.y, bottom: box.y + box.height,
+        }), `${e.from} -> ${e.to} crosses ${box.id}`).toBe(false);
+      }
+    }
+    expect(svg).toContain(`d="${e.d}" marker-end="url(#sx-pert-arrow${e.critical ? "-crit" : ""})" data-from="${e.from}" data-to="${e.to}"`);
+  }
 });
