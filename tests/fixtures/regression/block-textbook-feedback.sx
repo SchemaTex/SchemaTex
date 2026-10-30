@@ -1,0 +1,11 @@
+blockdiagram
+X = block("X(s)")
+G = block("G(s)")
+Y = block("Y(s)")
+H = block("H(s)") [role: sensor]
+s = sum(+x, -h)
+X -> s
+s -> G ["Z(s)"]
+G -> Y ["Z(s)G(s)"]
+G -> H
+H -> s

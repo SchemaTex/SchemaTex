@@ -198,6 +198,10 @@ function routeEdge(
   const end = vertical
     ? { x: t.x + t.width * inputFraction, y: t.y }
     : { x: t.x, y: t.y + t.height * inputFraction };
+  if (t.milestone) {
+    if (vertical) end.y += t.height * Math.abs(inputFraction - 0.5);
+    else end.x += t.width * Math.abs(inputFraction - 0.5);
+  }
   const mid = vertical ? (start.y + end.y) / 2 : (start.x + end.x) / 2;
   let points = vertical
     ? [start, { x: start.x, y: mid }, { x: end.x, y: mid }, end]
@@ -213,7 +217,7 @@ function routeEdge(
     // Escape along the flow axis before routing so the last segment always
     // approaches the real target from outside its box.
     const exit = vertical ? { x: start.x, y: start.y + 18 } : { x: start.x + 18, y: start.y };
-    const entry = vertical ? { x: end.x, y: end.y - 18 } : { x: end.x - 18, y: end.y };
+    const entry = vertical ? { x: end.x, y: t.y - 18 } : { x: t.x - 18, y: end.y };
     points = compactRoute([start, ...orthogonalRoute(exit, entry, obstacles), end]);
   }
   return {

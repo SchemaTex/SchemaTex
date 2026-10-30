@@ -1,0 +1,8 @@
+logic "Registered 2:1 mux"
+input A, B, SEL, EN, CLK
+output Q, VALID
+module "Datapath" {
+  m1 = MUX(A, B, SEL)
+  Q = DFF(m1, CLK)
+}
+VALID = AND(EN, ~SEL)

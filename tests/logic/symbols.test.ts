@@ -65,3 +65,11 @@ describe("logic symbol connectivity", () => {
     expect(svg).toMatch(/\.schematex-logic-enable-pin\s*\{[^}]*stroke:/);
   });
 });
+
+it.each([3, 5])("MUX with %i arguments keeps select below the data inputs", count => {
+  const g = getGateGeometry("MUX", count);
+  expect(g.inputPins.slice(0, -1).map(p => p.label)).toEqual(Array.from({ length: count - 1 }, (_, i) => `I${i}`));
+  expect(g.inputPins.slice(0, -1).every(p => p.x === 0 && p.y > 0 && p.y < g.height)).toBe(true);
+  expect(g.inputPins.at(-1)).toMatchObject({ id: "S", x: g.width / 2, y: g.height, label: "S" });
+  expect(g.outputPins[0].y).toBe(g.height / 2);
+});
